@@ -11,14 +11,14 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 
 public sealed class ConstructorSymbol : InvocableSymbol
 {
-    public override UserTypeSymbol ContainingSymbol { get; }
-    public override UserTypeSymbol ContextTypeSymbol => ContainingSymbol;
+    public override OrdinaryTypeSymbol ContainingSymbol { get; }
+    public override OrdinaryTypeSymbol ContextTypeSymbol => ContainingSymbol;
     public override IdentifierName? Name { get; }
     public CapabilityType SelfParameterType { get; }
     public CapabilityType ReturnType { get; }
 
     public ConstructorSymbol(
-        UserTypeSymbol containingSymbol,
+        OrdinaryTypeSymbol containingSymbol,
         IdentifierName? name,
         CapabilityType selfParameterType,
         IFixedList<ParameterType> parameterTypes)
@@ -31,7 +31,7 @@ public sealed class ConstructorSymbol : InvocableSymbol
         ReturnType = (CapabilityType)Return;
     }
 
-    public static ConstructorSymbol CreateDefault(UserTypeSymbol containingSymbol)
+    public static ConstructorSymbol CreateDefault(OrdinaryTypeSymbol containingSymbol)
         => new(containingSymbol, null,
             ((ObjectType)containingSymbol.DeclaresType).ToDefaultConstructorSelf(),
             FixedList.Empty<ParameterType>());

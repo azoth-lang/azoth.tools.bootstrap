@@ -189,7 +189,7 @@ internal static partial class ExpressionAntetypesAspect
         var rangeTypeDeclaration = containingLexicalScope.Lookup("azoth")
             .OfType<INamespaceDeclarationNode>().SelectMany(ns => ns.MembersNamed("range"))
             .OfType<ITypeDeclarationNode>().TrySingle();
-        var rangeAntetype = (IAntetype?)rangeTypeDeclaration?.Symbol.GetDeclaredType()?.ToAntetype()
+        var rangeAntetype = rangeTypeDeclaration?.Symbol.TryGetDeclaredType()?.ToTypeConstructor().TryConstructNullary()
                             ?? IMaybeAntetype.Unknown;
         return rangeAntetype;
     }
@@ -198,7 +198,7 @@ internal static partial class ExpressionAntetypesAspect
     {
         var typeSymbolNode = node.ContainingLexicalScope.Lookup(StringTypeName)
                                  .OfType<ITypeDeclarationNode>().TrySingle();
-        return (IMaybeExpressionAntetype?)typeSymbolNode?.Symbol.GetDeclaredType()?.ToAntetype() ?? IAntetype.Unknown;
+        return (IMaybeExpressionAntetype?)typeSymbolNode?.Symbol.TryGetDeclaredType()?.ToTypeConstructor().TryConstructNullary() ?? IAntetype.Unknown;
     }
 
     private static readonly IdentifierName StringTypeName = "String";
@@ -249,8 +249,8 @@ internal static partial class ExpressionAntetypesAspect
 
     public static partial IMaybeExpressionAntetype AwaitExpression_Antetype(IAwaitExpressionNode node)
     {
-        if (node.Expression?.Antetype is NamedPlainType { TypeConstructor: var declaredAntetype } antetype
-            && Intrinsic.PromiseAntetype.Equals(declaredAntetype))
+        if (node.Expression?.Antetype is NamedPlainType { TypeConstructor: var typeConstructor } antetype
+            && Intrinsic.PromiseTypeConstructor.Equals(typeConstructor))
             return antetype.TypeArguments[0];
 
         return IAntetype.Unknown;
@@ -259,8 +259,8 @@ internal static partial class ExpressionAntetypesAspect
     public static partial void AwaitExpression_Contribute_Diagnostics(IAwaitExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
         // TODO eliminate code duplication with AwaitExpression_Antetype
-        if (node.Expression?.Antetype is NamedPlainType { TypeConstructor: var declaredAntetype }
-            && Intrinsic.PromiseAntetype.Equals(declaredAntetype))
+        if (node.Expression?.Antetype is NamedPlainType { TypeConstructor: var typeConstructor }
+            && Intrinsic.PromiseTypeConstructor.Equals(typeConstructor))
             return;
 
         diagnostics.Add(TypeError.CannotAwaitType(node.File, node.Syntax.Span, node.Expression!.Type));

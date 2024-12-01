@@ -15,7 +15,7 @@ internal static partial class SymbolsAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial FunctionSymbol? FunctionDefinition_Symbol(IFunctionDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial UserTypeSymbol TypeDefinition_Symbol(ITypeDefinitionNode node);
+    public static partial OrdinaryTypeSymbol TypeDefinition_Symbol(ITypeDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial GenericParameterTypeSymbol GenericParameter_Symbol(IGenericParameterNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

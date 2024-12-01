@@ -15,7 +15,7 @@ public static class Primitive
 {
     public static readonly PrimitiveSymbolTree SymbolTree = DefinePrimitiveSymbols();
 
-    public static readonly PrimitiveTypeSymbol Any = Find<PrimitiveTypeSymbol>("Any");
+    public static readonly BuiltInTypeSymbol Any = Find<BuiltInTypeSymbol>("Any");
 
     public static readonly MethodSymbol IdentityHash = Find<MethodSymbol>(Any, "identity_hash");
 
@@ -65,7 +65,7 @@ public static class Primitive
 
     private static void BuildBoolSymbol(SymbolTreeBuilder tree)
     {
-        var symbol = new PrimitiveTypeSymbol(DeclaredType.Bool);
+        var symbol = new BuiltInTypeSymbol(DeclaredType.Bool);
         tree.Add(symbol);
     }
 
@@ -74,7 +74,7 @@ public static class Primitive
         IntegerType integerType,
         IType stringType)
     {
-        var type = new PrimitiveTypeSymbol(integerType);
+        var type = new BuiltInTypeSymbol(integerType);
         tree.Add(type);
 
         var integerParamType = SelfParam(integerType.Type);
@@ -96,7 +96,7 @@ public static class Primitive
 
     private static void BuildAnyTypeSymbol(SymbolTreeBuilder tree)
     {
-        var symbol = new PrimitiveTypeSymbol(DeclaredType.Any);
+        var symbol = new BuiltInTypeSymbol(DeclaredType.Any);
         tree.Add(symbol);
 
         var idAnyType = DeclaredType.Any.With(Capability.Identity);

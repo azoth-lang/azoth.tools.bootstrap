@@ -8,6 +8,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 public sealed class NamedPlainType : NominalAntetype, INonVoidAntetype
 {
     public override OrdinaryTypeConstructor TypeConstructor { get; }
+    public NamespaceName? ContainingNamespace => TypeConstructor.ContainingNamespace;
     public override bool AllowsVariance => TypeConstructor.AllowsVariance;
     public override StandardName Name => TypeConstructor.Name;
     public bool HasReferenceSemantics => TypeConstructor.HasReferenceSemantics;
@@ -58,6 +59,8 @@ public sealed class NamedPlainType : NominalAntetype, INonVoidAntetype
         builder.Append(TypeConstructor.ContainingNamespace);
         if (TypeConstructor.ContainingNamespace != NamespaceName.Global) builder.Append('.');
         builder.Append(TypeConstructor.Name.ToBareString());
+        if (TypeArguments.IsEmpty)
+            return;
         builder.Append('[');
         builder.AppendJoin(", ", TypeArguments);
         builder.Append(']');

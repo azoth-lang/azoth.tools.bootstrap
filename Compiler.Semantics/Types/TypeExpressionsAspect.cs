@@ -14,7 +14,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 internal static partial class TypeExpressionsAspect
 {
     public static partial IMaybeType TypeName_NamedType(ITypeNameNode node)
-        => (node.NamedBareType?.WithRead() ?? node.ReferencedSymbol?.GetDataType()) ?? IMaybeType.Unknown;
+        => (node.NamedBareType?.WithRead() ?? node.ReferencedSymbol?.TryGetType()) ?? IMaybeType.Unknown;
 
     public static partial IMaybeType CapabilityType_NamedType(ICapabilityTypeNode node)
         => (node.Referent as ITypeNameNode)?.NamedBareType?.With(node.Capability.Capability) ?? node.Referent.NamedType;

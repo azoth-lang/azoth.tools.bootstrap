@@ -27,16 +27,18 @@ public interface ITypeConstructor : IEquatable<ITypeConstructor>
 
     IFixedList<GenericParameterPlainType> GenericParameterPlainTypes { get; }
 
-    IAntetype With(IEnumerable<IAntetype> typeArguments);
+    IAntetype Construct(IEnumerable<IAntetype> typeArguments);
 
-    IAntetype WithGenericParameterAntetypes() => With(GenericParameterPlainTypes);
+    IAntetype ConstructWithGenericParameterPlainTypes() => Construct(GenericParameterPlainTypes);
 
-    IMaybeAntetype With(IEnumerable<IMaybeAntetype> typeArguments)
+    IMaybeAntetype Construct(IEnumerable<IMaybeAntetype> typeArguments)
     {
         var properTypeArguments = typeArguments.ToFixedList().As<IAntetype>();
         if (properTypeArguments is null) return IAntetype.Unknown;
-        return With(properTypeArguments.AsEnumerable());
+        return Construct(properTypeArguments.AsEnumerable());
     }
+
+    IAntetype? TryConstructNullary();
 
     string ToString();
 }

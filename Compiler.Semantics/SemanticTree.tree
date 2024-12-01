@@ -486,11 +486,11 @@ FunctionSymbol <: FunctionDeclaration, NamespaceMemberSymbol = Symbol:`FunctionS
 TypeSymbol <: TypeDeclaration, ChildSymbol = Symbol:`TypeSymbol`;
 BuiltInTypeSymbol <: BuiltInTypeDeclaration, TypeSymbol;
 EmptyTypeSymbol <: BuiltInTypeSymbol = Symbol:`EmptyTypeSymbol`;
-PrimitiveTypeSymbol <: BuiltInTypeSymbol = Symbol:`PrimitiveTypeSymbol`;
-UserTypeSymbol <: UserTypeDeclaration, TypeSymbol, NamespaceMemberSymbol = Symbol:`UserTypeSymbol`;
-ClassSymbol <: ClassDeclaration, UserTypeSymbol = /GenericParameters/ /Members/;
-StructSymbol <: StructDeclaration, UserTypeSymbol = /GenericParameters/ /Members/;
-TraitSymbol <: TraitDeclaration, UserTypeSymbol = /GenericParameters/ /Members/;
+PrimitiveTypeSymbol <: BuiltInTypeSymbol = Symbol:`BuiltInTypeSymbol`;
+OrdinaryTypeSymbol <: UserTypeDeclaration, TypeSymbol, NamespaceMemberSymbol = Symbol:`OrdinaryTypeSymbol`;
+ClassSymbol <: ClassDeclaration, OrdinaryTypeSymbol = /GenericParameters/ /Members/;
+StructSymbol <: StructDeclaration, OrdinaryTypeSymbol = /GenericParameters/ /Members/;
+TraitSymbol <: TraitDeclaration, OrdinaryTypeSymbol = /GenericParameters/ /Members/;
 
 // ---------- Type Declaration Parts
 GenericParameterSymbol <: GenericParameterDeclaration, ChildSymbol = Symbol:`GenericParameterTypeSymbol`;

@@ -19,18 +19,18 @@ public static class Intrinsic
 
     public static readonly PackageSymbol Package = SymbolTree.Package;
 
-    public static readonly UserTypeSymbol Promise = Find<UserTypeSymbol>("Promise");
+    public static readonly OrdinaryTypeSymbol Promise = Find<OrdinaryTypeSymbol>("Promise");
 
-    public static readonly IDeclaredUserType PromiseType = Promise.DeclaresType;
-    public static readonly ITypeConstructor PromiseAntetype = PromiseType.ToAntetype();
+    public static readonly IDeclaredUserType PromiseDeclaredType = Promise.DeclaresType;
+    public static readonly ITypeConstructor PromiseTypeConstructor = PromiseDeclaredType.ToTypeConstructor();
 
     public static IMaybeExpressionType PromiseOf(IMaybeType type)
-        => PromiseType.WithRead(FixedList.Create(type));
+        => PromiseDeclaredType.WithRead(FixedList.Create(type));
     public static IMaybeAntetype PromiseOf(IMaybeAntetype antetype)
-        => PromiseAntetype.With(FixedList.Create(antetype));
+        => PromiseTypeConstructor.Construct(FixedList.Create(antetype));
 
-    public static readonly UserTypeSymbol RawHybridBoundedList
-        = Find<UserTypeSymbol>("Raw_Hybrid_Bounded_List");
+    public static readonly OrdinaryTypeSymbol RawHybridBoundedList
+        = Find<OrdinaryTypeSymbol>("Raw_Hybrid_Bounded_List");
 
     public static readonly ConstructorSymbol NewRawBoundedList
         = Find<ConstructorSymbol>(RawHybridBoundedList, null);
@@ -112,7 +112,7 @@ public static class Intrinsic
         var intrinsicsPackage = azothNamespace.Package;
         var promiseType = ObjectType.CreateClass(intrinsicsPackage.Name, azothNamespace.NamespaceName,
                        isAbstract: false, isConst: false, "Promise", GenericParameter.Out(CapabilitySet.Any, "T"));
-        var classSymbol = new UserTypeSymbol(azothNamespace, promiseType);
+        var classSymbol = new OrdinaryTypeSymbol(azothNamespace, promiseType);
         tree.Add(classSymbol);
 
         return promiseType;
@@ -140,7 +140,7 @@ public static class Intrinsic
         var mutClassType = classType.WithMutate(classType.GenericParameterTypes);
         var mutClassParamType = new SelfParameterType(false, mutClassType);
         var itemType = classType.GenericParameterTypes[1];
-        var classSymbol = new UserTypeSymbol(@namespace, classType);
+        var classSymbol = new OrdinaryTypeSymbol(@namespace, classType);
         tree.Add(classSymbol);
 
         // published new(.fixed, .capacity) {...}

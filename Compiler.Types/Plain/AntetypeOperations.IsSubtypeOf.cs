@@ -50,8 +50,8 @@ public static partial class AntetypeOperations
             return true;
 
         // TODO remove hack to allow string to exist in both primitives and stdlib
-        if (self is UserNonGenericNominalAntetype s
-           && other is UserNonGenericNominalAntetype o
+        if (self is NamedPlainType s
+           && other is NamedPlainType o
            && s.Name == "String" && o.Name == "String"
            && s.ContainingNamespace == NamespaceName.Global
            && o.ContainingNamespace == NamespaceName.Global)

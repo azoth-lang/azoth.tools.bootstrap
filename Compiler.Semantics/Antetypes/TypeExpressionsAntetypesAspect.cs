@@ -22,8 +22,8 @@ internal static partial class TypeExpressionsAntetypesAspect
     public static partial IMaybeAntetype SpecialTypeName_NamedAntetype(ISpecialTypeNameNode node)
     {
         // TODO do not use symbols at this stage of the compiler
-        return (IMaybeAntetype?)node.ReferencedSymbol.GetDataType()?.ToAntetype()
-               ?? (IMaybeAntetype?)node.ReferencedSymbol.GetDeclaredType()?.ToAntetype() ?? IAntetype.Unknown;
+        return (IMaybeAntetype?)node.ReferencedSymbol.TryGetType()?.ToAntetype()
+               ?? (IMaybeAntetype?)node.ReferencedSymbol.TryGetDeclaredType()?.ToTypeConstructor() ?? IAntetype.Unknown;
     }
 
     public static partial IMaybeAntetype FunctionType_NamedAntetype(IFunctionTypeNode node)
@@ -42,8 +42,8 @@ internal static partial class TypeExpressionsAntetypesAspect
     {
         // TODO do not use symbols at this stage of the compiler
         var referencedSymbol = node.ReferencedDeclaration?.Symbol;
-        return (IMaybeAntetype?)referencedSymbol?.GetDataType()?.ToAntetype()
-               ?? (IMaybeAntetype?)referencedSymbol?.GetDeclaredType()?.ToAntetype()
+        return (IMaybeAntetype?)referencedSymbol?.TryGetType()?.ToAntetype()
+               ?? (IMaybeAntetype?)referencedSymbol?.TryGetDeclaredType()?.ToTypeConstructor().TryConstructNullary()
                ?? IAntetype.Unknown;
     }
 
@@ -51,25 +51,25 @@ internal static partial class TypeExpressionsAntetypesAspect
     {
         // TODO do not use symbols at this stage of the compiler
         var referencedSymbol = node.ReferencedDeclaration?.Symbol;
-        var declaredAntetype = referencedSymbol?.GetDeclaredType()?.ToAntetype();
+        var declaredAntetype = referencedSymbol?.TryGetDeclaredType()?.ToTypeConstructor();
         if (declaredAntetype is null)
             return IAntetype.Unknown;
         var antetypeArguments = node.TypeArguments.Select(a => a.NamedAntetype).OfType<IAntetype>().ToFixedList();
         if (antetypeArguments.Count != node.TypeArguments.Count)
             return IAntetype.Unknown;
-        return declaredAntetype.With(antetypeArguments);
+        return declaredAntetype.Construct(antetypeArguments);
     }
 
     public static partial IMaybeAntetype TypeNameExpression_NamedAntetype(ITypeNameExpressionNode node)
     {
         // TODO do not use symbols at this stage of the compiler
         var referencedSymbol = node.ReferencedDeclaration.Symbol;
-        var declaredAntetype = referencedSymbol.GetDeclaredType()?.ToAntetype();
+        var declaredAntetype = referencedSymbol.TryGetDeclaredType()?.ToTypeConstructor();
         if (declaredAntetype is null)
             return IAntetype.Unknown;
         var antetypeArguments = node.TypeArguments.Select(a => a.NamedAntetype).OfType<IAntetype>().ToFixedList();
         if (antetypeArguments.Count != node.TypeArguments.Count)
             return IAntetype.Unknown;
-        return declaredAntetype.With(antetypeArguments);
+        return declaredAntetype.Construct(antetypeArguments);
     }
 }

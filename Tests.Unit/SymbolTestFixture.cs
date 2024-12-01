@@ -65,7 +65,7 @@ public abstract class SymbolTestFixture
 
     protected MethodSymbol Method(
         string? name = null,
-        UserTypeSymbol? containing = null,
+        OrdinaryTypeSymbol? containing = null,
         SelfParameterType? self = null,
         IFixedList<ParameterType>? @params = null,
         IType? @return = null)
@@ -83,7 +83,7 @@ public abstract class SymbolTestFixture
     protected static MethodSymbol Method(
         MethodSymbol mother,
         string? name = null,
-        UserTypeSymbol? containing = null,
+        OrdinaryTypeSymbol? containing = null,
         SelfParameterType? self = null,
         IFixedList<ParameterType>? @params = null,
         IType? @return = null)
@@ -114,7 +114,7 @@ public abstract class SymbolTestFixture
             finalName.Text);
     }
 
-    protected UserTypeSymbol Type(
+    protected OrdinaryTypeSymbol Type(
         NamespaceSymbol? ns = null,
         ObjectType? dataType = null)
     {

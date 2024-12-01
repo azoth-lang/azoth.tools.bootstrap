@@ -31,12 +31,14 @@ public abstract class SimpleTypeConstructor : INonVoidAntetype, ITypeConstructor
         Name = name;
     }
 
-    public IAntetype With(IEnumerable<IAntetype> typeArguments)
+    public IAntetype Construct(IEnumerable<IAntetype> typeArguments)
     {
         if (typeArguments.Any())
             throw new ArgumentException("Simple type cannot have type arguments", nameof(typeArguments));
         return this;
     }
+
+    public IAntetype TryConstructNullary() => this;
 
     public IMaybeExpressionAntetype ReplaceTypeParametersIn(IMaybeExpressionAntetype antetype)
         => antetype;

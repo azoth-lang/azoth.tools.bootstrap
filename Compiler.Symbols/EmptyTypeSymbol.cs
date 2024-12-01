@@ -1,6 +1,5 @@
 using System;
 using Azoth.Tools.Bootstrap.Compiler.Names;
-using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
@@ -20,7 +19,7 @@ public sealed class EmptyTypeSymbol : TypeSymbol
         Type = type;
     }
 
-    public override IType GetDataType() => Type;
+    public override IType TryGetType() => Type;
 
     #region Equality
     public override bool Equals(Symbol? other)

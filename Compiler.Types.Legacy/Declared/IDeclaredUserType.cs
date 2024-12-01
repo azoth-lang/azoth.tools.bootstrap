@@ -45,15 +45,15 @@ public interface IDeclaredUserType : IEquatable<IDeclaredUserType>
         return WithRead(properTypeArguments);
     }
 
-    IOrdinaryTypeConstructor ToAntetype();
+    OrdinaryTypeConstructor ToTypeConstructor();
 }
 
 internal static class DeclaredUserTypeExtensions
 {
     /// <remarks>Used inside of instances of <see cref="IDeclaredUserType"/> to construct the
     /// equivalent <see cref="ITypeConstructor"/>. Do not use directly. Use
-    /// <see cref="IDeclaredUserType.ToAntetype"/> instead.</remarks>
-    internal static IOrdinaryTypeConstructor ConstructDeclaredAntetype(this IDeclaredUserType declaredType)
+    /// <see cref="IDeclaredUserType.ToTypeConstructor"/> instead.</remarks>
+    internal static OrdinaryTypeConstructor ConstructTypeConstructor(this IDeclaredUserType declaredType)
     {
         var isAbstract = declaredType.IsAbstract;
         var antetypeGenericParameters = declaredType.GenericParameters
@@ -61,17 +61,8 @@ internal static class DeclaredUserTypeExtensions
             .Select(p => new TypeConstructorParameter(p.Name, p.Variance.ToTypeVariance(true)));
         var hasReferenceSemantics = declaredType is ObjectType;
         var supertypes = declaredType.AntetypeSupertypes();
-        return declaredType.Name switch
-        {
-            IdentifierName n
-                => new UserNonGenericNominalAntetype(declaredType.ContainingPackage,
-                    declaredType.ContainingNamespace, isAbstract, n, supertypes, hasReferenceSemantics),
-            GenericName n
-                => new OrdinaryTypeConstructor(declaredType.ContainingPackage,
-                    declaredType.ContainingNamespace, isAbstract, n, antetypeGenericParameters,
-                    supertypes, hasReferenceSemantics),
-            _ => throw ExhaustiveMatch.Failed(declaredType.Name)
-        };
+        return new OrdinaryTypeConstructor(declaredType.ContainingPackage, declaredType.ContainingNamespace,
+            isAbstract, declaredType.Name, antetypeGenericParameters, supertypes, hasReferenceSemantics);
     }
 
     private static IFixedSet<NominalAntetype> AntetypeSupertypes(this IDeclaredUserType declaredType)

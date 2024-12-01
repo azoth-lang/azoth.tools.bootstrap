@@ -12,15 +12,15 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 /// <remarks>Named initializers show up as invocable symbols inside of their containing type.</remarks>
 public sealed class InitializerSymbol : FunctionOrInitializerSymbol
 {
-    public override UserTypeSymbol ContextTypeSymbol { get; }
-    public override UserTypeSymbol ContainingSymbol { get; }
+    public override OrdinaryTypeSymbol ContextTypeSymbol { get; }
+    public override OrdinaryTypeSymbol ContainingSymbol { get; }
     public override IdentifierName? Name { get; }
     public CapabilityType SelfParameterType { get; }
     public CapabilityType ReturnType { get; }
     public FunctionType InitializerGroupType { get; }
 
     public InitializerSymbol(
-        UserTypeSymbol containingTypeSymbol,
+        OrdinaryTypeSymbol containingTypeSymbol,
         IdentifierName? initializerName,
         CapabilityType selfParameterType,
         IFixedList<ParameterType> parameterTypes)
@@ -35,7 +35,7 @@ public sealed class InitializerSymbol : FunctionOrInitializerSymbol
         InitializerGroupType = new FunctionType(parameterTypes, ReturnType);
     }
 
-    public static InitializerSymbol CreateDefault(UserTypeSymbol containingTypeSymbol)
+    public static InitializerSymbol CreateDefault(OrdinaryTypeSymbol containingTypeSymbol)
         => new(containingTypeSymbol, null,
             ((StructType)containingTypeSymbol.DeclaresType).ToDefaultInitializerSelf(),
             FixedList.Empty<ParameterType>());

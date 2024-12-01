@@ -15,11 +15,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 internal static partial class SymbolNodeAspect
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial void Validate_ClassSymbolNode(UserTypeSymbol symbol);
+    public static partial void Validate_ClassSymbolNode(OrdinaryTypeSymbol symbol);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial void Validate_StructSymbolNode(UserTypeSymbol symbol);
+    public static partial void Validate_StructSymbolNode(OrdinaryTypeSymbol symbol);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial void Validate_TraitSymbolNode(UserTypeSymbol symbol);
+    public static partial void Validate_TraitSymbolNode(OrdinaryTypeSymbol symbol);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial void Validate_StandardMethodSymbolNode(MethodSymbol symbol);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -37,7 +37,7 @@ internal static partial class SymbolNodeAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFixedSet<ITypeMemberSymbolNode> BuiltInTypeSymbol_Members(IBuiltInTypeSymbolNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IFixedList<IGenericParameterSymbolNode> UserTypeSymbol_GenericParameters(IUserTypeSymbolNode node);
+    public static partial IFixedList<IGenericParameterSymbolNode> OrdinaryTypeSymbol_GenericParameters(IOrdinaryTypeSymbolNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial FixedDictionary<IdentifierName, IPackageDeclarationNode> Package_PackageDeclarations(IPackageNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

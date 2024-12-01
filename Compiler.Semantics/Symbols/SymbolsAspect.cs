@@ -29,7 +29,7 @@ internal static partial class SymbolsAspect
         return new PackageSymbols(node.Symbol, mainTree, testingTree);
     }
 
-    public static partial UserTypeSymbol TypeDefinition_Symbol(ITypeDefinitionNode node)
+    public static partial OrdinaryTypeSymbol TypeDefinition_Symbol(ITypeDefinitionNode node)
         => new(node.ContainingSymbol, node.DeclaredType);
 
     public static partial GenericParameterTypeSymbol GenericParameter_Symbol(IGenericParameterNode node)

@@ -9,13 +9,13 @@ public sealed class FieldSymbol : Symbol
 {
     public override IdentifierName Name { get; }
     public INonVoidType Type { get; }
-    public override UserTypeSymbol ContainingSymbol { get; }
-    public override UserTypeSymbol ContextTypeSymbol => ContainingSymbol;
+    public override OrdinaryTypeSymbol ContainingSymbol { get; }
+    public override OrdinaryTypeSymbol ContextTypeSymbol => ContainingSymbol;
     public override PackageSymbol Package { get; }
     public bool IsMutableBinding { get; }
 
     public FieldSymbol(
-        UserTypeSymbol containingSymbol,
+        OrdinaryTypeSymbol containingSymbol,
         IdentifierName name,
         bool isMutableBinding,
         INonVoidType dataType)

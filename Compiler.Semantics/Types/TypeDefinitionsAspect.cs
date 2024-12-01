@@ -36,7 +36,7 @@ internal static partial class TypeDefinitionsAspect
 
     private static void CheckBaseTypeMustBeAClass(IClassDefinitionNode node, DiagnosticCollectionBuilder diagnostics)
     {
-        if (node.BaseTypeName?.ReferencedSymbol is not null and not UserTypeSymbol { DeclaresType.IsClass: true })
+        if (node.BaseTypeName?.ReferencedSymbol is not null and not OrdinaryTypeSymbol { DeclaresType.IsClass: true })
             diagnostics.Add(OtherSemanticError.BaseTypeMustBeClass(node.File, node.Name, node.BaseTypeName.Syntax));
     }
 
@@ -173,7 +173,7 @@ internal static partial class TypeDefinitionsAspect
     {
         foreach (var node in typeNode.SupertypeNames)
             // Null symbol will report a separate name binding error
-            if (node.ReferencedSymbol is not null and not UserTypeSymbol { DeclaresType: ObjectType })
+            if (node.ReferencedSymbol is not null and not OrdinaryTypeSymbol { DeclaresType: ObjectType })
                 diagnostics.Add(OtherSemanticError.SupertypeMustBeClassOrTrait(node.File, typeNode.Name, node.Syntax));
     }
 

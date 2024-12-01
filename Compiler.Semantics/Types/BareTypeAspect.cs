@@ -18,7 +18,7 @@ internal static partial class BareTypeAspect
     {
         // Empty and generic parameter types don't have a declared or bare type. Note: the number
         // of arguments will match the type because name binding will only pick a matching type.
-        var declaredType = symbol?.GetDeclaredType();
+        var declaredType = symbol?.TryGetDeclaredType();
         return declaredType is not null ? BuildBareType(declaredType, typeArguments) : null;
     }
 
@@ -35,7 +35,7 @@ internal static partial class BareTypeAspect
     public static partial BareType? TypeNameExpression_NamedBareType(ITypeNameExpressionNode node)
     {
         var referencedSymbol = node.ReferencedDeclaration.Symbol;
-        var declaredType = referencedSymbol.GetDeclaredType();
+        var declaredType = referencedSymbol.TryGetDeclaredType();
         if (declaredType is null)
             return null;
         var typeArguments = node.TypeArguments.Select(a => a.NamedType).ToFixedList();

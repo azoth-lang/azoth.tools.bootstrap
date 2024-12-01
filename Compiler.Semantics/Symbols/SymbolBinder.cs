@@ -26,16 +26,16 @@ internal static class SymbolBinder
     private static ITypeDeclarationNode TypeSymbol(TypeSymbol symbol)
         => symbol switch
         {
-            UserTypeSymbol sym => UserTypeSymbol(sym),
+            OrdinaryTypeSymbol sym => UserTypeSymbol(sym),
             // These will be needed because the generic parameter type could be used in a type expression
             GenericParameterTypeSymbol sym => GenericParameterTypeSymbol(sym),
             EmptyTypeSymbol sym => EmptyTypeSymbol(sym),
-            PrimitiveTypeSymbol sym => PrimitiveTypeSymbol(sym),
-            AssociatedTypeSymbol sym => throw new NotImplementedException(),
+            BuiltInTypeSymbol sym => PrimitiveTypeSymbol(sym),
+            AssociatedTypeSymbol _ => throw new NotImplementedException(),
             _ => throw ExhaustiveMatch.Failed(symbol),
         };
 
-    private static IUserTypeDeclarationNode UserTypeSymbol(UserTypeSymbol symbol)
+    private static IUserTypeDeclarationNode UserTypeSymbol(OrdinaryTypeSymbol symbol)
          => symbol.DeclaresType switch
          {
              StructType _ => IStructSymbolNode.Create(symbol),
@@ -50,7 +50,7 @@ internal static class SymbolBinder
     private static IEmptyTypeSymbolNode EmptyTypeSymbol(EmptyTypeSymbol sym)
         => IEmptyTypeSymbolNode.Create(sym);
 
-    private static IPrimitiveTypeSymbolNode PrimitiveTypeSymbol(PrimitiveTypeSymbol sym)
+    private static IPrimitiveTypeSymbolNode PrimitiveTypeSymbol(BuiltInTypeSymbol sym)
         => IPrimitiveTypeSymbolNode.Create(sym);
 
     private static IGenericParameterSymbolNode GenericParameterTypeSymbol(GenericParameterTypeSymbol sym)

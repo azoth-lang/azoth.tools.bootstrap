@@ -61,7 +61,7 @@ public sealed class StructType : DeclaredValueType, IDeclaredUserType
     public override IFixedSet<BareReferenceType> Supertypes { get; }
     public override IFixedList<GenericParameterType> GenericParameterTypes { get; }
 
-    private IOrdinaryTypeConstructor? antetype;
+    private OrdinaryTypeConstructor? typeConstructor;
 
     DeclaredType IDeclaredUserType.AsDeclaredType => this;
 
@@ -120,9 +120,9 @@ public sealed class StructType : DeclaredValueType, IDeclaredUserType
     public CapabilityTypeConstraint With(CapabilitySet capability, IFixedList<IType> typeArguments)
         => With(typeArguments).With(capability);
 
-    public override IOrdinaryTypeConstructor ToAntetype()
+    public override OrdinaryTypeConstructor ToTypeConstructor()
         // Lazy initialize to prevent evaluation of lazy supertypes when constructing StructType
-        => LazyInitializer.EnsureInitialized(ref antetype, this.ConstructDeclaredAntetype);
+        => LazyInitializer.EnsureInitialized(ref typeConstructor, this.ConstructTypeConstructor);
 
     #region Equals
     public override bool Equals(DeclaredType? other)
@@ -159,7 +159,7 @@ public sealed class StructType : DeclaredValueType, IDeclaredUserType
         builder.Append(ContainingNamespace);
         if (ContainingNamespace != NamespaceName.Global) builder.Append('.');
         builder.Append(Name.ToBareString());
-        if (!GenericParameters.Any()) return;
+        if (GenericParameters.IsEmpty) return;
 
         builder.Append('[');
         builder.AppendJoin(", ", GenericParameters);

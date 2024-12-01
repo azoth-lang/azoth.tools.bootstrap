@@ -78,7 +78,6 @@ internal sealed class PlainTypeReplacements
             SimpleTypeConstructor a => a,
             NeverAntetype a => a,
             SelfAntetype a => a,
-            UserNonGenericNominalAntetype a => a,
             NamedPlainType a => ReplaceTypeParametersIn(a),
             GenericParameterPlainType a => ReplaceTypeParametersIn(a),
             FunctionAntetype a => ReplaceTypeParametersIn(a),

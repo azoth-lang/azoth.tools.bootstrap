@@ -112,7 +112,7 @@ internal sealed class PackageSymbolTreeBuilder
         AddInheritedSymbols(typeSymbol, Primitive.Any);
     }
 
-    private void AddInheritedSymbols(UserTypeSymbol typeSymbol, IStandardTypeNameNode supertypeName)
+    private void AddInheritedSymbols(OrdinaryTypeSymbol typeSymbol, IStandardTypeNameNode supertypeName)
     {
         var supertypeSymbol = supertypeName.ReferencedSymbol;
         if (supertypeSymbol is null) return;
@@ -123,7 +123,7 @@ internal sealed class PackageSymbolTreeBuilder
         AddInheritedSymbols(typeSymbol, supertypeSymbol);
     }
 
-    private void AddInheritedSymbols(UserTypeSymbol typeSymbol, TypeSymbol supertypeSymbol)
+    private void AddInheritedSymbols(OrdinaryTypeSymbol typeSymbol, TypeSymbol supertypeSymbol)
     {
         var existingMembers = tree.GetChildrenOf(typeSymbol).ToFixedSet();
         foreach (var symbol in symbolTrees.Children(supertypeSymbol))

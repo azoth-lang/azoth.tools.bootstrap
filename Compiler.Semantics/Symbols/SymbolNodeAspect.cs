@@ -139,7 +139,7 @@ internal static partial class SymbolNodeAspect
     #endregion
 
     #region Type Symbol Nodes
-    public static partial IFixedList<IGenericParameterSymbolNode> UserTypeSymbol_GenericParameters(IUserTypeSymbolNode node)
+    public static partial IFixedList<IGenericParameterSymbolNode> OrdinaryTypeSymbol_GenericParameters(IOrdinaryTypeSymbolNode node)
         => GetMembers(node).OfType<GenericParameterTypeSymbol>()
                            .Select(SymbolBinder.Symbol).WhereNotNull()
                            .Cast<IGenericParameterSymbolNode>().ToFixedList();
@@ -147,20 +147,20 @@ internal static partial class SymbolNodeAspect
     public static partial IFixedSet<ITypeMemberSymbolNode> BuiltInTypeSymbol_Members(IBuiltInTypeSymbolNode node)
         => GetMembers<ITypeMemberSymbolNode>(node);
 
-    public static partial void Validate_ClassSymbolNode(UserTypeSymbol symbol)
+    public static partial void Validate_ClassSymbolNode(OrdinaryTypeSymbol symbol)
         => Requires.That(symbol.DeclaresType is ObjectType { IsClass: true }, nameof(symbol),
             "Symbol must be for an class type.");
 
     public static partial IFixedSet<IClassMemberSymbolNode> ClassSymbol_Members(IClassSymbolNode node)
         => GetMembers<IClassMemberSymbolNode>(node);
 
-    public static partial void Validate_StructSymbolNode(UserTypeSymbol symbol)
+    public static partial void Validate_StructSymbolNode(OrdinaryTypeSymbol symbol)
         => Requires.That(symbol.DeclaresType is StructType, nameof(symbol), "Symbol must be for a struct type.");
 
     public static partial IFixedSet<IStructMemberSymbolNode> StructSymbol_Members(IStructSymbolNode node)
         => GetMembers<IStructMemberSymbolNode>(node);
 
-    public static partial void Validate_TraitSymbolNode(UserTypeSymbol symbol)
+    public static partial void Validate_TraitSymbolNode(OrdinaryTypeSymbol symbol)
         => Requires.That(symbol.DeclaresType is ObjectType { IsClass: false }, nameof(symbol),
             "Symbol must be for an trait type.");
 

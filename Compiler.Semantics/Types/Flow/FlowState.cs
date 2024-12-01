@@ -401,7 +401,7 @@ internal sealed class FlowState : IFlowState
         var memberType = node.Type;
         var builder = ToBuilder();
         var contextType = (CapabilityType)node.Context.Type;
-        var containingDeclaredType = node.ReferencedDeclaration.ContainingDeclaration.Symbol.GetDeclaredType()
+        var containingDeclaredType = node.ReferencedDeclaration.ContainingDeclaration.Symbol.TryGetDeclaredType()
             ?? throw new InvalidOperationException("Cannot access field of primitive type.");
         var bindingType = node.ReferencedDeclaration.BindingType;
 

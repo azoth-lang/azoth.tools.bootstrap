@@ -21,7 +21,7 @@ public sealed class SelfAntetype : NonGenericNominalAntetype, INonVoidAntetype
     public SelfAntetype(IOrdinaryTypeConstructor containingType)
     {
         ContainingType = containingType;
-        Supertypes = containingType.Supertypes.Append(containingType.WithGenericParameterAntetypes()).ToFixedSet();
+        Supertypes = containingType.Supertypes.Append(containingType.ConstructWithGenericParameterPlayTypes()).ToFixedSet();
     }
 
     #region Equality

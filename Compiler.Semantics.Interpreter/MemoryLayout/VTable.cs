@@ -10,13 +10,13 @@ internal class VTable
 {
     public IClassDefinitionNode Class { get; }
     private readonly MethodSignatureCache methodSignatures;
-    private readonly FixedDictionary<UserTypeSymbol, ITypeDefinitionNode> types;
+    private readonly FixedDictionary<OrdinaryTypeSymbol, ITypeDefinitionNode> types;
     private readonly ConcurrentDictionary<MethodSignature, IMethodDefinitionNode> methods = new();
 
     public VTable(
         IClassDefinitionNode @class,
         MethodSignatureCache methodSignatures,
-        FixedDictionary<UserTypeSymbol, ITypeDefinitionNode> types)
+        FixedDictionary<OrdinaryTypeSymbol, ITypeDefinitionNode> types)
     {
         Class = @class;
         this.methodSignatures = methodSignatures;
@@ -42,7 +42,7 @@ internal class VTable
 
         foreach (var supertypeName in type.AllSupertypeNames)
         {
-            var supertype = types[(UserTypeSymbol)supertypeName.ReferencedDeclaration!.Symbol];
+            var supertype = types[(OrdinaryTypeSymbol)supertypeName.ReferencedDeclaration!.Symbol];
             var method = LookupMethod(supertype, signature);
             if (method is not null) return method;
         }

@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Names;
-using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Declared;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Pseudotypes;
@@ -61,8 +60,8 @@ public sealed class GenericParameterType : NonEmptyType, INonVoidType
 
     public override GenericParameterPlainType ToAntetype()
     {
-        var declaringAntetype = DeclaringType.ToAntetype();
-        return new GenericParameterPlainType((OrdinaryTypeConstructor)declaringAntetype, declaringAntetype.Parameters.Single(p => p.Name == Name));
+        var typeConstructor = DeclaringType.ToTypeConstructor();
+        return new GenericParameterPlainType(typeConstructor, typeConstructor.Parameters.Single(p => p.Name == Name));
     }
     INonVoidAntetype INonVoidType.ToAntetype() => ToAntetype();
 

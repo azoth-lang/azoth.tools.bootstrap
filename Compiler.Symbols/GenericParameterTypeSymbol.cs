@@ -8,15 +8,15 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 public sealed class GenericParameterTypeSymbol : TypeSymbol
 {
     public override PackageSymbol Package => ContainingSymbol.Package ?? throw new ArgumentNullException();
-    public override UserTypeSymbol ContainingSymbol { get; }
-    public override UserTypeSymbol ContextTypeSymbol => ContainingSymbol;
+    public override OrdinaryTypeSymbol ContainingSymbol { get; }
+    public override OrdinaryTypeSymbol ContextTypeSymbol => ContainingSymbol;
     public GenericParameterType Type { get; }
     public override IdentifierName Name => (IdentifierName)base.Name;
 
-    public override IType GetDataType() => Type;
+    public override IType TryGetType() => Type;
 
     public GenericParameterTypeSymbol(
-        UserTypeSymbol containingSymbol,
+        OrdinaryTypeSymbol containingSymbol,
         GenericParameterType type)
         : base(type.Name)
     {

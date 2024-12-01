@@ -6,7 +6,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 [Closed(
     typeof(OptionalAntetype),
     typeof(FunctionAntetype),
-    typeof(UserNonGenericNominalAntetype),
     typeof(NamedPlainType),
     typeof(AnyAntetype),
     typeof(NeverAntetype),

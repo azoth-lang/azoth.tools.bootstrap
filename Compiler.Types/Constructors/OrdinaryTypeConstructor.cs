@@ -64,13 +64,16 @@ public sealed class OrdinaryTypeConstructor : IOrdinaryTypeConstructor
                                                      .ToFixedList();
     }
 
-    public NominalAntetype With(IEnumerable<IAntetype> typeArguments)
+    public NominalAntetype Construct(IEnumerable<IAntetype> typeArguments)
     {
         var args = typeArguments.ToFixedList();
         if (args.Count != Parameters.Count)
             throw new ArgumentException("Incorrect number of type arguments.");
         return new NamedPlainType(this, args);
     }
+
+    public IAntetype? TryConstructNullary()
+        => Parameters.IsEmpty ? new NamedPlainType(this, []) : null;
 
     #region Equality
     public bool Equals(ITypeConstructor? other)
@@ -88,6 +91,7 @@ public sealed class OrdinaryTypeConstructor : IOrdinaryTypeConstructor
     public override int GetHashCode()
         => HashCode.Combine(ContainingPackage, ContainingNamespace, Name, Parameters);
     #endregion
+
 
     public override string ToString()
     {

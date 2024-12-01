@@ -27,10 +27,10 @@
 = TypeDefinition.Symbol;
 
 // ---------- Type Member Definitions
-↑ AlwaysTypeMemberDefinition.ContainingSymbol: `UserTypeSymbol` => ContainingDeclaration.Symbol;
+↑ AlwaysTypeMemberDefinition.ContainingSymbol: `OrdinaryTypeSymbol` => ContainingDeclaration.Symbol;
 
 // ---------- Type Definition Parts
-↑ GenericParameter.ContainingSymbol: `UserTypeSymbol` => ContainingDeclaration.Symbol;
+↑ GenericParameter.ContainingSymbol: `OrdinaryTypeSymbol` => ContainingDeclaration.Symbol;
 = GenericParameter.Symbol;
 
 // ---------- Member Definitions

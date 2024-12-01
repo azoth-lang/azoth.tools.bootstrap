@@ -7,7 +7,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 /// <summary>
 /// A symbol for a type declaration (i.e. a class, struct, or trait)
 /// </summary>
-public sealed class UserTypeSymbol : TypeSymbol
+public sealed class OrdinaryTypeSymbol : TypeSymbol
 {
     public override PackageSymbol Package { get; }
     public override Symbol ContainingSymbol { get; }
@@ -15,7 +15,7 @@ public sealed class UserTypeSymbol : TypeSymbol
     public override StandardName Name { get; }
     public IDeclaredUserType DeclaresType { get; }
 
-    public UserTypeSymbol(
+    public OrdinaryTypeSymbol(
         Symbol containingSymbol,
         IDeclaredUserType declaresType)
         : base(declaresType.Name)
@@ -27,14 +27,14 @@ public sealed class UserTypeSymbol : TypeSymbol
         DeclaresType = declaresType;
     }
 
-    public override DeclaredType GetDeclaredType() => DeclaresType.AsDeclaredType;
+    public override DeclaredType TryGetDeclaredType() => DeclaresType.AsDeclaredType;
 
     #region Equals
     public override bool Equals(Symbol? other)
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
-        return other is UserTypeSymbol otherType
+        return other is OrdinaryTypeSymbol otherType
                && ContainingSymbol == otherType.ContainingSymbol
                && Name == otherType.Name
                && DeclaresType.Equals(otherType.DeclaresType); // Must use Equals because they are interface types

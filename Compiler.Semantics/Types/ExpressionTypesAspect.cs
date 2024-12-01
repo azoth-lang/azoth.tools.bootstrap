@@ -124,7 +124,7 @@ internal static partial class ExpressionTypesAspect
     public static partial IMaybeExpressionType StringLiteralExpression_Type(IStringLiteralExpressionNode node)
     {
         var typeSymbolNode = node.ContainingLexicalScope.Lookup(StringTypeName).OfType<ITypeDeclarationNode>().TrySingle();
-        return typeSymbolNode?.Symbol.GetDeclaredType()?.With(Capability.Constant, []) ?? IMaybeType.Unknown;
+        return typeSymbolNode?.Symbol.TryGetDeclaredType()?.With(Capability.Constant, []) ?? IMaybeType.Unknown;
     }
 
     public static partial IFlowState LiteralExpression_FlowStateAfter(ILiteralExpressionNode node)
@@ -519,7 +519,7 @@ internal static partial class ExpressionTypesAspect
         var rangeTypeDeclaration = containingLexicalScope.Lookup("azoth")
             .OfType<INamespaceDeclarationNode>().SelectMany(ns => ns.MembersNamed("range"))
             .OfType<ITypeDeclarationNode>().TrySingle();
-        var rangeAntetype = rangeTypeDeclaration?.Symbol.GetDeclaredType()?.With(Capability.Constant, [])
+        var rangeAntetype = rangeTypeDeclaration?.Symbol.TryGetDeclaredType()?.With(Capability.Constant, [])
                             ?? IMaybeType.Unknown;
         return rangeAntetype;
     }
@@ -662,7 +662,7 @@ internal static partial class ExpressionTypesAspect
     public static partial IMaybeExpressionType AwaitExpression_Type(IAwaitExpressionNode node)
     {
         if (node.Expression?.Type is CapabilityType { DeclaredType: var declaredType } type
-            && Intrinsic.PromiseType.Equals(declaredType))
+            && Intrinsic.PromiseDeclaredType.Equals(declaredType))
             return type.TypeArguments[0];
 
         return IType.Unknown;

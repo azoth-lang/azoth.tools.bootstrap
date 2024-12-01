@@ -5,7 +5,7 @@ using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 
-[Closed(typeof(OrdinaryTypeConstructor), typeof(UserNonGenericNominalAntetype))]
+[Closed(typeof(OrdinaryTypeConstructor))]
 public interface IOrdinaryTypeConstructor : ITypeConstructor
 {
     IdentifierName ContainingPackage { get; }
@@ -16,9 +16,9 @@ public interface IOrdinaryTypeConstructor : ITypeConstructor
     // TODO this seems like the wrong way to do this and was introduced only for the legacy reference equality operator
     bool HasReferenceSemantics { get; }
 
-    new NominalAntetype With(IEnumerable<IAntetype> typeArguments);
-    IAntetype ITypeConstructor.With(IEnumerable<IAntetype> typeArguments) => With(typeArguments);
+    new NominalAntetype Construct(IEnumerable<IAntetype> typeArguments);
+    IAntetype ITypeConstructor.Construct(IEnumerable<IAntetype> typeArguments) => Construct(typeArguments);
 
-    new NominalAntetype WithGenericParameterAntetypes() => With(GenericParameterPlainTypes);
-    IAntetype ITypeConstructor.WithGenericParameterAntetypes() => WithGenericParameterAntetypes();
+    new NominalAntetype ConstructWithGenericParameterPlayTypes() => Construct(GenericParameterPlainTypes);
+    IAntetype ITypeConstructor.ConstructWithGenericParameterPlainTypes() => ConstructWithGenericParameterPlayTypes();
 }

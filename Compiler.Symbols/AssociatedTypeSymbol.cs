@@ -6,11 +6,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 public sealed class AssociatedTypeSymbol : TypeSymbol
 {
     public override PackageSymbol Package => ContainingSymbol.Package ?? throw new ArgumentNullException();
-    public override UserTypeSymbol ContainingSymbol { get; }
-    public override UserTypeSymbol ContextTypeSymbol => ContainingSymbol;
+    public override OrdinaryTypeSymbol ContainingSymbol { get; }
+    public override OrdinaryTypeSymbol ContextTypeSymbol => ContainingSymbol;
     public BareTypeVariableType Type { get; }
 
-    public AssociatedTypeSymbol(UserTypeSymbol containingSymbol, BareTypeVariableType type)
+    public AssociatedTypeSymbol(OrdinaryTypeSymbol containingSymbol, BareTypeVariableType type)
         : base(type.Name)
     {
         ContainingSymbol = containingSymbol;

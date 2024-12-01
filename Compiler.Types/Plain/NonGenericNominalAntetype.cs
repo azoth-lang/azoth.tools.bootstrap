@@ -12,8 +12,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
     typeof(EmptyAntetype),
     typeof(AnyAntetype),
     typeof(GenericParameterPlainType),
-    typeof(SelfAntetype),
-    typeof(UserNonGenericNominalAntetype))]
+    typeof(SelfAntetype))]
 public abstract class NonGenericNominalAntetype : NominalAntetype, ITypeConstructor
 {
     public sealed override ITypeConstructor TypeConstructor => this;
@@ -22,12 +21,14 @@ public abstract class NonGenericNominalAntetype : NominalAntetype, ITypeConstruc
     IFixedList<TypeConstructorParameter> ITypeConstructor.Parameters => [];
     IFixedList<GenericParameterPlainType> ITypeConstructor.GenericParameterPlainTypes => [];
 
-    public virtual IAntetype With(IEnumerable<IAntetype> typeArguments)
+    public virtual IAntetype Construct(IEnumerable<IAntetype> typeArguments)
     {
         if (typeArguments.Any())
             throw new ArgumentException("Non-generic type cannot have type arguments", nameof(typeArguments));
         return this;
     }
+
+    public IAntetype TryConstructNullary() => this;
 
     public override IMaybeExpressionAntetype ReplaceTypeParametersIn(IMaybeExpressionAntetype antetype)
         => antetype;

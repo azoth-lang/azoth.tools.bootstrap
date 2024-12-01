@@ -88,8 +88,8 @@ public abstract class BareNonVariableType : BareType
     public INonVoidAntetype ToAntetype()
     {
         var typeArguments = GenericTypeArguments.Select(a => a.ToAntetype()).ToFixedList();
-        // The ToAntetype() should never result in void since DeclaredType can't be void.
-        return (INonVoidAntetype)DeclaredType.ToAntetype().With(typeArguments);
+        // The ToTypeConstructor() should never result in void since DeclaredType can't be void.
+        return (INonVoidAntetype)DeclaredType.ToTypeConstructor().Construct(typeArguments);
     }
 
     private TypeReplacements GetTypeReplacements() => new(DeclaredType, GenericTypeArguments);
