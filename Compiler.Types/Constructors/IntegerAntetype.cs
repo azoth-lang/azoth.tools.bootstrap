@@ -1,7 +1,7 @@
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using ExhaustiveMatching;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
+namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 
 [Closed(
     typeof(PointerSizedIntegerAntetype),

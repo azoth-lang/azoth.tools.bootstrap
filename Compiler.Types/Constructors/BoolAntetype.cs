@@ -1,6 +1,6 @@
 using Azoth.Tools.Bootstrap.Compiler.Names;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
+namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 
 public sealed class BoolAntetype : SimpleAntetype
 {

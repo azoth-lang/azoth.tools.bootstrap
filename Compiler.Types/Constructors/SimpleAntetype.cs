@@ -1,10 +1,10 @@
 using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Names;
-using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
+using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
+namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 
 [Closed(
     typeof(BoolAntetype),

@@ -1,5 +1,6 @@
 using System.Numerics;
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain.ConstValue;
 

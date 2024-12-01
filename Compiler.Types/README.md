@@ -24,6 +24,18 @@ violation reported.
 Note: plain types used to be called antetypes and that term is still being cleaned up in the
 codebase.
 
+## Conventions
+
+This project doesn't prefix interfaces used as traits with "`I`". This is because the
+class/interface hierarchy for types is so complex and really needs traits. As such it is often the
+case that base classes should be equivalent to traits and that it isn't always obvious which should
+be used where.
+
+Also, this project does not declare the `==` operator for types because it cannot be declared on
+interfaces. When `==` was used, there had been bugs where `==` was used to compare types when
+`.Equals()` was needed because they happened to be accessed through interfaces. This inconsistency
+was confusing and error prone.
+
 ## Definitions
 
 *Unbound Generic Type*
