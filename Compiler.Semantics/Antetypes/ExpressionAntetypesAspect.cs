@@ -8,7 +8,6 @@ using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
-using Azoth.Tools.Bootstrap.Compiler.Types.Plain.ConstValue;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 
@@ -63,21 +62,21 @@ internal static partial class ExpressionAntetypesAspect
         var rightAntetype = node.RightOperand?.Antetype ?? IAntetype.Unknown;
         return (leftAntetype, node.Operator, rightAntetype) switch
         {
-            (IntegerConstValueAntetype, BinaryOperator.Plus, IntegerConstValueAntetype) => null,
-            (IntegerConstValueAntetype, BinaryOperator.Minus, IntegerConstValueAntetype) => null,
-            (IntegerConstValueAntetype, BinaryOperator.Asterisk, IntegerConstValueAntetype) => null,
-            (IntegerConstValueAntetype, BinaryOperator.Slash, IntegerConstValueAntetype) => null,
-            (IntegerConstValueAntetype, BinaryOperator.EqualsEquals, IntegerConstValueAntetype) => null,
-            (IntegerConstValueAntetype, BinaryOperator.NotEqual, IntegerConstValueAntetype) => null,
-            (IntegerConstValueAntetype, BinaryOperator.LessThan, IntegerConstValueAntetype) => null,
-            (IntegerConstValueAntetype, BinaryOperator.LessThanOrEqual, IntegerConstValueAntetype) => null,
-            (IntegerConstValueAntetype, BinaryOperator.GreaterThan, IntegerConstValueAntetype) => null,
-            (IntegerConstValueAntetype, BinaryOperator.GreaterThanOrEqual, IntegerConstValueAntetype) => null,
+            (IntegerLiteralTypeConstructor, BinaryOperator.Plus, IntegerLiteralTypeConstructor) => null,
+            (IntegerLiteralTypeConstructor, BinaryOperator.Minus, IntegerLiteralTypeConstructor) => null,
+            (IntegerLiteralTypeConstructor, BinaryOperator.Asterisk, IntegerLiteralTypeConstructor) => null,
+            (IntegerLiteralTypeConstructor, BinaryOperator.Slash, IntegerLiteralTypeConstructor) => null,
+            (IntegerLiteralTypeConstructor, BinaryOperator.EqualsEquals, IntegerLiteralTypeConstructor) => null,
+            (IntegerLiteralTypeConstructor, BinaryOperator.NotEqual, IntegerLiteralTypeConstructor) => null,
+            (IntegerLiteralTypeConstructor, BinaryOperator.LessThan, IntegerLiteralTypeConstructor) => null,
+            (IntegerLiteralTypeConstructor, BinaryOperator.LessThanOrEqual, IntegerLiteralTypeConstructor) => null,
+            (IntegerLiteralTypeConstructor, BinaryOperator.GreaterThan, IntegerLiteralTypeConstructor) => null,
+            (IntegerLiteralTypeConstructor, BinaryOperator.GreaterThanOrEqual, IntegerLiteralTypeConstructor) => null,
 
-            (BoolConstValueAntetype, BinaryOperator.EqualsEquals, BoolConstValueAntetype) => null,
-            (BoolConstValueAntetype, BinaryOperator.NotEqual, BoolConstValueAntetype) => null,
-            (BoolConstValueAntetype, BinaryOperator.And, BoolConstValueAntetype) => null,
-            (BoolConstValueAntetype, BinaryOperator.Or, BoolConstValueAntetype) => null,
+            (BoolLiteralTypeConstructor, BinaryOperator.EqualsEquals, BoolLiteralTypeConstructor) => null,
+            (BoolLiteralTypeConstructor, BinaryOperator.NotEqual, BoolLiteralTypeConstructor) => null,
+            (BoolLiteralTypeConstructor, BinaryOperator.And, BoolLiteralTypeConstructor) => null,
+            (BoolLiteralTypeConstructor, BinaryOperator.Or, BoolLiteralTypeConstructor) => null,
 
             (INonVoidAntetype { HasReferenceSemantics: true }, BinaryOperator.ReferenceEquals, INonVoidAntetype { HasReferenceSemantics: true })
                 or (INonVoidAntetype { HasReferenceSemantics: true }, BinaryOperator.NotReferenceEqual, INonVoidAntetype { HasReferenceSemantics: true })
@@ -120,21 +119,21 @@ internal static partial class ExpressionAntetypesAspect
         var rightAntetype = node.RightOperand?.Antetype ?? IAntetype.Unknown;
         return (leftAntetype, node.Operator, rightAntetype) switch
         {
-            (IntegerConstValueAntetype left, BinaryOperator.Plus, IntegerConstValueAntetype right) => left.Add(right),
-            (IntegerConstValueAntetype left, BinaryOperator.Minus, IntegerConstValueAntetype right) => left.Subtract(right),
-            (IntegerConstValueAntetype left, BinaryOperator.Asterisk, IntegerConstValueAntetype right) => left.Multiply(right),
-            (IntegerConstValueAntetype left, BinaryOperator.Slash, IntegerConstValueAntetype right) => left.DivideBy(right),
-            (IntegerConstValueAntetype left, BinaryOperator.EqualsEquals, IntegerConstValueAntetype right) => left.Equals(right),
-            (IntegerConstValueAntetype left, BinaryOperator.NotEqual, IntegerConstValueAntetype right) => left.NotEquals(right),
-            (IntegerConstValueAntetype left, BinaryOperator.LessThan, IntegerConstValueAntetype right) => left.LessThan(right),
-            (IntegerConstValueAntetype left, BinaryOperator.LessThanOrEqual, IntegerConstValueAntetype right) => left.LessThanOrEqual(right),
-            (IntegerConstValueAntetype left, BinaryOperator.GreaterThan, IntegerConstValueAntetype right) => left.GreaterThan(right),
-            (IntegerConstValueAntetype left, BinaryOperator.GreaterThanOrEqual, IntegerConstValueAntetype right) => left.GreaterThanOrEqual(right),
+            (IntegerLiteralTypeConstructor left, BinaryOperator.Plus, IntegerLiteralTypeConstructor right) => left.Add(right),
+            (IntegerLiteralTypeConstructor left, BinaryOperator.Minus, IntegerLiteralTypeConstructor right) => left.Subtract(right),
+            (IntegerLiteralTypeConstructor left, BinaryOperator.Asterisk, IntegerLiteralTypeConstructor right) => left.Multiply(right),
+            (IntegerLiteralTypeConstructor left, BinaryOperator.Slash, IntegerLiteralTypeConstructor right) => left.DivideBy(right),
+            (IntegerLiteralTypeConstructor left, BinaryOperator.EqualsEquals, IntegerLiteralTypeConstructor right) => left.Equals(right),
+            (IntegerLiteralTypeConstructor left, BinaryOperator.NotEqual, IntegerLiteralTypeConstructor right) => left.NotEquals(right),
+            (IntegerLiteralTypeConstructor left, BinaryOperator.LessThan, IntegerLiteralTypeConstructor right) => left.LessThan(right),
+            (IntegerLiteralTypeConstructor left, BinaryOperator.LessThanOrEqual, IntegerLiteralTypeConstructor right) => left.LessThanOrEqual(right),
+            (IntegerLiteralTypeConstructor left, BinaryOperator.GreaterThan, IntegerLiteralTypeConstructor right) => left.GreaterThan(right),
+            (IntegerLiteralTypeConstructor left, BinaryOperator.GreaterThanOrEqual, IntegerLiteralTypeConstructor right) => left.GreaterThanOrEqual(right),
 
-            (BoolConstValueAntetype left, BinaryOperator.EqualsEquals, BoolConstValueAntetype right) => left.Equals(right),
-            (BoolConstValueAntetype left, BinaryOperator.NotEqual, BoolConstValueAntetype right) => left.NotEquals(right),
-            (BoolConstValueAntetype left, BinaryOperator.And, BoolConstValueAntetype right) => left.And(right),
-            (BoolConstValueAntetype left, BinaryOperator.Or, BoolConstValueAntetype right) => left.Or(right),
+            (BoolLiteralTypeConstructor left, BinaryOperator.EqualsEquals, BoolLiteralTypeConstructor right) => left.Equals(right),
+            (BoolLiteralTypeConstructor left, BinaryOperator.NotEqual, BoolLiteralTypeConstructor right) => left.NotEquals(right),
+            (BoolLiteralTypeConstructor left, BinaryOperator.And, BoolLiteralTypeConstructor right) => left.And(right),
+            (BoolLiteralTypeConstructor left, BinaryOperator.Or, BoolLiteralTypeConstructor right) => left.Or(right),
 
             (INonVoidAntetype { HasReferenceSemantics: true }, BinaryOperator.ReferenceEquals, INonVoidAntetype { HasReferenceSemantics: true })
                 or (INonVoidAntetype { HasReferenceSemantics: true }, BinaryOperator.NotReferenceEqual, INonVoidAntetype { HasReferenceSemantics: true })
@@ -278,14 +277,14 @@ internal static partial class ExpressionAntetypesAspect
 
     private static IMaybeExpressionAntetype UnaryOperatorExpression_Antetype_Not(IUnaryOperatorExpressionNode node)
     {
-        if (node.Operand?.Antetype is BoolConstValueAntetype antetype) return antetype.Not();
+        if (node.Operand?.Antetype is BoolLiteralTypeConstructor antetype) return antetype.Not();
         return IAntetype.Bool;
     }
 
     private static IMaybeExpressionAntetype UnaryOperatorExpression_Antetype_Minus(IUnaryOperatorExpressionNode node)
         => node.Operand?.Antetype switch
         {
-            IntegerConstValueAntetype t => t.Negate(),
+            IntegerLiteralTypeConstructor t => t.Negate(),
             FixedSizeIntegerTypeConstructor t => t.WithSign(),
             PointerSizedIntegerTypeConstructor t => t.WithSign(),
             // Even if unsigned before, it is signed now
@@ -307,7 +306,7 @@ internal static partial class ExpressionAntetypesAspect
         var operandAntetype = node.Operand!.Antetype;
         var cannotBeAppliedToOperandType = node.Operator switch
         {
-            UnaryOperator.Not => operandAntetype is not (BoolTypeConstructor or BoolConstValueAntetype),
+            UnaryOperator.Not => operandAntetype is not (BoolTypeConstructor or BoolLiteralTypeConstructor),
             UnaryOperator.Minus => operandAntetype is not INumericAntetype,
             UnaryOperator.Plus => operandAntetype is not INumericAntetype,
             _ => throw ExhaustiveMatch.Failed(node.Operator),
@@ -383,8 +382,8 @@ internal static partial class ExpressionAntetypesAspect
         return fromType switch
         {
             UnknownAntetype => false,
-            BoolConstValueAntetype => true,
-            IntegerConstValueAntetype => true,
+            BoolLiteralTypeConstructor => true,
+            IntegerLiteralTypeConstructor => true,
             // Can't convert from signed because there is not larger type to convert to
             BigIntegerTypeConstructor t => !t.IsSigned,
             PointerSizedIntegerTypeConstructor => true,
@@ -407,14 +406,14 @@ internal static partial class ExpressionAntetypesAspect
                 if (to.Bits > from.Bits && (!from.IsSigned || to.IsSigned))
                     return to;
                 return null;
-            case (FixedSizeIntegerTypeConstructor to, IntegerConstValueAntetype from):
+            case (FixedSizeIntegerTypeConstructor to, IntegerLiteralTypeConstructor from):
             {
                 // TODO make a method on antetypes for this check
                 var requireSigned = from.Value < 0;
                 var bits = from.Value.GetByteCount(!to.IsSigned) * 8;
                 return to.Bits >= bits && (!requireSigned || to.IsSigned) ? to : null;
             }
-            case (PointerSizedIntegerTypeConstructor to, IntegerConstValueAntetype from):
+            case (PointerSizedIntegerTypeConstructor to, IntegerLiteralTypeConstructor from):
             {
                 // TODO make a method on antetypes for this check
                 var requireSigned = from.Value < 0;
@@ -424,12 +423,12 @@ internal static partial class ExpressionAntetypesAspect
             }
             // Note: Both signed BigIntegerAntetype has already been covered
             case (BigIntegerTypeConstructor { IsSigned: true }, IntegerTypeConstructor):
-            case (BigIntegerTypeConstructor { IsSigned: true }, IntegerConstValueAntetype):
+            case (BigIntegerTypeConstructor { IsSigned: true }, IntegerLiteralTypeConstructor):
                 return IAntetype.Int;
             case (BigIntegerTypeConstructor to, IntegerTypeConstructor { IsSigned: false }
-                                        or IntegerConstValueAntetype { IsSigned: false }):
+                                        or IntegerLiteralTypeConstructor { IsSigned: false }):
                 return to;
-            case (BoolTypeConstructor, BoolConstValueAntetype):
+            case (BoolTypeConstructor, BoolLiteralTypeConstructor):
                 return IAntetype.Bool;
             // TODO support lifted implicit conversions
             //case (OptionalAntetype { Referent: var to }, OptionalAntetype { Referent: var from }):
@@ -448,7 +447,7 @@ internal static partial class ExpressionAntetypesAspect
     }
 
     public static partial IMaybeExpressionAntetype IntegerLiteralExpression_Antetype(IIntegerLiteralExpressionNode node)
-        => new IntegerConstValueAntetype(node.Value);
+        => new IntegerLiteralTypeConstructor(node.Value);
 
     public static partial IMaybeExpressionAntetype BoolLiteralExpression_Antetype(IBoolLiteralExpressionNode node)
         => node.Value ? IExpressionAntetype.True : IExpressionAntetype.False;

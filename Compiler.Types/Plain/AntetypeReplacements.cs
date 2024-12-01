@@ -1,5 +1,4 @@
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
-using Azoth.Tools.Bootstrap.Compiler.Types.Plain.ConstValue;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 
@@ -54,7 +53,7 @@ internal sealed class AntetypeReplacements
         => antetype switch
         {
             IAntetype a => ReplaceTypeParametersIn(a),
-            ConstValueAntetype a => a,
+            LiteralTypeConstructor a => a,
             _ => throw ExhaustiveMatch.Failed(antetype)
         };
 

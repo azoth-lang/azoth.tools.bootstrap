@@ -9,7 +9,6 @@ using Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.ConstValue;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Declared;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
-using Azoth.Tools.Bootstrap.Compiler.Types.Plain.ConstValue;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 
@@ -128,7 +127,7 @@ public sealed class PackageNameScope
             NominalAntetype t => Lookup(t.DeclaredAntetype),
             SimpleTypeConstructor t => Lookup(t),
             // TODO There are no declarations for const value type, but perhaps there should be?
-            ConstValueAntetype _ => null,
+            LiteralTypeConstructor _ => null,
             _ => throw ExhaustiveMatch.Failed(antetype),
         };
 

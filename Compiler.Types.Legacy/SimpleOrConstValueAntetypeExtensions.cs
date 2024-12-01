@@ -3,7 +3,6 @@ using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.ConstValue;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Declared;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
-using Azoth.Tools.Bootstrap.Compiler.Types.Plain.ConstValue;
 using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
@@ -13,16 +12,16 @@ public static class SimpleOrConstValueAntetypeExtensions
     public static IExpressionType ToType(this ISimpleOrConstValueAntetype antetype)
         => antetype switch
         {
-            ConstValueAntetype t => t.ToType(),
+            LiteralTypeConstructor t => t.ToType(),
             SimpleTypeConstructor t => t.ToType(),
             _ => throw ExhaustiveMatch.Failed(antetype),
         };
 
-    public static ConstValueType ToType(this ConstValueAntetype antetype)
+    public static ConstValueType ToType(this LiteralTypeConstructor antetype)
         => antetype switch
         {
-            BoolConstValueAntetype t => (BoolConstValueType)t.Value,
-            IntegerConstValueAntetype t => new IntegerConstValueType(t.Value),
+            BoolLiteralTypeConstructor t => (BoolConstValueType)t.Value,
+            IntegerLiteralTypeConstructor t => new IntegerConstValueType(t.Value),
             _ => throw ExhaustiveMatch.Failed(antetype),
         };
 

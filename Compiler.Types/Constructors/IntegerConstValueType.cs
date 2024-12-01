@@ -1,10 +1,10 @@
 using System.Numerics;
 using Azoth.Tools.Bootstrap.Compiler.Names;
-using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
+using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain.ConstValue;
+namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 
-public sealed class IntegerConstValueAntetype : ConstValueAntetype, INumericAntetype
+public sealed class IntegerLiteralTypeConstructor : LiteralTypeConstructor, INumericAntetype
 {
     public BigInteger Value { get; }
     public bool IsSigned => Value.Sign < 0;
@@ -13,7 +13,7 @@ public sealed class IntegerConstValueAntetype : ConstValueAntetype, INumericAnte
     public bool IsUInt16 => Value >= IAntetype.UInt16.MinValue && Value <= IAntetype.UInt16.MaxValue;
     public bool IsInt16 => Value >= IAntetype.Int16.MinValue && Value <= IAntetype.Int16.MaxValue;
 
-    public IntegerConstValueAntetype(BigInteger value)
+    public IntegerLiteralTypeConstructor(BigInteger value)
         : base(SpecialTypeName.ConstInt)
     {
         Value = value;
@@ -21,7 +21,7 @@ public sealed class IntegerConstValueAntetype : ConstValueAntetype, INumericAnte
 
     /// <summary>
     /// The default non-constant type to places values of this type in. For
-    /// <see cref="IntegerConstValueAntetype"/>, that is <see cref="IAntetype.Int"/>.
+    /// <see cref="IntegerLiteralTypeConstructor"/>, that is <see cref="IAntetype.Int"/>.
     /// </summary>
     /// <remarks>It might be thought this should return the smallest integer type that contains
     /// the value. However, that would lead to unexpected behavior in some cases because small
@@ -52,27 +52,27 @@ public sealed class IntegerConstValueAntetype : ConstValueAntetype, INumericAnte
     }
 
     #region Operations
-    public IntegerConstValueAntetype Add(IntegerConstValueAntetype other) => new(Value + other.Value);
+    public IntegerLiteralTypeConstructor Add(IntegerLiteralTypeConstructor other) => new(Value + other.Value);
 
-    public IntegerConstValueAntetype Subtract(IntegerConstValueAntetype other) => new(Value - other.Value);
+    public IntegerLiteralTypeConstructor Subtract(IntegerLiteralTypeConstructor other) => new(Value - other.Value);
 
-    public IntegerConstValueAntetype Multiply(IntegerConstValueAntetype other) => new(Value * other.Value);
+    public IntegerLiteralTypeConstructor Multiply(IntegerLiteralTypeConstructor other) => new(Value * other.Value);
 
-    public IntegerConstValueAntetype DivideBy(IntegerConstValueAntetype other) => new(Value / other.Value);
+    public IntegerLiteralTypeConstructor DivideBy(IntegerLiteralTypeConstructor other) => new(Value / other.Value);
 
-    public IntegerConstValueAntetype Negate() => new(-Value);
+    public IntegerLiteralTypeConstructor Negate() => new(-Value);
 
-    public BoolConstValueAntetype Equals(IntegerConstValueAntetype other) => Value == other.Value;
+    public BoolLiteralTypeConstructor Equals(IntegerLiteralTypeConstructor other) => Value == other.Value;
 
-    public BoolConstValueAntetype NotEquals(IntegerConstValueAntetype other) => Value != other.Value;
+    public BoolLiteralTypeConstructor NotEquals(IntegerLiteralTypeConstructor other) => Value != other.Value;
 
-    public BoolConstValueAntetype LessThan(IntegerConstValueAntetype other) => Value < other.Value;
+    public BoolLiteralTypeConstructor LessThan(IntegerLiteralTypeConstructor other) => Value < other.Value;
 
-    public BoolConstValueAntetype LessThanOrEqual(IntegerConstValueAntetype other) => Value <= other.Value;
+    public BoolLiteralTypeConstructor LessThanOrEqual(IntegerLiteralTypeConstructor other) => Value <= other.Value;
 
-    public BoolConstValueAntetype GreaterThan(IntegerConstValueAntetype other) => Value > other.Value;
+    public BoolLiteralTypeConstructor GreaterThan(IntegerLiteralTypeConstructor other) => Value > other.Value;
 
-    public BoolConstValueAntetype GreaterThanOrEqual(IntegerConstValueAntetype other) => Value >= other.Value;
+    public BoolLiteralTypeConstructor GreaterThanOrEqual(IntegerLiteralTypeConstructor other) => Value >= other.Value;
     #endregion
 
     #region Equality
@@ -80,7 +80,7 @@ public sealed class IntegerConstValueAntetype : ConstValueAntetype, INumericAnte
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
-        return other is IntegerConstValueAntetype that
+        return other is IntegerLiteralTypeConstructor that
                && Value.Equals(that.Value);
     }
 

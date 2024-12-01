@@ -1,5 +1,4 @@
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
-using Azoth.Tools.Bootstrap.Compiler.Types.Plain.ConstValue;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 
@@ -32,21 +31,21 @@ public static partial class AntetypeOperations
                 => left.IsSigned || right.IsSigned ? IAntetype.Int : IAntetype.UInt,
             (IntegerTypeConstructor left, BigIntegerTypeConstructor right)
                 => left.IsSigned || right.IsSigned ? IAntetype.Int : IAntetype.UInt,
-            (BigIntegerTypeConstructor left, IntegerConstValueAntetype right)
+            (BigIntegerTypeConstructor left, IntegerLiteralTypeConstructor right)
                 => left.IsSigned || right.IsSigned ? IAntetype.Int : IAntetype.UInt,
-            (IntegerConstValueAntetype left, BigIntegerTypeConstructor right)
+            (IntegerLiteralTypeConstructor left, BigIntegerTypeConstructor right)
                 => left.IsSigned || right.IsSigned ? IAntetype.Int : IAntetype.UInt,
             (PointerSizedIntegerTypeConstructor left, PointerSizedIntegerTypeConstructor right)
                 => left.IsSigned || right.IsSigned ? IAntetype.Offset : IAntetype.Size,
-            (PointerSizedIntegerTypeConstructor { IsSigned: true }, IntegerConstValueAntetype { IsInt16: true })
-                or (PointerSizedIntegerTypeConstructor { IsSigned: false }, IntegerConstValueAntetype { IsUInt16: true })
+            (PointerSizedIntegerTypeConstructor { IsSigned: true }, IntegerLiteralTypeConstructor { IsInt16: true })
+                or (PointerSizedIntegerTypeConstructor { IsSigned: false }, IntegerLiteralTypeConstructor { IsUInt16: true })
                 => (IAntetype)leftType.Antetype,
-            (PointerSizedIntegerTypeConstructor left, IntegerConstValueAntetype right)
+            (PointerSizedIntegerTypeConstructor left, IntegerLiteralTypeConstructor right)
                 => left.IsSigned || right.IsSigned ? IAntetype.Int : IAntetype.UInt,
-            (IntegerConstValueAntetype { IsInt16: true }, PointerSizedIntegerTypeConstructor { IsSigned: true })
-                or (IntegerConstValueAntetype { IsUInt16: true }, PointerSizedIntegerTypeConstructor { IsSigned: false })
+            (IntegerLiteralTypeConstructor { IsInt16: true }, PointerSizedIntegerTypeConstructor { IsSigned: true })
+                or (IntegerLiteralTypeConstructor { IsUInt16: true }, PointerSizedIntegerTypeConstructor { IsSigned: false })
                 => (IAntetype)rightType.Antetype,
-            (IntegerConstValueAntetype left, PointerSizedIntegerTypeConstructor right)
+            (IntegerLiteralTypeConstructor left, PointerSizedIntegerTypeConstructor right)
                 => left.IsSigned || right.IsSigned ? IAntetype.Int : IAntetype.UInt,
             (FixedSizeIntegerTypeConstructor left, FixedSizeIntegerTypeConstructor right)
                 when left.IsSigned == right.IsSigned
@@ -57,15 +56,15 @@ public static partial class AntetypeOperations
             (FixedSizeIntegerTypeConstructor left, FixedSizeIntegerTypeConstructor { IsSigned: true } right)
                 when left.Bits < right.Bits
                 => right,
-            (FixedSizeIntegerTypeConstructor { IsSigned: true } left, IntegerConstValueAntetype right)
+            (FixedSizeIntegerTypeConstructor { IsSigned: true } left, IntegerLiteralTypeConstructor right)
                 when left.IsSigned || right.IsSigned
                 => left.NumericOperatorCommonType((INumericAntetype)right.ToSmallestSignedIntegerType()),
-            (FixedSizeIntegerTypeConstructor { IsSigned: false } left, IntegerConstValueAntetype { IsSigned: false } right)
+            (FixedSizeIntegerTypeConstructor { IsSigned: false } left, IntegerLiteralTypeConstructor { IsSigned: false } right)
                 => left.NumericOperatorCommonType((INumericAntetype)right.ToSmallestUnsignedIntegerType()),
-            (IntegerConstValueAntetype left, FixedSizeIntegerTypeConstructor right)
+            (IntegerLiteralTypeConstructor left, FixedSizeIntegerTypeConstructor right)
                 when left.IsSigned || right.IsSigned
                 => left.ToSmallestSignedIntegerType().NumericOperatorCommonType((INumericAntetype)right),
-            (IntegerConstValueAntetype { IsSigned: false } left, FixedSizeIntegerTypeConstructor { IsSigned: false } right)
+            (IntegerLiteralTypeConstructor { IsSigned: false } left, FixedSizeIntegerTypeConstructor { IsSigned: false } right)
                 => left.ToSmallestSignedIntegerType().NumericOperatorCommonType((INumericAntetype)right),
             _ => null
         };

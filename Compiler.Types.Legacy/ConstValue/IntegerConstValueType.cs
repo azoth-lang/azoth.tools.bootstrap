@@ -1,9 +1,9 @@
 using System;
 using System.Numerics;
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Declared;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
-using Azoth.Tools.Bootstrap.Compiler.Types.Plain.ConstValue;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Legacy.ConstValue;
 
@@ -85,7 +85,8 @@ public sealed class IntegerConstValueType : ConstValueType, INumericType
     public override int GetHashCode() => HashCode.Combine(Value);
     #endregion
 
-    public override IMaybeExpressionAntetype ToAntetype() => new IntegerConstValueAntetype(Value);
+    public override IMaybeExpressionAntetype ToAntetype()
+        => new IntegerLiteralTypeConstructor(Value);
 
     public override string ToSourceCodeString()
         => throw new InvalidOperationException("Integer value type has no source code representation");

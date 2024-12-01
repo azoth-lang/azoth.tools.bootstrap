@@ -1,16 +1,21 @@
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using ExhaustiveMatching;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain.ConstValue;
+namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 
+/// <summary>
+/// Base class for type constructors for the types of literal values (e.g. <c>int[V]</c>,
+/// <c>bool[V]</c>, etc.).
+/// </summary>
 [Closed(
-       typeof(BoolConstValueAntetype),
-       typeof(IntegerConstValueAntetype))]
-public abstract class ConstValueAntetype : IExpressionAntetype, ISimpleOrConstValueAntetype
+       typeof(BoolLiteralTypeConstructor),
+       typeof(IntegerLiteralTypeConstructor))]
+public abstract class LiteralTypeConstructor : IExpressionAntetype, ISimpleOrConstValueAntetype
 {
     public SpecialTypeName Name { get; }
 
-    private protected ConstValueAntetype(SpecialTypeName name)
+    private protected LiteralTypeConstructor(SpecialTypeName name)
     {
         Name = name;
     }

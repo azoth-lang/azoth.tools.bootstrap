@@ -1,5 +1,4 @@
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
-using Azoth.Tools.Bootstrap.Compiler.Types.Plain.ConstValue;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 
@@ -20,7 +19,7 @@ public static partial class AntetypeOperations
             (OptionalAntetype s, OptionalAntetype o)
                 => s.Referent.IsAssignableTo(o.Referent),
             (_, OptionalAntetype o) => self.IsAssignableTo(o.Referent),
-            (BoolConstValueAntetype, BoolTypeConstructor) => true,
+            (BoolLiteralTypeConstructor, BoolTypeConstructor) => true,
             (INumericAntetype s, INumericAntetype o) => s.IsImplicitlyNumericallyConvertibleTo(o),
             _ => false,
         };
@@ -32,7 +31,7 @@ public static partial class AntetypeOperations
         {
             case (FixedSizeIntegerTypeConstructor s, FixedSizeIntegerTypeConstructor o):
                 return o.Bits > s.Bits && (!s.IsSigned || o.IsSigned);
-            case (IntegerConstValueAntetype s, FixedSizeIntegerTypeConstructor o):
+            case (IntegerLiteralTypeConstructor s, FixedSizeIntegerTypeConstructor o):
             {
                 var requireSigned = s.IsSigned;
                 var bits = s.Value.GetByteCount(!o.IsSigned) * 8;
@@ -40,10 +39,10 @@ public static partial class AntetypeOperations
             }
             case (IntegerTypeConstructor, BigIntegerTypeConstructor { IsSigned: true }):
             case (IntegerTypeConstructor { IsSigned: false }, BigIntegerTypeConstructor):
-            case (IntegerConstValueAntetype, BigIntegerTypeConstructor { IsSigned: true }):
-            case (IntegerConstValueAntetype { IsSigned: false }, BigIntegerTypeConstructor):
+            case (IntegerLiteralTypeConstructor, BigIntegerTypeConstructor { IsSigned: true }):
+            case (IntegerLiteralTypeConstructor { IsSigned: false }, BigIntegerTypeConstructor):
                 return true;
-            case (IntegerConstValueAntetype s, PointerSizedIntegerTypeConstructor o):
+            case (IntegerLiteralTypeConstructor s, PointerSizedIntegerTypeConstructor o):
             {
                 var requireSigned = s.IsSigned;
                 return !requireSigned || o.IsSigned;
