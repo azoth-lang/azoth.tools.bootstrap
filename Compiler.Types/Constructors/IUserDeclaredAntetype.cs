@@ -3,7 +3,7 @@ using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Types.Declared;
+namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 
 [Closed(typeof(UserDeclaredGenericAntetype), typeof(UserNonGenericNominalAntetype))]
 public interface IUserDeclaredAntetype : IDeclaredAntetype

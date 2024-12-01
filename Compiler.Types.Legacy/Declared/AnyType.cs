@@ -1,5 +1,5 @@
 using Azoth.Tools.Bootstrap.Compiler.Names;
-using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
+using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;

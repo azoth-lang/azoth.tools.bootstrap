@@ -27,7 +27,7 @@ using Azoth.Tools.Bootstrap.Compiler.Semantics.Variables;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 using Azoth.Tools.Bootstrap.Compiler.Syntax;
-using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
+using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Capabilities;

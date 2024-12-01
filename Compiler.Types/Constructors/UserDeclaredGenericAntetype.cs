@@ -4,7 +4,7 @@ using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using Azoth.Tools.Bootstrap.Framework;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Types.Declared;
+namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 
 public sealed class UserDeclaredGenericAntetype : IUserDeclaredAntetype
 {

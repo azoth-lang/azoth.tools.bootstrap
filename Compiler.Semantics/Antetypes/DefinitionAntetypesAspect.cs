@@ -1,4 +1,4 @@
-using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
+using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;

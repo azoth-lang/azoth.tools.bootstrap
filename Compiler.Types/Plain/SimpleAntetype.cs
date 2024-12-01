@@ -1,6 +1,6 @@
 using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Names;
-using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
+using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 

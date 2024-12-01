@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types;
-using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
+using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.ConstValue;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Declared;
