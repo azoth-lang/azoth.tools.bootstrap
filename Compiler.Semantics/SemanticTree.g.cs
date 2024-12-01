@@ -516,7 +516,7 @@ public partial interface ITypeDefinitionNode : IFacetMemberDefinitionNode, IAsso
     new Symbol ContainingSymbol
         => ContainingDeclaration.Symbol!;
     Symbol? IDefinitionNode.ContainingSymbol => ContainingSymbol;
-    IUserDeclaredAntetype DeclaredAntetype { get; }
+    IOrdinaryTypeConstructor DeclaredAntetype { get; }
     SelfAntetype SelfAntetype { get; }
     new IFixedSet<BareReferenceType> Supertypes { get; }
     IFixedSet<BareReferenceType> ITypeDeclarationNode.Supertypes => Supertypes;
@@ -2271,7 +2271,7 @@ public partial interface IImplicitConversionExpressionNode : IExpressionNode
 {
     IExpressionNode Referent { get; }
     IExpressionNode CurrentReferent { get; }
-    new SimpleAntetype Antetype { get; }
+    new SimpleTypeConstructor Antetype { get; }
     IMaybeExpressionAntetype IExpressionNode.Antetype => Antetype;
     new IMaybeType Type { get; }
     IMaybeExpressionType IExpressionNode.Type => Type;
@@ -2285,7 +2285,7 @@ public partial interface IImplicitConversionExpressionNode : IExpressionNode
 
     public static IImplicitConversionExpressionNode Create(
         IExpressionNode referent,
-        SimpleAntetype antetype)
+        SimpleTypeConstructor antetype)
         => new ImplicitConversionExpressionNode(referent, antetype);
 }
 
@@ -5397,11 +5397,11 @@ file class ClassDefinitionNode : SemanticNode, IClassDefinitionNode
                 NameLookupAspect.UserTypeDeclaration_AssociatedMembersByName);
     private FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>>? associatedMembersByName;
     private bool associatedMembersByNameCached;
-    public IUserDeclaredAntetype DeclaredAntetype
+    public IOrdinaryTypeConstructor DeclaredAntetype
         => GrammarAttribute.IsCached(in declaredAntetypeCached) ? declaredAntetype!
             : this.Synthetic(ref declaredAntetypeCached, ref declaredAntetype,
                 DefinitionAntetypesAspect.TypeDefinition_DeclaredAntetype);
-    private IUserDeclaredAntetype? declaredAntetype;
+    private IOrdinaryTypeConstructor? declaredAntetype;
     private bool declaredAntetypeCached;
     public ObjectType DeclaredType
         => GrammarAttribute.IsCached(in declaredTypeCached) ? declaredType!
@@ -5571,11 +5571,11 @@ file class StructDefinitionNode : SemanticNode, IStructDefinitionNode
                 NameLookupAspect.UserTypeDeclaration_AssociatedMembersByName);
     private FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>>? associatedMembersByName;
     private bool associatedMembersByNameCached;
-    public IUserDeclaredAntetype DeclaredAntetype
+    public IOrdinaryTypeConstructor DeclaredAntetype
         => GrammarAttribute.IsCached(in declaredAntetypeCached) ? declaredAntetype!
             : this.Synthetic(ref declaredAntetypeCached, ref declaredAntetype,
                 DefinitionAntetypesAspect.TypeDefinition_DeclaredAntetype);
-    private IUserDeclaredAntetype? declaredAntetype;
+    private IOrdinaryTypeConstructor? declaredAntetype;
     private bool declaredAntetypeCached;
     public StructType DeclaredType
         => GrammarAttribute.IsCached(in declaredTypeCached) ? declaredType!
@@ -5742,11 +5742,11 @@ file class TraitDefinitionNode : SemanticNode, ITraitDefinitionNode
                 NameLookupAspect.UserTypeDeclaration_AssociatedMembersByName);
     private FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>>? associatedMembersByName;
     private bool associatedMembersByNameCached;
-    public IUserDeclaredAntetype DeclaredAntetype
+    public IOrdinaryTypeConstructor DeclaredAntetype
         => GrammarAttribute.IsCached(in declaredAntetypeCached) ? declaredAntetype!
             : this.Synthetic(ref declaredAntetypeCached, ref declaredAntetype,
                 DefinitionAntetypesAspect.TypeDefinition_DeclaredAntetype);
-    private IUserDeclaredAntetype? declaredAntetype;
+    private IOrdinaryTypeConstructor? declaredAntetype;
     private bool declaredAntetypeCached;
     public ObjectType DeclaredType
         => GrammarAttribute.IsCached(in declaredTypeCached) ? declaredType!
@@ -11025,7 +11025,7 @@ file class ImplicitConversionExpressionNode : SemanticNode, IImplicitConversionE
         => GrammarAttribute.IsCached(in referentCached) ? referent.UnsafeValue
             : this.RewritableChild(ref referentCached, ref referent);
     public IExpressionNode CurrentReferent => referent.UnsafeValue;
-    public SimpleAntetype Antetype { [DebuggerStepThrough] get; }
+    public SimpleTypeConstructor Antetype { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -11083,7 +11083,7 @@ file class ImplicitConversionExpressionNode : SemanticNode, IImplicitConversionE
 
     public ImplicitConversionExpressionNode(
         IExpressionNode referent,
-        SimpleAntetype antetype)
+        SimpleTypeConstructor antetype)
     {
         this.referent = Child.Create(this, referent);
         Antetype = antetype;

@@ -12,7 +12,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
 internal static partial class DefinitionAntetypesAspect
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IUserDeclaredAntetype TypeDefinition_DeclaredAntetype(ITypeDefinitionNode node);
+    public static partial IOrdinaryTypeConstructor TypeDefinition_DeclaredAntetype(ITypeDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial SelfAntetype TypeDefinition_SelfAntetype(ITypeDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

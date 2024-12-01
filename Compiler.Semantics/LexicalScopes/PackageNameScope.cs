@@ -126,25 +126,25 @@ public sealed class PackageNameScope
             FunctionAntetype _ => null,
             OptionalAntetype _ => throw new NotImplementedException(),
             NominalAntetype t => Lookup(t.DeclaredAntetype),
-            SimpleAntetype t => Lookup(t),
+            SimpleTypeConstructor t => Lookup(t),
             // TODO There are no declarations for const value type, but perhaps there should be?
             ConstValueAntetype _ => null,
             _ => throw ExhaustiveMatch.Failed(antetype),
         };
 
-    private ITypeDeclarationNode? Lookup(IDeclaredAntetype antetype)
+    private ITypeDeclarationNode? Lookup(ITypeConstructor antetype)
         => antetype switch
         {
             EmptyAntetype _ => null,
             AnyAntetype t => Lookup(t),
-            SimpleAntetype t => Lookup(t),
+            SimpleTypeConstructor t => Lookup(t),
             GenericParameterAntetype t => Lookup(t),
             SelfAntetype _ => null,
-            IUserDeclaredAntetype t => Lookup(t),
+            IOrdinaryTypeConstructor t => Lookup(t),
             _ => throw ExhaustiveMatch.Failed(antetype),
         };
 
-    private ITypeDeclarationNode Lookup(IUserDeclaredAntetype antetype)
+    private ITypeDeclarationNode Lookup(IOrdinaryTypeConstructor antetype)
     {
         // TODO is there a problem with types using package names and this using package aliases?
         var globalNamespace = GlobalScopeForPackage(antetype.ContainingPackage);
@@ -155,7 +155,7 @@ public sealed class PackageNameScope
         return ns.Lookup(antetype.Name).OfType<ITypeDeclarationNode>().Single();
     }
 
-    private ITypeDeclarationNode Lookup(SimpleAntetype antetype)
+    private ITypeDeclarationNode Lookup(SimpleTypeConstructor antetype)
         => primitives[antetype.Name];
 
     private ITypeDeclarationNode Lookup(AnyAntetype antetype)

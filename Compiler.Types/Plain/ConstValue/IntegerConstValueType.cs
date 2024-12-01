@@ -28,7 +28,7 @@ public sealed class IntegerConstValueAntetype : ConstValueAntetype, INumericAnte
     /// integer constants might produce small fixed size integers leading to overflow.</remarks>
     public override IAntetype ToNonConstValueType() => IAntetype.Int;
 
-    public IntegerAntetype ToSmallestSignedIntegerType()
+    public NumericTypeConstructor ToSmallestSignedIntegerType()
     {
         if (Value > IAntetype.Int64.MaxValue) return IAntetype.Int;
         if (Value > IAntetype.Int32.MaxValue) return IAntetype.Int64;
@@ -41,7 +41,7 @@ public sealed class IntegerConstValueAntetype : ConstValueAntetype, INumericAnte
         return IAntetype.Int8;
     }
 
-    public IntegerAntetype ToSmallestUnsignedIntegerType()
+    public NumericTypeConstructor ToSmallestUnsignedIntegerType()
     {
         if (IsSigned) throw new InvalidOperationException("Cannot convert signed value type to unsigned type.");
         if (Value > IAntetype.Int64.MaxValue) return IAntetype.UInt;

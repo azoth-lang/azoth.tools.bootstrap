@@ -13,7 +13,7 @@ internal sealed class AntetypeReplacements
     /// Build a dictionary of type replacements. Generic parameter types of both this type and the
     /// supertypes can be replaced with type arguments of this type.
     /// </summary>
-    public AntetypeReplacements(IUserDeclaredAntetype declaredType, IFixedList<IAntetype> typeArguments)
+    public AntetypeReplacements(IOrdinaryTypeConstructor declaredType, IFixedList<IAntetype> typeArguments)
     {
         replacements = declaredType.GenericParameterAntetypes.EquiZip(typeArguments)
                                    .ToDictionary(t => t.Item1, t => t.Item2);
@@ -70,7 +70,7 @@ internal sealed class AntetypeReplacements
         => antetype switch
         {
             AnyAntetype a => a,
-            SimpleAntetype a => a,
+            SimpleTypeConstructor a => a,
             NeverAntetype a => a,
             SelfAntetype a => a,
             UserNonGenericNominalAntetype a => a,

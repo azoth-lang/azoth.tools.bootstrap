@@ -5,23 +5,23 @@ using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 
-public sealed class FixedSizeIntegerAntetype : IntegerAntetype
+public sealed class FixedSizeIntegerTypeConstructor : IntegerTypeConstructor
 {
-    internal static readonly FixedSizeIntegerAntetype Int8 = new(SpecialTypeName.Int8, -8);
-    internal static readonly FixedSizeIntegerAntetype Byte = new(SpecialTypeName.Byte, 8);
-    internal static readonly FixedSizeIntegerAntetype Int16 = new(SpecialTypeName.Int16, -16);
-    internal static readonly FixedSizeIntegerAntetype UInt16 = new(SpecialTypeName.UInt16, 16);
-    internal static readonly FixedSizeIntegerAntetype Int32 = new(SpecialTypeName.Int32, -32);
-    internal static readonly FixedSizeIntegerAntetype UInt32 = new(SpecialTypeName.UInt32, 32);
-    internal static readonly FixedSizeIntegerAntetype Int64 = new(SpecialTypeName.Int64, -64);
-    internal static readonly FixedSizeIntegerAntetype UInt64 = new(SpecialTypeName.UInt64, 64);
+    internal static readonly FixedSizeIntegerTypeConstructor Int8 = new(SpecialTypeName.Int8, 8, true);
+    internal static readonly FixedSizeIntegerTypeConstructor Byte = new(SpecialTypeName.Byte, 8, false);
+    internal static readonly FixedSizeIntegerTypeConstructor Int16 = new(SpecialTypeName.Int16, 16, true);
+    internal static readonly FixedSizeIntegerTypeConstructor UInt16 = new(SpecialTypeName.UInt16, 16, false);
+    internal static readonly FixedSizeIntegerTypeConstructor Int32 = new(SpecialTypeName.Int32, 32, true);
+    internal static readonly FixedSizeIntegerTypeConstructor UInt32 = new(SpecialTypeName.UInt32, 32, false);
+    internal static readonly FixedSizeIntegerTypeConstructor Int64 = new(SpecialTypeName.Int64, 64, true);
+    internal static readonly FixedSizeIntegerTypeConstructor UInt64 = new(SpecialTypeName.UInt64, 64, false);
 
     public int Bits { get; }
     public BigInteger MaxValue;
     public BigInteger MinValue;
 
-    private FixedSizeIntegerAntetype(SpecialTypeName name, int bits)
-        : base(name, bits < 0)
+    private FixedSizeIntegerTypeConstructor(SpecialTypeName name, int bits, bool isSigned)
+        : base(name, isSigned)
     {
         Bits = Math.Abs(bits);
         if (IsSigned)
@@ -42,7 +42,7 @@ public sealed class FixedSizeIntegerAntetype : IntegerAntetype
     /// </summary>
     /// <remarks>If the current type is already signed then this doesn't change anything. If the
     /// current type is unsigned, then this returns the next larger integer type.</remarks>
-    public IAntetype WithSign()
+    public override IntegerTypeConstructor WithSign()
     {
         if (IsSigned) return this;
         if (ReferenceEquals(this, Byte)) return Int16;

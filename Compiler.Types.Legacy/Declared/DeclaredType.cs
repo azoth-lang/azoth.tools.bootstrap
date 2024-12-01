@@ -81,7 +81,7 @@ public abstract class DeclaredType : IEquatable<DeclaredType>
     public CapabilityType WithRead(IFixedList<IType> typeArguments)
         => With(typeArguments).WithRead();
 
-    public abstract IDeclaredAntetype ToAntetype();
+    public abstract ITypeConstructor ToAntetype();
 
     #region Equality
     public abstract bool Equals(DeclaredType? other);

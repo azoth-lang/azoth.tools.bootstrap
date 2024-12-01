@@ -12,9 +12,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 [Closed(
     typeof(AnyAntetype),
     typeof(NonGenericNominalAntetype),
-    typeof(IUserDeclaredAntetype),
-    typeof(SimpleAntetype))]
-public interface IDeclaredAntetype : IEquatable<IDeclaredAntetype>
+    typeof(IOrdinaryTypeConstructor),
+    typeof(SimpleTypeConstructor))]
+public interface ITypeConstructor : IEquatable<ITypeConstructor>
 {
     /// <summary>
     /// Whether this type can be constructed. Abstract types and type variables cannot be constructed.

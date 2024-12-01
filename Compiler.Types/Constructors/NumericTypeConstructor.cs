@@ -5,11 +5,11 @@ using ExhaustiveMatching;
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 
 [Closed(
-    typeof(IntegerAntetype))]
-public abstract class NumericAntetype : SimpleAntetype, INumericAntetype
+    typeof(IntegerTypeConstructor))]
+public abstract class NumericTypeConstructor : SimpleTypeConstructor, INumericAntetype
 {
     IExpressionAntetype INumericAntetype.Antetype => this;
 
-    private protected NumericAntetype(SpecialTypeName name)
+    private protected NumericTypeConstructor(SpecialTypeName name)
         : base(name) { }
 }

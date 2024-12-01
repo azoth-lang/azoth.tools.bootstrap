@@ -71,7 +71,7 @@ public static partial class AntetypeOperations
     }
 
     private static bool IsSubtypeOf(
-        IDeclaredAntetype declaredAntetype,
+        ITypeConstructor declaredAntetype,
         IFixedList<IAntetype> selfTypeArguments,
         IFixedList<IAntetype> otherTypeArguments)
     {

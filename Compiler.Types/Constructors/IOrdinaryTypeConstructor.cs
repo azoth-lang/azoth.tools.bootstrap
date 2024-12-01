@@ -5,8 +5,8 @@ using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 
-[Closed(typeof(UserDeclaredGenericAntetype), typeof(UserNonGenericNominalAntetype))]
-public interface IUserDeclaredAntetype : IDeclaredAntetype
+[Closed(typeof(OrdinaryTypeConstructor), typeof(UserNonGenericNominalAntetype))]
+public interface IOrdinaryTypeConstructor : ITypeConstructor
 {
     IdentifierName ContainingPackage { get; }
     NamespaceName ContainingNamespace { get; }
@@ -17,8 +17,8 @@ public interface IUserDeclaredAntetype : IDeclaredAntetype
     bool HasReferenceSemantics { get; }
 
     new NominalAntetype With(IEnumerable<IAntetype> typeArguments);
-    IAntetype IDeclaredAntetype.With(IEnumerable<IAntetype> typeArguments) => With(typeArguments);
+    IAntetype ITypeConstructor.With(IEnumerable<IAntetype> typeArguments) => With(typeArguments);
 
     new NominalAntetype WithGenericParameterAntetypes() => With(GenericParameterAntetypes);
-    IAntetype IDeclaredAntetype.WithGenericParameterAntetypes() => WithGenericParameterAntetypes();
+    IAntetype ITypeConstructor.WithGenericParameterAntetypes() => WithGenericParameterAntetypes();
 }

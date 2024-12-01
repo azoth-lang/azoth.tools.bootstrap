@@ -7,10 +7,10 @@ using ExhaustiveMatching;
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 
 [Closed(
-    typeof(BoolAntetype),
-    typeof(NumericAntetype))]
+    typeof(BoolTypeConstructor),
+    typeof(NumericTypeConstructor))]
 [DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
-public abstract class SimpleAntetype : INonVoidAntetype, IDeclaredAntetype, ISimpleOrConstValueAntetype
+public abstract class SimpleTypeConstructor : INonVoidAntetype, ITypeConstructor, ISimpleOrConstValueAntetype
 {
     public bool CanBeConstructed => true;
 
@@ -18,15 +18,15 @@ public abstract class SimpleAntetype : INonVoidAntetype, IDeclaredAntetype, ISim
 
     public bool HasReferenceSemantics => false;
 
-    IFixedList<AntetypeGenericParameter> IDeclaredAntetype.GenericParameters
+    IFixedList<AntetypeGenericParameter> ITypeConstructor.GenericParameters
         => FixedList.Empty<AntetypeGenericParameter>();
 
     public bool AllowsVariance => false;
 
-    IFixedList<GenericParameterAntetype> IDeclaredAntetype.GenericParameterAntetypes
+    IFixedList<GenericParameterAntetype> ITypeConstructor.GenericParameterAntetypes
         => FixedList.Empty<GenericParameterAntetype>();
 
-    private protected SimpleAntetype(SpecialTypeName name)
+    private protected SimpleTypeConstructor(SpecialTypeName name)
     {
         Name = name;
     }
@@ -46,7 +46,7 @@ public abstract class SimpleAntetype : INonVoidAntetype, IDeclaredAntetype, ISim
         // All simple antetypes are singletons, so we can use reference equality.
         => ReferenceEquals(this, other);
 
-    public bool Equals(IDeclaredAntetype? other)
+    public bool Equals(ITypeConstructor? other)
         // All simple antetypes are singletons, so we can use reference equality.
         => ReferenceEquals(this, other);
 

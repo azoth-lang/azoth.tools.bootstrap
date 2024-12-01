@@ -62,7 +62,7 @@ public sealed class GenericParameterType : NonEmptyType, INonVoidType
     public override GenericParameterAntetype ToAntetype()
     {
         var declaringAntetype = DeclaringType.ToAntetype();
-        return new GenericParameterAntetype((UserDeclaredGenericAntetype)declaringAntetype, declaringAntetype.GenericParameters.Single(p => p.Name == Name));
+        return new GenericParameterAntetype((OrdinaryTypeConstructor)declaringAntetype, declaringAntetype.GenericParameters.Single(p => p.Name == Name));
     }
     INonVoidAntetype INonVoidType.ToAntetype() => ToAntetype();
 

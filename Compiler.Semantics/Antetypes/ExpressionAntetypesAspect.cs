@@ -5,7 +5,6 @@ using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Primitives;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
-using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
@@ -84,10 +83,10 @@ internal static partial class ExpressionAntetypesAspect
                 or (INonVoidAntetype { HasReferenceSemantics: true }, BinaryOperator.NotReferenceEqual, INonVoidAntetype { HasReferenceSemantics: true })
                 => null,
 
-            (BoolAntetype, BinaryOperator.EqualsEquals, BoolAntetype)
-                or (BoolAntetype, BinaryOperator.NotEqual, BoolAntetype)
-                or (BoolAntetype, BinaryOperator.And, BoolAntetype)
-                or (BoolAntetype, BinaryOperator.Or, BoolAntetype)
+            (BoolTypeConstructor, BinaryOperator.EqualsEquals, BoolTypeConstructor)
+                or (BoolTypeConstructor, BinaryOperator.NotEqual, BoolTypeConstructor)
+                or (BoolTypeConstructor, BinaryOperator.And, BoolTypeConstructor)
+                or (BoolTypeConstructor, BinaryOperator.Or, BoolTypeConstructor)
                 => null,
 
             (IExpressionAntetype, BinaryOperator.Plus, IExpressionAntetype)
@@ -141,10 +140,10 @@ internal static partial class ExpressionAntetypesAspect
                 or (INonVoidAntetype { HasReferenceSemantics: true }, BinaryOperator.NotReferenceEqual, INonVoidAntetype { HasReferenceSemantics: true })
                 => IAntetype.Bool,
 
-            (BoolAntetype, BinaryOperator.EqualsEquals, BoolAntetype)
-                or (BoolAntetype, BinaryOperator.NotEqual, BoolAntetype)
-                or (BoolAntetype, BinaryOperator.And, BoolAntetype)
-                or (BoolAntetype, BinaryOperator.Or, BoolAntetype)
+            (BoolTypeConstructor, BinaryOperator.EqualsEquals, BoolTypeConstructor)
+                or (BoolTypeConstructor, BinaryOperator.NotEqual, BoolTypeConstructor)
+                or (BoolTypeConstructor, BinaryOperator.And, BoolTypeConstructor)
+                or (BoolTypeConstructor, BinaryOperator.Or, BoolTypeConstructor)
                 => IAntetype.Bool,
 
             (IExpressionAntetype, BinaryOperator.Plus, IExpressionAntetype)
@@ -287,10 +286,10 @@ internal static partial class ExpressionAntetypesAspect
         => node.Operand?.Antetype switch
         {
             IntegerConstValueAntetype t => t.Negate(),
-            FixedSizeIntegerAntetype t => t.WithSign(),
-            PointerSizedIntegerAntetype t => t.WithSign(),
+            FixedSizeIntegerTypeConstructor t => t.WithSign(),
+            PointerSizedIntegerTypeConstructor t => t.WithSign(),
             // Even if unsigned before, it is signed now
-            BigIntegerAntetype _ => IAntetype.Int,
+            BigIntegerTypeConstructor _ => IAntetype.Int,
             _ => IAntetype.Unknown,
         };
 
@@ -308,7 +307,7 @@ internal static partial class ExpressionAntetypesAspect
         var operandAntetype = node.Operand!.Antetype;
         var cannotBeAppliedToOperandType = node.Operator switch
         {
-            UnaryOperator.Not => operandAntetype is not (BoolAntetype or BoolConstValueAntetype),
+            UnaryOperator.Not => operandAntetype is not (BoolTypeConstructor or BoolConstValueAntetype),
             UnaryOperator.Minus => operandAntetype is not INumericAntetype,
             UnaryOperator.Plus => operandAntetype is not INumericAntetype,
             _ => throw ExhaustiveMatch.Failed(node.Operator),
@@ -373,7 +372,7 @@ internal static partial class ExpressionAntetypesAspect
         if (!CanPossiblyImplicitlyConvertFrom(node.Antetype))
             return null;
 
-        if (ImplicitlyConvertToType(node.ExpectedAntetype, node.Antetype) is SimpleAntetype convertToAntetype)
+        if (ImplicitlyConvertToType(node.ExpectedAntetype, node.Antetype) is SimpleTypeConstructor convertToAntetype)
             return IImplicitConversionExpressionNode.Create(node, convertToAntetype);
 
         return null;
@@ -387,15 +386,15 @@ internal static partial class ExpressionAntetypesAspect
             BoolConstValueAntetype => true,
             IntegerConstValueAntetype => true,
             // Can't convert from signed because there is not larger type to convert to
-            BigIntegerAntetype t => !t.IsSigned,
-            PointerSizedIntegerAntetype => true,
-            FixedSizeIntegerAntetype => true,
+            BigIntegerTypeConstructor t => !t.IsSigned,
+            PointerSizedIntegerTypeConstructor => true,
+            FixedSizeIntegerTypeConstructor => true,
             OptionalAntetype { Referent: var referent } => CanPossiblyImplicitlyConvertFrom(referent),
             _ => false,
         };
     }
 
-    private static SimpleAntetype? ImplicitlyConvertToType(IMaybeExpressionAntetype? toType, IMaybeExpressionAntetype fromType)
+    private static SimpleTypeConstructor? ImplicitlyConvertToType(IMaybeExpressionAntetype? toType, IMaybeExpressionAntetype fromType)
     {
         switch (toType, fromType)
         {
@@ -404,33 +403,33 @@ internal static partial class ExpressionAntetypesAspect
             case (_, UnknownAntetype):
             case (IExpressionAntetype to, IExpressionAntetype from) when from.Equals(to):
                 return null;
-            case (FixedSizeIntegerAntetype to, FixedSizeIntegerAntetype from):
+            case (FixedSizeIntegerTypeConstructor to, FixedSizeIntegerTypeConstructor from):
                 if (to.Bits > from.Bits && (!from.IsSigned || to.IsSigned))
                     return to;
                 return null;
-            case (FixedSizeIntegerAntetype to, IntegerConstValueAntetype from):
-                {
-                    // TODO make a method on antetypes for this check
-                    var requireSigned = from.Value < 0;
-                    var bits = from.Value.GetByteCount(!to.IsSigned) * 8;
-                    return to.Bits >= bits && (!requireSigned || to.IsSigned) ? to : null;
-                }
-            case (PointerSizedIntegerAntetype to, IntegerConstValueAntetype from):
-                {
-                    // TODO make a method on antetypes for this check
-                    var requireSigned = from.Value < 0;
-                    var bits = from.Value.GetByteCount(!to.IsSigned) * 8;
-                    // Must fit in 32 bits so that it will fit on all platforms
-                    return bits <= 32 && (!requireSigned || to.IsSigned) ? to : null;
-                }
+            case (FixedSizeIntegerTypeConstructor to, IntegerConstValueAntetype from):
+            {
+                // TODO make a method on antetypes for this check
+                var requireSigned = from.Value < 0;
+                var bits = from.Value.GetByteCount(!to.IsSigned) * 8;
+                return to.Bits >= bits && (!requireSigned || to.IsSigned) ? to : null;
+            }
+            case (PointerSizedIntegerTypeConstructor to, IntegerConstValueAntetype from):
+            {
+                // TODO make a method on antetypes for this check
+                var requireSigned = from.Value < 0;
+                var bits = from.Value.GetByteCount(!to.IsSigned) * 8;
+                // Must fit in 32 bits so that it will fit on all platforms
+                return bits <= 32 && (!requireSigned || to.IsSigned) ? to : null;
+            }
             // Note: Both signed BigIntegerAntetype has already been covered
-            case (BigIntegerAntetype { IsSigned: true }, IntegerAntetype):
-            case (BigIntegerAntetype { IsSigned: true }, IntegerConstValueAntetype):
+            case (BigIntegerTypeConstructor { IsSigned: true }, IntegerTypeConstructor):
+            case (BigIntegerTypeConstructor { IsSigned: true }, IntegerConstValueAntetype):
                 return IAntetype.Int;
-            case (BigIntegerAntetype to, IntegerAntetype { IsSigned: false }
+            case (BigIntegerTypeConstructor to, IntegerTypeConstructor { IsSigned: false }
                                         or IntegerConstValueAntetype { IsSigned: false }):
                 return to;
-            case (BoolAntetype, BoolConstValueAntetype):
+            case (BoolTypeConstructor, BoolConstValueAntetype):
                 return IAntetype.Bool;
             // TODO support lifted implicit conversions
             //case (OptionalAntetype { Referent: var to }, OptionalAntetype { Referent: var from }):

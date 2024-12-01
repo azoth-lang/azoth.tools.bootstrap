@@ -5,7 +5,7 @@ using ExhaustiveMatching;
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 
 [Closed(
-    typeof(SimpleAntetype),
+    typeof(SimpleTypeConstructor),
     typeof(ConstValueAntetype))]
 public interface ISimpleOrConstValueAntetype
 {

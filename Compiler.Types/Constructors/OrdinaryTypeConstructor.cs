@@ -6,21 +6,25 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 
-public sealed class UserDeclaredGenericAntetype : IUserDeclaredAntetype
+/// <summary>
+/// An ordinary type constructor is one that is declared in source code (as opposed to
+/// <see cref="SimpleTypeConstructor"/>s).
+/// </summary>
+public sealed class OrdinaryTypeConstructor : IOrdinaryTypeConstructor
 {
     public IdentifierName ContainingPackage { get; }
     public NamespaceName ContainingNamespace { get; }
     public bool IsAbstract { get; }
     public bool CanBeConstructed => !IsAbstract;
     public GenericName Name { get; }
-    StandardName IUserDeclaredAntetype.Name => Name;
+    StandardName IOrdinaryTypeConstructor.Name => Name;
     public IFixedList<AntetypeGenericParameter> GenericParameters { get; }
     public bool AllowsVariance { get; }
     public IFixedList<GenericParameterAntetype> GenericParameterAntetypes { get; }
     public IFixedSet<NominalAntetype> Supertypes { get; }
     public bool HasReferenceSemantics { get; }
 
-    public UserDeclaredGenericAntetype(
+    public OrdinaryTypeConstructor(
         IdentifierName containingPackage,
         NamespaceName containingNamespace,
         bool isAbstract,
@@ -52,11 +56,11 @@ public sealed class UserDeclaredGenericAntetype : IUserDeclaredAntetype
     }
 
     #region Equality
-    public bool Equals(IDeclaredAntetype? other)
+    public bool Equals(ITypeConstructor? other)
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
-        return other is UserDeclaredGenericAntetype that
+        return other is OrdinaryTypeConstructor that
                && ContainingPackage.Equals(that.ContainingPackage)
                && ContainingNamespace.Equals(that.ContainingNamespace)
                && Name.Equals(that.Name)
@@ -82,7 +86,7 @@ public sealed class UserDeclaredGenericAntetype : IUserDeclaredAntetype
         builder.Append(ContainingNamespace);
         if (ContainingNamespace != NamespaceName.Global) builder.Append('.');
         builder.Append(Name.ToBareString());
-        if (!GenericParameters.Any()) return;
+        if (GenericParameters.IsEmpty) return;
 
         builder.Append('[');
         builder.AppendJoin(", ", GenericParameters);

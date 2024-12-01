@@ -9,7 +9,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 /// </summary>
 public sealed class GenericParameterAntetype : NonGenericNominalAntetype, INonVoidAntetype
 {
-    public UserDeclaredGenericAntetype DeclaringAntetype { get; }
+    public OrdinaryTypeConstructor DeclaringAntetype { get; }
     public AntetypeGenericParameter Parameter { get; }
     public override IdentifierName Name => Parameter.Name;
     /// <summary>
@@ -23,7 +23,7 @@ public sealed class GenericParameterAntetype : NonGenericNominalAntetype, INonVo
     // TODO is this right?
     public bool HasReferenceSemantics => true;
 
-    public GenericParameterAntetype(UserDeclaredGenericAntetype declaringAntetype, AntetypeGenericParameter parameter)
+    public GenericParameterAntetype(OrdinaryTypeConstructor declaringAntetype, AntetypeGenericParameter parameter)
     {
         DeclaringAntetype = declaringAntetype;
         Parameter = parameter;

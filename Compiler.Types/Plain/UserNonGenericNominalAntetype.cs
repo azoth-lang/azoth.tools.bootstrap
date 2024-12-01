@@ -5,14 +5,14 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 
-public sealed class UserNonGenericNominalAntetype : NonGenericNominalAntetype, IUserDeclaredAntetype, INonVoidAntetype
+public sealed class UserNonGenericNominalAntetype : NonGenericNominalAntetype, IOrdinaryTypeConstructor, INonVoidAntetype
 {
     public IdentifierName ContainingPackage { get; }
     public NamespaceName ContainingNamespace { get; }
     public bool IsAbstract { get; }
     public override bool CanBeConstructed => !IsAbstract;
     public override IdentifierName Name { get; }
-    StandardName IUserDeclaredAntetype.Name => Name;
+    StandardName IOrdinaryTypeConstructor.Name => Name;
     public override IFixedSet<NominalAntetype> Supertypes { get; }
     private readonly AntetypeReplacements antetypeReplacements;
     public bool HasReferenceSemantics { get; }

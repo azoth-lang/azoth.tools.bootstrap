@@ -4,7 +4,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 
-public sealed class AnyAntetype : NonGenericNominalAntetype, INonVoidAntetype, IDeclaredAntetype
+public sealed class AnyAntetype : NonGenericNominalAntetype, INonVoidAntetype, ITypeConstructor
 {
     #region Singleton
     internal static readonly AnyAntetype Instance = new();
@@ -21,10 +21,10 @@ public sealed class AnyAntetype : NonGenericNominalAntetype, INonVoidAntetype, I
 
     public override SpecialTypeName Name => SpecialTypeName.Any;
 
-    IFixedList<AntetypeGenericParameter> IDeclaredAntetype.GenericParameters
+    IFixedList<AntetypeGenericParameter> ITypeConstructor.GenericParameters
         => FixedList.Empty<AntetypeGenericParameter>();
 
-    IFixedList<GenericParameterAntetype> IDeclaredAntetype.GenericParameterAntetypes
+    IFixedList<GenericParameterAntetype> ITypeConstructor.GenericParameterAntetypes
         => FixedList.Empty<GenericParameterAntetype>();
 
     public override IFixedSet<NominalAntetype> Supertypes => FixedSet.Empty<NominalAntetype>();

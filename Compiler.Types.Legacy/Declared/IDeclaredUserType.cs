@@ -45,15 +45,15 @@ public interface IDeclaredUserType : IEquatable<IDeclaredUserType>
         return WithRead(properTypeArguments);
     }
 
-    IUserDeclaredAntetype ToAntetype();
+    IOrdinaryTypeConstructor ToAntetype();
 }
 
 internal static class DeclaredUserTypeExtensions
 {
     /// <remarks>Used inside of instances of <see cref="IDeclaredUserType"/> to construct the
-    /// equivalent <see cref="IDeclaredAntetype"/>. Do not use directly. Use
+    /// equivalent <see cref="ITypeConstructor"/>. Do not use directly. Use
     /// <see cref="IDeclaredUserType.ToAntetype"/> instead.</remarks>
-    internal static IUserDeclaredAntetype ConstructDeclaredAntetype(this IDeclaredUserType declaredType)
+    internal static IOrdinaryTypeConstructor ConstructDeclaredAntetype(this IDeclaredUserType declaredType)
     {
         var isAbstract = declaredType.IsAbstract;
         var antetypeGenericParameters = declaredType.GenericParameters
@@ -67,7 +67,7 @@ internal static class DeclaredUserTypeExtensions
                 => new UserNonGenericNominalAntetype(declaredType.ContainingPackage,
                     declaredType.ContainingNamespace, isAbstract, n, supertypes, hasReferenceSemantics),
             GenericName n
-                => new UserDeclaredGenericAntetype(declaredType.ContainingPackage,
+                => new OrdinaryTypeConstructor(declaredType.ContainingPackage,
                     declaredType.ContainingNamespace, isAbstract, n, antetypeGenericParameters,
                     supertypes, hasReferenceSemantics),
             _ => throw ExhaustiveMatch.Failed(declaredType.Name)

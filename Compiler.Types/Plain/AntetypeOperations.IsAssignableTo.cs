@@ -20,7 +20,7 @@ public static partial class AntetypeOperations
             (OptionalAntetype s, OptionalAntetype o)
                 => s.Referent.IsAssignableTo(o.Referent),
             (_, OptionalAntetype o) => self.IsAssignableTo(o.Referent),
-            (BoolConstValueAntetype, BoolAntetype) => true,
+            (BoolConstValueAntetype, BoolTypeConstructor) => true,
             (INumericAntetype s, INumericAntetype o) => s.IsImplicitlyNumericallyConvertibleTo(o),
             _ => false,
         };
@@ -30,20 +30,20 @@ public static partial class AntetypeOperations
     {
         switch (self, other)
         {
-            case (FixedSizeIntegerAntetype s, FixedSizeIntegerAntetype o):
+            case (FixedSizeIntegerTypeConstructor s, FixedSizeIntegerTypeConstructor o):
                 return o.Bits > s.Bits && (!s.IsSigned || o.IsSigned);
-            case (IntegerConstValueAntetype s, FixedSizeIntegerAntetype o):
+            case (IntegerConstValueAntetype s, FixedSizeIntegerTypeConstructor o):
             {
                 var requireSigned = s.IsSigned;
                 var bits = s.Value.GetByteCount(!o.IsSigned) * 8;
                 return o.Bits >= bits && (!requireSigned || o.IsSigned);
             }
-            case (IntegerAntetype, BigIntegerAntetype { IsSigned: true }):
-            case (IntegerAntetype { IsSigned: false }, BigIntegerAntetype):
-            case (IntegerConstValueAntetype, BigIntegerAntetype { IsSigned: true }):
-            case (IntegerConstValueAntetype { IsSigned: false }, BigIntegerAntetype):
+            case (IntegerTypeConstructor, BigIntegerTypeConstructor { IsSigned: true }):
+            case (IntegerTypeConstructor { IsSigned: false }, BigIntegerTypeConstructor):
+            case (IntegerConstValueAntetype, BigIntegerTypeConstructor { IsSigned: true }):
+            case (IntegerConstValueAntetype { IsSigned: false }, BigIntegerTypeConstructor):
                 return true;
-            case (IntegerConstValueAntetype s, PointerSizedIntegerAntetype o):
+            case (IntegerConstValueAntetype s, PointerSizedIntegerTypeConstructor o):
             {
                 var requireSigned = s.IsSigned;
                 return !requireSigned || o.IsSigned;

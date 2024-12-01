@@ -18,22 +18,22 @@ public interface IAntetype : IExpressionAntetype, IMaybeAntetype
     public static readonly VoidAntetype Void = VoidAntetype.Instance;
     public static readonly NeverAntetype Never = NeverAntetype.Instance;
     public static readonly AnyAntetype Any = AnyAntetype.Instance;
-    public static readonly BoolAntetype Bool = BoolAntetype.Instance;
+    public static readonly BoolTypeConstructor Bool = BoolTypeConstructor.Instance;
     public static readonly OptionalAntetype OptionalBool = new(Bool);
-    public static readonly BigIntegerAntetype Int = BigIntegerAntetype.Int;
-    public static readonly BigIntegerAntetype UInt = BigIntegerAntetype.UInt;
-    public static readonly FixedSizeIntegerAntetype Int8 = FixedSizeIntegerAntetype.Int8;
-    public static readonly FixedSizeIntegerAntetype Byte = FixedSizeIntegerAntetype.Byte;
-    public static readonly FixedSizeIntegerAntetype Int16 = FixedSizeIntegerAntetype.Int16;
-    public static readonly FixedSizeIntegerAntetype UInt16 = FixedSizeIntegerAntetype.UInt16;
-    public static readonly FixedSizeIntegerAntetype Int32 = FixedSizeIntegerAntetype.Int32;
-    public static readonly FixedSizeIntegerAntetype UInt32 = FixedSizeIntegerAntetype.UInt32;
-    public static readonly FixedSizeIntegerAntetype Int64 = FixedSizeIntegerAntetype.Int64;
-    public static readonly FixedSizeIntegerAntetype UInt64 = FixedSizeIntegerAntetype.UInt64;
-    public static readonly PointerSizedIntegerAntetype Size = PointerSizedIntegerAntetype.Size;
-    public static readonly PointerSizedIntegerAntetype Offset = PointerSizedIntegerAntetype.Offset;
-    public static readonly PointerSizedIntegerAntetype NInt = PointerSizedIntegerAntetype.NInt;
-    public static readonly PointerSizedIntegerAntetype NUInt = PointerSizedIntegerAntetype.NUInt;
+    public static readonly BigIntegerTypeConstructor Int = BigIntegerTypeConstructor.Int;
+    public static readonly BigIntegerTypeConstructor UInt = BigIntegerTypeConstructor.UInt;
+    public static readonly FixedSizeIntegerTypeConstructor Int8 = FixedSizeIntegerTypeConstructor.Int8;
+    public static readonly FixedSizeIntegerTypeConstructor Byte = FixedSizeIntegerTypeConstructor.Byte;
+    public static readonly FixedSizeIntegerTypeConstructor Int16 = FixedSizeIntegerTypeConstructor.Int16;
+    public static readonly FixedSizeIntegerTypeConstructor UInt16 = FixedSizeIntegerTypeConstructor.UInt16;
+    public static readonly FixedSizeIntegerTypeConstructor Int32 = FixedSizeIntegerTypeConstructor.Int32;
+    public static readonly FixedSizeIntegerTypeConstructor UInt32 = FixedSizeIntegerTypeConstructor.UInt32;
+    public static readonly FixedSizeIntegerTypeConstructor Int64 = FixedSizeIntegerTypeConstructor.Int64;
+    public static readonly FixedSizeIntegerTypeConstructor UInt64 = FixedSizeIntegerTypeConstructor.UInt64;
+    public static readonly PointerSizedIntegerTypeConstructor Size = PointerSizedIntegerTypeConstructor.Size;
+    public static readonly PointerSizedIntegerTypeConstructor Offset = PointerSizedIntegerTypeConstructor.Offset;
+    public static readonly PointerSizedIntegerTypeConstructor NInt = PointerSizedIntegerTypeConstructor.NInt;
+    public static readonly PointerSizedIntegerTypeConstructor NUInt = PointerSizedIntegerTypeConstructor.NUInt;
 
     /// <summary>
     /// The value `none` has this type, which is `never?`.

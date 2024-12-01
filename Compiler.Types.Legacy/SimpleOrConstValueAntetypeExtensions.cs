@@ -14,7 +14,7 @@ public static class SimpleOrConstValueAntetypeExtensions
         => antetype switch
         {
             ConstValueAntetype t => t.ToType(),
-            SimpleAntetype t => t.ToType(),
+            SimpleTypeConstructor t => t.ToType(),
             _ => throw ExhaustiveMatch.Failed(antetype),
         };
 
@@ -26,34 +26,34 @@ public static class SimpleOrConstValueAntetypeExtensions
             _ => throw ExhaustiveMatch.Failed(antetype),
         };
 
-    public static CapabilityType ToType(this SimpleAntetype antetype)
+    public static CapabilityType ToType(this SimpleTypeConstructor antetype)
         => antetype switch
         {
-            BoolAntetype _ => IType.Bool,
-            BigIntegerAntetype t => t.IsSigned ? IType.Int : IType.UInt,
-            PointerSizedIntegerAntetype t => t.ToType(),
-            FixedSizeIntegerAntetype t => t.ToType(),
+            BoolTypeConstructor _ => IType.Bool,
+            BigIntegerTypeConstructor t => t.IsSigned ? IType.Int : IType.UInt,
+            PointerSizedIntegerTypeConstructor t => t.ToType(),
+            FixedSizeIntegerTypeConstructor t => t.ToType(),
             _ => throw ExhaustiveMatch.Failed(antetype),
         };
 
-    public static CapabilityType<PointerSizedIntegerType> ToType(this PointerSizedIntegerAntetype antetype)
+    public static CapabilityType<PointerSizedIntegerType> ToType(this PointerSizedIntegerTypeConstructor typeConstructor)
     {
-        if (antetype.Equals((IMaybeExpressionAntetype)IAntetype.Size))
+        if (typeConstructor.Equals((IMaybeExpressionAntetype)IAntetype.Size))
             return IType.Size;
 
-        if (antetype.Equals((IMaybeExpressionAntetype)IAntetype.Offset))
+        if (typeConstructor.Equals((IMaybeExpressionAntetype)IAntetype.Offset))
             return IType.Offset;
 
-        if (antetype.Equals((IMaybeExpressionAntetype)IAntetype.NInt))
+        if (typeConstructor.Equals((IMaybeExpressionAntetype)IAntetype.NInt))
             return IType.NInt;
 
-        if (antetype.Equals((IMaybeExpressionAntetype)IAntetype.NUInt))
+        if (typeConstructor.Equals((IMaybeExpressionAntetype)IAntetype.NUInt))
             return IType.NUInt;
 
         throw new UnreachableException();
     }
 
-    public static CapabilityType<FixedSizeIntegerType> ToType(this FixedSizeIntegerAntetype antetype)
+    public static CapabilityType<FixedSizeIntegerType> ToType(this FixedSizeIntegerTypeConstructor antetype)
         => antetype.Bits switch
         {
             8 => antetype.IsSigned ? IType.Int8 : IType.Byte,

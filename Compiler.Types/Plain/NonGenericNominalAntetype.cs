@@ -14,13 +14,13 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
     typeof(GenericParameterAntetype),
     typeof(SelfAntetype),
     typeof(UserNonGenericNominalAntetype))]
-public abstract class NonGenericNominalAntetype : NominalAntetype, IDeclaredAntetype
+public abstract class NonGenericNominalAntetype : NominalAntetype, ITypeConstructor
 {
-    public sealed override IDeclaredAntetype DeclaredAntetype => this;
+    public sealed override ITypeConstructor DeclaredAntetype => this;
     public sealed override bool AllowsVariance => false;
     public abstract bool CanBeConstructed { get; }
-    IFixedList<AntetypeGenericParameter> IDeclaredAntetype.GenericParameters => [];
-    IFixedList<GenericParameterAntetype> IDeclaredAntetype.GenericParameterAntetypes => [];
+    IFixedList<AntetypeGenericParameter> ITypeConstructor.GenericParameters => [];
+    IFixedList<GenericParameterAntetype> ITypeConstructor.GenericParameterAntetypes => [];
 
     public virtual IAntetype With(IEnumerable<IAntetype> typeArguments)
     {
@@ -32,6 +32,6 @@ public abstract class NonGenericNominalAntetype : NominalAntetype, IDeclaredAnte
     public override IMaybeExpressionAntetype ReplaceTypeParametersIn(IMaybeExpressionAntetype antetype)
         => antetype;
 
-    public bool Equals(IDeclaredAntetype? other)
+    public bool Equals(ITypeConstructor? other)
         => other is IMaybeExpressionAntetype that && Equals(that);
 }
