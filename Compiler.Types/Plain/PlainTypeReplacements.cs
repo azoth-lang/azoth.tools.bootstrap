@@ -78,14 +78,14 @@ internal sealed class PlainTypeReplacements
             SimpleTypeConstructor a => a,
             NeverAntetype a => a,
             SelfAntetype a => a,
-            NamedPlainType a => ReplaceTypeParametersIn(a),
+            OrdinaryNamedPlainType a => ReplaceTypeParametersIn(a),
             GenericParameterPlainType a => ReplaceTypeParametersIn(a),
             FunctionAntetype a => ReplaceTypeParametersIn(a),
             OptionalAntetype a => ReplaceTypeParametersIn(a),
             _ => throw ExhaustiveMatch.Failed(antetype)
         };
 
-    private NamedPlainType ReplaceTypeParametersIn(NamedPlainType antetype)
+    private OrdinaryNamedPlainType ReplaceTypeParametersIn(OrdinaryNamedPlainType antetype)
     {
         var replacementTypeArguments = ReplaceTypeParametersIn(antetype.TypeArguments);
         if (ReferenceEquals(antetype.TypeArguments, replacementTypeArguments))

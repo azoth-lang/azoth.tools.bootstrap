@@ -70,7 +70,7 @@ public sealed class OrdinaryTypeConstructor : ITypeConstructor
         var args = typeArguments.ToFixedList();
         if (args.Count != Parameters.Count)
             throw new ArgumentException("Incorrect number of type arguments.");
-        return new NamedPlainType(this, args);
+        return new OrdinaryNamedPlainType(this, args);
     }
     IAntetype ITypeConstructor.Construct(IEnumerable<IAntetype> typeArguments)
         => Construct(typeArguments);
@@ -81,7 +81,7 @@ public sealed class OrdinaryTypeConstructor : ITypeConstructor
         => ConstructWithGenericParameterPlayTypes();
 
     public IAntetype? TryConstructNullary()
-        => Parameters.IsEmpty ? new NamedPlainType(this, []) : null;
+        => Parameters.IsEmpty ? new OrdinaryNamedPlainType(this, []) : null;
 
     #region Equality
     public bool Equals(ITypeConstructor? other)

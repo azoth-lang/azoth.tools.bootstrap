@@ -61,7 +61,7 @@ internal static class DeclaredUserTypeExtensions
             .Select(p => new TypeConstructorParameter(p.Name, p.Variance.ToTypeVariance(true)));
         var semantics = declaredType is ObjectType ? TypeSemantics.Reference : TypeSemantics.Value;
         var supertypes = declaredType.AntetypeSupertypes();
-        return new OrdinaryTypeConstructor(declaredType.ContainingPackage, declaredType.ContainingNamespace,
+        return new(declaredType.ContainingPackage, declaredType.ContainingNamespace,
             isAbstract, declaredType.Name, antetypeGenericParameters, supertypes, semantics);
     }
 

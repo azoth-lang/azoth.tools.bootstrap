@@ -5,7 +5,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 
-public sealed class NamedPlainType : NominalAntetype, INonVoidAntetype
+public sealed class OrdinaryNamedPlainType : NominalAntetype, INonVoidAntetype
 {
     public override OrdinaryTypeConstructor TypeConstructor { get; }
     public NamespaceName? ContainingNamespace => TypeConstructor.ContainingNamespace;
@@ -16,7 +16,7 @@ public sealed class NamedPlainType : NominalAntetype, INonVoidAntetype
     public override IFixedSet<NominalAntetype> Supertypes { get; }
     private readonly PlainTypeReplacements plainTypeReplacements;
 
-    public NamedPlainType(OrdinaryTypeConstructor typeConstructor, IEnumerable<IAntetype> typeArguments)
+    public OrdinaryNamedPlainType(OrdinaryTypeConstructor typeConstructor, IEnumerable<IAntetype> typeArguments)
     {
         TypeConstructor = typeConstructor;
         TypeArguments = typeArguments.ToFixedList();
@@ -39,7 +39,7 @@ public sealed class NamedPlainType : NominalAntetype, INonVoidAntetype
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
-        return other is NamedPlainType that
+        return other is OrdinaryNamedPlainType that
                && TypeConstructor.Equals(that.TypeConstructor)
                && TypeArguments.Equals(that.TypeArguments);
     }
