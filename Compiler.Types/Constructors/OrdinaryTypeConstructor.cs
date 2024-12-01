@@ -69,7 +69,7 @@ public sealed class OrdinaryTypeConstructor : IOrdinaryTypeConstructor
         var args = typeArguments.ToFixedList();
         if (args.Count != Parameters.Count)
             throw new ArgumentException("Incorrect number of type arguments.");
-        return new UserGenericNominalAntetype(this, args);
+        return new NamedPlainType(this, args);
     }
 
     #region Equality

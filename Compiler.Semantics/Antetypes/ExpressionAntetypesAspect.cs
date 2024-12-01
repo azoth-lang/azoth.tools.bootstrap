@@ -249,7 +249,7 @@ internal static partial class ExpressionAntetypesAspect
 
     public static partial IMaybeExpressionAntetype AwaitExpression_Antetype(IAwaitExpressionNode node)
     {
-        if (node.Expression?.Antetype is UserGenericNominalAntetype { DeclaredAntetype: var declaredAntetype } antetype
+        if (node.Expression?.Antetype is NamedPlainType { TypeConstructor: var declaredAntetype } antetype
             && Intrinsic.PromiseAntetype.Equals(declaredAntetype))
             return antetype.TypeArguments[0];
 
@@ -259,7 +259,7 @@ internal static partial class ExpressionAntetypesAspect
     public static partial void AwaitExpression_Contribute_Diagnostics(IAwaitExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
         // TODO eliminate code duplication with AwaitExpression_Antetype
-        if (node.Expression?.Antetype is UserGenericNominalAntetype { DeclaredAntetype: var declaredAntetype }
+        if (node.Expression?.Antetype is NamedPlainType { TypeConstructor: var declaredAntetype }
             && Intrinsic.PromiseAntetype.Equals(declaredAntetype))
             return;
 

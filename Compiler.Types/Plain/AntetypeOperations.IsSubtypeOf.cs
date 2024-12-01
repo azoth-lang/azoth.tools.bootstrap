@@ -59,9 +59,9 @@ public static partial class AntetypeOperations
 
         if (other.AllowsVariance)
         {
-            var otherDeclaredAntetype = other.DeclaredAntetype;
+            var otherDeclaredAntetype = other.TypeConstructor;
             var selfAntetypes = self.Supertypes.Prepend(self)
-                                           .Where(t => t.DeclaredAntetype.Equals(otherDeclaredAntetype));
+                                           .Where(t => t.TypeConstructor.Equals(otherDeclaredAntetype));
             foreach (var selfAntetype in selfAntetypes)
                 if (IsSubtypeOf(otherDeclaredAntetype, selfAntetype.TypeArguments, other.TypeArguments))
                     return true;

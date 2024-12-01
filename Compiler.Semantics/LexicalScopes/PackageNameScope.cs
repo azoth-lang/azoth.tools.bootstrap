@@ -124,7 +124,7 @@ public sealed class PackageNameScope
             EmptyAntetype _ => null,
             FunctionAntetype _ => null,
             OptionalAntetype _ => throw new NotImplementedException(),
-            NominalAntetype t => Lookup(t.DeclaredAntetype),
+            NominalAntetype t => Lookup(t.TypeConstructor),
             SimpleTypeConstructor t => Lookup(t),
             // TODO There are no declarations for const value type, but perhaps there should be?
             LiteralTypeConstructor _ => null,

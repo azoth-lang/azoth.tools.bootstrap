@@ -36,6 +36,9 @@ interfaces. When `==` was used, there had been bugs where `==` was used to compa
 `.Equals()` was needed because they happened to be accessed through interfaces. This inconsistency
 was confusing and error prone.
 
+The word "Named" is used instead of "Nominal" because it has fewer other meanings that could confuse
+the meaning of class names.
+
 ## Definitions
 
 *Unbound Generic Type*

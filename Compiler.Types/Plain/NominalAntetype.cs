@@ -9,10 +9,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 /// An antetype that is defined by its name.
 /// </summary>
 // TODO but shouldn't simple antetypes be nominal by this definition?
-[Closed(typeof(NonGenericNominalAntetype), typeof(UserGenericNominalAntetype))]
+[Closed(typeof(NonGenericNominalAntetype), typeof(NamedPlainType))]
 public abstract class NominalAntetype : IAntetype
 {
-    public abstract ITypeConstructor DeclaredAntetype { get; }
+    public abstract ITypeConstructor TypeConstructor { get; }
     public abstract bool AllowsVariance { get; }
     public abstract TypeName Name { get; }
     public virtual IFixedList<IAntetype> TypeArguments => FixedList.Empty<IAntetype>();

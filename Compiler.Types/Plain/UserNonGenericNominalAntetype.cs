@@ -14,7 +14,7 @@ public sealed class UserNonGenericNominalAntetype : NonGenericNominalAntetype, I
     public override IdentifierName Name { get; }
     StandardName IOrdinaryTypeConstructor.Name => Name;
     public override IFixedSet<NominalAntetype> Supertypes { get; }
-    private readonly AntetypeReplacements antetypeReplacements;
+    private readonly PlainTypeReplacements plainTypeReplacements;
     public bool HasReferenceSemantics { get; }
 
     public UserNonGenericNominalAntetype(
@@ -31,12 +31,12 @@ public sealed class UserNonGenericNominalAntetype : NonGenericNominalAntetype, I
         Supertypes = supertypes;
         HasReferenceSemantics = hasReferenceSemantics;
         IsAbstract = isAbstract;
-        antetypeReplacements = new(this, TypeArguments);
+        plainTypeReplacements = new(this, TypeArguments);
     }
 
     public override IMaybeExpressionAntetype ReplaceTypeParametersIn(IMaybeExpressionAntetype antetype)
         // A non-generic antetype can have replacements if it inherits from a generic antetype.
-        => antetypeReplacements.ReplaceTypeParametersIn(antetype);
+        => plainTypeReplacements.ReplaceTypeParametersIn(antetype);
 
     public override NominalAntetype With(IEnumerable<IAntetype> typeArguments)
     {

@@ -7,7 +7,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
     typeof(OptionalAntetype),
     typeof(FunctionAntetype),
     typeof(UserNonGenericNominalAntetype),
-    typeof(UserGenericNominalAntetype),
+    typeof(NamedPlainType),
     typeof(AnyAntetype),
     typeof(NeverAntetype),
     typeof(SimpleTypeConstructor),

@@ -4,32 +4,38 @@ using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 
-internal sealed class AntetypeReplacements
+internal sealed class PlainTypeReplacements
 {
-    private readonly IDictionary<GenericParameterPlainType, IAntetype> replacements;
+    private readonly Dictionary<GenericParameterPlainType, IAntetype> replacements;
 
     /// <summary>
     /// Build a dictionary of type replacements. Generic parameter types of both this type and the
     /// supertypes can be replaced with type arguments of this type.
     /// </summary>
-    public AntetypeReplacements(IOrdinaryTypeConstructor declaredType, IFixedList<IAntetype> typeArguments)
+    public PlainTypeReplacements(IOrdinaryTypeConstructor typeConstructor, IFixedList<IAntetype> typeArguments)
     {
-        replacements = declaredType.GenericParameterPlainTypes.EquiZip(typeArguments)
+        replacements = typeConstructor.GenericParameterPlainTypes.EquiZip(typeArguments)
                                    .ToDictionary(t => t.Item1, t => t.Item2);
-        foreach (var supertype in declaredType.Supertypes)
-            foreach (var (antetypeArg, i) in supertype.TypeArguments.Enumerate())
+        if (typeConstructor.Parameters.IsEmpty)
+            return;
+        // Set up replacements for supertype generic parameters
+        // TODO this might have been needed when inheritance was implemented by treating methods as
+        //      if they were copied down the hierarchy, but I don't think it should be needed when
+        //      they are properly handled.
+        foreach (var supertype in typeConstructor.Supertypes)
+            foreach (var (supertypeArgument, i) in supertype.TypeArguments.Enumerate())
             {
-                var genericParameterAnteype = supertype.DeclaredAntetype.GenericParameterPlainTypes[i];
-                if (antetypeArg is GenericParameterPlainType genericAntetypeArg)
+                var genericParameterPlainType = supertype.TypeConstructor.GenericParameterPlainTypes[i];
+                if (supertypeArgument is GenericParameterPlainType genericAntetypeArg)
                 {
                     if (replacements.TryGetValue(genericAntetypeArg, out var replacement))
-                        replacements.Add(genericParameterAnteype, replacement);
+                        replacements.Add(genericParameterPlainType, replacement);
                     else
                         throw new InvalidOperationException(
-                            $"Could not find replacement for `{antetypeArg}` in antetype `{declaredType}` with arguments `{typeArguments}`.");
+                            $"Could not find replacement for `{supertypeArgument}` in type constructor `{typeConstructor}` with arguments `{typeArguments}`.");
                 }
                 else
-                    replacements.Add(genericParameterAnteype, ReplaceTypeParametersIn(antetypeArg));
+                    replacements.Add(genericParameterPlainType, ReplaceTypeParametersIn(supertypeArgument));
             }
     }
 
@@ -73,20 +79,20 @@ internal sealed class AntetypeReplacements
             NeverAntetype a => a,
             SelfAntetype a => a,
             UserNonGenericNominalAntetype a => a,
-            UserGenericNominalAntetype a => ReplaceTypeParametersIn(a),
+            NamedPlainType a => ReplaceTypeParametersIn(a),
             GenericParameterPlainType a => ReplaceTypeParametersIn(a),
             FunctionAntetype a => ReplaceTypeParametersIn(a),
             OptionalAntetype a => ReplaceTypeParametersIn(a),
             _ => throw ExhaustiveMatch.Failed(antetype)
         };
 
-    private UserGenericNominalAntetype ReplaceTypeParametersIn(UserGenericNominalAntetype antetype)
+    private NamedPlainType ReplaceTypeParametersIn(NamedPlainType antetype)
     {
         var replacementTypeArguments = ReplaceTypeParametersIn(antetype.TypeArguments);
         if (ReferenceEquals(antetype.TypeArguments, replacementTypeArguments))
             return antetype;
 
-        return new(antetype.DeclaredAntetype, replacementTypeArguments);
+        return new(antetype.TypeConstructor, replacementTypeArguments);
     }
 
     private IFixedList<IAntetype> ReplaceTypeParametersIn(IFixedList<IAntetype> antetypes)
