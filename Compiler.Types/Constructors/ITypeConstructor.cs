@@ -13,6 +13,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
     typeof(OrdinaryTypeConstructor),
     typeof(AnyTypeConstructor),
     typeof(SimpleTypeConstructor))]
+// TODO convert to a class?
 public interface ITypeConstructor : IEquatable<ITypeConstructor>
 {
     #region Standard Type Constructors

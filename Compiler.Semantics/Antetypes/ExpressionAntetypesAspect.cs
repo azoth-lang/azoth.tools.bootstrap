@@ -451,5 +451,5 @@ internal static partial class ExpressionAntetypesAspect
         => new IntegerLiteralTypeConstructor(node.Value);
 
     public static partial IMaybeExpressionAntetype BoolLiteralExpression_Antetype(IBoolLiteralExpressionNode node)
-        => node.Value ? IExpressionAntetype.True : IExpressionAntetype.False;
+        => node.Value ? IAntetype.True : IAntetype.False;
 }

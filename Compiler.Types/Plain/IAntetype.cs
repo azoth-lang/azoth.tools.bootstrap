@@ -19,7 +19,7 @@ public interface IAntetype : IExpressionAntetype, IMaybeAntetype
     public static readonly NeverPlainType Never = NeverPlainType.Instance;
     public static readonly OrdinaryNamedPlainType Any = AnyTypeConstructor.PlainType;
     public static readonly BoolTypeConstructor Bool = BoolTypeConstructor.Instance;
-    public static readonly OptionalPlainType OptionalBool = new(ITypeConstructor. Bool);
+    public static readonly OptionalPlainType OptionalBool = new(ITypeConstructor.Bool);
     public static readonly BigIntegerTypeConstructor Int = BigIntegerTypeConstructor.Int;
     public static readonly BigIntegerTypeConstructor UInt = BigIntegerTypeConstructor.UInt;
     public static readonly FixedSizeIntegerTypeConstructor Int8 = FixedSizeIntegerTypeConstructor.Int8;
@@ -34,10 +34,15 @@ public interface IAntetype : IExpressionAntetype, IMaybeAntetype
     public static readonly PointerSizedIntegerTypeConstructor Offset = PointerSizedIntegerTypeConstructor.Offset;
     public static readonly PointerSizedIntegerTypeConstructor NInt = PointerSizedIntegerTypeConstructor.NInt;
     public static readonly PointerSizedIntegerTypeConstructor NUInt = PointerSizedIntegerTypeConstructor.NUInt;
+    #endregion
 
+    #region Literal Types
     /// <summary>
     /// The value `none` has this type, which is `never?`.
     /// </summary>
     public static readonly OptionalPlainType None = new(Never);
+
+    public static readonly BoolLiteralTypeConstructor True = BoolLiteralTypeConstructor.True;
+    public static readonly BoolLiteralTypeConstructor False = BoolLiteralTypeConstructor.False;
     #endregion
 }
