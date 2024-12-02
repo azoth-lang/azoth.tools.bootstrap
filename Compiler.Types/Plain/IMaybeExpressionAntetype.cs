@@ -6,9 +6,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 public interface IMaybeExpressionAntetype : IEquatable<IMaybeExpressionAntetype>
 {
     /// <summary>
-    /// Convert types for constant values to their corresponding types.
+    /// Convert types for literals (e.g. <c>bool[true]</c>, <c>int[42]</c> etc.) to their
+    /// corresponding types.
     /// </summary>
-    IMaybeAntetype ToNonConstValueType();
+    IMaybeAntetype ToNonLiteralType();
 
     IMaybeExpressionAntetype ReplaceTypeParametersIn(IMaybeExpressionAntetype antetype);
 

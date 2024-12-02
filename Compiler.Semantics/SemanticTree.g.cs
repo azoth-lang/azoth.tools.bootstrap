@@ -5308,7 +5308,7 @@ file class FunctionDefinitionNode : SemanticNode, IFunctionDefinitionNode
     internal override IMaybeAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.Body))
-            return Type.Return.ToAntetype().ToNonConstValueType();
+            return Type.Return.ToAntetype().ToNonLiteralType();
         return base.Inherited_ExpectedAntetype(child, descendant, ctx);
     }
 
@@ -7362,7 +7362,7 @@ file class AssociatedFunctionDefinitionNode : SemanticNode, IAssociatedFunctionD
     internal override IMaybeAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.Body))
-            return Type.Return.ToAntetype().ToNonConstValueType();
+            return Type.Return.ToAntetype().ToNonLiteralType();
         return base.Inherited_ExpectedAntetype(child, descendant, ctx);
     }
 
@@ -9535,7 +9535,7 @@ file class NewObjectExpressionNode : SemanticNode, INewObjectExpressionNode
     internal override IMaybeAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (IndexOfNode(Self.CurrentArguments, descendant) is { } index)
-            return ContextualizedCall?.ParameterTypes[index].Type.ToAntetype().ToNonConstValueType();
+            return ContextualizedCall?.ParameterTypes[index].Type.ToAntetype().ToNonLiteralType();
         if (ReferenceEquals(child, descendant))
             return null;
         return base.Inherited_ExpectedAntetype(child, descendant, ctx);
@@ -10447,7 +10447,7 @@ file class AssignmentExpressionNode : SemanticNode, IAssignmentExpressionNode
     internal override IMaybeAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.CurrentRightOperand))
-            return LeftOperand?.Antetype.ToNonConstValueType();
+            return LeftOperand?.Antetype.ToNonLiteralType();
         if (ReferenceEquals(child, descendant))
             return null;
         return base.Inherited_ExpectedAntetype(child, descendant, ctx);
@@ -12516,7 +12516,7 @@ file class ReturnExpressionNode : SemanticNode, IReturnExpressionNode
     internal override IMaybeAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.CurrentValue))
-            return ExpectedReturnType?.ToAntetype().ToNonConstValueType();
+            return ExpectedReturnType?.ToAntetype().ToNonLiteralType();
         if (ReferenceEquals(child, descendant))
             return null;
         return base.Inherited_ExpectedAntetype(child, descendant, ctx);
@@ -13231,7 +13231,7 @@ file class GetterInvocationExpressionNode : SemanticNode, IGetterInvocationExpre
     internal override IMaybeAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.CurrentContext))
-            return ContextualizedCall?.SelfParameterType?.Type.ToAntetype().ToNonConstValueType();
+            return ContextualizedCall?.SelfParameterType?.Type.ToAntetype().ToNonLiteralType();
         if (ReferenceEquals(child, descendant))
             return null;
         return base.Inherited_ExpectedAntetype(child, descendant, ctx);
@@ -13413,9 +13413,9 @@ file class SetterInvocationExpressionNode : SemanticNode, ISetterInvocationExpre
     internal override IMaybeAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.CurrentContext))
-            return ContextualizedCall?.SelfParameterType?.Type.ToAntetype().ToNonConstValueType();
+            return ContextualizedCall?.SelfParameterType?.Type.ToAntetype().ToNonLiteralType();
         if (ReferenceEquals(descendant, Self.CurrentValue))
-            return ContextualizedCall?.ParameterTypes[0].Type.ToAntetype().ToNonConstValueType();
+            return ContextualizedCall?.ParameterTypes[0].Type.ToAntetype().ToNonLiteralType();
         if (ReferenceEquals(child, descendant))
             return null;
         return base.Inherited_ExpectedAntetype(child, descendant, ctx);
@@ -13788,7 +13788,7 @@ file class InitializerInvocationExpressionNode : SemanticNode, IInitializerInvoc
     internal override IMaybeAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (IndexOfNode(Self.CurrentArguments, descendant) is { } index)
-            return ContextualizedCall?.ParameterTypes[index].Type.ToAntetype().ToNonConstValueType();
+            return ContextualizedCall?.ParameterTypes[index].Type.ToAntetype().ToNonLiteralType();
         if (ReferenceEquals(child, descendant))
             return null;
         return base.Inherited_ExpectedAntetype(child, descendant, ctx);

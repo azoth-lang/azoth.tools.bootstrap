@@ -7,7 +7,7 @@
 
 // ---------- Function Definition
 // TODO it would be good to refactor to not depend on Type
-= FunctionDefinition.Body.ExpectedAntetype => Type.Return.ToAntetype().ToNonConstValueType();
+= FunctionDefinition.Body.ExpectedAntetype => Type.Return.ToAntetype().ToNonLiteralType();
 
 // ---------- Type Definitions
 ↑ TypeDefinition.DeclaredAntetype:`OrdinaryTypeConstructor`;
@@ -22,4 +22,4 @@
 = FieldDefinition.BindingAntetype;
 // TODO it would be good to refactor to not depend on Type
 = AssociatedFunctionDefinition.Body.ExpectedAntetype
-    => Type.Return.ToAntetype().ToNonConstValueType();
+    => Type.Return.ToAntetype().ToNonLiteralType();

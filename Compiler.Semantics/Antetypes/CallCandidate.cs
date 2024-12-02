@@ -49,7 +49,7 @@ internal static class CallCandidate
     public static CallCandidate<IFunctionInvocableDeclarationNode> Create(
         IFunctionInvocableDeclarationNode function)
     {
-        var parameterAntetypes = function.ParameterTypes.Select(p => p.Type.ToAntetype().ToNonConstValueType())
+        var parameterAntetypes = function.ParameterTypes.Select(p => p.Type.ToAntetype().ToNonLiteralType())
                                        .Cast<IMaybeNonVoidAntetype>().ToFixedList();
         var returnAntetype = function.ReturnType.ToAntetype();
         return new(function, null, parameterAntetypes, returnAntetype);
@@ -86,7 +86,7 @@ internal static class CallCandidate
         IMaybeExpressionAntetype contextAntetype,
         IMaybeSelfParameterType selfParameterType)
         => contextAntetype.ReplaceTypeParametersIn(selfParameterType.Type.ToAntetype())
-                               .ToNonConstValueType();
+                               .ToNonLiteralType();
 
     private static IFixedList<IMaybeNonVoidAntetype> ParameterAntetypes(
         IMaybeExpressionAntetype contextAntetype,
@@ -95,8 +95,8 @@ internal static class CallCandidate
                       .OfType<IMaybeNonVoidAntetype>().ToFixedList();
 
     private static IMaybeAntetype ParameterAntetype(IMaybeExpressionAntetype contextAntetype, IMaybeParameterType parameter)
-        => contextAntetype.ReplaceTypeParametersIn(parameter.Type.ToAntetype()).ToNonConstValueType();
+        => contextAntetype.ReplaceTypeParametersIn(parameter.Type.ToAntetype()).ToNonLiteralType();
 
     private static IMaybeAntetype ReturnAntetype(IMaybeExpressionAntetype contextAntetype, IInvocableDeclarationNode declaration)
-        => contextAntetype.ReplaceTypeParametersIn(declaration.ReturnType.ToAntetype()).ToNonConstValueType();
+        => contextAntetype.ReplaceTypeParametersIn(declaration.ReturnType.ToAntetype()).ToNonLiteralType();
 }

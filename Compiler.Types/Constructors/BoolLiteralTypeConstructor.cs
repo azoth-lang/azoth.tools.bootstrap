@@ -16,7 +16,7 @@ public sealed class BoolLiteralTypeConstructor : LiteralTypeConstructor
         Value = value;
     }
 
-    public override IMaybeAntetype ToNonConstValueType() => ITypeConstructor.Bool;
+    public override IMaybeAntetype ToNonLiteralType() => ITypeConstructor.Bool;
 
     public static implicit operator BoolLiteralTypeConstructor(bool value) => value ? True : False;
 

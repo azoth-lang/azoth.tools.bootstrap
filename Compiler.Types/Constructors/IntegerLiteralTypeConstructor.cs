@@ -28,7 +28,7 @@ public sealed class IntegerLiteralTypeConstructor : LiteralTypeConstructor, INum
     /// <remarks>It might be thought this should return the smallest integer type that contains
     /// the value. However, that would lead to unexpected behavior in some cases because small
     /// integer constants might produce small fixed size integers leading to overflow.</remarks>
-    public override IAntetype ToNonConstValueType() => ITypeConstructor.Int;
+    public override IAntetype ToNonLiteralType() => ITypeConstructor.Int;
 
     public NumericTypeConstructor ToSmallestSignedIntegerType()
     {

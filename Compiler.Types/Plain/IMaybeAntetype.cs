@@ -14,5 +14,5 @@ public interface IMaybeAntetype : IMaybeExpressionAntetype
     public static readonly IMaybeAntetype Unknown = UnknownPlainType.Instance;
     #endregion
 
-    IMaybeAntetype IMaybeExpressionAntetype.ToNonConstValueType() => this;
+    IMaybeAntetype IMaybeExpressionAntetype.ToNonLiteralType() => this;
 }

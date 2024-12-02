@@ -36,7 +36,7 @@ internal static partial class ForeachExpressionAntetypesAspect
     {
         var nextMethodReturnType = node.ReferencedNextMethod?.MethodGroupType.Return.ToAntetype();
         if (nextMethodReturnType is OptionalPlainType { Referent: var iteratedType })
-            return node.IteratorAntetype.ReplaceTypeParametersIn(iteratedType).ToNonConstValueType();
+            return node.IteratorAntetype.ReplaceTypeParametersIn(iteratedType).ToNonLiteralType();
         return IAntetype.Unknown;
     }
 }

@@ -36,11 +36,11 @@
 ↑ BlockExpression.Antetype: `IMaybeAntetype`;
 // TODO it would be better if this didn't depend on types, but only on antetypes
 = NewObjectExpression.Arguments[index].ExpectedAntetype
-    => ContextualizedCall?.ParameterTypes[index].Type.ToAntetype().ToNonConstValueType();
+    => ContextualizedCall?.ParameterTypes[index].Type.ToAntetype().ToNonLiteralType();
 = NeverTypedExpression.Antetype => IAntetype.Never;
 
 // ---------- Operator Expressions
-= AssignmentExpression.RightOperand.ExpectedAntetype => LeftOperand?.Antetype.ToNonConstValueType();
+= AssignmentExpression.RightOperand.ExpectedAntetype => LeftOperand?.Antetype.ToNonLiteralType();
 ↑ BinaryOperatorExpression.NumericOperatorCommonAntetype: `IAntetype`?;
 = BinaryOperatorExpression.LeftOperand.ExpectedAntetype => NumericOperatorCommonAntetype;
 = BinaryOperatorExpression.RightOperand.ExpectedAntetype => NumericOperatorCommonAntetype;
@@ -52,7 +52,7 @@
 // ---------- Control Flow Expressions
 = IfExpression.Condition.ExpectedAntetype => IAntetype.OptionalBool;
 = WhileExpression.Condition.ExpectedAntetype => IAntetype.OptionalBool;
-= ReturnExpression.Value.ExpectedAntetype => ExpectedReturnType?.ToAntetype().ToNonConstValueType();
+= ReturnExpression.Value.ExpectedAntetype => ExpectedReturnType?.ToAntetype().ToNonLiteralType();
 
 // ---------- Invocation Expressions
 = UnknownInvocationExpression.Antetype => IAntetype.Unknown;
@@ -62,17 +62,17 @@
     => Self.SelectedCallCandidate?.ParameterAntetypes[index];
 // TODO it would be better if this didn't depend on types, but only on antetypes
 = GetterInvocationExpression.Context.ExpectedAntetype
-    => ContextualizedCall?.SelfParameterType?.Type.ToAntetype().ToNonConstValueType();
+    => ContextualizedCall?.SelfParameterType?.Type.ToAntetype().ToNonLiteralType();
 // TODO it would be better if this didn't depend on types, but only on antetypes
 = SetterInvocationExpression.Context.ExpectedAntetype
-    => ContextualizedCall?.SelfParameterType?.Type.ToAntetype().ToNonConstValueType();
+    => ContextualizedCall?.SelfParameterType?.Type.ToAntetype().ToNonLiteralType();
 // TODO it would be better if this didn't depend on types, but only on antetypes
 = SetterInvocationExpression.Value.ExpectedAntetype
-    => ContextualizedCall?.ParameterTypes[0].Type.ToAntetype().ToNonConstValueType();
+    => ContextualizedCall?.ParameterTypes[0].Type.ToAntetype().ToNonLiteralType();
 ↑ FunctionReferenceInvocationExpression.FunctionPlainType: `FunctionPlainType`;
 // TODO it would be better if this didn't depend on types, but only on antetypes
 = InitializerInvocationExpression.Arguments[index].ExpectedAntetype
-    => ContextualizedCall?.ParameterTypes[index].Type.ToAntetype().ToNonConstValueType();
+    => ContextualizedCall?.ParameterTypes[index].Type.ToAntetype().ToNonLiteralType();
 
 // ---------- Ambiguous Name Expressions
 

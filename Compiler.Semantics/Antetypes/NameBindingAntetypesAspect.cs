@@ -17,7 +17,7 @@ internal static partial class NameBindingAntetypesAspect
     }
 
     public static partial IMaybeAntetype PatternMatchExpression_Pattern_ContextBindingAntetype(IPatternMatchExpressionNode node)
-        => node.Referent?.Antetype.ToNonConstValueType() ?? IAntetype.Unknown;
+        => node.Referent?.Antetype.ToNonLiteralType() ?? IAntetype.Unknown;
 
     public static partial IMaybeAntetype BindingContextPattern_Pattern_ContextBindingAntetype(IBindingContextPatternNode node)
         => node.Type?.NamedAntetype ?? node.ContextBindingAntetype();
@@ -35,7 +35,7 @@ internal static partial class NameBindingAntetypesAspect
         => node.ContextBindingAntetype();
 
     public static partial IMaybeAntetype VariableDeclarationStatement_BindingAntetype(IVariableDeclarationStatementNode node)
-        => node.Type?.NamedAntetype ?? node.Initializer?.Antetype.ToNonConstValueType() ?? IAntetype.Unknown;
+        => node.Type?.NamedAntetype ?? node.Initializer?.Antetype.ToNonLiteralType() ?? IAntetype.Unknown;
 
     public static partial void VariableDeclarationStatement_Contribute_Diagnostics(
         IVariableDeclarationStatementNode node,

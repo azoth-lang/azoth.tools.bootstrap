@@ -70,7 +70,7 @@ internal static partial class OverloadResolutionAspect
     #region Invocation Expressions
     public static partial IMaybeAntetype? UnknownInvocationExpression_Expression_ExpectedAntetype(IUnknownInvocationExpressionNode node)
     {
-        var expectedReturnAntetype = node.ExpectedAntetype?.ToNonConstValueType() ?? IAntetype.Unknown;
+        var expectedReturnAntetype = node.ExpectedAntetype?.ToNonLiteralType() ?? IAntetype.Unknown;
         return new FunctionPlainType(node.Arguments.Select(NonVoidAntetypeIfKnown),
             // TODO this is odd, but the return plainType will be ignored
             NonVoidAntetypeIfKnown(expectedReturnAntetype));

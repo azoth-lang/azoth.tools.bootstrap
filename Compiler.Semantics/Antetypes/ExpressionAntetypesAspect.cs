@@ -55,7 +55,7 @@ internal static partial class ExpressionAntetypesAspect
         => node.LeftOperand?.Antetype ?? IAntetype.Unknown;
 
     public static partial IMaybeAntetype ResultStatement_Antetype(IResultStatementNode node)
-        => node.Expression?.Antetype.ToNonConstValueType() ?? IAntetype.Unknown;
+        => node.Expression?.Antetype.ToNonLiteralType() ?? IAntetype.Unknown;
 
     public static partial IAntetype? BinaryOperatorExpression_NumericOperatorCommonAntetype(IBinaryOperatorExpressionNode node)
     {
@@ -246,7 +246,7 @@ internal static partial class ExpressionAntetypesAspect
         => IAntetype.None;
 
     public static partial IMaybeExpressionAntetype AsyncStartExpression_Antetype(IAsyncStartExpressionNode node)
-        => Intrinsic.PromiseOf(node.Expression?.Antetype.ToNonConstValueType() ?? IAntetype.Unknown);
+        => Intrinsic.PromiseOf(node.Expression?.Antetype.ToNonLiteralType() ?? IAntetype.Unknown);
 
     public static partial IMaybeExpressionAntetype AwaitExpression_Antetype(IAwaitExpressionNode node)
     {
@@ -359,7 +359,7 @@ internal static partial class ExpressionAntetypesAspect
     public static partial IMaybeAntetype? MethodName_Context_ExpectedAntetype(IMethodNameNode node)
         // TODO it would be better if this didn't depend on types, but only on antetypes
         => (node.Parent as IMethodInvocationExpressionNode)
-           ?.ContextualizedCall?.SelfParameterType?.Type.ToAntetype().ToNonConstValueType();
+           ?.ContextualizedCall?.SelfParameterType?.Type.ToAntetype().ToNonLiteralType();
 
     public static partial IExpressionNode? Expression_Rewrite_ImplicitConversion(IExpressionNode node)
     {

@@ -20,7 +20,7 @@ public abstract class LiteralTypeConstructor : IExpressionAntetype, ISimpleOrCon
         Name = name;
     }
 
-    public abstract IMaybeAntetype ToNonConstValueType();
+    public abstract IMaybeAntetype ToNonLiteralType();
 
     public IMaybeExpressionAntetype ReplaceTypeParametersIn(IMaybeExpressionAntetype antetype)
         => antetype;
