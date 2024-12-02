@@ -7,7 +7,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 /// <summary>
 /// The type introduced by a generic parameter.
 /// </summary>
-public sealed class GenericParameterPlainType : NonGenericNominalAntetype, INonVoidAntetype
+public sealed class GenericParameterPlainType : VariablePlainType, INonVoidAntetype
 {
     public OrdinaryTypeConstructor DeclaringAntetype { get; }
     public TypeConstructorParameter Parameter { get; }

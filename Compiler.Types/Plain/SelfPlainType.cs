@@ -7,7 +7,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 /// <summary>
 /// The type variable referred to with the `Self` type variable.
 /// </summary>
-public sealed class SelfPlainType : NonGenericNominalAntetype, INonVoidAntetype
+public sealed class SelfPlainType : VariablePlainType, INonVoidAntetype
 {
     /// <summary>
     /// As a type variable, a `Self` type cannot be constructed.
