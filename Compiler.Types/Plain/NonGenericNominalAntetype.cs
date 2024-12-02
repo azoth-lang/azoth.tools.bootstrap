@@ -8,10 +8,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 /// </summary>
 /// <remarks>Non-generic antetypes are both an antetype and their own declared antetype.</remarks>
 [Closed(
-    typeof(EmptyAntetype),
+    typeof(EmptyPlainType),
     typeof(AnyAntetype),
     typeof(GenericParameterPlainType),
-    typeof(SelfAntetype))]
+    typeof(SelfPlainType))]
 // TODO maybe this class should be eliminated all together
 public abstract class NonGenericNominalAntetype : NamedPlainType
 {

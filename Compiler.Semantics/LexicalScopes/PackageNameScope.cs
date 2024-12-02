@@ -119,13 +119,13 @@ public sealed class PackageNameScope
     public ITypeDeclarationNode? Lookup(IMaybeExpressionAntetype antetype)
         => antetype switch
         {
-            UnknownAntetype _ => null,
-            EmptyAntetype _ => null,
-            FunctionAntetype _ => null,
-            OptionalAntetype _ => throw new NotImplementedException(),
+            UnknownPlainType _ => null,
+            EmptyPlainType _ => null,
+            FunctionPlainType _ => null,
+            OptionalPlainType _ => throw new NotImplementedException(),
             AnyAntetype t => Lookup(t),
             GenericParameterPlainType t => Lookup(t),
-            SelfAntetype _ => null,
+            SelfPlainType _ => null,
             OrdinaryNamedPlainType t => Lookup(t.TypeConstructor),
             SimpleTypeConstructor t => Lookup(t),
             // TODO There are no declarations for const value type, but perhaps there should be?

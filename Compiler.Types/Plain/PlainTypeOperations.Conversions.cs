@@ -2,7 +2,7 @@ using System.Diagnostics;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 
-public static partial class AntetypeOperations
+public static partial class PlainTypeOperations
 {
     /// <summary>
     /// Create an optional type for the given type (i.e. `T?` given `T`).
@@ -11,8 +11,8 @@ public static partial class AntetypeOperations
     public static IMaybeAntetype MakeOptional(this IMaybeAntetype antetype)
         => antetype switch
         {
-            UnknownAntetype or NeverAntetype or VoidAntetype => antetype,
-            INonVoidAntetype t => new OptionalAntetype(t),
+            UnknownPlainType or NeverPlainType or VoidPlainType => antetype,
+            INonVoidAntetype t => new OptionalPlainType(t),
             _ => throw new UnreachableException(),
         };
 
@@ -23,8 +23,8 @@ public static partial class AntetypeOperations
     public static IAntetype MakeOptional(this IAntetype antetype)
         => antetype switch
         {
-            NeverAntetype or VoidAntetype => antetype,
-            INonVoidAntetype t => new OptionalAntetype(t),
+            NeverPlainType or VoidPlainType => antetype,
+            INonVoidAntetype t => new OptionalPlainType(t),
             _ => throw new UnreachableException(),
         };
 }

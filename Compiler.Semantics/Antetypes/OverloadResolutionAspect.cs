@@ -40,7 +40,7 @@ internal static partial class OverloadResolutionAspect
     {
         switch (node.ConstructingAntetype)
         {
-            case UnknownAntetype:
+            case UnknownPlainType:
                 // Error should be reported elsewhere
                 return;
             case NamedPlainType { TypeConstructor.CanBeInstantiated: false }:
@@ -71,8 +71,8 @@ internal static partial class OverloadResolutionAspect
     public static partial IMaybeAntetype? UnknownInvocationExpression_Expression_ExpectedAntetype(IUnknownInvocationExpressionNode node)
     {
         var expectedReturnAntetype = node.ExpectedAntetype?.ToNonConstValueType() ?? IAntetype.Unknown;
-        return new FunctionAntetype(node.Arguments.Select(NonVoidAntetypeIfKnown),
-            // TODO this is odd, but the return antetype will be ignored
+        return new FunctionPlainType(node.Arguments.Select(NonVoidAntetypeIfKnown),
+            // TODO this is odd, but the return plainType will be ignored
             NonVoidAntetypeIfKnown(expectedReturnAntetype));
     }
 
@@ -128,7 +128,7 @@ internal static partial class OverloadResolutionAspect
 
     public static partial IExpressionNode? UnknownInvocationExpression_Rewrite_FunctionReferenceExpression(IUnknownInvocationExpressionNode node)
     {
-        if (node.Expression is not { Antetype: FunctionAntetype } expression)
+        if (node.Expression is not { Antetype: FunctionPlainType } expression)
             return null;
 
         return IFunctionReferenceInvocationExpressionNode.Create(node.Syntax, expression, node.CurrentArguments);
@@ -220,7 +220,7 @@ internal static partial class OverloadResolutionAspect
 
     public static partial IFixedSet<CallCandidate<IFunctionInvocableDeclarationNode>> FunctionGroupName_CompatibleCallCandidates(IFunctionGroupNameNode node)
     {
-        if (node.ExpectedAntetype is not FunctionAntetype expectedAntetype) return [];
+        if (node.ExpectedAntetype is not FunctionPlainType expectedAntetype) return [];
 
         var argumentAntetypes = ArgumentAntetypes.ForFunction(expectedAntetype.Parameters);
         return node.CallCandidates.Where(o => o.CompatibleWith(argumentAntetypes)).ToFixedSet();
@@ -267,7 +267,7 @@ internal static partial class OverloadResolutionAspect
 
     public static partial IFixedSet<CallCandidate<IStandardMethodDeclarationNode>> MethodGroupName_CompatibleCallCandidates(IMethodGroupNameNode node)
     {
-        if (node.ExpectedAntetype is not FunctionAntetype expectedAntetype) return [];
+        if (node.ExpectedAntetype is not FunctionPlainType expectedAntetype) return [];
 
         var contextAntetype = node.Context.Antetype;
         var argumentAntetypes = ArgumentAntetypes.ForMethod(contextAntetype, expectedAntetype.Parameters);

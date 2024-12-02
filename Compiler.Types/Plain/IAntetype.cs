@@ -14,12 +14,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 public interface IAntetype : IExpressionAntetype, IMaybeAntetype
 {
     #region Standard Types
-    public new static readonly UnknownAntetype Unknown = UnknownAntetype.Instance;
-    public static readonly VoidAntetype Void = VoidAntetype.Instance;
-    public static readonly NeverAntetype Never = NeverAntetype.Instance;
+    public new static readonly UnknownPlainType Unknown = UnknownPlainType.Instance;
+    public static readonly VoidPlainType Void = VoidPlainType.Instance;
+    public static readonly NeverPlainType Never = NeverPlainType.Instance;
     public static readonly AnyAntetype Any = AnyAntetype.Instance;
     public static readonly BoolTypeConstructor Bool = BoolTypeConstructor.Instance;
-    public static readonly OptionalAntetype OptionalBool = new(Bool);
+    public static readonly OptionalPlainType OptionalBool = new(Bool);
     public static readonly BigIntegerTypeConstructor Int = BigIntegerTypeConstructor.Int;
     public static readonly BigIntegerTypeConstructor UInt = BigIntegerTypeConstructor.UInt;
     public static readonly FixedSizeIntegerTypeConstructor Int8 = FixedSizeIntegerTypeConstructor.Int8;
@@ -38,6 +38,6 @@ public interface IAntetype : IExpressionAntetype, IMaybeAntetype
     /// <summary>
     /// The value `none` has this type, which is `never?`.
     /// </summary>
-    public static readonly OptionalAntetype None = new(Never);
+    public static readonly OptionalPlainType None = new(Never);
     #endregion
 }

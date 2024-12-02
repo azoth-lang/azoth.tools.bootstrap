@@ -51,7 +51,7 @@ internal sealed class PlainTypeReplacements
         => antetype switch
         {
             IAntetype a => ReplaceTypeParametersIn(a),
-            UnknownAntetype a => a,
+            UnknownPlainType a => a,
             _ => throw ExhaustiveMatch.Failed(antetype)
         };
 
@@ -66,7 +66,7 @@ internal sealed class PlainTypeReplacements
     private IAntetype ReplaceTypeParametersIn(IAntetype antetype)
         => antetype switch
         {
-            VoidAntetype a => a,
+            VoidPlainType a => a,
             INonVoidAntetype a => ReplaceTypeParametersIn(a),
             _ => throw ExhaustiveMatch.Failed(antetype)
         };
@@ -76,12 +76,12 @@ internal sealed class PlainTypeReplacements
         {
             AnyAntetype a => a,
             SimpleTypeConstructor a => a,
-            NeverAntetype a => a,
-            SelfAntetype a => a,
+            NeverPlainType a => a,
+            SelfPlainType a => a,
             OrdinaryNamedPlainType a => ReplaceTypeParametersIn(a),
             GenericParameterPlainType a => ReplaceTypeParametersIn(a),
-            FunctionAntetype a => ReplaceTypeParametersIn(a),
-            OptionalAntetype a => ReplaceTypeParametersIn(a),
+            FunctionPlainType a => ReplaceTypeParametersIn(a),
+            OptionalPlainType a => ReplaceTypeParametersIn(a),
             _ => throw ExhaustiveMatch.Failed(antetype)
         };
 
@@ -115,13 +115,13 @@ internal sealed class PlainTypeReplacements
         return plainType;
     }
 
-    private FunctionAntetype ReplaceTypeParametersIn(FunctionAntetype antetype)
+    private FunctionPlainType ReplaceTypeParametersIn(FunctionPlainType plainType)
     {
-        var replacementParameterTypes = ReplaceTypeParametersInParameters(antetype.Parameters);
-        var replacementReturnType = ReplaceTypeParametersIn(antetype.Return);
-        if (ReferenceEquals(antetype.Parameters, replacementParameterTypes)
-            && ReferenceEquals(antetype.Return, replacementReturnType))
-            return antetype;
+        var replacementParameterTypes = ReplaceTypeParametersInParameters(plainType.Parameters);
+        var replacementReturnType = ReplaceTypeParametersIn(plainType.Return);
+        if (ReferenceEquals(plainType.Parameters, replacementParameterTypes)
+            && ReferenceEquals(plainType.Return, replacementReturnType))
+            return plainType;
 
         return new(replacementParameterTypes, replacementReturnType);
     }
@@ -146,11 +146,11 @@ internal sealed class PlainTypeReplacements
         return typesReplaced ? replacementAntetypes.ToFixedList() : antetypes;
     }
 
-    private IAntetype ReplaceTypeParametersIn(OptionalAntetype antetype)
+    private IAntetype ReplaceTypeParametersIn(OptionalPlainType plainType)
     {
-        var replacementType = ReplaceTypeParametersIn(antetype.Referent);
-        if (ReferenceEquals(antetype.Referent, replacementType))
-            return antetype;
+        var replacementType = ReplaceTypeParametersIn(plainType.Referent);
+        if (ReferenceEquals(plainType.Referent, replacementType))
+            return plainType;
 
         return replacementType.MakeOptional();
     }

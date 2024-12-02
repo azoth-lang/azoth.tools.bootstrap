@@ -26,7 +26,7 @@ internal static partial class NameBindingAntetypesAspect
         IOptionalPatternNode node)
     {
         var inheritedBindingAntetype = node.ContextBindingAntetype();
-        if (inheritedBindingAntetype is OptionalAntetype optionalAntetype)
+        if (inheritedBindingAntetype is OptionalPlainType optionalAntetype)
             return optionalAntetype.Referent;
         return inheritedBindingAntetype;
     }

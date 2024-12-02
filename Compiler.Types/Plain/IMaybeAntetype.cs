@@ -11,7 +11,7 @@ public interface IMaybeAntetype : IMaybeExpressionAntetype
     /// </summary>
     /// <remarks>There are places where the compiler cannot infer the expression type. This can be
     /// used to force the compiler to use <see cref="IMaybeAntetype"/>.</remarks>
-    public static readonly IMaybeAntetype Unknown = UnknownAntetype.Instance;
+    public static readonly IMaybeAntetype Unknown = UnknownPlainType.Instance;
     #endregion
 
     IMaybeAntetype IMaybeExpressionAntetype.ToNonConstValueType() => this;

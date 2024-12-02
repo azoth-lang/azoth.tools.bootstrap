@@ -20,7 +20,7 @@ public readonly record struct ArgumentAntetypes
 
     public int Arity => Arguments.Count;
     /// <summary>
-    /// The antetype of the object that the method is called on.
+    /// The plainType of the object that the method is called on.
     /// </summary>
     /// <remarks>This is <see langword="null"/> for functions, but also for constructors and
     /// initializers because the value will be created as part of the call and will therefore always

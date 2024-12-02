@@ -4,14 +4,14 @@ using ExhaustiveMatching;
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 
 [Closed(
-    typeof(OptionalAntetype),
-    typeof(FunctionAntetype),
+    typeof(OptionalPlainType),
+    typeof(FunctionPlainType),
     typeof(OrdinaryNamedPlainType),
     typeof(AnyAntetype),
-    typeof(NeverAntetype),
+    typeof(NeverPlainType),
     typeof(SimpleTypeConstructor),
     typeof(GenericParameterPlainType),
-    typeof(SelfAntetype))]
+    typeof(SelfPlainType))]
 public interface INonVoidAntetype : IAntetype, IMaybeNonVoidAntetype
 {
     TypeSemantics Semantics { get; }

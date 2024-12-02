@@ -2,5 +2,5 @@ using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 
-[Closed(typeof(FunctionAntetype), typeof(UnknownAntetype))]
+[Closed(typeof(FunctionPlainType), typeof(UnknownPlainType))]
 public interface IMaybeFunctionAntetype : IMaybeNonVoidAntetype;

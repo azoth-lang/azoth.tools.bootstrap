@@ -488,7 +488,7 @@ internal static partial class ExpressionTypesAspect
     {
         if (node.Antetype is ISimpleOrConstValueAntetype simpleOrConstValueAntetype)
             return simpleOrConstValueAntetype.ToType();
-        if (node.Antetype is UnknownAntetype)
+        if (node.Antetype is UnknownPlainType)
             return IType.Unknown;
 
         var leftType = node.LeftOperand?.Type ?? IType.Unknown;
@@ -676,8 +676,8 @@ internal static partial class ExpressionTypesAspect
         => node.Antetype switch
         {
             ISimpleOrConstValueAntetype t => t.ToType(),
-            UnknownAntetype => IType.Unknown,
-            _ => throw new InvalidOperationException($"Unexpected antetype {node.Antetype}")
+            UnknownPlainType => IType.Unknown,
+            _ => throw new InvalidOperationException($"Unexpected plainType {node.Antetype}")
         };
 
     public static partial IFlowState UnaryOperatorExpression_FlowStateAfter(IUnaryOperatorExpressionNode node)

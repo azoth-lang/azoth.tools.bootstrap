@@ -96,7 +96,7 @@ internal static partial class ExpressionAntetypesAspect
                 => ((IExpressionAntetype)leftAntetype).NumericOperatorCommonType((IExpressionAntetype)rightAntetype),
             (IExpressionAntetype, BinaryOperator.EqualsEquals, IExpressionAntetype)
                 or (IExpressionAntetype, BinaryOperator.NotEqual, IExpressionAntetype)
-                or (OptionalAntetype { Referent: IExpressionAntetype }, BinaryOperator.NotEqual, OptionalAntetype { Referent: IExpressionAntetype })
+                or (OptionalPlainType { Referent: IExpressionAntetype }, BinaryOperator.NotEqual, OptionalPlainType { Referent: IExpressionAntetype })
                 or (IExpressionAntetype, BinaryOperator.LessThan, IExpressionAntetype)
                 or (IExpressionAntetype, BinaryOperator.LessThanOrEqual, IExpressionAntetype)
                 or (IExpressionAntetype, BinaryOperator.GreaterThan, IExpressionAntetype)
@@ -153,7 +153,7 @@ internal static partial class ExpressionAntetypesAspect
                 => InferNumericOperatorType(node.NumericOperatorCommonAntetype),
             (IExpressionAntetype, BinaryOperator.EqualsEquals, IExpressionAntetype)
                 or (IExpressionAntetype, BinaryOperator.NotEqual, IExpressionAntetype)
-                or (OptionalAntetype { Referent: IExpressionAntetype }, BinaryOperator.NotEqual, OptionalAntetype { Referent: IExpressionAntetype })
+                or (OptionalPlainType { Referent: IExpressionAntetype }, BinaryOperator.NotEqual, OptionalPlainType { Referent: IExpressionAntetype })
                 or (IExpressionAntetype, BinaryOperator.LessThan, IExpressionAntetype)
                 or (IExpressionAntetype, BinaryOperator.LessThanOrEqual, IExpressionAntetype)
                 or (IExpressionAntetype, BinaryOperator.GreaterThan, IExpressionAntetype)
@@ -166,7 +166,7 @@ internal static partial class ExpressionAntetypesAspect
                 or (_, BinaryOperator.LessThanDotDotLessThan, _)
                 => InferRangeOperatorType(node.ContainingLexicalScope),
 
-            (OptionalAntetype { Referent: var referentType }, BinaryOperator.QuestionQuestion, NeverAntetype)
+            (OptionalPlainType { Referent: var referentType }, BinaryOperator.QuestionQuestion, NeverPlainType)
                 => referentType,
 
             _ => IAntetype.Unknown
@@ -333,12 +333,12 @@ internal static partial class ExpressionAntetypesAspect
     }
 
     public static partial IMaybeExpressionAntetype FunctionReferenceInvocationExpression_Antetype(IFunctionReferenceInvocationExpressionNode node)
-        => node.FunctionAntetype.Return;
+        => node.FunctionPlainType.Return;
 
     /// <remarks>Can't be an eager attribute because accessing <see cref="IFunctionReferenceInvocationExpressionNode.Expression"/>
     /// requires checking the parent of the <paramref name="node"/>.</remarks>
-    public static partial FunctionAntetype FunctionReferenceInvocationExpression_FunctionAntetype(IFunctionReferenceInvocationExpressionNode node)
-        => (FunctionAntetype)node.Expression.Antetype;
+    public static partial FunctionPlainType FunctionReferenceInvocationExpression_FunctionPlainType(IFunctionReferenceInvocationExpressionNode node)
+        => (FunctionPlainType)node.Expression.Antetype;
 
     public static partial IMaybeExpressionAntetype InitializerInvocationExpression_Antetype(IInitializerInvocationExpressionNode node)
     {
@@ -382,14 +382,14 @@ internal static partial class ExpressionAntetypesAspect
     {
         return fromType switch
         {
-            UnknownAntetype => false,
+            UnknownPlainType => false,
             BoolLiteralTypeConstructor => true,
             IntegerLiteralTypeConstructor => true,
             // Can't convert from signed because there is not larger type to convert to
             BigIntegerTypeConstructor t => !t.IsSigned,
             PointerSizedIntegerTypeConstructor => true,
             FixedSizeIntegerTypeConstructor => true,
-            OptionalAntetype { Referent: var referent } => CanPossiblyImplicitlyConvertFrom(referent),
+            OptionalPlainType { Referent: var referent } => CanPossiblyImplicitlyConvertFrom(referent),
             _ => false,
         };
     }
@@ -399,8 +399,8 @@ internal static partial class ExpressionAntetypesAspect
         switch (toType, fromType)
         {
             case (null, _):
-            case (UnknownAntetype, _):
-            case (_, UnknownAntetype):
+            case (UnknownPlainType, _):
+            case (_, UnknownPlainType):
             case (IExpressionAntetype to, IExpressionAntetype from) when from.Equals(to):
                 return null;
             case (FixedSizeIntegerTypeConstructor to, FixedSizeIntegerTypeConstructor from):
@@ -432,9 +432,9 @@ internal static partial class ExpressionAntetypesAspect
             case (BoolTypeConstructor, BoolLiteralTypeConstructor):
                 return IAntetype.Bool;
             // TODO support lifted implicit conversions
-            //case (OptionalAntetype { Referent: var to }, OptionalAntetype { Referent: var from }):
+            //case (OptionalPlainType { Referent: var to }, OptionalPlainType { Referent: var from }):
             //    return ImplicitlyConvertToType(to, from)?.MakeOptional();
-            case (OptionalAntetype { Referent: var to }, _):
+            case (OptionalPlainType { Referent: var to }, _):
                 return ImplicitlyConvertToType(to, fromType);
             default:
                 return null;

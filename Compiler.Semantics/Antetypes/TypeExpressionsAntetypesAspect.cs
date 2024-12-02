@@ -7,7 +7,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
 internal static partial class TypeExpressionsAntetypesAspect
 {
     public static partial IMaybeAntetype ViewpointType_NamedAntetype(IViewpointTypeNode node)
-        // Viewpoint has no effect on the antetype
+        // Viewpoint has no effect on the plainType
         => node.Referent.NamedAntetype;
 
     public static partial IMaybeAntetype OptionalType_NamedAntetype(IOptionalTypeNode node)
@@ -16,7 +16,7 @@ internal static partial class TypeExpressionsAntetypesAspect
     // TODO report error for `void?`
 
     public static partial IMaybeAntetype CapabilityType_NamedAntetype(ICapabilityTypeNode node)
-        // Capability has not affect on the antetype
+        // Capability has not affect on the plainType
         => node.Referent.NamedAntetype;
 
     public static partial IMaybeAntetype SpecialTypeName_NamedAntetype(ISpecialTypeNameNode node)
@@ -36,7 +36,7 @@ internal static partial class TypeExpressionsAntetypesAspect
             return IAntetype.Unknown;
         if (node.Return.NamedAntetype is not IAntetype returnAntetype)
             return IAntetype.Unknown;
-        return new FunctionAntetype(parameters, returnAntetype);
+        return new FunctionPlainType(parameters, returnAntetype);
     }
 
     public static partial IMaybeAntetype IdentifierTypeName_NamedAntetype(IIdentifierTypeNameNode node)

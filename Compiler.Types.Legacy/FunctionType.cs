@@ -58,7 +58,7 @@ public sealed class FunctionType : NonEmptyType, IMaybeFunctionType, INonVoidTyp
     public override INonVoidAntetype ToAntetype()
     {
         var parameters = Parameters.Select(p => p.Type.ToAntetype()).ToFixedList();
-        return new FunctionAntetype(parameters, Return.ToAntetype());
+        return new FunctionPlainType(parameters, Return.ToAntetype());
     }
     IMaybeAntetype IMaybeType.ToAntetype() => ToAntetype();
 

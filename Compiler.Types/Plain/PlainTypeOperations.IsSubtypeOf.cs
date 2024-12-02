@@ -7,7 +7,7 @@ using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 
-public static partial class AntetypeOperations
+public static partial class PlainTypeOperations
 {
     /// <summary>
     /// Whether this antetype is a subtype of the other antetype.
@@ -16,7 +16,7 @@ public static partial class AntetypeOperations
     {
         return (self, other) switch
         {
-            (UnknownAntetype, _) or (_, UnknownAntetype)
+            (UnknownPlainType, _) or (_, UnknownPlainType)
                 => true,
             (IExpressionAntetype s, IExpressionAntetype o)
                 => s.IsSubtypeOf(o),
@@ -29,15 +29,15 @@ public static partial class AntetypeOperations
         return (self, other) switch
         {
             (_, _) when self.Equals(other) => true,
-            (NeverAntetype, _) => true,
-            (VoidAntetype, _) => false,
-            (OptionalAntetype s, OptionalAntetype o) => s.Referent.IsSubtypeOf(o.Referent),
-            (_, OptionalAntetype o) => self.IsSubtypeOf(o.Referent),
-            (INonVoidAntetype and not OptionalAntetype, AnyAntetype)
+            (NeverPlainType, _) => true,
+            (VoidPlainType, _) => false,
+            (OptionalPlainType s, OptionalPlainType o) => s.Referent.IsSubtypeOf(o.Referent),
+            (_, OptionalPlainType o) => self.IsSubtypeOf(o.Referent),
+            (INonVoidAntetype and not OptionalPlainType, AnyAntetype)
                 // Optional types are not subtypes of `Any`. But because of boxing, any non-void type is a subtype of `Any`.
                 => true,
             (NamedPlainType s, NamedPlainType t) => s.IsSubtypeOf(t),
-            (FunctionAntetype s, FunctionAntetype o) => s.IsSubtypeOf(o),
+            (FunctionPlainType s, FunctionPlainType o) => s.IsSubtypeOf(o),
             _ => false
         };
     }
@@ -103,7 +103,7 @@ public static partial class AntetypeOperations
         return true;
     }
 
-    public static bool IsSubtypeOf(this FunctionAntetype self, FunctionAntetype other)
+    public static bool IsSubtypeOf(this FunctionPlainType self, FunctionPlainType other)
     {
         if (self.Parameters.Count != other.Parameters.Count)
             return false;

@@ -60,7 +60,7 @@ public sealed class OptionalType : NonEmptyType, INonVoidType
     }
 
     public override INonVoidAntetype ToAntetype()
-        => new OptionalAntetype(Referent.ToAntetype());
+        => new OptionalPlainType(Referent.ToAntetype());
 
     IMaybeType IMaybeType.AccessedVia(IMaybePseudotype contextType) => (IMaybeType)AccessedVia(contextType);
 

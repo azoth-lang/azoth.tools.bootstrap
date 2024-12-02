@@ -2,7 +2,7 @@ using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 
-public static partial class AntetypeOperations
+public static partial class PlainTypeOperations
 {
     /// <summary>
     /// Determine what the common type for two numeric types for a numeric operator is.
@@ -10,12 +10,12 @@ public static partial class AntetypeOperations
     public static IAntetype? NumericOperatorCommonType(this IExpressionAntetype leftType, IExpressionAntetype rightType)
         => (leftType, rightType) switch
         {
-            (_, NeverAntetype) => IAntetype.Never,
-            (NeverAntetype, _) => IAntetype.Never,
-            (OptionalAntetype { Referent: var left }, OptionalAntetype { Referent: var right })
+            (_, NeverPlainType) => IAntetype.Never,
+            (NeverPlainType, _) => IAntetype.Never,
+            (OptionalPlainType { Referent: var left }, OptionalPlainType { Referent: var right })
                 => left.NumericOperatorCommonType(right)?.MakeOptional(),
-            (OptionalAntetype { Referent: var left }, _) => left.NumericOperatorCommonType(rightType)?.MakeOptional(),
-            (_, OptionalAntetype { Referent: var right }) => leftType.NumericOperatorCommonType(right)?.MakeOptional(),
+            (OptionalPlainType { Referent: var left }, _) => left.NumericOperatorCommonType(rightType)?.MakeOptional(),
+            (_, OptionalPlainType { Referent: var right }) => leftType.NumericOperatorCommonType(right)?.MakeOptional(),
             (INumericAntetype left, INumericAntetype right)
                 => left.NumericOperatorCommonType(right),
             _ => null,

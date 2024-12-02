@@ -2,13 +2,13 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 
-public sealed class FunctionAntetype : INonVoidAntetype, IMaybeFunctionAntetype
+public sealed class FunctionPlainType : INonVoidAntetype, IMaybeFunctionAntetype
 {
     public TypeSemantics Semantics => TypeSemantics.Reference;
     public IFixedList<INonVoidAntetype> Parameters { get; }
     public IAntetype Return { get; }
 
-    public FunctionAntetype(IEnumerable<INonVoidAntetype> parameters, IAntetype returnAntetype)
+    public FunctionPlainType(IEnumerable<INonVoidAntetype> parameters, IAntetype returnAntetype)
     {
         Return = returnAntetype;
         Parameters = parameters.ToFixedList();
@@ -22,7 +22,7 @@ public sealed class FunctionAntetype : INonVoidAntetype, IMaybeFunctionAntetype
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
-        return other is FunctionAntetype that
+        return other is FunctionPlainType that
                && Parameters.Equals(that.Parameters)
                && Return.Equals(that.Return);
     }

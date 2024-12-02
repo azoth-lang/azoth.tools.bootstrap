@@ -29,13 +29,13 @@ internal static partial class ForeachExpressionAntetypesAspect
 
     public static partial IStandardMethodDeclarationNode? ForeachExpression_ReferencedNextMethod(IForeachExpressionNode node)
         => node.ReferencedIteratorDeclaration?.InclusiveInstanceMembersNamed("next").OfType<IStandardMethodDeclarationNode>()
-               .Where(m => m.Arity == 0 && m.MethodGroupType.Return.ToAntetype() is OptionalAntetype)
+               .Where(m => m.Arity == 0 && m.MethodGroupType.Return.ToAntetype() is OptionalPlainType)
                .TrySingle();
 
     public static partial IMaybeAntetype ForeachExpression_IteratedAntetype(IForeachExpressionNode node)
     {
         var nextMethodReturnType = node.ReferencedNextMethod?.MethodGroupType.Return.ToAntetype();
-        if (nextMethodReturnType is OptionalAntetype { Referent: var iteratedType })
+        if (nextMethodReturnType is OptionalPlainType { Referent: var iteratedType })
             return node.IteratorAntetype.ReplaceTypeParametersIn(iteratedType).ToNonConstValueType();
         return IAntetype.Unknown;
     }

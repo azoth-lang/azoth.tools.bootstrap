@@ -3,17 +3,17 @@ using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 
-[Closed(typeof(NeverAntetype), typeof(VoidAntetype))]
-public abstract class EmptyAntetype : NonGenericNominalAntetype, IAntetype
+[Closed(typeof(NeverPlainType), typeof(VoidPlainType))]
+public abstract class EmptyPlainType : NonGenericNominalAntetype, IAntetype
 {
     /// <summary>
-    /// Empty types aren't abstract, but they still can't be constructed.
+    /// Empty types aren't abstract, but they still can't be instantiated.
     /// </summary>
     public override bool CanBeInstantiated => false;
 
     public override SpecialTypeName Name { get; }
 
-    private protected EmptyAntetype(SpecialTypeName name)
+    private protected EmptyPlainType(SpecialTypeName name)
     {
         Name = name;
     }

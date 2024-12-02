@@ -69,7 +69,7 @@
 // TODO it would be better if this didn't depend on types, but only on antetypes
 = SetterInvocationExpression.Value.ExpectedAntetype
     => ContextualizedCall?.ParameterTypes[0].Type.ToAntetype().ToNonConstValueType();
-↑ FunctionReferenceInvocationExpression.FunctionAntetype: `FunctionAntetype`;
+↑ FunctionReferenceInvocationExpression.FunctionPlainType: `FunctionPlainType`;
 // TODO it would be better if this didn't depend on types, but only on antetypes
 = InitializerInvocationExpression.Arguments[index].ExpectedAntetype
     => ContextualizedCall?.ParameterTypes[index].Type.ToAntetype().ToNonConstValueType();

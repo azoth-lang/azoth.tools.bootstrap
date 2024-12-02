@@ -12,8 +12,8 @@
 // ---------- Type Definitions
 ↑ TypeDefinition.DeclaredAntetype:`OrdinaryTypeConstructor`;
 = TypeDefinition.DeclaredAntetype;
-↑ TypeDefinition.SelfAntetype: `SelfAntetype`;
-= TypeDefinition.SelfAntetype;
+↑ TypeDefinition.SelfPlainType: `SelfPlainType`;
+= TypeDefinition.SelfPlainType;
 
 // ---------- Member Definitions
 // TODO it would be good to refactor to not depend on Type

@@ -18,5 +18,5 @@ public sealed class VoidType : EmptyType
     { }
     #endregion
 
-    public override VoidAntetype ToAntetype() => IAntetype.Void;
+    public override VoidPlainType ToAntetype() => IAntetype.Void;
 }

@@ -2,7 +2,7 @@ using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 
-public static partial class AntetypeOperations
+public static partial class PlainTypeOperations
 {
     /// <summary>
     /// Whether a value of this antetype can be assigned to a variable of the other antetype. This
@@ -15,10 +15,10 @@ public static partial class AntetypeOperations
 
         return (self, other) switch
         {
-            (VoidAntetype, _) => false,
-            (OptionalAntetype s, OptionalAntetype o)
+            (VoidPlainType, _) => false,
+            (OptionalPlainType s, OptionalPlainType o)
                 => s.Referent.IsAssignableTo(o.Referent),
-            (_, OptionalAntetype o) => self.IsAssignableTo(o.Referent),
+            (_, OptionalPlainType o) => self.IsAssignableTo(o.Referent),
             (BoolLiteralTypeConstructor, BoolTypeConstructor) => true,
             (INumericAntetype s, INumericAntetype o) => s.IsImplicitlyNumericallyConvertibleTo(o),
             _ => false,

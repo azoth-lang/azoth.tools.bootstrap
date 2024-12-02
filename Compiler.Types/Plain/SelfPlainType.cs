@@ -7,7 +7,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 /// <summary>
 /// The type variable referred to with the `Self` type variable.
 /// </summary>
-public sealed class SelfAntetype : NonGenericNominalAntetype, INonVoidAntetype
+public sealed class SelfPlainType : NonGenericNominalAntetype, INonVoidAntetype
 {
     /// <summary>
     /// As a type variable, a `Self` type cannot be constructed.
@@ -17,7 +17,7 @@ public sealed class SelfAntetype : NonGenericNominalAntetype, INonVoidAntetype
     public override TypeName Name => SpecialTypeName.Self;
     public override IFixedSet<NamedPlainType> Supertypes { get; }
 
-    public SelfAntetype(OrdinaryTypeConstructor containingType)
+    public SelfPlainType(OrdinaryTypeConstructor containingType)
     {
         ContainingType = containingType;
         Supertypes = containingType.Supertypes.Append(containingType.ConstructWithGenericParameterPlayTypes()).ToFixedSet();
@@ -28,11 +28,11 @@ public sealed class SelfAntetype : NonGenericNominalAntetype, INonVoidAntetype
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
-        return other is SelfAntetype otherType
+        return other is SelfPlainType otherType
                && ContainingType.Equals(otherType.ContainingType);
     }
 
-    public override int GetHashCode() => HashCode.Combine(typeof(SelfAntetype), ContainingType);
+    public override int GetHashCode() => HashCode.Combine(typeof(SelfPlainType), ContainingType);
     #endregion
 
     public override string ToString() => $"{ContainingType}.Self";

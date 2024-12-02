@@ -8,22 +8,24 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 /// lack of a value. For example, a function returning `void` doesn't return
 /// a value. A parameter of type `void` is dropped from the parameter list.
 /// </summary>
-public sealed class VoidAntetype : EmptyAntetype
+public sealed class VoidPlainType : EmptyPlainType
 {
     #region Singleton
-    internal static readonly VoidAntetype Instance = new VoidAntetype();
+    internal static readonly VoidPlainType Instance = new VoidPlainType();
 
-    private VoidAntetype()
+    private VoidPlainType()
         : base(SpecialTypeName.Void) { }
     #endregion
 
+    /// <remarks>The void type is an exception to the general rule that all types are a subtype of
+    /// <c>Any</c>. Thus, it has no supertypes.</remarks>
     public override IFixedSet<NamedPlainType> Supertypes => FixedSet.Empty<NamedPlainType>();
 
     #region Equality
     public override bool Equals(IMaybeExpressionAntetype? other)
-        // VoidAntetype is a singleton, so we can use reference equality.
+        // VoidPlainType is a singleton, so we can use reference equality.
         => ReferenceEquals(this, other);
 
-    public override int GetHashCode() => HashCode.Combine(typeof(VoidAntetype));
+    public override int GetHashCode() => HashCode.Combine(typeof(VoidPlainType));
     #endregion
 }

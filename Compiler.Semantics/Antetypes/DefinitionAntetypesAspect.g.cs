@@ -14,7 +14,7 @@ internal static partial class DefinitionAntetypesAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial OrdinaryTypeConstructor TypeDefinition_DeclaredAntetype(ITypeDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial SelfAntetype TypeDefinition_SelfAntetype(ITypeDefinitionNode node);
+    public static partial SelfPlainType TypeDefinition_SelfPlainType(ITypeDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IMaybeAntetype FieldDefinition_BindingAntetype(IFieldDefinitionNode node);
 }

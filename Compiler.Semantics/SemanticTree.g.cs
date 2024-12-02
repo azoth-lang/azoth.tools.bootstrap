@@ -517,7 +517,7 @@ public partial interface ITypeDefinitionNode : IFacetMemberDefinitionNode, IAsso
         => ContainingDeclaration.Symbol!;
     Symbol? IDefinitionNode.ContainingSymbol => ContainingSymbol;
     OrdinaryTypeConstructor DeclaredAntetype { get; }
-    SelfAntetype SelfAntetype { get; }
+    SelfPlainType SelfPlainType { get; }
     new IFixedSet<BareReferenceType> Supertypes { get; }
     IFixedSet<BareReferenceType> ITypeDeclarationNode.Supertypes => Supertypes;
     IDeclaredUserType DeclaredType { get; }
@@ -2660,7 +2660,7 @@ public partial interface IFunctionReferenceInvocationExpressionNode : IInvocatio
     IFixedList<IExpressionNode?> Arguments { get; }
     IFixedList<IAmbiguousExpressionNode> CurrentArguments { get; }
     FunctionType FunctionType { get; }
-    FunctionAntetype FunctionAntetype { get; }
+    FunctionPlainType FunctionPlainType { get; }
     IEnumerable<IAmbiguousExpressionNode> IInvocationExpressionNode.TempAllArguments
         => TempArguments;
     IEnumerable<IExpressionNode?> IInvocationExpressionNode.AllArguments
@@ -5439,12 +5439,12 @@ file class ClassDefinitionNode : SemanticNode, IClassDefinitionNode
                 DefaultMembersAspect.ClassDefinition_Members);
     private IFixedSet<IClassMemberDefinitionNode>? members;
     private bool membersCached;
-    public SelfAntetype SelfAntetype
-        => GrammarAttribute.IsCached(in selfAntetypeCached) ? selfAntetype!
-            : this.Synthetic(ref selfAntetypeCached, ref selfAntetype,
-                DefinitionAntetypesAspect.TypeDefinition_SelfAntetype);
-    private SelfAntetype? selfAntetype;
-    private bool selfAntetypeCached;
+    public SelfPlainType SelfPlainType
+        => GrammarAttribute.IsCached(in selfPlainTypeCached) ? selfPlainType!
+            : this.Synthetic(ref selfPlainTypeCached, ref selfPlainType,
+                DefinitionAntetypesAspect.TypeDefinition_SelfPlainType);
+    private SelfPlainType? selfPlainType;
+    private bool selfPlainTypeCached;
     public SelfType SelfType
         => GrammarAttribute.IsCached(in selfTypeCached) ? selfType!
             : this.Synthetic(ref selfTypeCached, ref selfType,
@@ -5613,12 +5613,12 @@ file class StructDefinitionNode : SemanticNode, IStructDefinitionNode
                 DefaultMembersAspect.StructDefinition_Members);
     private IFixedSet<IStructMemberDefinitionNode>? members;
     private bool membersCached;
-    public SelfAntetype SelfAntetype
-        => GrammarAttribute.IsCached(in selfAntetypeCached) ? selfAntetype!
-            : this.Synthetic(ref selfAntetypeCached, ref selfAntetype,
-                DefinitionAntetypesAspect.TypeDefinition_SelfAntetype);
-    private SelfAntetype? selfAntetype;
-    private bool selfAntetypeCached;
+    public SelfPlainType SelfPlainType
+        => GrammarAttribute.IsCached(in selfPlainTypeCached) ? selfPlainType!
+            : this.Synthetic(ref selfPlainTypeCached, ref selfPlainType,
+                DefinitionAntetypesAspect.TypeDefinition_SelfPlainType);
+    private SelfPlainType? selfPlainType;
+    private bool selfPlainTypeCached;
     public SelfType SelfType
         => GrammarAttribute.IsCached(in selfTypeCached) ? selfType!
             : this.Synthetic(ref selfTypeCached, ref selfType,
@@ -5772,12 +5772,12 @@ file class TraitDefinitionNode : SemanticNode, ITraitDefinitionNode
                 LexicalScopingAspect.TypeDefinition_LexicalScope);
     private LexicalScope? lexicalScope;
     private bool lexicalScopeCached;
-    public SelfAntetype SelfAntetype
-        => GrammarAttribute.IsCached(in selfAntetypeCached) ? selfAntetype!
-            : this.Synthetic(ref selfAntetypeCached, ref selfAntetype,
-                DefinitionAntetypesAspect.TypeDefinition_SelfAntetype);
-    private SelfAntetype? selfAntetype;
-    private bool selfAntetypeCached;
+    public SelfPlainType SelfPlainType
+        => GrammarAttribute.IsCached(in selfPlainTypeCached) ? selfPlainType!
+            : this.Synthetic(ref selfPlainTypeCached, ref selfPlainType,
+                DefinitionAntetypesAspect.TypeDefinition_SelfPlainType);
+    private SelfPlainType? selfPlainType;
+    private bool selfPlainTypeCached;
     public SelfType SelfType
         => GrammarAttribute.IsCached(in selfTypeCached) ? selfType!
             : this.Synthetic(ref selfTypeCached, ref selfType,
@@ -13556,12 +13556,12 @@ file class FunctionReferenceInvocationExpressionNode : SemanticNode, IFunctionRe
                 ExpressionTypesAspect.FunctionReferenceInvocationExpression_FlowStateAfter);
     private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
-    public FunctionAntetype FunctionAntetype
-        => GrammarAttribute.IsCached(in functionAntetypeCached) ? functionAntetype!
-            : this.Synthetic(ref functionAntetypeCached, ref functionAntetype,
-                ExpressionAntetypesAspect.FunctionReferenceInvocationExpression_FunctionAntetype);
-    private FunctionAntetype? functionAntetype;
-    private bool functionAntetypeCached;
+    public FunctionPlainType FunctionPlainType
+        => GrammarAttribute.IsCached(in functionPlainTypeCached) ? functionPlainType!
+            : this.Synthetic(ref functionPlainTypeCached, ref functionPlainType,
+                ExpressionAntetypesAspect.FunctionReferenceInvocationExpression_FunctionPlainType);
+    private FunctionPlainType? functionPlainType;
+    private bool functionPlainTypeCached;
     public FunctionType FunctionType
         => GrammarAttribute.IsCached(in functionTypeCached) ? functionType!
             : this.Synthetic(ref functionTypeCached, ref functionType,

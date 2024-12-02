@@ -28,7 +28,7 @@ public abstract class EmptyType : IType
         Name = name;
     }
 
-    public abstract EmptyAntetype ToAntetype();
+    public abstract EmptyPlainType ToAntetype();
     IAntetype IType.ToAntetype() => ToAntetype();
 
     public IExpressionType ToUpperBound() => this;
