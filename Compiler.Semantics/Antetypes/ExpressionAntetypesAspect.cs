@@ -16,51 +16,51 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
 
 internal static partial class ExpressionAntetypesAspect
 {
-    public static partial IMaybeAntetype UnsafeExpression_Antetype(IUnsafeExpressionNode node)
-        => node.Expression?.Antetype ?? IAntetype.Unknown;
+    public static partial IMaybePlainType UnsafeExpression_PlainType(IUnsafeExpressionNode node)
+        => node.Expression?.PlainType ?? IPlainType.Unknown;
 
-    public static partial IMaybeAntetype FunctionInvocationExpression_Antetype(IFunctionInvocationExpressionNode node)
-        => node.Function.SelectedCallCandidate?.ReturnAntetype ?? IAntetype.Unknown;
+    public static partial IMaybePlainType FunctionInvocationExpression_PlainType(IFunctionInvocationExpressionNode node)
+        => node.Function.SelectedCallCandidate?.ReturnPlainType ?? IPlainType.Unknown;
 
-    public static partial IMaybeAntetype MethodInvocationExpression_Antetype(IMethodInvocationExpressionNode node)
+    public static partial IMaybePlainType MethodInvocationExpression_PlainType(IMethodInvocationExpressionNode node)
     {
-        var unboundAntetype = node.Method.SelectedCallCandidate?.ReturnAntetype ?? IAntetype.Unknown;
-        var boundAntetype = node.Method.Context.Antetype.ReplaceTypeParametersIn(unboundAntetype);
+        var unboundAntetype = node.Method.SelectedCallCandidate?.ReturnPlainType ?? IPlainType.Unknown;
+        var boundAntetype = node.Method.Context.PlainType.ReplaceTypeParametersIn(unboundAntetype);
         return boundAntetype;
     }
 
-    public static partial IMaybeAntetype VariableNameExpression_Antetype(IVariableNameExpressionNode node)
-        => node.ReferencedDefinition.BindingAntetype;
+    public static partial IMaybePlainType VariableNameExpression_PlainType(IVariableNameExpressionNode node)
+        => node.ReferencedDefinition.BindingPlainType;
 
-    public static partial IMaybeAntetype SelfExpression_Antetype(ISelfExpressionNode node)
-        => node.ReferencedDefinition?.BindingAntetype ?? IAntetype.Unknown;
+    public static partial IMaybePlainType SelfExpression_PlainType(ISelfExpressionNode node)
+        => node.ReferencedDefinition?.BindingPlainType ?? IPlainType.Unknown;
 
-    public static partial IMaybeAntetype FieldAccessExpression_Antetype(IFieldAccessExpressionNode node)
+    public static partial IMaybePlainType FieldAccessExpression_PlainType(IFieldAccessExpressionNode node)
     {
-        // TODO should probably use Antetype on the declaration
-        var unboundAntetype = node.ReferencedDeclaration.BindingType.ToAntetype();
-        var boundAntetype = node.Context.Antetype.ReplaceTypeParametersIn(unboundAntetype);
+        // TODO should probably use PlainType on the declaration
+        var unboundAntetype = node.ReferencedDeclaration.BindingType.ToPlainType();
+        var boundAntetype = node.Context.PlainType.ReplaceTypeParametersIn(unboundAntetype);
         return boundAntetype;
     }
 
-    public static partial IMaybeAntetype NewObjectExpression_Antetype(INewObjectExpressionNode node)
+    public static partial IMaybePlainType NewObjectExpression_PlainType(INewObjectExpressionNode node)
     {
-        // TODO should probably use Antetype on the declaration
-        var unboundType = node.ReferencedConstructor?.ReturnType.ToAntetype() ?? IAntetype.Unknown;
-        var boundType = node.ConstructingAntetype.ReplaceTypeParametersIn(unboundType);
+        // TODO should probably use PlainType on the declaration
+        var unboundType = node.ReferencedConstructor?.ReturnType.ToPlainType() ?? IPlainType.Unknown;
+        var boundType = node.ConstructingPlainType.ReplaceTypeParametersIn(unboundType);
         return boundType;
     }
 
-    public static partial IMaybeAntetype AssignmentExpression_Antetype(IAssignmentExpressionNode node)
-        => node.LeftOperand?.Antetype ?? IAntetype.Unknown;
+    public static partial IMaybePlainType AssignmentExpression_PlainType(IAssignmentExpressionNode node)
+        => node.LeftOperand?.PlainType ?? IPlainType.Unknown;
 
-    public static partial IMaybeAntetype ResultStatement_Antetype(IResultStatementNode node)
-        => node.Expression?.Antetype.ToNonLiteralType() ?? IAntetype.Unknown;
+    public static partial IMaybePlainType ResultStatement_PlainType(IResultStatementNode node)
+        => node.Expression?.PlainType.ToNonLiteralType() ?? IPlainType.Unknown;
 
-    public static partial IAntetype? BinaryOperatorExpression_NumericOperatorCommonAntetype(IBinaryOperatorExpressionNode node)
+    public static partial IPlainType? BinaryOperatorExpression_NumericOperatorCommonPlainType(IBinaryOperatorExpressionNode node)
     {
-        var leftAntetype = node.LeftOperand?.Antetype ?? IAntetype.Unknown;
-        var rightAntetype = node.RightOperand?.Antetype ?? IAntetype.Unknown;
+        var leftAntetype = node.LeftOperand?.PlainType ?? IPlainType.Unknown;
+        var rightAntetype = node.RightOperand?.PlainType ?? IPlainType.Unknown;
         return (leftAntetype, node.Operator, rightAntetype) switch
         {
             (IntegerLiteralTypeConstructor, BinaryOperator.Plus, IntegerLiteralTypeConstructor) => null,
@@ -79,8 +79,8 @@ internal static partial class ExpressionAntetypesAspect
             (BoolLiteralTypeConstructor, BinaryOperator.And, BoolLiteralTypeConstructor) => null,
             (BoolLiteralTypeConstructor, BinaryOperator.Or, BoolLiteralTypeConstructor) => null,
 
-            (INonVoidAntetype { Semantics: TypeSemantics.Reference }, BinaryOperator.ReferenceEquals, INonVoidAntetype { Semantics: TypeSemantics.Reference })
-                or (INonVoidAntetype { Semantics: TypeSemantics.Reference }, BinaryOperator.NotReferenceEqual, INonVoidAntetype { Semantics: TypeSemantics.Reference })
+            (INonVoidPlainType { Semantics: TypeSemantics.Reference }, BinaryOperator.ReferenceEquals, INonVoidPlainType { Semantics: TypeSemantics.Reference })
+                or (INonVoidPlainType { Semantics: TypeSemantics.Reference }, BinaryOperator.NotReferenceEqual, INonVoidPlainType { Semantics: TypeSemantics.Reference })
                 => null,
 
             (BoolTypeConstructor, BinaryOperator.EqualsEquals, BoolTypeConstructor)
@@ -89,35 +89,35 @@ internal static partial class ExpressionAntetypesAspect
                 or (BoolTypeConstructor, BinaryOperator.Or, BoolTypeConstructor)
                 => null,
 
-            (IAntetype, BinaryOperator.Plus, IAntetype)
-                or (IAntetype, BinaryOperator.Minus, IAntetype)
-                or (IAntetype, BinaryOperator.Asterisk, IAntetype)
-                or (IAntetype, BinaryOperator.Slash, IAntetype)
-                => ((IAntetype)leftAntetype).NumericOperatorCommonType((IAntetype)rightAntetype),
-            (IAntetype, BinaryOperator.EqualsEquals, IAntetype)
-                or (IAntetype, BinaryOperator.NotEqual, IAntetype)
-                or (OptionalPlainType { Referent: IAntetype }, BinaryOperator.NotEqual, OptionalPlainType { Referent: IAntetype })
-                or (IAntetype, BinaryOperator.LessThan, IAntetype)
-                or (IAntetype, BinaryOperator.LessThanOrEqual, IAntetype)
-                or (IAntetype, BinaryOperator.GreaterThan, IAntetype)
-                or (IAntetype, BinaryOperator.GreaterThanOrEqual, IAntetype)
-                => ((IAntetype)leftAntetype).NumericOperatorCommonType((IAntetype)rightAntetype),
+            (IPlainType, BinaryOperator.Plus, IPlainType)
+                or (IPlainType, BinaryOperator.Minus, IPlainType)
+                or (IPlainType, BinaryOperator.Asterisk, IPlainType)
+                or (IPlainType, BinaryOperator.Slash, IPlainType)
+                => ((IPlainType)leftAntetype).NumericOperatorCommonType((IPlainType)rightAntetype),
+            (IPlainType, BinaryOperator.EqualsEquals, IPlainType)
+                or (IPlainType, BinaryOperator.NotEqual, IPlainType)
+                or (OptionalPlainType { Referent: IPlainType }, BinaryOperator.NotEqual, OptionalPlainType { Referent: IPlainType })
+                or (IPlainType, BinaryOperator.LessThan, IPlainType)
+                or (IPlainType, BinaryOperator.LessThanOrEqual, IPlainType)
+                or (IPlainType, BinaryOperator.GreaterThan, IPlainType)
+                or (IPlainType, BinaryOperator.GreaterThanOrEqual, IPlainType)
+                => ((IPlainType)leftAntetype).NumericOperatorCommonType((IPlainType)rightAntetype),
 
             (_, BinaryOperator.DotDot, _)
                 or (_, BinaryOperator.LessThanDotDot, _)
                 or (_, BinaryOperator.DotDotLessThan, _)
                 or (_, BinaryOperator.LessThanDotDotLessThan, _)
                 // TODO for the moment ranges are always integer ranges
-                => IAntetype.Int,
+                => IPlainType.Int,
 
             _ => null,
         };
     }
 
-    public static partial IMaybeAntetype BinaryOperatorExpression_Antetype(IBinaryOperatorExpressionNode node)
+    public static partial IMaybePlainType BinaryOperatorExpression_PlainType(IBinaryOperatorExpressionNode node)
     {
-        var leftAntetype = node.LeftOperand?.Antetype ?? IAntetype.Unknown;
-        var rightAntetype = node.RightOperand?.Antetype ?? IAntetype.Unknown;
+        var leftAntetype = node.LeftOperand?.PlainType ?? IPlainType.Unknown;
+        var rightAntetype = node.RightOperand?.PlainType ?? IPlainType.Unknown;
         return (leftAntetype, node.Operator, rightAntetype) switch
         {
             (IntegerLiteralTypeConstructor left, BinaryOperator.Plus, IntegerLiteralTypeConstructor right) => left.Add(right),
@@ -136,29 +136,29 @@ internal static partial class ExpressionAntetypesAspect
             (BoolLiteralTypeConstructor left, BinaryOperator.And, BoolLiteralTypeConstructor right) => left.And(right),
             (BoolLiteralTypeConstructor left, BinaryOperator.Or, BoolLiteralTypeConstructor right) => left.Or(right),
 
-            (INonVoidAntetype { Semantics: TypeSemantics.Reference }, BinaryOperator.ReferenceEquals, INonVoidAntetype { Semantics: TypeSemantics.Reference })
-                or (INonVoidAntetype { Semantics: TypeSemantics.Reference }, BinaryOperator.NotReferenceEqual, INonVoidAntetype { Semantics: TypeSemantics.Reference })
-                => IAntetype.Bool,
+            (INonVoidPlainType { Semantics: TypeSemantics.Reference }, BinaryOperator.ReferenceEquals, INonVoidPlainType { Semantics: TypeSemantics.Reference })
+                or (INonVoidPlainType { Semantics: TypeSemantics.Reference }, BinaryOperator.NotReferenceEqual, INonVoidPlainType { Semantics: TypeSemantics.Reference })
+                => IPlainType.Bool,
 
             (BoolTypeConstructor, BinaryOperator.EqualsEquals, BoolTypeConstructor)
                 or (BoolTypeConstructor, BinaryOperator.NotEqual, BoolTypeConstructor)
                 or (BoolTypeConstructor, BinaryOperator.And, BoolTypeConstructor)
                 or (BoolTypeConstructor, BinaryOperator.Or, BoolTypeConstructor)
-                => IAntetype.Bool,
+                => IPlainType.Bool,
 
-            (IAntetype, BinaryOperator.Plus, IAntetype)
-                or (IAntetype, BinaryOperator.Minus, IAntetype)
-                or (IAntetype, BinaryOperator.Asterisk, IAntetype)
-                or (IAntetype, BinaryOperator.Slash, IAntetype)
-                => InferNumericOperatorType(node.NumericOperatorCommonAntetype),
-            (IAntetype, BinaryOperator.EqualsEquals, IAntetype)
-                or (IAntetype, BinaryOperator.NotEqual, IAntetype)
-                or (OptionalPlainType { Referent: IAntetype }, BinaryOperator.NotEqual, OptionalPlainType { Referent: IAntetype })
-                or (IAntetype, BinaryOperator.LessThan, IAntetype)
-                or (IAntetype, BinaryOperator.LessThanOrEqual, IAntetype)
-                or (IAntetype, BinaryOperator.GreaterThan, IAntetype)
-                or (IAntetype, BinaryOperator.GreaterThanOrEqual, IAntetype)
-                => InferComparisonOperatorType(node.NumericOperatorCommonAntetype),
+            (IPlainType, BinaryOperator.Plus, IPlainType)
+                or (IPlainType, BinaryOperator.Minus, IPlainType)
+                or (IPlainType, BinaryOperator.Asterisk, IPlainType)
+                or (IPlainType, BinaryOperator.Slash, IPlainType)
+                => InferNumericOperatorType(node.NumericOperatorCommonPlainType),
+            (IPlainType, BinaryOperator.EqualsEquals, IPlainType)
+                or (IPlainType, BinaryOperator.NotEqual, IPlainType)
+                or (OptionalPlainType { Referent: IPlainType }, BinaryOperator.NotEqual, OptionalPlainType { Referent: IPlainType })
+                or (IPlainType, BinaryOperator.LessThan, IPlainType)
+                or (IPlainType, BinaryOperator.LessThanOrEqual, IPlainType)
+                or (IPlainType, BinaryOperator.GreaterThan, IPlainType)
+                or (IPlainType, BinaryOperator.GreaterThanOrEqual, IPlainType)
+                => InferComparisonOperatorType(node.NumericOperatorCommonPlainType),
 
             (_, BinaryOperator.DotDot, _)
                 or (_, BinaryOperator.LessThanDotDot, _)
@@ -169,147 +169,147 @@ internal static partial class ExpressionAntetypesAspect
             (OptionalPlainType { Referent: var referentType }, BinaryOperator.QuestionQuestion, NeverPlainType)
                 => referentType,
 
-            _ => IAntetype.Unknown
+            _ => IPlainType.Unknown
 
             // TODO optional types
         };
     }
 
-    private static IMaybeAntetype InferNumericOperatorType(IAntetype? commonAntetype)
-        => commonAntetype ?? IMaybeAntetype.Unknown;
+    private static IMaybePlainType InferNumericOperatorType(IPlainType? commonAntetype)
+        => commonAntetype ?? IMaybePlainType.Unknown;
 
-    private static IMaybeAntetype InferComparisonOperatorType(IAntetype? commonAntetype)
+    private static IMaybePlainType InferComparisonOperatorType(IPlainType? commonAntetype)
     {
-        if (commonAntetype is null) return IAntetype.Unknown;
-        return IAntetype.Bool;
+        if (commonAntetype is null) return IPlainType.Unknown;
+        return IPlainType.Bool;
     }
 
-    private static IMaybeAntetype InferRangeOperatorType(LexicalScope containingLexicalScope)
+    private static IMaybePlainType InferRangeOperatorType(LexicalScope containingLexicalScope)
     {
         // TODO the left and right antetypes need to be compatible with the range type
         var rangeTypeDeclaration = containingLexicalScope.Lookup("azoth")
             .OfType<INamespaceDeclarationNode>().SelectMany(ns => ns.MembersNamed("range"))
             .OfType<ITypeDeclarationNode>().TrySingle();
-        var rangeAntetype = rangeTypeDeclaration?.Symbol.TryGetDeclaredType()?.TryToAntetype()
-                            ?? IMaybeAntetype.Unknown;
+        var rangeAntetype = rangeTypeDeclaration?.Symbol.TryGetDeclaredType()?.TryToPlainType()
+                            ?? IMaybePlainType.Unknown;
         return rangeAntetype;
     }
 
-    public static partial IMaybeAntetype StringLiteralExpression_Antetype(IStringLiteralExpressionNode node)
+    public static partial IMaybePlainType StringLiteralExpression_PlainType(IStringLiteralExpressionNode node)
     {
         var typeSymbolNode = node.ContainingLexicalScope.Lookup(StringTypeName)
                                  .OfType<ITypeDeclarationNode>().TrySingle();
-        return (IMaybeAntetype?)typeSymbolNode?.Symbol.TryGetDeclaredType()?.TryToAntetype() ?? IAntetype.Unknown;
+        return (IMaybePlainType?)typeSymbolNode?.Symbol.TryGetDeclaredType()?.TryToPlainType() ?? IPlainType.Unknown;
     }
 
     private static readonly IdentifierName StringTypeName = "String";
 
-    public static partial IMaybeAntetype IfExpression_Antetype(IIfExpressionNode node)
+    public static partial IMaybePlainType IfExpression_PlainType(IIfExpressionNode node)
     {
-        if (node.ElseClause is null) return node.ThenBlock.Antetype.MakeOptional();
+        if (node.ElseClause is null) return node.ThenBlock.PlainType.MakeOptional();
 
         // TODO unify with else clause
-        return node.ThenBlock.Antetype;
+        return node.ThenBlock.PlainType;
     }
 
-    public static partial IMaybeAntetype WhileExpression_Antetype(IWhileExpressionNode node)
+    public static partial IMaybePlainType WhileExpression_PlainType(IWhileExpressionNode node)
         // TODO assign correct type to the expression
-        => IAntetype.Void;
+        => IPlainType.Void;
 
-    public static partial IMaybeAntetype LoopExpression_Antetype(ILoopExpressionNode node)
+    public static partial IMaybePlainType LoopExpression_PlainType(ILoopExpressionNode node)
         // TODO assign correct type to the expression
-        => IAntetype.Void;
+        => IPlainType.Void;
 
-    public static partial IMaybeAntetype ForeachExpression_Antetype(IForeachExpressionNode node)
+    public static partial IMaybePlainType ForeachExpression_PlainType(IForeachExpressionNode node)
         // TODO assign correct type to the expression
-        => IAntetype.Void;
+        => IPlainType.Void;
 
-    public static partial IMaybeAntetype BlockExpression_Antetype(IBlockExpressionNode node)
+    public static partial IMaybePlainType BlockExpression_PlainType(IBlockExpressionNode node)
     {
         foreach (var statement in node.Statements)
-            if (statement.ResultAntetype is not null and var resultAntetype)
+            if (statement.ResultPlainType is not null and var resultAntetype)
                 return resultAntetype;
 
         // If there was no result expression, then the block type is void
-        return IAntetype.Void;
+        return IPlainType.Void;
     }
 
-    public static partial IMaybeAntetype ConversionExpression_Antetype(IConversionExpressionNode node)
+    public static partial IMaybePlainType ConversionExpression_PlainType(IConversionExpressionNode node)
     {
-        var convertToAntetype = node.ConvertToType.NamedAntetype;
+        var convertToAntetype = node.ConvertToType.NamedPlainType;
         if (node.Operator == ConversionOperator.Optional)
             convertToAntetype = convertToAntetype.MakeOptional();
         return convertToAntetype;
     }
 
-    public static partial IMaybeAntetype NoneLiteralExpression_Antetype(INoneLiteralExpressionNode node)
-        => IAntetype.None;
+    public static partial IMaybePlainType NoneLiteralExpression_PlainType(INoneLiteralExpressionNode node)
+        => IPlainType.None;
 
-    public static partial IMaybeAntetype AsyncStartExpression_Antetype(IAsyncStartExpressionNode node)
-        => Intrinsic.PromiseOf(node.Expression?.Antetype.ToNonLiteralType() ?? IAntetype.Unknown);
+    public static partial IMaybePlainType AsyncStartExpression_PlainType(IAsyncStartExpressionNode node)
+        => Intrinsic.PromiseOf(node.Expression?.PlainType.ToNonLiteralType() ?? IPlainType.Unknown);
 
-    public static partial IMaybeAntetype AwaitExpression_Antetype(IAwaitExpressionNode node)
+    public static partial IMaybePlainType AwaitExpression_PlainType(IAwaitExpressionNode node)
     {
-        if (node.Expression?.Antetype is OrdinaryNamedPlainType { TypeConstructor: var typeConstructor } antetype
+        if (node.Expression?.PlainType is OrdinaryNamedPlainType { TypeConstructor: var typeConstructor } antetype
             && Intrinsic.PromiseTypeConstructor.Equals(typeConstructor))
             return antetype.TypeArguments[0];
 
-        return IAntetype.Unknown;
+        return IPlainType.Unknown;
     }
 
     public static partial void AwaitExpression_Contribute_Diagnostics(IAwaitExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
         // TODO eliminate code duplication with AwaitExpression_Antetype
-        if (node.Expression?.Antetype is OrdinaryNamedPlainType { TypeConstructor: var typeConstructor }
+        if (node.Expression?.PlainType is OrdinaryNamedPlainType { TypeConstructor: var typeConstructor }
             && Intrinsic.PromiseTypeConstructor.Equals(typeConstructor))
             return;
 
         diagnostics.Add(TypeError.CannotAwaitType(node.File, node.Syntax.Span, node.Expression!.Type));
     }
 
-    public static partial IMaybeAntetype UnaryOperatorExpression_Antetype(IUnaryOperatorExpressionNode node)
+    public static partial IMaybePlainType UnaryOperatorExpression_PlainType(IUnaryOperatorExpressionNode node)
         => node.Operator switch
         {
-            UnaryOperator.Not => UnaryOperatorExpression_Antetype_Not(node),
-            UnaryOperator.Minus => UnaryOperatorExpression_Antetype_Minus(node),
-            UnaryOperator.Plus => UnaryOperatorExpression_Antetype_Plus(node),
+            UnaryOperator.Not => UnaryOperatorExpression_PlainType_Not(node),
+            UnaryOperator.Minus => UnaryOperatorExpression_PlainType_Minus(node),
+            UnaryOperator.Plus => UnaryOperatorExpression_PlainType_Plus(node),
             _ => throw ExhaustiveMatch.Failed(node.Operator),
         };
 
-    private static IMaybeAntetype UnaryOperatorExpression_Antetype_Not(IUnaryOperatorExpressionNode node)
+    private static IMaybePlainType UnaryOperatorExpression_PlainType_Not(IUnaryOperatorExpressionNode node)
     {
-        if (node.Operand?.Antetype is BoolLiteralTypeConstructor antetype) return antetype.Not();
-        return IAntetype.Bool;
+        if (node.Operand?.PlainType is BoolLiteralTypeConstructor antetype) return antetype.Not();
+        return IPlainType.Bool;
     }
 
-    private static IMaybeAntetype UnaryOperatorExpression_Antetype_Minus(IUnaryOperatorExpressionNode node)
-        => node.Operand?.Antetype switch
+    private static IMaybePlainType UnaryOperatorExpression_PlainType_Minus(IUnaryOperatorExpressionNode node)
+        => node.Operand?.PlainType switch
         {
             IntegerLiteralTypeConstructor t => t.Negate(),
             FixedSizeIntegerTypeConstructor t => t.WithSign(),
             PointerSizedIntegerTypeConstructor t => t.WithSign(),
             // Even if unsigned before, it is signed now
-            BigIntegerTypeConstructor _ => IAntetype.Int,
-            _ => IAntetype.Unknown,
+            BigIntegerTypeConstructor _ => IPlainType.Int,
+            _ => IPlainType.Unknown,
         };
 
-    private static IMaybeAntetype UnaryOperatorExpression_Antetype_Plus(IUnaryOperatorExpressionNode node)
-        => node.Operand?.Antetype switch
+    private static IMaybePlainType UnaryOperatorExpression_PlainType_Plus(IUnaryOperatorExpressionNode node)
+        => node.Operand?.PlainType switch
         {
-            INumericAntetype t => t,
-            _ => IAntetype.Unknown,
+            INumericPlainType t => t,
+            _ => IPlainType.Unknown,
         };
 
     public static partial void UnaryOperatorExpression_Contribute_Diagnostics(
         IUnaryOperatorExpressionNode node,
         DiagnosticCollectionBuilder diagnostics)
     {
-        var operandAntetype = node.Operand!.Antetype;
+        var operandAntetype = node.Operand!.PlainType;
         var cannotBeAppliedToOperandType = node.Operator switch
         {
             UnaryOperator.Not => operandAntetype is not (BoolTypeConstructor or BoolLiteralTypeConstructor),
-            UnaryOperator.Minus => operandAntetype is not INumericAntetype,
-            UnaryOperator.Plus => operandAntetype is not INumericAntetype,
+            UnaryOperator.Minus => operandAntetype is not INumericPlainType,
+            UnaryOperator.Plus => operandAntetype is not INumericPlainType,
             _ => throw ExhaustiveMatch.Failed(node.Operator),
         };
 
@@ -318,67 +318,67 @@ internal static partial class ExpressionAntetypesAspect
                 node.Syntax.Span, node.Operator, node.Operand!.Type));
     }
 
-    public static partial IMaybeAntetype GetterInvocationExpression_Antetype(IGetterInvocationExpressionNode node)
+    public static partial IMaybePlainType GetterInvocationExpression_PlainType(IGetterInvocationExpressionNode node)
     {
-        var unboundAntetype = node.ReferencedDeclaration?.ReturnType.ToAntetype() ?? IAntetype.Unknown;
-        var boundAntetype = node.Context.Antetype.ReplaceTypeParametersIn(unboundAntetype);
+        var unboundAntetype = node.ReferencedDeclaration?.ReturnType.ToPlainType() ?? IPlainType.Unknown;
+        var boundAntetype = node.Context.PlainType.ReplaceTypeParametersIn(unboundAntetype);
         return boundAntetype;
     }
 
-    public static partial IMaybeAntetype SetterInvocationExpression_Antetype(ISetterInvocationExpressionNode node)
+    public static partial IMaybePlainType SetterInvocationExpression_PlainType(ISetterInvocationExpressionNode node)
     {
-        var unboundAntetype = node.ReferencedDeclaration?.ParameterTypes[0].Type.ToAntetype() ?? IAntetype.Unknown;
-        var boundAntetype = node.Context.Antetype.ReplaceTypeParametersIn(unboundAntetype);
+        var unboundAntetype = node.ReferencedDeclaration?.ParameterTypes[0].Type.ToPlainType() ?? IPlainType.Unknown;
+        var boundAntetype = node.Context.PlainType.ReplaceTypeParametersIn(unboundAntetype);
         return boundAntetype;
     }
 
-    public static partial IMaybeAntetype FunctionReferenceInvocationExpression_Antetype(IFunctionReferenceInvocationExpressionNode node)
+    public static partial IMaybePlainType FunctionReferenceInvocationExpression_PlainType(IFunctionReferenceInvocationExpressionNode node)
         => node.FunctionPlainType.Return;
 
     /// <remarks>Can't be an eager attribute because accessing <see cref="IFunctionReferenceInvocationExpressionNode.Expression"/>
     /// requires checking the parent of the <paramref name="node"/>.</remarks>
     public static partial FunctionPlainType FunctionReferenceInvocationExpression_FunctionPlainType(IFunctionReferenceInvocationExpressionNode node)
-        => (FunctionPlainType)node.Expression.Antetype;
+        => (FunctionPlainType)node.Expression.PlainType;
 
-    public static partial IMaybeAntetype InitializerInvocationExpression_Antetype(IInitializerInvocationExpressionNode node)
+    public static partial IMaybePlainType InitializerInvocationExpression_PlainType(IInitializerInvocationExpressionNode node)
     {
-        var unboundAntetype = node.ReferencedDeclaration?.ReturnType.ToAntetype() ?? IAntetype.Unknown;
-        var boundAntetype = node.InitializerGroup.InitializingAntetype.ReplaceTypeParametersIn(unboundAntetype);
+        var unboundAntetype = node.ReferencedDeclaration?.ReturnType.ToPlainType() ?? IPlainType.Unknown;
+        var boundAntetype = node.InitializerGroup.InitializingPlainType.ReplaceTypeParametersIn(unboundAntetype);
         return boundAntetype;
     }
 
-    public static partial IMaybeAntetype FunctionName_Antetype(IFunctionNameNode node)
-        // TODO should probably use Antetype on the declaration
-        => node.ReferencedDeclaration?.Type.ToAntetype() ?? IAntetype.Unknown;
+    public static partial IMaybePlainType FunctionName_PlainType(IFunctionNameNode node)
+        // TODO should probably use PlainType on the declaration
+        => node.ReferencedDeclaration?.Type.ToPlainType() ?? IPlainType.Unknown;
 
-    public static partial IMaybeAntetype MethodName_Antetype(IMethodNameNode node)
-        // TODO should probably use Antetype on the declaration
-        => node.ReferencedDeclaration?.MethodGroupType.ToAntetype() ?? IAntetype.Unknown;
+    public static partial IMaybePlainType MethodName_PlainType(IMethodNameNode node)
+        // TODO should probably use PlainType on the declaration
+        => node.ReferencedDeclaration?.MethodGroupType.ToPlainType() ?? IPlainType.Unknown;
 
     // TODO this is strange and maybe a hack
-    public static partial IMaybeAntetype? MethodName_Context_ExpectedAntetype(IMethodNameNode node)
+    public static partial IMaybePlainType? MethodName_Context_ExpectedPlainType(IMethodNameNode node)
         // TODO it would be better if this didn't depend on types, but only on antetypes
         => (node.Parent as IMethodInvocationExpressionNode)
-           ?.ContextualizedCall?.SelfParameterType?.Type.ToAntetype().ToNonLiteralType();
+           ?.ContextualizedCall?.SelfParameterType?.Type.ToPlainType().ToNonLiteralType();
 
     public static partial IExpressionNode? Expression_Rewrite_ImplicitConversion(IExpressionNode node)
     {
         if (node.ShouldNotBeExpression()) return null;
 
-        // To minimize outstanding rewrites, first check whether node.Antetype could possibly
+        // To minimize outstanding rewrites, first check whether node.PlainType could possibly
         // support conversion. If node.ExpectedAntetype is checked, that is inherited and if a
         // rewrite is in progress, that can't be cached. Note: this requires thoroughly treating
         // T <: T? as a subtype and not an implicit conversion.
-        if (!CanPossiblyImplicitlyConvertFrom(node.Antetype))
+        if (!CanPossiblyImplicitlyConvertFrom(node.PlainType))
             return null;
 
-        if (ImplicitlyConvertToType(node.ExpectedAntetype, node.Antetype) is SimpleTypeConstructor convertToAntetype)
+        if (ImplicitlyConvertToType(node.ExpectedPlainType, node.PlainType) is SimpleTypeConstructor convertToAntetype)
             return IImplicitConversionExpressionNode.Create(node, convertToAntetype);
 
         return null;
     }
 
-    private static bool CanPossiblyImplicitlyConvertFrom(IMaybeAntetype fromType)
+    private static bool CanPossiblyImplicitlyConvertFrom(IMaybePlainType fromType)
     {
         return fromType switch
         {
@@ -394,14 +394,14 @@ internal static partial class ExpressionAntetypesAspect
         };
     }
 
-    private static SimpleTypeConstructor? ImplicitlyConvertToType(IMaybeAntetype? toType, IMaybeAntetype fromType)
+    private static SimpleTypeConstructor? ImplicitlyConvertToType(IMaybePlainType? toType, IMaybePlainType fromType)
     {
         switch (toType, fromType)
         {
             case (null, _):
             case (UnknownPlainType, _):
             case (_, UnknownPlainType):
-            case (IAntetype to, IAntetype from) when from.Equals(to):
+            case (IPlainType to, IPlainType from) when from.Equals(to):
                 return null;
             case (FixedSizeIntegerTypeConstructor to, FixedSizeIntegerTypeConstructor from):
                 if (to.Bits > from.Bits && (!from.IsSigned || to.IsSigned))
@@ -425,12 +425,12 @@ internal static partial class ExpressionAntetypesAspect
             // Note: Both signed BigIntegerAntetype has already been covered
             case (BigIntegerTypeConstructor { IsSigned: true }, IntegerTypeConstructor):
             case (BigIntegerTypeConstructor { IsSigned: true }, IntegerLiteralTypeConstructor):
-                return IAntetype.Int;
+                return IPlainType.Int;
             case (BigIntegerTypeConstructor to, IntegerTypeConstructor { IsSigned: false }
                                         or IntegerLiteralTypeConstructor { IsSigned: false }):
                 return to;
             case (BoolTypeConstructor, BoolLiteralTypeConstructor):
-                return IAntetype.Bool;
+                return IPlainType.Bool;
             // TODO support lifted implicit conversions
             //case (OptionalPlainType { Referent: var to }, OptionalPlainType { Referent: var from }):
             //    return ImplicitlyConvertToType(to, from)?.MakeOptional();
@@ -447,9 +447,9 @@ internal static partial class ExpressionAntetypesAspect
             diagnostics.Add(TypeError.OptionalPatternOnNonOptionalType(node.File, node.Syntax, type));
     }
 
-    public static partial IMaybeAntetype IntegerLiteralExpression_Antetype(IIntegerLiteralExpressionNode node)
+    public static partial IMaybePlainType IntegerLiteralExpression_PlainType(IIntegerLiteralExpressionNode node)
         => new IntegerLiteralTypeConstructor(node.Value);
 
-    public static partial IMaybeAntetype BoolLiteralExpression_Antetype(IBoolLiteralExpressionNode node)
-        => node.Value ? IAntetype.True : IAntetype.False;
+    public static partial IMaybePlainType BoolLiteralExpression_PlainType(IBoolLiteralExpressionNode node)
+        => node.Value ? IPlainType.True : IPlainType.False;
 }

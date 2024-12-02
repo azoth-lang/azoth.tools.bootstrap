@@ -12,19 +12,19 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
 // TODO there are a lot of places where binding errors need to be reported. It seems like that should be consolidated
 internal static partial class OverloadResolutionAspect
 {
-    private static IMaybeAntetype AntetypeIfKnown(IExpressionNode? node)
+    private static IMaybePlainType AntetypeIfKnown(IExpressionNode? node)
     {
-        if (node is not null && !node.ShouldNotBeExpression()) return node.Antetype;
-        return IAntetype.Unknown;
+        if (node is not null && !node.ShouldNotBeExpression()) return node.PlainType;
+        return IPlainType.Unknown;
     }
 
     #region Expressions
     public static partial IFixedSet<IConstructorDeclarationNode> NewObjectExpression_CompatibleConstructors(
         INewObjectExpressionNode node)
     {
-        var constructingAntetype = node.ConstructingAntetype;
+        var constructingAntetype = node.ConstructingPlainType;
         var arguments = node.Arguments.Select(AntetypeIfKnown);
-        var argumentAntetypes = ArgumentAntetypes.ForConstructor(arguments);
+        var argumentAntetypes = ArgumentPlainTypes.ForConstructor(arguments);
         return node.ReferencedConstructors
                    .Select(d => CallCandidate.Create(constructingAntetype, d))
                    .Where(o => o.CompatibleWith(argumentAntetypes))
@@ -38,7 +38,7 @@ internal static partial class OverloadResolutionAspect
         INewObjectExpressionNode node,
         DiagnosticCollectionBuilder diagnostics)
     {
-        switch (node.ConstructingAntetype)
+        switch (node.ConstructingPlainType)
         {
             case UnknownPlainType:
                 // Error should be reported elsewhere
@@ -68,23 +68,23 @@ internal static partial class OverloadResolutionAspect
     #endregion
 
     #region Invocation Expressions
-    public static partial IMaybeAntetype? UnknownInvocationExpression_Expression_ExpectedAntetype(IUnknownInvocationExpressionNode node)
+    public static partial IMaybePlainType? UnknownInvocationExpression_Expression_ExpectedPlainType(IUnknownInvocationExpressionNode node)
     {
-        var expectedReturnAntetype = node.ExpectedAntetype?.ToNonLiteralType() ?? IAntetype.Unknown;
+        var expectedReturnAntetype = node.ExpectedPlainType?.ToNonLiteralType() ?? IPlainType.Unknown;
         return new FunctionPlainType(node.Arguments.Select(NonVoidAntetypeIfKnown),
             // TODO this is odd, but the return plainType will be ignored
             NonVoidAntetypeIfKnown(expectedReturnAntetype));
     }
 
-    private static INonVoidAntetype NonVoidAntetypeIfKnown(IExpressionNode? node)
+    private static INonVoidPlainType NonVoidAntetypeIfKnown(IExpressionNode? node)
         => NonVoidAntetypeIfKnown(AntetypeIfKnown(node));
 
-    private static INonVoidAntetype NonVoidAntetypeIfKnown(IMaybeAntetype maybeExpressionAntetype)
+    private static INonVoidPlainType NonVoidAntetypeIfKnown(IMaybePlainType maybeExpressionPlainType)
     {
-        if (maybeExpressionAntetype is INonVoidAntetype antetype) return antetype;
+        if (maybeExpressionPlainType is INonVoidPlainType antetype) return antetype;
         // This is a little odd, but if the parameter type is not known, then using `never` will
         // cause nothing to match except for `never` itself.
-        return IAntetype.Never;
+        return IPlainType.Never;
     }
 
     public static partial IExpressionNode? UnknownInvocationExpression_Rewrite_FunctionNameExpression(IUnknownInvocationExpressionNode node)
@@ -128,7 +128,7 @@ internal static partial class OverloadResolutionAspect
 
     public static partial IExpressionNode? UnknownInvocationExpression_Rewrite_FunctionReferenceExpression(IUnknownInvocationExpressionNode node)
     {
-        if (node.Expression is not { Antetype: FunctionPlainType } expression)
+        if (node.Expression is not { PlainType: FunctionPlainType } expression)
             return null;
 
         return IFunctionReferenceInvocationExpressionNode.Create(node.Syntax, expression, node.CurrentArguments);
@@ -201,9 +201,9 @@ internal static partial class OverloadResolutionAspect
 
     public static partial IFixedSet<IInitializerDeclarationNode> InitializerInvocationExpression_CompatibleDeclarations(IInitializerInvocationExpressionNode node)
     {
-        var initializingAntetype = node.InitializerGroup.InitializingAntetype;
+        var initializingAntetype = node.InitializerGroup.InitializingPlainType;
         var arguments = node.Arguments.Select(AntetypeIfKnown);
-        var argumentAntetypes = ArgumentAntetypes.ForInitializer(arguments);
+        var argumentAntetypes = ArgumentPlainTypes.ForInitializer(arguments);
         return node.InitializerGroup.ReferencedDeclarations
                    .Select(d => CallCandidate.Create(initializingAntetype, d))
                    .Where(o => o.CompatibleWith(argumentAntetypes))
@@ -220,9 +220,9 @@ internal static partial class OverloadResolutionAspect
 
     public static partial IFixedSet<CallCandidate<IFunctionInvocableDeclarationNode>> FunctionGroupName_CompatibleCallCandidates(IFunctionGroupNameNode node)
     {
-        if (node.ExpectedAntetype is not FunctionPlainType expectedAntetype) return [];
+        if (node.ExpectedPlainType is not FunctionPlainType expectedAntetype) return [];
 
-        var argumentAntetypes = ArgumentAntetypes.ForFunction(expectedAntetype.Parameters);
+        var argumentAntetypes = ArgumentPlainTypes.ForFunction(expectedAntetype.Parameters);
         return node.CallCandidates.Where(o => o.CompatibleWith(argumentAntetypes)).ToFixedSet();
     }
 
@@ -263,14 +263,14 @@ internal static partial class OverloadResolutionAspect
         => ContributeFunctionNameBindingDiagnostics(node.ReferencedDeclaration, node.CompatibleCallCandidates, node, diagnostics);
 
     public static partial IFixedSet<CallCandidate<IStandardMethodDeclarationNode>> MethodGroupName_CallCandidates(IMethodGroupNameNode node)
-        => node.ReferencedDeclarations.Select(m => CallCandidate.Create(node.Context.Antetype, m)).ToFixedSet();
+        => node.ReferencedDeclarations.Select(m => CallCandidate.Create(node.Context.PlainType, m)).ToFixedSet();
 
     public static partial IFixedSet<CallCandidate<IStandardMethodDeclarationNode>> MethodGroupName_CompatibleCallCandidates(IMethodGroupNameNode node)
     {
-        if (node.ExpectedAntetype is not FunctionPlainType expectedAntetype) return [];
+        if (node.ExpectedPlainType is not FunctionPlainType expectedAntetype) return [];
 
-        var contextAntetype = node.Context.Antetype;
-        var argumentAntetypes = ArgumentAntetypes.ForMethod(contextAntetype, expectedAntetype.Parameters);
+        var contextAntetype = node.Context.PlainType;
+        var argumentAntetypes = ArgumentPlainTypes.ForMethod(contextAntetype, expectedAntetype.Parameters);
         return node.CallCandidates.Where(o => o.CompatibleWith(argumentAntetypes)).ToFixedSet();
     }
 

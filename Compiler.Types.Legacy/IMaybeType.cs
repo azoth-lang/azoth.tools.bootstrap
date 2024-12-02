@@ -17,8 +17,8 @@ public interface IMaybeType : IMaybeExpressionType
     public new static readonly IMaybeType Unknown = UnknownType.Instance;
     #endregion
 
-    public new IMaybeAntetype ToAntetype();
-    IMaybeAntetype IMaybePseudotype.ToAntetype() => ToAntetype();
+    public new IMaybePlainType ToPlainType();
+    IMaybePlainType IMaybePseudotype.ToPlainType() => ToPlainType();
 
     /// <summary>
     /// The same type except with any mutability removed.

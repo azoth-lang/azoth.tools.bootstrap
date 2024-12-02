@@ -4,11 +4,11 @@ using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 
-public sealed class IntegerLiteralTypeConstructor : LiteralTypeConstructor, INumericAntetype
+public sealed class IntegerLiteralTypeConstructor : LiteralTypeConstructor, INumericPlainType
 {
     public BigInteger Value { get; }
     public bool IsSigned => Value.Sign < 0;
-    IAntetype INumericAntetype.Antetype => this;
+    IPlainType INumericPlainType.PlainType => this;
 
     public bool IsUInt16
         => Value >= ITypeConstructor.UInt16.MinValue && Value <= ITypeConstructor.UInt16.MaxValue;
@@ -23,12 +23,12 @@ public sealed class IntegerLiteralTypeConstructor : LiteralTypeConstructor, INum
 
     /// <summary>
     /// The default non-constant type to places values of this type in. For
-    /// <see cref="IntegerLiteralTypeConstructor"/>, that is <see cref="IAntetype.Int"/>.
+    /// <see cref="IntegerLiteralTypeConstructor"/>, that is <see cref="IPlainType.Int"/>.
     /// </summary>
     /// <remarks>It might be thought this should return the smallest integer type that contains
     /// the value. However, that would lead to unexpected behavior in some cases because small
     /// integer constants might produce small fixed size integers leading to overflow.</remarks>
-    public override IAntetype ToNonLiteralType() => ITypeConstructor.Int;
+    public override IPlainType ToNonLiteralType() => ITypeConstructor.Int;
 
     public NumericTypeConstructor ToSmallestSignedIntegerType()
     {
@@ -88,7 +88,7 @@ public sealed class IntegerLiteralTypeConstructor : LiteralTypeConstructor, INum
     #endregion
 
     #region Equality
-    public override bool Equals(IMaybeAntetype? other)
+    public override bool Equals(IMaybePlainType? other)
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;

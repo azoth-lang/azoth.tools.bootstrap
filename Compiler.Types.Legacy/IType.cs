@@ -38,8 +38,8 @@ public interface IType : IExpressionType, IMaybeType
     public static readonly OptionalType None = new(Never);
     #endregion
 
-    public new IAntetype ToAntetype();
-    IMaybeAntetype IMaybeType.ToAntetype() => ToAntetype();
+    public new IPlainType ToPlainType();
+    IMaybePlainType IMaybeType.ToPlainType() => ToPlainType();
 
     /// <summary>
     /// Return the type for when a value of this type is accessed via a reference with the given capability.

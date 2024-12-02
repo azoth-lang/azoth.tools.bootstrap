@@ -5,10 +5,10 @@
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
 // ---------- Types
-↑ Type.NamedAntetype: `IMaybeAntetype`;
-= QualifiedTypeName.NamedAntetype => throw new NotImplementedException();
-= ViewpointType.NamedAntetype;
+↑ Type.NamedPlainType: `IMaybePlainType`;
+= QualifiedTypeName.NamedPlainType => throw new NotImplementedException();
+= ViewpointType.NamedPlainType;
 
 // ---------- Name Expressions
-↑ TypeNameExpression.NamedAntetype: `IMaybeAntetype`;
-= TypeNameExpression.NamedAntetype;
+↑ TypeNameExpression.NamedPlainType: `IMaybePlainType`;
+= TypeNameExpression.NamedPlainType;

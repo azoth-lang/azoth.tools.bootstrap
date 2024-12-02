@@ -78,13 +78,13 @@ public sealed class FixedSizeIntegerType : IntegerType
         => BareType.With(capability);
 
     public override ITypeConstructor? ToTypeConstructor() => null;
-    public override IAntetype TryToAntetype()
+    public override IPlainType TryToPlainType()
         => Bits switch
         {
-            8 => IsSigned ? IAntetype.Int8 : IAntetype.Byte,
-            16 => IsSigned ? IAntetype.Int16 : IAntetype.UInt16,
-            32 => IsSigned ? IAntetype.Int32 : IAntetype.UInt32,
-            64 => IsSigned ? IAntetype.Int64 : IAntetype.UInt64,
+            8 => IsSigned ? IPlainType.Int8 : IPlainType.Byte,
+            16 => IsSigned ? IPlainType.Int16 : IPlainType.UInt16,
+            32 => IsSigned ? IPlainType.Int32 : IPlainType.UInt32,
+            64 => IsSigned ? IPlainType.Int64 : IPlainType.UInt64,
             _ => throw new UnreachableException("Bits not an expected value"),
         };
 }

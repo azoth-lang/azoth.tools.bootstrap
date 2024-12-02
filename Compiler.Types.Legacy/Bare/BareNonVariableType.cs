@@ -85,11 +85,11 @@ public abstract class BareNonVariableType : BareType
         supertypes = new(GetSupertypes);
     }
 
-    public INonVoidAntetype ToAntetype()
+    public INonVoidPlainType ToPlainType()
     {
-        var typeArguments = GenericTypeArguments.Select(a => a.ToAntetype()).ToFixedList();
+        var typeArguments = GenericTypeArguments.Select(a => a.ToPlainType()).ToFixedList();
         // The ToTypeConstructor() should never result in void since DeclaredType can't be void.
-        return (INonVoidAntetype)(DeclaredType.TryToAntetype()
+        return (INonVoidPlainType)(DeclaredType.TryToPlainType()
                                   ?? DeclaredType.ToTypeConstructor()?.Construct(typeArguments))!;
     }
 

@@ -45,21 +45,21 @@ public sealed class AnyTypeConstructor : ITypeConstructor
     public override int GetHashCode() => HashCode.Combine(typeof(AnyTypeConstructor));
     #endregion
 
-    public IAntetype Construct(IEnumerable<IAntetype> typeArguments)
+    public IPlainType Construct(IEnumerable<IPlainType> typeArguments)
     {
         if (typeArguments.Any())
             throw new ArgumentException("Incorrect number of type arguments.");
         return PlainType;
     }
 
-    public IMaybeAntetype Construct(IEnumerable<IMaybeAntetype> typeArguments)
+    public IMaybePlainType Construct(IEnumerable<IMaybePlainType> typeArguments)
     {
-        var properTypeArguments = typeArguments.ToFixedList().As<IAntetype>();
-        if (properTypeArguments is null) return IAntetype.Unknown;
+        var properTypeArguments = typeArguments.ToFixedList().As<IPlainType>();
+        if (properTypeArguments is null) return IPlainType.Unknown;
         return Construct(properTypeArguments.AsEnumerable());
     }
 
-    public IAntetype TryConstructNullary() => PlainType;
+    public IPlainType TryConstructNullary() => PlainType;
 
     public override string ToString() => Name.ToString();
 }

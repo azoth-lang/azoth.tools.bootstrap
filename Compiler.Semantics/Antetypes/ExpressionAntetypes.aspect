@@ -5,99 +5,99 @@
 
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
-// TODO ExpectedAntetype could really be INonVoidAntetype?, but regular types need to be made more strict first.
+// TODO ExpectedPlainType could really be INonVoidPlainType?, but regular types need to be made more strict first.
 
 // ---------- Special Parts
-↑ BlockOrResult.Antetype: `IMaybeAntetype`;
+↑ BlockOrResult.PlainType: `IMaybePlainType`;
 
 // ---------- Function Parts
-↓ ExpressionBody.ExpectedAntetype: `IMaybeAntetype`?;
-= ExpressionBody.ResultStatement.ExpectedAntetype => ExpectedAntetype;
+↓ ExpressionBody.ExpectedPlainType: `IMaybePlainType`?;
+= ExpressionBody.ResultStatement.ExpectedPlainType => ExpectedPlainType;
 
 // ---------- Statements
-↑ Statement.ResultAntetype: `IMaybeAntetype`? => null;
-↓ ResultStatement.ExpectedAntetype: `IMaybeAntetype`?;
-= ResultStatement.Expression.ExpectedAntetype => ExpectedAntetype;
-= ResultStatement.ResultAntetype => Antetype;
-// The expected antetype for the initializer is the binding antetype since it needs to
+↑ Statement.ResultPlainType: `IMaybePlainType`? => null;
+↓ ResultStatement.ExpectedPlainType: `IMaybePlainType`?;
+= ResultStatement.Expression.ExpectedPlainType => ExpectedPlainType;
+= ResultStatement.ResultPlainType => PlainType;
+// The expected plain type for the initializer is the binding plain type since it needs to
 // have any conversion (e.g. to non-const-value type) applied.
-= VariableDeclarationStatement.Initializer.ExpectedAntetype => BindingAntetype;
-= ExpressionStatement.Expression.ExpectedAntetype => null;
+= VariableDeclarationStatement.Initializer.ExpectedPlainType => BindingPlainType;
+= ExpressionStatement.Expression.ExpectedPlainType => null;
 
 // ---------- Patterns
 = OptionalPattern.↑.Diagnostics;
 
 // ---------- Expressions
-// TODO remove once all nodes properly provide the expected antetype
-= AmbiguousExpression.*.ExpectedAntetype => null;
-↓ Expression.ExpectedAntetype: `IMaybeAntetype`?;
-↑ Expression.Antetype: `IMaybeAntetype`;
+// TODO remove once all nodes properly provide the expected plain type
+= AmbiguousExpression.*.ExpectedPlainType => null;
+↓ Expression.ExpectedPlainType: `IMaybePlainType`?;
+↑ Expression.PlainType: `IMaybePlainType`;
 ✎ Expression ImplicitConversion;
-↑ BlockExpression.Antetype: `IMaybeAntetype`;
-// TODO it would be better if this didn't depend on types, but only on antetypes
-= NewObjectExpression.Arguments[index].ExpectedAntetype
-    => ContextualizedCall?.ParameterTypes[index].Type.ToAntetype().ToNonLiteralType();
-= NeverTypedExpression.Antetype => IAntetype.Never;
+↑ BlockExpression.PlainType: `IMaybePlainType`;
+// TODO it would be better if this didn't depend on types, but only on plain types
+= NewObjectExpression.Arguments[index].ExpectedPlainType
+    => ContextualizedCall?.ParameterTypes[index].Type.ToPlainType().ToNonLiteralType();
+= NeverTypedExpression.PlainType => IPlainType.Never;
 
 // ---------- Operator Expressions
-= AssignmentExpression.RightOperand.ExpectedAntetype => LeftOperand?.Antetype.ToNonLiteralType();
-↑ BinaryOperatorExpression.NumericOperatorCommonAntetype: `IAntetype`?;
-= BinaryOperatorExpression.LeftOperand.ExpectedAntetype => NumericOperatorCommonAntetype;
-= BinaryOperatorExpression.RightOperand.ExpectedAntetype => NumericOperatorCommonAntetype;
+= AssignmentExpression.RightOperand.ExpectedPlainType => LeftOperand?.PlainType.ToNonLiteralType();
+↑ BinaryOperatorExpression.NumericOperatorCommonPlainType: `IPlainType`?;
+= BinaryOperatorExpression.LeftOperand.ExpectedPlainType => NumericOperatorCommonPlainType;
+= BinaryOperatorExpression.RightOperand.ExpectedPlainType => NumericOperatorCommonPlainType;
 = UnaryOperatorExpression.↑.Diagnostics;
-// No expected antetype for the referent. If one were given, it could cause another implicit conversion.
-= ImplicitConversionExpression.Referent.ExpectedAntetype => null;
-= PatternMatchExpression.Antetype => IAntetype.Bool;
+// No expected plain type for the referent. If one were given, it could cause another implicit conversion.
+= ImplicitConversionExpression.Referent.ExpectedPlainType => null;
+= PatternMatchExpression.PlainType => IPlainType.Bool;
 
 // ---------- Control Flow Expressions
-= IfExpression.Condition.ExpectedAntetype => IAntetype.OptionalBool;
-= WhileExpression.Condition.ExpectedAntetype => IAntetype.OptionalBool;
-= ReturnExpression.Value.ExpectedAntetype => ExpectedReturnType?.ToAntetype().ToNonLiteralType();
+= IfExpression.Condition.ExpectedPlainType => IPlainType.OptionalBool;
+= WhileExpression.Condition.ExpectedPlainType => IPlainType.OptionalBool;
+= ReturnExpression.Value.ExpectedPlainType => ExpectedReturnType?.ToPlainType().ToNonLiteralType();
 
 // ---------- Invocation Expressions
-= UnknownInvocationExpression.Antetype => IAntetype.Unknown;
-= FunctionInvocationExpression.Arguments[index].ExpectedAntetype
-    => Self.SelectedCallCandidate?.ParameterAntetypes[index];
-= MethodInvocationExpression.Arguments[index].ExpectedAntetype
-    => Self.SelectedCallCandidate?.ParameterAntetypes[index];
-// TODO it would be better if this didn't depend on types, but only on antetypes
-= GetterInvocationExpression.Context.ExpectedAntetype
-    => ContextualizedCall?.SelfParameterType?.Type.ToAntetype().ToNonLiteralType();
-// TODO it would be better if this didn't depend on types, but only on antetypes
-= SetterInvocationExpression.Context.ExpectedAntetype
-    => ContextualizedCall?.SelfParameterType?.Type.ToAntetype().ToNonLiteralType();
-// TODO it would be better if this didn't depend on types, but only on antetypes
-= SetterInvocationExpression.Value.ExpectedAntetype
-    => ContextualizedCall?.ParameterTypes[0].Type.ToAntetype().ToNonLiteralType();
+= UnknownInvocationExpression.PlainType => IPlainType.Unknown;
+= FunctionInvocationExpression.Arguments[index].ExpectedPlainType
+    => Self.SelectedCallCandidate?.ParameterPlainTypes[index];
+= MethodInvocationExpression.Arguments[index].ExpectedPlainType
+    => Self.SelectedCallCandidate?.ParameterPlainTypes[index];
+// TODO it would be better if this didn't depend on types, but only on plain types
+= GetterInvocationExpression.Context.ExpectedPlainType
+    => ContextualizedCall?.SelfParameterType?.Type.ToPlainType().ToNonLiteralType();
+// TODO it would be better if this didn't depend on types, but only on plain types
+= SetterInvocationExpression.Context.ExpectedPlainType
+    => ContextualizedCall?.SelfParameterType?.Type.ToPlainType().ToNonLiteralType();
+// TODO it would be better if this didn't depend on types, but only on plain types
+= SetterInvocationExpression.Value.ExpectedPlainType
+    => ContextualizedCall?.ParameterTypes[0].Type.ToPlainType().ToNonLiteralType();
 ↑ FunctionReferenceInvocationExpression.FunctionPlainType: `FunctionPlainType`;
-// TODO it would be better if this didn't depend on types, but only on antetypes
-= InitializerInvocationExpression.Arguments[index].ExpectedAntetype
-    => ContextualizedCall?.ParameterTypes[index].Type.ToAntetype().ToNonLiteralType();
+// TODO it would be better if this didn't depend on types, but only on plain types
+= InitializerInvocationExpression.Arguments[index].ExpectedPlainType
+    => ContextualizedCall?.ParameterTypes[index].Type.ToPlainType().ToNonLiteralType();
 
 // ---------- Ambiguous Name Expressions
 
 // ---------- Name Expressions
-= UnresolvedMemberAccessExpression.*.ExpectedAntetype => null;
-= NamespaceName.Antetype => IAntetype.Unknown;
-= FunctionGroupName.Antetype => IAntetype.Unknown;
-= FunctionGroupName.*.ExpectedAntetype => null;
-= FunctionName.*.ExpectedAntetype => null;
-= MethodGroupName.Antetype => IAntetype.Unknown;
-= MethodGroupName.*.ExpectedAntetype => null;
-= MethodName.Context.ExpectedAntetype;
-= TypeNameExpression.Antetype => IAntetype.Unknown;
-= InitializerGroupName.Antetype => IAntetype.Unknown;
-↑ InitializerGroupName.InitializingAntetype: `IMaybeAntetype` => Context.NamedAntetype;
-= SpecialTypeNameExpression.Antetype => IAntetype.Unknown;
-= MissingNameExpression.Antetype => IAntetype.Unknown;
-= UnknownNameExpression.Antetype => IAntetype.Unknown;
+= UnresolvedMemberAccessExpression.*.ExpectedPlainType => null;
+= NamespaceName.PlainType => IPlainType.Unknown;
+= FunctionGroupName.PlainType => IPlainType.Unknown;
+= FunctionGroupName.*.ExpectedPlainType => null;
+= FunctionName.*.ExpectedPlainType => null;
+= MethodGroupName.PlainType => IPlainType.Unknown;
+= MethodGroupName.*.ExpectedPlainType => null;
+= MethodName.Context.ExpectedPlainType;
+= TypeNameExpression.PlainType => IPlainType.Unknown;
+= InitializerGroupName.PlainType => IPlainType.Unknown;
+↑ InitializerGroupName.InitializingPlainType: `IMaybePlainType` => Context.NamedPlainType;
+= SpecialTypeNameExpression.PlainType => IPlainType.Unknown;
+= MissingNameExpression.PlainType => IPlainType.Unknown;
+= UnknownNameExpression.PlainType => IPlainType.Unknown;
 
 // ---------- Capability Expressions
-= MoveExpression.Antetype => Referent.Antetype;
-= ImplicitTempMoveExpression.Antetype => Referent.Antetype;
-= FreezeExpression.Antetype => Referent.Antetype;
-= PrepareToReturnExpression.Antetype => Value.Antetype;
+= MoveExpression.PlainType => Referent.PlainType;
+= ImplicitTempMoveExpression.PlainType => Referent.PlainType;
+= FreezeExpression.PlainType => Referent.PlainType;
+= PrepareToReturnExpression.PlainType => Value.PlainType;
 
 // ---------- Async Expressions
-= AsyncBlockExpression.Antetype => Block.Antetype;
+= AsyncBlockExpression.PlainType => Block.PlainType;
 = AwaitExpression.↑.Diagnostics;

@@ -5,18 +5,18 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 
-public sealed class OrdinaryNamedPlainType : NamedPlainType, INonVoidAntetype
+public sealed class OrdinaryNamedPlainType : NamedPlainType, INonVoidPlainType
 {
     public override ITypeConstructor TypeConstructor { get; }
     public NamespaceName? ContainingNamespace => TypeConstructor.ContainingNamespace;
     public TypeSemantics? Semantics => TypeConstructor.Semantics;
     public override TypeName Name => TypeConstructor.Name;
     public override bool AllowsVariance => TypeConstructor.AllowsVariance;
-    public override IFixedList<IAntetype> TypeArguments { get; }
+    public override IFixedList<IPlainType> TypeArguments { get; }
     public override IFixedSet<NamedPlainType> Supertypes { get; }
     private readonly PlainTypeReplacements plainTypeReplacements;
 
-    public OrdinaryNamedPlainType(ITypeConstructor typeConstructor, IEnumerable<IAntetype> typeArguments)
+    public OrdinaryNamedPlainType(ITypeConstructor typeConstructor, IEnumerable<IPlainType> typeArguments)
     {
         TypeConstructor = typeConstructor;
         TypeArguments = typeArguments.ToFixedList();
@@ -31,11 +31,11 @@ public sealed class OrdinaryNamedPlainType : NamedPlainType, INonVoidAntetype
         Supertypes = typeConstructor.Supertypes.Select(s => (NamedPlainType)ReplaceTypeParametersIn(s)).ToFixedSet();
     }
 
-    public override IMaybeAntetype ReplaceTypeParametersIn(IMaybeAntetype antetype)
-        => plainTypeReplacements.ReplaceTypeParametersIn(antetype);
+    public override IMaybePlainType ReplaceTypeParametersIn(IMaybePlainType plainType)
+        => plainTypeReplacements.ReplaceTypeParametersIn(plainType);
 
     #region Equality
-    public override bool Equals(IMaybeAntetype? other)
+    public override bool Equals(IMaybePlainType? other)
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;

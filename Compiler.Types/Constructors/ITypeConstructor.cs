@@ -55,18 +55,18 @@ public interface ITypeConstructor : IEquatable<ITypeConstructor>
 
     IFixedSet<NamedPlainType> Supertypes { get; }
 
-    IAntetype Construct(IEnumerable<IAntetype> typeArguments);
+    IPlainType Construct(IEnumerable<IPlainType> typeArguments);
 
-    IAntetype ConstructWithGenericParameterPlainTypes() => Construct(GenericParameterPlainTypes);
+    IPlainType ConstructWithGenericParameterPlainTypes() => Construct(GenericParameterPlainTypes);
 
-    IMaybeAntetype Construct(IEnumerable<IMaybeAntetype> typeArguments)
+    IMaybePlainType Construct(IEnumerable<IMaybePlainType> typeArguments)
     {
-        var properTypeArguments = typeArguments.ToFixedList().As<IAntetype>();
-        if (properTypeArguments is null) return IAntetype.Unknown;
+        var properTypeArguments = typeArguments.ToFixedList().As<IPlainType>();
+        if (properTypeArguments is null) return IPlainType.Unknown;
         return Construct(properTypeArguments.AsEnumerable());
     }
 
-    IAntetype? TryConstructNullary();
+    IPlainType? TryConstructNullary();
 
     string ToString();
 }

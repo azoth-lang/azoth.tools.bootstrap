@@ -58,12 +58,12 @@ public sealed class GenericParameterType : NonEmptyType, INonVoidType
         => HashCode.Combine(DeclaringType, Parameter);
     #endregion
 
-    public override GenericParameterPlainType ToAntetype()
+    public override GenericParameterPlainType ToPlainType()
     {
         var typeConstructor = DeclaringType.ToTypeConstructor();
         return new GenericParameterPlainType(typeConstructor, typeConstructor.Parameters.Single(p => p.Name == Name));
     }
-    INonVoidAntetype INonVoidType.ToAntetype() => ToAntetype();
+    INonVoidPlainType INonVoidType.ToPlainType() => ToPlainType();
 
     public override string ToSourceCodeString() => $"{DeclaringType}.{Parameter.Name}";
 

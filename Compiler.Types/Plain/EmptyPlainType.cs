@@ -17,7 +17,7 @@ public abstract class EmptyPlainType : NamedPlainType
         Name = name;
     }
 
-    public override IMaybeAntetype ReplaceTypeParametersIn(IMaybeAntetype antetype) => antetype;
+    public override IMaybePlainType ReplaceTypeParametersIn(IMaybePlainType plainType) => plainType;
 
     public sealed override string ToString() => Name.ToString();
 }

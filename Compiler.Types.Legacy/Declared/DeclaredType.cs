@@ -84,7 +84,7 @@ public abstract class DeclaredType : IEquatable<DeclaredType>
 
     public abstract ITypeConstructor? ToTypeConstructor();
 
-    public abstract IAntetype? TryToAntetype();
+    public abstract IPlainType? TryToPlainType();
 
     #region Equality
     public abstract bool Equals(DeclaredType? other);

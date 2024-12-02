@@ -26,8 +26,8 @@ public static class Intrinsic
 
     public static IMaybeExpressionType PromiseOf(IMaybeType type)
         => PromiseDeclaredType.WithRead(FixedList.Create(type));
-    public static IMaybeAntetype PromiseOf(IMaybeAntetype antetype)
-        => PromiseTypeConstructor.Construct(FixedList.Create(antetype));
+    public static IMaybePlainType PromiseOf(IMaybePlainType plainType)
+        => PromiseTypeConstructor.Construct(FixedList.Create(plainType));
 
     public static readonly OrdinaryTypeSymbol RawHybridBoundedList
         = Find<OrdinaryTypeSymbol>("Raw_Hybrid_Bounded_List");

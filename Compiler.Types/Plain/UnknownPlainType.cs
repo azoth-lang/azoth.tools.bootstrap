@@ -1,6 +1,6 @@
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 
-public sealed class UnknownPlainType : IMaybeFunctionAntetype
+public sealed class UnknownPlainType : IMaybeFunctionPlainType
 {
     #region Singleton
     internal static readonly UnknownPlainType Instance = new();
@@ -8,14 +8,14 @@ public sealed class UnknownPlainType : IMaybeFunctionAntetype
     private UnknownPlainType() { }
     #endregion
 
-    public IMaybeAntetype ReplaceTypeParametersIn(IMaybeAntetype antetype)
-        => antetype;
+    public IMaybePlainType ReplaceTypeParametersIn(IMaybePlainType plainType)
+        => plainType;
 
     #region Equality
-    public bool Equals(IMaybeAntetype? other) => ReferenceEquals(this, other);
+    public bool Equals(IMaybePlainType? other) => ReferenceEquals(this, other);
 
     public override bool Equals(object? obj)
-        => obj is IMaybeAntetype other && Equals(other);
+        => obj is IMaybePlainType other && Equals(other);
 
     public override int GetHashCode() => HashCode.Combine(typeof(UnknownPlainType));
     #endregion

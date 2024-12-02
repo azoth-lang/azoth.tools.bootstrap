@@ -7,7 +7,7 @@
 // ---------- Control Flow Expressions
 ↑ ForeachExpression.ReferencedIterableDeclaration: TypeDeclaration?;
 ↑ ForeachExpression.ReferencedIterateMethod: StandardMethodDeclaration?;
-↑ ForeachExpression.IteratorAntetype:`IMaybeAntetype`;
+↑ ForeachExpression.IteratorPlainType:`IMaybePlainType`;
 ↑ ForeachExpression.ReferencedIteratorDeclaration: TypeDeclaration?;
 ↑ ForeachExpression.ReferencedNextMethod: StandardMethodDeclaration?;
-↑ ForeachExpression.IteratedAntetype: `IMaybeAntetype`;
+↑ ForeachExpression.IteratedPlainType: `IMaybePlainType`;

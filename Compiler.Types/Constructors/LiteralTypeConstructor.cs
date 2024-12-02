@@ -11,7 +11,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 [Closed(
        typeof(BoolLiteralTypeConstructor),
        typeof(IntegerLiteralTypeConstructor))]
-public abstract class LiteralTypeConstructor : IAntetype, ISimpleOrConstValueAntetype
+public abstract class LiteralTypeConstructor : IPlainType, ISimpleOrConstValueAntetype
 {
     public SpecialTypeName Name { get; }
 
@@ -20,16 +20,16 @@ public abstract class LiteralTypeConstructor : IAntetype, ISimpleOrConstValueAnt
         Name = name;
     }
 
-    public abstract IMaybeAntetype ToNonLiteralType();
+    public abstract IMaybePlainType ToNonLiteralType();
 
-    public IMaybeAntetype ReplaceTypeParametersIn(IMaybeAntetype antetype)
-        => antetype;
+    public IMaybePlainType ReplaceTypeParametersIn(IMaybePlainType plainType)
+        => plainType;
 
     #region Equality
-    public abstract bool Equals(IMaybeAntetype? other);
+    public abstract bool Equals(IMaybePlainType? other);
 
     public sealed override bool Equals(object? obj)
-        => obj is IMaybeAntetype other && Equals(other);
+        => obj is IMaybePlainType other && Equals(other);
 
     public abstract override int GetHashCode();
     #endregion

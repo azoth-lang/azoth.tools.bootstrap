@@ -32,8 +32,8 @@ public sealed class BoolConstValueType : ConstValueType
 
     public override CapabilityType<BoolType> ToNonConstValueType() => IType.Bool;
 
-    public override IMaybeAntetype ToAntetype()
-        => Value ? IAntetype.True : IAntetype.False;
+    public override IMaybePlainType ToPlainType()
+        => Value ? IPlainType.True : IPlainType.False;
 
     public override string ToSourceCodeString()
         => throw new InvalidOperationException("Bool value type has no source code representation");

@@ -6,9 +6,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 
 [Closed(
     typeof(IntegerTypeConstructor))]
-public abstract class NumericTypeConstructor : SimpleTypeConstructor, INumericAntetype
+public abstract class NumericTypeConstructor : SimpleTypeConstructor, INumericPlainType
 {
-    IAntetype INumericAntetype.Antetype => this;
+    IPlainType INumericPlainType.PlainType => this;
 
     private protected NumericTypeConstructor(SpecialTypeName name)
         : base(name) { }

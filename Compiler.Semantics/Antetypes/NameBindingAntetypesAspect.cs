@@ -7,35 +7,35 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
 internal static partial class NameBindingAntetypesAspect
 {
     // TODO this is strange because a FieldParameter isn't a binding
-    public static partial IMaybeAntetype FieldParameter_BindingAntetype(IFieldParameterNode node)
-        => node.ReferencedField?.BindingAntetype ?? IAntetype.Unknown;
+    public static partial IMaybePlainType FieldParameter_BindingPlainType(IFieldParameterNode node)
+        => node.ReferencedField?.BindingPlainType ?? IPlainType.Unknown;
 
-    public static partial IMaybeAntetype SelfParameter_BindingAntetype(ISelfParameterNode node)
+    public static partial IMaybePlainType SelfParameter_BindingPlainType(ISelfParameterNode node)
     {
-        var containingDeclaredAntetype = node.ContainingTypeDefinition.DeclaredAntetype;
+        var containingDeclaredAntetype = node.ContainingTypeDefinition.DeclaredPlainType;
         return containingDeclaredAntetype.Construct(containingDeclaredAntetype.GenericParameterPlainTypes);
     }
 
-    public static partial IMaybeAntetype PatternMatchExpression_Pattern_ContextBindingAntetype(IPatternMatchExpressionNode node)
-        => node.Referent?.Antetype.ToNonLiteralType() ?? IAntetype.Unknown;
+    public static partial IMaybePlainType PatternMatchExpression_Pattern_ContextBindingPlainType(IPatternMatchExpressionNode node)
+        => node.Referent?.PlainType.ToNonLiteralType() ?? IPlainType.Unknown;
 
-    public static partial IMaybeAntetype BindingContextPattern_Pattern_ContextBindingAntetype(IBindingContextPatternNode node)
-        => node.Type?.NamedAntetype ?? node.ContextBindingAntetype();
+    public static partial IMaybePlainType BindingContextPattern_Pattern_ContextBindingPlainType(IBindingContextPatternNode node)
+        => node.Type?.NamedPlainType ?? node.ContextBindingPlainType();
 
-    public static partial IMaybeAntetype OptionalPattern_Pattern_ContextBindingAntetype(
+    public static partial IMaybePlainType OptionalPattern_Pattern_ContextBindingPlainType(
         IOptionalPatternNode node)
     {
-        var inheritedBindingAntetype = node.ContextBindingAntetype();
+        var inheritedBindingAntetype = node.ContextBindingPlainType();
         if (inheritedBindingAntetype is OptionalPlainType optionalAntetype)
             return optionalAntetype.Referent;
         return inheritedBindingAntetype;
     }
 
-    public static partial IMaybeAntetype BindingPattern_BindingAntetype(IBindingPatternNode node)
-        => node.ContextBindingAntetype();
+    public static partial IMaybePlainType BindingPattern_BindingPlainType(IBindingPatternNode node)
+        => node.ContextBindingPlainType();
 
-    public static partial IMaybeAntetype VariableDeclarationStatement_BindingAntetype(IVariableDeclarationStatementNode node)
-        => node.Type?.NamedAntetype ?? node.Initializer?.Antetype.ToNonLiteralType() ?? IAntetype.Unknown;
+    public static partial IMaybePlainType VariableDeclarationStatement_BindingPlainType(IVariableDeclarationStatementNode node)
+        => node.Type?.NamedPlainType ?? node.Initializer?.PlainType.ToNonLiteralType() ?? IPlainType.Unknown;
 
     public static partial void VariableDeclarationStatement_Contribute_Diagnostics(
         IVariableDeclarationStatementNode node,
@@ -46,12 +46,12 @@ internal static partial class NameBindingAntetypesAspect
                 "Inference of local variable types not implemented"));
     }
 
-    public static partial IMaybeAntetype ForeachExpression_BindingAntetype(IForeachExpressionNode node)
-        => node.DeclaredType?.NamedAntetype ?? node.IteratedAntetype;
+    public static partial IMaybePlainType ForeachExpression_BindingPlainType(IForeachExpressionNode node)
+        => node.DeclaredType?.NamedPlainType ?? node.IteratedPlainType;
 
-    public static partial IMaybeAntetype NewObjectExpression_ConstructingAntetype(INewObjectExpressionNode node)
-        => node.ConstructingType.NamedAntetype;
+    public static partial IMaybePlainType NewObjectExpression_ConstructingPlainType(INewObjectExpressionNode node)
+        => node.ConstructingType.NamedPlainType;
 
-    public static partial IMaybeAntetype NamedParameter_BindingAntetype(INamedParameterNode node)
-        => node.TypeNode.NamedAntetype;
+    public static partial IMaybePlainType NamedParameter_BindingPlainType(INamedParameterNode node)
+        => node.TypeNode.NamedPlainType;
 }

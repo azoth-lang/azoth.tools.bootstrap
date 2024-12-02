@@ -4,7 +4,7 @@ using ExhaustiveMatching;
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 
 [Closed(typeof(NumericTypeConstructor), typeof(IntegerLiteralTypeConstructor))]
-public interface INumericAntetype : IAntetype
+public interface INumericPlainType : IPlainType
 {
-    IAntetype Antetype { get; }
+    IPlainType PlainType { get; }
 }

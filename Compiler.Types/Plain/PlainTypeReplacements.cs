@@ -6,13 +6,13 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 
 internal sealed class PlainTypeReplacements
 {
-    private readonly Dictionary<GenericParameterPlainType, IAntetype> replacements;
+    private readonly Dictionary<GenericParameterPlainType, IPlainType> replacements;
 
     /// <summary>
     /// Build a dictionary of type replacements. Generic parameter types of both this type and the
     /// supertypes can be replaced with type arguments of this type.
     /// </summary>
-    public PlainTypeReplacements(ITypeConstructor typeConstructor, IFixedList<IAntetype> typeArguments)
+    public PlainTypeReplacements(ITypeConstructor typeConstructor, IFixedList<IPlainType> typeArguments)
     {
         replacements = typeConstructor.GenericParameterPlainTypes.EquiZip(typeArguments)
                                    .ToDictionary(t => t.Item1, t => t.Item2);
@@ -41,25 +41,25 @@ internal sealed class PlainTypeReplacements
             }
     }
 
-    public IMaybeAntetype ReplaceTypeParametersIn(IMaybeAntetype antetype)
-        => antetype switch
+    public IMaybePlainType ReplaceTypeParametersIn(IMaybePlainType plainType)
+        => plainType switch
         {
-            IAntetype a => ReplaceTypeParametersIn(a),
+            IPlainType a => ReplaceTypeParametersIn(a),
             UnknownPlainType a => a,
-            _ => throw ExhaustiveMatch.Failed(antetype)
+            _ => throw ExhaustiveMatch.Failed(plainType)
         };
 
-    public IAntetype ReplaceTypeParametersIn(IAntetype antetype)
-        => antetype switch
+    public IPlainType ReplaceTypeParametersIn(IPlainType plainType)
+        => plainType switch
         {
             VoidPlainType a => a,
             LiteralTypeConstructor a => a,
-            INonVoidAntetype a => ReplaceTypeParametersIn(a),
-            _ => throw ExhaustiveMatch.Failed(antetype)
+            INonVoidPlainType a => ReplaceTypeParametersIn(a),
+            _ => throw ExhaustiveMatch.Failed(plainType)
         };
 
-    public IAntetype ReplaceTypeParametersIn(INonVoidAntetype antetype)
-        => antetype switch
+    public IPlainType ReplaceTypeParametersIn(INonVoidPlainType plainType)
+        => plainType switch
         {
             SimpleTypeConstructor a => a,
             NeverPlainType a => a,
@@ -68,7 +68,7 @@ internal sealed class PlainTypeReplacements
             GenericParameterPlainType a => ReplaceTypeParametersIn(a),
             FunctionPlainType a => ReplaceTypeParametersIn(a),
             OptionalPlainType a => ReplaceTypeParametersIn(a),
-            _ => throw ExhaustiveMatch.Failed(antetype)
+            _ => throw ExhaustiveMatch.Failed(plainType)
         };
 
     public OrdinaryNamedPlainType ReplaceTypeParametersIn(OrdinaryNamedPlainType antetype)
@@ -80,9 +80,9 @@ internal sealed class PlainTypeReplacements
         return new(antetype.TypeConstructor, replacementTypeArguments);
     }
 
-    private IFixedList<IAntetype> ReplaceTypeParametersIn(IFixedList<IAntetype> antetypes)
+    private IFixedList<IPlainType> ReplaceTypeParametersIn(IFixedList<IPlainType> antetypes)
     {
-        var replacementAntetypes = new List<IAntetype>();
+        var replacementAntetypes = new List<IPlainType>();
         var typesReplaced = false;
         foreach (var antetype in antetypes)
         {
@@ -94,7 +94,7 @@ internal sealed class PlainTypeReplacements
         return typesReplaced ? replacementAntetypes.ToFixedList() : antetypes;
     }
 
-    public IAntetype ReplaceTypeParametersIn(GenericParameterPlainType plainType)
+    public IPlainType ReplaceTypeParametersIn(GenericParameterPlainType plainType)
         => replacements.GetValueOrDefault(plainType, plainType);
 
     public FunctionPlainType ReplaceTypeParametersIn(FunctionPlainType plainType)
@@ -112,23 +112,23 @@ internal sealed class PlainTypeReplacements
     /// Replace type parameters specifically in parameters to a function where `void` can cause
     /// a parameter to drop out.
     /// </summary>
-    private IFixedList<INonVoidAntetype> ReplaceTypeParametersInParameters(
-        IFixedList<INonVoidAntetype> antetypes)
+    private IFixedList<INonVoidPlainType> ReplaceTypeParametersInParameters(
+        IFixedList<INonVoidPlainType> antetypes)
     {
-        var replacementAntetypes = new List<INonVoidAntetype>();
+        var replacementAntetypes = new List<INonVoidPlainType>();
         var typesReplaced = false;
         foreach (var antetype in antetypes)
         {
             var replacementType = ReplaceTypeParametersIn(antetype);
             typesReplaced |= !ReferenceEquals(antetype, replacementType);
-            if (replacementType is INonVoidAntetype nonVoidAntetype)
+            if (replacementType is INonVoidPlainType nonVoidAntetype)
                 replacementAntetypes.Add(nonVoidAntetype);
         }
 
         return typesReplaced ? replacementAntetypes.ToFixedList() : antetypes;
     }
 
-    public IAntetype ReplaceTypeParametersIn(OptionalPlainType plainType)
+    public IPlainType ReplaceTypeParametersIn(OptionalPlainType plainType)
     {
         var replacementType = ReplaceTypeParametersIn(plainType.Referent);
         if (ReferenceEquals(plainType.Referent, replacementType))

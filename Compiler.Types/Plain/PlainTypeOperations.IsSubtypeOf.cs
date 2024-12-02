@@ -10,21 +10,21 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 public static partial class PlainTypeOperations
 {
     /// <summary>
-    /// Whether this antetype is a subtype of the other antetype.
+    /// Whether this plainType is a subtype of the other plainType.
     /// </summary>
-    public static bool IsSubtypeOf(this IMaybeAntetype self, IMaybeAntetype other)
+    public static bool IsSubtypeOf(this IMaybePlainType self, IMaybePlainType other)
     {
         return (self, other) switch
         {
             (UnknownPlainType, _) or (_, UnknownPlainType)
                 => true,
-            (IAntetype s, IAntetype o)
+            (IPlainType s, IPlainType o)
                 => s.IsSubtypeOf(o),
             _ => throw new UnreachableException()
         };
     }
 
-    public static bool IsSubtypeOf(this IAntetype self, IAntetype other)
+    public static bool IsSubtypeOf(this IPlainType self, IPlainType other)
     {
         return (self, other) switch
         {
@@ -69,8 +69,8 @@ public static partial class PlainTypeOperations
 
     private static bool IsSubtypeOf(
         ITypeConstructor declaredAntetype,
-        IFixedList<IAntetype> selfTypeArguments,
-        IFixedList<IAntetype> otherTypeArguments)
+        IFixedList<IPlainType> selfTypeArguments,
+        IFixedList<IPlainType> otherTypeArguments)
     {
         Requires.That(selfTypeArguments.Count == declaredAntetype.Parameters.Count, nameof(selfTypeArguments), "count must match count of declaredAntetype generic parameters");
         Requires.That(otherTypeArguments.Count == declaredAntetype.Parameters.Count, nameof(otherTypeArguments), "count must match count of declaredAntetype generic parameters");

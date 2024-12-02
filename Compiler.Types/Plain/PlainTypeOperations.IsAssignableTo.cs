@@ -5,10 +5,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 public static partial class PlainTypeOperations
 {
     /// <summary>
-    /// Whether a value of this antetype can be assigned to a variable of the other antetype. This
+    /// Whether a value of this plainType can be assigned to a variable of the other plainType. This
     /// accounts for both subtyping and implicit conversions.
     /// </summary>
-    public static bool IsAssignableTo(this IMaybeAntetype self, IMaybeAntetype other)
+    public static bool IsAssignableTo(this IMaybePlainType self, IMaybePlainType other)
     {
         if (self.IsSubtypeOf(other))
             return true;
@@ -20,12 +20,12 @@ public static partial class PlainTypeOperations
                 => s.Referent.IsAssignableTo(o.Referent),
             (_, OptionalPlainType o) => self.IsAssignableTo(o.Referent),
             (BoolLiteralTypeConstructor, BoolTypeConstructor) => true,
-            (INumericAntetype s, INumericAntetype o) => s.IsImplicitlyNumericallyConvertibleTo(o),
+            (INumericPlainType s, INumericPlainType o) => s.IsImplicitlyNumericallyConvertibleTo(o),
             _ => false,
         };
     }
 
-    private static bool IsImplicitlyNumericallyConvertibleTo(this INumericAntetype self, INumericAntetype other)
+    private static bool IsImplicitlyNumericallyConvertibleTo(this INumericPlainType self, INumericPlainType other)
     {
         switch (self, other)
         {

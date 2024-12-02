@@ -1,22 +1,22 @@
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 
-public sealed class OptionalPlainType : INonVoidAntetype
+public sealed class OptionalPlainType : INonVoidPlainType
 {
     /// <remarks>The optional type acts as a value type that may contain a reference and as such
     /// always has value semantics.</remarks>
     public TypeSemantics? Semantics => TypeSemantics.Value;
-    public INonVoidAntetype Referent { get; }
+    public INonVoidPlainType Referent { get; }
 
-    public OptionalPlainType(INonVoidAntetype referent)
+    public OptionalPlainType(INonVoidPlainType referent)
     {
         Referent = referent;
     }
 
-    public IMaybeAntetype ReplaceTypeParametersIn(IMaybeAntetype antetype)
-        => antetype;
+    public IMaybePlainType ReplaceTypeParametersIn(IMaybePlainType plainType)
+        => plainType;
 
     #region Equality
-    public bool Equals(IMaybeAntetype? other)
+    public bool Equals(IMaybePlainType? other)
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
@@ -25,7 +25,7 @@ public sealed class OptionalPlainType : INonVoidAntetype
     }
 
     public override bool Equals(object? obj)
-        => obj is IMaybeAntetype other && Equals(other);
+        => obj is IMaybePlainType other && Equals(other);
 
     public override int GetHashCode() => HashCode.Combine(Referent);
     #endregion

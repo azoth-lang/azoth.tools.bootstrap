@@ -66,5 +66,5 @@ internal static class DeclaredUserTypeExtensions
     }
 
     private static IFixedSet<NamedPlainType> AntetypeSupertypes(this IDeclaredUserType declaredType)
-        => declaredType.Supertypes.Select(t => t.ToAntetype()).Cast<NamedPlainType>().ToFixedSet();
+        => declaredType.Supertypes.Select(t => t.ToPlainType()).Cast<NamedPlainType>().ToFixedSet();
 }

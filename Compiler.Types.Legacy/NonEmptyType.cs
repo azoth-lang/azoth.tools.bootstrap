@@ -109,9 +109,9 @@ public abstract class NonEmptyType : IExpressionType
     public IExpressionType ToUpperBound() => this;
 
     /// <summary>
-    /// Convert this type to the equivalent antetype.
+    /// Convert this type to the equivalent plainType.
     /// </summary>
-    public abstract IMaybeAntetype ToAntetype();
+    public abstract IMaybePlainType ToPlainType();
 
     /// <summary>
     /// Convert types for constant values to their corresponding types.

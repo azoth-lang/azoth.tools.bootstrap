@@ -7,19 +7,19 @@
 
 // ---------- Function Definition
 // TODO it would be good to refactor to not depend on Type
-= FunctionDefinition.Body.ExpectedAntetype => Type.Return.ToAntetype().ToNonLiteralType();
+= FunctionDefinition.Body.ExpectedPlainType => Type.Return.ToPlainType().ToNonLiteralType();
 
 // ---------- Type Definitions
-↑ TypeDefinition.DeclaredAntetype:`OrdinaryTypeConstructor`;
-= TypeDefinition.DeclaredAntetype;
+↑ TypeDefinition.DeclaredPlainType:`OrdinaryTypeConstructor`;
+= TypeDefinition.DeclaredPlainType;
 ↑ TypeDefinition.SelfPlainType: `SelfPlainType`;
 = TypeDefinition.SelfPlainType;
 
 // ---------- Member Definitions
 // TODO it would be good to refactor to not depend on Type
-= MethodDefinition.Body.ExpectedAntetype
-    => Self.ReturnType.ToAntetype();
-= FieldDefinition.BindingAntetype;
+= MethodDefinition.Body.ExpectedPlainType
+    => Self.ReturnType.ToPlainType();
+= FieldDefinition.BindingPlainType;
 // TODO it would be good to refactor to not depend on Type
-= AssociatedFunctionDefinition.Body.ExpectedAntetype
-    => Type.Return.ToAntetype().ToNonLiteralType();
+= AssociatedFunctionDefinition.Body.ExpectedPlainType
+    => Type.Return.ToPlainType().ToNonLiteralType();

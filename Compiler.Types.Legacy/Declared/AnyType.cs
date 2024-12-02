@@ -39,7 +39,7 @@ public sealed class AnyType : DeclaredReferenceType
         => CapabilityType.Create(capability, BareType);
 
     public override ITypeConstructor? ToTypeConstructor() => ITypeConstructor.Any;
-    public override IAntetype TryToAntetype() => IAntetype.Any;
+    public override IPlainType TryToPlainType() => IPlainType.Any;
 
     #region Equals
     public override bool Equals(DeclaredType? other) => ReferenceEquals(this, other);

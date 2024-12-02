@@ -36,7 +36,7 @@ public sealed class UnknownType : IMaybeFunctionType, IMaybeParameterType, IMayb
 
     IMaybeNonVoidType IMaybeNonVoidType.WithoutWrite() => this;
 
-    public IMaybeAntetype ToAntetype() => IAntetype.Unknown;
+    public IMaybePlainType ToPlainType() => IPlainType.Unknown;
 
     public IMaybeExpressionType ToUpperBound() => this;
 

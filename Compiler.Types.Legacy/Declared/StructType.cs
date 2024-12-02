@@ -123,7 +123,7 @@ public sealed class StructType : DeclaredValueType, IDeclaredUserType
     public override OrdinaryTypeConstructor ToTypeConstructor()
         // Lazy initialize to prevent evaluation of lazy supertypes when constructing StructType
         => LazyInitializer.EnsureInitialized(ref typeConstructor, this.ConstructTypeConstructor);
-    public override IAntetype? TryToAntetype() => ToTypeConstructor().TryConstructNullary();
+    public override IPlainType? TryToPlainType() => ToTypeConstructor().TryConstructNullary();
 
     #region Equals
     public override bool Equals(DeclaredType? other)

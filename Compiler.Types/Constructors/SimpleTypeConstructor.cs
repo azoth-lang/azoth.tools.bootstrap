@@ -10,7 +10,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
     typeof(BoolTypeConstructor),
     typeof(NumericTypeConstructor))]
 [DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
-public abstract class SimpleTypeConstructor : INonVoidAntetype, ITypeConstructor, ISimpleOrConstValueAntetype
+public abstract class SimpleTypeConstructor : INonVoidPlainType, ITypeConstructor, ISimpleOrConstValueAntetype
 {
     public IdentifierName? ContainingPackage => null;
 
@@ -19,7 +19,7 @@ public abstract class SimpleTypeConstructor : INonVoidAntetype, ITypeConstructor
     public bool CanBeInstantiated => true;
 
     public TypeSemantics Semantics => TypeSemantics.Value;
-    TypeSemantics? INonVoidAntetype.Semantics => Semantics;
+    TypeSemantics? INonVoidPlainType.Semantics => Semantics;
 
     public SpecialTypeName Name { get; }
     TypeName ITypeConstructor.Name => Name;
@@ -39,20 +39,20 @@ public abstract class SimpleTypeConstructor : INonVoidAntetype, ITypeConstructor
         Name = name;
     }
 
-    public IAntetype Construct(IEnumerable<IAntetype> typeArguments)
+    public IPlainType Construct(IEnumerable<IPlainType> typeArguments)
     {
         if (typeArguments.Any())
             throw new ArgumentException("Simple type cannot have type arguments", nameof(typeArguments));
         return this;
     }
 
-    public IAntetype TryConstructNullary() => this;
+    public IPlainType TryConstructNullary() => this;
 
-    public IMaybeAntetype ReplaceTypeParametersIn(IMaybeAntetype antetype)
-        => antetype;
+    public IMaybePlainType ReplaceTypeParametersIn(IMaybePlainType plainType)
+        => plainType;
 
     #region Equality
-    public bool Equals(IMaybeAntetype? other)
+    public bool Equals(IMaybePlainType? other)
         // All simple type constructors are singletons, so we can use reference equality.
         => ReferenceEquals(this, other);
 
@@ -61,7 +61,7 @@ public abstract class SimpleTypeConstructor : INonVoidAntetype, ITypeConstructor
         => ReferenceEquals(this, other);
 
     public override bool Equals(object? obj)
-        => obj is IMaybeAntetype other && Equals(other);
+        => obj is IMaybePlainType other && Equals(other);
 
     public override int GetHashCode()
         // ReSharper disable once BaseObjectGetHashCodeCallInGetHashCode

@@ -55,12 +55,12 @@ public sealed class PointerSizedIntegerType : IntegerType
         => BareType.With(capability);
 
     public override ITypeConstructor? ToTypeConstructor() => null;
-    public override IAntetype TryToAntetype()
+    public override IPlainType TryToPlainType()
     {
-        if (this == Size) return IAntetype.Size;
-        if (this == Offset) return IAntetype.Offset;
-        if (this == NInt) return IAntetype.NInt;
-        if (this == NUInt) return IAntetype.NUInt;
+        if (this == Size) return IPlainType.Size;
+        if (this == Offset) return IPlainType.Offset;
+        if (this == NInt) return IPlainType.NInt;
+        if (this == NUInt) return IPlainType.NUInt;
         throw new UnreachableException();
     }
 }

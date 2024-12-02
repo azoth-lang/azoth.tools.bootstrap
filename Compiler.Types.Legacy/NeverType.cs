@@ -23,8 +23,8 @@ public sealed class NeverType : EmptyType, INonVoidType
 
     #endregion
 
-    public override NeverPlainType ToAntetype() => IAntetype.Never;
-    INonVoidAntetype INonVoidType.ToAntetype() => ToAntetype();
+    public override NeverPlainType ToPlainType() => IPlainType.Never;
+    INonVoidPlainType INonVoidType.ToPlainType() => ToPlainType();
 
     IMaybeNonVoidType IMaybeNonVoidType.WithoutWrite() => this;
 }

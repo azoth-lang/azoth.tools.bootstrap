@@ -85,7 +85,7 @@ public sealed class IntegerConstValueType : ConstValueType, INumericType
     public override int GetHashCode() => HashCode.Combine(Value);
     #endregion
 
-    public override IMaybeAntetype ToAntetype()
+    public override IMaybePlainType ToPlainType()
         => new IntegerLiteralTypeConstructor(Value);
 
     public override string ToSourceCodeString()

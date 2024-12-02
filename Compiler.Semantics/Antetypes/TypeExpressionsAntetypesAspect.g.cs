@@ -11,19 +11,19 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
 internal static partial class TypeExpressionsAntetypesAspect
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IMaybeAntetype ViewpointType_NamedAntetype(IViewpointTypeNode node);
+    public static partial IMaybePlainType ViewpointType_NamedPlainType(IViewpointTypeNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IMaybeAntetype TypeNameExpression_NamedAntetype(ITypeNameExpressionNode node);
+    public static partial IMaybePlainType TypeNameExpression_NamedPlainType(ITypeNameExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IMaybeAntetype IdentifierTypeName_NamedAntetype(IIdentifierTypeNameNode node);
+    public static partial IMaybePlainType IdentifierTypeName_NamedPlainType(IIdentifierTypeNameNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IMaybeAntetype SpecialTypeName_NamedAntetype(ISpecialTypeNameNode node);
+    public static partial IMaybePlainType SpecialTypeName_NamedPlainType(ISpecialTypeNameNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IMaybeAntetype GenericTypeName_NamedAntetype(IGenericTypeNameNode node);
+    public static partial IMaybePlainType GenericTypeName_NamedPlainType(IGenericTypeNameNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IMaybeAntetype OptionalType_NamedAntetype(IOptionalTypeNode node);
+    public static partial IMaybePlainType OptionalType_NamedPlainType(IOptionalTypeNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IMaybeAntetype CapabilityType_NamedAntetype(ICapabilityTypeNode node);
+    public static partial IMaybePlainType CapabilityType_NamedPlainType(ICapabilityTypeNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IMaybeAntetype FunctionType_NamedAntetype(IFunctionTypeNode node);
+    public static partial IMaybePlainType FunctionType_NamedPlainType(IFunctionTypeNode node);
 }

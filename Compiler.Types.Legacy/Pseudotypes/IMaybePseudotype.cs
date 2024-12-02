@@ -8,9 +8,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Pseudotypes;
 public interface IMaybePseudotype : IEquatable<IMaybePseudotype>
 {
     /// <summary>
-    /// Convert this type to the equivalent antetype.
+    /// Convert this type to the equivalent plainType.
     /// </summary>
-    IMaybeAntetype ToAntetype();
+    IMaybePlainType ToPlainType();
 
     /// <summary>
     /// Create a type with the upper bound of the capability constraint.

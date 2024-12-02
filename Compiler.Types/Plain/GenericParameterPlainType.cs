@@ -22,7 +22,7 @@ public sealed class GenericParameterPlainType : VariablePlainType
     }
 
     #region Equality
-    public override bool Equals(IMaybeAntetype? other)
+    public override bool Equals(IMaybePlainType? other)
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;

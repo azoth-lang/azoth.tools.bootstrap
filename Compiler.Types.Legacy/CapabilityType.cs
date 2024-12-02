@@ -112,7 +112,7 @@ public abstract class CapabilityType : NonEmptyType, INonVoidType
         Capability = capability;
     }
 
-    public sealed override INonVoidAntetype ToAntetype() => BareType.ToAntetype();
+    public sealed override INonVoidPlainType ToPlainType() => BareType.ToPlainType();
 
     public override IType ReplaceTypeParametersIn(IType type)
         => BareType.ReplaceTypeParametersIn(type);

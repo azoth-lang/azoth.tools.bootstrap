@@ -6,22 +6,22 @@
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
 // ---------- Bindings
-↑ Binding.BindingAntetype: `IMaybeAntetype`;
+↑ Binding.BindingPlainType: `IMaybePlainType`;
 
 // ---------- Parameters
-↑ Parameter.BindingAntetype: `IMaybeAntetype`;
-= SelfParameter.BindingAntetype;
+↑ Parameter.BindingPlainType: `IMaybePlainType`;
+= SelfParameter.BindingPlainType;
 
 // ---------- Statements
 = VariableDeclarationStatement.↑.Diagnostics;
 
 // ---------- Patterns
-↓ Pattern.ContextBindingAntetype(): `IMaybeAntetype`;
-= BindingContextPattern.Pattern.ContextBindingAntetype();
-= OptionalPattern.Pattern.ContextBindingAntetype();
+↓ Pattern.ContextBindingPlainType(): `IMaybePlainType`;
+= BindingContextPattern.Pattern.ContextBindingPlainType();
+= OptionalPattern.Pattern.ContextBindingPlainType();
 
 // ---------- Expressions
-↑ NewObjectExpression.ConstructingAntetype: `IMaybeAntetype`;
+↑ NewObjectExpression.ConstructingPlainType: `IMaybePlainType`;
 
 // ---------- Operator Expressions
-= PatternMatchExpression.Pattern.ContextBindingAntetype();
+= PatternMatchExpression.Pattern.ContextBindingPlainType();

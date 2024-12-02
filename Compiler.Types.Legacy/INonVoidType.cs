@@ -12,7 +12,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
     typeof(NeverType))]
 public interface INonVoidType : IType, IMaybeNonVoidType
 {
-    public new INonVoidAntetype ToAntetype();
-    IAntetype IType.ToAntetype() => ToAntetype();
-    IMaybeAntetype IMaybeType.ToAntetype() => ToAntetype();
+    public new INonVoidPlainType ToPlainType();
+    IPlainType IType.ToPlainType() => ToPlainType();
+    IMaybePlainType IMaybeType.ToPlainType() => ToPlainType();
 }

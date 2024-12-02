@@ -21,7 +21,7 @@ public sealed class CapabilityTypeConstraint : IPseudotype
         => BareType.With(Capability.UpperBound);
     IExpressionType IPseudotype.ToUpperBound() => ToUpperBound();
 
-    public IMaybeAntetype ToAntetype() => BareType.ToAntetype();
+    public IMaybePlainType ToPlainType() => BareType.ToPlainType();
 
     #region Equality
     public bool Equals(IMaybePseudotype? other)

@@ -36,5 +36,5 @@ public sealed class BigIntegerType : IntegerType
         => BareType.With(capability);
 
     public override ITypeConstructor? ToTypeConstructor() => null;
-    public override IAntetype TryToAntetype() => IsSigned ? IAntetype.Int : IAntetype.UInt;
+    public override IPlainType TryToPlainType() => IsSigned ? IPlainType.Int : IPlainType.UInt;
 }

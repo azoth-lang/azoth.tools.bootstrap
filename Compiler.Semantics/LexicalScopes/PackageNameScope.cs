@@ -116,8 +116,8 @@ public sealed class PackageNameScope
     #endregion
 
     #region Lookup(IMaybeExpressionAntetype)
-    public ITypeDeclarationNode? Lookup(IMaybeAntetype antetype)
-        => antetype switch
+    public ITypeDeclarationNode? Lookup(IMaybePlainType plainType)
+        => plainType switch
         {
             UnknownPlainType _ => null,
             EmptyPlainType _ => null,
@@ -129,7 +129,7 @@ public sealed class PackageNameScope
             SimpleTypeConstructor t => Lookup(t),
             // TODO There are no declarations for const value type, but perhaps there should be?
             LiteralTypeConstructor _ => null,
-            _ => throw ExhaustiveMatch.Failed(antetype),
+            _ => throw ExhaustiveMatch.Failed(plainType),
         };
 
     public ITypeDeclarationNode? Lookup(ITypeConstructor antetype)

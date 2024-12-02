@@ -6,26 +6,26 @@ using ExhaustiveMatching;
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 
 /// <summary>
-/// An antetype that is defined by its name.
+/// An plainType that is defined by its name.
 /// </summary>
 [Closed(typeof(OrdinaryNamedPlainType), typeof(VariablePlainType), typeof(EmptyPlainType))]
-public abstract class NamedPlainType : IAntetype
+public abstract class NamedPlainType : IPlainType
 {
     public abstract ITypeConstructor? TypeConstructor { get; }
     public abstract bool AllowsVariance { get; }
     public abstract TypeName Name { get; }
-    public virtual IFixedList<IAntetype> TypeArguments => FixedList.Empty<IAntetype>();
+    public virtual IFixedList<IPlainType> TypeArguments => FixedList.Empty<IPlainType>();
     public abstract IFixedSet<NamedPlainType> Supertypes { get; }
 
     private protected NamedPlainType() { }
 
-    public abstract IMaybeAntetype ReplaceTypeParametersIn(IMaybeAntetype antetype);
+    public abstract IMaybePlainType ReplaceTypeParametersIn(IMaybePlainType plainType);
 
     #region Equality
-    public abstract bool Equals(IMaybeAntetype? other);
+    public abstract bool Equals(IMaybePlainType? other);
 
     public sealed override bool Equals(object? obj)
-        => obj is IMaybeAntetype other && Equals(other);
+        => obj is IMaybePlainType other && Equals(other);
 
     public abstract override int GetHashCode();
     #endregion

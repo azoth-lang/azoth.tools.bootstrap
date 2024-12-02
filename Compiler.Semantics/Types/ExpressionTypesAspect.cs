@@ -486,9 +486,9 @@ internal static partial class ExpressionTypesAspect
 
     public static partial IMaybeExpressionType BinaryOperatorExpression_Type(IBinaryOperatorExpressionNode node)
     {
-        if (node.Antetype is ISimpleOrConstValueAntetype simpleOrConstValueAntetype)
+        if (node.PlainType is ISimpleOrConstValueAntetype simpleOrConstValueAntetype)
             return simpleOrConstValueAntetype.ToType();
-        if (node.Antetype is UnknownPlainType)
+        if (node.PlainType is UnknownPlainType)
             return IType.Unknown;
 
         var leftType = node.LeftOperand?.Type ?? IType.Unknown;
@@ -647,7 +647,7 @@ internal static partial class ExpressionTypesAspect
     }
 
     public static partial IMaybeType ImplicitConversionExpression_Type(IImplicitConversionExpressionNode node)
-        => node.Antetype.ToType();
+        => node.PlainType.ToType();
 
     public static partial IFlowState ImplicitConversionExpression_FlowStateAfter(IImplicitConversionExpressionNode node)
         => node.Referent.FlowStateAfter.Transform(node.Referent.ValueId, node.ValueId, node.Type);
@@ -673,11 +673,11 @@ internal static partial class ExpressionTypesAspect
         => node.Expression?.FlowStateAfter.Combine(node.Expression.ValueId, null, node.ValueId) ?? IFlowState.Empty;
 
     public static partial IMaybeExpressionType UnaryOperatorExpression_Type(IUnaryOperatorExpressionNode node)
-        => node.Antetype switch
+        => node.PlainType switch
         {
             ISimpleOrConstValueAntetype t => t.ToType(),
             UnknownPlainType => IType.Unknown,
-            _ => throw new InvalidOperationException($"Unexpected plainType {node.Antetype}")
+            _ => throw new InvalidOperationException($"Unexpected plainType {node.PlainType}")
         };
 
     public static partial IFlowState UnaryOperatorExpression_FlowStateAfter(IUnaryOperatorExpressionNode node)

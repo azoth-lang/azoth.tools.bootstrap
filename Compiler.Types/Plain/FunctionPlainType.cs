@@ -2,23 +2,23 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 
-public sealed class FunctionPlainType : INonVoidAntetype, IMaybeFunctionAntetype
+public sealed class FunctionPlainType : INonVoidPlainType, IMaybeFunctionPlainType
 {
     public TypeSemantics? Semantics => TypeSemantics.Reference;
-    public IFixedList<INonVoidAntetype> Parameters { get; }
-    public IAntetype Return { get; }
+    public IFixedList<INonVoidPlainType> Parameters { get; }
+    public IPlainType Return { get; }
 
-    public FunctionPlainType(IEnumerable<INonVoidAntetype> parameters, IAntetype returnAntetype)
+    public FunctionPlainType(IEnumerable<INonVoidPlainType> parameters, IPlainType returnPlainType)
     {
-        Return = returnAntetype;
+        Return = returnPlainType;
         Parameters = parameters.ToFixedList();
     }
 
-    public IMaybeAntetype ReplaceTypeParametersIn(IMaybeAntetype antetype)
-        => antetype;
+    public IMaybePlainType ReplaceTypeParametersIn(IMaybePlainType plainType)
+        => plainType;
 
     #region Equality
-    public bool Equals(IMaybeAntetype? other)
+    public bool Equals(IMaybePlainType? other)
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
@@ -27,7 +27,7 @@ public sealed class FunctionPlainType : INonVoidAntetype, IMaybeFunctionAntetype
                && Return.Equals(that.Return);
     }
 
-    public override bool Equals(object? obj) => obj is IMaybeAntetype other && Equals(other);
+    public override bool Equals(object? obj) => obj is IMaybePlainType other && Equals(other);
 
     public override int GetHashCode() => HashCode.Combine(Parameters, Return);
     #endregion

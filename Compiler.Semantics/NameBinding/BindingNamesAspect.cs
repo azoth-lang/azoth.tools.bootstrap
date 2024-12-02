@@ -45,7 +45,7 @@ internal static partial class BindingNamesAspect
 
     public static partial IFixedSet<IConstructorDeclarationNode> NewObjectExpression_ReferencedConstructors(INewObjectExpressionNode node)
     {
-        var typeDeclarationNode = node.PackageNameScope().Lookup(node.ConstructingAntetype);
+        var typeDeclarationNode = node.PackageNameScope().Lookup(node.ConstructingPlainType);
         if (typeDeclarationNode is null)
             return FixedSet.Empty<IConstructorDeclarationNode>();
 

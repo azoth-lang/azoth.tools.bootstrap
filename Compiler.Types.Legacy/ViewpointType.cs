@@ -16,7 +16,7 @@ public abstract class ViewpointType : NonEmptyType, INonVoidType
 
     IMaybeNonVoidType IMaybeNonVoidType.WithoutWrite() => this;
 
-    public sealed override INonVoidAntetype ToAntetype() => Referent.ToAntetype();
+    public sealed override INonVoidPlainType ToPlainType() => Referent.ToPlainType();
 
     IMaybeType IMaybeType.AccessedVia(IMaybePseudotype contextType) => (IMaybeType)AccessedVia(contextType);
 

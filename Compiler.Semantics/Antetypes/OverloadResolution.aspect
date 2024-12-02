@@ -12,7 +12,7 @@
 = NewObjectExpression.↑.Diagnostics;
 
 // ---------- Invocation Expressions
-= UnknownInvocationExpression.Expression.ExpectedAntetype;
+= UnknownInvocationExpression.Expression.ExpectedPlainType;
 ✎ UnknownInvocationExpression FunctionNameExpression;
 ✎ UnknownInvocationExpression MethodNameExpression;
 ✎ UnknownInvocationExpression TypeNameExpression;

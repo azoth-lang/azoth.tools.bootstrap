@@ -62,29 +62,29 @@ public sealed class OrdinaryTypeConstructor : ITypeConstructor
         AllowsVariance = Parameters.Any(p => p.Variance != TypeVariance.Invariant);
         Semantics = semantics;
         IsAbstract = isAbstract;
-        Requires.That(supertypes.Contains(IAntetype.Any), nameof(supertypes),
+        Requires.That(supertypes.Contains(IPlainType.Any), nameof(supertypes),
             "All ordinary type constructors must have `Any` as a supertype.");
         Supertypes = supertypes;
         GenericParameterPlainTypes = Parameters.Select(p => new GenericParameterPlainType(this, p))
                                                      .ToFixedList();
     }
 
-    public NamedPlainType Construct(IEnumerable<IAntetype> typeArguments)
+    public NamedPlainType Construct(IEnumerable<IPlainType> typeArguments)
     {
         var args = typeArguments.ToFixedList();
         if (args.Count != Parameters.Count)
             throw new ArgumentException("Incorrect number of type arguments.");
         return new OrdinaryNamedPlainType(this, args);
     }
-    IAntetype ITypeConstructor.Construct(IEnumerable<IAntetype> typeArguments)
+    IPlainType ITypeConstructor.Construct(IEnumerable<IPlainType> typeArguments)
         => Construct(typeArguments);
 
     public NamedPlainType ConstructWithGenericParameterPlayTypes()
         => Construct(GenericParameterPlainTypes);
-    IAntetype ITypeConstructor.ConstructWithGenericParameterPlainTypes()
+    IPlainType ITypeConstructor.ConstructWithGenericParameterPlainTypes()
         => ConstructWithGenericParameterPlayTypes();
 
-    public IAntetype? TryConstructNullary()
+    public IPlainType? TryConstructNullary()
         => Parameters.IsEmpty ? new OrdinaryNamedPlainType(this, []) : null;
 
     #region Equality

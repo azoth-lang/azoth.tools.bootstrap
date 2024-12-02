@@ -10,37 +10,37 @@ public sealed class CallCandidate<TDeclaration>
     where TDeclaration : IInvocableDeclarationNode
 {
     public TDeclaration Declaration { get; }
-    public IMaybeAntetype? SelfParameterAntetype { get; }
-    public IFixedList<IMaybeNonVoidAntetype> ParameterAntetypes { get; }
-    public int Arity => ParameterAntetypes.Count;
-    public IMaybeAntetype ReturnAntetype { get; }
+    public IMaybePlainType? SelfParameterPlainType { get; }
+    public IFixedList<IMaybeNonVoidPlainType> ParameterPlainTypes { get; }
+    public int Arity => ParameterPlainTypes.Count;
+    public IMaybePlainType ReturnPlainType { get; }
 
     internal CallCandidate(
         TDeclaration declaration,
-        IMaybeAntetype? selfParameterAntetype,
-        IEnumerable<IMaybeNonVoidAntetype> parameterAntetypes,
-        IMaybeAntetype returnAntetype)
+        IMaybePlainType? selfParameterPlainType,
+        IEnumerable<IMaybeNonVoidPlainType> parameterPlainTypes,
+        IMaybePlainType returnPlainType)
     {
-        SelfParameterAntetype = selfParameterAntetype;
-        ParameterAntetypes = parameterAntetypes.ToFixedList();
-        ReturnAntetype = returnAntetype;
+        SelfParameterPlainType = selfParameterPlainType;
+        ParameterPlainTypes = parameterPlainTypes.ToFixedList();
+        ReturnPlainType = returnPlainType;
         Declaration = declaration;
     }
 
-    public bool CompatibleWith(ArgumentAntetypes arguments)
+    public bool CompatibleWith(ArgumentPlainTypes arguments)
     {
         if (Arity != arguments.Arity)
             return false;
 
-        if (SelfParameterAntetype is not null
+        if (SelfParameterPlainType is not null
             // Self is null for constructors and initializers where the type is definitely compatible
             && arguments.Self is not null)
         {
-            if (!arguments.Self.IsAssignableTo(SelfParameterAntetype))
+            if (!arguments.Self.IsAssignableTo(SelfParameterPlainType))
                 return false;
         }
 
-        return ParameterAntetypes.EquiZip(arguments.Arguments).All((p, a) => a.IsAssignableTo(p));
+        return ParameterPlainTypes.EquiZip(arguments.Arguments).All((p, a) => a.IsAssignableTo(p));
     }
 }
 
@@ -49,54 +49,54 @@ internal static class CallCandidate
     public static CallCandidate<IFunctionInvocableDeclarationNode> Create(
         IFunctionInvocableDeclarationNode function)
     {
-        var parameterAntetypes = function.ParameterTypes.Select(p => p.Type.ToAntetype().ToNonLiteralType())
-                                       .Cast<IMaybeNonVoidAntetype>().ToFixedList();
-        var returnAntetype = function.ReturnType.ToAntetype();
+        var parameterAntetypes = function.ParameterTypes.Select(p => p.Type.ToPlainType().ToNonLiteralType())
+                                       .Cast<IMaybeNonVoidPlainType>().ToFixedList();
+        var returnAntetype = function.ReturnType.ToPlainType();
         return new(function, null, parameterAntetypes, returnAntetype);
     }
 
     public static CallCandidate<IConstructorDeclarationNode> Create(
-        IMaybeAntetype constructingAntetype,
+        IMaybePlainType constructingPlainType,
         IConstructorDeclarationNode constructor)
-        => Create(constructingAntetype, constructor, constructor.SelfParameterType);
+        => Create(constructingPlainType, constructor, constructor.SelfParameterType);
 
     public static CallCandidate<IInitializerDeclarationNode> Create(
-        IMaybeAntetype initializingAntetype,
+        IMaybePlainType initializingPlainType,
         IInitializerDeclarationNode initializer)
-        => Create(initializingAntetype, initializer, initializer.SelfParameterType);
+        => Create(initializingPlainType, initializer, initializer.SelfParameterType);
 
     public static CallCandidate<IStandardMethodDeclarationNode> Create(
-        IMaybeAntetype contextAntetype,
+        IMaybePlainType contextPlainType,
         IStandardMethodDeclarationNode method)
-        => Create(contextAntetype, method, method.SelfParameterType);
+        => Create(contextPlainType, method, method.SelfParameterType);
 
     private static CallCandidate<TDeclaration> Create<TDeclaration>(
-        IMaybeAntetype contextAntetype,
+        IMaybePlainType contextPlainType,
         TDeclaration declaration,
         IMaybeSelfParameterType selfParameterType)
         where TDeclaration : IInvocableDeclarationNode
     {
-        var selfParameterAntetype = SelfParameterAntetype(contextAntetype, selfParameterType);
-        var parameterAntetypes = ParameterAntetypes(contextAntetype, declaration);
-        var returnAntetype = ReturnAntetype(contextAntetype, declaration);
+        var selfParameterAntetype = SelfParameterPlainType(contextPlainType, selfParameterType);
+        var parameterAntetypes = ParameterPlainTypes(contextPlainType, declaration);
+        var returnAntetype = ReturnPlainType(contextPlainType, declaration);
         return new(declaration, selfParameterAntetype, parameterAntetypes, returnAntetype);
     }
 
-    private static IMaybeAntetype SelfParameterAntetype(
-        IMaybeAntetype contextAntetype,
+    private static IMaybePlainType SelfParameterPlainType(
+        IMaybePlainType contextPlainType,
         IMaybeSelfParameterType selfParameterType)
-        => contextAntetype.ReplaceTypeParametersIn(selfParameterType.Type.ToAntetype())
+        => contextPlainType.ReplaceTypeParametersIn(selfParameterType.Type.ToPlainType())
                                .ToNonLiteralType();
 
-    private static IFixedList<IMaybeNonVoidAntetype> ParameterAntetypes(
-        IMaybeAntetype contextAntetype,
+    private static IFixedList<IMaybeNonVoidPlainType> ParameterPlainTypes(
+        IMaybePlainType contextPlainType,
         IInvocableDeclarationNode declaration)
-        => declaration.ParameterTypes.Select(p => ParameterAntetype(contextAntetype, p))
-                      .OfType<IMaybeNonVoidAntetype>().ToFixedList();
+        => declaration.ParameterTypes.Select(p => ParameterPlainType(contextPlainType, p))
+                      .OfType<IMaybeNonVoidPlainType>().ToFixedList();
 
-    private static IMaybeAntetype ParameterAntetype(IMaybeAntetype contextAntetype, IMaybeParameterType parameter)
-        => contextAntetype.ReplaceTypeParametersIn(parameter.Type.ToAntetype()).ToNonLiteralType();
+    private static IMaybePlainType ParameterPlainType(IMaybePlainType contextPlainType, IMaybeParameterType parameter)
+        => contextPlainType.ReplaceTypeParametersIn(parameter.Type.ToPlainType()).ToNonLiteralType();
 
-    private static IMaybeAntetype ReturnAntetype(IMaybeAntetype contextAntetype, IInvocableDeclarationNode declaration)
-        => contextAntetype.ReplaceTypeParametersIn(declaration.ReturnType.ToAntetype()).ToNonLiteralType();
+    private static IMaybePlainType ReturnPlainType(IMaybePlainType contextPlainType, IInvocableDeclarationNode declaration)
+        => contextPlainType.ReplaceTypeParametersIn(declaration.ReturnType.ToPlainType()).ToNonLiteralType();
 }

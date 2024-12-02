@@ -115,7 +115,7 @@ internal static partial class BindingAmbiguousNamesAspect
             or IInitializerGroupNameNode)
             return null;
 
-        var contextTypeDeclaration = node.PackageNameScope().Lookup(context.Antetype);
+        var contextTypeDeclaration = node.PackageNameScope().Lookup(context.PlainType);
         // TODO members needs to be filtered to visible accessible members
         var members = contextTypeDeclaration?.InclusiveInstanceMembersNamed(node.MemberName).ToFixedSet() ?? [];
         if (members.Count == 0)

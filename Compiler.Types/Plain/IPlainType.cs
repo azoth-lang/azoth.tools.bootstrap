@@ -3,15 +3,15 @@ using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 
-/// <remarks><para>An antetype is the type that exists before reference capabilities are accounted
+/// <remarks><para>An plainType is the type that exists before reference capabilities are accounted
 /// for. This is distinct from a <i>bare type</i>. A bare type lacks a reference capability at the
 /// top level. However, if it is generic then a reference capability can still occur on the type
-/// arguments (e.g. <c>Foo[mut Bar])</c>. Meanwhile, an antetype lacks reference capabilities
+/// arguments (e.g. <c>Foo[mut Bar])</c>. Meanwhile, an plainType lacks reference capabilities
 /// anywhere (e.g. <c>Foo[Bar]</c>). Antetypes are the types that would exist in Azoth if the language
 /// had no reference capabilities. They are so named because they are the types that come before or
 /// precede the calculation of the regular types with reference capabilities.</para></remarks>
-[Closed(typeof(INonVoidAntetype), typeof(NamedPlainType), typeof(LiteralTypeConstructor))]
-public interface IAntetype : IMaybeAntetype
+[Closed(typeof(INonVoidPlainType), typeof(NamedPlainType), typeof(LiteralTypeConstructor))]
+public interface IPlainType : IMaybePlainType
 {
     #region Standard Types
     public new static readonly UnknownPlainType Unknown = UnknownPlainType.Instance;

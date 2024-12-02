@@ -16,7 +16,7 @@ public sealed class BoolLiteralTypeConstructor : LiteralTypeConstructor
         Value = value;
     }
 
-    public override IMaybeAntetype ToNonLiteralType() => ITypeConstructor.Bool;
+    public override IMaybePlainType ToNonLiteralType() => ITypeConstructor.Bool;
 
     public static implicit operator BoolLiteralTypeConstructor(bool value) => value ? True : False;
 
@@ -33,7 +33,7 @@ public sealed class BoolLiteralTypeConstructor : LiteralTypeConstructor
     #endregion
 
     #region Equality
-    public override bool Equals(IMaybeAntetype? other)
+    public override bool Equals(IMaybePlainType? other)
         // Bool literal values are singletons, so we can use reference equality.
         => ReferenceEquals(this, other);
 
