@@ -5,7 +5,7 @@ using Azoth.Tools.Bootstrap.Compiler.Names;
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 
 /// <summary>
-/// A generic parameter definition for an antetype.
+/// A generic parameter definition for a type constructor.
 /// </summary>
 public sealed class TypeConstructorParameter : IEquatable<TypeConstructorParameter>
 {

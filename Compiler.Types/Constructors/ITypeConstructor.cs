@@ -6,10 +6,9 @@ using ExhaustiveMatching;
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 
 /// <summary>
-/// An antetype as it is declared.
+/// A type constructor for a plain type.
 /// </summary>
-/// <remarks>For generic types, a declared type is not a type, but rather a template or kind for
-/// creating types.</remarks>
+/// <remarks>A type constructor is a sort of template, factory, or kind for creating plain types.</remarks>
 [Closed(
     typeof(OrdinaryTypeConstructor),
     typeof(AnyTypeConstructor),

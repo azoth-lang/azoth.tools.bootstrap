@@ -58,14 +58,14 @@ public static partial class PlainTypeOperations
                 => right,
             (FixedSizeIntegerTypeConstructor { IsSigned: true } left, IntegerLiteralTypeConstructor right)
                 when left.IsSigned || right.IsSigned
-                => left.NumericOperatorCommonType((INumericAntetype)right.ToSmallestSignedIntegerType()),
+                => left.NumericOperatorCommonType(right.ToSmallestSignedIntegerType()),
             (FixedSizeIntegerTypeConstructor { IsSigned: false } left, IntegerLiteralTypeConstructor { IsSigned: false } right)
-                => left.NumericOperatorCommonType((INumericAntetype)right.ToSmallestUnsignedIntegerType()),
+                => left.NumericOperatorCommonType(right.ToSmallestUnsignedIntegerType()),
             (IntegerLiteralTypeConstructor left, FixedSizeIntegerTypeConstructor right)
                 when left.IsSigned || right.IsSigned
-                => left.ToSmallestSignedIntegerType().NumericOperatorCommonType((INumericAntetype)right),
+                => left.ToSmallestSignedIntegerType().NumericOperatorCommonType(right),
             (IntegerLiteralTypeConstructor { IsSigned: false } left, FixedSizeIntegerTypeConstructor { IsSigned: false } right)
-                => left.ToSmallestSignedIntegerType().NumericOperatorCommonType((INumericAntetype)right),
+                => left.ToSmallestSignedIntegerType().NumericOperatorCommonType(right),
             _ => null
         };
 }

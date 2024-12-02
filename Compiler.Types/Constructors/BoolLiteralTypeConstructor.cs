@@ -16,7 +16,7 @@ public sealed class BoolLiteralTypeConstructor : LiteralTypeConstructor
         Value = value;
     }
 
-    public override IMaybeAntetype ToNonConstValueType() => IAntetype.Bool;
+    public override IMaybeAntetype ToNonConstValueType() => ITypeConstructor.Bool;
 
     public static implicit operator BoolLiteralTypeConstructor(bool value) => value ? True : False;
 
@@ -34,7 +34,7 @@ public sealed class BoolLiteralTypeConstructor : LiteralTypeConstructor
 
     #region Equality
     public override bool Equals(IMaybeExpressionAntetype? other)
-        // Bool const values are singletons, so we can use reference equality.
+        // Bool literal values are singletons, so we can use reference equality.
         => ReferenceEquals(this, other);
 
     public override int GetHashCode() => HashCode.Combine(Value);

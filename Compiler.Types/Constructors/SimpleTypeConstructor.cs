@@ -53,11 +53,11 @@ public abstract class SimpleTypeConstructor : INonVoidAntetype, ITypeConstructor
 
     #region Equality
     public bool Equals(IMaybeExpressionAntetype? other)
-        // All simple antetypes are singletons, so we can use reference equality.
+        // All simple type constructors are singletons, so we can use reference equality.
         => ReferenceEquals(this, other);
 
     public bool Equals(ITypeConstructor? other)
-        // All simple antetypes are singletons, so we can use reference equality.
+        // All simple type constructors are singletons, so we can use reference equality.
         => ReferenceEquals(this, other);
 
     public override bool Equals(object? obj)

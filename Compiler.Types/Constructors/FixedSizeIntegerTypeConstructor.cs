@@ -1,7 +1,6 @@
 using System.Diagnostics;
 using System.Numerics;
 using Azoth.Tools.Bootstrap.Compiler.Names;
-using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 
@@ -37,9 +36,6 @@ public sealed class FixedSizeIntegerTypeConstructor : IntegerTypeConstructor
         }
     }
 
-    /// <summary>
-    /// The current type but signed.
-    /// </summary>
     /// <remarks>If the current type is already signed then this doesn't change anything. If the
     /// current type is unsigned, then this returns the next larger integer type.</remarks>
     public override IntegerTypeConstructor WithSign()
@@ -48,7 +44,7 @@ public sealed class FixedSizeIntegerTypeConstructor : IntegerTypeConstructor
         if (ReferenceEquals(this, Byte)) return Int16;
         if (ReferenceEquals(this, UInt16)) return Int32;
         if (ReferenceEquals(this, UInt32)) return Int64;
-        if (ReferenceEquals(this, UInt64)) return IAntetype.Int;
+        if (ReferenceEquals(this, UInt64)) return ITypeConstructor.Int;
         throw new UnreachableException("All values should be covered.");
     }
 }

@@ -17,5 +17,8 @@ public abstract class IntegerTypeConstructor : NumericTypeConstructor
         IsSigned = isSigned;
     }
 
+    /// <summary>
+    /// The current type but signed.
+    /// </summary>
     public abstract IntegerTypeConstructor WithSign();
 }
