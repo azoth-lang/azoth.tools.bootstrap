@@ -4,7 +4,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.PlainTypes;
 
-internal static partial class ForeachExpressionAntetypesAspect
+internal static partial class ForeachExpressionPlainTypesAspect
 {
     public static partial ITypeDeclarationNode? ForeachExpression_ReferencedIterableDeclaration(IForeachExpressionNode node)
         => node.PackageNameScope().Lookup(node.InExpression?.PlainType ?? IPlainType.Unknown);

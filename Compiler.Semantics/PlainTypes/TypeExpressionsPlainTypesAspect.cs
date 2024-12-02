@@ -4,7 +4,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.PlainTypes;
 
-internal static partial class TypeExpressionsAntetypesAspect
+internal static partial class TypeExpressionsPlainTypesAspect
 {
     public static partial IMaybePlainType ViewpointType_NamedPlainType(IViewpointTypeNode node)
         // Viewpoint has no effect on the plainType

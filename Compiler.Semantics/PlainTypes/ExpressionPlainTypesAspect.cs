@@ -14,7 +14,7 @@ using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.PlainTypes;
 
-internal static partial class ExpressionAntetypesAspect
+internal static partial class ExpressionPlainTypesAspect
 {
     public static partial IMaybePlainType UnsafeExpression_PlainType(IUnsafeExpressionNode node)
         => node.Expression?.PlainType ?? IPlainType.Unknown;

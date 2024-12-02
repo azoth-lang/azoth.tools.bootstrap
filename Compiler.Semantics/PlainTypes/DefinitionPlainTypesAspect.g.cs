@@ -9,7 +9,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.PlainTypes;
 // ReSharper disable PartialTypeWithSinglePart
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-internal static partial class DefinitionAntetypesAspect
+internal static partial class DefinitionPlainTypesAspect
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial OrdinaryTypeConstructor TypeDefinition_DeclaredPlainType(ITypeDefinitionNode node);

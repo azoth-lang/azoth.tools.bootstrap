@@ -1,5 +1,5 @@
 ◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.PlainTypes;
-◊name DefinitionAntetypesAspect;
+◊name DefinitionPlainTypesAspect;
 ◊using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 ◊using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 

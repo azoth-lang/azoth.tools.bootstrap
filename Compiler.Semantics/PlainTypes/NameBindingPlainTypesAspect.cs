@@ -4,7 +4,7 @@ using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.PlainTypes;
 
-internal static partial class NameBindingAntetypesAspect
+internal static partial class NameBindingPlainTypesAspect
 {
     // TODO this is strange because a FieldParameter isn't a binding
     public static partial IMaybePlainType FieldParameter_BindingPlainType(IFieldParameterNode node)

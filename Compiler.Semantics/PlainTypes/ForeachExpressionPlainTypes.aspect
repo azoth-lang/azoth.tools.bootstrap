@@ -1,5 +1,5 @@
 ◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.PlainTypes;
-◊name ForeachExpressionAntetypesAspect;
+◊name ForeachExpressionPlainTypesAspect;
 ◊using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎

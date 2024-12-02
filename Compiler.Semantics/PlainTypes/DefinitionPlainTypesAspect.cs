@@ -3,7 +3,7 @@ using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.PlainTypes;
 
-internal static partial class DefinitionAntetypesAspect
+internal static partial class DefinitionPlainTypesAspect
 {
     public static partial OrdinaryTypeConstructor TypeDefinition_DeclaredPlainType(ITypeDefinitionNode node)
         // Types at the definition level do not depend on flow typing so it is fine to derive the

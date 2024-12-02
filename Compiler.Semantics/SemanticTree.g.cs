@@ -5400,7 +5400,7 @@ file class ClassDefinitionNode : SemanticNode, IClassDefinitionNode
     public OrdinaryTypeConstructor DeclaredPlainType
         => GrammarAttribute.IsCached(in declaredPlainTypeCached) ? declaredPlainType!
             : this.Synthetic(ref declaredPlainTypeCached, ref declaredPlainType,
-                DefinitionAntetypesAspect.TypeDefinition_DeclaredPlainType);
+                DefinitionPlainTypesAspect.TypeDefinition_DeclaredPlainType);
     private OrdinaryTypeConstructor? declaredPlainType;
     private bool declaredPlainTypeCached;
     public ObjectType DeclaredType
@@ -5442,7 +5442,7 @@ file class ClassDefinitionNode : SemanticNode, IClassDefinitionNode
     public SelfPlainType SelfPlainType
         => GrammarAttribute.IsCached(in selfPlainTypeCached) ? selfPlainType!
             : this.Synthetic(ref selfPlainTypeCached, ref selfPlainType,
-                DefinitionAntetypesAspect.TypeDefinition_SelfPlainType);
+                DefinitionPlainTypesAspect.TypeDefinition_SelfPlainType);
     private SelfPlainType? selfPlainType;
     private bool selfPlainTypeCached;
     public SelfType SelfType
@@ -5574,7 +5574,7 @@ file class StructDefinitionNode : SemanticNode, IStructDefinitionNode
     public OrdinaryTypeConstructor DeclaredPlainType
         => GrammarAttribute.IsCached(in declaredPlainTypeCached) ? declaredPlainType!
             : this.Synthetic(ref declaredPlainTypeCached, ref declaredPlainType,
-                DefinitionAntetypesAspect.TypeDefinition_DeclaredPlainType);
+                DefinitionPlainTypesAspect.TypeDefinition_DeclaredPlainType);
     private OrdinaryTypeConstructor? declaredPlainType;
     private bool declaredPlainTypeCached;
     public StructType DeclaredType
@@ -5616,7 +5616,7 @@ file class StructDefinitionNode : SemanticNode, IStructDefinitionNode
     public SelfPlainType SelfPlainType
         => GrammarAttribute.IsCached(in selfPlainTypeCached) ? selfPlainType!
             : this.Synthetic(ref selfPlainTypeCached, ref selfPlainType,
-                DefinitionAntetypesAspect.TypeDefinition_SelfPlainType);
+                DefinitionPlainTypesAspect.TypeDefinition_SelfPlainType);
     private SelfPlainType? selfPlainType;
     private bool selfPlainTypeCached;
     public SelfType SelfType
@@ -5745,7 +5745,7 @@ file class TraitDefinitionNode : SemanticNode, ITraitDefinitionNode
     public OrdinaryTypeConstructor DeclaredPlainType
         => GrammarAttribute.IsCached(in declaredPlainTypeCached) ? declaredPlainType!
             : this.Synthetic(ref declaredPlainTypeCached, ref declaredPlainType,
-                DefinitionAntetypesAspect.TypeDefinition_DeclaredPlainType);
+                DefinitionPlainTypesAspect.TypeDefinition_DeclaredPlainType);
     private OrdinaryTypeConstructor? declaredPlainType;
     private bool declaredPlainTypeCached;
     public ObjectType DeclaredType
@@ -5775,7 +5775,7 @@ file class TraitDefinitionNode : SemanticNode, ITraitDefinitionNode
     public SelfPlainType SelfPlainType
         => GrammarAttribute.IsCached(in selfPlainTypeCached) ? selfPlainType!
             : this.Synthetic(ref selfPlainTypeCached, ref selfPlainType,
-                DefinitionAntetypesAspect.TypeDefinition_SelfPlainType);
+                DefinitionPlainTypesAspect.TypeDefinition_SelfPlainType);
     private SelfPlainType? selfPlainType;
     private bool selfPlainTypeCached;
     public SelfType SelfType
@@ -7156,7 +7156,7 @@ file class FieldDefinitionNode : SemanticNode, IFieldDefinitionNode
     public IMaybePlainType BindingPlainType
         => GrammarAttribute.IsCached(in bindingPlainTypeCached) ? bindingPlainType!
             : this.Synthetic(ref bindingPlainTypeCached, ref bindingPlainType,
-                DefinitionAntetypesAspect.FieldDefinition_BindingPlainType);
+                DefinitionPlainTypesAspect.FieldDefinition_BindingPlainType);
     private IMaybePlainType? bindingPlainType;
     private bool bindingPlainTypeCached;
     public IMaybeNonVoidType BindingType
@@ -7510,7 +7510,7 @@ file class NamedParameterNode : SemanticNode, INamedParameterNode
     public IMaybePlainType BindingPlainType
         => GrammarAttribute.IsCached(in bindingPlainTypeCached) ? bindingPlainType!
             : this.Synthetic(ref bindingPlainTypeCached, ref bindingPlainType,
-                NameBindingAntetypesAspect.NamedParameter_BindingPlainType);
+                NameBindingPlainTypesAspect.NamedParameter_BindingPlainType);
     private IMaybePlainType? bindingPlainType;
     private bool bindingPlainTypeCached;
     public IMaybeNonVoidType BindingType
@@ -7591,7 +7591,7 @@ file class ConstructorSelfParameterNode : SemanticNode, IConstructorSelfParamete
     public IMaybePlainType BindingPlainType
         => GrammarAttribute.IsCached(in bindingPlainTypeCached) ? bindingPlainType!
             : this.Synthetic(ref bindingPlainTypeCached, ref bindingPlainType,
-                NameBindingAntetypesAspect.SelfParameter_BindingPlainType);
+                NameBindingPlainTypesAspect.SelfParameter_BindingPlainType);
     private IMaybePlainType? bindingPlainType;
     private bool bindingPlainTypeCached;
     public CapabilityType BindingType
@@ -7672,7 +7672,7 @@ file class InitializerSelfParameterNode : SemanticNode, IInitializerSelfParamete
     public IMaybePlainType BindingPlainType
         => GrammarAttribute.IsCached(in bindingPlainTypeCached) ? bindingPlainType!
             : this.Synthetic(ref bindingPlainTypeCached, ref bindingPlainType,
-                NameBindingAntetypesAspect.SelfParameter_BindingPlainType);
+                NameBindingPlainTypesAspect.SelfParameter_BindingPlainType);
     private IMaybePlainType? bindingPlainType;
     private bool bindingPlainTypeCached;
     public CapabilityType BindingType
@@ -7753,7 +7753,7 @@ file class MethodSelfParameterNode : SemanticNode, IMethodSelfParameterNode
     public IMaybePlainType BindingPlainType
         => GrammarAttribute.IsCached(in bindingPlainTypeCached) ? bindingPlainType!
             : this.Synthetic(ref bindingPlainTypeCached, ref bindingPlainType,
-                NameBindingAntetypesAspect.SelfParameter_BindingPlainType);
+                NameBindingPlainTypesAspect.SelfParameter_BindingPlainType);
     private IMaybePlainType? bindingPlainType;
     private bool bindingPlainTypeCached;
     public IMaybePseudotype BindingType
@@ -7825,7 +7825,7 @@ file class FieldParameterNode : SemanticNode, IFieldParameterNode
     public IMaybePlainType BindingPlainType
         => GrammarAttribute.IsCached(in bindingPlainTypeCached) ? bindingPlainType!
             : this.Synthetic(ref bindingPlainTypeCached, ref bindingPlainType,
-                NameBindingAntetypesAspect.FieldParameter_BindingPlainType);
+                NameBindingPlainTypesAspect.FieldParameter_BindingPlainType);
     private IMaybePlainType? bindingPlainType;
     private bool bindingPlainTypeCached;
     public IMaybeNonVoidType BindingType
@@ -8007,7 +8007,7 @@ file class IdentifierTypeNameNode : SemanticNode, IIdentifierTypeNameNode
     public IMaybePlainType NamedPlainType
         => GrammarAttribute.IsCached(in namedPlainTypeCached) ? namedPlainType!
             : this.Synthetic(ref namedPlainTypeCached, ref namedPlainType,
-                TypeExpressionsAntetypesAspect.IdentifierTypeName_NamedPlainType);
+                TypeExpressionsPlainTypesAspect.IdentifierTypeName_NamedPlainType);
     private IMaybePlainType? namedPlainType;
     private bool namedPlainTypeCached;
     public IMaybeType NamedType
@@ -8071,7 +8071,7 @@ file class SpecialTypeNameNode : SemanticNode, ISpecialTypeNameNode
     public IMaybePlainType NamedPlainType
         => GrammarAttribute.IsCached(in namedPlainTypeCached) ? namedPlainType!
             : this.Synthetic(ref namedPlainTypeCached, ref namedPlainType,
-                TypeExpressionsAntetypesAspect.SpecialTypeName_NamedPlainType);
+                TypeExpressionsPlainTypesAspect.SpecialTypeName_NamedPlainType);
     private IMaybePlainType? namedPlainType;
     private bool namedPlainTypeCached;
     public IMaybeType NamedType
@@ -8126,7 +8126,7 @@ file class GenericTypeNameNode : SemanticNode, IGenericTypeNameNode
     public IMaybePlainType NamedPlainType
         => GrammarAttribute.IsCached(in namedPlainTypeCached) ? namedPlainType!
             : this.Synthetic(ref namedPlainTypeCached, ref namedPlainType,
-                TypeExpressionsAntetypesAspect.GenericTypeName_NamedPlainType);
+                TypeExpressionsPlainTypesAspect.GenericTypeName_NamedPlainType);
     private IMaybePlainType? namedPlainType;
     private bool namedPlainTypeCached;
     public IMaybeType NamedType
@@ -8224,7 +8224,7 @@ file class OptionalTypeNode : SemanticNode, IOptionalTypeNode
     public IMaybePlainType NamedPlainType
         => GrammarAttribute.IsCached(in namedPlainTypeCached) ? namedPlainType!
             : this.Synthetic(ref namedPlainTypeCached, ref namedPlainType,
-                TypeExpressionsAntetypesAspect.OptionalType_NamedPlainType);
+                TypeExpressionsPlainTypesAspect.OptionalType_NamedPlainType);
     private IMaybePlainType? namedPlainType;
     private bool namedPlainTypeCached;
     public IMaybeType NamedType
@@ -8258,7 +8258,7 @@ file class CapabilityTypeNode : SemanticNode, ICapabilityTypeNode
     public IMaybePlainType NamedPlainType
         => GrammarAttribute.IsCached(in namedPlainTypeCached) ? namedPlainType!
             : this.Synthetic(ref namedPlainTypeCached, ref namedPlainType,
-                TypeExpressionsAntetypesAspect.CapabilityType_NamedPlainType);
+                TypeExpressionsPlainTypesAspect.CapabilityType_NamedPlainType);
     private IMaybePlainType? namedPlainType;
     private bool namedPlainTypeCached;
     public IMaybeType NamedType
@@ -8305,7 +8305,7 @@ file class FunctionTypeNode : SemanticNode, IFunctionTypeNode
     public IMaybePlainType NamedPlainType
         => GrammarAttribute.IsCached(in namedPlainTypeCached) ? namedPlainType!
             : this.Synthetic(ref namedPlainTypeCached, ref namedPlainType,
-                TypeExpressionsAntetypesAspect.FunctionType_NamedPlainType);
+                TypeExpressionsPlainTypesAspect.FunctionType_NamedPlainType);
     private IMaybePlainType? namedPlainType;
     private bool namedPlainTypeCached;
     public IMaybeType NamedType
@@ -8368,7 +8368,7 @@ file class CapabilityViewpointTypeNode : SemanticNode, ICapabilityViewpointTypeN
     public IMaybePlainType NamedPlainType
         => GrammarAttribute.IsCached(in namedPlainTypeCached) ? namedPlainType!
             : this.Synthetic(ref namedPlainTypeCached, ref namedPlainType,
-                TypeExpressionsAntetypesAspect.ViewpointType_NamedPlainType);
+                TypeExpressionsPlainTypesAspect.ViewpointType_NamedPlainType);
     private IMaybePlainType? namedPlainType;
     private bool namedPlainTypeCached;
     public IMaybeType NamedType
@@ -8420,7 +8420,7 @@ file class SelfViewpointTypeNode : SemanticNode, ISelfViewpointTypeNode
     public IMaybePlainType NamedPlainType
         => GrammarAttribute.IsCached(in namedPlainTypeCached) ? namedPlainType!
             : this.Synthetic(ref namedPlainTypeCached, ref namedPlainType,
-                TypeExpressionsAntetypesAspect.ViewpointType_NamedPlainType);
+                TypeExpressionsPlainTypesAspect.ViewpointType_NamedPlainType);
     private IMaybePlainType? namedPlainType;
     private bool namedPlainTypeCached;
     public IMaybeType NamedType
@@ -8619,7 +8619,7 @@ file class ResultStatementNode : SemanticNode, IResultStatementNode
     public IMaybePlainType PlainType
         => GrammarAttribute.IsCached(in plainTypeCached) ? plainType!
             : this.Synthetic(ref plainTypeCached, ref plainType,
-                ExpressionAntetypesAspect.ResultStatement_PlainType);
+                ExpressionPlainTypesAspect.ResultStatement_PlainType);
     private IMaybePlainType? plainType;
     private bool plainTypeCached;
     public IMaybeExpressionType Type
@@ -8724,7 +8724,7 @@ file class VariableDeclarationStatementNode : SemanticNode, IVariableDeclaration
     public IMaybePlainType BindingPlainType
         => GrammarAttribute.IsCached(in bindingPlainTypeCached) ? bindingPlainType!
             : this.Synthetic(ref bindingPlainTypeCached, ref bindingPlainType,
-                NameBindingAntetypesAspect.VariableDeclarationStatement_BindingPlainType);
+                NameBindingPlainTypesAspect.VariableDeclarationStatement_BindingPlainType);
     private IMaybePlainType? bindingPlainType;
     private bool bindingPlainTypeCached;
     public IMaybeNonVoidType BindingType
@@ -8827,7 +8827,7 @@ file class VariableDeclarationStatementNode : SemanticNode, IVariableDeclaration
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
     {
         ShadowingAspect.VariableBinding_Contribute_Diagnostics(this, builder);
-        NameBindingAntetypesAspect.VariableDeclarationStatement_Contribute_Diagnostics(this, builder);
+        NameBindingPlainTypesAspect.VariableDeclarationStatement_Contribute_Diagnostics(this, builder);
     }
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
@@ -8989,7 +8989,7 @@ file class BindingContextPatternNode : SemanticNode, IBindingContextPatternNode
     internal override IMaybePlainType Inherited_ContextBindingPlainType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.Pattern))
-            return NameBindingAntetypesAspect.BindingContextPattern_Pattern_ContextBindingPlainType(this);
+            return NameBindingPlainTypesAspect.BindingContextPattern_Pattern_ContextBindingPlainType(this);
         return base.Inherited_ContextBindingPlainType(child, descendant, ctx);
     }
 
@@ -9060,7 +9060,7 @@ file class BindingPatternNode : SemanticNode, IBindingPatternNode
     public IMaybePlainType BindingPlainType
         => GrammarAttribute.IsCached(in bindingPlainTypeCached) ? bindingPlainType!
             : this.Synthetic(ref bindingPlainTypeCached, ref bindingPlainType,
-                NameBindingAntetypesAspect.BindingPattern_BindingPlainType);
+                NameBindingPlainTypesAspect.BindingPattern_BindingPlainType);
     private IMaybePlainType? bindingPlainType;
     private bool bindingPlainTypeCached;
     public IMaybeNonVoidType BindingType
@@ -9188,7 +9188,7 @@ file class OptionalPatternNode : SemanticNode, IOptionalPatternNode
     internal override IMaybePlainType Inherited_ContextBindingPlainType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.Pattern))
-            return NameBindingAntetypesAspect.OptionalPattern_Pattern_ContextBindingPlainType(this);
+            return NameBindingPlainTypesAspect.OptionalPattern_Pattern_ContextBindingPlainType(this);
         return base.Inherited_ContextBindingPlainType(child, descendant, ctx);
     }
 
@@ -9207,7 +9207,7 @@ file class OptionalPatternNode : SemanticNode, IOptionalPatternNode
 
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
     {
-        ExpressionAntetypesAspect.OptionalPattern_Contribute_Diagnostics(this, builder);
+        ExpressionPlainTypesAspect.OptionalPattern_Contribute_Diagnostics(this, builder);
     }
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
@@ -9284,7 +9284,7 @@ file class BlockExpressionNode : SemanticNode, IBlockExpressionNode
     public IMaybePlainType PlainType
         => GrammarAttribute.IsCached(in plainTypeCached) ? plainType!
             : this.Synthetic(ref plainTypeCached, ref plainType,
-                ExpressionAntetypesAspect.BlockExpression_PlainType);
+                ExpressionPlainTypesAspect.BlockExpression_PlainType);
     private IMaybePlainType? plainType;
     private bool plainTypeCached;
     public IMaybeExpressionType Type
@@ -9387,7 +9387,7 @@ file class BlockExpressionNode : SemanticNode, IBlockExpressionNode
         => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
-        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? ExpressionPlainTypesAspect.Expression_Rewrite_ImplicitConversion(this)
         ?? base.Rewrite();
 }
 
@@ -9452,7 +9452,7 @@ file class NewObjectExpressionNode : SemanticNode, INewObjectExpressionNode
     public IMaybePlainType ConstructingPlainType
         => GrammarAttribute.IsCached(in constructingPlainTypeCached) ? constructingPlainType!
             : this.Synthetic(ref constructingPlainTypeCached, ref constructingPlainType,
-                NameBindingAntetypesAspect.NewObjectExpression_ConstructingPlainType);
+                NameBindingPlainTypesAspect.NewObjectExpression_ConstructingPlainType);
     private IMaybePlainType? constructingPlainType;
     private bool constructingPlainTypeCached;
     public ContextualizedCall? ContextualizedCall
@@ -9476,7 +9476,7 @@ file class NewObjectExpressionNode : SemanticNode, INewObjectExpressionNode
     public IMaybePlainType PlainType
         => GrammarAttribute.IsCached(in plainTypeCached) ? plainType!
             : this.Synthetic(ref plainTypeCached, ref plainType,
-                ExpressionAntetypesAspect.NewObjectExpression_PlainType);
+                ExpressionPlainTypesAspect.NewObjectExpression_PlainType);
     private IMaybePlainType? plainType;
     private bool plainTypeCached;
     public IConstructorDeclarationNode? ReferencedConstructor
@@ -9602,7 +9602,7 @@ file class NewObjectExpressionNode : SemanticNode, INewObjectExpressionNode
         => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
-        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? ExpressionPlainTypesAspect.Expression_Rewrite_ImplicitConversion(this)
         ?? base.Rewrite();
 }
 
@@ -9671,7 +9671,7 @@ file class UnsafeExpressionNode : SemanticNode, IUnsafeExpressionNode
     public IMaybePlainType PlainType
         => GrammarAttribute.IsCached(in plainTypeCached) ? plainType!
             : this.Synthetic(ref plainTypeCached, ref plainType,
-                ExpressionAntetypesAspect.UnsafeExpression_PlainType);
+                ExpressionPlainTypesAspect.UnsafeExpression_PlainType);
     private IMaybePlainType? plainType;
     private bool plainTypeCached;
     public IMaybeExpressionType Type
@@ -9750,7 +9750,7 @@ file class UnsafeExpressionNode : SemanticNode, IUnsafeExpressionNode
         => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
-        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? ExpressionPlainTypesAspect.Expression_Rewrite_ImplicitConversion(this)
         ?? base.Rewrite();
 }
 
@@ -9814,7 +9814,7 @@ file class BoolLiteralExpressionNode : SemanticNode, IBoolLiteralExpressionNode
     public IMaybePlainType PlainType
         => GrammarAttribute.IsCached(in plainTypeCached) ? plainType!
             : this.Synthetic(ref plainTypeCached, ref plainType,
-                ExpressionAntetypesAspect.BoolLiteralExpression_PlainType);
+                ExpressionPlainTypesAspect.BoolLiteralExpression_PlainType);
     private IMaybePlainType? plainType;
     private bool plainTypeCached;
     public BoolConstValueType Type
@@ -9890,7 +9890,7 @@ file class BoolLiteralExpressionNode : SemanticNode, IBoolLiteralExpressionNode
         => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
-        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? ExpressionPlainTypesAspect.Expression_Rewrite_ImplicitConversion(this)
         ?? base.Rewrite();
 }
 
@@ -9954,7 +9954,7 @@ file class IntegerLiteralExpressionNode : SemanticNode, IIntegerLiteralExpressio
     public IMaybePlainType PlainType
         => GrammarAttribute.IsCached(in plainTypeCached) ? plainType!
             : this.Synthetic(ref plainTypeCached, ref plainType,
-                ExpressionAntetypesAspect.IntegerLiteralExpression_PlainType);
+                ExpressionPlainTypesAspect.IntegerLiteralExpression_PlainType);
     private IMaybePlainType? plainType;
     private bool plainTypeCached;
     public IntegerConstValueType Type
@@ -10030,7 +10030,7 @@ file class IntegerLiteralExpressionNode : SemanticNode, IIntegerLiteralExpressio
         => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
-        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? ExpressionPlainTypesAspect.Expression_Rewrite_ImplicitConversion(this)
         ?? base.Rewrite();
 }
 
@@ -10094,7 +10094,7 @@ file class NoneLiteralExpressionNode : SemanticNode, INoneLiteralExpressionNode
     public IMaybePlainType PlainType
         => GrammarAttribute.IsCached(in plainTypeCached) ? plainType!
             : this.Synthetic(ref plainTypeCached, ref plainType,
-                ExpressionAntetypesAspect.NoneLiteralExpression_PlainType);
+                ExpressionPlainTypesAspect.NoneLiteralExpression_PlainType);
     private IMaybePlainType? plainType;
     private bool plainTypeCached;
     public OptionalType Type
@@ -10170,7 +10170,7 @@ file class NoneLiteralExpressionNode : SemanticNode, INoneLiteralExpressionNode
         => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
-        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? ExpressionPlainTypesAspect.Expression_Rewrite_ImplicitConversion(this)
         ?? base.Rewrite();
 }
 
@@ -10238,7 +10238,7 @@ file class StringLiteralExpressionNode : SemanticNode, IStringLiteralExpressionN
     public IMaybePlainType PlainType
         => GrammarAttribute.IsCached(in plainTypeCached) ? plainType!
             : this.Synthetic(ref plainTypeCached, ref plainType,
-                ExpressionAntetypesAspect.StringLiteralExpression_PlainType);
+                ExpressionPlainTypesAspect.StringLiteralExpression_PlainType);
     private IMaybePlainType? plainType;
     private bool plainTypeCached;
     public IMaybeExpressionType Type
@@ -10315,7 +10315,7 @@ file class StringLiteralExpressionNode : SemanticNode, IStringLiteralExpressionN
         => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
-        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? ExpressionPlainTypesAspect.Expression_Rewrite_ImplicitConversion(this)
         ?? base.Rewrite();
 }
 
@@ -10411,7 +10411,7 @@ file class AssignmentExpressionNode : SemanticNode, IAssignmentExpressionNode
     public IMaybePlainType PlainType
         => GrammarAttribute.IsCached(in plainTypeCached) ? plainType!
             : this.Synthetic(ref plainTypeCached, ref plainType,
-                ExpressionAntetypesAspect.AssignmentExpression_PlainType);
+                ExpressionPlainTypesAspect.AssignmentExpression_PlainType);
     private IMaybePlainType? plainType;
     private bool plainTypeCached;
     public IMaybeExpressionType Type
@@ -10512,7 +10512,7 @@ file class AssignmentExpressionNode : SemanticNode, IAssignmentExpressionNode
         ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
-        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? ExpressionPlainTypesAspect.Expression_Rewrite_ImplicitConversion(this)
         ?? base.Rewrite();
 }
 
@@ -10592,13 +10592,13 @@ file class BinaryOperatorExpressionNode : SemanticNode, IBinaryOperatorExpressio
     public IPlainType? NumericOperatorCommonPlainType
         => GrammarAttribute.IsCached(in numericOperatorCommonPlainTypeCached) ? numericOperatorCommonPlainType
             : this.Synthetic(ref numericOperatorCommonPlainTypeCached, ref numericOperatorCommonPlainType,
-                ExpressionAntetypesAspect.BinaryOperatorExpression_NumericOperatorCommonPlainType);
+                ExpressionPlainTypesAspect.BinaryOperatorExpression_NumericOperatorCommonPlainType);
     private IPlainType? numericOperatorCommonPlainType;
     private bool numericOperatorCommonPlainTypeCached;
     public IMaybePlainType PlainType
         => GrammarAttribute.IsCached(in plainTypeCached) ? plainType!
             : this.Synthetic(ref plainTypeCached, ref plainType,
-                ExpressionAntetypesAspect.BinaryOperatorExpression_PlainType);
+                ExpressionPlainTypesAspect.BinaryOperatorExpression_PlainType);
     private IMaybePlainType? plainType;
     private bool plainTypeCached;
     public IMaybeExpressionType Type
@@ -10707,7 +10707,7 @@ file class BinaryOperatorExpressionNode : SemanticNode, IBinaryOperatorExpressio
         => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
-        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? ExpressionPlainTypesAspect.Expression_Rewrite_ImplicitConversion(this)
         ?? base.Rewrite();
 }
 
@@ -10776,7 +10776,7 @@ file class UnaryOperatorExpressionNode : SemanticNode, IUnaryOperatorExpressionN
     public IMaybePlainType PlainType
         => GrammarAttribute.IsCached(in plainTypeCached) ? plainType!
             : this.Synthetic(ref plainTypeCached, ref plainType,
-                ExpressionAntetypesAspect.UnaryOperatorExpression_PlainType);
+                ExpressionPlainTypesAspect.UnaryOperatorExpression_PlainType);
     private IMaybePlainType? plainType;
     private bool plainTypeCached;
     public IMaybeExpressionType Type
@@ -10837,7 +10837,7 @@ file class UnaryOperatorExpressionNode : SemanticNode, IUnaryOperatorExpressionN
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
     {
         ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
-        ExpressionAntetypesAspect.UnaryOperatorExpression_Contribute_Diagnostics(this, builder);
+        ExpressionPlainTypesAspect.UnaryOperatorExpression_Contribute_Diagnostics(this, builder);
     }
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
@@ -10856,7 +10856,7 @@ file class UnaryOperatorExpressionNode : SemanticNode, IUnaryOperatorExpressionN
         => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
-        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? ExpressionPlainTypesAspect.Expression_Rewrite_ImplicitConversion(this)
         ?? base.Rewrite();
 }
 
@@ -10926,7 +10926,7 @@ file class ConversionExpressionNode : SemanticNode, IConversionExpressionNode
     public IMaybePlainType PlainType
         => GrammarAttribute.IsCached(in plainTypeCached) ? plainType!
             : this.Synthetic(ref plainTypeCached, ref plainType,
-                ExpressionAntetypesAspect.ConversionExpression_PlainType);
+                ExpressionPlainTypesAspect.ConversionExpression_PlainType);
     private IMaybePlainType? plainType;
     private bool plainTypeCached;
     public IMaybeExpressionType Type
@@ -11008,7 +11008,7 @@ file class ConversionExpressionNode : SemanticNode, IConversionExpressionNode
         => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
-        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? ExpressionPlainTypesAspect.Expression_Rewrite_ImplicitConversion(this)
         ?? base.Rewrite();
 }
 
@@ -11149,7 +11149,7 @@ file class ImplicitConversionExpressionNode : SemanticNode, IImplicitConversionE
         => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
-        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? ExpressionPlainTypesAspect.Expression_Rewrite_ImplicitConversion(this)
         ?? base.Rewrite();
 }
 
@@ -11245,7 +11245,7 @@ file class PatternMatchExpressionNode : SemanticNode, IPatternMatchExpressionNod
     internal override IMaybePlainType Inherited_ContextBindingPlainType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.Pattern))
-            return NameBindingAntetypesAspect.PatternMatchExpression_Pattern_ContextBindingPlainType(this);
+            return NameBindingPlainTypesAspect.PatternMatchExpression_Pattern_ContextBindingPlainType(this);
         return base.Inherited_ContextBindingPlainType(child, descendant, ctx);
     }
 
@@ -11332,7 +11332,7 @@ file class PatternMatchExpressionNode : SemanticNode, IPatternMatchExpressionNod
         => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
-        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? ExpressionPlainTypesAspect.Expression_Rewrite_ImplicitConversion(this)
         ?? base.Rewrite();
 }
 
@@ -11413,7 +11413,7 @@ file class IfExpressionNode : SemanticNode, IIfExpressionNode
     public IMaybePlainType PlainType
         => GrammarAttribute.IsCached(in plainTypeCached) ? plainType!
             : this.Synthetic(ref plainTypeCached, ref plainType,
-                ExpressionAntetypesAspect.IfExpression_PlainType);
+                ExpressionPlainTypesAspect.IfExpression_PlainType);
     private IMaybePlainType? plainType;
     private bool plainTypeCached;
     public IMaybeExpressionType Type
@@ -11526,7 +11526,7 @@ file class IfExpressionNode : SemanticNode, IIfExpressionNode
         => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
-        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? ExpressionPlainTypesAspect.Expression_Rewrite_ImplicitConversion(this)
         ?? base.Rewrite();
 }
 
@@ -11594,7 +11594,7 @@ file class LoopExpressionNode : SemanticNode, ILoopExpressionNode
     public IMaybePlainType PlainType
         => GrammarAttribute.IsCached(in plainTypeCached) ? plainType!
             : this.Synthetic(ref plainTypeCached, ref plainType,
-                ExpressionAntetypesAspect.LoopExpression_PlainType);
+                ExpressionPlainTypesAspect.LoopExpression_PlainType);
     private IMaybePlainType? plainType;
     private bool plainTypeCached;
     public IMaybeExpressionType Type
@@ -11680,7 +11680,7 @@ file class LoopExpressionNode : SemanticNode, ILoopExpressionNode
         => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
-        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? ExpressionPlainTypesAspect.Expression_Rewrite_ImplicitConversion(this)
         ?? base.Rewrite();
 }
 
@@ -11755,7 +11755,7 @@ file class WhileExpressionNode : SemanticNode, IWhileExpressionNode
     public IMaybePlainType PlainType
         => GrammarAttribute.IsCached(in plainTypeCached) ? plainType!
             : this.Synthetic(ref plainTypeCached, ref plainType,
-                ExpressionAntetypesAspect.WhileExpression_PlainType);
+                ExpressionPlainTypesAspect.WhileExpression_PlainType);
     private IMaybePlainType? plainType;
     private bool plainTypeCached;
     public IMaybeExpressionType Type
@@ -11863,7 +11863,7 @@ file class WhileExpressionNode : SemanticNode, IWhileExpressionNode
         => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
-        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? ExpressionPlainTypesAspect.Expression_Rewrite_ImplicitConversion(this)
         ?? base.Rewrite();
 }
 
@@ -11935,7 +11935,7 @@ file class ForeachExpressionNode : SemanticNode, IForeachExpressionNode
     public IMaybePlainType BindingPlainType
         => GrammarAttribute.IsCached(in bindingPlainTypeCached) ? bindingPlainType!
             : this.Synthetic(ref bindingPlainTypeCached, ref bindingPlainType,
-                NameBindingAntetypesAspect.ForeachExpression_BindingPlainType);
+                NameBindingPlainTypesAspect.ForeachExpression_BindingPlainType);
     private IMaybePlainType? bindingPlainType;
     private bool bindingPlainTypeCached;
     public IMaybeNonVoidType BindingType
@@ -11991,7 +11991,7 @@ file class ForeachExpressionNode : SemanticNode, IForeachExpressionNode
     public IMaybePlainType IteratedPlainType
         => GrammarAttribute.IsCached(in iteratedPlainTypeCached) ? iteratedPlainType!
             : this.Synthetic(ref iteratedPlainTypeCached, ref iteratedPlainType,
-                ForeachExpressionAntetypesAspect.ForeachExpression_IteratedPlainType);
+                ForeachExpressionPlainTypesAspect.ForeachExpression_IteratedPlainType);
     private IMaybePlainType? iteratedPlainType;
     private bool iteratedPlainTypeCached;
     public IMaybeNonVoidType IteratedType
@@ -12003,7 +12003,7 @@ file class ForeachExpressionNode : SemanticNode, IForeachExpressionNode
     public IMaybePlainType IteratorPlainType
         => GrammarAttribute.IsCached(in iteratorPlainTypeCached) ? iteratorPlainType!
             : this.Synthetic(ref iteratorPlainTypeCached, ref iteratorPlainType,
-                ForeachExpressionAntetypesAspect.ForeachExpression_IteratorPlainType);
+                ForeachExpressionPlainTypesAspect.ForeachExpression_IteratorPlainType);
     private IMaybePlainType? iteratorPlainType;
     private bool iteratorPlainTypeCached;
     public IMaybeNonVoidType IteratorType
@@ -12021,31 +12021,31 @@ file class ForeachExpressionNode : SemanticNode, IForeachExpressionNode
     public IMaybePlainType PlainType
         => GrammarAttribute.IsCached(in plainTypeCached) ? plainType!
             : this.Synthetic(ref plainTypeCached, ref plainType,
-                ExpressionAntetypesAspect.ForeachExpression_PlainType);
+                ExpressionPlainTypesAspect.ForeachExpression_PlainType);
     private IMaybePlainType? plainType;
     private bool plainTypeCached;
     public ITypeDeclarationNode? ReferencedIterableDeclaration
         => GrammarAttribute.IsCached(in referencedIterableDeclarationCached) ? referencedIterableDeclaration
             : this.Synthetic(ref referencedIterableDeclarationCached, ref referencedIterableDeclaration,
-                ForeachExpressionAntetypesAspect.ForeachExpression_ReferencedIterableDeclaration);
+                ForeachExpressionPlainTypesAspect.ForeachExpression_ReferencedIterableDeclaration);
     private ITypeDeclarationNode? referencedIterableDeclaration;
     private bool referencedIterableDeclarationCached;
     public IStandardMethodDeclarationNode? ReferencedIterateMethod
         => GrammarAttribute.IsCached(in referencedIterateMethodCached) ? referencedIterateMethod
             : this.Synthetic(ref referencedIterateMethodCached, ref referencedIterateMethod,
-                ForeachExpressionAntetypesAspect.ForeachExpression_ReferencedIterateMethod);
+                ForeachExpressionPlainTypesAspect.ForeachExpression_ReferencedIterateMethod);
     private IStandardMethodDeclarationNode? referencedIterateMethod;
     private bool referencedIterateMethodCached;
     public ITypeDeclarationNode? ReferencedIteratorDeclaration
         => GrammarAttribute.IsCached(in referencedIteratorDeclarationCached) ? referencedIteratorDeclaration
             : this.Synthetic(ref referencedIteratorDeclarationCached, ref referencedIteratorDeclaration,
-                ForeachExpressionAntetypesAspect.ForeachExpression_ReferencedIteratorDeclaration);
+                ForeachExpressionPlainTypesAspect.ForeachExpression_ReferencedIteratorDeclaration);
     private ITypeDeclarationNode? referencedIteratorDeclaration;
     private bool referencedIteratorDeclarationCached;
     public IStandardMethodDeclarationNode? ReferencedNextMethod
         => GrammarAttribute.IsCached(in referencedNextMethodCached) ? referencedNextMethod
             : this.Synthetic(ref referencedNextMethodCached, ref referencedNextMethod,
-                ForeachExpressionAntetypesAspect.ForeachExpression_ReferencedNextMethod);
+                ForeachExpressionPlainTypesAspect.ForeachExpression_ReferencedNextMethod);
     private IStandardMethodDeclarationNode? referencedNextMethod;
     private bool referencedNextMethodCached;
     public IMaybeExpressionType Type
@@ -12155,7 +12155,7 @@ file class ForeachExpressionNode : SemanticNode, IForeachExpressionNode
         => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
-        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? ExpressionPlainTypesAspect.Expression_Rewrite_ImplicitConversion(this)
         ?? base.Rewrite();
 }
 
@@ -12291,7 +12291,7 @@ file class BreakExpressionNode : SemanticNode, IBreakExpressionNode
         => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
-        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? ExpressionPlainTypesAspect.Expression_Rewrite_ImplicitConversion(this)
         ?? base.Rewrite();
 }
 
@@ -12417,7 +12417,7 @@ file class NextExpressionNode : SemanticNode, INextExpressionNode
         => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
-        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? ExpressionPlainTypesAspect.Expression_Rewrite_ImplicitConversion(this)
         ?? base.Rewrite();
 }
 
@@ -12578,7 +12578,7 @@ file class ReturnExpressionNode : SemanticNode, IReturnExpressionNode
         => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
-        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? ExpressionPlainTypesAspect.Expression_Rewrite_ImplicitConversion(this)
         ?? base.Rewrite();
 }
 
@@ -12752,7 +12752,7 @@ file class UnknownInvocationExpressionNode : SemanticNode, IUnknownInvocationExp
         ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
-        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? ExpressionPlainTypesAspect.Expression_Rewrite_ImplicitConversion(this)
         ?? base.Rewrite();
 }
 
@@ -12832,7 +12832,7 @@ file class FunctionInvocationExpressionNode : SemanticNode, IFunctionInvocationE
     public IMaybePlainType PlainType
         => GrammarAttribute.IsCached(in plainTypeCached) ? plainType!
             : this.Synthetic(ref plainTypeCached, ref plainType,
-                ExpressionAntetypesAspect.FunctionInvocationExpression_PlainType);
+                ExpressionPlainTypesAspect.FunctionInvocationExpression_PlainType);
     private IMaybePlainType? plainType;
     private bool plainTypeCached;
     public IMaybeExpressionType Type
@@ -12945,7 +12945,7 @@ file class FunctionInvocationExpressionNode : SemanticNode, IFunctionInvocationE
         => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
-        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? ExpressionPlainTypesAspect.Expression_Rewrite_ImplicitConversion(this)
         ?? base.Rewrite();
 }
 
@@ -13023,7 +13023,7 @@ file class MethodInvocationExpressionNode : SemanticNode, IMethodInvocationExpre
     public IMaybePlainType PlainType
         => GrammarAttribute.IsCached(in plainTypeCached) ? plainType!
             : this.Synthetic(ref plainTypeCached, ref plainType,
-                ExpressionAntetypesAspect.MethodInvocationExpression_PlainType);
+                ExpressionPlainTypesAspect.MethodInvocationExpression_PlainType);
     private IMaybePlainType? plainType;
     private bool plainTypeCached;
     public IMaybeExpressionType Type
@@ -13126,7 +13126,7 @@ file class MethodInvocationExpressionNode : SemanticNode, IMethodInvocationExpre
         => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
-        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? ExpressionPlainTypesAspect.Expression_Rewrite_ImplicitConversion(this)
         ?? base.Rewrite();
 }
 
@@ -13198,7 +13198,7 @@ file class GetterInvocationExpressionNode : SemanticNode, IGetterInvocationExpre
     public IMaybePlainType PlainType
         => GrammarAttribute.IsCached(in plainTypeCached) ? plainType!
             : this.Synthetic(ref plainTypeCached, ref plainType,
-                ExpressionAntetypesAspect.GetterInvocationExpression_PlainType);
+                ExpressionPlainTypesAspect.GetterInvocationExpression_PlainType);
     private IMaybePlainType? plainType;
     private bool plainTypeCached;
     public IGetterMethodDeclarationNode? ReferencedDeclaration { [DebuggerStepThrough] get; }
@@ -13288,7 +13288,7 @@ file class GetterInvocationExpressionNode : SemanticNode, IGetterInvocationExpre
         => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
-        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? ExpressionPlainTypesAspect.Expression_Rewrite_ImplicitConversion(this)
         ?? base.Rewrite();
 }
 
@@ -13371,7 +13371,7 @@ file class SetterInvocationExpressionNode : SemanticNode, ISetterInvocationExpre
     public IMaybePlainType PlainType
         => GrammarAttribute.IsCached(in plainTypeCached) ? plainType!
             : this.Synthetic(ref plainTypeCached, ref plainType,
-                ExpressionAntetypesAspect.SetterInvocationExpression_PlainType);
+                ExpressionPlainTypesAspect.SetterInvocationExpression_PlainType);
     private IMaybePlainType? plainType;
     private bool plainTypeCached;
     public ISetterMethodDeclarationNode? ReferencedDeclaration { [DebuggerStepThrough] get; }
@@ -13481,7 +13481,7 @@ file class SetterInvocationExpressionNode : SemanticNode, ISetterInvocationExpre
         => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
-        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? ExpressionPlainTypesAspect.Expression_Rewrite_ImplicitConversion(this)
         ?? base.Rewrite();
 }
 
@@ -13553,7 +13553,7 @@ file class FunctionReferenceInvocationExpressionNode : SemanticNode, IFunctionRe
     public FunctionPlainType FunctionPlainType
         => GrammarAttribute.IsCached(in functionPlainTypeCached) ? functionPlainType!
             : this.Synthetic(ref functionPlainTypeCached, ref functionPlainType,
-                ExpressionAntetypesAspect.FunctionReferenceInvocationExpression_FunctionPlainType);
+                ExpressionPlainTypesAspect.FunctionReferenceInvocationExpression_FunctionPlainType);
     private FunctionPlainType? functionPlainType;
     private bool functionPlainTypeCached;
     public FunctionType FunctionType
@@ -13565,7 +13565,7 @@ file class FunctionReferenceInvocationExpressionNode : SemanticNode, IFunctionRe
     public IMaybePlainType PlainType
         => GrammarAttribute.IsCached(in plainTypeCached) ? plainType!
             : this.Synthetic(ref plainTypeCached, ref plainType,
-                ExpressionAntetypesAspect.FunctionReferenceInvocationExpression_PlainType);
+                ExpressionPlainTypesAspect.FunctionReferenceInvocationExpression_PlainType);
     private IMaybePlainType? plainType;
     private bool plainTypeCached;
     public IMaybeExpressionType Type
@@ -13667,7 +13667,7 @@ file class FunctionReferenceInvocationExpressionNode : SemanticNode, IFunctionRe
         => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
-        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? ExpressionPlainTypesAspect.Expression_Rewrite_ImplicitConversion(this)
         ?? base.Rewrite();
 }
 
@@ -13753,7 +13753,7 @@ file class InitializerInvocationExpressionNode : SemanticNode, IInitializerInvoc
     public IMaybePlainType PlainType
         => GrammarAttribute.IsCached(in plainTypeCached) ? plainType!
             : this.Synthetic(ref plainTypeCached, ref plainType,
-                ExpressionAntetypesAspect.InitializerInvocationExpression_PlainType);
+                ExpressionPlainTypesAspect.InitializerInvocationExpression_PlainType);
     private IMaybePlainType? plainType;
     private bool plainTypeCached;
     public IInitializerDeclarationNode? ReferencedDeclaration
@@ -13853,7 +13853,7 @@ file class InitializerInvocationExpressionNode : SemanticNode, IInitializerInvoc
         => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
-        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? ExpressionPlainTypesAspect.Expression_Rewrite_ImplicitConversion(this)
         ?? base.Rewrite();
 }
 
@@ -14136,7 +14136,7 @@ file class UnresolvedMemberAccessExpressionNode : SemanticNode, IUnresolvedMembe
         ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
-        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? ExpressionPlainTypesAspect.Expression_Rewrite_ImplicitConversion(this)
         ?? base.Rewrite();
 }
 
@@ -14262,7 +14262,7 @@ file class UnqualifiedNamespaceNameNode : SemanticNode, IUnqualifiedNamespaceNam
         => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
-        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? ExpressionPlainTypesAspect.Expression_Rewrite_ImplicitConversion(this)
         ?? base.Rewrite();
 }
 
@@ -14396,7 +14396,7 @@ file class QualifiedNamespaceNameNode : SemanticNode, IQualifiedNamespaceNameNod
         => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
-        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? ExpressionPlainTypesAspect.Expression_Rewrite_ImplicitConversion(this)
         ?? base.Rewrite();
 }
 
@@ -14564,7 +14564,7 @@ file class FunctionGroupNameNode : SemanticNode, IFunctionGroupNameNode
         ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
-        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? ExpressionPlainTypesAspect.Expression_Rewrite_ImplicitConversion(this)
         ?? base.Rewrite();
 }
 
@@ -14635,7 +14635,7 @@ file class FunctionNameNode : SemanticNode, IFunctionNameNode
     public IMaybePlainType PlainType
         => GrammarAttribute.IsCached(in plainTypeCached) ? plainType!
             : this.Synthetic(ref plainTypeCached, ref plainType,
-                ExpressionAntetypesAspect.FunctionName_PlainType);
+                ExpressionPlainTypesAspect.FunctionName_PlainType);
     private IMaybePlainType? plainType;
     private bool plainTypeCached;
     public IMaybeExpressionType Type
@@ -14729,7 +14729,7 @@ file class FunctionNameNode : SemanticNode, IFunctionNameNode
         => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
-        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? ExpressionPlainTypesAspect.Expression_Rewrite_ImplicitConversion(this)
         ?? base.Rewrite();
 }
 
@@ -14896,7 +14896,7 @@ file class MethodGroupNameNode : SemanticNode, IMethodGroupNameNode
         ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
-        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? ExpressionPlainTypesAspect.Expression_Rewrite_ImplicitConversion(this)
         ?? base.Rewrite();
 }
 
@@ -14967,7 +14967,7 @@ file class MethodNameNode : SemanticNode, IMethodNameNode
     public IMaybePlainType PlainType
         => GrammarAttribute.IsCached(in plainTypeCached) ? plainType!
             : this.Synthetic(ref plainTypeCached, ref plainType,
-                ExpressionAntetypesAspect.MethodName_PlainType);
+                ExpressionPlainTypesAspect.MethodName_PlainType);
     private IMaybePlainType? plainType;
     private bool plainTypeCached;
     public IMaybeExpressionType Type
@@ -15008,7 +15008,7 @@ file class MethodNameNode : SemanticNode, IMethodNameNode
     internal override IMaybePlainType? Inherited_ExpectedPlainType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.CurrentContext))
-            return ExpressionAntetypesAspect.MethodName_Context_ExpectedPlainType(this);
+            return ExpressionPlainTypesAspect.MethodName_Context_ExpectedPlainType(this);
         if (ReferenceEquals(child, descendant))
             return null;
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
@@ -15066,7 +15066,7 @@ file class MethodNameNode : SemanticNode, IMethodNameNode
         => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
-        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? ExpressionPlainTypesAspect.Expression_Rewrite_ImplicitConversion(this)
         ?? base.Rewrite();
 }
 
@@ -15132,7 +15132,7 @@ file class FieldAccessExpressionNode : SemanticNode, IFieldAccessExpressionNode
     public IMaybePlainType PlainType
         => GrammarAttribute.IsCached(in plainTypeCached) ? plainType!
             : this.Synthetic(ref plainTypeCached, ref plainType,
-                ExpressionAntetypesAspect.FieldAccessExpression_PlainType);
+                ExpressionPlainTypesAspect.FieldAccessExpression_PlainType);
     private IMaybePlainType? plainType;
     private bool plainTypeCached;
     public IMaybeExpressionType Type
@@ -15216,7 +15216,7 @@ file class FieldAccessExpressionNode : SemanticNode, IFieldAccessExpressionNode
         => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
-        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? ExpressionPlainTypesAspect.Expression_Rewrite_ImplicitConversion(this)
         ?? base.Rewrite();
 }
 
@@ -15281,7 +15281,7 @@ file class VariableNameExpressionNode : SemanticNode, IVariableNameExpressionNod
     public IMaybePlainType PlainType
         => GrammarAttribute.IsCached(in plainTypeCached) ? plainType!
             : this.Synthetic(ref plainTypeCached, ref plainType,
-                ExpressionAntetypesAspect.VariableNameExpression_PlainType);
+                ExpressionPlainTypesAspect.VariableNameExpression_PlainType);
     private IMaybePlainType? plainType;
     private bool plainTypeCached;
     public IMaybeExpressionType Type
@@ -15363,7 +15363,7 @@ file class VariableNameExpressionNode : SemanticNode, IVariableNameExpressionNod
         => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
-        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? ExpressionPlainTypesAspect.Expression_Rewrite_ImplicitConversion(this)
         ?? base.Rewrite();
 }
 
@@ -15429,7 +15429,7 @@ file class StandardTypeNameExpressionNode : SemanticNode, IStandardTypeNameExpre
     public IMaybePlainType NamedPlainType
         => GrammarAttribute.IsCached(in namedPlainTypeCached) ? namedPlainType!
             : this.Synthetic(ref namedPlainTypeCached, ref namedPlainType,
-                TypeExpressionsAntetypesAspect.TypeNameExpression_NamedPlainType);
+                TypeExpressionsPlainTypesAspect.TypeNameExpression_NamedPlainType);
     private IMaybePlainType? namedPlainType;
     private bool namedPlainTypeCached;
     public ValueId ValueId
@@ -15504,7 +15504,7 @@ file class StandardTypeNameExpressionNode : SemanticNode, IStandardTypeNameExpre
         => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
-        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? ExpressionPlainTypesAspect.Expression_Rewrite_ImplicitConversion(this)
         ?? base.Rewrite();
 }
 
@@ -15576,7 +15576,7 @@ file class QualifiedTypeNameExpressionNode : SemanticNode, IQualifiedTypeNameExp
     public IMaybePlainType NamedPlainType
         => GrammarAttribute.IsCached(in namedPlainTypeCached) ? namedPlainType!
             : this.Synthetic(ref namedPlainTypeCached, ref namedPlainType,
-                TypeExpressionsAntetypesAspect.TypeNameExpression_NamedPlainType);
+                TypeExpressionsPlainTypesAspect.TypeNameExpression_NamedPlainType);
     private IMaybePlainType? namedPlainType;
     private bool namedPlainTypeCached;
     public ValueId ValueId
@@ -15653,7 +15653,7 @@ file class QualifiedTypeNameExpressionNode : SemanticNode, IQualifiedTypeNameExp
         => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
-        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? ExpressionPlainTypesAspect.Expression_Rewrite_ImplicitConversion(this)
         ?? base.Rewrite();
 }
 
@@ -15790,7 +15790,7 @@ file class InitializerGroupNameNode : SemanticNode, IInitializerGroupNameNode
         => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
-        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? ExpressionPlainTypesAspect.Expression_Rewrite_ImplicitConversion(this)
         ?? base.Rewrite();
 }
 
@@ -15912,7 +15912,7 @@ file class SpecialTypeNameExpressionNode : SemanticNode, ISpecialTypeNameExpress
         => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
-        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? ExpressionPlainTypesAspect.Expression_Rewrite_ImplicitConversion(this)
         ?? base.Rewrite();
 }
 
@@ -15976,7 +15976,7 @@ file class SelfExpressionNode : SemanticNode, ISelfExpressionNode
     public IMaybePlainType PlainType
         => GrammarAttribute.IsCached(in plainTypeCached) ? plainType!
             : this.Synthetic(ref plainTypeCached, ref plainType,
-                ExpressionAntetypesAspect.SelfExpression_PlainType);
+                ExpressionPlainTypesAspect.SelfExpression_PlainType);
     private IMaybePlainType? plainType;
     private bool plainTypeCached;
     public IMaybePseudotype Pseudotype
@@ -16065,7 +16065,7 @@ file class SelfExpressionNode : SemanticNode, ISelfExpressionNode
         => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
-        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? ExpressionPlainTypesAspect.Expression_Rewrite_ImplicitConversion(this)
         ?? base.Rewrite();
 }
 
@@ -16187,7 +16187,7 @@ file class MissingNameExpressionNode : SemanticNode, IMissingNameExpressionNode
         => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
-        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? ExpressionPlainTypesAspect.Expression_Rewrite_ImplicitConversion(this)
         ?? base.Rewrite();
 }
 
@@ -16314,7 +16314,7 @@ file class UnknownIdentifierNameExpressionNode : SemanticNode, IUnknownIdentifie
         => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
-        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? ExpressionPlainTypesAspect.Expression_Rewrite_ImplicitConversion(this)
         ?? base.Rewrite();
 }
 
@@ -16446,7 +16446,7 @@ file class UnknownGenericNameExpressionNode : SemanticNode, IUnknownGenericNameE
         => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
-        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? ExpressionPlainTypesAspect.Expression_Rewrite_ImplicitConversion(this)
         ?? base.Rewrite();
 }
 
@@ -16584,7 +16584,7 @@ file class AmbiguousMemberAccessExpressionNode : SemanticNode, IAmbiguousMemberA
         => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
-        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? ExpressionPlainTypesAspect.Expression_Rewrite_ImplicitConversion(this)
         ?? base.Rewrite();
 }
 
@@ -16801,7 +16801,7 @@ file class MoveVariableExpressionNode : SemanticNode, IMoveVariableExpressionNod
         => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
-        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? ExpressionPlainTypesAspect.Expression_Rewrite_ImplicitConversion(this)
         ?? base.Rewrite();
 }
 
@@ -16948,7 +16948,7 @@ file class MoveValueExpressionNode : SemanticNode, IMoveValueExpressionNode
         => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
-        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? ExpressionPlainTypesAspect.Expression_Rewrite_ImplicitConversion(this)
         ?? base.Rewrite();
 }
 
@@ -17089,7 +17089,7 @@ file class ImplicitTempMoveExpressionNode : SemanticNode, IImplicitTempMoveExpre
         => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
-        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? ExpressionPlainTypesAspect.Expression_Rewrite_ImplicitConversion(this)
         ?? base.Rewrite();
 }
 
@@ -17309,7 +17309,7 @@ file class FreezeVariableExpressionNode : SemanticNode, IFreezeVariableExpressio
         => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
-        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? ExpressionPlainTypesAspect.Expression_Rewrite_ImplicitConversion(this)
         ?? base.Rewrite();
 }
 
@@ -17459,7 +17459,7 @@ file class FreezeValueExpressionNode : SemanticNode, IFreezeValueExpressionNode
         => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
-        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? ExpressionPlainTypesAspect.Expression_Rewrite_ImplicitConversion(this)
         ?? base.Rewrite();
 }
 
@@ -17590,7 +17590,7 @@ file class PrepareToReturnExpressionNode : SemanticNode, IPrepareToReturnExpress
         => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
-        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? ExpressionPlainTypesAspect.Expression_Rewrite_ImplicitConversion(this)
         ?? base.Rewrite();
 }
 
@@ -17719,7 +17719,7 @@ file class AsyncBlockExpressionNode : SemanticNode, IAsyncBlockExpressionNode
         => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
-        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? ExpressionPlainTypesAspect.Expression_Rewrite_ImplicitConversion(this)
         ?? base.Rewrite();
 }
 
@@ -17788,7 +17788,7 @@ file class AsyncStartExpressionNode : SemanticNode, IAsyncStartExpressionNode
     public IMaybePlainType PlainType
         => GrammarAttribute.IsCached(in plainTypeCached) ? plainType!
             : this.Synthetic(ref plainTypeCached, ref plainType,
-                ExpressionAntetypesAspect.AsyncStartExpression_PlainType);
+                ExpressionPlainTypesAspect.AsyncStartExpression_PlainType);
     private IMaybePlainType? plainType;
     private bool plainTypeCached;
     public IMaybeExpressionType Type
@@ -17867,7 +17867,7 @@ file class AsyncStartExpressionNode : SemanticNode, IAsyncStartExpressionNode
         => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
-        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? ExpressionPlainTypesAspect.Expression_Rewrite_ImplicitConversion(this)
         ?? base.Rewrite();
 }
 
@@ -17936,7 +17936,7 @@ file class AwaitExpressionNode : SemanticNode, IAwaitExpressionNode
     public IMaybePlainType PlainType
         => GrammarAttribute.IsCached(in plainTypeCached) ? plainType!
             : this.Synthetic(ref plainTypeCached, ref plainType,
-                ExpressionAntetypesAspect.AwaitExpression_PlainType);
+                ExpressionPlainTypesAspect.AwaitExpression_PlainType);
     private IMaybePlainType? plainType;
     private bool plainTypeCached;
     public IMaybeExpressionType Type
@@ -17997,7 +17997,7 @@ file class AwaitExpressionNode : SemanticNode, IAwaitExpressionNode
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
     {
         ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
-        ExpressionAntetypesAspect.AwaitExpression_Contribute_Diagnostics(this, builder);
+        ExpressionPlainTypesAspect.AwaitExpression_Contribute_Diagnostics(this, builder);
     }
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
@@ -18016,7 +18016,7 @@ file class AwaitExpressionNode : SemanticNode, IAwaitExpressionNode
         => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
-        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? ExpressionPlainTypesAspect.Expression_Rewrite_ImplicitConversion(this)
         ?? base.Rewrite();
 }
 
