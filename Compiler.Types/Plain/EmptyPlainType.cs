@@ -9,10 +9,6 @@ public abstract class EmptyPlainType : NamedPlainType
 {
     public sealed override ITypeConstructor? TypeConstructor => null;
     public TypeSemantics? Semantics => null;
-    /// <summary>
-    /// Empty types aren't abstract, but they still can't be instantiated.
-    /// </summary>
-    public bool CanBeInstantiated => false;
     public override SpecialTypeName Name { get; }
     public sealed override bool AllowsVariance => false;
 

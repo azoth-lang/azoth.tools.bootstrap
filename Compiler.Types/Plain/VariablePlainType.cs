@@ -9,11 +9,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 [Closed(
     typeof(GenericParameterPlainType),
     typeof(SelfPlainType))]
-public abstract class VariablePlainType : NamedPlainType
+public abstract class VariablePlainType : NamedPlainType, INonVoidAntetype
 {
     public sealed override ITypeConstructor? TypeConstructor => null;
     public TypeSemantics? Semantics => null;
-    public abstract bool CanBeInstantiated { get; }
     public sealed override bool AllowsVariance => false;
 
     public override IMaybeAntetype ReplaceTypeParametersIn(IMaybeAntetype antetype)

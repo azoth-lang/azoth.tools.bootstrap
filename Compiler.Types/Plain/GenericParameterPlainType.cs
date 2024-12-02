@@ -7,16 +7,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 /// <summary>
 /// The type introduced by a generic parameter.
 /// </summary>
-public sealed class GenericParameterPlainType : VariablePlainType, INonVoidAntetype
+public sealed class GenericParameterPlainType : VariablePlainType
 {
     public OrdinaryTypeConstructor DeclaringAntetype { get; }
     public TypeConstructorParameter Parameter { get; }
     public override IdentifierName Name => Parameter.Name;
-    /// <summary>
-    /// As a type variable, a generic parameter cannot be constructed.
-    /// </summary>
-    public override bool CanBeInstantiated => false;
-
     // TODO this should be based on generic constraints
     public override IFixedSet<NamedPlainType> Supertypes => FixedSet.Empty<NamedPlainType>();
 

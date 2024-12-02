@@ -9,8 +9,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
     typeof(OrdinaryNamedPlainType),
     typeof(NeverPlainType),
     typeof(SimpleTypeConstructor),
-    typeof(GenericParameterPlainType),
-    typeof(SelfPlainType))]
+    typeof(VariablePlainType))]
 public interface INonVoidAntetype : IAntetype, IMaybeNonVoidAntetype
 {
     TypeSemantics? Semantics { get; }

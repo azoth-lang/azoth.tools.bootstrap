@@ -7,12 +7,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 /// <summary>
 /// The type variable referred to with the `Self` type variable.
 /// </summary>
-public sealed class SelfPlainType : VariablePlainType, INonVoidAntetype
+public sealed class SelfPlainType : VariablePlainType
 {
-    /// <summary>
-    /// As a type variable, a `Self` type cannot be constructed.
-    /// </summary>
-    public override bool CanBeInstantiated => false;
     public OrdinaryTypeConstructor ContainingType { get; }
     public override TypeName Name => SpecialTypeName.Self;
     public override IFixedSet<NamedPlainType> Supertypes { get; }
