@@ -31,11 +31,11 @@ public sealed class OrdinaryNamedPlainType : NamedPlainType, INonVoidAntetype
         Supertypes = typeConstructor.Supertypes.Select(s => (NamedPlainType)ReplaceTypeParametersIn(s)).ToFixedSet();
     }
 
-    public override IMaybeExpressionAntetype ReplaceTypeParametersIn(IMaybeExpressionAntetype antetype)
+    public override IMaybeAntetype ReplaceTypeParametersIn(IMaybeAntetype antetype)
         => plainTypeReplacements.ReplaceTypeParametersIn(antetype);
 
     #region Equality
-    public override bool Equals(IMaybeExpressionAntetype? other)
+    public override bool Equals(IMaybeAntetype? other)
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;

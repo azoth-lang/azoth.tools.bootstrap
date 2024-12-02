@@ -12,7 +12,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
 // TODO there are a lot of places where binding errors need to be reported. It seems like that should be consolidated
 internal static partial class OverloadResolutionAspect
 {
-    private static IMaybeExpressionAntetype AntetypeIfKnown(IExpressionNode? node)
+    private static IMaybeAntetype AntetypeIfKnown(IExpressionNode? node)
     {
         if (node is not null && !node.ShouldNotBeExpression()) return node.Antetype;
         return IAntetype.Unknown;
@@ -79,7 +79,7 @@ internal static partial class OverloadResolutionAspect
     private static INonVoidAntetype NonVoidAntetypeIfKnown(IExpressionNode? node)
         => NonVoidAntetypeIfKnown(AntetypeIfKnown(node));
 
-    private static INonVoidAntetype NonVoidAntetypeIfKnown(IMaybeExpressionAntetype maybeExpressionAntetype)
+    private static INonVoidAntetype NonVoidAntetypeIfKnown(IMaybeAntetype maybeExpressionAntetype)
     {
         if (maybeExpressionAntetype is INonVoidAntetype antetype) return antetype;
         // This is a little odd, but if the parameter type is not known, then using `never` will

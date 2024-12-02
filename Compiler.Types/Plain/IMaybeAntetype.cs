@@ -3,7 +3,7 @@ using ExhaustiveMatching;
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 
 [Closed(typeof(IAntetype), typeof(IMaybeNonVoidAntetype))]
-public interface IMaybeAntetype : IMaybeExpressionAntetype
+public interface IMaybeAntetype : IEquatable<IMaybeAntetype>
 {
     #region Standard Types
     /// <summary>
@@ -14,5 +14,13 @@ public interface IMaybeAntetype : IMaybeExpressionAntetype
     public static readonly IMaybeAntetype Unknown = UnknownPlainType.Instance;
     #endregion
 
-    IMaybeAntetype IMaybeExpressionAntetype.ToNonLiteralType() => this;
+    /// <summary>
+    /// Convert types for literals (e.g. <c>bool[true]</c>, <c>int[42]</c> etc.) to their
+    /// corresponding types.
+    /// </summary>
+    IMaybeAntetype ToNonLiteralType() => this;
+
+    IMaybeAntetype ReplaceTypeParametersIn(IMaybeAntetype antetype);
+
+    string ToString();
 }

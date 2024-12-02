@@ -15,7 +15,7 @@ internal static partial class ForeachExpressionAntetypesAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IStandardMethodDeclarationNode? ForeachExpression_ReferencedIterateMethod(IForeachExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IMaybeExpressionAntetype ForeachExpression_IteratorAntetype(IForeachExpressionNode node);
+    public static partial IMaybeAntetype ForeachExpression_IteratorAntetype(IForeachExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial ITypeDeclarationNode? ForeachExpression_ReferencedIteratorDeclaration(IForeachExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

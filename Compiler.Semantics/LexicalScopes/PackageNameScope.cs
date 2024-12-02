@@ -116,7 +116,7 @@ public sealed class PackageNameScope
     #endregion
 
     #region Lookup(IMaybeExpressionAntetype)
-    public ITypeDeclarationNode? Lookup(IMaybeExpressionAntetype antetype)
+    public ITypeDeclarationNode? Lookup(IMaybeAntetype antetype)
         => antetype switch
         {
             UnknownPlainType _ => null,

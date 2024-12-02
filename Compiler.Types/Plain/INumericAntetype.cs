@@ -4,7 +4,7 @@ using ExhaustiveMatching;
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 
 [Closed(typeof(NumericTypeConstructor), typeof(IntegerLiteralTypeConstructor))]
-public interface INumericAntetype : IExpressionAntetype
+public interface INumericAntetype : IAntetype
 {
-    IExpressionAntetype Antetype { get; }
+    IAntetype Antetype { get; }
 }

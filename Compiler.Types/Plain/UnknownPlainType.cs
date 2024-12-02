@@ -8,14 +8,14 @@ public sealed class UnknownPlainType : IMaybeFunctionAntetype
     private UnknownPlainType() { }
     #endregion
 
-    public IMaybeExpressionAntetype ReplaceTypeParametersIn(IMaybeExpressionAntetype antetype)
+    public IMaybeAntetype ReplaceTypeParametersIn(IMaybeAntetype antetype)
         => antetype;
 
     #region Equality
-    public bool Equals(IMaybeExpressionAntetype? other) => ReferenceEquals(this, other);
+    public bool Equals(IMaybeAntetype? other) => ReferenceEquals(this, other);
 
     public override bool Equals(object? obj)
-        => obj is IMaybeExpressionAntetype other && Equals(other);
+        => obj is IMaybeAntetype other && Equals(other);
 
     public override int GetHashCode() => HashCode.Combine(typeof(UnknownPlainType));
     #endregion

@@ -6,16 +6,16 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
 
 public readonly record struct ArgumentAntetypes
 {
-    public static ArgumentAntetypes ForFunction(IEnumerable<IMaybeExpressionAntetype> arguments)
+    public static ArgumentAntetypes ForFunction(IEnumerable<IMaybeAntetype> arguments)
         => new(null, arguments);
 
-    public static ArgumentAntetypes ForConstructor(IEnumerable<IMaybeExpressionAntetype> arguments)
+    public static ArgumentAntetypes ForConstructor(IEnumerable<IMaybeAntetype> arguments)
         => new(null, arguments);
 
-    public static ArgumentAntetypes ForInitializer(IEnumerable<IMaybeExpressionAntetype> arguments)
+    public static ArgumentAntetypes ForInitializer(IEnumerable<IMaybeAntetype> arguments)
         => new(null, arguments);
 
-    public static ArgumentAntetypes ForMethod(IMaybeExpressionAntetype self, IEnumerable<IMaybeExpressionAntetype> arguments)
+    public static ArgumentAntetypes ForMethod(IMaybeAntetype self, IEnumerable<IMaybeAntetype> arguments)
         => new(self, arguments);
 
     public int Arity => Arguments.Count;
@@ -25,10 +25,10 @@ public readonly record struct ArgumentAntetypes
     /// <remarks>This is <see langword="null"/> for functions, but also for constructors and
     /// initializers because the value will be created as part of the call and will therefore always
     /// be of the correct type.</remarks>
-    public IMaybeExpressionAntetype? Self { get; init; }
-    public IFixedList<IMaybeExpressionAntetype> Arguments { get; init; }
+    public IMaybeAntetype? Self { get; init; }
+    public IFixedList<IMaybeAntetype> Arguments { get; init; }
 
-    private ArgumentAntetypes(IMaybeExpressionAntetype? self, IEnumerable<IMaybeExpressionAntetype> arguments)
+    private ArgumentAntetypes(IMaybeAntetype? self, IEnumerable<IMaybeAntetype> arguments)
     {
         Self = self;
         Arguments = arguments.ToFixedList();

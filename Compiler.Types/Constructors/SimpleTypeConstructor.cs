@@ -48,11 +48,11 @@ public abstract class SimpleTypeConstructor : INonVoidAntetype, ITypeConstructor
 
     public IAntetype TryConstructNullary() => this;
 
-    public IMaybeExpressionAntetype ReplaceTypeParametersIn(IMaybeExpressionAntetype antetype)
+    public IMaybeAntetype ReplaceTypeParametersIn(IMaybeAntetype antetype)
         => antetype;
 
     #region Equality
-    public bool Equals(IMaybeExpressionAntetype? other)
+    public bool Equals(IMaybeAntetype? other)
         // All simple type constructors are singletons, so we can use reference equality.
         => ReferenceEquals(this, other);
 
@@ -61,7 +61,7 @@ public abstract class SimpleTypeConstructor : INonVoidAntetype, ITypeConstructor
         => ReferenceEquals(this, other);
 
     public override bool Equals(object? obj)
-        => obj is IMaybeExpressionAntetype other && Equals(other);
+        => obj is IMaybeAntetype other && Equals(other);
 
     public override int GetHashCode()
         // ReSharper disable once BaseObjectGetHashCodeCallInGetHashCode

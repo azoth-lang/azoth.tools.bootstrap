@@ -31,7 +31,7 @@
 // TODO remove once all nodes properly provide the expected antetype
 = AmbiguousExpression.*.ExpectedAntetype => null;
 ↓ Expression.ExpectedAntetype: `IMaybeAntetype`?;
-↑ Expression.Antetype: `IMaybeExpressionAntetype`;
+↑ Expression.Antetype: `IMaybeAntetype`;
 ✎ Expression ImplicitConversion;
 ↑ BlockExpression.Antetype: `IMaybeAntetype`;
 // TODO it would be better if this didn't depend on types, but only on antetypes

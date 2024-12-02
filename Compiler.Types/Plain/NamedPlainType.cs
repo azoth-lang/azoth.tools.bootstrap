@@ -20,13 +20,13 @@ public abstract class NamedPlainType : IAntetype
 
     private protected NamedPlainType() { }
 
-    public abstract IMaybeExpressionAntetype ReplaceTypeParametersIn(IMaybeExpressionAntetype antetype);
+    public abstract IMaybeAntetype ReplaceTypeParametersIn(IMaybeAntetype antetype);
 
     #region Equality
-    public abstract bool Equals(IMaybeExpressionAntetype? other);
+    public abstract bool Equals(IMaybeAntetype? other);
 
     public sealed override bool Equals(object? obj)
-        => obj is IMaybeExpressionAntetype other && Equals(other);
+        => obj is IMaybeAntetype other && Equals(other);
 
     public abstract override int GetHashCode();
     #endregion

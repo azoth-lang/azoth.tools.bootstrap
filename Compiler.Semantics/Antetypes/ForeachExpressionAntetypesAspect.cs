@@ -14,7 +14,7 @@ internal static partial class ForeachExpressionAntetypesAspect
                .Where(m => m.Arity == 0 && m.MethodGroupType.Return.ToAntetype() is INonVoidAntetype)
                .TrySingle();
 
-    public static partial IMaybeExpressionAntetype ForeachExpression_IteratorAntetype(IForeachExpressionNode node)
+    public static partial IMaybeAntetype ForeachExpression_IteratorAntetype(IForeachExpressionNode node)
     {
         var iterableType = node.InExpression?.Antetype ?? IAntetype.Unknown;
         var iterateMethod = node.ReferencedIterateMethod;

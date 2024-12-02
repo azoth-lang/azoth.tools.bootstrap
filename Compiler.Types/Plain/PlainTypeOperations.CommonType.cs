@@ -7,7 +7,7 @@ public static partial class PlainTypeOperations
     /// <summary>
     /// Determine what the common type for two numeric types for a numeric operator is.
     /// </summary>
-    public static IAntetype? NumericOperatorCommonType(this IExpressionAntetype leftType, IExpressionAntetype rightType)
+    public static IAntetype? NumericOperatorCommonType(this IAntetype leftType, IAntetype rightType)
         => (leftType, rightType) switch
         {
             (_, NeverPlainType) => IAntetype.Never,

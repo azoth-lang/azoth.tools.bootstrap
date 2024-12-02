@@ -8,7 +8,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
     typeof(IntegerTypeConstructor))]
 public abstract class NumericTypeConstructor : SimpleTypeConstructor, INumericAntetype
 {
-    IExpressionAntetype INumericAntetype.Antetype => this;
+    IAntetype INumericAntetype.Antetype => this;
 
     private protected NumericTypeConstructor(SpecialTypeName name)
         : base(name) { }

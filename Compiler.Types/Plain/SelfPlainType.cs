@@ -24,7 +24,7 @@ public sealed class SelfPlainType : NonGenericNominalAntetype, INonVoidAntetype
     }
 
     #region Equality
-    public override bool Equals(IMaybeExpressionAntetype? other)
+    public override bool Equals(IMaybeAntetype? other)
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;

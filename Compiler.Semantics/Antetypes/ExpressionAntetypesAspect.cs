@@ -16,26 +16,26 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
 
 internal static partial class ExpressionAntetypesAspect
 {
-    public static partial IMaybeExpressionAntetype UnsafeExpression_Antetype(IUnsafeExpressionNode node)
+    public static partial IMaybeAntetype UnsafeExpression_Antetype(IUnsafeExpressionNode node)
         => node.Expression?.Antetype ?? IAntetype.Unknown;
 
-    public static partial IMaybeExpressionAntetype FunctionInvocationExpression_Antetype(IFunctionInvocationExpressionNode node)
+    public static partial IMaybeAntetype FunctionInvocationExpression_Antetype(IFunctionInvocationExpressionNode node)
         => node.Function.SelectedCallCandidate?.ReturnAntetype ?? IAntetype.Unknown;
 
-    public static partial IMaybeExpressionAntetype MethodInvocationExpression_Antetype(IMethodInvocationExpressionNode node)
+    public static partial IMaybeAntetype MethodInvocationExpression_Antetype(IMethodInvocationExpressionNode node)
     {
         var unboundAntetype = node.Method.SelectedCallCandidate?.ReturnAntetype ?? IAntetype.Unknown;
         var boundAntetype = node.Method.Context.Antetype.ReplaceTypeParametersIn(unboundAntetype);
         return boundAntetype;
     }
 
-    public static partial IMaybeExpressionAntetype VariableNameExpression_Antetype(IVariableNameExpressionNode node)
+    public static partial IMaybeAntetype VariableNameExpression_Antetype(IVariableNameExpressionNode node)
         => node.ReferencedDefinition.BindingAntetype;
 
-    public static partial IMaybeExpressionAntetype SelfExpression_Antetype(ISelfExpressionNode node)
+    public static partial IMaybeAntetype SelfExpression_Antetype(ISelfExpressionNode node)
         => node.ReferencedDefinition?.BindingAntetype ?? IAntetype.Unknown;
 
-    public static partial IMaybeExpressionAntetype FieldAccessExpression_Antetype(IFieldAccessExpressionNode node)
+    public static partial IMaybeAntetype FieldAccessExpression_Antetype(IFieldAccessExpressionNode node)
     {
         // TODO should probably use Antetype on the declaration
         var unboundAntetype = node.ReferencedDeclaration.BindingType.ToAntetype();
@@ -43,7 +43,7 @@ internal static partial class ExpressionAntetypesAspect
         return boundAntetype;
     }
 
-    public static partial IMaybeExpressionAntetype NewObjectExpression_Antetype(INewObjectExpressionNode node)
+    public static partial IMaybeAntetype NewObjectExpression_Antetype(INewObjectExpressionNode node)
     {
         // TODO should probably use Antetype on the declaration
         var unboundType = node.ReferencedConstructor?.ReturnType.ToAntetype() ?? IAntetype.Unknown;
@@ -51,7 +51,7 @@ internal static partial class ExpressionAntetypesAspect
         return boundType;
     }
 
-    public static partial IMaybeExpressionAntetype AssignmentExpression_Antetype(IAssignmentExpressionNode node)
+    public static partial IMaybeAntetype AssignmentExpression_Antetype(IAssignmentExpressionNode node)
         => node.LeftOperand?.Antetype ?? IAntetype.Unknown;
 
     public static partial IMaybeAntetype ResultStatement_Antetype(IResultStatementNode node)
@@ -89,19 +89,19 @@ internal static partial class ExpressionAntetypesAspect
                 or (BoolTypeConstructor, BinaryOperator.Or, BoolTypeConstructor)
                 => null,
 
-            (IExpressionAntetype, BinaryOperator.Plus, IExpressionAntetype)
-                or (IExpressionAntetype, BinaryOperator.Minus, IExpressionAntetype)
-                or (IExpressionAntetype, BinaryOperator.Asterisk, IExpressionAntetype)
-                or (IExpressionAntetype, BinaryOperator.Slash, IExpressionAntetype)
-                => ((IExpressionAntetype)leftAntetype).NumericOperatorCommonType((IExpressionAntetype)rightAntetype),
-            (IExpressionAntetype, BinaryOperator.EqualsEquals, IExpressionAntetype)
-                or (IExpressionAntetype, BinaryOperator.NotEqual, IExpressionAntetype)
-                or (OptionalPlainType { Referent: IExpressionAntetype }, BinaryOperator.NotEqual, OptionalPlainType { Referent: IExpressionAntetype })
-                or (IExpressionAntetype, BinaryOperator.LessThan, IExpressionAntetype)
-                or (IExpressionAntetype, BinaryOperator.LessThanOrEqual, IExpressionAntetype)
-                or (IExpressionAntetype, BinaryOperator.GreaterThan, IExpressionAntetype)
-                or (IExpressionAntetype, BinaryOperator.GreaterThanOrEqual, IExpressionAntetype)
-                => ((IExpressionAntetype)leftAntetype).NumericOperatorCommonType((IExpressionAntetype)rightAntetype),
+            (IAntetype, BinaryOperator.Plus, IAntetype)
+                or (IAntetype, BinaryOperator.Minus, IAntetype)
+                or (IAntetype, BinaryOperator.Asterisk, IAntetype)
+                or (IAntetype, BinaryOperator.Slash, IAntetype)
+                => ((IAntetype)leftAntetype).NumericOperatorCommonType((IAntetype)rightAntetype),
+            (IAntetype, BinaryOperator.EqualsEquals, IAntetype)
+                or (IAntetype, BinaryOperator.NotEqual, IAntetype)
+                or (OptionalPlainType { Referent: IAntetype }, BinaryOperator.NotEqual, OptionalPlainType { Referent: IAntetype })
+                or (IAntetype, BinaryOperator.LessThan, IAntetype)
+                or (IAntetype, BinaryOperator.LessThanOrEqual, IAntetype)
+                or (IAntetype, BinaryOperator.GreaterThan, IAntetype)
+                or (IAntetype, BinaryOperator.GreaterThanOrEqual, IAntetype)
+                => ((IAntetype)leftAntetype).NumericOperatorCommonType((IAntetype)rightAntetype),
 
             (_, BinaryOperator.DotDot, _)
                 or (_, BinaryOperator.LessThanDotDot, _)
@@ -114,7 +114,7 @@ internal static partial class ExpressionAntetypesAspect
         };
     }
 
-    public static partial IMaybeExpressionAntetype BinaryOperatorExpression_Antetype(IBinaryOperatorExpressionNode node)
+    public static partial IMaybeAntetype BinaryOperatorExpression_Antetype(IBinaryOperatorExpressionNode node)
     {
         var leftAntetype = node.LeftOperand?.Antetype ?? IAntetype.Unknown;
         var rightAntetype = node.RightOperand?.Antetype ?? IAntetype.Unknown;
@@ -146,18 +146,18 @@ internal static partial class ExpressionAntetypesAspect
                 or (BoolTypeConstructor, BinaryOperator.Or, BoolTypeConstructor)
                 => IAntetype.Bool,
 
-            (IExpressionAntetype, BinaryOperator.Plus, IExpressionAntetype)
-                or (IExpressionAntetype, BinaryOperator.Minus, IExpressionAntetype)
-                or (IExpressionAntetype, BinaryOperator.Asterisk, IExpressionAntetype)
-                or (IExpressionAntetype, BinaryOperator.Slash, IExpressionAntetype)
+            (IAntetype, BinaryOperator.Plus, IAntetype)
+                or (IAntetype, BinaryOperator.Minus, IAntetype)
+                or (IAntetype, BinaryOperator.Asterisk, IAntetype)
+                or (IAntetype, BinaryOperator.Slash, IAntetype)
                 => InferNumericOperatorType(node.NumericOperatorCommonAntetype),
-            (IExpressionAntetype, BinaryOperator.EqualsEquals, IExpressionAntetype)
-                or (IExpressionAntetype, BinaryOperator.NotEqual, IExpressionAntetype)
-                or (OptionalPlainType { Referent: IExpressionAntetype }, BinaryOperator.NotEqual, OptionalPlainType { Referent: IExpressionAntetype })
-                or (IExpressionAntetype, BinaryOperator.LessThan, IExpressionAntetype)
-                or (IExpressionAntetype, BinaryOperator.LessThanOrEqual, IExpressionAntetype)
-                or (IExpressionAntetype, BinaryOperator.GreaterThan, IExpressionAntetype)
-                or (IExpressionAntetype, BinaryOperator.GreaterThanOrEqual, IExpressionAntetype)
+            (IAntetype, BinaryOperator.EqualsEquals, IAntetype)
+                or (IAntetype, BinaryOperator.NotEqual, IAntetype)
+                or (OptionalPlainType { Referent: IAntetype }, BinaryOperator.NotEqual, OptionalPlainType { Referent: IAntetype })
+                or (IAntetype, BinaryOperator.LessThan, IAntetype)
+                or (IAntetype, BinaryOperator.LessThanOrEqual, IAntetype)
+                or (IAntetype, BinaryOperator.GreaterThan, IAntetype)
+                or (IAntetype, BinaryOperator.GreaterThanOrEqual, IAntetype)
                 => InferComparisonOperatorType(node.NumericOperatorCommonAntetype),
 
             (_, BinaryOperator.DotDot, _)
@@ -175,16 +175,16 @@ internal static partial class ExpressionAntetypesAspect
         };
     }
 
-    private static IMaybeExpressionAntetype InferNumericOperatorType(IAntetype? commonAntetype)
+    private static IMaybeAntetype InferNumericOperatorType(IAntetype? commonAntetype)
         => commonAntetype ?? IMaybeAntetype.Unknown;
 
-    private static IMaybeExpressionAntetype InferComparisonOperatorType(IAntetype? commonAntetype)
+    private static IMaybeAntetype InferComparisonOperatorType(IAntetype? commonAntetype)
     {
         if (commonAntetype is null) return IAntetype.Unknown;
         return IAntetype.Bool;
     }
 
-    private static IMaybeExpressionAntetype InferRangeOperatorType(LexicalScope containingLexicalScope)
+    private static IMaybeAntetype InferRangeOperatorType(LexicalScope containingLexicalScope)
     {
         // TODO the left and right antetypes need to be compatible with the range type
         var rangeTypeDeclaration = containingLexicalScope.Lookup("azoth")
@@ -195,16 +195,16 @@ internal static partial class ExpressionAntetypesAspect
         return rangeAntetype;
     }
 
-    public static partial IMaybeExpressionAntetype StringLiteralExpression_Antetype(IStringLiteralExpressionNode node)
+    public static partial IMaybeAntetype StringLiteralExpression_Antetype(IStringLiteralExpressionNode node)
     {
         var typeSymbolNode = node.ContainingLexicalScope.Lookup(StringTypeName)
                                  .OfType<ITypeDeclarationNode>().TrySingle();
-        return (IMaybeExpressionAntetype?)typeSymbolNode?.Symbol.TryGetDeclaredType()?.TryToAntetype() ?? IAntetype.Unknown;
+        return (IMaybeAntetype?)typeSymbolNode?.Symbol.TryGetDeclaredType()?.TryToAntetype() ?? IAntetype.Unknown;
     }
 
     private static readonly IdentifierName StringTypeName = "String";
 
-    public static partial IMaybeExpressionAntetype IfExpression_Antetype(IIfExpressionNode node)
+    public static partial IMaybeAntetype IfExpression_Antetype(IIfExpressionNode node)
     {
         if (node.ElseClause is null) return node.ThenBlock.Antetype.MakeOptional();
 
@@ -212,15 +212,15 @@ internal static partial class ExpressionAntetypesAspect
         return node.ThenBlock.Antetype;
     }
 
-    public static partial IMaybeExpressionAntetype WhileExpression_Antetype(IWhileExpressionNode node)
+    public static partial IMaybeAntetype WhileExpression_Antetype(IWhileExpressionNode node)
         // TODO assign correct type to the expression
         => IAntetype.Void;
 
-    public static partial IMaybeExpressionAntetype LoopExpression_Antetype(ILoopExpressionNode node)
+    public static partial IMaybeAntetype LoopExpression_Antetype(ILoopExpressionNode node)
         // TODO assign correct type to the expression
         => IAntetype.Void;
 
-    public static partial IMaybeExpressionAntetype ForeachExpression_Antetype(IForeachExpressionNode node)
+    public static partial IMaybeAntetype ForeachExpression_Antetype(IForeachExpressionNode node)
         // TODO assign correct type to the expression
         => IAntetype.Void;
 
@@ -234,7 +234,7 @@ internal static partial class ExpressionAntetypesAspect
         return IAntetype.Void;
     }
 
-    public static partial IMaybeExpressionAntetype ConversionExpression_Antetype(IConversionExpressionNode node)
+    public static partial IMaybeAntetype ConversionExpression_Antetype(IConversionExpressionNode node)
     {
         var convertToAntetype = node.ConvertToType.NamedAntetype;
         if (node.Operator == ConversionOperator.Optional)
@@ -242,13 +242,13 @@ internal static partial class ExpressionAntetypesAspect
         return convertToAntetype;
     }
 
-    public static partial IMaybeExpressionAntetype NoneLiteralExpression_Antetype(INoneLiteralExpressionNode node)
+    public static partial IMaybeAntetype NoneLiteralExpression_Antetype(INoneLiteralExpressionNode node)
         => IAntetype.None;
 
-    public static partial IMaybeExpressionAntetype AsyncStartExpression_Antetype(IAsyncStartExpressionNode node)
+    public static partial IMaybeAntetype AsyncStartExpression_Antetype(IAsyncStartExpressionNode node)
         => Intrinsic.PromiseOf(node.Expression?.Antetype.ToNonLiteralType() ?? IAntetype.Unknown);
 
-    public static partial IMaybeExpressionAntetype AwaitExpression_Antetype(IAwaitExpressionNode node)
+    public static partial IMaybeAntetype AwaitExpression_Antetype(IAwaitExpressionNode node)
     {
         if (node.Expression?.Antetype is OrdinaryNamedPlainType { TypeConstructor: var typeConstructor } antetype
             && Intrinsic.PromiseTypeConstructor.Equals(typeConstructor))
@@ -267,7 +267,7 @@ internal static partial class ExpressionAntetypesAspect
         diagnostics.Add(TypeError.CannotAwaitType(node.File, node.Syntax.Span, node.Expression!.Type));
     }
 
-    public static partial IMaybeExpressionAntetype UnaryOperatorExpression_Antetype(IUnaryOperatorExpressionNode node)
+    public static partial IMaybeAntetype UnaryOperatorExpression_Antetype(IUnaryOperatorExpressionNode node)
         => node.Operator switch
         {
             UnaryOperator.Not => UnaryOperatorExpression_Antetype_Not(node),
@@ -276,13 +276,13 @@ internal static partial class ExpressionAntetypesAspect
             _ => throw ExhaustiveMatch.Failed(node.Operator),
         };
 
-    private static IMaybeExpressionAntetype UnaryOperatorExpression_Antetype_Not(IUnaryOperatorExpressionNode node)
+    private static IMaybeAntetype UnaryOperatorExpression_Antetype_Not(IUnaryOperatorExpressionNode node)
     {
         if (node.Operand?.Antetype is BoolLiteralTypeConstructor antetype) return antetype.Not();
         return IAntetype.Bool;
     }
 
-    private static IMaybeExpressionAntetype UnaryOperatorExpression_Antetype_Minus(IUnaryOperatorExpressionNode node)
+    private static IMaybeAntetype UnaryOperatorExpression_Antetype_Minus(IUnaryOperatorExpressionNode node)
         => node.Operand?.Antetype switch
         {
             IntegerLiteralTypeConstructor t => t.Negate(),
@@ -293,7 +293,7 @@ internal static partial class ExpressionAntetypesAspect
             _ => IAntetype.Unknown,
         };
 
-    private static IMaybeExpressionAntetype UnaryOperatorExpression_Antetype_Plus(IUnaryOperatorExpressionNode node)
+    private static IMaybeAntetype UnaryOperatorExpression_Antetype_Plus(IUnaryOperatorExpressionNode node)
         => node.Operand?.Antetype switch
         {
             INumericAntetype t => t,
@@ -318,21 +318,21 @@ internal static partial class ExpressionAntetypesAspect
                 node.Syntax.Span, node.Operator, node.Operand!.Type));
     }
 
-    public static partial IMaybeExpressionAntetype GetterInvocationExpression_Antetype(IGetterInvocationExpressionNode node)
+    public static partial IMaybeAntetype GetterInvocationExpression_Antetype(IGetterInvocationExpressionNode node)
     {
         var unboundAntetype = node.ReferencedDeclaration?.ReturnType.ToAntetype() ?? IAntetype.Unknown;
         var boundAntetype = node.Context.Antetype.ReplaceTypeParametersIn(unboundAntetype);
         return boundAntetype;
     }
 
-    public static partial IMaybeExpressionAntetype SetterInvocationExpression_Antetype(ISetterInvocationExpressionNode node)
+    public static partial IMaybeAntetype SetterInvocationExpression_Antetype(ISetterInvocationExpressionNode node)
     {
         var unboundAntetype = node.ReferencedDeclaration?.ParameterTypes[0].Type.ToAntetype() ?? IAntetype.Unknown;
         var boundAntetype = node.Context.Antetype.ReplaceTypeParametersIn(unboundAntetype);
         return boundAntetype;
     }
 
-    public static partial IMaybeExpressionAntetype FunctionReferenceInvocationExpression_Antetype(IFunctionReferenceInvocationExpressionNode node)
+    public static partial IMaybeAntetype FunctionReferenceInvocationExpression_Antetype(IFunctionReferenceInvocationExpressionNode node)
         => node.FunctionPlainType.Return;
 
     /// <remarks>Can't be an eager attribute because accessing <see cref="IFunctionReferenceInvocationExpressionNode.Expression"/>
@@ -340,18 +340,18 @@ internal static partial class ExpressionAntetypesAspect
     public static partial FunctionPlainType FunctionReferenceInvocationExpression_FunctionPlainType(IFunctionReferenceInvocationExpressionNode node)
         => (FunctionPlainType)node.Expression.Antetype;
 
-    public static partial IMaybeExpressionAntetype InitializerInvocationExpression_Antetype(IInitializerInvocationExpressionNode node)
+    public static partial IMaybeAntetype InitializerInvocationExpression_Antetype(IInitializerInvocationExpressionNode node)
     {
         var unboundAntetype = node.ReferencedDeclaration?.ReturnType.ToAntetype() ?? IAntetype.Unknown;
         var boundAntetype = node.InitializerGroup.InitializingAntetype.ReplaceTypeParametersIn(unboundAntetype);
         return boundAntetype;
     }
 
-    public static partial IMaybeExpressionAntetype FunctionName_Antetype(IFunctionNameNode node)
+    public static partial IMaybeAntetype FunctionName_Antetype(IFunctionNameNode node)
         // TODO should probably use Antetype on the declaration
         => node.ReferencedDeclaration?.Type.ToAntetype() ?? IAntetype.Unknown;
 
-    public static partial IMaybeExpressionAntetype MethodName_Antetype(IMethodNameNode node)
+    public static partial IMaybeAntetype MethodName_Antetype(IMethodNameNode node)
         // TODO should probably use Antetype on the declaration
         => node.ReferencedDeclaration?.MethodGroupType.ToAntetype() ?? IAntetype.Unknown;
 
@@ -378,7 +378,7 @@ internal static partial class ExpressionAntetypesAspect
         return null;
     }
 
-    private static bool CanPossiblyImplicitlyConvertFrom(IMaybeExpressionAntetype fromType)
+    private static bool CanPossiblyImplicitlyConvertFrom(IMaybeAntetype fromType)
     {
         return fromType switch
         {
@@ -394,14 +394,14 @@ internal static partial class ExpressionAntetypesAspect
         };
     }
 
-    private static SimpleTypeConstructor? ImplicitlyConvertToType(IMaybeExpressionAntetype? toType, IMaybeExpressionAntetype fromType)
+    private static SimpleTypeConstructor? ImplicitlyConvertToType(IMaybeAntetype? toType, IMaybeAntetype fromType)
     {
         switch (toType, fromType)
         {
             case (null, _):
             case (UnknownPlainType, _):
             case (_, UnknownPlainType):
-            case (IExpressionAntetype to, IExpressionAntetype from) when from.Equals(to):
+            case (IAntetype to, IAntetype from) when from.Equals(to):
                 return null;
             case (FixedSizeIntegerTypeConstructor to, FixedSizeIntegerTypeConstructor from):
                 if (to.Bits > from.Bits && (!from.IsSigned || to.IsSigned))
@@ -447,9 +447,9 @@ internal static partial class ExpressionAntetypesAspect
             diagnostics.Add(TypeError.OptionalPatternOnNonOptionalType(node.File, node.Syntax, type));
     }
 
-    public static partial IMaybeExpressionAntetype IntegerLiteralExpression_Antetype(IIntegerLiteralExpressionNode node)
+    public static partial IMaybeAntetype IntegerLiteralExpression_Antetype(IIntegerLiteralExpressionNode node)
         => new IntegerLiteralTypeConstructor(node.Value);
 
-    public static partial IMaybeExpressionAntetype BoolLiteralExpression_Antetype(IBoolLiteralExpressionNode node)
+    public static partial IMaybeAntetype BoolLiteralExpression_Antetype(IBoolLiteralExpressionNode node)
         => node.Value ? IAntetype.True : IAntetype.False;
 }

@@ -18,7 +18,7 @@ public interface IMaybeType : IMaybeExpressionType
     #endregion
 
     public new IMaybeAntetype ToAntetype();
-    IMaybeExpressionAntetype IMaybePseudotype.ToAntetype() => ToAntetype();
+    IMaybeAntetype IMaybePseudotype.ToAntetype() => ToAntetype();
 
     /// <summary>
     /// The same type except with any mutability removed.

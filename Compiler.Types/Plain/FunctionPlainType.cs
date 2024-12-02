@@ -14,11 +14,11 @@ public sealed class FunctionPlainType : INonVoidAntetype, IMaybeFunctionAntetype
         Parameters = parameters.ToFixedList();
     }
 
-    public IMaybeExpressionAntetype ReplaceTypeParametersIn(IMaybeExpressionAntetype antetype)
+    public IMaybeAntetype ReplaceTypeParametersIn(IMaybeAntetype antetype)
         => antetype;
 
     #region Equality
-    public bool Equals(IMaybeExpressionAntetype? other)
+    public bool Equals(IMaybeAntetype? other)
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
@@ -27,7 +27,7 @@ public sealed class FunctionPlainType : INonVoidAntetype, IMaybeFunctionAntetype
                && Return.Equals(that.Return);
     }
 
-    public override bool Equals(object? obj) => obj is IMaybeExpressionAntetype other && Equals(other);
+    public override bool Equals(object? obj) => obj is IMaybeAntetype other && Equals(other);
 
     public override int GetHashCode() => HashCode.Combine(Parameters, Return);
     #endregion

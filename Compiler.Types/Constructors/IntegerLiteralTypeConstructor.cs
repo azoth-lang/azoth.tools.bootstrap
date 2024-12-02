@@ -8,7 +8,7 @@ public sealed class IntegerLiteralTypeConstructor : LiteralTypeConstructor, INum
 {
     public BigInteger Value { get; }
     public bool IsSigned => Value.Sign < 0;
-    IExpressionAntetype INumericAntetype.Antetype => this;
+    IAntetype INumericAntetype.Antetype => this;
 
     public bool IsUInt16
         => Value >= ITypeConstructor.UInt16.MinValue && Value <= ITypeConstructor.UInt16.MaxValue;
@@ -88,7 +88,7 @@ public sealed class IntegerLiteralTypeConstructor : LiteralTypeConstructor, INum
     #endregion
 
     #region Equality
-    public override bool Equals(IMaybeExpressionAntetype? other)
+    public override bool Equals(IMaybeAntetype? other)
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;

@@ -66,12 +66,12 @@ internal static class CallCandidate
         => Create(initializingAntetype, initializer, initializer.SelfParameterType);
 
     public static CallCandidate<IStandardMethodDeclarationNode> Create(
-        IMaybeExpressionAntetype contextAntetype,
+        IMaybeAntetype contextAntetype,
         IStandardMethodDeclarationNode method)
         => Create(contextAntetype, method, method.SelfParameterType);
 
     private static CallCandidate<TDeclaration> Create<TDeclaration>(
-        IMaybeExpressionAntetype contextAntetype,
+        IMaybeAntetype contextAntetype,
         TDeclaration declaration,
         IMaybeSelfParameterType selfParameterType)
         where TDeclaration : IInvocableDeclarationNode
@@ -83,20 +83,20 @@ internal static class CallCandidate
     }
 
     private static IMaybeAntetype SelfParameterAntetype(
-        IMaybeExpressionAntetype contextAntetype,
+        IMaybeAntetype contextAntetype,
         IMaybeSelfParameterType selfParameterType)
         => contextAntetype.ReplaceTypeParametersIn(selfParameterType.Type.ToAntetype())
                                .ToNonLiteralType();
 
     private static IFixedList<IMaybeNonVoidAntetype> ParameterAntetypes(
-        IMaybeExpressionAntetype contextAntetype,
+        IMaybeAntetype contextAntetype,
         IInvocableDeclarationNode declaration)
         => declaration.ParameterTypes.Select(p => ParameterAntetype(contextAntetype, p))
                       .OfType<IMaybeNonVoidAntetype>().ToFixedList();
 
-    private static IMaybeAntetype ParameterAntetype(IMaybeExpressionAntetype contextAntetype, IMaybeParameterType parameter)
+    private static IMaybeAntetype ParameterAntetype(IMaybeAntetype contextAntetype, IMaybeParameterType parameter)
         => contextAntetype.ReplaceTypeParametersIn(parameter.Type.ToAntetype()).ToNonLiteralType();
 
-    private static IMaybeAntetype ReturnAntetype(IMaybeExpressionAntetype contextAntetype, IInvocableDeclarationNode declaration)
+    private static IMaybeAntetype ReturnAntetype(IMaybeAntetype contextAntetype, IInvocableDeclarationNode declaration)
         => contextAntetype.ReplaceTypeParametersIn(declaration.ReturnType.ToAntetype()).ToNonLiteralType();
 }

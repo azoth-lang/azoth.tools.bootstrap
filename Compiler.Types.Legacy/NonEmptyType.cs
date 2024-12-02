@@ -111,7 +111,7 @@ public abstract class NonEmptyType : IExpressionType
     /// <summary>
     /// Convert this type to the equivalent antetype.
     /// </summary>
-    public abstract IMaybeExpressionAntetype ToAntetype();
+    public abstract IMaybeAntetype ToAntetype();
 
     /// <summary>
     /// Convert types for constant values to their corresponding types.

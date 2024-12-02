@@ -33,7 +33,7 @@ public sealed class BoolLiteralTypeConstructor : LiteralTypeConstructor
     #endregion
 
     #region Equality
-    public override bool Equals(IMaybeExpressionAntetype? other)
+    public override bool Equals(IMaybeAntetype? other)
         // Bool literal values are singletons, so we can use reference equality.
         => ReferenceEquals(this, other);
 

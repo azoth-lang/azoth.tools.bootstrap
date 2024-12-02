@@ -8,7 +8,7 @@ public static partial class PlainTypeOperations
     /// Whether a value of this antetype can be assigned to a variable of the other antetype. This
     /// accounts for both subtyping and implicit conversions.
     /// </summary>
-    public static bool IsAssignableTo(this IMaybeExpressionAntetype self, IMaybeExpressionAntetype other)
+    public static bool IsAssignableTo(this IMaybeAntetype self, IMaybeAntetype other)
     {
         if (self.IsSubtypeOf(other))
             return true;

@@ -32,7 +32,7 @@ public sealed class BoolConstValueType : ConstValueType
 
     public override CapabilityType<BoolType> ToNonConstValueType() => IType.Bool;
 
-    public override IMaybeExpressionAntetype ToAntetype()
+    public override IMaybeAntetype ToAntetype()
         => Value ? IAntetype.True : IAntetype.False;
 
     public override string ToSourceCodeString()

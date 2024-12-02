@@ -22,7 +22,7 @@ public sealed class VoidPlainType : EmptyPlainType
     public override IFixedSet<NamedPlainType> Supertypes => FixedSet.Empty<NamedPlainType>();
 
     #region Equality
-    public override bool Equals(IMaybeExpressionAntetype? other)
+    public override bool Equals(IMaybeAntetype? other)
         // VoidPlainType is a singleton, so we can use reference equality.
         => ReferenceEquals(this, other);
 

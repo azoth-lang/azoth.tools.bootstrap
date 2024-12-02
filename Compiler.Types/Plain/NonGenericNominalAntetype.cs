@@ -19,9 +19,9 @@ public abstract class NonGenericNominalAntetype : NamedPlainType
     public abstract bool CanBeInstantiated { get; }
     public sealed override bool AllowsVariance => false;
 
-    public override IMaybeExpressionAntetype ReplaceTypeParametersIn(IMaybeExpressionAntetype antetype)
+    public override IMaybeAntetype ReplaceTypeParametersIn(IMaybeAntetype antetype)
         => antetype;
 
     public bool Equals(ITypeConstructor? other)
-        => other is IMaybeExpressionAntetype that && Equals(that);
+        => other is IMaybeAntetype that && Equals(that);
 }

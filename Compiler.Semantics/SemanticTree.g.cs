@@ -1973,7 +1973,7 @@ public partial interface IExpressionNode : IAmbiguousExpressionNode, IControlFlo
     IMaybeExpressionType Type { get; }
     IFlowState FlowStateAfter { get; }
     IMaybeAntetype? ExpectedAntetype { get; }
-    IMaybeExpressionAntetype Antetype { get; }
+    IMaybeAntetype Antetype { get; }
 }
 
 // [Closed(typeof(BlockExpressionNode))]
@@ -1995,7 +1995,7 @@ public partial interface IBlockExpressionNode : IExpressionNode, IBlockOrResultN
     IFlowState IExpressionNode.FlowStateAfter => FlowStateAfter;
     IFlowState IElseClauseNode.FlowStateAfter => FlowStateAfter;
     new IMaybeAntetype Antetype { get; }
-    IMaybeExpressionAntetype IExpressionNode.Antetype => Antetype;
+    IMaybeAntetype IExpressionNode.Antetype => Antetype;
     IMaybeAntetype IBlockOrResultNode.Antetype => Antetype;
     new LexicalScope ContainingLexicalScope();
     LexicalScope IAmbiguousExpressionNode.ContainingLexicalScope() => ContainingLexicalScope();
@@ -2073,7 +2073,7 @@ public partial interface INeverTypedExpressionNode : IExpressionNode
     new NeverType Type
         => IType.Never;
     IMaybeExpressionType IExpressionNode.Type => Type;
-    IMaybeExpressionAntetype IExpressionNode.Antetype
+    IMaybeAntetype IExpressionNode.Antetype
         => IAntetype.Never;
 }
 
@@ -2272,7 +2272,7 @@ public partial interface IImplicitConversionExpressionNode : IExpressionNode
     IExpressionNode Referent { get; }
     IExpressionNode CurrentReferent { get; }
     new SimpleTypeConstructor Antetype { get; }
-    IMaybeExpressionAntetype IExpressionNode.Antetype => Antetype;
+    IMaybeAntetype IExpressionNode.Antetype => Antetype;
     new IMaybeType Type { get; }
     IMaybeExpressionType IExpressionNode.Type => Type;
     new IExpressionSyntax Syntax
@@ -2305,7 +2305,7 @@ public partial interface IPatternMatchExpressionNode : IExpressionNode
         => Pattern.FlowLexicalScope();
     IMaybeExpressionType IExpressionNode.Type
         => IType.Bool;
-    IMaybeExpressionAntetype IExpressionNode.Antetype
+    IMaybeAntetype IExpressionNode.Antetype
         => IAntetype.Bool;
 
     public static IPatternMatchExpressionNode Create(
@@ -2411,7 +2411,7 @@ public partial interface IForeachExpressionNode : IExpressionNode, IVariableBind
     IFlowState FlowStateBeforeBlock { get; }
     ITypeDeclarationNode? ReferencedIterableDeclaration { get; }
     IStandardMethodDeclarationNode? ReferencedIterateMethod { get; }
-    IMaybeExpressionAntetype IteratorAntetype { get; }
+    IMaybeAntetype IteratorAntetype { get; }
     ITypeDeclarationNode? ReferencedIteratorDeclaration { get; }
     IStandardMethodDeclarationNode? ReferencedNextMethod { get; }
     IMaybeAntetype IteratedAntetype { get; }
@@ -2518,7 +2518,7 @@ public partial interface IUnknownInvocationExpressionNode : IInvocationExpressio
         => TempArguments;
     IEnumerable<IExpressionNode?> IInvocationExpressionNode.AllArguments
         => Arguments;
-    IMaybeExpressionAntetype IExpressionNode.Antetype
+    IMaybeAntetype IExpressionNode.Antetype
         => IAntetype.Unknown;
 
     public static IUnknownInvocationExpressionNode Create(
@@ -2826,7 +2826,7 @@ public partial interface IUnknownNameExpressionNode : INameExpressionNode
     new UnknownType Type
         => IType.Unknown;
     IMaybeExpressionType IExpressionNode.Type => Type;
-    IMaybeExpressionAntetype IExpressionNode.Antetype
+    IMaybeAntetype IExpressionNode.Antetype
         => IAntetype.Unknown;
 }
 
@@ -2886,7 +2886,7 @@ public partial interface INamespaceNameNode : INameExpressionNode
     new UnknownType Type
         => IType.Unknown;
     IMaybeExpressionType IExpressionNode.Type => Type;
-    IMaybeExpressionAntetype IExpressionNode.Antetype
+    IMaybeAntetype IExpressionNode.Antetype
         => IAntetype.Unknown;
 }
 
@@ -2948,7 +2948,7 @@ public partial interface IFunctionGroupNameNode : INameExpressionNode
     IFunctionInvocableDeclarationNode? ReferencedDeclaration { get; }
     IFlowState INameExpressionNode.FlowStateAfter
         => FlowStateBefore();
-    IMaybeExpressionAntetype IExpressionNode.Antetype
+    IMaybeAntetype IExpressionNode.Antetype
         => IAntetype.Unknown;
 
     public static IFunctionGroupNameNode Create(
@@ -3012,7 +3012,7 @@ public partial interface IMethodGroupNameNode : INameExpressionNode
     IStandardMethodDeclarationNode? ReferencedDeclaration { get; }
     IFlowState INameExpressionNode.FlowStateAfter
         => Context.FlowStateAfter;
-    IMaybeExpressionAntetype IExpressionNode.Antetype
+    IMaybeAntetype IExpressionNode.Antetype
         => IAntetype.Unknown;
 
     public static IMethodGroupNameNode Create(
@@ -3119,7 +3119,7 @@ public partial interface ITypeNameExpressionNode : INameExpressionNode
     BareType? NamedBareType { get; }
     IMaybeExpressionType IExpressionNode.Type
         => IType.Unknown;
-    IMaybeExpressionAntetype IExpressionNode.Antetype
+    IMaybeAntetype IExpressionNode.Antetype
         => IAntetype.Unknown;
 }
 
@@ -3176,7 +3176,7 @@ public partial interface IInitializerGroupNameNode : INameExpressionNode
         => Context.NamedAntetype;
     IMaybeExpressionType IExpressionNode.Type
         => throw new NotImplementedException();
-    IMaybeExpressionAntetype IExpressionNode.Antetype
+    IMaybeAntetype IExpressionNode.Antetype
         => IAntetype.Unknown;
 
     public static IInitializerGroupNameNode Create(
@@ -3201,7 +3201,7 @@ public partial interface ISpecialTypeNameExpressionNode : INameExpressionNode
     IMaybeExpressionType IExpressionNode.Type => Type;
     SpecialTypeName Name
         => Syntax.Name;
-    IMaybeExpressionAntetype IExpressionNode.Antetype
+    IMaybeAntetype IExpressionNode.Antetype
         => IAntetype.Unknown;
 
     public static ISpecialTypeNameExpressionNode Create(ISpecialTypeNameExpressionSyntax syntax)
@@ -3258,7 +3258,7 @@ public partial interface IMissingNameExpressionNode : ISimpleNameExpressionNode
     new UnknownType Type
         => IType.Unknown;
     IMaybeExpressionType IExpressionNode.Type => Type;
-    IMaybeExpressionAntetype IExpressionNode.Antetype
+    IMaybeAntetype IExpressionNode.Antetype
         => IAntetype.Unknown;
 
     public static IMissingNameExpressionNode Create(IMissingNameSyntax syntax)
@@ -3384,7 +3384,7 @@ public partial interface IRecoveryExpressionNode : IExpressionNode
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IMoveExpressionNode : IRecoveryExpressionNode
 {
-    IMaybeExpressionAntetype IExpressionNode.Antetype
+    IMaybeAntetype IExpressionNode.Antetype
         => Referent.Antetype;
 }
 
@@ -3422,7 +3422,7 @@ public partial interface IImplicitTempMoveExpressionNode : IExpressionNode
 {
     IExpressionNode Referent { get; }
     IExpressionNode CurrentReferent { get; }
-    IMaybeExpressionAntetype IExpressionNode.Antetype
+    IMaybeAntetype IExpressionNode.Antetype
         => Referent.Antetype;
 
     public static IImplicitTempMoveExpressionNode Create(
@@ -3456,7 +3456,7 @@ public partial interface IAmbiguousFreezeExpressionNode : IAmbiguousExpressionNo
 public partial interface IFreezeExpressionNode : IRecoveryExpressionNode
 {
     bool IsTemporary { get; }
-    IMaybeExpressionAntetype IExpressionNode.Antetype
+    IMaybeAntetype IExpressionNode.Antetype
         => Referent.Antetype;
 }
 
@@ -3503,7 +3503,7 @@ public partial interface IPrepareToReturnExpressionNode : IExpressionNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     IMaybeExpressionType IExpressionNode.Type
         => Value.Type;
-    IMaybeExpressionAntetype IExpressionNode.Antetype
+    IMaybeAntetype IExpressionNode.Antetype
         => Value.Antetype;
 
     public static IPrepareToReturnExpressionNode Create(IExpressionNode value)
@@ -3525,7 +3525,7 @@ public partial interface IAsyncBlockExpressionNode : IExpressionNode
     IFlowState IExpressionNode.FlowStateAfter => FlowStateAfter;
     IMaybeExpressionType IExpressionNode.Type
         => Block.Type;
-    IMaybeExpressionAntetype IExpressionNode.Antetype
+    IMaybeAntetype IExpressionNode.Antetype
         => Block.Antetype;
 
     public static IAsyncBlockExpressionNode Create(
@@ -9443,11 +9443,11 @@ file class NewObjectExpressionNode : SemanticNode, INewObjectExpressionNode
         => Inherited_PackageNameScope(GrammarAttribute.CurrentInheritanceContext());
     public IFlowState FlowStateBefore()
         => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
-    public IMaybeExpressionAntetype Antetype
+    public IMaybeAntetype Antetype
         => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
             : this.Synthetic(ref antetypeCached, ref antetype,
                 ExpressionAntetypesAspect.NewObjectExpression_Antetype);
-    private IMaybeExpressionAntetype? antetype;
+    private IMaybeAntetype? antetype;
     private bool antetypeCached;
     public IFixedSet<IConstructorDeclarationNode> CompatibleConstructors
         => GrammarAttribute.IsCached(in compatibleConstructorsCached) ? compatibleConstructors!
@@ -9656,11 +9656,11 @@ file class UnsafeExpressionNode : SemanticNode, IUnsafeExpressionNode
                 Inherited_ExpectedAntetype);
     private IMaybeAntetype? expectedAntetype;
     private bool expectedAntetypeCached;
-    public IMaybeExpressionAntetype Antetype
+    public IMaybeAntetype Antetype
         => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
             : this.Synthetic(ref antetypeCached, ref antetype,
                 ExpressionAntetypesAspect.UnsafeExpression_Antetype);
-    private IMaybeExpressionAntetype? antetype;
+    private IMaybeAntetype? antetype;
     private bool antetypeCached;
     public ControlFlowSet ControlFlowNext
         => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
@@ -9799,11 +9799,11 @@ file class BoolLiteralExpressionNode : SemanticNode, IBoolLiteralExpressionNode
     private bool expectedAntetypeCached;
     public IFlowState FlowStateBefore()
         => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
-    public IMaybeExpressionAntetype Antetype
+    public IMaybeAntetype Antetype
         => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
             : this.Synthetic(ref antetypeCached, ref antetype,
                 ExpressionAntetypesAspect.BoolLiteralExpression_Antetype);
-    private IMaybeExpressionAntetype? antetype;
+    private IMaybeAntetype? antetype;
     private bool antetypeCached;
     public ControlFlowSet ControlFlowNext
         => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
@@ -9939,11 +9939,11 @@ file class IntegerLiteralExpressionNode : SemanticNode, IIntegerLiteralExpressio
     private bool expectedAntetypeCached;
     public IFlowState FlowStateBefore()
         => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
-    public IMaybeExpressionAntetype Antetype
+    public IMaybeAntetype Antetype
         => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
             : this.Synthetic(ref antetypeCached, ref antetype,
                 ExpressionAntetypesAspect.IntegerLiteralExpression_Antetype);
-    private IMaybeExpressionAntetype? antetype;
+    private IMaybeAntetype? antetype;
     private bool antetypeCached;
     public ControlFlowSet ControlFlowNext
         => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
@@ -10079,11 +10079,11 @@ file class NoneLiteralExpressionNode : SemanticNode, INoneLiteralExpressionNode
     private bool expectedAntetypeCached;
     public IFlowState FlowStateBefore()
         => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
-    public IMaybeExpressionAntetype Antetype
+    public IMaybeAntetype Antetype
         => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
             : this.Synthetic(ref antetypeCached, ref antetype,
                 ExpressionAntetypesAspect.NoneLiteralExpression_Antetype);
-    private IMaybeExpressionAntetype? antetype;
+    private IMaybeAntetype? antetype;
     private bool antetypeCached;
     public ControlFlowSet ControlFlowNext
         => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
@@ -10223,11 +10223,11 @@ file class StringLiteralExpressionNode : SemanticNode, IStringLiteralExpressionN
                 Inherited_ContainingLexicalScope);
     private LexicalScope? containingLexicalScope;
     private bool containingLexicalScopeCached;
-    public IMaybeExpressionAntetype Antetype
+    public IMaybeAntetype Antetype
         => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
             : this.Synthetic(ref antetypeCached, ref antetype,
                 ExpressionAntetypesAspect.StringLiteralExpression_Antetype);
-    private IMaybeExpressionAntetype? antetype;
+    private IMaybeAntetype? antetype;
     private bool antetypeCached;
     public ControlFlowSet ControlFlowNext
         => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
@@ -10376,11 +10376,11 @@ file class AssignmentExpressionNode : SemanticNode, IAssignmentExpressionNode
                 Inherited_ExpectedAntetype);
     private IMaybeAntetype? expectedAntetype;
     private bool expectedAntetypeCached;
-    public IMaybeExpressionAntetype Antetype
+    public IMaybeAntetype Antetype
         => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
             : this.Synthetic(ref antetypeCached, ref antetype,
                 ExpressionAntetypesAspect.AssignmentExpression_Antetype);
-    private IMaybeExpressionAntetype? antetype;
+    private IMaybeAntetype? antetype;
     private bool antetypeCached;
     public ControlFlowSet ControlFlowNext
         => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
@@ -10577,11 +10577,11 @@ file class BinaryOperatorExpressionNode : SemanticNode, IBinaryOperatorExpressio
                 Inherited_ContainingLexicalScope);
     private LexicalScope? containingLexicalScope;
     private bool containingLexicalScopeCached;
-    public IMaybeExpressionAntetype Antetype
+    public IMaybeAntetype Antetype
         => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
             : this.Synthetic(ref antetypeCached, ref antetype,
                 ExpressionAntetypesAspect.BinaryOperatorExpression_Antetype);
-    private IMaybeExpressionAntetype? antetype;
+    private IMaybeAntetype? antetype;
     private bool antetypeCached;
     public ControlFlowSet ControlFlowNext
         => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
@@ -10761,11 +10761,11 @@ file class UnaryOperatorExpressionNode : SemanticNode, IUnaryOperatorExpressionN
                 Inherited_ExpectedAntetype);
     private IMaybeAntetype? expectedAntetype;
     private bool expectedAntetypeCached;
-    public IMaybeExpressionAntetype Antetype
+    public IMaybeAntetype Antetype
         => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
             : this.Synthetic(ref antetypeCached, ref antetype,
                 ExpressionAntetypesAspect.UnaryOperatorExpression_Antetype);
-    private IMaybeExpressionAntetype? antetype;
+    private IMaybeAntetype? antetype;
     private bool antetypeCached;
     public ControlFlowSet ControlFlowNext
         => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
@@ -10911,11 +10911,11 @@ file class ConversionExpressionNode : SemanticNode, IConversionExpressionNode
                 Inherited_ExpectedAntetype);
     private IMaybeAntetype? expectedAntetype;
     private bool expectedAntetypeCached;
-    public IMaybeExpressionAntetype Antetype
+    public IMaybeAntetype Antetype
         => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
             : this.Synthetic(ref antetypeCached, ref antetype,
                 ExpressionAntetypesAspect.ConversionExpression_Antetype);
-    private IMaybeExpressionAntetype? antetype;
+    private IMaybeAntetype? antetype;
     private bool antetypeCached;
     public ControlFlowSet ControlFlowNext
         => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
@@ -11398,11 +11398,11 @@ file class IfExpressionNode : SemanticNode, IIfExpressionNode
                 Inherited_ExpectedAntetype);
     private IMaybeAntetype? expectedAntetype;
     private bool expectedAntetypeCached;
-    public IMaybeExpressionAntetype Antetype
+    public IMaybeAntetype Antetype
         => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
             : this.Synthetic(ref antetypeCached, ref antetype,
                 ExpressionAntetypesAspect.IfExpression_Antetype);
-    private IMaybeExpressionAntetype? antetype;
+    private IMaybeAntetype? antetype;
     private bool antetypeCached;
     public ControlFlowSet ControlFlowNext
         => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
@@ -11579,11 +11579,11 @@ file class LoopExpressionNode : SemanticNode, ILoopExpressionNode
                 Inherited_ExpectedAntetype);
     private IMaybeAntetype? expectedAntetype;
     private bool expectedAntetypeCached;
-    public IMaybeExpressionAntetype Antetype
+    public IMaybeAntetype Antetype
         => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
             : this.Synthetic(ref antetypeCached, ref antetype,
                 ExpressionAntetypesAspect.LoopExpression_Antetype);
-    private IMaybeExpressionAntetype? antetype;
+    private IMaybeAntetype? antetype;
     private bool antetypeCached;
     public ControlFlowSet ControlFlowNext
         => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
@@ -11740,11 +11740,11 @@ file class WhileExpressionNode : SemanticNode, IWhileExpressionNode
                 Inherited_ExpectedAntetype);
     private IMaybeAntetype? expectedAntetype;
     private bool expectedAntetypeCached;
-    public IMaybeExpressionAntetype Antetype
+    public IMaybeAntetype Antetype
         => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
             : this.Synthetic(ref antetypeCached, ref antetype,
                 ExpressionAntetypesAspect.WhileExpression_Antetype);
-    private IMaybeExpressionAntetype? antetype;
+    private IMaybeAntetype? antetype;
     private bool antetypeCached;
     public ControlFlowSet ControlFlowNext
         => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
@@ -11932,11 +11932,11 @@ file class ForeachExpressionNode : SemanticNode, IForeachExpressionNode
                 Inherited_ContainingLexicalScope);
     private LexicalScope? containingLexicalScope;
     private bool containingLexicalScopeCached;
-    public IMaybeExpressionAntetype Antetype
+    public IMaybeAntetype Antetype
         => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
             : this.Synthetic(ref antetypeCached, ref antetype,
                 ExpressionAntetypesAspect.ForeachExpression_Antetype);
-    private IMaybeExpressionAntetype? antetype;
+    private IMaybeAntetype? antetype;
     private bool antetypeCached;
     public IMaybeAntetype BindingAntetype
         => GrammarAttribute.IsCached(in bindingAntetypeCached) ? bindingAntetype!
@@ -12006,11 +12006,11 @@ file class ForeachExpressionNode : SemanticNode, IForeachExpressionNode
                 ForeachExpressionTypesAspect.ForeachExpression_IteratedType);
     private IMaybeNonVoidType? iteratedType;
     private bool iteratedTypeCached;
-    public IMaybeExpressionAntetype IteratorAntetype
+    public IMaybeAntetype IteratorAntetype
         => GrammarAttribute.IsCached(in iteratorAntetypeCached) ? iteratorAntetype!
             : this.Synthetic(ref iteratorAntetypeCached, ref iteratorAntetype,
                 ForeachExpressionAntetypesAspect.ForeachExpression_IteratorAntetype);
-    private IMaybeExpressionAntetype? iteratorAntetype;
+    private IMaybeAntetype? iteratorAntetype;
     private bool iteratorAntetypeCached;
     public IMaybeNonVoidType IteratorType
         => GrammarAttribute.IsCached(in iteratorTypeCached) ? iteratorType!
@@ -12811,11 +12811,11 @@ file class FunctionInvocationExpressionNode : SemanticNode, IFunctionInvocationE
     private bool expectedAntetypeCached;
     public IFlowState FlowStateBefore()
         => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
-    public IMaybeExpressionAntetype Antetype
+    public IMaybeAntetype Antetype
         => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
             : this.Synthetic(ref antetypeCached, ref antetype,
                 ExpressionAntetypesAspect.FunctionInvocationExpression_Antetype);
-    private IMaybeExpressionAntetype? antetype;
+    private IMaybeAntetype? antetype;
     private bool antetypeCached;
     public ContextualizedCall? ContextualizedCall
         => GrammarAttribute.IsCached(in contextualizedCallCached) ? contextualizedCall
@@ -13002,11 +13002,11 @@ file class MethodInvocationExpressionNode : SemanticNode, IMethodInvocationExpre
                 Inherited_ExpectedAntetype);
     private IMaybeAntetype? expectedAntetype;
     private bool expectedAntetypeCached;
-    public IMaybeExpressionAntetype Antetype
+    public IMaybeAntetype Antetype
         => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
             : this.Synthetic(ref antetypeCached, ref antetype,
                 ExpressionAntetypesAspect.MethodInvocationExpression_Antetype);
-    private IMaybeExpressionAntetype? antetype;
+    private IMaybeAntetype? antetype;
     private bool antetypeCached;
     public ContextualizedCall? ContextualizedCall
         => GrammarAttribute.IsCached(in contextualizedCallCached) ? contextualizedCall
@@ -13183,11 +13183,11 @@ file class GetterInvocationExpressionNode : SemanticNode, IGetterInvocationExpre
     private bool expectedAntetypeCached;
     public IFlowState FlowStateBefore()
         => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
-    public IMaybeExpressionAntetype Antetype
+    public IMaybeAntetype Antetype
         => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
             : this.Synthetic(ref antetypeCached, ref antetype,
                 ExpressionAntetypesAspect.GetterInvocationExpression_Antetype);
-    private IMaybeExpressionAntetype? antetype;
+    private IMaybeAntetype? antetype;
     private bool antetypeCached;
     public ContextualizedCall? ContextualizedCall
         => GrammarAttribute.IsCached(in contextualizedCallCached) ? contextualizedCall
@@ -13350,11 +13350,11 @@ file class SetterInvocationExpressionNode : SemanticNode, ISetterInvocationExpre
                 Inherited_ExpectedAntetype);
     private IMaybeAntetype? expectedAntetype;
     private bool expectedAntetypeCached;
-    public IMaybeExpressionAntetype Antetype
+    public IMaybeAntetype Antetype
         => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
             : this.Synthetic(ref antetypeCached, ref antetype,
                 ExpressionAntetypesAspect.SetterInvocationExpression_Antetype);
-    private IMaybeExpressionAntetype? antetype;
+    private IMaybeAntetype? antetype;
     private bool antetypeCached;
     public ContextualizedCall? ContextualizedCall
         => GrammarAttribute.IsCached(in contextualizedCallCached) ? contextualizedCall
@@ -13538,11 +13538,11 @@ file class FunctionReferenceInvocationExpressionNode : SemanticNode, IFunctionRe
                 Inherited_ExpectedAntetype);
     private IMaybeAntetype? expectedAntetype;
     private bool expectedAntetypeCached;
-    public IMaybeExpressionAntetype Antetype
+    public IMaybeAntetype Antetype
         => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
             : this.Synthetic(ref antetypeCached, ref antetype,
                 ExpressionAntetypesAspect.FunctionReferenceInvocationExpression_Antetype);
-    private IMaybeExpressionAntetype? antetype;
+    private IMaybeAntetype? antetype;
     private bool antetypeCached;
     public ControlFlowSet ControlFlowNext
         => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
@@ -13726,11 +13726,11 @@ file class InitializerInvocationExpressionNode : SemanticNode, IInitializerInvoc
     private bool expectedAntetypeCached;
     public IFlowState FlowStateBefore()
         => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
-    public IMaybeExpressionAntetype Antetype
+    public IMaybeAntetype Antetype
         => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
             : this.Synthetic(ref antetypeCached, ref antetype,
                 ExpressionAntetypesAspect.InitializerInvocationExpression_Antetype);
-    private IMaybeExpressionAntetype? antetype;
+    private IMaybeAntetype? antetype;
     private bool antetypeCached;
     public IFixedSet<IInitializerDeclarationNode> CompatibleDeclarations
         => GrammarAttribute.IsCached(in compatibleDeclarationsCached) ? compatibleDeclarations!
@@ -14626,11 +14626,11 @@ file class FunctionNameNode : SemanticNode, IFunctionNameNode
     private bool expectedAntetypeCached;
     public IFlowState FlowStateBefore()
         => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
-    public IMaybeExpressionAntetype Antetype
+    public IMaybeAntetype Antetype
         => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
             : this.Synthetic(ref antetypeCached, ref antetype,
                 ExpressionAntetypesAspect.FunctionName_Antetype);
-    private IMaybeExpressionAntetype? antetype;
+    private IMaybeAntetype? antetype;
     private bool antetypeCached;
     public ControlFlowSet ControlFlowNext
         => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
@@ -14958,11 +14958,11 @@ file class MethodNameNode : SemanticNode, IMethodNameNode
     private bool expectedAntetypeCached;
     public IFlowState FlowStateBefore()
         => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
-    public IMaybeExpressionAntetype Antetype
+    public IMaybeAntetype Antetype
         => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
             : this.Synthetic(ref antetypeCached, ref antetype,
                 ExpressionAntetypesAspect.MethodName_Antetype);
-    private IMaybeExpressionAntetype? antetype;
+    private IMaybeAntetype? antetype;
     private bool antetypeCached;
     public ControlFlowSet ControlFlowNext
         => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
@@ -15123,11 +15123,11 @@ file class FieldAccessExpressionNode : SemanticNode, IFieldAccessExpressionNode
     private bool expectedAntetypeCached;
     public IFlowState FlowStateBefore()
         => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
-    public IMaybeExpressionAntetype Antetype
+    public IMaybeAntetype Antetype
         => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
             : this.Synthetic(ref antetypeCached, ref antetype,
                 ExpressionAntetypesAspect.FieldAccessExpression_Antetype);
-    private IMaybeExpressionAntetype? antetype;
+    private IMaybeAntetype? antetype;
     private bool antetypeCached;
     public ControlFlowSet ControlFlowNext
         => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
@@ -15266,11 +15266,11 @@ file class VariableNameExpressionNode : SemanticNode, IVariableNameExpressionNod
     private bool expectedAntetypeCached;
     public IFlowState FlowStateBefore()
         => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
-    public IMaybeExpressionAntetype Antetype
+    public IMaybeAntetype Antetype
         => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
             : this.Synthetic(ref antetypeCached, ref antetype,
                 ExpressionAntetypesAspect.VariableNameExpression_Antetype);
-    private IMaybeExpressionAntetype? antetype;
+    private IMaybeAntetype? antetype;
     private bool antetypeCached;
     public ControlFlowSet ControlFlowNext
         => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
@@ -15967,11 +15967,11 @@ file class SelfExpressionNode : SemanticNode, ISelfExpressionNode
                 (ctx) => (IExecutableDefinitionNode)Inherited_ContainingDeclaration(ctx));
     private IExecutableDefinitionNode? containingDeclaration;
     private bool containingDeclarationCached;
-    public IMaybeExpressionAntetype Antetype
+    public IMaybeAntetype Antetype
         => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
             : this.Synthetic(ref antetypeCached, ref antetype,
                 ExpressionAntetypesAspect.SelfExpression_Antetype);
-    private IMaybeExpressionAntetype? antetype;
+    private IMaybeAntetype? antetype;
     private bool antetypeCached;
     public ControlFlowSet ControlFlowNext
         => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
@@ -17773,11 +17773,11 @@ file class AsyncStartExpressionNode : SemanticNode, IAsyncStartExpressionNode
                 Inherited_ExpectedAntetype);
     private IMaybeAntetype? expectedAntetype;
     private bool expectedAntetypeCached;
-    public IMaybeExpressionAntetype Antetype
+    public IMaybeAntetype Antetype
         => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
             : this.Synthetic(ref antetypeCached, ref antetype,
                 ExpressionAntetypesAspect.AsyncStartExpression_Antetype);
-    private IMaybeExpressionAntetype? antetype;
+    private IMaybeAntetype? antetype;
     private bool antetypeCached;
     public ControlFlowSet ControlFlowNext
         => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
@@ -17921,11 +17921,11 @@ file class AwaitExpressionNode : SemanticNode, IAwaitExpressionNode
                 Inherited_ExpectedAntetype);
     private IMaybeAntetype? expectedAntetype;
     private bool expectedAntetypeCached;
-    public IMaybeExpressionAntetype Antetype
+    public IMaybeAntetype Antetype
         => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
             : this.Synthetic(ref antetypeCached, ref antetype,
                 ExpressionAntetypesAspect.AwaitExpression_Antetype);
-    private IMaybeExpressionAntetype? antetype;
+    private IMaybeAntetype? antetype;
     private bool antetypeCached;
     public ControlFlowSet ControlFlowNext
         => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!

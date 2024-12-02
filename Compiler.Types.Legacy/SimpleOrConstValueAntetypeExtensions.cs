@@ -37,16 +37,16 @@ public static class SimpleOrConstValueAntetypeExtensions
 
     public static CapabilityType<PointerSizedIntegerType> ToType(this PointerSizedIntegerTypeConstructor typeConstructor)
     {
-        if (typeConstructor.Equals((IMaybeExpressionAntetype)IAntetype.Size))
+        if (typeConstructor.Equals((IMaybeAntetype)ITypeConstructor.Size))
             return IType.Size;
 
-        if (typeConstructor.Equals((IMaybeExpressionAntetype)IAntetype.Offset))
+        if (typeConstructor.Equals((IMaybeAntetype)ITypeConstructor.Offset))
             return IType.Offset;
 
-        if (typeConstructor.Equals((IMaybeExpressionAntetype)IAntetype.NInt))
+        if (typeConstructor.Equals((IMaybeAntetype)ITypeConstructor.NInt))
             return IType.NInt;
 
-        if (typeConstructor.Equals((IMaybeExpressionAntetype)IAntetype.NUInt))
+        if (typeConstructor.Equals((IMaybeAntetype)ITypeConstructor.NUInt))
             return IType.NUInt;
 
         throw new UnreachableException();

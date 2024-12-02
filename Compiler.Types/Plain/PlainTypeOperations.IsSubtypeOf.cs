@@ -12,19 +12,19 @@ public static partial class PlainTypeOperations
     /// <summary>
     /// Whether this antetype is a subtype of the other antetype.
     /// </summary>
-    public static bool IsSubtypeOf(this IMaybeExpressionAntetype self, IMaybeExpressionAntetype other)
+    public static bool IsSubtypeOf(this IMaybeAntetype self, IMaybeAntetype other)
     {
         return (self, other) switch
         {
             (UnknownPlainType, _) or (_, UnknownPlainType)
                 => true,
-            (IExpressionAntetype s, IExpressionAntetype o)
+            (IAntetype s, IAntetype o)
                 => s.IsSubtypeOf(o),
             _ => throw new UnreachableException()
         };
     }
 
-    public static bool IsSubtypeOf(this IExpressionAntetype self, IExpressionAntetype other)
+    public static bool IsSubtypeOf(this IAntetype self, IAntetype other)
     {
         return (self, other) switch
         {

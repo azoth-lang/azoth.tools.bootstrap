@@ -10,7 +10,7 @@ public interface IMaybePseudotype : IEquatable<IMaybePseudotype>
     /// <summary>
     /// Convert this type to the equivalent antetype.
     /// </summary>
-    IMaybeExpressionAntetype ToAntetype();
+    IMaybeAntetype ToAntetype();
 
     /// <summary>
     /// Create a type with the upper bound of the capability constraint.
