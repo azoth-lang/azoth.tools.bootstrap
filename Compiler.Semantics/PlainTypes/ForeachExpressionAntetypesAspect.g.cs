@@ -2,7 +2,7 @@ using System.CodeDom.Compiler;
 using System.Runtime.CompilerServices;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
+namespace Azoth.Tools.Bootstrap.Compiler.Semantics.PlainTypes;
 
 #nullable enable
 // ReSharper disable PartialTypeWithSinglePart

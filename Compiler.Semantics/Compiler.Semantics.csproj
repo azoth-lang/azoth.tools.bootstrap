@@ -41,7 +41,7 @@
     <ProjectReference Include="..\Compiler.Primitives\Compiler.Primitives.csproj" />
   </ItemGroup>
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Command="$(SolutionDir)Compiler.CodeGen\$(OutDir)\CompilerCodeGen.exe &quot;$(ProjectDir)SemanticTree.tree&quot; &quot;$(ProjectDir)LexicalScopes\LexicalScoping.aspect&quot;  &quot;$(ProjectDir)Structure\Inheritance.aspect&quot; &quot;$(ProjectDir)Types\ValueIds.aspect&quot; &quot;$(ProjectDir)Types\ExpressionTypes.aspect&quot; &quot;$(ProjectDir)ControlFlow\ControlFlow.aspect&quot; &quot;$(ProjectDir)Antetypes\NameBindingAntetypes.aspect&quot; &quot;$(ProjectDir)Types\NameBindingTypes.aspect&quot; &quot;$(ProjectDir)Types\TypeMemberDeclarations.aspect&quot; &quot;$(ProjectDir)NameBinding\NameLookup.aspect&quot; &quot;$(ProjectDir)Structure\Context.aspect&quot; &quot;$(ProjectDir)Symbols\SymbolNode.aspect&quot; &quot;$(ProjectDir)Structure\Members.aspect&quot; &quot;$(ProjectDir)Antetypes\OverloadResolution.aspect&quot; &quot;$(ProjectDir)Structure\Definitions.aspect&quot; &quot;$(ProjectDir)Symbols\Symbols.aspect&quot; &quot;$(ProjectDir)Declarations\Declarations.aspect&quot; &quot;$(ProjectDir)Structure\BuiltIns.aspect&quot; &quot;$(ProjectDir)Types\DefinitionTypes.aspect&quot; &quot;$(ProjectDir)Types\TypeExpressions.aspect&quot; &quot;$(ProjectDir)Antetypes\ExpressionAntetypes.aspect&quot; &quot;$(ProjectDir)Structure\TypeModifiers.aspect&quot; &quot;$(ProjectDir)Variables\Variables.aspect&quot; &quot;$(ProjectDir)Antetypes\DefinitionAntetypes.aspect&quot; &quot;$(ProjectDir)Types\TypeDefinitions.aspect&quot; &quot;$(ProjectDir)Structure\DefaultMembers.aspect&quot; &quot;$(ProjectDir)NameBinding\BindingNames.aspect&quot; &quot;$(ProjectDir)Types\ForeachExpressionTypes.aspect&quot; &quot;$(ProjectDir)Antetypes\TypeExpressionsAntetypes.aspect&quot; &quot;$(ProjectDir)Structure\CapabilityExpressions.aspect&quot; &quot;$(ProjectDir)Structure\InvalidStructure.aspect&quot; &quot;$(ProjectDir)Types\BareType.aspect&quot; &quot;$(ProjectDir)DataFlow\DataFlow.aspect&quot; &quot;$(ProjectDir)Variables\DefiniteAssignment.aspect&quot; &quot;$(ProjectDir)Variables\Shadowing.aspect&quot; &quot;$(ProjectDir)Variables\SingleAssignment.aspect&quot; &quot;$(ProjectDir)NameBinding\BindingAmbiguousNames.aspect&quot; &quot;$(ProjectDir)Antetypes\ForeachExpressionAntetypes.aspect&quot;" />
+    <Exec Command="$(SolutionDir)Compiler.CodeGen\$(OutDir)\CompilerCodeGen.exe &quot;$(ProjectDir)SemanticTree.tree&quot; &quot;$(ProjectDir)LexicalScopes\LexicalScoping.aspect&quot;  &quot;$(ProjectDir)Structure\Inheritance.aspect&quot; &quot;$(ProjectDir)Types\ValueIds.aspect&quot; &quot;$(ProjectDir)Types\ExpressionTypes.aspect&quot; &quot;$(ProjectDir)ControlFlow\ControlFlow.aspect&quot; &quot;$(ProjectDir)PlainTypes\NameBindingAntetypes.aspect&quot; &quot;$(ProjectDir)Types\NameBindingTypes.aspect&quot; &quot;$(ProjectDir)Types\TypeMemberDeclarations.aspect&quot; &quot;$(ProjectDir)NameBinding\NameLookup.aspect&quot; &quot;$(ProjectDir)Structure\Context.aspect&quot; &quot;$(ProjectDir)Symbols\SymbolNode.aspect&quot; &quot;$(ProjectDir)Structure\Members.aspect&quot; &quot;$(ProjectDir)PlainTypes\OverloadResolution.aspect&quot; &quot;$(ProjectDir)Structure\Definitions.aspect&quot; &quot;$(ProjectDir)Symbols\Symbols.aspect&quot; &quot;$(ProjectDir)Declarations\Declarations.aspect&quot; &quot;$(ProjectDir)Structure\BuiltIns.aspect&quot; &quot;$(ProjectDir)Types\DefinitionTypes.aspect&quot; &quot;$(ProjectDir)Types\TypeExpressions.aspect&quot; &quot;$(ProjectDir)PlainTypes\ExpressionAntetypes.aspect&quot; &quot;$(ProjectDir)Structure\TypeModifiers.aspect&quot; &quot;$(ProjectDir)Variables\Variables.aspect&quot; &quot;$(ProjectDir)PlainTypes\DefinitionAntetypes.aspect&quot; &quot;$(ProjectDir)Types\TypeDefinitions.aspect&quot; &quot;$(ProjectDir)Structure\DefaultMembers.aspect&quot; &quot;$(ProjectDir)NameBinding\BindingNames.aspect&quot; &quot;$(ProjectDir)Types\ForeachExpressionTypes.aspect&quot; &quot;$(ProjectDir)PlainTypes\TypeExpressionsAntetypes.aspect&quot; &quot;$(ProjectDir)Structure\CapabilityExpressions.aspect&quot; &quot;$(ProjectDir)Structure\InvalidStructure.aspect&quot; &quot;$(ProjectDir)Types\BareType.aspect&quot; &quot;$(ProjectDir)DataFlow\DataFlow.aspect&quot; &quot;$(ProjectDir)Variables\DefiniteAssignment.aspect&quot; &quot;$(ProjectDir)Variables\Shadowing.aspect&quot; &quot;$(ProjectDir)Variables\SingleAssignment.aspect&quot; &quot;$(ProjectDir)NameBinding\BindingAmbiguousNames.aspect&quot; &quot;$(ProjectDir)PlainTypes\ForeachExpressionAntetypes.aspect&quot;" />
   </Target>
   <ItemGroup>
     <Compile Update="SemanticTree.g.cs">
@@ -65,7 +65,7 @@
     <Compile Update="ControlFlow\ControlFlowAspect.g.cs">
       <DependentUpon>ControlFlow.aspect</DependentUpon>
     </Compile>
-    <Compile Update="Antetypes\NameBindingAntetypesAspect.g.cs">
+    <Compile Update="PlainTypes\NameBindingAntetypesAspect.g.cs">
       <DependentUpon>NameBindingAntetypes.aspect</DependentUpon>
     </Compile>
     <Compile Update="Types\NameBindingTypesAspect.g.cs">
@@ -86,7 +86,7 @@
     <Compile Update="Structure\MembersAspect.g.cs">
       <DependentUpon>Members.aspect</DependentUpon>
     </Compile>
-    <Compile Update="Antetypes\OverloadResolutionAspect.g.cs">
+    <Compile Update="PlainTypes\OverloadResolutionAspect.g.cs">
       <DependentUpon>OverloadResolution.aspect</DependentUpon>
     </Compile>
     <Compile Update="Structure\DefinitionsAspect.g.cs">
@@ -107,7 +107,7 @@
     <Compile Update="Types\TypeExpressionsAspect.g.cs">
       <DependentUpon>TypeExpressions.aspect</DependentUpon>
     </Compile>
-    <Compile Update="Antetypes\ExpressionAntetypesAspect.g.cs">
+    <Compile Update="PlainTypes\ExpressionAntetypesAspect.g.cs">
       <DependentUpon>ExpressionAntetypes.aspect</DependentUpon>
     </Compile>
     <Compile Update="Structure\TypeModifiersAspect.g.cs">
@@ -116,7 +116,7 @@
     <Compile Update="Variables\VariablesAspect.g.cs">
       <DependentUpon>Variables.aspect</DependentUpon>
     </Compile>
-    <Compile Update="Antetypes\DefinitionAntetypesAspect.g.cs">
+    <Compile Update="PlainTypes\DefinitionAntetypesAspect.g.cs">
       <DependentUpon>DefinitionAntetypes.aspect</DependentUpon>
     </Compile>
     <Compile Update="Types\TypeDefinitionsAspect.g.cs">
@@ -128,7 +128,7 @@
     <Compile Update="NameBinding\BindingNamesAspect.g.cs">
       <DependentUpon>BindingNames.aspect</DependentUpon>
     </Compile>
-    <Compile Update="Antetypes\TypeExpressionsAntetypesAspect.g.cs">
+    <Compile Update="PlainTypes\TypeExpressionsAntetypesAspect.g.cs">
       <DependentUpon>TypeExpressionsAntetypes.aspect</DependentUpon>
     </Compile>
     <Compile Update="Structure\CapabilityExpressionsAspect.g.cs">
@@ -155,7 +155,7 @@
     <Compile Update="NameBinding\BindingAmbiguousNamesAspect.g.cs">
       <DependentUpon>BindingAmbiguousNames.aspect</DependentUpon>
     </Compile>
-    <Compile Update="Antetypes\ForeachExpressionAntetypesAspect.g.cs">
+    <Compile Update="PlainTypes\ForeachExpressionAntetypesAspect.g.cs">
       <DependentUpon>ForeachExpressionAntetypes.aspect</DependentUpon>
     </Compile>
     <Compile Update="Types\ForeachExpressionTypesAspect.g.cs">

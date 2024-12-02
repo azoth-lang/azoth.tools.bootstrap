@@ -1,4 +1,4 @@
-◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
+◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.PlainTypes;
 ◊name NameBindingAntetypesAspect;
 ◊using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 ◊using Azoth.Tools.Bootstrap.Compiler.Types.Plain;

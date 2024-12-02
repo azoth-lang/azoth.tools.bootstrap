@@ -4,7 +4,7 @@ using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Parameters;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using Azoth.Tools.Bootstrap.Framework;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
+namespace Azoth.Tools.Bootstrap.Compiler.Semantics.PlainTypes;
 
 public sealed class CallCandidate<TDeclaration>
     where TDeclaration : IInvocableDeclarationNode
