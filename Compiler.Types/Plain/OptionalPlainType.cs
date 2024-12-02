@@ -4,7 +4,7 @@ public sealed class OptionalPlainType : INonVoidAntetype
 {
     /// <remarks>The optional type acts as a value type that may contain a reference and as such
     /// always has value semantics.</remarks>
-    public TypeSemantics Semantics => TypeSemantics.Value;
+    public TypeSemantics? Semantics => TypeSemantics.Value;
     public INonVoidAntetype Referent { get; }
 
     public OptionalPlainType(INonVoidAntetype referent)

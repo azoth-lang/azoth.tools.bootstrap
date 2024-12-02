@@ -29,6 +29,8 @@ public sealed class OrdinaryTypeConstructor : ITypeConstructor
     public bool CanBeInstantiated => !IsAbstract;
 
     public StandardName Name { get; }
+    TypeName ITypeConstructor.Name => Name;
+
     /// <summary>
     /// The parameters to this type constructor. Commonly referred to as "generic parameters".
     /// </summary>
@@ -60,6 +62,8 @@ public sealed class OrdinaryTypeConstructor : ITypeConstructor
         AllowsVariance = Parameters.Any(p => p.Variance != TypeVariance.Invariant);
         Semantics = semantics;
         IsAbstract = isAbstract;
+        Requires.That(supertypes.Contains(IAntetype.Any), nameof(supertypes),
+            "All ordinary type constructors must have `Any` as a supertype.");
         Supertypes = supertypes;
         GenericParameterPlainTypes = Parameters.Select(p => new GenericParameterPlainType(this, p))
                                                      .ToFixedList();

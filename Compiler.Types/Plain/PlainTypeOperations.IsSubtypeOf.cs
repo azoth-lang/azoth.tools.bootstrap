@@ -33,9 +33,6 @@ public static partial class PlainTypeOperations
             (VoidPlainType, _) => false,
             (OptionalPlainType s, OptionalPlainType o) => s.Referent.IsSubtypeOf(o.Referent),
             (_, OptionalPlainType o) => self.IsSubtypeOf(o.Referent),
-            (INonVoidAntetype and not OptionalPlainType, AnyAntetype)
-                // Optional types are not subtypes of `Any`. But because of boxing, any non-void type is a subtype of `Any`.
-                => true,
             (NamedPlainType s, NamedPlainType t) => s.IsSubtypeOf(t),
             (FunctionPlainType s, FunctionPlainType o) => s.IsSubtypeOf(o),
             _ => false
@@ -57,13 +54,13 @@ public static partial class PlainTypeOperations
            && o.ContainingNamespace == NamespaceName.Global)
             return true;
 
-        if (other.AllowsVariance)
+        var otherTypeConstructor = other.TypeConstructor;
+        if (otherTypeConstructor is not null && other.AllowsVariance)
         {
-            var otherDeclaredAntetype = other.TypeConstructor;
             var selfAntetypes = self.Supertypes.Prepend(self)
-                                           .Where(t => t.TypeConstructor.Equals(otherDeclaredAntetype));
+                                           .Where(t => otherTypeConstructor.Equals(t.TypeConstructor));
             foreach (var selfAntetype in selfAntetypes)
-                if (IsSubtypeOf(otherDeclaredAntetype, selfAntetype.TypeArguments, other.TypeArguments))
+                if (IsSubtypeOf(otherTypeConstructor, selfAntetype.TypeArguments, other.TypeArguments))
                     return true;
         }
 

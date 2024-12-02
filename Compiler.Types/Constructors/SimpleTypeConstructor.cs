@@ -12,10 +12,17 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 [DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
 public abstract class SimpleTypeConstructor : INonVoidAntetype, ITypeConstructor, ISimpleOrConstValueAntetype
 {
-    public TypeSemantics Semantics => TypeSemantics.Value;
+    public IdentifierName? ContainingPackage => null;
+
+    public NamespaceName? ContainingNamespace => null;
+
     public bool CanBeInstantiated => true;
 
+    public TypeSemantics Semantics => TypeSemantics.Value;
+    TypeSemantics? INonVoidAntetype.Semantics => Semantics;
+
     public SpecialTypeName Name { get; }
+    TypeName ITypeConstructor.Name => Name;
 
     IFixedList<TypeConstructorParameter> ITypeConstructor.Parameters
         => FixedList.Empty<TypeConstructorParameter>();
@@ -24,6 +31,8 @@ public abstract class SimpleTypeConstructor : INonVoidAntetype, ITypeConstructor
 
     IFixedList<GenericParameterPlainType> ITypeConstructor.GenericParameterPlainTypes
         => FixedList.Empty<GenericParameterPlainType>();
+
+    IFixedSet<NamedPlainType> ITypeConstructor.Supertypes => AnyTypeConstructor.Set;
 
     private protected SimpleTypeConstructor(SpecialTypeName name)
     {

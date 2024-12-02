@@ -12,7 +12,7 @@ internal sealed class PlainTypeReplacements
     /// Build a dictionary of type replacements. Generic parameter types of both this type and the
     /// supertypes can be replaced with type arguments of this type.
     /// </summary>
-    public PlainTypeReplacements(OrdinaryTypeConstructor typeConstructor, IFixedList<IAntetype> typeArguments)
+    public PlainTypeReplacements(ITypeConstructor typeConstructor, IFixedList<IAntetype> typeArguments)
     {
         replacements = typeConstructor.GenericParameterPlainTypes.EquiZip(typeArguments)
                                    .ToDictionary(t => t.Item1, t => t.Item2);
@@ -25,7 +25,9 @@ internal sealed class PlainTypeReplacements
         foreach (var supertype in typeConstructor.Supertypes)
             foreach (var (supertypeArgument, i) in supertype.TypeArguments.Enumerate())
             {
-                var genericParameterPlainType = supertype.TypeConstructor.GenericParameterPlainTypes[i];
+                var genericParameterPlainType = supertype.TypeConstructor?.GenericParameterPlainTypes[i];
+                if (genericParameterPlainType is null)
+                    continue;
                 if (supertypeArgument is GenericParameterPlainType genericAntetypeArg)
                 {
                     if (replacements.TryGetValue(genericAntetypeArg, out var replacement))
@@ -74,7 +76,6 @@ internal sealed class PlainTypeReplacements
     private IAntetype ReplaceTypeParametersIn(INonVoidAntetype antetype)
         => antetype switch
         {
-            AnyAntetype a => a,
             SimpleTypeConstructor a => a,
             NeverPlainType a => a,
             SelfPlainType a => a,

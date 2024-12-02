@@ -1,6 +1,6 @@
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Names;
-using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
+using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Framework;
 using DotNet.Collections.Generic;
 
@@ -29,7 +29,7 @@ internal static partial class InheritanceAspect
                                                     .ToMultiMapHashSet(m => m.Name!);
         foreach (var supertype in node.AllSupertypeNames.Select(t => t.ReferencedDeclaration))
             AddInheritedMembers(inclusiveMembers, supertype);
-        var anyType = node.ContainingLexicalScope.PackageNames.Lookup(IAntetype.Any);
+        var anyType = node.ContainingLexicalScope.PackageNames.Lookup(ITypeConstructor.Any);
         AddInheritedMembers(inclusiveMembers, anyType);
         return inclusiveMembers.Values.SelectMany().Concat(memberDefinitionNodes.Where(m => m.Name is null))
                                .ToFixedSet();

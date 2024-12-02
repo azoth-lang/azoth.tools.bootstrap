@@ -7,16 +7,16 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 
 public sealed class OrdinaryNamedPlainType : NamedPlainType, INonVoidAntetype
 {
-    public override OrdinaryTypeConstructor TypeConstructor { get; }
+    public override ITypeConstructor TypeConstructor { get; }
     public NamespaceName? ContainingNamespace => TypeConstructor.ContainingNamespace;
-    public TypeSemantics Semantics => TypeConstructor.Semantics;
-    public override StandardName Name => TypeConstructor.Name;
+    public TypeSemantics? Semantics => TypeConstructor.Semantics;
+    public override TypeName Name => TypeConstructor.Name;
     public override bool AllowsVariance => TypeConstructor.AllowsVariance;
     public override IFixedList<IAntetype> TypeArguments { get; }
     public override IFixedSet<NamedPlainType> Supertypes { get; }
     private readonly PlainTypeReplacements plainTypeReplacements;
 
-    public OrdinaryNamedPlainType(OrdinaryTypeConstructor typeConstructor, IEnumerable<IAntetype> typeArguments)
+    public OrdinaryNamedPlainType(ITypeConstructor typeConstructor, IEnumerable<IAntetype> typeArguments)
     {
         TypeConstructor = typeConstructor;
         TypeArguments = typeArguments.ToFixedList();

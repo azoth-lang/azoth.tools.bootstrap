@@ -123,7 +123,6 @@ public sealed class PackageNameScope
             EmptyPlainType _ => null,
             FunctionPlainType _ => null,
             OptionalPlainType _ => throw new NotImplementedException(),
-            AnyAntetype t => Lookup(t),
             GenericParameterPlainType t => Lookup(t),
             SelfPlainType _ => null,
             OrdinaryNamedPlainType t => Lookup(t.TypeConstructor),
@@ -133,15 +132,16 @@ public sealed class PackageNameScope
             _ => throw ExhaustiveMatch.Failed(antetype),
         };
 
-    private ITypeDeclarationNode? Lookup(ITypeConstructor antetype)
+    public ITypeDeclarationNode? Lookup(ITypeConstructor antetype)
         => antetype switch
         {
             SimpleTypeConstructor t => Lookup(t),
+            AnyTypeConstructor t => Lookup(t),
             OrdinaryTypeConstructor t => Lookup(t),
             _ => throw ExhaustiveMatch.Failed(antetype),
         };
 
-    private ITypeDeclarationNode Lookup(OrdinaryTypeConstructor antetype)
+    public ITypeDeclarationNode Lookup(OrdinaryTypeConstructor antetype)
     {
         // TODO is there a problem with types using package names and this using package aliases?
         var globalNamespace = GlobalScopeForPackage(antetype.ContainingPackage);
@@ -152,11 +152,11 @@ public sealed class PackageNameScope
         return ns.Lookup(antetype.Name).OfType<ITypeDeclarationNode>().Single();
     }
 
-    private ITypeDeclarationNode Lookup(SimpleTypeConstructor typeConstructor)
+    public ITypeDeclarationNode Lookup(SimpleTypeConstructor typeConstructor)
         => builtIns[typeConstructor.Name];
 
-    private ITypeDeclarationNode Lookup(AnyAntetype antetype)
-        => builtIns[antetype.Name];
+    public ITypeDeclarationNode Lookup(AnyTypeConstructor typeConstructor)
+        => builtIns[typeConstructor.Name];
 
     public ITypeDeclarationNode Lookup(GenericParameterPlainType plainType)
     {

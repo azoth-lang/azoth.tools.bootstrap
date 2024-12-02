@@ -17,9 +17,9 @@ public interface IAntetype : IExpressionAntetype, IMaybeAntetype
     public new static readonly UnknownPlainType Unknown = UnknownPlainType.Instance;
     public static readonly VoidPlainType Void = VoidPlainType.Instance;
     public static readonly NeverPlainType Never = NeverPlainType.Instance;
-    public static readonly AnyAntetype Any = AnyAntetype.Instance;
+    public static readonly OrdinaryNamedPlainType Any = AnyTypeConstructor.PlainType;
     public static readonly BoolTypeConstructor Bool = BoolTypeConstructor.Instance;
-    public static readonly OptionalPlainType OptionalBool = new(Bool);
+    public static readonly OptionalPlainType OptionalBool = new(ITypeConstructor. Bool);
     public static readonly BigIntegerTypeConstructor Int = BigIntegerTypeConstructor.Int;
     public static readonly BigIntegerTypeConstructor UInt = BigIntegerTypeConstructor.UInt;
     public static readonly FixedSizeIntegerTypeConstructor Int8 = FixedSizeIntegerTypeConstructor.Int8;
