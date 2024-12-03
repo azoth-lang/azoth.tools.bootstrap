@@ -7,7 +7,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
     typeof(PointerSizedIntegerTypeConstructor),
     typeof(FixedSizeIntegerTypeConstructor),
     typeof(BigIntegerTypeConstructor))]
-public abstract class IntegerTypeConstructor : SimpleTypeConstructor, INumericTypeConstructor
+public abstract class IntegerTypeConstructor : SimpleTypeConstructor, NumericTypeConstructor
 {
     public bool IsSigned { get; }
 

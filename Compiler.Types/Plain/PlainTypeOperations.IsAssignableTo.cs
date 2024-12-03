@@ -21,16 +21,16 @@ public static partial class PlainTypeOperations
             (_, OptionalPlainType o) => self.IsAssignableTo(o.Referent),
             (OrdinaryNamedPlainType { TypeConstructor: BoolLiteralTypeConstructor },
                 OrdinaryNamedPlainType { TypeConstructor: BoolTypeConstructor }) => true,
-            (OrdinaryNamedPlainType { TypeConstructor: INumericTypeConstructor s },
-                OrdinaryNamedPlainType { TypeConstructor: INumericTypeConstructor o })
+            (OrdinaryNamedPlainType { TypeConstructor: NumericTypeConstructor s },
+                OrdinaryNamedPlainType { TypeConstructor: NumericTypeConstructor o })
                 => s.IsImplicitlyNumericallyConvertibleTo(o),
             _ => false,
         };
     }
 
     private static bool IsImplicitlyNumericallyConvertibleTo(
-        this INumericTypeConstructor self,
-        INumericTypeConstructor other)
+        this NumericTypeConstructor self,
+        NumericTypeConstructor other)
     {
         switch (self, other)
         {

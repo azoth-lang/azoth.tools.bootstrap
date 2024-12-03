@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using Azoth.Tools.Bootstrap.Framework;
@@ -13,7 +14,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
     typeof(OrdinaryTypeConstructor),
     typeof(AnyTypeConstructor),
     typeof(SimpleOrLiteralTypeConstructor))]
-// TODO convert to a class?
+[SuppressMessage("Style", "IDE1006:Naming Styles",
+    Justification = "Using as a trait.")]
+// ReSharper disable once InconsistentNaming
 public interface TypeConstructor : IEquatable<TypeConstructor>
 {
     #region Standard Type Constructors

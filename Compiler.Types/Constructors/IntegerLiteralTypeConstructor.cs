@@ -5,7 +5,7 @@ using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 
 // TODO this isn't right. The value should be a type parameter
-public sealed class IntegerLiteralTypeConstructor : LiteralTypeConstructor, INumericTypeConstructor
+public sealed class IntegerLiteralTypeConstructor : LiteralTypeConstructor, NumericTypeConstructor
 {
     public BigInteger Value { get; }
     public bool IsSigned => Value.Sign < 0;

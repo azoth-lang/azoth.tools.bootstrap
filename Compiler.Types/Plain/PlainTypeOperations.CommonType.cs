@@ -16,8 +16,8 @@ public static partial class PlainTypeOperations
                 => left.NumericOperatorCommonType(right)?.MakeOptional(),
             (OptionalPlainType { Referent: var left }, _) => left.NumericOperatorCommonType(rightType)?.MakeOptional(),
             (_, OptionalPlainType { Referent: var right }) => leftType.NumericOperatorCommonType(right)?.MakeOptional(),
-            (OrdinaryNamedPlainType { TypeConstructor: INumericTypeConstructor left },
-                OrdinaryNamedPlainType { TypeConstructor: INumericTypeConstructor right })
+            (OrdinaryNamedPlainType { TypeConstructor: NumericTypeConstructor left },
+                OrdinaryNamedPlainType { TypeConstructor: NumericTypeConstructor right })
                 => left.NumericOperatorCommonType(right),
             _ => null,
         };
@@ -26,8 +26,8 @@ public static partial class PlainTypeOperations
     /// Determine what the common type for two numeric types for a numeric operator is.
     /// </summary>
     internal static IPlainType? NumericOperatorCommonType(
-        this INumericTypeConstructor leftTypeConstructor,
-        INumericTypeConstructor rightTypeConstructor)
+        this NumericTypeConstructor leftTypeConstructor,
+        NumericTypeConstructor rightTypeConstructor)
         => (leftType: leftTypeConstructor, rightType: rightTypeConstructor) switch
         {
             (BigIntegerTypeConstructor left, IntegerTypeConstructor right)
