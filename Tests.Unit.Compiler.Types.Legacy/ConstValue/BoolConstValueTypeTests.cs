@@ -30,7 +30,7 @@ public class BoolConstValueTypeTests
         var type = BoolConstValueType.True;
 
         Assert.Equal(SpecialTypeName.True, type.Name);
-        Assert.Equal("Value[true]", type.ToILString());
+        Assert.Equal("bool[true]", type.ToILString());
     }
 
     [Fact]
@@ -39,7 +39,7 @@ public class BoolConstValueTypeTests
         var type = BoolConstValueType.False;
 
         Assert.Equal(SpecialTypeName.False, type.Name);
-        Assert.Equal("Value[false]", type.ToILString());
+        Assert.Equal("bool[false]", type.ToILString());
     }
 
     [Fact]
