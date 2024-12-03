@@ -1,5 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Types.Constructors.Contexts;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
@@ -14,10 +15,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
     typeof(OrdinaryTypeConstructor),
     typeof(AnyTypeConstructor),
     typeof(SimpleOrLiteralTypeConstructor))]
-[SuppressMessage("Style", "IDE1006:Naming Styles",
-    Justification = "Using as a trait.")]
+[SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "Using as a trait.")]
 // ReSharper disable once InconsistentNaming
-public interface TypeConstructor : IEquatable<TypeConstructor>
+public interface TypeConstructor : IEquatable<TypeConstructor>, TypeConstructorContext
 {
     #region Standard Type Constructors
     public static readonly AnyTypeConstructor Any = AnyTypeConstructor.Instance;
@@ -42,6 +42,8 @@ public interface TypeConstructor : IEquatable<TypeConstructor>
     public static readonly BoolLiteralTypeConstructor True = BoolLiteralTypeConstructor.True;
     public static readonly BoolLiteralTypeConstructor False = BoolLiteralTypeConstructor.False;
     #endregion
+
+    string TypeConstructorContext.ContextPrefix => ToString() + ".";
 
     IdentifierName? ContainingPackage { get; }
     NamespaceName? ContainingNamespace { get; }
@@ -79,5 +81,8 @@ public interface TypeConstructor : IEquatable<TypeConstructor>
 
     TypeConstructor ToNonLiteral() => this;
 
-    string ToString();
+    #region Equality
+    bool IEquatable<TypeConstructorContext>.Equals(TypeConstructorContext? other)
+        => ReferenceEquals(this, other) || other is TypeConstructor that && Equals(that);
+    #endregion
 }
