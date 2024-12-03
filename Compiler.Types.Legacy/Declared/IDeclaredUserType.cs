@@ -60,11 +60,11 @@ internal static class DeclaredUserTypeExtensions
             // Treat self as non-writeable because antetypes should permit anything that could possibly be allowed by the types
             .Select(p => new TypeConstructorParameter(p.Name, p.Variance.ToTypeVariance(true)));
         var semantics = declaredType is ObjectType ? TypeSemantics.Reference : TypeSemantics.Value;
-        var supertypes = declaredType.AntetypeSupertypes();
+        var supertypes = declaredType.PlainTypeSupertypes();
         return new(declaredType.ContainingPackage, declaredType.ContainingNamespace,
             isAbstract, declaredType.Name, antetypeGenericParameters, supertypes, semantics);
     }
 
-    private static IFixedSet<NamedPlainType> AntetypeSupertypes(this IDeclaredUserType declaredType)
-        => declaredType.Supertypes.Select(t => t.ToPlainType()).Cast<NamedPlainType>().ToFixedSet();
+    private static IFixedSet<NamedPlainType> PlainTypeSupertypes(this IDeclaredUserType declaredType)
+        => declaredType.Supertypes.Select(t => t.ToPlainType()).Cast<NamedPlainType>().Append(IPlainType.Any).ToFixedSet();
 }
