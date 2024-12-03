@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.ConstValue;
@@ -7,14 +8,25 @@ using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
 
-public static class SimpleOrConstValueAntetypeExtensions
+public static class SimpleOrLiteralTypeConstructorExtensions
 {
-    public static IExpressionType ToType(this ISimpleOrConstValueAntetype antetype)
-        => antetype switch
+    public static IExpressionType ToType(this OrdinaryNamedPlainType plainType)
+        => plainType.TypeConstructor switch
+        {
+            ISimpleOrLiteralTypeConstructor t => t.ToType(),
+            AnyTypeConstructor _
+                => throw new NotSupportedException("Conversion to type only supported on simple or literal type constructor"),
+            OrdinaryTypeConstructor _
+                => throw new NotSupportedException("Conversion to type only supported on simple or literal type constructor"),
+            _ => throw ExhaustiveMatch.Failed(plainType.TypeConstructor),
+        };
+
+    public static IExpressionType ToType(this ISimpleOrLiteralTypeConstructor typeConstructor)
+        => typeConstructor switch
         {
             LiteralTypeConstructor t => t.ToType(),
             SimpleTypeConstructor t => t.ToType(),
-            _ => throw ExhaustiveMatch.Failed(antetype),
+            _ => throw ExhaustiveMatch.Failed(typeConstructor),
         };
 
     public static ConstValueType ToType(this LiteralTypeConstructor antetype)
@@ -37,16 +49,16 @@ public static class SimpleOrConstValueAntetypeExtensions
 
     public static CapabilityType<PointerSizedIntegerType> ToType(this PointerSizedIntegerTypeConstructor typeConstructor)
     {
-        if (typeConstructor.Equals((IMaybePlainType)ITypeConstructor.Size))
+        if (typeConstructor.Equals(ITypeConstructor.Size))
             return IType.Size;
 
-        if (typeConstructor.Equals((IMaybePlainType)ITypeConstructor.Offset))
+        if (typeConstructor.Equals(ITypeConstructor.Offset))
             return IType.Offset;
 
-        if (typeConstructor.Equals((IMaybePlainType)ITypeConstructor.NInt))
+        if (typeConstructor.Equals(ITypeConstructor.NInt))
             return IType.NInt;
 
-        if (typeConstructor.Equals((IMaybePlainType)ITypeConstructor.NUInt))
+        if (typeConstructor.Equals(ITypeConstructor.NUInt))
             return IType.NUInt;
 
         throw new UnreachableException();

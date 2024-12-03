@@ -17,7 +17,7 @@ internal static partial class NameBindingPlainTypesAspect
     }
 
     public static partial IMaybePlainType PatternMatchExpression_Pattern_ContextBindingPlainType(IPatternMatchExpressionNode node)
-        => node.Referent?.PlainType.ToNonLiteralType() ?? IPlainType.Unknown;
+        => node.Referent?.PlainType.ToNonLiteral() ?? IPlainType.Unknown;
 
     public static partial IMaybePlainType BindingContextPattern_Pattern_ContextBindingPlainType(IBindingContextPatternNode node)
         => node.Type?.NamedPlainType ?? node.ContextBindingPlainType();
@@ -35,7 +35,7 @@ internal static partial class NameBindingPlainTypesAspect
         => node.ContextBindingPlainType();
 
     public static partial IMaybePlainType VariableDeclarationStatement_BindingPlainType(IVariableDeclarationStatementNode node)
-        => node.Type?.NamedPlainType ?? node.Initializer?.PlainType.ToNonLiteralType() ?? IPlainType.Unknown;
+        => node.Type?.NamedPlainType ?? node.Initializer?.PlainType.ToNonLiteral() ?? IPlainType.Unknown;
 
     public static partial void VariableDeclarationStatement_Contribute_Diagnostics(
         IVariableDeclarationStatementNode node,

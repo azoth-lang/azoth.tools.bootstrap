@@ -32,6 +32,7 @@ public sealed class SpecialTypeName : TypeName
     #endregion
 
     #region Constant Types
+    // TODO eliminate the constant type names once fully switched to literal types (e.g. `int[42]`)
     public static readonly SpecialTypeName True = new("Const_Value_True");
     public static readonly SpecialTypeName False = new("Const_Value_False");
     public static readonly SpecialTypeName ConstInt = new("Const_Value_Int");

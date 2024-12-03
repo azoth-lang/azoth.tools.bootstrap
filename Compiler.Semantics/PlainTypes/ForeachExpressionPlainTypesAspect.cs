@@ -36,7 +36,7 @@ internal static partial class ForeachExpressionPlainTypesAspect
     {
         var nextMethodReturnType = node.ReferencedNextMethod?.MethodGroupType.Return.ToPlainType();
         if (nextMethodReturnType is OptionalPlainType { Referent: var iteratedType })
-            return node.IteratorPlainType.ReplaceTypeParametersIn(iteratedType).ToNonLiteralType();
+            return node.IteratorPlainType.ReplaceTypeParametersIn(iteratedType).ToNonLiteral();
         return IPlainType.Unknown;
     }
 }

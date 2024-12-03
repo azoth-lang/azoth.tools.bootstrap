@@ -16,7 +16,8 @@ public static partial class PlainTypeOperations
                 => left.NumericOperatorCommonType(right)?.MakeOptional(),
             (OptionalPlainType { Referent: var left }, _) => left.NumericOperatorCommonType(rightType)?.MakeOptional(),
             (_, OptionalPlainType { Referent: var right }) => leftType.NumericOperatorCommonType(right)?.MakeOptional(),
-            (INumericPlainType left, INumericPlainType right)
+            (OrdinaryNamedPlainType { TypeConstructor: INumericTypeConstructor left },
+                OrdinaryNamedPlainType { TypeConstructor: INumericTypeConstructor right })
                 => left.NumericOperatorCommonType(right),
             _ => null,
         };
@@ -24,8 +25,10 @@ public static partial class PlainTypeOperations
     /// <summary>
     /// Determine what the common type for two numeric types for a numeric operator is.
     /// </summary>
-    internal static IPlainType? NumericOperatorCommonType(this INumericPlainType leftType, INumericPlainType rightType)
-        => (leftType, rightType) switch
+    internal static IPlainType? NumericOperatorCommonType(
+        this INumericTypeConstructor leftTypeConstructor,
+        INumericTypeConstructor rightTypeConstructor)
+        => (leftType: leftTypeConstructor, rightType: rightTypeConstructor) switch
         {
             (BigIntegerTypeConstructor left, IntegerTypeConstructor right)
                 => left.IsSigned || right.IsSigned ? IPlainType.Int : IPlainType.UInt,
@@ -39,23 +42,23 @@ public static partial class PlainTypeOperations
                 => left.IsSigned || right.IsSigned ? IPlainType.Offset : IPlainType.Size,
             (PointerSizedIntegerTypeConstructor { IsSigned: true }, IntegerLiteralTypeConstructor { IsInt16: true })
                 or (PointerSizedIntegerTypeConstructor { IsSigned: false }, IntegerLiteralTypeConstructor { IsUInt16: true })
-                => (IPlainType)leftType.PlainType,
+                => leftTypeConstructor.PlainType,
             (PointerSizedIntegerTypeConstructor left, IntegerLiteralTypeConstructor right)
                 => left.IsSigned || right.IsSigned ? IPlainType.Int : IPlainType.UInt,
             (IntegerLiteralTypeConstructor { IsInt16: true }, PointerSizedIntegerTypeConstructor { IsSigned: true })
                 or (IntegerLiteralTypeConstructor { IsUInt16: true }, PointerSizedIntegerTypeConstructor { IsSigned: false })
-                => (IPlainType)rightType.PlainType,
+                => rightTypeConstructor.PlainType,
             (IntegerLiteralTypeConstructor left, PointerSizedIntegerTypeConstructor right)
                 => left.IsSigned || right.IsSigned ? IPlainType.Int : IPlainType.UInt,
             (FixedSizeIntegerTypeConstructor left, FixedSizeIntegerTypeConstructor right)
                 when left.IsSigned == right.IsSigned
-                => left.Bits >= right.Bits ? left : right,
+                => left.Bits >= right.Bits ? left.PlainType : right.PlainType,
             (FixedSizeIntegerTypeConstructor { IsSigned: true } left, FixedSizeIntegerTypeConstructor right)
                 when left.Bits > right.Bits
-                => left,
+                => left.PlainType,
             (FixedSizeIntegerTypeConstructor left, FixedSizeIntegerTypeConstructor { IsSigned: true } right)
                 when left.Bits < right.Bits
-                => right,
+                => right.PlainType,
             (FixedSizeIntegerTypeConstructor { IsSigned: true } left, IntegerLiteralTypeConstructor right)
                 when left.IsSigned || right.IsSigned
                 => left.NumericOperatorCommonType(right.ToSmallestSignedIntegerType()),

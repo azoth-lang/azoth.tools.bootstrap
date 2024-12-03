@@ -12,7 +12,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 [Closed(
     typeof(OrdinaryTypeConstructor),
     typeof(AnyTypeConstructor),
-    typeof(SimpleTypeConstructor))]
+    typeof(ISimpleOrLiteralTypeConstructor))]
 // TODO convert to a class?
 public interface ITypeConstructor : IEquatable<ITypeConstructor>
 {
@@ -33,6 +33,11 @@ public interface ITypeConstructor : IEquatable<ITypeConstructor>
     public static readonly PointerSizedIntegerTypeConstructor Offset = PointerSizedIntegerTypeConstructor.Offset;
     public static readonly PointerSizedIntegerTypeConstructor NInt = PointerSizedIntegerTypeConstructor.NInt;
     public static readonly PointerSizedIntegerTypeConstructor NUInt = PointerSizedIntegerTypeConstructor.NUInt;
+    #endregion
+
+    #region Literal Types
+    public static readonly BoolLiteralTypeConstructor True = BoolLiteralTypeConstructor.True;
+    public static readonly BoolLiteralTypeConstructor False = BoolLiteralTypeConstructor.False;
     #endregion
 
     IdentifierName? ContainingPackage { get; }
@@ -67,6 +72,8 @@ public interface ITypeConstructor : IEquatable<ITypeConstructor>
     }
 
     IPlainType? TryConstructNullary();
+
+    ITypeConstructor ToNonLiteral() => this;
 
     string ToString();
 }

@@ -4,31 +4,32 @@ using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 
-public sealed class IntegerLiteralTypeConstructor : LiteralTypeConstructor, INumericPlainType
+// TODO this isn't right. The value should be a type parameter
+public sealed class IntegerLiteralTypeConstructor : LiteralTypeConstructor, INumericTypeConstructor
 {
     public BigInteger Value { get; }
     public bool IsSigned => Value.Sign < 0;
-    IPlainType INumericPlainType.PlainType => this;
 
     public bool IsUInt16
         => Value >= ITypeConstructor.UInt16.MinValue && Value <= ITypeConstructor.UInt16.MaxValue;
     public bool IsInt16
         => Value >= ITypeConstructor.Int16.MinValue && Value <= ITypeConstructor.Int16.MaxValue;
 
+    public override OrdinaryNamedPlainType PlainType => LazyInitializer.EnsureInitialized(ref plainType, ConstructPlainType);
+    private OrdinaryNamedPlainType? plainType;
+
     public IntegerLiteralTypeConstructor(BigInteger value)
-        : base(SpecialTypeName.ConstInt)
+        : base(SpecialTypeName.Int)
     {
         Value = value;
     }
 
-    /// <summary>
-    /// The default non-constant type to places values of this type in. For
-    /// <see cref="IntegerLiteralTypeConstructor"/>, that is <see cref="IPlainType.Int"/>.
-    /// </summary>
-    /// <remarks>It might be thought this should return the smallest integer type that contains
-    /// the value. However, that would lead to unexpected behavior in some cases because small
-    /// integer constants might produce small fixed size integers leading to overflow.</remarks>
-    public override IPlainType ToNonLiteralType() => ITypeConstructor.Int;
+    /// <remarks>For <see cref="IntegerLiteralTypeConstructor"/>, this is
+    /// <see cref="ITypeConstructor.Int"/>. It might be thought this should return the smallest
+    /// integer type constructor that contains the value. However, that would lead to unexpected
+    /// behavior in some cases because small integer constants might produce small fixed size
+    /// integers leading to overflow.</remarks>
+    public override ITypeConstructor ToNonLiteral() => ITypeConstructor.Int;
 
     public NumericTypeConstructor ToSmallestSignedIntegerType()
     {
@@ -88,7 +89,7 @@ public sealed class IntegerLiteralTypeConstructor : LiteralTypeConstructor, INum
     #endregion
 
     #region Equality
-    public override bool Equals(IMaybePlainType? other)
+    public override bool Equals(ITypeConstructor? other)
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
@@ -98,6 +99,8 @@ public sealed class IntegerLiteralTypeConstructor : LiteralTypeConstructor, INum
 
     public override int GetHashCode() => HashCode.Combine(Value);
     #endregion
+
+    private OrdinaryNamedPlainType ConstructPlainType() => new(this, []);
 
     public override string ToString() => $"int[{Value}]";
 }

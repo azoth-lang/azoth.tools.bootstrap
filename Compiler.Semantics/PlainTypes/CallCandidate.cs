@@ -49,7 +49,7 @@ internal static class CallCandidate
     public static CallCandidate<IFunctionInvocableDeclarationNode> Create(
         IFunctionInvocableDeclarationNode function)
     {
-        var parameterAntetypes = function.ParameterTypes.Select(p => p.Type.ToPlainType().ToNonLiteralType())
+        var parameterAntetypes = function.ParameterTypes.Select(p => p.Type.ToPlainType().ToNonLiteral())
                                        .Cast<IMaybeNonVoidPlainType>().ToFixedList();
         var returnAntetype = function.ReturnType.ToPlainType();
         return new(function, null, parameterAntetypes, returnAntetype);
@@ -86,7 +86,7 @@ internal static class CallCandidate
         IMaybePlainType contextPlainType,
         IMaybeSelfParameterType selfParameterType)
         => contextPlainType.ReplaceTypeParametersIn(selfParameterType.Type.ToPlainType())
-                               .ToNonLiteralType();
+                               .ToNonLiteral();
 
     private static IFixedList<IMaybeNonVoidPlainType> ParameterPlainTypes(
         IMaybePlainType contextPlainType,
@@ -95,8 +95,8 @@ internal static class CallCandidate
                       .OfType<IMaybeNonVoidPlainType>().ToFixedList();
 
     private static IMaybePlainType ParameterPlainType(IMaybePlainType contextPlainType, IMaybeParameterType parameter)
-        => contextPlainType.ReplaceTypeParametersIn(parameter.Type.ToPlainType()).ToNonLiteralType();
+        => contextPlainType.ReplaceTypeParametersIn(parameter.Type.ToPlainType()).ToNonLiteral();
 
     private static IMaybePlainType ReturnPlainType(IMaybePlainType contextPlainType, IInvocableDeclarationNode declaration)
-        => contextPlainType.ReplaceTypeParametersIn(declaration.ReturnType.ToPlainType()).ToNonLiteralType();
+        => contextPlainType.ReplaceTypeParametersIn(declaration.ReturnType.ToPlainType()).ToNonLiteral();
 }

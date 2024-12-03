@@ -8,6 +8,7 @@ using Azoth.Tools.Bootstrap.Compiler.Primitives;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
+using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Capabilities;
@@ -486,8 +487,8 @@ internal static partial class ExpressionTypesAspect
 
     public static partial IMaybeExpressionType BinaryOperatorExpression_Type(IBinaryOperatorExpressionNode node)
     {
-        if (node.PlainType is ISimpleOrConstValueAntetype simpleOrConstValueAntetype)
-            return simpleOrConstValueAntetype.ToType();
+        if (node.PlainType is OrdinaryNamedPlainType { TypeConstructor: ISimpleOrLiteralTypeConstructor simpleOrLiteralTypeConstructor })
+            return simpleOrLiteralTypeConstructor.ToType();
         if (node.PlainType is UnknownPlainType)
             return IType.Unknown;
 
@@ -647,7 +648,9 @@ internal static partial class ExpressionTypesAspect
     }
 
     public static partial IMaybeType ImplicitConversionExpression_Type(IImplicitConversionExpressionNode node)
-        => node.PlainType.ToType();
+        // the type will always be a simple type which will be an IMaybeType
+        // TODO eliminate the need for a cast
+        => (IMaybeType)node.PlainType.ToType();
 
     public static partial IFlowState ImplicitConversionExpression_FlowStateAfter(IImplicitConversionExpressionNode node)
         => node.Referent.FlowStateAfter.Transform(node.Referent.ValueId, node.ValueId, node.Type);
@@ -675,7 +678,8 @@ internal static partial class ExpressionTypesAspect
     public static partial IMaybeExpressionType UnaryOperatorExpression_Type(IUnaryOperatorExpressionNode node)
         => node.PlainType switch
         {
-            ISimpleOrConstValueAntetype t => t.ToType(),
+            OrdinaryNamedPlainType { TypeConstructor: ISimpleOrLiteralTypeConstructor t }
+                => t.ToType(),
             UnknownPlainType => IType.Unknown,
             _ => throw new InvalidOperationException($"Unexpected plainType {node.PlainType}")
         };

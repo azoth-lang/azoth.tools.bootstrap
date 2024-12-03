@@ -53,7 +53,6 @@ internal sealed class PlainTypeReplacements
         => plainType switch
         {
             VoidPlainType a => a,
-            LiteralTypeConstructor a => a,
             INonVoidPlainType a => ReplaceTypeParametersIn(a),
             _ => throw ExhaustiveMatch.Failed(plainType)
         };
@@ -61,7 +60,6 @@ internal sealed class PlainTypeReplacements
     public IPlainType ReplaceTypeParametersIn(INonVoidPlainType plainType)
         => plainType switch
         {
-            SimpleTypeConstructor a => a,
             NeverPlainType a => a,
             SelfPlainType a => a,
             OrdinaryNamedPlainType a => ReplaceTypeParametersIn(a),

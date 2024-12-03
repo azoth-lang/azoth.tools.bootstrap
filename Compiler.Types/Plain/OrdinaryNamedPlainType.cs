@@ -31,6 +31,13 @@ public sealed class OrdinaryNamedPlainType : NamedPlainType, INonVoidPlainType
         Supertypes = typeConstructor.Supertypes.Select(s => (NamedPlainType)ReplaceTypeParametersIn(s)).ToFixedSet();
     }
 
+    public IMaybePlainType ToNonLiteral()
+    {
+        var newTypeConstructor = TypeConstructor.ToNonLiteral();
+        if (TypeConstructor.Equals(newTypeConstructor)) return this;
+        return new OrdinaryNamedPlainType(newTypeConstructor, TypeArguments);
+    }
+
     public override IMaybePlainType ReplaceTypeParametersIn(IMaybePlainType plainType)
         => plainTypeReplacements.ReplaceTypeParametersIn(plainType);
 
@@ -56,8 +63,12 @@ public sealed class OrdinaryNamedPlainType : NamedPlainType, INonVoidPlainType
 
     public void ToString(StringBuilder builder)
     {
-        builder.Append(TypeConstructor.ContainingNamespace);
-        if (TypeConstructor.ContainingNamespace != NamespaceName.Global) builder.Append('.');
+        var containingNamespace = ContainingNamespace;
+        if (containingNamespace is not null)
+        {
+            builder.Append(containingNamespace);
+            if (containingNamespace != NamespaceName.Global) builder.Append('.');
+        }
         builder.Append(TypeConstructor.Name.ToBareString());
         if (TypeArguments.IsEmpty)
             return;

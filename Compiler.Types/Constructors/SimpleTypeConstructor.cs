@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using Azoth.Tools.Bootstrap.Framework;
@@ -10,7 +11,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
     typeof(BoolTypeConstructor),
     typeof(NumericTypeConstructor))]
 [DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
-public abstract class SimpleTypeConstructor : INonVoidPlainType, ITypeConstructor, ISimpleOrConstValueAntetype
+public abstract class SimpleTypeConstructor : ISimpleOrLiteralTypeConstructor
 {
     public IdentifierName? ContainingPackage => null;
 
@@ -19,7 +20,6 @@ public abstract class SimpleTypeConstructor : INonVoidPlainType, ITypeConstructo
     public bool CanBeInstantiated => true;
 
     public TypeSemantics Semantics => TypeSemantics.Value;
-    TypeSemantics? INonVoidPlainType.Semantics => Semantics;
 
     public SpecialTypeName Name { get; }
     TypeName ITypeConstructor.Name => Name;
@@ -27,35 +27,31 @@ public abstract class SimpleTypeConstructor : INonVoidPlainType, ITypeConstructo
     IFixedList<TypeConstructorParameter> ITypeConstructor.Parameters
         => FixedList.Empty<TypeConstructorParameter>();
 
-    public bool AllowsVariance => false;
+    bool ITypeConstructor.AllowsVariance => false;
 
     IFixedList<GenericParameterPlainType> ITypeConstructor.GenericParameterPlainTypes
         => FixedList.Empty<GenericParameterPlainType>();
 
     IFixedSet<NamedPlainType> ITypeConstructor.Supertypes => AnyTypeConstructor.Set;
 
+    public OrdinaryNamedPlainType PlainType { get; }
+
     private protected SimpleTypeConstructor(SpecialTypeName name)
     {
         Name = name;
+        PlainType = new(this, []);
     }
 
     public IPlainType Construct(IEnumerable<IPlainType> typeArguments)
     {
         if (typeArguments.Any())
             throw new ArgumentException("Simple type cannot have type arguments", nameof(typeArguments));
-        return this;
+        return PlainType;
     }
 
-    public IPlainType TryConstructNullary() => this;
-
-    public IMaybePlainType ReplaceTypeParametersIn(IMaybePlainType plainType)
-        => plainType;
+    public IPlainType TryConstructNullary() => PlainType;
 
     #region Equality
-    public bool Equals(IMaybePlainType? other)
-        // All simple type constructors are singletons, so we can use reference equality.
-        => ReferenceEquals(this, other);
-
     public bool Equals(ITypeConstructor? other)
         // All simple type constructors are singletons, so we can use reference equality.
         => ReferenceEquals(this, other);
@@ -64,8 +60,7 @@ public abstract class SimpleTypeConstructor : INonVoidPlainType, ITypeConstructo
         => obj is IMaybePlainType other && Equals(other);
 
     public override int GetHashCode()
-        // ReSharper disable once BaseObjectGetHashCodeCallInGetHashCode
-        => base.GetHashCode();
+        => RuntimeHelpers.GetHashCode(this);
     #endregion
 
     public sealed override string ToString() => Name.ToString();

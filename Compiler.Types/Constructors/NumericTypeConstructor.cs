@@ -1,15 +1,12 @@
 using Azoth.Tools.Bootstrap.Compiler.Names;
-using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 
 [Closed(
     typeof(IntegerTypeConstructor))]
-public abstract class NumericTypeConstructor : SimpleTypeConstructor, INumericPlainType
+public abstract class NumericTypeConstructor : SimpleTypeConstructor, INumericTypeConstructor
 {
-    IPlainType INumericPlainType.PlainType => this;
-
     private protected NumericTypeConstructor(SpecialTypeName name)
         : base(name) { }
 }

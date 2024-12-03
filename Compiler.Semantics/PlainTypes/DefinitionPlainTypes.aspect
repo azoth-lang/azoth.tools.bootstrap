@@ -7,7 +7,7 @@
 
 // ---------- Function Definition
 // TODO it would be good to refactor to not depend on Type
-= FunctionDefinition.Body.ExpectedPlainType => Type.Return.ToPlainType().ToNonLiteralType();
+= FunctionDefinition.Body.ExpectedPlainType => Type.Return.ToPlainType().ToNonLiteral();
 
 // ---------- Type Definitions
 ↑ TypeDefinition.DeclaredPlainType:`OrdinaryTypeConstructor`;
@@ -22,4 +22,4 @@
 = FieldDefinition.BindingPlainType;
 // TODO it would be good to refactor to not depend on Type
 = AssociatedFunctionDefinition.Body.ExpectedPlainType
-    => Type.Return.ToPlainType().ToNonLiteralType();
+    => Type.Return.ToPlainType().ToNonLiteral();

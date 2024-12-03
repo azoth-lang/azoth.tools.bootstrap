@@ -22,12 +22,6 @@ public sealed class BoolConstValueType : ConstValueType
         Value = value;
     }
 
-    public BoolConstValueType And(BoolConstValueType other) => Value && other.Value;
-    public BoolConstValueType Or(BoolConstValueType other) => Value || other.Value;
-    public BoolConstValueType Not() => !Value;
-    public BoolConstValueType Equals(BoolConstValueType other) => Value == other.Value;
-    public BoolConstValueType NotEquals(BoolConstValueType other) => Value != other.Value;
-
     public static implicit operator BoolConstValueType(bool value) => value ? True : False;
 
     public override CapabilityType<BoolType> ToNonConstValueType() => IType.Bool;
@@ -38,5 +32,5 @@ public sealed class BoolConstValueType : ConstValueType
     public override string ToSourceCodeString()
         => throw new InvalidOperationException("Bool value type has no source code representation");
 
-    public override string ToILString() => $"Value[{(Value ? "true" : "false")}]";
+    public override string ToILString() => $"bool[{(Value ? "true" : "false")}]";
 }

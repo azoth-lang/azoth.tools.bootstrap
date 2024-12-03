@@ -28,18 +28,6 @@ public sealed class IntegerConstValueType : ConstValueType, INumericType
     public bool IsUInt16 => Value >= DeclaredType.UInt16.MinValue && Value <= DeclaredType.UInt16.MaxValue;
     public bool IsInt16 => Value >= DeclaredType.Int16.MinValue && Value <= DeclaredType.Int16.MaxValue;
 
-    public IntegerConstValueType Add(IntegerConstValueType right) => new(Value + right.Value);
-    public IntegerConstValueType Subtract(IntegerConstValueType right) => new(Value - right.Value);
-    public IntegerConstValueType Multiply(IntegerConstValueType right) => new(Value * right.Value);
-    public IntegerConstValueType DivideBy(IntegerConstValueType right) => new(Value / right.Value);
-    public IntegerConstValueType Negate() => new(-Value);
-    public BoolConstValueType Equals(IntegerConstValueType right) => Value == right.Value;
-    public BoolConstValueType NotEquals(IntegerConstValueType right) => Value != right.Value;
-    public BoolConstValueType LessThan(IntegerConstValueType right) => Value < right.Value;
-    public BoolConstValueType LessThanOrEqual(IntegerConstValueType right) => Value <= right.Value;
-    public BoolConstValueType GreaterThan(IntegerConstValueType right) => Value > right.Value;
-    public BoolConstValueType GreaterThanOrEqual(IntegerConstValueType right) => Value >= right.Value;
-
     /// <summary>
     /// The default non-constant type to places values of this type in. For
     /// <see cref="IntegerConstValueType"/>, that is <see cref="IType.Int"/>.
@@ -86,10 +74,10 @@ public sealed class IntegerConstValueType : ConstValueType, INumericType
     #endregion
 
     public override IMaybePlainType ToPlainType()
-        => new IntegerLiteralTypeConstructor(Value);
+        => new IntegerLiteralTypeConstructor(Value).PlainType;
 
     public override string ToSourceCodeString()
         => throw new InvalidOperationException("Integer value type has no source code representation");
 
-    public override string ToILString() => $"Value[{Value}]";
+    public override string ToILString() => $"int[{Value}]";
 }

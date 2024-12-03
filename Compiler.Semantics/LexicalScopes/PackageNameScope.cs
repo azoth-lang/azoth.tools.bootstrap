@@ -126,9 +126,6 @@ public sealed class PackageNameScope
             GenericParameterPlainType t => Lookup(t),
             SelfPlainType _ => null,
             OrdinaryNamedPlainType t => Lookup(t.TypeConstructor),
-            SimpleTypeConstructor t => Lookup(t),
-            // TODO There are no declarations for const value type, but perhaps there should be?
-            LiteralTypeConstructor _ => null,
             _ => throw ExhaustiveMatch.Failed(plainType),
         };
 
@@ -136,6 +133,8 @@ public sealed class PackageNameScope
         => antetype switch
         {
             SimpleTypeConstructor t => Lookup(t),
+            // TODO There are no declarations for const value type, but perhaps there should be?
+            LiteralTypeConstructor _ => null,
             AnyTypeConstructor t => Lookup(t),
             OrdinaryTypeConstructor t => Lookup(t),
             _ => throw ExhaustiveMatch.Failed(antetype),
