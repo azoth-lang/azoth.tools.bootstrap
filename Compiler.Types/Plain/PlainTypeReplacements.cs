@@ -28,9 +28,9 @@ internal sealed class PlainTypeReplacements
                 var genericParameterPlainType = supertype.TypeConstructor?.GenericParameterPlainTypes[i];
                 if (genericParameterPlainType is null)
                     continue;
-                if (supertypeArgument is GenericParameterPlainType genericAntetypeArg)
+                if (supertypeArgument is GenericParameterPlainType genericPlainTypeArg)
                 {
-                    if (replacements.TryGetValue(genericAntetypeArg, out var replacement))
+                    if (replacements.TryGetValue(genericPlainTypeArg, out var replacement))
                         replacements.Add(genericParameterPlainType, replacement);
                     else
                         throw new InvalidOperationException(
@@ -69,27 +69,27 @@ internal sealed class PlainTypeReplacements
             _ => throw ExhaustiveMatch.Failed(plainType)
         };
 
-    public OrdinaryNamedPlainType ReplaceTypeParametersIn(OrdinaryNamedPlainType antetype)
+    public OrdinaryNamedPlainType ReplaceTypeParametersIn(OrdinaryNamedPlainType plainType)
     {
-        var replacementTypeArguments = ReplaceTypeParametersIn(antetype.TypeArguments);
-        if (ReferenceEquals(antetype.TypeArguments, replacementTypeArguments))
-            return antetype;
+        var replacementTypeArguments = ReplaceTypeParametersIn(plainType.TypeArguments);
+        if (ReferenceEquals(plainType.TypeArguments, replacementTypeArguments))
+            return plainType;
 
-        return new(antetype.TypeConstructor, replacementTypeArguments);
+        return new(plainType.TypeConstructor, replacementTypeArguments);
     }
 
-    private IFixedList<IPlainType> ReplaceTypeParametersIn(IFixedList<IPlainType> antetypes)
+    private IFixedList<IPlainType> ReplaceTypeParametersIn(IFixedList<IPlainType> plainTypes)
     {
-        var replacementAntetypes = new List<IPlainType>();
+        var replacementPlainTypes = new List<IPlainType>();
         var typesReplaced = false;
-        foreach (var antetype in antetypes)
+        foreach (var plainType in plainTypes)
         {
-            var replacementType = ReplaceTypeParametersIn(antetype);
-            typesReplaced |= !ReferenceEquals(antetype, replacementType);
-            replacementAntetypes.Add(replacementType);
+            var replacementType = ReplaceTypeParametersIn(plainType);
+            typesReplaced |= !ReferenceEquals(plainType, replacementType);
+            replacementPlainTypes.Add(replacementType);
         }
 
-        return typesReplaced ? replacementAntetypes.ToFixedList() : antetypes;
+        return typesReplaced ? replacementPlainTypes.ToFixedList() : plainTypes;
     }
 
     public IPlainType ReplaceTypeParametersIn(GenericParameterPlainType plainType)
@@ -111,19 +111,19 @@ internal sealed class PlainTypeReplacements
     /// a parameter to drop out.
     /// </summary>
     private IFixedList<INonVoidPlainType> ReplaceTypeParametersInParameters(
-        IFixedList<INonVoidPlainType> antetypes)
+        IFixedList<INonVoidPlainType> plainTypes)
     {
-        var replacementAntetypes = new List<INonVoidPlainType>();
+        var replacementPlainTypes = new List<INonVoidPlainType>();
         var typesReplaced = false;
-        foreach (var antetype in antetypes)
+        foreach (var plainType in plainTypes)
         {
-            var replacementType = ReplaceTypeParametersIn(antetype);
-            typesReplaced |= !ReferenceEquals(antetype, replacementType);
-            if (replacementType is INonVoidPlainType nonVoidAntetype)
-                replacementAntetypes.Add(nonVoidAntetype);
+            var replacementType = ReplaceTypeParametersIn(plainType);
+            typesReplaced |= !ReferenceEquals(plainType, replacementType);
+            if (replacementType is INonVoidPlainType nonVoidPlainType)
+                replacementPlainTypes.Add(nonVoidPlainType);
         }
 
-        return typesReplaced ? replacementAntetypes.ToFixedList() : antetypes;
+        return typesReplaced ? replacementPlainTypes.ToFixedList() : plainTypes;
     }
 
     public IPlainType ReplaceTypeParametersIn(OptionalPlainType plainType)

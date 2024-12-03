@@ -34,9 +34,9 @@ internal static partial class TypeExpressionsPlainTypesAspect
         if (parameters.Count != node.Parameters.Count)
             // Not all parameters are known and non-void
             return IPlainType.Unknown;
-        if (node.Return.NamedPlainType is not IPlainType returnAntetype)
+        if (node.Return.NamedPlainType is not IPlainType returnPlainType)
             return IPlainType.Unknown;
-        return new FunctionPlainType(parameters, returnAntetype);
+        return new FunctionPlainType(parameters, returnPlainType);
     }
 
     public static partial IMaybePlainType IdentifierTypeName_NamedPlainType(IIdentifierTypeNameNode node)
@@ -52,25 +52,25 @@ internal static partial class TypeExpressionsPlainTypesAspect
     {
         // TODO do not use symbols at this stage of the compiler
         var referencedSymbol = node.ReferencedDeclaration?.Symbol;
-        var declaredAntetype = referencedSymbol?.TryGetDeclaredType()?.ToTypeConstructor();
-        if (declaredAntetype is null)
+        var declaredPlainType = referencedSymbol?.TryGetDeclaredType()?.ToTypeConstructor();
+        if (declaredPlainType is null)
             return IPlainType.Unknown;
-        var antetypeArguments = node.TypeArguments.Select(a => a.NamedPlainType).OfType<IPlainType>().ToFixedList();
-        if (antetypeArguments.Count != node.TypeArguments.Count)
+        var plainTypeArguments = node.TypeArguments.Select(a => a.NamedPlainType).OfType<IPlainType>().ToFixedList();
+        if (plainTypeArguments.Count != node.TypeArguments.Count)
             return IPlainType.Unknown;
-        return declaredAntetype.Construct(antetypeArguments);
+        return declaredPlainType.Construct(plainTypeArguments);
     }
 
     public static partial IMaybePlainType TypeNameExpression_NamedPlainType(ITypeNameExpressionNode node)
     {
         // TODO do not use symbols at this stage of the compiler
         var referencedSymbol = node.ReferencedDeclaration.Symbol;
-        var declaredAntetype = referencedSymbol.TryGetDeclaredType()?.ToTypeConstructor();
-        if (declaredAntetype is null)
+        var declaredPlainType = referencedSymbol.TryGetDeclaredType()?.ToTypeConstructor();
+        if (declaredPlainType is null)
             return IPlainType.Unknown;
-        var antetypeArguments = node.TypeArguments.Select(a => a.NamedPlainType).OfType<IPlainType>().ToFixedList();
-        if (antetypeArguments.Count != node.TypeArguments.Count)
+        var plainTypeArguments = node.TypeArguments.Select(a => a.NamedPlainType).OfType<IPlainType>().ToFixedList();
+        if (plainTypeArguments.Count != node.TypeArguments.Count)
             return IPlainType.Unknown;
-        return declaredAntetype.Construct(antetypeArguments);
+        return declaredPlainType.Construct(plainTypeArguments);
     }
 }

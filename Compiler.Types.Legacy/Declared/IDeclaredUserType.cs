@@ -56,13 +56,13 @@ internal static class DeclaredUserTypeExtensions
     internal static OrdinaryTypeConstructor ConstructTypeConstructor(this IDeclaredUserType declaredType)
     {
         var isAbstract = declaredType.IsAbstract;
-        var antetypeGenericParameters = declaredType.GenericParameters
-            // Treat self as non-writeable because antetypes should permit anything that could possibly be allowed by the types
+        var plainTypeGenericParameters = declaredType.GenericParameters
+            // Treat self as non-writeable because plain types should permit anything that could possibly be allowed by the types
             .Select(p => new TypeConstructorParameter(p.Name, p.Variance.ToTypeVariance(true)));
         var semantics = declaredType is ObjectType ? TypeSemantics.Reference : TypeSemantics.Value;
         var supertypes = declaredType.PlainTypeSupertypes();
         return new(declaredType.ContainingPackage, declaredType.ContainingNamespace,
-            isAbstract, declaredType.Name, antetypeGenericParameters, supertypes, semantics);
+            isAbstract, declaredType.Name, plainTypeGenericParameters, supertypes, semantics);
     }
 
     private static IFixedSet<NamedPlainType> PlainTypeSupertypes(this IDeclaredUserType declaredType)

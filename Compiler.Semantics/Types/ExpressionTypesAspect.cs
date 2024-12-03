@@ -520,9 +520,9 @@ internal static partial class ExpressionTypesAspect
         var rangeTypeDeclaration = containingLexicalScope.Lookup("azoth")
             .OfType<INamespaceDeclarationNode>().SelectMany(ns => ns.MembersNamed("range"))
             .OfType<ITypeDeclarationNode>().TrySingle();
-        var rangeAntetype = rangeTypeDeclaration?.Symbol.TryGetDeclaredType()?.With(Capability.Constant, [])
-                            ?? IMaybeType.Unknown;
-        return rangeAntetype;
+        var rangePlainType = rangeTypeDeclaration?.Symbol.TryGetDeclaredType()?.With(Capability.Constant, [])
+                             ?? IMaybeType.Unknown;
+        return rangePlainType;
     }
 
     public static partial IFlowState BinaryOperatorExpression_FlowStateAfter(IBinaryOperatorExpressionNode node)

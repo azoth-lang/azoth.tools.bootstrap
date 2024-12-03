@@ -1,5 +1,4 @@
 using System.Linq;
-using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Parameters;
 using Azoth.Tools.Bootstrap.Framework;
@@ -17,9 +16,9 @@ public sealed class ContextualizedCall
         => Create(constructingType, constructor, constructor.SelfParameterType);
 
     public static ContextualizedCall Create(
-        IMaybeExpressionType initializingAntetype,
+        IMaybeExpressionType initializingPlainType,
         IInitializerDeclarationNode initializer)
-        => Create(initializingAntetype, initializer, initializer.SelfParameterType);
+        => Create(initializingPlainType, initializer, initializer.SelfParameterType);
 
     public static ContextualizedCall Create(
         IMaybeExpressionType contextType,

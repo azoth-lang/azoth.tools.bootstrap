@@ -57,10 +57,10 @@ public static partial class PlainTypeOperations
         var otherTypeConstructor = other.TypeConstructor;
         if (otherTypeConstructor is not null && other.AllowsVariance)
         {
-            var selfAntetypes = self.Supertypes.Prepend(self)
-                                           .Where(t => otherTypeConstructor.Equals(t.TypeConstructor));
-            foreach (var selfAntetype in selfAntetypes)
-                if (IsSubtypeOf(otherTypeConstructor, selfAntetype.TypeArguments, other.TypeArguments))
+            var selfPlainTypes = self.Supertypes.Prepend(self)
+                                    .Where(t => otherTypeConstructor.Equals(t.TypeConstructor));
+            foreach (var selfPlainType in selfPlainTypes)
+                if (IsSubtypeOf(otherTypeConstructor, selfPlainType.TypeArguments, other.TypeArguments))
                     return true;
         }
 
@@ -68,15 +68,15 @@ public static partial class PlainTypeOperations
     }
 
     private static bool IsSubtypeOf(
-        TypeConstructor declaredAntetype,
+        TypeConstructor declaredPlainType,
         IFixedList<IPlainType> selfTypeArguments,
         IFixedList<IPlainType> otherTypeArguments)
     {
-        Requires.That(selfTypeArguments.Count == declaredAntetype.Parameters.Count, nameof(selfTypeArguments), "count must match count of declaredAntetype generic parameters");
-        Requires.That(otherTypeArguments.Count == declaredAntetype.Parameters.Count, nameof(otherTypeArguments), "count must match count of declaredAntetype generic parameters");
-        for (int i = 0; i < declaredAntetype.Parameters.Count; i++)
+        Requires.That(selfTypeArguments.Count == declaredPlainType.Parameters.Count, nameof(selfTypeArguments), "count must match count of declaredPlainType generic parameters");
+        Requires.That(otherTypeArguments.Count == declaredPlainType.Parameters.Count, nameof(otherTypeArguments), "count must match count of declaredPlainType generic parameters");
+        for (int i = 0; i < declaredPlainType.Parameters.Count; i++)
         {
-            var genericParameter = declaredAntetype.Parameters[i];
+            var genericParameter = declaredPlainType.Parameters[i];
             var self = selfTypeArguments[i];
             var other = otherTypeArguments[i];
             switch (genericParameter.Variance)

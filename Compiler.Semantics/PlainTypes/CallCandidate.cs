@@ -49,10 +49,10 @@ internal static class CallCandidate
     public static CallCandidate<IFunctionInvocableDeclarationNode> Create(
         IFunctionInvocableDeclarationNode function)
     {
-        var parameterAntetypes = function.ParameterTypes.Select(p => p.Type.ToPlainType())
+        var parameterPlainTypes = function.ParameterTypes.Select(p => p.Type.ToPlainType())
                                        .Cast<IMaybeNonVoidPlainType>().ToFixedList();
-        var returnAntetype = function.ReturnType.ToPlainType();
-        return new(function, null, parameterAntetypes, returnAntetype);
+        var returnPlainType = function.ReturnType.ToPlainType();
+        return new(function, null, parameterPlainTypes, returnPlainType);
     }
 
     public static CallCandidate<IConstructorDeclarationNode> Create(
@@ -76,10 +76,10 @@ internal static class CallCandidate
         IMaybeSelfParameterType selfParameterType)
         where TDeclaration : IInvocableDeclarationNode
     {
-        var selfParameterAntetype = SelfParameterPlainType(contextPlainType, selfParameterType);
-        var parameterAntetypes = ParameterPlainTypes(contextPlainType, declaration);
-        var returnAntetype = ReturnPlainType(contextPlainType, declaration);
-        return new(declaration, selfParameterAntetype, parameterAntetypes, returnAntetype);
+        var selfParameterPlainType = SelfParameterPlainType(contextPlainType, selfParameterType);
+        var parameterPlainTypes = ParameterPlainTypes(contextPlainType, declaration);
+        var returnPlainType = ReturnPlainType(contextPlainType, declaration);
+        return new(declaration, selfParameterPlainType, parameterPlainTypes, returnPlainType);
     }
 
     private static IMaybePlainType SelfParameterPlainType(

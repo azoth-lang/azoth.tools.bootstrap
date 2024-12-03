@@ -18,10 +18,10 @@ internal static partial class ForeachExpressionPlainTypesAspect
     {
         var iterableType = node.InExpression?.PlainType ?? IPlainType.Unknown;
         var iterateMethod = node.ReferencedIterateMethod;
-        var iteratorAntetype = iterateMethod is not null
+        var iteratorPlainType = iterateMethod is not null
             ? iterableType.ReplaceTypeParametersIn(iterateMethod.MethodGroupType.Return.ToPlainType())
             : iterableType;
-        return iteratorAntetype;
+        return iteratorPlainType;
     }
 
     public static partial ITypeDeclarationNode? ForeachExpression_ReferencedIteratorDeclaration(IForeachExpressionNode node)

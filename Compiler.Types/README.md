@@ -21,9 +21,6 @@ plain type. Once overload resolution and name binding are fixed by plain types, 
 reference capability based types can be determined and any errors resulting from capability
 violation reported.
 
-Note: plain types used to be called antetypes and that term is still being cleaned up in the
-codebase.
-
 ## Conventions
 
 This project doesn't prefix interfaces used as traits with "`I`". This is because the

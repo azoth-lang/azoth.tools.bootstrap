@@ -115,7 +115,7 @@ public sealed class PackageNameScope
     }
     #endregion
 
-    #region Lookup(IMaybeExpressionAntetype)
+    #region Lookup(IMaybeExpressionPlainType)
     public ITypeDeclarationNode? Lookup(IMaybePlainType plainType)
         => plainType switch
         {
@@ -129,26 +129,26 @@ public sealed class PackageNameScope
             _ => throw ExhaustiveMatch.Failed(plainType),
         };
 
-    public ITypeDeclarationNode? Lookup(TypeConstructor antetype)
-        => antetype switch
+    public ITypeDeclarationNode? Lookup(TypeConstructor typeConstructor)
+        => typeConstructor switch
         {
             SimpleTypeConstructor t => Lookup(t),
             // TODO There are no declarations for const value type, but perhaps there should be?
             LiteralTypeConstructor _ => null,
             AnyTypeConstructor t => Lookup(t),
             OrdinaryTypeConstructor t => Lookup(t),
-            _ => throw ExhaustiveMatch.Failed(antetype),
+            _ => throw ExhaustiveMatch.Failed(typeConstructor),
         };
 
-    public ITypeDeclarationNode Lookup(OrdinaryTypeConstructor antetype)
+    public ITypeDeclarationNode Lookup(OrdinaryTypeConstructor typeConstructor)
     {
         // TODO is there a problem with types using package names and this using package aliases?
-        var globalNamespace = GlobalScopeForPackage(antetype.ContainingPackage);
+        var globalNamespace = GlobalScopeForPackage(typeConstructor.ContainingPackage);
         var ns = globalNamespace;
-        foreach (var name in antetype.ContainingNamespace.Segments)
+        foreach (var name in typeConstructor.ContainingNamespace.Segments)
             ns = ns.GetChildNamespaceScope(name) ?? throw new UnreachableException("Type namespace must exist");
 
-        return ns.Lookup(antetype.Name).OfType<ITypeDeclarationNode>().Single();
+        return ns.Lookup(typeConstructor.Name).OfType<ITypeDeclarationNode>().Single();
     }
 
     public ITypeDeclarationNode Lookup(SimpleTypeConstructor typeConstructor)
@@ -159,7 +159,7 @@ public sealed class PackageNameScope
 
     public ITypeDeclarationNode Lookup(GenericParameterPlainType plainType)
     {
-        var declaringTypeNode = (IUserTypeDeclarationNode)Lookup(plainType.DeclaringAntetype);
+        var declaringTypeNode = (IUserTypeDeclarationNode)Lookup(plainType.DeclaringTypeConstructor);
         return declaringTypeNode.GenericParameters.Single(p => p.Name == plainType.Name);
     }
     #endregion
