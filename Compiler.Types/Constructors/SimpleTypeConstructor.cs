@@ -9,7 +9,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 
 [Closed(
     typeof(BoolTypeConstructor),
-    typeof(NumericTypeConstructor))]
+    typeof(IntegerTypeConstructor))]
 [DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
 public abstract class SimpleTypeConstructor : SimpleOrLiteralTypeConstructor
 {

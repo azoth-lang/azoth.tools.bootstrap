@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using Azoth.Tools.Bootstrap.Framework;
@@ -12,6 +13,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 [Closed(
        typeof(BoolLiteralTypeConstructor),
        typeof(IntegerLiteralTypeConstructor))]
+[DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
 public abstract class LiteralTypeConstructor : SimpleOrLiteralTypeConstructor
 {
     public sealed override IdentifierName? ContainingPackage => null;

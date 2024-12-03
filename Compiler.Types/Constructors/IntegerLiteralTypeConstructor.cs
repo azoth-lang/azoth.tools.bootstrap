@@ -31,7 +31,7 @@ public sealed class IntegerLiteralTypeConstructor : LiteralTypeConstructor, INum
     /// integers leading to overflow.</remarks>
     public override TypeConstructor ToNonLiteral() => TypeConstructor.Int;
 
-    public NumericTypeConstructor ToSmallestSignedIntegerType()
+    public IntegerTypeConstructor ToSmallestSignedIntegerType()
     {
         if (Value > TypeConstructor.Int64.MaxValue) return TypeConstructor.Int;
         if (Value > TypeConstructor.Int32.MaxValue) return TypeConstructor.Int64;
@@ -44,7 +44,7 @@ public sealed class IntegerLiteralTypeConstructor : LiteralTypeConstructor, INum
         return TypeConstructor.Int8;
     }
 
-    public NumericTypeConstructor ToSmallestUnsignedIntegerType()
+    public IntegerTypeConstructor ToSmallestUnsignedIntegerType()
     {
         if (IsSigned) throw new InvalidOperationException("Cannot convert signed value type to unsigned type.");
         if (Value > TypeConstructor.Int64.MaxValue) return TypeConstructor.UInt;
