@@ -1,3 +1,6 @@
+using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
+using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
@@ -6,6 +9,29 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 [Closed(
     typeof(SimpleTypeConstructor),
     typeof(LiteralTypeConstructor))]
-public interface SimpleOrLiteralTypeConstructor : TypeConstructor
+public abstract class SimpleOrLiteralTypeConstructor : TypeConstructor
 {
+    public abstract IdentifierName? ContainingPackage { get; }
+
+    public abstract NamespaceName? ContainingNamespace { get; }
+
+    public abstract bool CanBeInstantiated { get; }
+
+    public abstract TypeSemantics Semantics { get; }
+
+    public abstract TypeName Name { get; }
+
+    public abstract IFixedList<TypeConstructorParameter> Parameters { get; }
+
+    public abstract bool AllowsVariance { get; }
+
+    public abstract IFixedList<GenericParameterPlainType> GenericParameterPlainTypes { get; }
+
+    public abstract IFixedSet<NamedPlainType> Supertypes { get; }
+
+    public abstract IPlainType Construct(IEnumerable<IPlainType> typeArguments);
+    public abstract bool Equals(TypeConstructor? other);
+    public abstract IPlainType? TryConstructNullary();
+
+    public abstract override string ToString();
 }

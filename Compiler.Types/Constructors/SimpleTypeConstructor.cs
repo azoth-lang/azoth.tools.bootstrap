@@ -13,26 +13,25 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 [DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
 public abstract class SimpleTypeConstructor : SimpleOrLiteralTypeConstructor
 {
-    public IdentifierName? ContainingPackage => null;
+    public sealed override IdentifierName? ContainingPackage => null;
 
-    public NamespaceName? ContainingNamespace => null;
+    public sealed override NamespaceName? ContainingNamespace => null;
 
-    public bool CanBeInstantiated => true;
+    public sealed override bool CanBeInstantiated => true;
 
-    public TypeSemantics Semantics => TypeSemantics.Value;
+    public sealed override TypeSemantics Semantics => TypeSemantics.Value;
 
-    public SpecialTypeName Name { get; }
-    TypeName TypeConstructor.Name => Name;
+    public sealed override SpecialTypeName Name { get; }
 
-    IFixedList<TypeConstructorParameter> TypeConstructor.Parameters
+    public sealed override IFixedList<TypeConstructorParameter> Parameters
         => FixedList.Empty<TypeConstructorParameter>();
 
-    bool TypeConstructor.AllowsVariance => false;
+    public sealed override bool AllowsVariance => false;
 
-    IFixedList<GenericParameterPlainType> TypeConstructor.GenericParameterPlainTypes
+    public sealed override IFixedList<GenericParameterPlainType> GenericParameterPlainTypes
         => FixedList.Empty<GenericParameterPlainType>();
 
-    IFixedSet<NamedPlainType> TypeConstructor.Supertypes => AnyTypeConstructor.Set;
+    public sealed override IFixedSet<NamedPlainType> Supertypes => AnyTypeConstructor.Set;
 
     public OrdinaryNamedPlainType PlainType { get; }
 
@@ -42,24 +41,24 @@ public abstract class SimpleTypeConstructor : SimpleOrLiteralTypeConstructor
         PlainType = new(this, []);
     }
 
-    public IPlainType Construct(IEnumerable<IPlainType> typeArguments)
+    public sealed override IPlainType Construct(IEnumerable<IPlainType> typeArguments)
     {
         if (typeArguments.Any())
             throw new ArgumentException("Simple type cannot have type arguments", nameof(typeArguments));
         return PlainType;
     }
 
-    public IPlainType TryConstructNullary() => PlainType;
+    public sealed override IPlainType TryConstructNullary() => PlainType;
 
     #region Equality
-    public bool Equals(TypeConstructor? other)
+    public sealed override bool Equals(TypeConstructor? other)
         // All simple type constructors are singletons, so we can use reference equality.
         => ReferenceEquals(this, other);
 
-    public override bool Equals(object? obj)
+    public sealed override bool Equals(object? obj)
         => obj is IMaybePlainType other && Equals(other);
 
-    public override int GetHashCode()
+    public sealed override int GetHashCode()
         => RuntimeHelpers.GetHashCode(this);
     #endregion
 

@@ -14,28 +14,27 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
        typeof(IntegerLiteralTypeConstructor))]
 public abstract class LiteralTypeConstructor : SimpleOrLiteralTypeConstructor
 {
-    public IdentifierName? ContainingPackage => null;
+    public sealed override IdentifierName? ContainingPackage => null;
 
-    public NamespaceName? ContainingNamespace => null;
+    public sealed override NamespaceName? ContainingNamespace => null;
 
-    public bool CanBeInstantiated => true;
+    public sealed override bool CanBeInstantiated => true;
 
-    public TypeSemantics Semantics => TypeSemantics.Value;
+    public sealed override TypeSemantics Semantics => TypeSemantics.Value;
 
-    public SpecialTypeName Name { get; }
-    TypeName TypeConstructor.Name => Name;
+    public sealed override SpecialTypeName Name { get; }
 
     // TODO these need type parameters that are values
-    IFixedList<TypeConstructorParameter> TypeConstructor.Parameters
+    public sealed override IFixedList<TypeConstructorParameter> Parameters
         => FixedList.Empty<TypeConstructorParameter>();
 
-    bool TypeConstructor.AllowsVariance => false;
+    public sealed override bool AllowsVariance => false;
 
-    IFixedList<GenericParameterPlainType> TypeConstructor.GenericParameterPlainTypes
+    public sealed override IFixedList<GenericParameterPlainType> GenericParameterPlainTypes
         => FixedList.Empty<GenericParameterPlainType>();
 
     // TODO should this instead include the non-literal type (e.g. `int` or `bool`)?
-    IFixedSet<NamedPlainType> TypeConstructor.Supertypes => AnyTypeConstructor.Set;
+    public sealed override IFixedSet<NamedPlainType> Supertypes => AnyTypeConstructor.Set;
 
     public abstract OrdinaryNamedPlainType PlainType { get; }
 
@@ -49,8 +48,8 @@ public abstract class LiteralTypeConstructor : SimpleOrLiteralTypeConstructor
     /// </summary>
     public abstract TypeConstructor ToNonLiteral();
 
-    public IPlainType Construct(IEnumerable<IPlainType> typeArguments)
-        => throw new NotImplementedException("Constructing literal types requires value type parameters.");
+    public sealed override IPlainType Construct(IEnumerable<IPlainType> typeArguments)
+       => throw new NotImplementedException("Constructing literal types requires value type parameters.");
 
     public IMaybePlainType Construct(IEnumerable<IMaybePlainType> typeArguments)
     {
@@ -60,16 +59,14 @@ public abstract class LiteralTypeConstructor : SimpleOrLiteralTypeConstructor
     }
 
     /// <remarks>All literal types take a type parameter and cannot be nullary constructed.</remarks>
-    public IPlainType? TryConstructNullary() => null;
+    public sealed override IPlainType? TryConstructNullary() => null;
 
     #region Equality
-    public abstract bool Equals(TypeConstructor? other);
+    public abstract override bool Equals(TypeConstructor? other);
 
     public sealed override bool Equals(object? obj)
         => obj is IMaybePlainType other && Equals(other);
 
     public abstract override int GetHashCode();
     #endregion
-
-    public abstract override string ToString();
 }
