@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using System.Text;
 using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors.Contexts;
@@ -12,9 +13,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors.Contexts;
 public interface TypeConstructorContext : IEquatable<TypeConstructorContext>
 {
     /// <summary>
-    /// The prefix the context applies to the name of type constructors in the context.
+    /// Append the prefix the context applies to the name of type constructors in the context to the
+    /// given <see cref="StringBuilder"/>.
     /// </summary>
-    string ContextPrefix { get; }
+    void AppendContextPrefix(StringBuilder builder);
 
     string ToString();
 }

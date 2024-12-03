@@ -1,6 +1,7 @@
 using System.Text;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Types.Constructors.Contexts;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using Azoth.Tools.Bootstrap.Framework;
 
@@ -9,12 +10,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 /// <summary>
 /// An ordinary type constructor is one that is declared in source code (as opposed to
 /// <see cref="SimpleTypeConstructor"/>s). That is, it was declared with a <c>class</c>,
-/// <c>struct</c>,  or <c>trait</c> declaration.
+/// <c>struct</c>, or <c>trait</c> declaration.
 /// </summary>
 public sealed class OrdinaryTypeConstructor : TypeConstructor
 {
-    public IdentifierName ContainingPackage { get; }
-    public NamespaceName ContainingNamespace { get; }
+    public TypeConstructorContext Context { get; }
     /// <summary>
     /// Whether the declaration for this type constructor is abstract.
     /// </summary>
@@ -45,16 +45,14 @@ public sealed class OrdinaryTypeConstructor : TypeConstructor
     public TypeSemantics Semantics { get; }
 
     public OrdinaryTypeConstructor(
-        IdentifierName containingPackage,
-        NamespaceName containingNamespace,
+        TypeConstructorContext context,
         bool isAbstract,
         StandardName name,
         IEnumerable<TypeConstructorParameter> genericParameters,
         IFixedSet<NamedPlainType> supertypes,
         TypeSemantics semantics)
     {
-        ContainingPackage = containingPackage;
-        ContainingNamespace = containingNamespace;
+        Context = context;
         Name = name;
         Parameters = genericParameters.ToFixedList();
         Requires.That(Name.GenericParameterCount == Parameters.Count, nameof(genericParameters),
@@ -93,15 +91,14 @@ public sealed class OrdinaryTypeConstructor : TypeConstructor
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
         return other is OrdinaryTypeConstructor that
-               && ContainingPackage.Equals(that.ContainingPackage)
-               && ContainingNamespace.Equals(that.ContainingNamespace)
+               && Context.Equals(that.Context)
                && Name.Equals(that.Name)
                && Parameters.Equals(that.Parameters);
         // GenericParameterPlainTypes is derived from GenericParameters and doesn't need to be compared
     }
 
     public override int GetHashCode()
-        => HashCode.Combine(ContainingPackage, ContainingNamespace, Name, Parameters);
+        => HashCode.Combine(Context, Name, Parameters);
     #endregion
 
     public override string ToString()
@@ -113,10 +110,7 @@ public sealed class OrdinaryTypeConstructor : TypeConstructor
 
     public void ToString(StringBuilder builder)
     {
-        builder.Append(ContainingPackage);
-        builder.Append("::.");
-        builder.Append(ContainingNamespace);
-        if (ContainingNamespace != NamespaceName.Global) builder.Append('.');
+        Context.AppendContextPrefix(builder);
         builder.Append(Name.ToBareString());
         if (Parameters.IsEmpty) return;
 

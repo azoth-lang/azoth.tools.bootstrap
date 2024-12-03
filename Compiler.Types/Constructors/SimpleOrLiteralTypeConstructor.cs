@@ -1,4 +1,6 @@
+using System.Text;
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Types.Constructors.Contexts;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
@@ -11,9 +13,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
     typeof(LiteralTypeConstructor))]
 public abstract class SimpleOrLiteralTypeConstructor : TypeConstructor
 {
-    public abstract IdentifierName? ContainingPackage { get; }
-
-    public abstract NamespaceName? ContainingNamespace { get; }
+    TypeConstructorContext TypeConstructor.Context => PrimitiveContext.Instance;
 
     public abstract bool CanBeInstantiated { get; }
 
@@ -34,4 +34,6 @@ public abstract class SimpleOrLiteralTypeConstructor : TypeConstructor
     public abstract IPlainType? TryConstructNullary();
 
     public abstract override string ToString();
+
+    public abstract void ToString(StringBuilder builder);
 }

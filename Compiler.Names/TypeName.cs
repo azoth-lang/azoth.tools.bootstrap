@@ -54,6 +54,9 @@ public abstract partial class TypeName : IEquatable<TypeName>
 
     public abstract StandardName? WithAttributeSuffix();
 
+    /// <summary>
+    /// The name without any generic parameters.
+    /// </summary>
     public abstract string ToBareString();
 
     public abstract override string ToString();

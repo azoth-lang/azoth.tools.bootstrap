@@ -3,6 +3,7 @@ using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
+using Azoth.Tools.Bootstrap.Compiler.Types.Constructors.Contexts;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Pseudotypes;
@@ -55,14 +56,14 @@ internal static class DeclaredUserTypeExtensions
     /// <see cref="IDeclaredUserType.ToTypeConstructor"/> instead.</remarks>
     internal static OrdinaryTypeConstructor ConstructTypeConstructor(this IDeclaredUserType declaredType)
     {
+        var context = new NamespaceContext(declaredType.ContainingPackage, declaredType.ContainingNamespace);
         var isAbstract = declaredType.IsAbstract;
         var plainTypeGenericParameters = declaredType.GenericParameters
             // Treat self as non-writeable because plain types should permit anything that could possibly be allowed by the types
             .Select(p => new TypeConstructorParameter(p.Name, p.Variance.ToTypeVariance(true)));
         var semantics = declaredType is ObjectType ? TypeSemantics.Reference : TypeSemantics.Value;
         var supertypes = declaredType.PlainTypeSupertypes();
-        return new(declaredType.ContainingPackage, declaredType.ContainingNamespace,
-            isAbstract, declaredType.Name, plainTypeGenericParameters, supertypes, semantics);
+        return new(context, isAbstract, declaredType.Name, plainTypeGenericParameters, supertypes, semantics);
     }
 
     private static IFixedSet<NamedPlainType> PlainTypeSupertypes(this IDeclaredUserType declaredType)

@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Text;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors.Contexts;
@@ -14,8 +15,17 @@ public sealed class NamespaceContext : TypeConstructorContext
 
     /// <remarks>The prefix includes a trailing dot so that the type constructor doesn't need to
     /// check the context type to determine if a dot separator is needed.</remarks>
-    public string ContextPrefix
-        => Namespace == NamespaceName.Global ? $"{Package}::." : $"{Package}::.{Namespace}.";
+    public void AppendContextPrefix(StringBuilder builder)
+    {
+        builder.Append(Package);
+        builder.Append("::");
+        if (Namespace != NamespaceName.Global)
+        {
+            builder.Append('.');
+            builder.Append(Namespace);
+        }
+        builder.Append('.');
+    }
 
     public NamespaceContext(IdentifierName package, NamespaceName ns)
     {

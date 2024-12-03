@@ -2,6 +2,7 @@ using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
+using Azoth.Tools.Bootstrap.Compiler.Types.Constructors.Contexts;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 
@@ -50,8 +51,10 @@ public static partial class PlainTypeOperations
         if (self is OrdinaryNamedPlainType s
            && other is OrdinaryNamedPlainType o
            && s.Name == "String" && o.Name == "String"
-           && s.ContainingNamespace == NamespaceName.Global
-           && o.ContainingNamespace == NamespaceName.Global)
+           && s.TypeConstructor.Context is NamespaceContext sc
+           && sc.Namespace == NamespaceName.Global
+           && o.TypeConstructor.Context is NamespaceContext oc
+           && oc.Namespace == NamespaceName.Global)
             return true;
 
         var otherTypeConstructor = other.TypeConstructor;

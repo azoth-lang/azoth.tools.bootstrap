@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using System.Text;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors.Contexts;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
@@ -43,10 +44,13 @@ public interface TypeConstructor : IEquatable<TypeConstructor>, TypeConstructorC
     public static readonly BoolLiteralTypeConstructor False = BoolLiteralTypeConstructor.False;
     #endregion
 
-    string TypeConstructorContext.ContextPrefix => ToString() + ".";
+    void TypeConstructorContext.AppendContextPrefix(StringBuilder builder)
+    {
+        ToString(builder);
+        builder.Append('.');
+    }
 
-    IdentifierName? ContainingPackage { get; }
-    NamespaceName? ContainingNamespace { get; }
+    TypeConstructorContext Context { get; }
 
     /// <summary>
     /// Whether this type can be constructed. Abstract types and type variables cannot be constructed.
@@ -85,4 +89,6 @@ public interface TypeConstructor : IEquatable<TypeConstructor>, TypeConstructorC
     bool IEquatable<TypeConstructorContext>.Equals(TypeConstructorContext? other)
         => ReferenceEquals(this, other) || other is TypeConstructor that && Equals(that);
     #endregion
+
+    public void ToString(StringBuilder builder);
 }

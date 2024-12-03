@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using System.Text;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using Azoth.Tools.Bootstrap.Framework;
@@ -13,10 +14,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 [DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
 public abstract class SimpleTypeConstructor : SimpleOrLiteralTypeConstructor
 {
-    public sealed override IdentifierName? ContainingPackage => null;
-
-    public sealed override NamespaceName? ContainingNamespace => null;
-
     public sealed override bool CanBeInstantiated => true;
 
     public sealed override TypeSemantics Semantics => TypeSemantics.Value;
@@ -63,4 +60,6 @@ public abstract class SimpleTypeConstructor : SimpleOrLiteralTypeConstructor
     #endregion
 
     public sealed override string ToString() => Name.ToString();
+
+    public sealed override void ToString(StringBuilder builder) => builder.Append(Name);
 }

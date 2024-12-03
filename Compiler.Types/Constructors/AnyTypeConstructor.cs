@@ -1,4 +1,6 @@
+using System.Text;
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Types.Constructors.Contexts;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using Azoth.Tools.Bootstrap.Framework;
 
@@ -15,9 +17,7 @@ public sealed class AnyTypeConstructor : TypeConstructor
     internal static readonly OrdinaryNamedPlainType PlainType = new(Instance, []);
     internal static readonly IFixedSet<NamedPlainType> Set = PlainType.Yield().ToFixedSet<NamedPlainType>();
 
-    public IdentifierName? ContainingPackage => null;
-
-    public NamespaceName? ContainingNamespace => null;
+    TypeConstructorContext TypeConstructor.Context => PrimitiveContext.Instance;
 
     /// <summary>
     /// The `Any` type cannot be instantiated because it is abstract.
@@ -62,4 +62,6 @@ public sealed class AnyTypeConstructor : TypeConstructor
     public IPlainType TryConstructNullary() => PlainType;
 
     public override string ToString() => Name.ToString();
+
+    public void ToString(StringBuilder builder) => builder.Append(Name);
 }

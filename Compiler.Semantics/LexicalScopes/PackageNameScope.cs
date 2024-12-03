@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
+using Azoth.Tools.Bootstrap.Compiler.Types.Constructors.Contexts;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.ConstValue;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Declared;
@@ -143,9 +144,11 @@ public sealed class PackageNameScope
     public ITypeDeclarationNode Lookup(OrdinaryTypeConstructor typeConstructor)
     {
         // TODO is there a problem with types using package names and this using package aliases?
-        var globalNamespace = GlobalScopeForPackage(typeConstructor.ContainingPackage);
+        // TODO handle nested types that have another type as their context
+        var context = (NamespaceContext)typeConstructor.Context;
+        var globalNamespace = GlobalScopeForPackage(context.Package);
         var ns = globalNamespace;
-        foreach (var name in typeConstructor.ContainingNamespace.Segments)
+        foreach (var name in context.Namespace.Segments)
             ns = ns.GetChildNamespaceScope(name) ?? throw new UnreachableException("Type namespace must exist");
 
         return ns.Lookup(typeConstructor.Name).OfType<ITypeDeclarationNode>().Single();

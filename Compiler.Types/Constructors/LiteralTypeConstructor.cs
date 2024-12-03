@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Text;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using Azoth.Tools.Bootstrap.Framework;
@@ -16,10 +17,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 [DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
 public abstract class LiteralTypeConstructor : SimpleOrLiteralTypeConstructor
 {
-    public sealed override IdentifierName? ContainingPackage => null;
-
-    public sealed override NamespaceName? ContainingNamespace => null;
-
     public sealed override bool CanBeInstantiated => true;
 
     public sealed override TypeSemantics Semantics => TypeSemantics.Value;
@@ -71,4 +68,6 @@ public abstract class LiteralTypeConstructor : SimpleOrLiteralTypeConstructor
 
     public abstract override int GetHashCode();
     #endregion
+
+    public override void ToString(StringBuilder builder) => builder.Append(ToString());
 }

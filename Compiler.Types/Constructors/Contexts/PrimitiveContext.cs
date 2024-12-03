@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Text;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors.Contexts;
 
@@ -15,7 +16,7 @@ public sealed class PrimitiveContext : TypeConstructorContext
     private PrimitiveContext() { }
     #endregion
 
-    public string ContextPrefix => "";
+    public void AppendContextPrefix(StringBuilder builder) { /* no prefix */ }
 
     #region Equality
     public bool Equals(TypeConstructorContext? other)
