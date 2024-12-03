@@ -487,7 +487,7 @@ internal static partial class ExpressionTypesAspect
 
     public static partial IMaybeExpressionType BinaryOperatorExpression_Type(IBinaryOperatorExpressionNode node)
     {
-        if (node.PlainType is OrdinaryNamedPlainType { TypeConstructor: ISimpleOrLiteralTypeConstructor simpleOrLiteralTypeConstructor })
+        if (node.PlainType is OrdinaryNamedPlainType { TypeConstructor: SimpleOrLiteralTypeConstructor simpleOrLiteralTypeConstructor })
             return simpleOrLiteralTypeConstructor.ToType();
         if (node.PlainType is UnknownPlainType)
             return IType.Unknown;
@@ -678,7 +678,7 @@ internal static partial class ExpressionTypesAspect
     public static partial IMaybeExpressionType UnaryOperatorExpression_Type(IUnaryOperatorExpressionNode node)
         => node.PlainType switch
         {
-            OrdinaryNamedPlainType { TypeConstructor: ISimpleOrLiteralTypeConstructor t }
+            OrdinaryNamedPlainType { TypeConstructor: SimpleOrLiteralTypeConstructor t }
                 => t.ToType(),
             UnknownPlainType => IType.Unknown,
             _ => throw new InvalidOperationException($"Unexpected plainType {node.PlainType}")

@@ -38,7 +38,7 @@ public sealed class AnyType : DeclaredReferenceType
     public CapabilityType<AnyType> With(Capability capability)
         => CapabilityType.Create(capability, BareType);
 
-    public override ITypeConstructor? ToTypeConstructor() => ITypeConstructor.Any;
+    public override TypeConstructor? ToTypeConstructor() => TypeConstructor.Any;
     public override IPlainType TryToPlainType() => IPlainType.Any;
 
     #region Equals

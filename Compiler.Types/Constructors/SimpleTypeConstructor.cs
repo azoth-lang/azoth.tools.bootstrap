@@ -11,7 +11,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
     typeof(BoolTypeConstructor),
     typeof(NumericTypeConstructor))]
 [DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
-public abstract class SimpleTypeConstructor : ISimpleOrLiteralTypeConstructor
+public abstract class SimpleTypeConstructor : SimpleOrLiteralTypeConstructor
 {
     public IdentifierName? ContainingPackage => null;
 
@@ -22,17 +22,17 @@ public abstract class SimpleTypeConstructor : ISimpleOrLiteralTypeConstructor
     public TypeSemantics Semantics => TypeSemantics.Value;
 
     public SpecialTypeName Name { get; }
-    TypeName ITypeConstructor.Name => Name;
+    TypeName TypeConstructor.Name => Name;
 
-    IFixedList<TypeConstructorParameter> ITypeConstructor.Parameters
+    IFixedList<TypeConstructorParameter> TypeConstructor.Parameters
         => FixedList.Empty<TypeConstructorParameter>();
 
-    bool ITypeConstructor.AllowsVariance => false;
+    bool TypeConstructor.AllowsVariance => false;
 
-    IFixedList<GenericParameterPlainType> ITypeConstructor.GenericParameterPlainTypes
+    IFixedList<GenericParameterPlainType> TypeConstructor.GenericParameterPlainTypes
         => FixedList.Empty<GenericParameterPlainType>();
 
-    IFixedSet<NamedPlainType> ITypeConstructor.Supertypes => AnyTypeConstructor.Set;
+    IFixedSet<NamedPlainType> TypeConstructor.Supertypes => AnyTypeConstructor.Set;
 
     public OrdinaryNamedPlainType PlainType { get; }
 
@@ -52,7 +52,7 @@ public abstract class SimpleTypeConstructor : ISimpleOrLiteralTypeConstructor
     public IPlainType TryConstructNullary() => PlainType;
 
     #region Equality
-    public bool Equals(ITypeConstructor? other)
+    public bool Equals(TypeConstructor? other)
         // All simple type constructors are singletons, so we can use reference equality.
         => ReferenceEquals(this, other);
 

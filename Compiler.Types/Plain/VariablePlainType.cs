@@ -11,7 +11,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
     typeof(SelfPlainType))]
 public abstract class VariablePlainType : NamedPlainType, INonVoidPlainType
 {
-    public sealed override ITypeConstructor? TypeConstructor => null;
+    public sealed override TypeConstructor? TypeConstructor => null;
     public TypeSemantics? Semantics => null;
     public sealed override bool AllowsVariance => false;
 

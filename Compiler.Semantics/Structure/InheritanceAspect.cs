@@ -29,7 +29,7 @@ internal static partial class InheritanceAspect
                                                     .ToMultiMapHashSet(m => m.Name!);
         foreach (var supertype in node.AllSupertypeNames.Select(t => t.ReferencedDeclaration))
             AddInheritedMembers(inclusiveMembers, supertype);
-        var anyType = node.ContainingLexicalScope.PackageNames.Lookup(ITypeConstructor.Any);
+        var anyType = node.ContainingLexicalScope.PackageNames.Lookup(TypeConstructor.Any);
         AddInheritedMembers(inclusiveMembers, anyType);
         return inclusiveMembers.Values.SelectMany().Concat(memberDefinitionNodes.Where(m => m.Name is null))
                                .ToFixedSet();

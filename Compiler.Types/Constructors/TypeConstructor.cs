@@ -12,9 +12,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 [Closed(
     typeof(OrdinaryTypeConstructor),
     typeof(AnyTypeConstructor),
-    typeof(ISimpleOrLiteralTypeConstructor))]
+    typeof(SimpleOrLiteralTypeConstructor))]
 // TODO convert to a class?
-public interface ITypeConstructor : IEquatable<ITypeConstructor>
+public interface TypeConstructor : IEquatable<TypeConstructor>
 {
     #region Standard Type Constructors
     public static readonly AnyTypeConstructor Any = AnyTypeConstructor.Instance;
@@ -62,7 +62,8 @@ public interface ITypeConstructor : IEquatable<ITypeConstructor>
 
     IPlainType Construct(IEnumerable<IPlainType> typeArguments);
 
-    IPlainType ConstructWithGenericParameterPlainTypes() => Construct(GenericParameterPlainTypes);
+    IPlainType ConstructWithGenericParameterPlainTypes()
+        => Construct(GenericParameterPlainTypes);
 
     IMaybePlainType Construct(IEnumerable<IMaybePlainType> typeArguments)
     {
@@ -73,7 +74,7 @@ public interface ITypeConstructor : IEquatable<ITypeConstructor>
 
     IPlainType? TryConstructNullary();
 
-    ITypeConstructor ToNonLiteral() => this;
+    TypeConstructor ToNonLiteral() => this;
 
     string ToString();
 }

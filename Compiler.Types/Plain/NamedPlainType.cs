@@ -11,7 +11,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 [Closed(typeof(OrdinaryNamedPlainType), typeof(VariablePlainType), typeof(EmptyPlainType))]
 public abstract class NamedPlainType : IPlainType
 {
-    public abstract ITypeConstructor? TypeConstructor { get; }
+    public abstract TypeConstructor? TypeConstructor { get; }
     public abstract bool AllowsVariance { get; }
     public abstract TypeName Name { get; }
     public virtual IFixedList<IPlainType> TypeArguments => FixedList.Empty<IPlainType>();

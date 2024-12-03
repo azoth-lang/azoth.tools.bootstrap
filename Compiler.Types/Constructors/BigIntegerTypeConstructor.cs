@@ -18,5 +18,5 @@ public sealed class BigIntegerTypeConstructor : IntegerTypeConstructor
     {
     }
 
-    public override IntegerTypeConstructor WithSign() => ITypeConstructor.Int;
+    public override IntegerTypeConstructor WithSign() => TypeConstructor.Int;
 }

@@ -51,7 +51,7 @@ public interface IDeclaredUserType : IEquatable<IDeclaredUserType>
 internal static class DeclaredUserTypeExtensions
 {
     /// <remarks>Used inside of instances of <see cref="IDeclaredUserType"/> to construct the
-    /// equivalent <see cref="ITypeConstructor"/>. Do not use directly. Use
+    /// equivalent <see cref="TypeConstructor"/>. Do not use directly. Use
     /// <see cref="IDeclaredUserType.ToTypeConstructor"/> instead.</remarks>
     internal static OrdinaryTypeConstructor ConstructTypeConstructor(this IDeclaredUserType declaredType)
     {

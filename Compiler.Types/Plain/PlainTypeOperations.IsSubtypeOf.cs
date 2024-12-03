@@ -68,7 +68,7 @@ public static partial class PlainTypeOperations
     }
 
     private static bool IsSubtypeOf(
-        ITypeConstructor declaredAntetype,
+        TypeConstructor declaredAntetype,
         IFixedList<IPlainType> selfTypeArguments,
         IFixedList<IPlainType> otherTypeArguments)
     {

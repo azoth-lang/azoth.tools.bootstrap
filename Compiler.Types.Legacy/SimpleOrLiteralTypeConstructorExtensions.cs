@@ -13,7 +13,7 @@ public static class SimpleOrLiteralTypeConstructorExtensions
     public static IExpressionType ToType(this OrdinaryNamedPlainType plainType)
         => plainType.TypeConstructor switch
         {
-            ISimpleOrLiteralTypeConstructor t => t.ToType(),
+            SimpleOrLiteralTypeConstructor t => t.ToType(),
             AnyTypeConstructor _
                 => throw new NotSupportedException("Conversion to type only supported on simple or literal type constructor"),
             OrdinaryTypeConstructor _
@@ -21,7 +21,7 @@ public static class SimpleOrLiteralTypeConstructorExtensions
             _ => throw ExhaustiveMatch.Failed(plainType.TypeConstructor),
         };
 
-    public static IExpressionType ToType(this ISimpleOrLiteralTypeConstructor typeConstructor)
+    public static IExpressionType ToType(this SimpleOrLiteralTypeConstructor typeConstructor)
         => typeConstructor switch
         {
             LiteralTypeConstructor t => t.ToType(),
@@ -49,16 +49,16 @@ public static class SimpleOrLiteralTypeConstructorExtensions
 
     public static CapabilityType<PointerSizedIntegerType> ToType(this PointerSizedIntegerTypeConstructor typeConstructor)
     {
-        if (typeConstructor.Equals(ITypeConstructor.Size))
+        if (typeConstructor.Equals(TypeConstructor.Size))
             return IType.Size;
 
-        if (typeConstructor.Equals(ITypeConstructor.Offset))
+        if (typeConstructor.Equals(TypeConstructor.Offset))
             return IType.Offset;
 
-        if (typeConstructor.Equals(ITypeConstructor.NInt))
+        if (typeConstructor.Equals(TypeConstructor.NInt))
             return IType.NInt;
 
-        if (typeConstructor.Equals(ITypeConstructor.NUInt))
+        if (typeConstructor.Equals(TypeConstructor.NUInt))
             return IType.NUInt;
 
         throw new UnreachableException();

@@ -416,7 +416,7 @@ internal static partial class ExpressionPlainTypesAspect
             _ => false,
         };
 
-    private static bool CanPossiblyImplicitlyConvertFrom(ITypeConstructor fromTypeConstructor)
+    private static bool CanPossiblyImplicitlyConvertFrom(TypeConstructor fromTypeConstructor)
         => fromTypeConstructor switch
         {
             BoolLiteralTypeConstructor => true,
@@ -464,7 +464,7 @@ internal static partial class ExpressionPlainTypesAspect
                 OrdinaryNamedPlainType { TypeConstructor: IntegerTypeConstructor }):
             case (OrdinaryNamedPlainType { TypeConstructor: BigIntegerTypeConstructor { IsSigned: true } },
                 OrdinaryNamedPlainType { TypeConstructor: IntegerLiteralTypeConstructor }):
-                return ITypeConstructor.Int;
+                return TypeConstructor.Int;
             case (OrdinaryNamedPlainType { TypeConstructor: BigIntegerTypeConstructor to },
                 OrdinaryNamedPlainType
                 {
@@ -474,7 +474,7 @@ internal static partial class ExpressionPlainTypesAspect
                 return to;
             case (OrdinaryNamedPlainType { TypeConstructor: BoolTypeConstructor },
                 OrdinaryNamedPlainType { TypeConstructor: BoolLiteralTypeConstructor }):
-                return ITypeConstructor.Bool;
+                return TypeConstructor.Bool;
             // TODO support lifted implicit conversions
             //case (OptionalPlainType { Referent: var to }, OptionalPlainType { Referent: var from }):
             //    return ImplicitlyConvertToType(to, from)?.MakeOptional();

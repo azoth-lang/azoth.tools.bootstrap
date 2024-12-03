@@ -11,9 +11,9 @@ public sealed class IntegerLiteralTypeConstructor : LiteralTypeConstructor, INum
     public bool IsSigned => Value.Sign < 0;
 
     public bool IsUInt16
-        => Value >= ITypeConstructor.UInt16.MinValue && Value <= ITypeConstructor.UInt16.MaxValue;
+        => Value >= TypeConstructor.UInt16.MinValue && Value <= TypeConstructor.UInt16.MaxValue;
     public bool IsInt16
-        => Value >= ITypeConstructor.Int16.MinValue && Value <= ITypeConstructor.Int16.MaxValue;
+        => Value >= TypeConstructor.Int16.MinValue && Value <= TypeConstructor.Int16.MaxValue;
 
     public override OrdinaryNamedPlainType PlainType => LazyInitializer.EnsureInitialized(ref plainType, ConstructPlainType);
     private OrdinaryNamedPlainType? plainType;
@@ -25,33 +25,33 @@ public sealed class IntegerLiteralTypeConstructor : LiteralTypeConstructor, INum
     }
 
     /// <remarks>For <see cref="IntegerLiteralTypeConstructor"/>, this is
-    /// <see cref="ITypeConstructor.Int"/>. It might be thought this should return the smallest
+    /// <see cref="TypeConstructor.Int"/>. It might be thought this should return the smallest
     /// integer type constructor that contains the value. However, that would lead to unexpected
     /// behavior in some cases because small integer constants might produce small fixed size
     /// integers leading to overflow.</remarks>
-    public override ITypeConstructor ToNonLiteral() => ITypeConstructor.Int;
+    public override TypeConstructor ToNonLiteral() => TypeConstructor.Int;
 
     public NumericTypeConstructor ToSmallestSignedIntegerType()
     {
-        if (Value > ITypeConstructor.Int64.MaxValue) return ITypeConstructor.Int;
-        if (Value > ITypeConstructor.Int32.MaxValue) return ITypeConstructor.Int64;
-        if (Value > ITypeConstructor.Int16.MaxValue) return ITypeConstructor.Int32;
-        if (Value > ITypeConstructor.Int8.MaxValue) return ITypeConstructor.Int16;
-        if (Value < ITypeConstructor.Int64.MinValue) return ITypeConstructor.Int;
-        if (Value < ITypeConstructor.Int32.MinValue) return ITypeConstructor.Int64;
-        if (Value < ITypeConstructor.Int16.MinValue) return ITypeConstructor.Int32;
-        if (Value < ITypeConstructor.Int8.MinValue) return ITypeConstructor.Int16;
-        return ITypeConstructor.Int8;
+        if (Value > TypeConstructor.Int64.MaxValue) return TypeConstructor.Int;
+        if (Value > TypeConstructor.Int32.MaxValue) return TypeConstructor.Int64;
+        if (Value > TypeConstructor.Int16.MaxValue) return TypeConstructor.Int32;
+        if (Value > TypeConstructor.Int8.MaxValue) return TypeConstructor.Int16;
+        if (Value < TypeConstructor.Int64.MinValue) return TypeConstructor.Int;
+        if (Value < TypeConstructor.Int32.MinValue) return TypeConstructor.Int64;
+        if (Value < TypeConstructor.Int16.MinValue) return TypeConstructor.Int32;
+        if (Value < TypeConstructor.Int8.MinValue) return TypeConstructor.Int16;
+        return TypeConstructor.Int8;
     }
 
     public NumericTypeConstructor ToSmallestUnsignedIntegerType()
     {
         if (IsSigned) throw new InvalidOperationException("Cannot convert signed value type to unsigned type.");
-        if (Value > ITypeConstructor.Int64.MaxValue) return ITypeConstructor.UInt;
-        if (Value > ITypeConstructor.Int32.MaxValue) return ITypeConstructor.UInt64;
-        if (Value > ITypeConstructor.Int16.MaxValue) return ITypeConstructor.UInt32;
-        if (Value > ITypeConstructor.Byte.MaxValue) return ITypeConstructor.UInt16;
-        return ITypeConstructor.Byte;
+        if (Value > TypeConstructor.Int64.MaxValue) return TypeConstructor.UInt;
+        if (Value > TypeConstructor.Int32.MaxValue) return TypeConstructor.UInt64;
+        if (Value > TypeConstructor.Int16.MaxValue) return TypeConstructor.UInt32;
+        if (Value > TypeConstructor.Byte.MaxValue) return TypeConstructor.UInt16;
+        return TypeConstructor.Byte;
     }
 
     #region Operations
@@ -89,7 +89,7 @@ public sealed class IntegerLiteralTypeConstructor : LiteralTypeConstructor, INum
     #endregion
 
     #region Equality
-    public override bool Equals(ITypeConstructor? other)
+    public override bool Equals(TypeConstructor? other)
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;

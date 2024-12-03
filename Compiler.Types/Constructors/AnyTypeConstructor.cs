@@ -4,7 +4,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 
-public sealed class AnyTypeConstructor : ITypeConstructor
+public sealed class AnyTypeConstructor : TypeConstructor
 {
     #region Singleton
     internal static readonly AnyTypeConstructor Instance = new();
@@ -26,19 +26,19 @@ public sealed class AnyTypeConstructor : ITypeConstructor
 
     public TypeSemantics Semantics => TypeSemantics.Reference;
     public SpecialTypeName Name => SpecialTypeName.Any;
-    TypeName ITypeConstructor.Name => Name;
+    TypeName TypeConstructor.Name => Name;
 
-    IFixedList<TypeConstructorParameter> ITypeConstructor.Parameters
+    IFixedList<TypeConstructorParameter> TypeConstructor.Parameters
         => FixedList.Empty<TypeConstructorParameter>();
     public bool AllowsVariance => false;
 
-    IFixedList<GenericParameterPlainType> ITypeConstructor.GenericParameterPlainTypes
+    IFixedList<GenericParameterPlainType> TypeConstructor.GenericParameterPlainTypes
         => FixedList.Empty<GenericParameterPlainType>();
 
-    IFixedSet<NamedPlainType> ITypeConstructor.Supertypes => FixedSet.Empty<NamedPlainType>();
+    IFixedSet<NamedPlainType> TypeConstructor.Supertypes => FixedSet.Empty<NamedPlainType>();
 
     #region Equality
-    public bool Equals(ITypeConstructor? other)
+    public bool Equals(TypeConstructor? other)
         // AnyTypeConstructor is a singleton, so we can use reference equality.
         => ReferenceEquals(this, other);
 

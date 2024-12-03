@@ -18,6 +18,8 @@ public sealed class PointerSizedIntegerTypeConstructor : IntegerTypeConstructor
     /// <summary>
     /// The current type but signed.
     /// </summary>
+    // TODO it could be a problem that not all values of `size` fit into the with sign type `offset`.
+    // TODO it could be a problem that not all values of `nuint` fit into the with sign type `nint`.
     public override IntegerTypeConstructor WithSign()
     {
         if (IsSigned) return this;

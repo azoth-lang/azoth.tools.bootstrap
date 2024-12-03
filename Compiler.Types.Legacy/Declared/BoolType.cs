@@ -36,6 +36,6 @@ public sealed class BoolType : SimpleType
     public override CapabilityType<BoolType> With(Capability capability)
         => BareType.With(capability);
 
-    public override ITypeConstructor? ToTypeConstructor() => null;
+    public override TypeConstructor? ToTypeConstructor() => null;
     public override IPlainType TryToPlainType() => IPlainType.Bool;
 }

@@ -18,22 +18,22 @@ public interface IPlainType : IMaybePlainType
     public static readonly VoidPlainType Void = VoidPlainType.Instance;
     public static readonly NeverPlainType Never = NeverPlainType.Instance;
     public static readonly OrdinaryNamedPlainType Any = AnyTypeConstructor.PlainType;
-    public static readonly OrdinaryNamedPlainType Bool = ITypeConstructor.Bool.PlainType;
+    public static readonly OrdinaryNamedPlainType Bool = TypeConstructor.Bool.PlainType;
     public static readonly OptionalPlainType OptionalBool = new(Bool);
-    public static readonly OrdinaryNamedPlainType Int = ITypeConstructor.Int.PlainType;
-    public static readonly OrdinaryNamedPlainType UInt = ITypeConstructor.UInt.PlainType;
-    public static readonly OrdinaryNamedPlainType Int8 = ITypeConstructor.Int8.PlainType;
-    public static readonly OrdinaryNamedPlainType Byte = ITypeConstructor.Byte.PlainType;
-    public static readonly OrdinaryNamedPlainType Int16 = ITypeConstructor.Int16.PlainType;
-    public static readonly OrdinaryNamedPlainType UInt16 = ITypeConstructor.UInt16.PlainType;
-    public static readonly OrdinaryNamedPlainType Int32 = ITypeConstructor.Int32.PlainType;
-    public static readonly OrdinaryNamedPlainType UInt32 = ITypeConstructor.UInt32.PlainType;
-    public static readonly OrdinaryNamedPlainType Int64 = ITypeConstructor.Int64.PlainType;
-    public static readonly OrdinaryNamedPlainType UInt64 = ITypeConstructor.UInt64.PlainType;
-    public static readonly OrdinaryNamedPlainType Size = ITypeConstructor.Size.PlainType;
-    public static readonly OrdinaryNamedPlainType Offset = ITypeConstructor.Offset.PlainType;
-    public static readonly OrdinaryNamedPlainType NInt = ITypeConstructor.NInt.PlainType;
-    public static readonly OrdinaryNamedPlainType NUInt = ITypeConstructor.NUInt.PlainType;
+    public static readonly OrdinaryNamedPlainType Int = TypeConstructor.Int.PlainType;
+    public static readonly OrdinaryNamedPlainType UInt = TypeConstructor.UInt.PlainType;
+    public static readonly OrdinaryNamedPlainType Int8 = TypeConstructor.Int8.PlainType;
+    public static readonly OrdinaryNamedPlainType Byte = TypeConstructor.Byte.PlainType;
+    public static readonly OrdinaryNamedPlainType Int16 = TypeConstructor.Int16.PlainType;
+    public static readonly OrdinaryNamedPlainType UInt16 = TypeConstructor.UInt16.PlainType;
+    public static readonly OrdinaryNamedPlainType Int32 = TypeConstructor.Int32.PlainType;
+    public static readonly OrdinaryNamedPlainType UInt32 = TypeConstructor.UInt32.PlainType;
+    public static readonly OrdinaryNamedPlainType Int64 = TypeConstructor.Int64.PlainType;
+    public static readonly OrdinaryNamedPlainType UInt64 = TypeConstructor.UInt64.PlainType;
+    public static readonly OrdinaryNamedPlainType Size = TypeConstructor.Size.PlainType;
+    public static readonly OrdinaryNamedPlainType Offset = TypeConstructor.Offset.PlainType;
+    public static readonly OrdinaryNamedPlainType NInt = TypeConstructor.NInt.PlainType;
+    public static readonly OrdinaryNamedPlainType NUInt = TypeConstructor.NUInt.PlainType;
     #endregion
 
     #region Literal Types
@@ -42,8 +42,8 @@ public interface IPlainType : IMaybePlainType
     /// </summary>
     public static readonly OptionalPlainType None = new(Never);
 
-    public static readonly OrdinaryNamedPlainType True = ITypeConstructor.True.PlainType;
-    public static readonly OrdinaryNamedPlainType False = ITypeConstructor.False.PlainType;
+    public static readonly OrdinaryNamedPlainType True = TypeConstructor.True.PlainType;
+    public static readonly OrdinaryNamedPlainType False = TypeConstructor.False.PlainType;
     #endregion
 
     new IPlainType ToNonLiteral() => this;

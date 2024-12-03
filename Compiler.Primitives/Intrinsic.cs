@@ -22,7 +22,7 @@ public static class Intrinsic
     public static readonly OrdinaryTypeSymbol Promise = Find<OrdinaryTypeSymbol>("Promise");
 
     public static readonly IDeclaredUserType PromiseDeclaredType = Promise.DeclaresType;
-    public static readonly ITypeConstructor PromiseTypeConstructor = PromiseDeclaredType.ToTypeConstructor();
+    public static readonly TypeConstructor PromiseTypeConstructor = PromiseDeclaredType.ToTypeConstructor();
 
     public static IMaybeExpressionType PromiseOf(IMaybeType type)
         => PromiseDeclaredType.WithRead(FixedList.Create(type));

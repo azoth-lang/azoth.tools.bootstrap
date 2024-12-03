@@ -129,7 +129,7 @@ public sealed class PackageNameScope
             _ => throw ExhaustiveMatch.Failed(plainType),
         };
 
-    public ITypeDeclarationNode? Lookup(ITypeConstructor antetype)
+    public ITypeDeclarationNode? Lookup(TypeConstructor antetype)
         => antetype switch
         {
             SimpleTypeConstructor t => Lookup(t),

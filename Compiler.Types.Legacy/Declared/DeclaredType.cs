@@ -82,7 +82,7 @@ public abstract class DeclaredType : IEquatable<DeclaredType>
     public CapabilityType WithRead(IFixedList<IType> typeArguments)
         => With(typeArguments).WithRead();
 
-    public abstract ITypeConstructor? ToTypeConstructor();
+    public abstract TypeConstructor? ToTypeConstructor();
 
     public abstract IPlainType? TryToPlainType();
 

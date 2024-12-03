@@ -12,7 +12,7 @@ internal sealed class PlainTypeReplacements
     /// Build a dictionary of type replacements. Generic parameter types of both this type and the
     /// supertypes can be replaced with type arguments of this type.
     /// </summary>
-    public PlainTypeReplacements(ITypeConstructor typeConstructor, IFixedList<IPlainType> typeArguments)
+    public PlainTypeReplacements(TypeConstructor typeConstructor, IFixedList<IPlainType> typeArguments)
     {
         replacements = typeConstructor.GenericParameterPlainTypes.EquiZip(typeArguments)
                                    .ToDictionary(t => t.Item1, t => t.Item2);

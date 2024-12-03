@@ -11,7 +11,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 /// <see cref="SimpleTypeConstructor"/>s). That is, it was declared with a <c>class</c>,
 /// <c>struct</c>,  or <c>trait</c> declaration.
 /// </summary>
-public sealed class OrdinaryTypeConstructor : ITypeConstructor
+public sealed class OrdinaryTypeConstructor : TypeConstructor
 {
     public IdentifierName ContainingPackage { get; }
     public NamespaceName ContainingNamespace { get; }
@@ -29,7 +29,7 @@ public sealed class OrdinaryTypeConstructor : ITypeConstructor
     public bool CanBeInstantiated => !IsAbstract;
 
     public StandardName Name { get; }
-    TypeName ITypeConstructor.Name => Name;
+    TypeName TypeConstructor.Name => Name;
 
     /// <summary>
     /// The parameters to this type constructor. Commonly referred to as "generic parameters".
@@ -76,19 +76,19 @@ public sealed class OrdinaryTypeConstructor : ITypeConstructor
             throw new ArgumentException("Incorrect number of type arguments.");
         return new OrdinaryNamedPlainType(this, args);
     }
-    IPlainType ITypeConstructor.Construct(IEnumerable<IPlainType> typeArguments)
+    IPlainType TypeConstructor.Construct(IEnumerable<IPlainType> typeArguments)
         => Construct(typeArguments);
 
     public NamedPlainType ConstructWithGenericParameterPlayTypes()
         => Construct(GenericParameterPlainTypes);
-    IPlainType ITypeConstructor.ConstructWithGenericParameterPlainTypes()
+    IPlainType TypeConstructor.ConstructWithGenericParameterPlainTypes()
         => ConstructWithGenericParameterPlayTypes();
 
     public IPlainType? TryConstructNullary()
         => Parameters.IsEmpty ? new OrdinaryNamedPlainType(this, []) : null;
 
     #region Equality
-    public bool Equals(ITypeConstructor? other)
+    public bool Equals(TypeConstructor? other)
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
