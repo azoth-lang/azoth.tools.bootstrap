@@ -45,4 +45,7 @@ public interface IPlainType : IMaybePlainType
     public static readonly OrdinaryNamedPlainType True = ITypeConstructor.True.PlainType;
     public static readonly OrdinaryNamedPlainType False = ITypeConstructor.False.PlainType;
     #endregion
+
+    new IPlainType ToNonLiteral() => this;
+    IMaybePlainType IMaybePlainType.ToNonLiteral() => ToNonLiteral();
 }

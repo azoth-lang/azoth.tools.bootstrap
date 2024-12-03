@@ -5308,7 +5308,7 @@ file class FunctionDefinitionNode : SemanticNode, IFunctionDefinitionNode
     internal override IMaybePlainType? Inherited_ExpectedPlainType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.Body))
-            return Type.Return.ToPlainType().ToNonLiteral();
+            return Type.Return.ToPlainType();
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
     }
 
@@ -7362,7 +7362,7 @@ file class AssociatedFunctionDefinitionNode : SemanticNode, IAssociatedFunctionD
     internal override IMaybePlainType? Inherited_ExpectedPlainType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.Body))
-            return Type.Return.ToPlainType().ToNonLiteral();
+            return Type.Return.ToPlainType();
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
     }
 
@@ -9535,7 +9535,7 @@ file class NewObjectExpressionNode : SemanticNode, INewObjectExpressionNode
     internal override IMaybePlainType? Inherited_ExpectedPlainType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (IndexOfNode(Self.CurrentArguments, descendant) is { } index)
-            return ContextualizedCall?.ParameterTypes[index].Type.ToPlainType().ToNonLiteral();
+            return ContextualizedCall?.ParameterTypes[index].Type.ToPlainType();
         if (ReferenceEquals(child, descendant))
             return null;
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
@@ -10447,7 +10447,7 @@ file class AssignmentExpressionNode : SemanticNode, IAssignmentExpressionNode
     internal override IMaybePlainType? Inherited_ExpectedPlainType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.CurrentRightOperand))
-            return LeftOperand?.PlainType.ToNonLiteral();
+            return LeftOperand?.PlainType;
         if (ReferenceEquals(child, descendant))
             return null;
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
@@ -12516,7 +12516,7 @@ file class ReturnExpressionNode : SemanticNode, IReturnExpressionNode
     internal override IMaybePlainType? Inherited_ExpectedPlainType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.CurrentValue))
-            return ExpectedReturnType?.ToPlainType().ToNonLiteral();
+            return ExpectedReturnType?.ToPlainType();
         if (ReferenceEquals(child, descendant))
             return null;
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
@@ -13231,7 +13231,7 @@ file class GetterInvocationExpressionNode : SemanticNode, IGetterInvocationExpre
     internal override IMaybePlainType? Inherited_ExpectedPlainType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.CurrentContext))
-            return ContextualizedCall?.SelfParameterType?.Type.ToPlainType().ToNonLiteral();
+            return ContextualizedCall?.SelfParameterType?.Type.ToPlainType();
         if (ReferenceEquals(child, descendant))
             return null;
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
@@ -13413,9 +13413,9 @@ file class SetterInvocationExpressionNode : SemanticNode, ISetterInvocationExpre
     internal override IMaybePlainType? Inherited_ExpectedPlainType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.CurrentContext))
-            return ContextualizedCall?.SelfParameterType?.Type.ToPlainType().ToNonLiteral();
+            return ContextualizedCall?.SelfParameterType?.Type.ToPlainType();
         if (ReferenceEquals(descendant, Self.CurrentValue))
-            return ContextualizedCall?.ParameterTypes[0].Type.ToPlainType().ToNonLiteral();
+            return ContextualizedCall?.ParameterTypes[0].Type.ToPlainType();
         if (ReferenceEquals(child, descendant))
             return null;
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
@@ -13788,7 +13788,7 @@ file class InitializerInvocationExpressionNode : SemanticNode, IInitializerInvoc
     internal override IMaybePlainType? Inherited_ExpectedPlainType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (IndexOfNode(Self.CurrentArguments, descendant) is { } index)
-            return ContextualizedCall?.ParameterTypes[index].Type.ToPlainType().ToNonLiteral();
+            return ContextualizedCall?.ParameterTypes[index].Type.ToPlainType();
         if (ReferenceEquals(child, descendant))
             return null;
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);

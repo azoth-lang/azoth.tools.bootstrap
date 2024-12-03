@@ -387,7 +387,7 @@ internal static partial class ExpressionPlainTypesAspect
     public static partial IMaybePlainType? MethodName_Context_ExpectedPlainType(IMethodNameNode node)
         // TODO it would be better if this didn't depend on types, but only on antetypes
         => (node.Parent as IMethodInvocationExpressionNode)
-           ?.ContextualizedCall?.SelfParameterType?.Type.ToPlainType().ToNonLiteral();
+           ?.ContextualizedCall?.SelfParameterType?.Type.ToPlainType();
 
     public static partial IExpressionNode? Expression_Rewrite_ImplicitConversion(IExpressionNode node)
     {

@@ -70,16 +70,16 @@ internal static partial class OverloadResolutionAspect
     #region Invocation Expressions
     public static partial IMaybePlainType? UnknownInvocationExpression_Expression_ExpectedPlainType(IUnknownInvocationExpressionNode node)
     {
-        var expectedReturnAntetype = node.ExpectedPlainType?.ToNonLiteral() ?? IPlainType.Unknown;
-        return new FunctionPlainType(node.Arguments.Select(NonVoidAntetypeIfKnown),
+        var expectedReturnPlainType = node.ExpectedPlainType ?? IPlainType.Unknown;
+        return new FunctionPlainType(node.Arguments.Select(NonVoidPlainTypeIfKnown),
             // TODO this is odd, but the return plainType will be ignored
-            NonVoidAntetypeIfKnown(expectedReturnAntetype));
+            NonVoidPlainTypeIfKnown(expectedReturnPlainType));
     }
 
-    private static INonVoidPlainType NonVoidAntetypeIfKnown(IExpressionNode? node)
-        => NonVoidAntetypeIfKnown(AntetypeIfKnown(node));
+    private static INonVoidPlainType NonVoidPlainTypeIfKnown(IExpressionNode? node)
+        => NonVoidPlainTypeIfKnown(AntetypeIfKnown(node));
 
-    private static INonVoidPlainType NonVoidAntetypeIfKnown(IMaybePlainType maybeExpressionPlainType)
+    private static INonVoidPlainType NonVoidPlainTypeIfKnown(IMaybePlainType maybeExpressionPlainType)
     {
         if (maybeExpressionPlainType is INonVoidPlainType antetype) return antetype;
         // This is a little odd, but if the parameter type is not known, then using `never` will

@@ -36,11 +36,11 @@
 ↑ BlockExpression.PlainType: `IMaybePlainType`;
 // TODO it would be better if this didn't depend on types, but only on plain types
 = NewObjectExpression.Arguments[index].ExpectedPlainType
-    => ContextualizedCall?.ParameterTypes[index].Type.ToPlainType().ToNonLiteral();
+    => ContextualizedCall?.ParameterTypes[index].Type.ToPlainType();
 = NeverTypedExpression.PlainType => IPlainType.Never;
 
 // ---------- Operator Expressions
-= AssignmentExpression.RightOperand.ExpectedPlainType => LeftOperand?.PlainType.ToNonLiteral();
+= AssignmentExpression.RightOperand.ExpectedPlainType => LeftOperand?.PlainType;
 ↑ BinaryOperatorExpression.NumericOperatorCommonPlainType: `IPlainType`?;
 = BinaryOperatorExpression.LeftOperand.ExpectedPlainType => NumericOperatorCommonPlainType;
 = BinaryOperatorExpression.RightOperand.ExpectedPlainType => NumericOperatorCommonPlainType;
@@ -52,7 +52,7 @@
 // ---------- Control Flow Expressions
 = IfExpression.Condition.ExpectedPlainType => IPlainType.OptionalBool;
 = WhileExpression.Condition.ExpectedPlainType => IPlainType.OptionalBool;
-= ReturnExpression.Value.ExpectedPlainType => ExpectedReturnType?.ToPlainType().ToNonLiteral();
+= ReturnExpression.Value.ExpectedPlainType => ExpectedReturnType?.ToPlainType();
 
 // ---------- Invocation Expressions
 = UnknownInvocationExpression.PlainType => IPlainType.Unknown;
@@ -62,17 +62,17 @@
     => Self.SelectedCallCandidate?.ParameterPlainTypes[index];
 // TODO it would be better if this didn't depend on types, but only on plain types
 = GetterInvocationExpression.Context.ExpectedPlainType
-    => ContextualizedCall?.SelfParameterType?.Type.ToPlainType().ToNonLiteral();
+    => ContextualizedCall?.SelfParameterType?.Type.ToPlainType();
 // TODO it would be better if this didn't depend on types, but only on plain types
 = SetterInvocationExpression.Context.ExpectedPlainType
-    => ContextualizedCall?.SelfParameterType?.Type.ToPlainType().ToNonLiteral();
+    => ContextualizedCall?.SelfParameterType?.Type.ToPlainType();
 // TODO it would be better if this didn't depend on types, but only on plain types
 = SetterInvocationExpression.Value.ExpectedPlainType
-    => ContextualizedCall?.ParameterTypes[0].Type.ToPlainType().ToNonLiteral();
+    => ContextualizedCall?.ParameterTypes[0].Type.ToPlainType();
 ↑ FunctionReferenceInvocationExpression.FunctionPlainType: `FunctionPlainType`;
 // TODO it would be better if this didn't depend on types, but only on plain types
 = InitializerInvocationExpression.Arguments[index].ExpectedPlainType
-    => ContextualizedCall?.ParameterTypes[index].Type.ToPlainType().ToNonLiteral();
+    => ContextualizedCall?.ParameterTypes[index].Type.ToPlainType();
 
 // ---------- Ambiguous Name Expressions
 

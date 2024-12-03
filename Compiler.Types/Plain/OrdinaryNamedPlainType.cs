@@ -31,11 +31,14 @@ public sealed class OrdinaryNamedPlainType : NamedPlainType, INonVoidPlainType
         Supertypes = typeConstructor.Supertypes.Select(s => (NamedPlainType)ReplaceTypeParametersIn(s)).ToFixedSet();
     }
 
-    public IMaybePlainType ToNonLiteral()
+    public IPlainType ToNonLiteral()
     {
         var newTypeConstructor = TypeConstructor.ToNonLiteral();
+        // Avoid constructing a new object when not needed.
         if (TypeConstructor.Equals(newTypeConstructor)) return this;
-        return new OrdinaryNamedPlainType(newTypeConstructor, TypeArguments);
+        // Literal type constructors will have parameters, whereas their corresponding non-literal
+        // types won't. Thus, do not pass any type arguments.
+        return new OrdinaryNamedPlainType(newTypeConstructor, []);
     }
 
     public override IMaybePlainType ReplaceTypeParametersIn(IMaybePlainType plainType)
