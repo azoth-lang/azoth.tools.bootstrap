@@ -41,7 +41,7 @@ public sealed class OrdinaryTypeConstructor : TypeConstructor
     /// variables. These are the types of those variables.
     /// </summary>
     public IFixedList<GenericParameterPlainType> GenericParameterPlainTypes { get; }
-    public IFixedSet<NamedPlainType> Supertypes { get; }
+    public IFixedSet<OrdinaryNamedPlainType> Supertypes { get; }
     public TypeSemantics Semantics { get; }
 
     public OrdinaryTypeConstructor(
@@ -49,7 +49,7 @@ public sealed class OrdinaryTypeConstructor : TypeConstructor
         bool isAbstract,
         StandardName name,
         IEnumerable<TypeConstructorParameter> genericParameters,
-        IFixedSet<NamedPlainType> supertypes,
+        IFixedSet<OrdinaryNamedPlainType> supertypes,
         TypeSemantics semantics)
     {
         Context = context;

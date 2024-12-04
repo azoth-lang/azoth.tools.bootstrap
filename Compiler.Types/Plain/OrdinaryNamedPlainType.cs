@@ -13,7 +13,7 @@ public sealed class OrdinaryNamedPlainType : NamedPlainType, INonVoidPlainType
     public override TypeName Name => TypeConstructor.Name;
     public override bool AllowsVariance => TypeConstructor.AllowsVariance;
     public override IFixedList<IPlainType> TypeArguments { get; }
-    public override IFixedSet<NamedPlainType> Supertypes { get; }
+    public override IFixedSet<OrdinaryNamedPlainType> Supertypes { get; }
     private readonly PlainTypeReplacements plainTypeReplacements;
 
     public OrdinaryNamedPlainType(TypeConstructor typeConstructor, IEnumerable<IPlainType> typeArguments)
@@ -28,7 +28,7 @@ public sealed class OrdinaryNamedPlainType : NamedPlainType, INonVoidPlainType
 
         plainTypeReplacements = new(TypeConstructor, TypeArguments);
 
-        Supertypes = typeConstructor.Supertypes.Select(s => (NamedPlainType)ReplaceTypeParametersIn(s)).ToFixedSet();
+        Supertypes = typeConstructor.Supertypes.Select(s => (OrdinaryNamedPlainType)ReplaceTypeParametersIn(s)).ToFixedSet();
     }
 
     public IPlainType ToNonLiteral()

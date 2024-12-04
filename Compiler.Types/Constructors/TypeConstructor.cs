@@ -67,7 +67,7 @@ public interface TypeConstructor : IEquatable<TypeConstructor>, TypeConstructorC
 
     IFixedList<GenericParameterPlainType> GenericParameterPlainTypes { get; }
 
-    IFixedSet<NamedPlainType> Supertypes { get; }
+    IFixedSet<OrdinaryNamedPlainType> Supertypes { get; }
 
     IPlainType Construct(IEnumerable<IPlainType> typeArguments);
 
