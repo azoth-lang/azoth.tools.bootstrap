@@ -61,12 +61,10 @@
     => Self.SelectedCallCandidate?.ParameterPlainTypes[index];
 = MethodInvocationExpression.Arguments[index].ExpectedPlainType
     => Self.SelectedCallCandidate?.ParameterPlainTypes[index];
-// TODO it would be better if this didn't depend on types, but only on plain types
 = GetterInvocationExpression.Context.ExpectedPlainType
-    => ContextualizedCall?.SelfParameterType?.Type.ToPlainType();
-// TODO it would be better if this didn't depend on types, but only on plain types
+    => Self.ReferencedDeclaration?.SelfParameterPlainType;
 = SetterInvocationExpression.Context.ExpectedPlainType
-    => ContextualizedCall?.SelfParameterType?.Type.ToPlainType();
+    => Self.ReferencedDeclaration?.SelfParameterPlainType;
 // TODO it would be better if this didn't depend on types, but only on plain types
 = SetterInvocationExpression.Value.ExpectedPlainType
     => ContextualizedCall?.ParameterTypes[0].Type.ToPlainType();

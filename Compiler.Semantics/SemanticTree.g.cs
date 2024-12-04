@@ -13394,7 +13394,7 @@ file class GetterInvocationExpressionNode : SemanticNode, IGetterInvocationExpre
     internal override IMaybePlainType? Inherited_ExpectedPlainType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.CurrentContext))
-            return ContextualizedCall?.SelfParameterType?.Type.ToPlainType();
+            return Self.ReferencedDeclaration?.SelfParameterPlainType;
         if (ReferenceEquals(child, descendant))
             return null;
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
@@ -13576,7 +13576,7 @@ file class SetterInvocationExpressionNode : SemanticNode, ISetterInvocationExpre
     internal override IMaybePlainType? Inherited_ExpectedPlainType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.CurrentContext))
-            return ContextualizedCall?.SelfParameterType?.Type.ToPlainType();
+            return Self.ReferencedDeclaration?.SelfParameterPlainType;
         if (ReferenceEquals(descendant, Self.CurrentValue))
             return ContextualizedCall?.ParameterTypes[0].Type.ToPlainType();
         if (ReferenceEquals(child, descendant))

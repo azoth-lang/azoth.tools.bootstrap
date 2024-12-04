@@ -383,9 +383,8 @@ internal static partial class ExpressionPlainTypesAspect
 
     // TODO this is strange and maybe a hack
     public static partial IMaybePlainType? MethodName_Context_ExpectedPlainType(IMethodNameNode node)
-        // TODO it would be better if this didn't depend on types, but only on plain types
         => (node.Parent as IMethodInvocationExpressionNode)
-           ?.ContextualizedCall?.SelfParameterType?.Type.ToPlainType();
+           ?.SelectedCallCandidate?.SelfParameterPlainType;
 
     public static partial IExpressionNode? Expression_Rewrite_ImplicitConversion(IExpressionNode node)
     {
