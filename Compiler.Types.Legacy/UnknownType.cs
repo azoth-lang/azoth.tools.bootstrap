@@ -1,6 +1,6 @@
 using System;
 using System.Diagnostics;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Capabilities;
+using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Parameters;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Pseudotypes;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;

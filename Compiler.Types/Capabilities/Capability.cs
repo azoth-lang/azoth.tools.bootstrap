@@ -1,8 +1,7 @@
-using System;
 using System.Diagnostics;
 using ExhaustiveMatching;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Capabilities;
+namespace Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 
 [DebuggerDisplay("{ToILString()}")]
 public sealed class Capability : ICapabilityConstraint

@@ -1,12 +1,9 @@
-using System;
 using System.Collections.Frozen;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using ExhaustiveMatching;
-using static Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Capabilities.Capability;
+using static Azoth.Tools.Bootstrap.Compiler.Types.Capabilities.Capability;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Capabilities;
+namespace Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 
 [DebuggerDisplay("{ToILString()}")]
 public sealed class CapabilitySet : ICapabilityConstraint

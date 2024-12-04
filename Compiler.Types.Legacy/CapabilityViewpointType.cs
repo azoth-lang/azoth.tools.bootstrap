@@ -1,5 +1,5 @@
 using System;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Capabilities;
+using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
 

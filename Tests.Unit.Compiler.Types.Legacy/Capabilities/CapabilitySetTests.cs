@@ -1,4 +1,4 @@
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Capabilities;
+using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Types.Legacy.TestCases;
 using Xunit;
 

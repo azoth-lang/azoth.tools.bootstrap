@@ -4,6 +4,7 @@ using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 
+// TODO possibly remove this class
 [Closed(typeof(NeverPlainType), typeof(VoidPlainType))]
 public abstract class EmptyPlainType : NamedPlainType
 {
