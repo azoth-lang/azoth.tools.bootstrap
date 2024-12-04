@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Parameters;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using Azoth.Tools.Bootstrap.Framework;
 
@@ -49,9 +48,8 @@ internal static class CallCandidate
     public static CallCandidate<IFunctionInvocableDeclarationNode> Create(
         IFunctionInvocableDeclarationNode function)
     {
-        var parameterPlainTypes = function.ParameterTypes.Select(p => p.Type.ToPlainType())
-                                       .Cast<IMaybeNonVoidPlainType>().ToFixedList();
-        var returnPlainType = function.ReturnType.ToPlainType();
+        var parameterPlainTypes = function.ParameterPlainTypes;
+        var returnPlainType = function.ReturnPlainType;
         return new(function, null, parameterPlainTypes, returnPlainType);
     }
 
@@ -90,12 +88,12 @@ internal static class CallCandidate
     private static IFixedList<IMaybeNonVoidPlainType> ParameterPlainTypes(
         IMaybePlainType contextPlainType,
         IInvocableDeclarationNode declaration)
-        => declaration.ParameterTypes.Select(p => ParameterPlainType(contextPlainType, p))
+        => declaration.ParameterPlainTypes.Select(p => ParameterPlainType(contextPlainType, p))
                       .OfType<IMaybeNonVoidPlainType>().ToFixedList();
 
-    private static IMaybePlainType ParameterPlainType(IMaybePlainType contextPlainType, IMaybeParameterType parameter)
-        => contextPlainType.ReplaceTypeParametersIn(parameter.Type.ToPlainType());
+    private static IMaybePlainType ParameterPlainType(IMaybePlainType contextPlainType, IMaybeNonVoidPlainType parameterPlainType)
+        => contextPlainType.ReplaceTypeParametersIn(parameterPlainType);
 
     private static IMaybePlainType ReturnPlainType(IMaybePlainType contextPlainType, IInvocableDeclarationNode declaration)
-        => contextPlainType.ReplaceTypeParametersIn(declaration.ReturnType.ToPlainType());
+        => contextPlainType.ReplaceTypeParametersIn(declaration.ReturnPlainType);
 }
