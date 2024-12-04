@@ -12,25 +12,25 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.PlainTypes;
 internal static partial class NameBindingPlainTypesAspect
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IMaybePlainType SelfParameter_BindingPlainType(ISelfParameterNode node);
+    public static partial IMaybeNonVoidPlainType SelfParameter_BindingPlainType(ISelfParameterNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial void VariableDeclarationStatement_Contribute_Diagnostics(IVariableDeclarationStatementNode node, DiagnosticCollectionBuilder diagnostics);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IMaybePlainType BindingContextPattern_Pattern_ContextBindingPlainType(IBindingContextPatternNode node);
+    public static partial IMaybeNonVoidPlainType BindingContextPattern_Pattern_ContextBindingPlainType(IBindingContextPatternNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IMaybePlainType OptionalPattern_Pattern_ContextBindingPlainType(IOptionalPatternNode node);
+    public static partial IMaybeNonVoidPlainType OptionalPattern_Pattern_ContextBindingPlainType(IOptionalPatternNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IMaybePlainType PatternMatchExpression_Pattern_ContextBindingPlainType(IPatternMatchExpressionNode node);
+    public static partial IMaybeNonVoidPlainType PatternMatchExpression_Pattern_ContextBindingPlainType(IPatternMatchExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IMaybePlainType NamedParameter_BindingPlainType(INamedParameterNode node);
+    public static partial IMaybeNonVoidPlainType NamedParameter_BindingPlainType(INamedParameterNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IMaybePlainType FieldParameter_BindingPlainType(IFieldParameterNode node);
+    public static partial IMaybeNonVoidPlainType FieldParameter_BindingPlainType(IFieldParameterNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IMaybePlainType VariableDeclarationStatement_BindingPlainType(IVariableDeclarationStatementNode node);
+    public static partial IMaybeNonVoidPlainType VariableDeclarationStatement_BindingPlainType(IVariableDeclarationStatementNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IMaybePlainType BindingPattern_BindingPlainType(IBindingPatternNode node);
+    public static partial IMaybeNonVoidPlainType BindingPattern_BindingPlainType(IBindingPatternNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IMaybePlainType NewObjectExpression_ConstructingPlainType(INewObjectExpressionNode node);
+    public static partial IMaybeNonVoidPlainType NewObjectExpression_ConstructingPlainType(INewObjectExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IMaybePlainType ForeachExpression_BindingPlainType(IForeachExpressionNode node);
+    public static partial IMaybeNonVoidPlainType ForeachExpression_BindingPlainType(IForeachExpressionNode node);
 }

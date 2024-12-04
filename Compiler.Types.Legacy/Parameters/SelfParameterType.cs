@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Pseudotypes;
+using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Parameters;
 
@@ -26,6 +27,8 @@ public record class SelfParameterType(bool IsLent, IPseudotype Type) : IMaybeSel
         => (!baseParameterType.IsLent || IsLent) && baseParameterType.Type.IsAssignableFrom(Type);
 
     public ParameterType ToUpperBound() => new(IsLent, (INonVoidType)Type.ToUpperBound().ToNonConstValueType());
+
+    public IMaybeNonVoidPlainType ToPlainType() => Type.ToPlainType().ToNonVoid();
 
     public override string ToString() => throw new NotSupportedException();
 

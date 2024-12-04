@@ -7,22 +7,22 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.PlainTypes;
 internal static partial class NameBindingPlainTypesAspect
 {
     // TODO this is strange because a FieldParameter isn't a binding
-    public static partial IMaybePlainType FieldParameter_BindingPlainType(IFieldParameterNode node)
+    public static partial IMaybeNonVoidPlainType FieldParameter_BindingPlainType(IFieldParameterNode node)
         => node.ReferencedField?.BindingPlainType ?? IPlainType.Unknown;
 
-    public static partial IMaybePlainType SelfParameter_BindingPlainType(ISelfParameterNode node)
+    public static partial IMaybeNonVoidPlainType SelfParameter_BindingPlainType(ISelfParameterNode node)
     {
         var containingTypeConstructor = node.ContainingTypeDefinition.TypeConstructor;
         return containingTypeConstructor.Construct(containingTypeConstructor.GenericParameterPlainTypes);
     }
 
-    public static partial IMaybePlainType PatternMatchExpression_Pattern_ContextBindingPlainType(IPatternMatchExpressionNode node)
-        => node.Referent?.PlainType.ToNonLiteral() ?? IPlainType.Unknown;
+    public static partial IMaybeNonVoidPlainType PatternMatchExpression_Pattern_ContextBindingPlainType(IPatternMatchExpressionNode node)
+        => node.Referent?.PlainType.ToNonLiteral().ToNonVoid() ?? IPlainType.Unknown;
 
-    public static partial IMaybePlainType BindingContextPattern_Pattern_ContextBindingPlainType(IBindingContextPatternNode node)
-        => node.Type?.NamedPlainType ?? node.ContextBindingPlainType();
+    public static partial IMaybeNonVoidPlainType BindingContextPattern_Pattern_ContextBindingPlainType(IBindingContextPatternNode node)
+        => node.Type?.NamedPlainType.ToNonVoid() ?? node.ContextBindingPlainType();
 
-    public static partial IMaybePlainType OptionalPattern_Pattern_ContextBindingPlainType(
+    public static partial IMaybeNonVoidPlainType OptionalPattern_Pattern_ContextBindingPlainType(
         IOptionalPatternNode node)
     {
         var inheritedBindingPlainType = node.ContextBindingPlainType();
@@ -31,11 +31,11 @@ internal static partial class NameBindingPlainTypesAspect
         return inheritedBindingPlainType;
     }
 
-    public static partial IMaybePlainType BindingPattern_BindingPlainType(IBindingPatternNode node)
+    public static partial IMaybeNonVoidPlainType BindingPattern_BindingPlainType(IBindingPatternNode node)
         => node.ContextBindingPlainType();
 
-    public static partial IMaybePlainType VariableDeclarationStatement_BindingPlainType(IVariableDeclarationStatementNode node)
-        => node.Type?.NamedPlainType ?? node.Initializer?.PlainType.ToNonLiteral() ?? IPlainType.Unknown;
+    public static partial IMaybeNonVoidPlainType VariableDeclarationStatement_BindingPlainType(IVariableDeclarationStatementNode node)
+        => node.Type?.NamedPlainType.ToNonVoid() ?? node.Initializer?.PlainType.ToNonLiteral().ToNonVoid() ?? IPlainType.Unknown;
 
     public static partial void VariableDeclarationStatement_Contribute_Diagnostics(
         IVariableDeclarationStatementNode node,
@@ -46,12 +46,12 @@ internal static partial class NameBindingPlainTypesAspect
                 "Inference of local variable types not implemented"));
     }
 
-    public static partial IMaybePlainType ForeachExpression_BindingPlainType(IForeachExpressionNode node)
-        => node.DeclaredType?.NamedPlainType ?? node.IteratedPlainType;
+    public static partial IMaybeNonVoidPlainType ForeachExpression_BindingPlainType(IForeachExpressionNode node)
+        => node.DeclaredType?.NamedPlainType.ToNonVoid() ?? node.IteratedPlainType;
 
-    public static partial IMaybePlainType NewObjectExpression_ConstructingPlainType(INewObjectExpressionNode node)
-        => node.ConstructingType.NamedPlainType;
+    public static partial IMaybeNonVoidPlainType NewObjectExpression_ConstructingPlainType(INewObjectExpressionNode node)
+        => node.ConstructingType.NamedPlainType.ToNonVoid();
 
-    public static partial IMaybePlainType NamedParameter_BindingPlainType(INamedParameterNode node)
-        => node.TypeNode.NamedPlainType;
+    public static partial IMaybeNonVoidPlainType NamedParameter_BindingPlainType(INamedParameterNode node)
+        => node.TypeNode.NamedPlainType.ToNonVoid();
 }

@@ -10,14 +10,14 @@ public sealed class CallCandidate<TDeclaration>
     where TDeclaration : IInvocableDeclarationNode
 {
     public TDeclaration Declaration { get; }
-    public IMaybePlainType? SelfParameterPlainType { get; }
+    public IMaybeNonVoidPlainType? SelfParameterPlainType { get; }
     public IFixedList<IMaybeNonVoidPlainType> ParameterPlainTypes { get; }
     public int Arity => ParameterPlainTypes.Count;
     public IMaybePlainType ReturnPlainType { get; }
 
     internal CallCandidate(
         TDeclaration declaration,
-        IMaybePlainType? selfParameterPlainType,
+        IMaybeNonVoidPlainType? selfParameterPlainType,
         IEnumerable<IMaybeNonVoidPlainType> parameterPlainTypes,
         IMaybePlainType returnPlainType)
     {
@@ -58,34 +58,34 @@ internal static class CallCandidate
     public static CallCandidate<IConstructorDeclarationNode> Create(
         IMaybePlainType constructingPlainType,
         IConstructorDeclarationNode constructor)
-        => Create(constructingPlainType, constructor, constructor.SelfParameterType);
+        => Create(constructingPlainType, constructor, constructor.SelfParameterPlainType);
 
     public static CallCandidate<IInitializerDeclarationNode> Create(
         IMaybePlainType initializingPlainType,
         IInitializerDeclarationNode initializer)
-        => Create(initializingPlainType, initializer, initializer.SelfParameterType);
+        => Create(initializingPlainType, initializer, initializer.SelfParameterPlainType);
 
     public static CallCandidate<IStandardMethodDeclarationNode> Create(
         IMaybePlainType contextPlainType,
         IStandardMethodDeclarationNode method)
-        => Create(contextPlainType, method, method.SelfParameterType);
+        => Create(contextPlainType, method, method.SelfParameterPlainType);
 
     private static CallCandidate<TDeclaration> Create<TDeclaration>(
         IMaybePlainType contextPlainType,
         TDeclaration declaration,
-        IMaybeSelfParameterType selfParameterType)
+        IMaybeNonVoidPlainType selfParameterPlainType)
         where TDeclaration : IInvocableDeclarationNode
     {
-        var selfParameterPlainType = SelfParameterPlainType(contextPlainType, selfParameterType);
+        selfParameterPlainType = SelfParameterPlainType(contextPlainType, selfParameterPlainType);
         var parameterPlainTypes = ParameterPlainTypes(contextPlainType, declaration);
         var returnPlainType = ReturnPlainType(contextPlainType, declaration);
         return new(declaration, selfParameterPlainType, parameterPlainTypes, returnPlainType);
     }
 
-    private static IMaybePlainType SelfParameterPlainType(
+    private static IMaybeNonVoidPlainType SelfParameterPlainType(
         IMaybePlainType contextPlainType,
-        IMaybeSelfParameterType selfParameterType)
-        => contextPlainType.ReplaceTypeParametersIn(selfParameterType.Type.ToPlainType());
+        IMaybeNonVoidPlainType selfParameterPlainType)
+        => contextPlainType.ReplaceTypeParametersIn(selfParameterPlainType).ToNonVoid();
 
     private static IFixedList<IMaybeNonVoidPlainType> ParameterPlainTypes(
         IMaybePlainType contextPlainType,

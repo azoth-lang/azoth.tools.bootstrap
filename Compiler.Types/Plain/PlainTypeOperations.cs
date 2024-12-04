@@ -9,4 +9,10 @@ public static partial class PlainTypeOperations
 
         return parameters.ToFixedList().As<INonVoidPlainType>();
     }
+
+    /// <summary>
+    /// Convert to a non-void type by replacing void with unknown.
+    /// </summary>
+    public static IMaybeNonVoidPlainType ToNonVoid(this IMaybePlainType type)
+        => type as IMaybeNonVoidPlainType ?? IPlainType.Unknown;
 }

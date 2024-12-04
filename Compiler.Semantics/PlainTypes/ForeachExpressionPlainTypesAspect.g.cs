@@ -15,11 +15,11 @@ internal static partial class ForeachExpressionPlainTypesAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IStandardMethodDeclarationNode? ForeachExpression_ReferencedIterateMethod(IForeachExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IMaybePlainType ForeachExpression_IteratorPlainType(IForeachExpressionNode node);
+    public static partial IMaybeNonVoidPlainType ForeachExpression_IteratorPlainType(IForeachExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial ITypeDeclarationNode? ForeachExpression_ReferencedIteratorDeclaration(IForeachExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IStandardMethodDeclarationNode? ForeachExpression_ReferencedNextMethod(IForeachExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IMaybePlainType ForeachExpression_IteratedPlainType(IForeachExpressionNode node);
+    public static partial IMaybeNonVoidPlainType ForeachExpression_IteratedPlainType(IForeachExpressionNode node);
 }

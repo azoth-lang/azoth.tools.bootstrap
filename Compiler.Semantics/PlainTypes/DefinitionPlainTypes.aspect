@@ -21,6 +21,7 @@
 = TypeDefinition.SelfPlainType;
 
 // ---------- Member Definitions
+= MethodDefinition.SelfParameterPlainType => SelfParameter.BindingPlainType;
 = MethodDefinition.Body.**.ExpectedReturnPlainType => Self.ReturnPlainType;
 = MethodDefinition.Body.ExpectedPlainType
     => Self.ReturnPlainType;
@@ -34,9 +35,15 @@
 = StandardMethodDefinition.MethodGroupPlainType => MethodGroupType.ToPlainType();
 = ConstructorDefinition.ReturnPlainType
     => ContainingTypeDefinition.TypeConstructor.ConstructWithGenericParameterPlainTypes();
+= DefaultConstructorDefinition.SelfParameterPlainType
+    => ContainingTypeDefinition.TypeConstructor.ConstructWithGenericParameterPlainTypes();
+= SourceConstructorDefinition.SelfParameterPlainType => SelfParameter.BindingPlainType;
 = SourceConstructorDefinition.Body.**.ExpectedReturnPlainType => IPlainType.Void;
 = InitializerDefinition.ReturnPlainType
     => ContainingTypeDefinition.TypeConstructor.ConstructWithGenericParameterPlainTypes();
+= DefaultInitializerDefinition.SelfParameterPlainType
+    => ContainingTypeDefinition.TypeConstructor.ConstructWithGenericParameterPlainTypes();
+= SourceInitializerDefinition.SelfParameterPlainType => SelfParameter.BindingPlainType;
 = SourceInitializerDefinition.Body.**.ExpectedReturnPlainType => IPlainType.Void;
 // Null is the signal that this is a field initializer and not a method body
 = FieldDefinition.Initializer.**.ExpectedReturnPlainType => null;

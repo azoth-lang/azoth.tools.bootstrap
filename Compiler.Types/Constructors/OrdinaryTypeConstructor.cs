@@ -67,23 +67,24 @@ public sealed class OrdinaryTypeConstructor : TypeConstructor
                                                      .ToFixedList();
     }
 
-    public NamedPlainType Construct(IEnumerable<IPlainType> typeArguments)
+    public OrdinaryNamedPlainType Construct(IEnumerable<IPlainType> typeArguments)
     {
         var args = typeArguments.ToFixedList();
         if (args.Count != Parameters.Count)
             throw new ArgumentException("Incorrect number of type arguments.");
-        return new OrdinaryNamedPlainType(this, args);
+        return new(this, args);
     }
     IPlainType TypeConstructor.Construct(IEnumerable<IPlainType> typeArguments)
         => Construct(typeArguments);
 
-    public NamedPlainType ConstructWithGenericParameterPlainTypes()
+    public OrdinaryNamedPlainType ConstructWithGenericParameterPlainTypes()
         => Construct(GenericParameterPlainTypes);
     IPlainType TypeConstructor.ConstructWithGenericParameterPlainTypes()
         => ConstructWithGenericParameterPlainTypes();
 
-    public IPlainType? TryConstructNullary()
+    public OrdinaryNamedPlainType? TryConstructNullary()
         => Parameters.IsEmpty ? new OrdinaryNamedPlainType(this, []) : null;
+    IPlainType? TypeConstructor.TryConstructNullary() => TryConstructNullary();
 
     #region Equality
     public bool Equals(TypeConstructor? other)

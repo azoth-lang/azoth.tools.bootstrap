@@ -14,12 +14,12 @@ internal static partial class ForeachExpressionPlainTypesAspect
                .Where(m => m.Arity == 0 && m.MethodGroupType.Return.ToPlainType() is INonVoidPlainType)
                .TrySingle();
 
-    public static partial IMaybePlainType ForeachExpression_IteratorPlainType(IForeachExpressionNode node)
+    public static partial IMaybeNonVoidPlainType ForeachExpression_IteratorPlainType(IForeachExpressionNode node)
     {
-        var iterableType = node.InExpression?.PlainType ?? IPlainType.Unknown;
+        var iterableType = node.InExpression?.PlainType.ToNonVoid() ?? IPlainType.Unknown;
         var iterateMethod = node.ReferencedIterateMethod;
         var iteratorPlainType = iterateMethod is not null
-            ? iterableType.ReplaceTypeParametersIn(iterateMethod.MethodGroupType.Return.ToPlainType())
+            ? iterableType.ReplaceTypeParametersIn(iterateMethod.MethodGroupPlainType.Return).ToNonVoid()
             : iterableType;
         return iteratorPlainType;
     }
@@ -32,11 +32,11 @@ internal static partial class ForeachExpressionPlainTypesAspect
                .Where(m => m.Arity == 0 && m.MethodGroupType.Return.ToPlainType() is OptionalPlainType)
                .TrySingle();
 
-    public static partial IMaybePlainType ForeachExpression_IteratedPlainType(IForeachExpressionNode node)
+    public static partial IMaybeNonVoidPlainType ForeachExpression_IteratedPlainType(IForeachExpressionNode node)
     {
-        var nextMethodReturnType = node.ReferencedNextMethod?.MethodGroupType.Return.ToPlainType();
+        var nextMethodReturnType = node.ReferencedNextMethod?.ReturnPlainType;
         if (nextMethodReturnType is OptionalPlainType { Referent: var iteratedType })
-            return node.IteratorPlainType.ReplaceTypeParametersIn(iteratedType).ToNonLiteral();
+            return node.IteratorPlainType.ReplaceTypeParametersIn(iteratedType).ToNonLiteral().ToNonVoid();
         return IPlainType.Unknown;
     }
 }

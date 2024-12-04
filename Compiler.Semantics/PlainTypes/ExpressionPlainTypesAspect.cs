@@ -376,12 +376,10 @@ internal static partial class ExpressionPlainTypesAspect
     }
 
     public static partial IMaybePlainType FunctionName_PlainType(IFunctionNameNode node)
-        // TODO should probably use PlainType on the declaration
-        => node.ReferencedDeclaration?.Type.ToPlainType() ?? IPlainType.Unknown;
+        => node.ReferencedDeclaration?.PlainType ?? IPlainType.Unknown;
 
     public static partial IMaybePlainType MethodName_PlainType(IMethodNameNode node)
-        // TODO should probably use PlainType on the declaration
-        => node.ReferencedDeclaration?.MethodGroupType.ToPlainType() ?? IPlainType.Unknown;
+        => node.ReferencedDeclaration?.MethodGroupPlainType ?? IPlainType.Unknown;
 
     // TODO this is strange and maybe a hack
     public static partial IMaybePlainType? MethodName_Context_ExpectedPlainType(IMethodNameNode node)

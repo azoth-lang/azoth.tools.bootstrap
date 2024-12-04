@@ -17,6 +17,6 @@ internal static partial class DefinitionPlainTypesAspect
     public static partial SelfPlainType TypeDefinition_SelfPlainType(ITypeDefinitionNode node)
         => new(node.TypeConstructor);
 
-    public static partial IMaybePlainType FieldDefinition_BindingPlainType(IFieldDefinitionNode node)
-        => node.TypeNode.NamedPlainType;
+    public static partial IMaybeNonVoidPlainType FieldDefinition_BindingPlainType(IFieldDefinitionNode node)
+        => node.TypeNode.NamedPlainType.ToNonVoid();
 }
