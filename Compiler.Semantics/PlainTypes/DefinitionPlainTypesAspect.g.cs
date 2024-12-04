@@ -2,6 +2,7 @@ using System.CodeDom.Compiler;
 using System.Runtime.CompilerServices;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
+using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.PlainTypes;
 
@@ -11,6 +12,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.PlainTypes;
 [GeneratedCode("AzothCompilerCodeGen", null)]
 internal static partial class DefinitionPlainTypesAspect
 {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial IFixedList<IMaybeNonVoidPlainType> InvocableDefinition_ParameterPlainTypes(IInvocableDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IMaybeFunctionPlainType ConcreteFunctionInvocableDefinition_PlainType(IConcreteFunctionInvocableDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

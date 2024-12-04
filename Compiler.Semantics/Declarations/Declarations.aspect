@@ -21,6 +21,7 @@
 ↑ child PackageFacetDeclaration.GlobalNamespace: NamespaceDeclaration;
 
 // ---------- Declarations
+↑ InvocableDeclaration.ParameterPlainTypes: `IMaybeNonVoidPlainType`*;
 ↑ InvocableDeclaration.ParameterTypes: `IMaybeParameterType`*;
 ↑ InvocableDeclaration.ReturnPlainType: `IMaybePlainType`;
 ↑ InvocableDeclaration.ReturnType: `IMaybeType`;

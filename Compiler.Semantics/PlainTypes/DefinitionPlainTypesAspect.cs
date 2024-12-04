@@ -1,11 +1,15 @@
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
+using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.PlainTypes;
 
 internal static partial class DefinitionPlainTypesAspect
 {
+    public static partial IFixedList<IMaybeNonVoidPlainType> InvocableDefinition_ParameterPlainTypes(IInvocableDefinitionNode node)
+        => node.Parameters.Select(p => p.BindingPlainType).ToFixedList();
+
     public static partial IMaybeFunctionPlainType ConcreteFunctionInvocableDefinition_PlainType(IConcreteFunctionInvocableDefinitionNode node)
         => FunctionPlainType.Create(node.ParameterTypes.Select(t => t.ToPlainType()), node.ReturnType.ToPlainType());
 

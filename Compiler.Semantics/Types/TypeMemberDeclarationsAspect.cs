@@ -8,6 +8,7 @@ using Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 
 // TODO shouldn't this be renamed to TypeMemberDefinitionsAspect?
+// TODO does this make sense to have separate from DefinitionTypesAspect? Plain types group differently
 internal static partial class TypeMemberDeclarationsAspect
 {
     // TODO maybe this should be moved to definition types aspect?

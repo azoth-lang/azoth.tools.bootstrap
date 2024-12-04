@@ -2,10 +2,12 @@
 ◊name DefinitionPlainTypesAspect;
 ◊using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 ◊using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
+◊using Azoth.Tools.Bootstrap.Framework;
 
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
 // ---------- Definitions
+= InvocableDefinition.ParameterPlainTypes;
 // TODO it would be good to refactor to not depend on Type
 = ConcreteFunctionInvocableDefinition.ReturnPlainType => (Return?.NamedType ?? IType.Void).ToPlainType();
 = ConcreteFunctionInvocableDefinition.PlainType;

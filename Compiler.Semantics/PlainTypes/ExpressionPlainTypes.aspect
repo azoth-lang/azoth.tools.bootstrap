@@ -65,13 +65,11 @@
     => Self.ReferencedDeclaration?.SelfParameterPlainType;
 = SetterInvocationExpression.Context.ExpectedPlainType
     => Self.ReferencedDeclaration?.SelfParameterPlainType;
-// TODO it would be better if this didn't depend on types, but only on plain types
 = SetterInvocationExpression.Value.ExpectedPlainType
-    => ContextualizedCall?.ParameterTypes[0].Type.ToPlainType();
+    => Self.ReferencedDeclaration?.ParameterPlainTypes[0];
 ↑ FunctionReferenceInvocationExpression.FunctionPlainType: `FunctionPlainType`;
-// TODO it would be better if this didn't depend on types, but only on plain types
 = InitializerInvocationExpression.Arguments[index].ExpectedPlainType
-    => ContextualizedCall?.ParameterTypes[index].Type.ToPlainType();
+    => Self.ReferencedDeclaration?.ParameterPlainTypes[index];
 
 // ---------- Ambiguous Name Expressions
 

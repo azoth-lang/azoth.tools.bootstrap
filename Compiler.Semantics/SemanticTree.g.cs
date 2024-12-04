@@ -3717,6 +3717,7 @@ public partial interface IPackageFacetChildDeclarationNode : IChildDeclarationNo
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IInvocableDeclarationNode : ISymbolDeclarationNode, IChildDeclarationNode
 {
+    IFixedList<IMaybeNonVoidPlainType> ParameterPlainTypes { get; }
     IFixedList<IMaybeParameterType> ParameterTypes { get; }
     IMaybePlainType ReturnPlainType { get; }
     IMaybeType ReturnType { get; }
@@ -4192,6 +4193,8 @@ public partial interface IFunctionSymbolNode : IFunctionDeclarationNode, INamesp
     StandardName INamespaceMemberDeclarationNode.Name => Name;
     StandardName? IPackageFacetChildDeclarationNode.Name => Name;
     TypeName INamedDeclarationNode.Name => Name;
+    IFixedList<IMaybeNonVoidPlainType> IInvocableDeclarationNode.ParameterPlainTypes
+        => Symbol.Type.Parameters.ToPlainTypes();
     IFixedList<IMaybeParameterType> IInvocableDeclarationNode.ParameterTypes
         => Symbol.Type.Parameters;
     IMaybePlainType IInvocableDeclarationNode.ReturnPlainType
@@ -4446,6 +4449,8 @@ public partial interface IMethodSymbolNode : IMethodDeclarationNode, IClassMembe
         => Symbol.SelfParameterType.ToPlainType();
     IMaybeSelfParameterType IMethodDeclarationNode.SelfParameterType
         => Symbol.SelfParameterType;
+    IFixedList<IMaybeNonVoidPlainType> IInvocableDeclarationNode.ParameterPlainTypes
+        => Symbol.MethodGroupType.Parameters.ToPlainTypes();
     IFixedList<IMaybeParameterType> IInvocableDeclarationNode.ParameterTypes
         => Symbol.MethodGroupType.Parameters;
     IMaybePlainType IInvocableDeclarationNode.ReturnPlainType
@@ -4504,6 +4509,8 @@ public partial interface IConstructorSymbolNode : IConstructorDeclarationNode, I
         => Symbol.SelfParameterType.ToPlainType();
     IMaybeSelfParameterType IConstructorDeclarationNode.SelfParameterType
         => new SelfParameterType(false, Symbol.SelfParameterType);
+    IFixedList<IMaybeNonVoidPlainType> IInvocableDeclarationNode.ParameterPlainTypes
+        => Symbol.Parameters.ToPlainTypes();
     IFixedList<IMaybeParameterType> IInvocableDeclarationNode.ParameterTypes
         => Symbol.Parameters;
     IMaybePlainType IInvocableDeclarationNode.ReturnPlainType
@@ -4532,6 +4539,8 @@ public partial interface IInitializerSymbolNode : IInitializerDeclarationNode, I
         => Symbol.SelfParameterType.ToPlainType();
     IMaybeSelfParameterType IInitializerDeclarationNode.SelfParameterType
         => new SelfParameterType(false, Symbol.SelfParameterType);
+    IFixedList<IMaybeNonVoidPlainType> IInvocableDeclarationNode.ParameterPlainTypes
+        => Symbol.Parameters.ToPlainTypes();
     IFixedList<IMaybeParameterType> IInvocableDeclarationNode.ParameterTypes
         => Symbol.Parameters;
     IMaybePlainType IInvocableDeclarationNode.ReturnPlainType
@@ -4579,6 +4588,8 @@ public partial interface IAssociatedFunctionSymbolNode : IAssociatedFunctionDecl
         => Symbol.Type.ToPlainType();
     IMaybeFunctionType IFunctionInvocableDeclarationNode.Type
         => Symbol.Type;
+    IFixedList<IMaybeNonVoidPlainType> IInvocableDeclarationNode.ParameterPlainTypes
+        => Symbol.Type.Parameters.ToPlainTypes();
     IFixedList<IMaybeParameterType> IInvocableDeclarationNode.ParameterTypes
         => Symbol.Type.Parameters;
     IMaybePlainType IInvocableDeclarationNode.ReturnPlainType
@@ -5294,6 +5305,12 @@ file class FunctionDefinitionNode : SemanticNode, IFunctionDefinitionNode
                 LexicalScopingAspect.FunctionDefinition_LexicalScope);
     private LexicalScope? lexicalScope;
     private bool lexicalScopeCached;
+    public IFixedList<IMaybeNonVoidPlainType> ParameterPlainTypes
+        => GrammarAttribute.IsCached(in parameterPlainTypesCached) ? parameterPlainTypes!
+            : this.Synthetic(ref parameterPlainTypesCached, ref parameterPlainTypes,
+                DefinitionPlainTypesAspect.InvocableDefinition_ParameterPlainTypes);
+    private IFixedList<IMaybeNonVoidPlainType>? parameterPlainTypes;
+    private bool parameterPlainTypesCached;
     public IFixedList<IMaybeParameterType> ParameterTypes
         => GrammarAttribute.IsCached(in parameterTypesCached) ? parameterTypes!
             : this.Synthetic(ref parameterTypesCached, ref parameterTypes,
@@ -6033,6 +6050,12 @@ file class AbstractMethodDefinitionNode : SemanticNode, IAbstractMethodDefinitio
                 LexicalScopingAspect.MethodDefinition_LexicalScope);
     private LexicalScope? lexicalScope;
     private bool lexicalScopeCached;
+    public IFixedList<IMaybeNonVoidPlainType> ParameterPlainTypes
+        => GrammarAttribute.IsCached(in parameterPlainTypesCached) ? parameterPlainTypes!
+            : this.Synthetic(ref parameterPlainTypesCached, ref parameterPlainTypes,
+                DefinitionPlainTypesAspect.InvocableDefinition_ParameterPlainTypes);
+    private IFixedList<IMaybeNonVoidPlainType>? parameterPlainTypes;
+    private bool parameterPlainTypesCached;
     public IFixedList<IMaybeParameterType> ParameterTypes
         => GrammarAttribute.IsCached(in parameterTypesCached) ? parameterTypes!
             : this.Synthetic(ref parameterTypesCached, ref parameterTypes,
@@ -6213,6 +6236,12 @@ file class StandardMethodDefinitionNode : SemanticNode, IStandardMethodDefinitio
                 LexicalScopingAspect.MethodDefinition_LexicalScope);
     private LexicalScope? lexicalScope;
     private bool lexicalScopeCached;
+    public IFixedList<IMaybeNonVoidPlainType> ParameterPlainTypes
+        => GrammarAttribute.IsCached(in parameterPlainTypesCached) ? parameterPlainTypes!
+            : this.Synthetic(ref parameterPlainTypesCached, ref parameterPlainTypes,
+                DefinitionPlainTypesAspect.InvocableDefinition_ParameterPlainTypes);
+    private IFixedList<IMaybeNonVoidPlainType>? parameterPlainTypes;
+    private bool parameterPlainTypesCached;
     public IFixedList<IMaybeParameterType> ParameterTypes
         => GrammarAttribute.IsCached(in parameterTypesCached) ? parameterTypes!
             : this.Synthetic(ref parameterTypesCached, ref parameterTypes,
@@ -6394,6 +6423,12 @@ file class GetterMethodDefinitionNode : SemanticNode, IGetterMethodDefinitionNod
                 LexicalScopingAspect.MethodDefinition_LexicalScope);
     private LexicalScope? lexicalScope;
     private bool lexicalScopeCached;
+    public IFixedList<IMaybeNonVoidPlainType> ParameterPlainTypes
+        => GrammarAttribute.IsCached(in parameterPlainTypesCached) ? parameterPlainTypes!
+            : this.Synthetic(ref parameterPlainTypesCached, ref parameterPlainTypes,
+                DefinitionPlainTypesAspect.InvocableDefinition_ParameterPlainTypes);
+    private IFixedList<IMaybeNonVoidPlainType>? parameterPlainTypes;
+    private bool parameterPlainTypesCached;
     public IFixedList<IMaybeParameterType> ParameterTypes
         => GrammarAttribute.IsCached(in parameterTypesCached) ? parameterTypes!
             : this.Synthetic(ref parameterTypesCached, ref parameterTypes,
@@ -6575,6 +6610,12 @@ file class SetterMethodDefinitionNode : SemanticNode, ISetterMethodDefinitionNod
                 LexicalScopingAspect.MethodDefinition_LexicalScope);
     private LexicalScope? lexicalScope;
     private bool lexicalScopeCached;
+    public IFixedList<IMaybeNonVoidPlainType> ParameterPlainTypes
+        => GrammarAttribute.IsCached(in parameterPlainTypesCached) ? parameterPlainTypes!
+            : this.Synthetic(ref parameterPlainTypesCached, ref parameterPlainTypes,
+                DefinitionPlainTypesAspect.InvocableDefinition_ParameterPlainTypes);
+    private IFixedList<IMaybeNonVoidPlainType>? parameterPlainTypes;
+    private bool parameterPlainTypesCached;
     public IFixedList<IMaybeParameterType> ParameterTypes
         => GrammarAttribute.IsCached(in parameterTypesCached) ? parameterTypes!
             : this.Synthetic(ref parameterTypesCached, ref parameterTypes,
@@ -6757,6 +6798,12 @@ file class DefaultConstructorDefinitionNode : SemanticNode, IDefaultConstructorD
                 LexicalScopingAspect.ConstructorDefinition_LexicalScope);
     private LexicalScope? lexicalScope;
     private bool lexicalScopeCached;
+    public IFixedList<IMaybeNonVoidPlainType> ParameterPlainTypes
+        => GrammarAttribute.IsCached(in parameterPlainTypesCached) ? parameterPlainTypes!
+            : this.Synthetic(ref parameterPlainTypesCached, ref parameterPlainTypes,
+                DefinitionPlainTypesAspect.InvocableDefinition_ParameterPlainTypes);
+    private IFixedList<IMaybeNonVoidPlainType>? parameterPlainTypes;
+    private bool parameterPlainTypesCached;
     public IFixedList<IMaybeParameterType> ParameterTypes
         => GrammarAttribute.IsCached(in parameterTypesCached) ? parameterTypes!
             : this.Synthetic(ref parameterTypesCached, ref parameterTypes,
@@ -6876,6 +6923,12 @@ file class SourceConstructorDefinitionNode : SemanticNode, ISourceConstructorDef
                 LexicalScopingAspect.ConstructorDefinition_LexicalScope);
     private LexicalScope? lexicalScope;
     private bool lexicalScopeCached;
+    public IFixedList<IMaybeNonVoidPlainType> ParameterPlainTypes
+        => GrammarAttribute.IsCached(in parameterPlainTypesCached) ? parameterPlainTypes!
+            : this.Synthetic(ref parameterPlainTypesCached, ref parameterPlainTypes,
+                DefinitionPlainTypesAspect.InvocableDefinition_ParameterPlainTypes);
+    private IFixedList<IMaybeNonVoidPlainType>? parameterPlainTypes;
+    private bool parameterPlainTypesCached;
     public IFixedList<IMaybeParameterType> ParameterTypes
         => GrammarAttribute.IsCached(in parameterTypesCached) ? parameterTypes!
             : this.Synthetic(ref parameterTypesCached, ref parameterTypes,
@@ -7026,6 +7079,12 @@ file class DefaultInitializerDefinitionNode : SemanticNode, IDefaultInitializerD
                 LexicalScopingAspect.InitializerDefinition_LexicalScope);
     private LexicalScope? lexicalScope;
     private bool lexicalScopeCached;
+    public IFixedList<IMaybeNonVoidPlainType> ParameterPlainTypes
+        => GrammarAttribute.IsCached(in parameterPlainTypesCached) ? parameterPlainTypes!
+            : this.Synthetic(ref parameterPlainTypesCached, ref parameterPlainTypes,
+                DefinitionPlainTypesAspect.InvocableDefinition_ParameterPlainTypes);
+    private IFixedList<IMaybeNonVoidPlainType>? parameterPlainTypes;
+    private bool parameterPlainTypesCached;
     public IFixedList<IMaybeParameterType> ParameterTypes
         => GrammarAttribute.IsCached(in parameterTypesCached) ? parameterTypes!
             : this.Synthetic(ref parameterTypesCached, ref parameterTypes,
@@ -7145,6 +7204,12 @@ file class SourceInitializerDefinitionNode : SemanticNode, ISourceInitializerDef
                 LexicalScopingAspect.InitializerDefinition_LexicalScope);
     private LexicalScope? lexicalScope;
     private bool lexicalScopeCached;
+    public IFixedList<IMaybeNonVoidPlainType> ParameterPlainTypes
+        => GrammarAttribute.IsCached(in parameterPlainTypesCached) ? parameterPlainTypes!
+            : this.Synthetic(ref parameterPlainTypesCached, ref parameterPlainTypes,
+                DefinitionPlainTypesAspect.InvocableDefinition_ParameterPlainTypes);
+    private IFixedList<IMaybeNonVoidPlainType>? parameterPlainTypes;
+    private bool parameterPlainTypesCached;
     public IFixedList<IMaybeParameterType> ParameterTypes
         => GrammarAttribute.IsCached(in parameterTypesCached) ? parameterTypes!
             : this.Synthetic(ref parameterTypesCached, ref parameterTypes,
@@ -7436,6 +7501,12 @@ file class AssociatedFunctionDefinitionNode : SemanticNode, IAssociatedFunctionD
                 LexicalScopingAspect.AssociatedFunctionDefinition_LexicalScope);
     private LexicalScope? lexicalScope;
     private bool lexicalScopeCached;
+    public IFixedList<IMaybeNonVoidPlainType> ParameterPlainTypes
+        => GrammarAttribute.IsCached(in parameterPlainTypesCached) ? parameterPlainTypes!
+            : this.Synthetic(ref parameterPlainTypesCached, ref parameterPlainTypes,
+                DefinitionPlainTypesAspect.InvocableDefinition_ParameterPlainTypes);
+    private IFixedList<IMaybeNonVoidPlainType>? parameterPlainTypes;
+    private bool parameterPlainTypesCached;
     public IFixedList<IMaybeParameterType> ParameterTypes
         => GrammarAttribute.IsCached(in parameterTypesCached) ? parameterTypes!
             : this.Synthetic(ref parameterTypesCached, ref parameterTypes,
@@ -13578,7 +13649,7 @@ file class SetterInvocationExpressionNode : SemanticNode, ISetterInvocationExpre
         if (ReferenceEquals(descendant, Self.CurrentContext))
             return Self.ReferencedDeclaration?.SelfParameterPlainType;
         if (ReferenceEquals(descendant, Self.CurrentValue))
-            return ContextualizedCall?.ParameterTypes[0].Type.ToPlainType();
+            return Self.ReferencedDeclaration?.ParameterPlainTypes[0];
         if (ReferenceEquals(child, descendant))
             return null;
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
@@ -13951,7 +14022,7 @@ file class InitializerInvocationExpressionNode : SemanticNode, IInitializerInvoc
     internal override IMaybePlainType? Inherited_ExpectedPlainType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (IndexOfNode(Self.CurrentArguments, descendant) is { } index)
-            return ContextualizedCall?.ParameterTypes[index].Type.ToPlainType();
+            return Self.ReferencedDeclaration?.ParameterPlainTypes[index];
         if (ReferenceEquals(child, descendant))
             return null;
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
