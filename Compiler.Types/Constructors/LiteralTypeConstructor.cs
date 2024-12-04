@@ -15,6 +15,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
        typeof(BoolLiteralTypeConstructor),
        typeof(IntegerLiteralTypeConstructor))]
 [DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
+// TODO possibly remove this type and make the literal types simple types
 public abstract class LiteralTypeConstructor : SimpleOrLiteralTypeConstructor
 {
     public sealed override bool CanBeInstantiated => true;
