@@ -11,7 +11,7 @@ internal static partial class DefinitionPlainTypesAspect
         => node.Parameters.Select(p => p.BindingPlainType).ToFixedList();
 
     public static partial IMaybeFunctionPlainType ConcreteFunctionInvocableDefinition_PlainType(IConcreteFunctionInvocableDefinitionNode node)
-        => FunctionPlainType.Create(node.ParameterTypes.Select(t => t.ToPlainType()), node.ReturnType.ToPlainType());
+        => FunctionPlainType.Create(node.ParameterPlainTypes, node.ReturnPlainType);
 
     public static partial OrdinaryTypeConstructor TypeDefinition_TypeConstructor(ITypeDefinitionNode node)
         // Types at the definition level do not depend on flow typing so it is fine to derive the

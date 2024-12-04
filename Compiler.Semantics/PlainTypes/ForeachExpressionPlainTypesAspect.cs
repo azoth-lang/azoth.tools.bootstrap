@@ -11,7 +11,7 @@ internal static partial class ForeachExpressionPlainTypesAspect
 
     public static partial IStandardMethodDeclarationNode? ForeachExpression_ReferencedIterateMethod(IForeachExpressionNode node)
         => node.ReferencedIterableDeclaration?.InclusiveInstanceMembersNamed("iterate").OfType<IStandardMethodDeclarationNode>()
-               .Where(m => m.Arity == 0 && m.MethodGroupType.Return.ToPlainType() is INonVoidPlainType)
+               .Where(m => m.Arity == 0 && m.ReturnPlainType is INonVoidPlainType)
                .TrySingle();
 
     public static partial IMaybeNonVoidPlainType ForeachExpression_IteratorPlainType(IForeachExpressionNode node)
@@ -29,7 +29,7 @@ internal static partial class ForeachExpressionPlainTypesAspect
 
     public static partial IStandardMethodDeclarationNode? ForeachExpression_ReferencedNextMethod(IForeachExpressionNode node)
         => node.ReferencedIteratorDeclaration?.InclusiveInstanceMembersNamed("next").OfType<IStandardMethodDeclarationNode>()
-               .Where(m => m.Arity == 0 && m.MethodGroupType.Return.ToPlainType() is OptionalPlainType)
+               .Where(m => m.Arity == 0 && m.ReturnPlainType is OptionalPlainType)
                .TrySingle();
 
     public static partial IMaybeNonVoidPlainType ForeachExpression_IteratedPlainType(IForeachExpressionNode node)

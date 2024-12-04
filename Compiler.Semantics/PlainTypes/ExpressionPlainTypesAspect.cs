@@ -45,8 +45,7 @@ internal static partial class ExpressionPlainTypesAspect
 
     public static partial IMaybePlainType NewObjectExpression_PlainType(INewObjectExpressionNode node)
     {
-        // TODO should probably use PlainType on the declaration
-        var unboundPlainType = node.ReferencedConstructor?.ReturnType.ToPlainType() ?? IPlainType.Unknown;
+        var unboundPlainType = node.ReferencedConstructor?.ReturnPlainType ?? IPlainType.Unknown;
         var boundPlainType = node.ConstructingPlainType.ReplaceTypeParametersIn(unboundPlainType);
         return boundPlainType;
     }
@@ -348,14 +347,14 @@ internal static partial class ExpressionPlainTypesAspect
 
     public static partial IMaybePlainType GetterInvocationExpression_PlainType(IGetterInvocationExpressionNode node)
     {
-        var unboundPlainType = node.ReferencedDeclaration?.ReturnType.ToPlainType() ?? IPlainType.Unknown;
+        var unboundPlainType = node.ReferencedDeclaration?.ReturnPlainType ?? IPlainType.Unknown;
         var boundPlainType = node.Context.PlainType.ReplaceTypeParametersIn(unboundPlainType);
         return boundPlainType;
     }
 
     public static partial IMaybePlainType SetterInvocationExpression_PlainType(ISetterInvocationExpressionNode node)
     {
-        var unboundPlainType = node.ReferencedDeclaration?.ParameterTypes[0].Type.ToPlainType() ?? IPlainType.Unknown;
+        var unboundPlainType = node.ReferencedDeclaration?.ParameterPlainTypes[0] ?? IPlainType.Unknown;
         var boundPlainType = node.Context.PlainType.ReplaceTypeParametersIn(unboundPlainType);
         return boundPlainType;
     }
@@ -370,7 +369,7 @@ internal static partial class ExpressionPlainTypesAspect
 
     public static partial IMaybePlainType InitializerInvocationExpression_PlainType(IInitializerInvocationExpressionNode node)
     {
-        var unboundPlainType = node.ReferencedDeclaration?.ReturnType.ToPlainType() ?? IPlainType.Unknown;
+        var unboundPlainType = node.ReferencedDeclaration?.ReturnPlainType ?? IPlainType.Unknown;
         var boundPlainType = node.InitializerGroup.InitializingPlainType.ReplaceTypeParametersIn(unboundPlainType);
         return boundPlainType;
     }
