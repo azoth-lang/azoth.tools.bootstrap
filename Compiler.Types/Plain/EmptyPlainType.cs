@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Framework;
@@ -7,6 +8,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 
 // TODO possibly remove this class
 [Closed(typeof(NeverPlainType), typeof(VoidPlainType))]
+[DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
 public abstract class EmptyPlainType : IPlainType
 {
     public TypeConstructor? TypeConstructor => null;

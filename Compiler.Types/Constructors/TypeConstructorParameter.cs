@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Text;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Names;
@@ -7,6 +8,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 /// <summary>
 /// A generic parameter definition for a type constructor.
 /// </summary>
+[DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
 public sealed class TypeConstructorParameter : IEquatable<TypeConstructorParameter>
 {
     public IdentifierName Name { get; }

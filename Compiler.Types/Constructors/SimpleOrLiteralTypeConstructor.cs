@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Text;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors.Contexts;
@@ -11,6 +12,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 [Closed(
     typeof(SimpleTypeConstructor),
     typeof(LiteralTypeConstructor))]
+[DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
 public abstract class SimpleOrLiteralTypeConstructor : TypeConstructor
 {
     TypeConstructorContext TypeConstructor.Context => PrimitiveContext.Instance;

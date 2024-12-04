@@ -1,5 +1,8 @@
+using System.Diagnostics;
+
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 
+[DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
 public sealed class UnknownPlainType : IMaybeFunctionPlainType
 {
     #region Singleton

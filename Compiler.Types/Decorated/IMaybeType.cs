@@ -6,6 +6,13 @@ public interface IMaybeType
 {
     IMaybePlainType PlainType { get; }
 
-    string ToString();
-    // TODO need ToILString and ToSourceCodeString
+    /// <summary>
+    /// How this type would be written in source code.
+    /// </summary>
+    string ToSourceCodeString();
+
+    /// <summary>
+    /// How this type would be written in IL.
+    /// </summary>
+    string ToILString();
 }

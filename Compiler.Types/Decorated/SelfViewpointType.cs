@@ -1,9 +1,11 @@
+using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 
 // e.g. `self |> mut Foo` Applies to all non-void types
+[DebuggerDisplay("{" + nameof(ToILString) + "(),nq}")]
 public sealed class SelfViewpointType : INonVoidType
 {
     public CapabilitySet Capability { get; }
@@ -18,5 +20,9 @@ public sealed class SelfViewpointType : INonVoidType
         Referent = referent;
     }
 
-    public override string ToString() => $"{Capability.ToILString()} self |> {Referent}";
+    public override string ToString() => throw new NotSupportedException();
+
+    public string ToSourceCodeString() => $"{Capability.ToSourceCodeString()} self |> {Referent}";
+
+    public string ToILString() => $"{Capability.ToILString()} self |> {Referent}";
 }

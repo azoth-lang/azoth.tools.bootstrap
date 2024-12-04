@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Text;
 using Azoth.Tools.Bootstrap.Compiler.Names;
@@ -11,7 +10,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 [Closed(
     typeof(BoolTypeConstructor),
     typeof(IntegerTypeConstructor))]
-[DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
 public abstract class SimpleTypeConstructor : SimpleOrLiteralTypeConstructor
 {
     public sealed override bool CanBeInstantiated => true;

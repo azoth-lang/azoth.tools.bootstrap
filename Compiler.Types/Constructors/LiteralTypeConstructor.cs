@@ -14,7 +14,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 [Closed(
        typeof(BoolLiteralTypeConstructor),
        typeof(IntegerLiteralTypeConstructor))]
-[DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
 // TODO possibly remove this type and make the literal types simple types
 public abstract class LiteralTypeConstructor : SimpleOrLiteralTypeConstructor
 {

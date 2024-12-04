@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 
@@ -16,6 +17,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 //   * SelfParameterPlainType
 //   * AssociatedPlainType
 // * ConstructedPlainType
+[DebuggerDisplay("{" + nameof(ToILString) + "(),nq}")]
 public sealed class CapabilityType : INonVoidType
 {
     public Capability Capability { get; }
@@ -29,5 +31,9 @@ public sealed class CapabilityType : INonVoidType
         PlainType = plainType;
     }
 
-    public override string ToString() => $"{Capability} {PlainType}";
+    public override string ToString() => throw new NotSupportedException();
+
+    public string ToSourceCodeString() => $"{Capability.ToSourceCodeString()} {PlainType}";
+
+    public string ToILString() => $"{Capability.ToILString()} {PlainType}";
 }

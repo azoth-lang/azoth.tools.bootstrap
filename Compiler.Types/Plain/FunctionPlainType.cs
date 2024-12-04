@@ -1,7 +1,9 @@
+using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 
+[DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
 public sealed class FunctionPlainType : INonVoidPlainType, IMaybeFunctionPlainType
 {
     public static IMaybeFunctionPlainType Create(IEnumerable<IMaybeNonVoidPlainType> parameters, IMaybePlainType @return)

@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Text;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Names;
@@ -12,6 +13,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 /// <see cref="SimpleTypeConstructor"/>s). That is, it was declared with a <c>class</c>,
 /// <c>struct</c>, or <c>trait</c> declaration.
 /// </summary>
+[DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
 public sealed class OrdinaryTypeConstructor : TypeConstructor
 {
     public TypeConstructorContext Context { get; }

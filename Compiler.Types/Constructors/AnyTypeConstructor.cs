@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Text;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors.Contexts;
@@ -6,6 +7,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 
+[DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
 public sealed class AnyTypeConstructor : TypeConstructor
 {
     #region Singleton
