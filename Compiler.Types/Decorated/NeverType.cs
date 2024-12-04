@@ -4,18 +4,16 @@ using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 
 [DebuggerDisplay("{" + nameof(ToILString) + "(),nq}")]
-public sealed class EmptyType : IType
+public sealed class NeverType : INonVoidType
 {
-    internal static readonly EmptyType Never = new EmptyType(IPlainType.Never);
-    internal static readonly EmptyType Void = new EmptyType(IPlainType.Void);
+    #region Singleton
+    internal static readonly NeverType Instance = new NeverType();
 
-    public EmptyPlainType PlainType { get; }
-    IPlainType IType.PlainType => PlainType;
+    private NeverType() { }
+    #endregion
 
-    private EmptyType(EmptyPlainType plainType)
-    {
-        PlainType = plainType;
-    }
+    public NeverPlainType PlainType => NeverPlainType.Instance;
+    INonVoidPlainType INonVoidType.PlainType => PlainType;
 
     public override string ToString() => throw new NotSupportedException();
 

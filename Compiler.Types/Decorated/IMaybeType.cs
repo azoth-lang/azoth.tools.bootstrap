@@ -1,7 +1,9 @@
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
+using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 
+[Closed(typeof(IType), typeof(UnknownType))]
 public interface IMaybeType
 {
     IMaybePlainType PlainType { get; }
