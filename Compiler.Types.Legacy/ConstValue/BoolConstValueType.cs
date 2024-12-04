@@ -1,4 +1,3 @@
-using System;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Declared;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
@@ -29,8 +28,7 @@ public sealed class BoolConstValueType : ConstValueType
     public override IMaybePlainType ToPlainType()
         => Value ? IPlainType.True : IPlainType.False;
 
-    public override string ToSourceCodeString()
-        => throw new InvalidOperationException("Bool value type has no source code representation");
+    public override string ToSourceCodeString() => $"bool[{(Value ? "true" : "false")}]";
 
-    public override string ToILString() => $"bool[{(Value ? "true" : "false")}]";
+    public override string ToILString() => ToSourceCodeString();
 }

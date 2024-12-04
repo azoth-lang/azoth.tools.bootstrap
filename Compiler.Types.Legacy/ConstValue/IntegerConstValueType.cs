@@ -76,8 +76,7 @@ public sealed class IntegerConstValueType : ConstValueType, INumericType
     public override IMaybePlainType ToPlainType()
         => new IntegerLiteralTypeConstructor(Value).PlainType;
 
-    public override string ToSourceCodeString()
-        => throw new InvalidOperationException("Integer value type has no source code representation");
+    public override string ToSourceCodeString() => $"int[{Value}]";
 
     public override string ToILString() => $"int[{Value}]";
 }

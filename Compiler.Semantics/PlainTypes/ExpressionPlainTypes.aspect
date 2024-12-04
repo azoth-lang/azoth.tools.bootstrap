@@ -35,6 +35,7 @@
 ✎ Expression ImplicitConversion;
 ↑ BlockExpression.PlainType: `IMaybePlainType`;
 // TODO it would be better if this didn't depend on types, but only on plain types
+// However, it needs to be contextualized with the generic arguments and currently there isn't another way to do that.
 = NewObjectExpression.Arguments[index].ExpectedPlainType
     => ContextualizedCall?.ParameterTypes[index].Type.ToPlainType();
 = NeverTypedExpression.PlainType => IPlainType.Never;
@@ -61,13 +62,17 @@
     => Self.SelectedCallCandidate?.ParameterPlainTypes[index];
 = MethodInvocationExpression.Arguments[index].ExpectedPlainType
     => Self.SelectedCallCandidate?.ParameterPlainTypes[index];
+// TODO this needs to be contextualized with the generic arguments
 = GetterInvocationExpression.Context.ExpectedPlainType
     => Self.ReferencedDeclaration?.SelfParameterPlainType;
+// TODO this needs to be contextualized with the generic arguments
 = SetterInvocationExpression.Context.ExpectedPlainType
     => Self.ReferencedDeclaration?.SelfParameterPlainType;
+// TODO this needs to be contextualized with the generic arguments
 = SetterInvocationExpression.Value.ExpectedPlainType
     => Self.ReferencedDeclaration?.ParameterPlainTypes[0];
 ↑ FunctionReferenceInvocationExpression.FunctionPlainType: `FunctionPlainType`;
+// TODO this needs to be contextualized with the generic arguments
 = InitializerInvocationExpression.Arguments[index].ExpectedPlainType
     => Self.ReferencedDeclaration?.ParameterPlainTypes[index];
 

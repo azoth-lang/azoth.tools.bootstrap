@@ -62,7 +62,7 @@ public static class TypeError
     public static Diagnostic CannotImplicitlyConvert(CodeFile file, ICodeSyntax expression, IMaybeExpressionType ofType, IMaybeNonVoidType toType)
     {
         return new(file, expression.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
-            3006, $"Cannot convert expression `{file.Code[expression.Span]}` of type `{ofType.ToNonConstValueType().ToSourceCodeString()}` to type `{toType.ToNonConstValueType().ToSourceCodeString()}`");
+            3006, $"Cannot convert expression `{file.Code[expression.Span]}` of type `{ofType.ToSourceCodeString()}` to type `{toType.ToNonConstValueType().ToSourceCodeString()}`");
     }
 
     public static Diagnostic MustBeInvocable(CodeFile file, IExpressionSyntax expression)
