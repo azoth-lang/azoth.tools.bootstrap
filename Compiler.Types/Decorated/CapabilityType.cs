@@ -1,6 +1,8 @@
 using System.Diagnostics;
+using System.Text;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
+using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 
@@ -23,17 +25,42 @@ public sealed class CapabilityType : INonVoidType
     public Capability Capability { get; }
     public ConstructedOrVariablePlainType PlainType { get; }
     INonVoidPlainType INonVoidType.PlainType => PlainType;
-    // TODO represent the decoration on the plain type (type arguments should work)
 
-    public CapabilityType(Capability capability, ConstructedOrVariablePlainType plainType)
+    public IFixedList<IType> TypeArguments { get; }
+
+    public CapabilityType(
+        Capability capability,
+        ConstructedOrVariablePlainType plainType,
+        IFixedList<IType> typeArguments)
     {
+        Requires.That(plainType.TypeArguments.SequenceEqual(typeArguments.Select(a => a.PlainType)), nameof(typeArguments),
+            "Type arguments must match plain type.");
         Capability = capability;
         PlainType = plainType;
+        TypeArguments = typeArguments;
     }
 
     public override string ToString() => throw new NotSupportedException();
 
-    public string ToSourceCodeString() => $"{Capability.ToSourceCodeString()} {PlainType}";
+    public string ToSourceCodeString()
+        => ToString(Capability.ToSourceCodeString(), t => t.ToSourceCodeString());
 
-    public string ToILString() => $"{Capability.ToILString()} {PlainType}";
+    public string ToILString()
+        => ToString(Capability.ToILString(), t => t.ToILString());
+
+    private string ToString(string capability, Func<IType, string> toString)
+    {
+        var builder = new StringBuilder();
+        builder.Append(capability);
+        builder.Append(' ');
+        builder.Append(PlainType.ToBareString());
+        if (!TypeArguments.IsEmpty)
+        {
+            builder.Append('[');
+            builder.AppendJoin(", ", TypeArguments.Select(toString));
+            builder.Append(']');
+        }
+
+        return builder.ToString();
+    }
 }

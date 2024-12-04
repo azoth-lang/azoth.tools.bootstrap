@@ -15,7 +15,6 @@ public sealed class CapabilitySetSelfType : INonVoidType
     public SelfPlainType SelfType { get; }
     INonVoidPlainType INonVoidType.PlainType => SelfType;
 
-
     public CapabilitySetSelfType(CapabilitySet capability, SelfPlainType selfType)
     {
         Capability = capability;

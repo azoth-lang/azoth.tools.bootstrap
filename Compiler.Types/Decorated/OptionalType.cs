@@ -8,8 +8,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 public sealed class OptionalType : INonVoidType
 {
     public OptionalPlainType PlainType { get; }
-
     INonVoidPlainType INonVoidType.PlainType => PlainType;
+
     public IType Referent { get; }
 
     public OptionalType(OptionalPlainType plainType, IType referent)

@@ -61,6 +61,8 @@ public sealed class ConstructedPlainType : ConstructedOrVariablePlainType
     public override int GetHashCode() => HashCode.Combine(TypeConstructor, TypeArguments);
     #endregion
 
+    public override string ToBareString() => $"{TypeConstructor.Context}{TypeConstructor.Name.ToBareString()}";
+
     public override string ToString()
     {
         var builder = new StringBuilder();

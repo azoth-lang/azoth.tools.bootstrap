@@ -37,5 +37,7 @@ public abstract class ConstructedOrVariablePlainType : INonVoidPlainType
     public abstract override int GetHashCode();
     #endregion
 
+    public abstract string ToBareString();
+
     public abstract override string ToString();
 }

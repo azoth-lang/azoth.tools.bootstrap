@@ -20,4 +20,6 @@ public abstract class VariablePlainType : ConstructedOrVariablePlainType
 
     public override IMaybePlainType ReplaceTypeParametersIn(IMaybePlainType plainType)
         => plainType;
+
+    public sealed override string ToBareString() => ToString();
 }
