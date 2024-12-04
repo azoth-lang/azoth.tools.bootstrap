@@ -9,9 +9,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 /// An plainType that is defined by its name.
 /// </summary>
 [Closed(typeof(ConstructedPlainType), typeof(VariablePlainType))]
-public abstract class ConstructedOrVariablePlainType : IPlainType
+public abstract class ConstructedOrVariablePlainType : INonVoidPlainType
 {
     public abstract TypeConstructor? TypeConstructor { get; }
+    public abstract TypeSemantics? Semantics { get; }
     public abstract TypeName Name { get; }
     public abstract bool AllowsVariance { get; }
     public virtual IFixedList<IPlainType> TypeArguments => FixedList.Empty<IPlainType>();

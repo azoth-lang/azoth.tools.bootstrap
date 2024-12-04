@@ -12,10 +12,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 [Closed(
     typeof(GenericParameterPlainType),
     typeof(SelfPlainType))]
-public abstract class VariablePlainType : ConstructedOrVariablePlainType, INonVoidPlainType
+public abstract class VariablePlainType : ConstructedOrVariablePlainType
 {
     public sealed override TypeConstructor? TypeConstructor => null;
-    public TypeSemantics? Semantics => null;
+    public override TypeSemantics? Semantics => null;
     public sealed override bool AllowsVariance => false;
 
     public override IMaybePlainType ReplaceTypeParametersIn(IMaybePlainType plainType)

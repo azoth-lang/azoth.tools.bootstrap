@@ -1,3 +1,6 @@
+using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
+using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
+
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 
 // TODO should this cover optional types since they are implicit const?
@@ -13,7 +16,18 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 //   * SelfParameterPlainType
 //   * AssociatedPlainType
 // * ConstructedPlainType
-public sealed class CapabilityType
+public sealed class CapabilityType : INonVoidType
 {
+    public Capability Capability { get; }
+    public ConstructedOrVariablePlainType PlainType { get; }
+    INonVoidPlainType INonVoidType.PlainType => PlainType;
+    // TODO represent the decoration on the plain type (type arguments should work)
 
+    public CapabilityType(Capability capability, ConstructedOrVariablePlainType plainType)
+    {
+        Capability = capability;
+        PlainType = plainType;
+    }
+
+    public override string ToString() => $"{Capability} {PlainType}";
 }
