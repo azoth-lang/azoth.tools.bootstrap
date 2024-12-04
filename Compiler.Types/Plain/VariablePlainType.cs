@@ -12,7 +12,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 [Closed(
     typeof(GenericParameterPlainType),
     typeof(SelfPlainType))]
-public abstract class VariablePlainType : NamedPlainType, INonVoidPlainType
+public abstract class VariablePlainType : ConstructedOrVariablePlainType, INonVoidPlainType
 {
     public sealed override TypeConstructor? TypeConstructor => null;
     public TypeSemantics? Semantics => null;

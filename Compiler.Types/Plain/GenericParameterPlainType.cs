@@ -14,7 +14,7 @@ public sealed class GenericParameterPlainType : VariablePlainType
     public TypeConstructorParameter Parameter { get; }
     public override IdentifierName Name => Parameter.Name;
     // TODO this should be based on generic constraints
-    public override IFixedSet<NamedPlainType> Supertypes => FixedSet.Empty<NamedPlainType>();
+    public override IFixedSet<ConstructedPlainType> Supertypes => FixedSet.Empty<ConstructedPlainType>();
 
     public GenericParameterPlainType(
         OrdinaryTypeConstructor declaringTypeConstructor,

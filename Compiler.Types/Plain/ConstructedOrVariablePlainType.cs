@@ -8,16 +8,16 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 /// <summary>
 /// An plainType that is defined by its name.
 /// </summary>
-[Closed(typeof(ConstructedPlainType), typeof(VariablePlainType), typeof(EmptyPlainType))]
-public abstract class NamedPlainType : IPlainType
+[Closed(typeof(ConstructedPlainType), typeof(VariablePlainType))]
+public abstract class ConstructedOrVariablePlainType : IPlainType
 {
     public abstract TypeConstructor? TypeConstructor { get; }
-    public abstract bool AllowsVariance { get; }
     public abstract TypeName Name { get; }
+    public abstract bool AllowsVariance { get; }
     public virtual IFixedList<IPlainType> TypeArguments => FixedList.Empty<IPlainType>();
-    public abstract IFixedSet<NamedPlainType> Supertypes { get; }
+    public abstract IFixedSet<ConstructedPlainType> Supertypes { get; }
 
-    private protected NamedPlainType() { }
+    private protected ConstructedOrVariablePlainType() { }
 
     public abstract IMaybePlainType ReplaceTypeParametersIn(IMaybePlainType plainType);
 

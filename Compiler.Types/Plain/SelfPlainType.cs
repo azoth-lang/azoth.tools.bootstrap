@@ -11,7 +11,7 @@ public sealed class SelfPlainType : VariablePlainType
 {
     public OrdinaryTypeConstructor ContainingType { get; }
     public override TypeName Name => SpecialTypeName.Self;
-    public override IFixedSet<NamedPlainType> Supertypes { get; }
+    public override IFixedSet<ConstructedPlainType> Supertypes { get; }
 
     public SelfPlainType(OrdinaryTypeConstructor containingType)
     {

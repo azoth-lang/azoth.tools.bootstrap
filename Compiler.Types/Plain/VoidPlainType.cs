@@ -19,7 +19,7 @@ public sealed class VoidPlainType : EmptyPlainType
 
     /// <remarks>The void type is an exception to the general rule that all types are a subtype of
     /// <c>Any</c>. Thus, it has no supertypes.</remarks>
-    public override IFixedSet<NamedPlainType> Supertypes => FixedSet.Empty<NamedPlainType>();
+    public override IFixedSet<ConstructedPlainType> Supertypes => [];
 
     #region Equality
     public override bool Equals(IMaybePlainType? other)
