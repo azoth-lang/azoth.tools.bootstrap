@@ -7,7 +7,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
 
 public static partial class TypeOperations
 {
-    public static string ToILString(this IFixedList<IMaybeExpressionType> types)
+    public static string ToILString(this IFixedList<IMaybeType> types)
         => string.Join(", ", types.Select(t => t.ToILString()));
 
     internal static INumericType? AsNumericType(this NonEmptyType type)

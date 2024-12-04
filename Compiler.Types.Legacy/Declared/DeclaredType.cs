@@ -100,7 +100,7 @@ public abstract class DeclaredType : IEquatable<DeclaredType>
 
     public abstract override string ToString();
 
-    protected void RequiresEmpty(IFixedList<IMaybeExpressionType> typeArguments)
+    protected void RequiresEmpty(IFixedList<IMaybeType> typeArguments)
     {
         if (typeArguments.Count != 0)
             throw new ArgumentException($"`{Name}` does not support type arguments.");

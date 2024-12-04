@@ -40,7 +40,7 @@ public sealed class UnknownType : IMaybeFunctionType, IMaybeParameterType, IMayb
     IMaybeNonVoidPlainType IMaybeParameterType.ToPlainType() => IPlainType.Unknown;
     IMaybeFunctionPlainType IMaybeFunctionType.ToPlainType() => IPlainType.Unknown;
 
-    public IMaybeExpressionType ToUpperBound() => this;
+    public IMaybeType ToUpperBound() => this;
 
     /// <summary>
     /// Convert types for constant values to their corresponding types.
@@ -75,7 +75,7 @@ public sealed class UnknownType : IMaybeFunctionType, IMaybeParameterType, IMayb
         => ReferenceEquals(this, other);
 
     #region Equals
-    public bool Equals(IMaybeExpressionType? other)
+    public bool Equals(IMaybeType? other)
         // The unknown type is a singleton, so reference equality suffices
         => ReferenceEquals(this, other);
 

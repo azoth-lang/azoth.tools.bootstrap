@@ -21,7 +21,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
     typeof(ConstValueType))]
 [DebuggerDisplay("{" + nameof(ToILString) + "(),nq}")]
 // TODO move ConstValueType out of this class since it makes this really a NonEmptyExpressionType
-public abstract class NonEmptyType : IExpressionType
+public abstract class NonEmptyType : INonVoidType
 {
     private protected NonEmptyType() { }
     public virtual bool AllowsVariance => false;
@@ -40,13 +40,6 @@ public abstract class NonEmptyType : IExpressionType
     /// </summary>
     /// <remarks>Has no effect if this is not a generic type.</remarks>
     public virtual IMaybeType ReplaceTypeParametersIn(IMaybeType type) => type;
-
-    /// <summary>
-    /// Replace any <see cref="GenericParameterType"/> from this type that appear in the given type
-    /// with the type arguments from this type (assuming it has them).
-    /// </summary>
-    /// <remarks>Has no effect if this is not a generic type.</remarks>
-    public virtual IMaybeExpressionType ReplaceTypeParametersIn(IMaybeExpressionType type) => type;
 
     /// <summary>
     /// Replace any <see cref="GenericParameterType"/> from this type that appear in the given type
@@ -106,28 +99,28 @@ public abstract class NonEmptyType : IExpressionType
         return IType.Unknown;
     }
 
-    public IExpressionType ToUpperBound() => this;
+    public IType ToUpperBound() => this;
 
     /// <summary>
     /// Convert this type to the equivalent plainType.
     /// </summary>
-    public abstract IMaybePlainType ToPlainType();
+    public abstract INonVoidPlainType ToPlainType();
 
     /// <summary>
     /// Convert types for constant values to their corresponding types.
     /// </summary>
-    public virtual IType ToNonConstValueType() => (IType)this;
+    public virtual IType ToNonConstValueType() => this;
 
     /// <summary>
     /// The same type except with any mutability removed.
     /// </summary>
-    public virtual IMaybeType WithoutWrite() => (IMaybeType)this;
+    public virtual IMaybeNonVoidType WithoutWrite() => this;
 
     /// <summary>
     /// Return the type for when a value of this type is accessed via a type of the given value.
     /// </summary>
     /// <remarks>This can restrict the ability to write to the value.</remarks>
-    public IMaybeExpressionType AccessedVia(IMaybePseudotype contextType)
+    public IMaybeType AccessedVia(IMaybePseudotype contextType)
     {
         if (contextType is CapabilityType capabilityType)
             return AccessedVia(capabilityType.Capability);
@@ -140,20 +133,20 @@ public abstract class NonEmptyType : IExpressionType
     /// Return the type for when a value of this type is accessed via a reference with the given capability.
     /// </summary>
     /// <remarks>This can restrict the ability to write to the value.</remarks>
-    public virtual IExpressionType AccessedVia(ICapabilityConstraint capability) => this;
-    IMaybeExpressionType IMaybeExpressionType.AccessedVia(ICapabilityConstraint capability)
+    public virtual IType AccessedVia(ICapabilityConstraint capability) => this;
+    IMaybeType IMaybeType.AccessedVia(ICapabilityConstraint capability)
         => AccessedVia(capability);
 
     #region Equality
-    public abstract bool Equals(IMaybeExpressionType? other);
+    public abstract bool Equals(IMaybeType? other);
 
     public abstract override int GetHashCode();
 
     public bool Equals(IMaybePseudotype? other)
-        => ReferenceEquals(this, other) || other is IMaybeExpressionType type && Equals(type);
+        => ReferenceEquals(this, other) || other is IMaybeType type && Equals(type);
 
     public sealed override bool Equals(object? obj)
-        => ReferenceEquals(this, obj) || obj is IMaybeExpressionType type && Equals(type);
+        => ReferenceEquals(this, obj) || obj is IMaybeType type && Equals(type);
     #endregion
 
     public sealed override string ToString() => throw new NotSupportedException();

@@ -97,7 +97,7 @@ public partial interface IElseClauseNode : IControlFlowNode
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IBlockOrResultNode : IElseClauseNode
 {
-    IMaybeExpressionType Type { get; }
+    IMaybeType Type { get; }
     IMaybePlainType PlainType { get; }
 }
 
@@ -1372,7 +1372,7 @@ public partial interface IExpressionBodyNode : IBodyNode
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     IResultStatementNode ResultStatement { get; }
-    IMaybeExpressionType? ExpectedType { get; }
+    IMaybeType? ExpectedType { get; }
     new IFlowState FlowStateAfter
         => throw new NotImplementedException();
     IFlowState IBodyNode.FlowStateAfter => FlowStateAfter;
@@ -1733,7 +1733,7 @@ public partial interface IStatementNode : IControlFlowNode
     LexicalScope LexicalScope()
         => ContainingLexicalScope();
     ValueId? ResultValueId { get; }
-    IMaybeExpressionType? ResultType
+    IMaybeType? ResultType
         => null;
     IFlowState FlowStateAfter { get; }
     IMaybePlainType? ResultPlainType
@@ -1754,7 +1754,7 @@ public partial interface IResultStatementNode : IStatementNode, IBlockOrResultNo
     IAmbiguousExpressionNode CurrentExpression { get; }
     bool ImplicitRecoveryAllowed();
     bool ShouldPrepareToReturn();
-    IMaybeExpressionType? ExpectedType { get; }
+    IMaybeType? ExpectedType { get; }
     new IFlowState FlowStateAfter
         => Expression?.FlowStateAfter ?? IFlowState.Empty;
     IFlowState IStatementNode.FlowStateAfter => FlowStateAfter;
@@ -1764,7 +1764,7 @@ public partial interface IResultStatementNode : IStatementNode, IBlockOrResultNo
         => ValueId;
     ValueId IElseClauseNode.ValueId
         => Expression?.ValueId ?? default;
-    IMaybeExpressionType? IStatementNode.ResultType
+    IMaybeType? IStatementNode.ResultType
         => Type;
     IMaybePlainType? IStatementNode.ResultPlainType
         => PlainType;
@@ -1991,10 +1991,10 @@ public partial interface IAmbiguousExpressionNode : ICodeNode
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IExpressionNode : IAmbiguousExpressionNode, IControlFlowNode
 {
-    IMaybeExpressionType? ExpectedType { get; }
+    IMaybeType? ExpectedType { get; }
     bool ImplicitRecoveryAllowed();
     bool ShouldPrepareToReturn();
-    IMaybeExpressionType Type { get; }
+    IMaybeType Type { get; }
     IFlowState FlowStateAfter { get; }
     IMaybePlainType? ExpectedPlainType { get; }
     IMaybePlainType PlainType { get; }
@@ -2012,9 +2012,9 @@ public partial interface IBlockExpressionNode : IExpressionNode, IBlockOrResultN
     new IFixedList<IStatementNode> Statements { get; }
     IFixedList<IStatementNode> IBodyOrBlockNode.Statements => Statements;
     IFlowState FlowStateBefore();
-    new IMaybeExpressionType Type { get; }
-    IMaybeExpressionType IExpressionNode.Type => Type;
-    IMaybeExpressionType IBlockOrResultNode.Type => Type;
+    new IMaybeType Type { get; }
+    IMaybeType IExpressionNode.Type => Type;
+    IMaybeType IBlockOrResultNode.Type => Type;
     new IFlowState FlowStateAfter { get; }
     IFlowState IExpressionNode.FlowStateAfter => FlowStateAfter;
     IFlowState IElseClauseNode.FlowStateAfter => FlowStateAfter;
@@ -2096,7 +2096,7 @@ public partial interface INeverTypedExpressionNode : IExpressionNode
 {
     new NeverType Type
         => IType.Never;
-    IMaybeExpressionType IExpressionNode.Type => Type;
+    IMaybeType IExpressionNode.Type => Type;
     IMaybePlainType IExpressionNode.PlainType
         => IPlainType.Never;
 }
@@ -2126,7 +2126,7 @@ public partial interface IBoolLiteralExpressionNode : ILiteralExpressionNode
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     new BoolConstValueType Type { get; }
-    IMaybeExpressionType IExpressionNode.Type => Type;
+    IMaybeType IExpressionNode.Type => Type;
     bool Value
         => Syntax.Value;
 
@@ -2144,7 +2144,7 @@ public partial interface IIntegerLiteralExpressionNode : ILiteralExpressionNode
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     new IntegerConstValueType Type { get; }
-    IMaybeExpressionType IExpressionNode.Type => Type;
+    IMaybeType IExpressionNode.Type => Type;
     BigInteger Value
         => Syntax.Value;
 
@@ -2162,7 +2162,7 @@ public partial interface INoneLiteralExpressionNode : ILiteralExpressionNode
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     new OptionalType Type { get; }
-    IMaybeExpressionType IExpressionNode.Type => Type;
+    IMaybeType IExpressionNode.Type => Type;
 
     public static INoneLiteralExpressionNode Create(INoneLiteralExpressionSyntax syntax)
         => new NoneLiteralExpressionNode(syntax);
@@ -2297,8 +2297,6 @@ public partial interface IImplicitConversionExpressionNode : IExpressionNode
     IExpressionNode CurrentReferent { get; }
     new ConstructedPlainType PlainType { get; }
     IMaybePlainType IExpressionNode.PlainType => PlainType;
-    new IMaybeType Type { get; }
-    IMaybeExpressionType IExpressionNode.Type => Type;
     new IExpressionSyntax Syntax
         => Referent.Syntax;
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
@@ -2327,7 +2325,7 @@ public partial interface IPatternMatchExpressionNode : IExpressionNode
     IPatternNode Pattern { get; }
     ConditionalLexicalScope IAmbiguousExpressionNode.FlowLexicalScope()
         => Pattern.FlowLexicalScope();
-    IMaybeExpressionType IExpressionNode.Type
+    IMaybeType IExpressionNode.Type
         => IType.Bool;
     IMaybePlainType IExpressionNode.PlainType
         => IPlainType.Bool;
@@ -2496,7 +2494,7 @@ public partial interface IReturnExpressionNode : INeverTypedExpressionNode
     IAmbiguousExpressionNode? TempValue { get; }
     IExpressionNode? Value { get; }
     IAmbiguousExpressionNode? CurrentValue { get; }
-    IMaybeExpressionType? ExpectedReturnType { get; }
+    IMaybeType? ExpectedReturnType { get; }
     IExitNode ControlFlowExit();
     IMaybePlainType? ExpectedReturnPlainType { get; }
 
@@ -2537,7 +2535,7 @@ public partial interface IUnknownInvocationExpressionNode : IInvocationExpressio
     IFixedList<IExpressionNode?> Arguments { get; }
     IFixedList<IAmbiguousExpressionNode> CurrentArguments { get; }
     IFlowState FlowStateBefore();
-    IMaybeExpressionType IExpressionNode.Type
+    IMaybeType IExpressionNode.Type
         => IType.Unknown;
     IEnumerable<IAmbiguousExpressionNode> IInvocationExpressionNode.TempAllArguments
         => TempArguments;
@@ -2850,7 +2848,7 @@ public partial interface IUnknownNameExpressionNode : INameExpressionNode
 {
     new UnknownType Type
         => IType.Unknown;
-    IMaybeExpressionType IExpressionNode.Type => Type;
+    IMaybeType IExpressionNode.Type => Type;
     IMaybePlainType IExpressionNode.PlainType
         => IPlainType.Unknown;
 }
@@ -2910,7 +2908,7 @@ public partial interface INamespaceNameNode : INameExpressionNode
     IFixedList<INamespaceDeclarationNode> ReferencedDeclarations { get; }
     new UnknownType Type
         => IType.Unknown;
-    IMaybeExpressionType IExpressionNode.Type => Type;
+    IMaybeType IExpressionNode.Type => Type;
     IMaybePlainType IExpressionNode.PlainType
         => IPlainType.Unknown;
 }
@@ -2966,7 +2964,7 @@ public partial interface IFunctionGroupNameNode : INameExpressionNode
     IFixedSet<IFunctionInvocableDeclarationNode> ReferencedDeclarations { get; }
     new UnknownType Type
         => IType.Unknown;
-    IMaybeExpressionType IExpressionNode.Type => Type;
+    IMaybeType IExpressionNode.Type => Type;
     IFixedSet<CallCandidate<IFunctionInvocableDeclarationNode>> CallCandidates { get; }
     IFixedSet<CallCandidate<IFunctionInvocableDeclarationNode>> CompatibleCallCandidates { get; }
     CallCandidate<IFunctionInvocableDeclarationNode>? SelectedCallCandidate { get; }
@@ -3030,7 +3028,7 @@ public partial interface IMethodGroupNameNode : INameExpressionNode
     IFixedSet<IStandardMethodDeclarationNode> ReferencedDeclarations { get; }
     new UnknownType Type
         => IType.Unknown;
-    IMaybeExpressionType IExpressionNode.Type => Type;
+    IMaybeType IExpressionNode.Type => Type;
     IFixedSet<CallCandidate<IStandardMethodDeclarationNode>> CallCandidates { get; }
     IFixedSet<CallCandidate<IStandardMethodDeclarationNode>> CompatibleCallCandidates { get; }
     CallCandidate<IStandardMethodDeclarationNode>? SelectedCallCandidate { get; }
@@ -3142,7 +3140,7 @@ public partial interface ITypeNameExpressionNode : INameExpressionNode
     StandardName Name { get; }
     IMaybePlainType NamedPlainType { get; }
     BareType? NamedBareType { get; }
-    IMaybeExpressionType IExpressionNode.Type
+    IMaybeType IExpressionNode.Type
         => IType.Unknown;
     IMaybePlainType IExpressionNode.PlainType
         => IPlainType.Unknown;
@@ -3199,7 +3197,7 @@ public partial interface IInitializerGroupNameNode : INameExpressionNode
     IFixedSet<IInitializerDeclarationNode> ReferencedDeclarations { get; }
     IMaybePlainType InitializingPlainType
         => Context.NamedPlainType;
-    IMaybeExpressionType IExpressionNode.Type
+    IMaybeType IExpressionNode.Type
         => throw new NotImplementedException();
     IMaybePlainType IExpressionNode.PlainType
         => IPlainType.Unknown;
@@ -3223,7 +3221,7 @@ public partial interface ISpecialTypeNameExpressionNode : INameExpressionNode
     INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
     new UnknownType Type
         => IType.Unknown;
-    IMaybeExpressionType IExpressionNode.Type => Type;
+    IMaybeType IExpressionNode.Type => Type;
     SpecialTypeName Name
         => Syntax.Name;
     IMaybePlainType IExpressionNode.PlainType
@@ -3282,7 +3280,7 @@ public partial interface IMissingNameExpressionNode : ISimpleNameExpressionNode
     ISimpleNameSyntax IUnresolvedSimpleNameNode.Syntax => Syntax;
     new UnknownType Type
         => IType.Unknown;
-    IMaybeExpressionType IExpressionNode.Type => Type;
+    IMaybeType IExpressionNode.Type => Type;
     IMaybePlainType IExpressionNode.PlainType
         => IPlainType.Unknown;
 
@@ -3526,7 +3524,7 @@ public partial interface IPrepareToReturnExpressionNode : IExpressionNode
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    IMaybeExpressionType IExpressionNode.Type
+    IMaybeType IExpressionNode.Type
         => Value.Type;
     IMaybePlainType IExpressionNode.PlainType
         => Value.PlainType;
@@ -3548,7 +3546,7 @@ public partial interface IAsyncBlockExpressionNode : IExpressionNode
     new IFlowState FlowStateAfter
         => throw new NotImplementedException();
     IFlowState IExpressionNode.FlowStateAfter => FlowStateAfter;
-    IMaybeExpressionType IExpressionNode.Type
+    IMaybeType IExpressionNode.Type
         => Block.Type;
     IMaybePlainType IExpressionNode.PlainType
         => Block.PlainType;
@@ -4759,9 +4757,9 @@ internal abstract partial class SemanticNode : TreeNode, IChildTreeNode<ISemanti
     protected IFlowState Inherited_FlowStateBefore(IInheritanceContext ctx)
         => GetParent(ctx)!.Inherited_FlowStateBefore(this, this, ctx);
 
-    internal virtual IMaybeExpressionType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal virtual IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
         => (GetParent(ctx) ?? throw Child.InheritFailed("ExpectedType", child, descendant)).Inherited_ExpectedType(this, descendant, ctx);
-    protected IMaybeExpressionType? Inherited_ExpectedType(IInheritanceContext ctx)
+    protected IMaybeType? Inherited_ExpectedType(IInheritanceContext ctx)
         => GetParent(ctx)!.Inherited_ExpectedType(this, this, ctx);
 
     internal virtual IMaybePlainType? Inherited_ExpectedPlainType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -4819,9 +4817,9 @@ internal abstract partial class SemanticNode : TreeNode, IChildTreeNode<ISemanti
     protected IMaybeNonVoidType Inherited_ContextBindingType(IInheritanceContext ctx)
         => GetParent(ctx)!.Inherited_ContextBindingType(this, this, ctx);
 
-    internal virtual IMaybeExpressionType? Inherited_ExpectedReturnType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal virtual IMaybeType? Inherited_ExpectedReturnType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
         => (GetParent(ctx) ?? throw Child.InheritFailed("ExpectedReturnType", child, descendant)).Inherited_ExpectedReturnType(this, descendant, ctx);
-    protected IMaybeExpressionType? Inherited_ExpectedReturnType(IInheritanceContext ctx)
+    protected IMaybeType? Inherited_ExpectedReturnType(IInheritanceContext ctx)
         => GetParent(ctx)!.Inherited_ExpectedReturnType(this, this, ctx);
 
     internal virtual IExitNode Inherited_ControlFlowExit(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -5400,14 +5398,14 @@ file class FunctionDefinitionNode : SemanticNode, IFunctionDefinitionNode
         return base.Inherited_ExpectedReturnPlainType(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionType? Inherited_ExpectedReturnType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeType? Inherited_ExpectedReturnType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, Self.Body))
             return Self.ReturnType;
         return base.Inherited_ExpectedReturnType(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.Body))
             return Self.ReturnType;
@@ -6136,14 +6134,14 @@ file class AbstractMethodDefinitionNode : SemanticNode, IAbstractMethodDefinitio
         return base.Inherited_ExpectedReturnPlainType(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionType? Inherited_ExpectedReturnType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeType? Inherited_ExpectedReturnType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, Self.Body))
             return Self.ReturnType;
         return base.Inherited_ExpectedReturnType(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.Body))
             return Self.ReturnType;
@@ -6324,14 +6322,14 @@ file class StandardMethodDefinitionNode : SemanticNode, IStandardMethodDefinitio
         return base.Inherited_ExpectedReturnPlainType(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionType? Inherited_ExpectedReturnType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeType? Inherited_ExpectedReturnType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, Self.Body))
             return Self.ReturnType;
         return base.Inherited_ExpectedReturnType(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.Body))
             return Self.ReturnType;
@@ -6511,14 +6509,14 @@ file class GetterMethodDefinitionNode : SemanticNode, IGetterMethodDefinitionNod
         return base.Inherited_ExpectedReturnPlainType(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionType? Inherited_ExpectedReturnType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeType? Inherited_ExpectedReturnType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, Self.Body))
             return Self.ReturnType;
         return base.Inherited_ExpectedReturnType(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.Body))
             return Self.ReturnType;
@@ -6698,14 +6696,14 @@ file class SetterMethodDefinitionNode : SemanticNode, ISetterMethodDefinitionNod
         return base.Inherited_ExpectedReturnPlainType(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionType? Inherited_ExpectedReturnType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeType? Inherited_ExpectedReturnType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, Self.Body))
             return Self.ReturnType;
         return base.Inherited_ExpectedReturnType(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.Body))
             return Self.ReturnType;
@@ -7002,7 +7000,7 @@ file class SourceConstructorDefinitionNode : SemanticNode, ISourceConstructorDef
         return base.Inherited_ExpectedReturnPlainType(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionType? Inherited_ExpectedReturnType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeType? Inherited_ExpectedReturnType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, Self.Body))
             return IType.Void;
@@ -7283,7 +7281,7 @@ file class SourceInitializerDefinitionNode : SemanticNode, ISourceInitializerDef
         return base.Inherited_ExpectedReturnPlainType(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionType? Inherited_ExpectedReturnType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeType? Inherited_ExpectedReturnType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, Self.Body))
             return IType.Void;
@@ -7428,7 +7426,7 @@ file class FieldDefinitionNode : SemanticNode, IFieldDefinitionNode
         return base.Inherited_ExpectedReturnPlainType(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionType? Inherited_ExpectedReturnType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeType? Inherited_ExpectedReturnType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, Self.CurrentInitializer))
             return null;
@@ -7594,14 +7592,14 @@ file class AssociatedFunctionDefinitionNode : SemanticNode, IAssociatedFunctionD
         return base.Inherited_ExpectedReturnPlainType(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionType? Inherited_ExpectedReturnType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeType? Inherited_ExpectedReturnType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, Self.Body))
             return Self.ReturnType;
         return base.Inherited_ExpectedReturnType(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.Body))
             return Self.ReturnType;
@@ -8146,11 +8144,11 @@ file class ExpressionBodyNode : SemanticNode, IExpressionBodyNode
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
         => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
-    public IMaybeExpressionType? ExpectedType
+    public IMaybeType? ExpectedType
         => GrammarAttribute.IsCached(in expectedTypeCached) ? expectedType
             : this.Inherited(ref expectedTypeCached, ref expectedType,
                 Inherited_ExpectedType);
-    private IMaybeExpressionType? expectedType;
+    private IMaybeType? expectedType;
     private bool expectedTypeCached;
     public IMaybePlainType? ExpectedPlainType
         => GrammarAttribute.IsCached(in expectedPlainTypeCached) ? expectedPlainType
@@ -8181,7 +8179,7 @@ file class ExpressionBodyNode : SemanticNode, IExpressionBodyNode
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.ResultStatement))
             return ExpectedType;
@@ -8826,11 +8824,11 @@ file class ResultStatementNode : SemanticNode, IResultStatementNode
         => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
     public bool ShouldPrepareToReturn()
         => Inherited_ShouldPrepareToReturn(GrammarAttribute.CurrentInheritanceContext());
-    public IMaybeExpressionType? ExpectedType
+    public IMaybeType? ExpectedType
         => GrammarAttribute.IsCached(in expectedTypeCached) ? expectedType
             : this.Inherited(ref expectedTypeCached, ref expectedType,
                 Inherited_ExpectedType);
-    private IMaybeExpressionType? expectedType;
+    private IMaybeType? expectedType;
     private bool expectedTypeCached;
     public IMaybePlainType? ExpectedPlainType
         => GrammarAttribute.IsCached(in expectedPlainTypeCached) ? expectedPlainType
@@ -8850,11 +8848,11 @@ file class ResultStatementNode : SemanticNode, IResultStatementNode
                 ExpressionPlainTypesAspect.ResultStatement_PlainType);
     private IMaybePlainType? plainType;
     private bool plainTypeCached;
-    public IMaybeExpressionType Type
+    public IMaybeType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
             : this.Synthetic(ref typeCached, ref type,
                 ExpressionTypesAspect.ResultStatement_Type);
-    private IMaybeExpressionType? type;
+    private IMaybeType? type;
     private bool typeCached;
 
     public ResultStatementNode(
@@ -8872,7 +8870,7 @@ file class ResultStatementNode : SemanticNode, IResultStatementNode
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.CurrentExpression))
             return ExpectedType;
@@ -9025,7 +9023,7 @@ file class VariableDeclarationStatementNode : SemanticNode, IVariableDeclaration
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.CurrentInitializer))
             return BindingType;
@@ -9129,7 +9127,7 @@ file class ExpressionStatementNode : SemanticNode, IExpressionStatementNode
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.CurrentExpression))
             return null;
@@ -9477,11 +9475,11 @@ file class BlockExpressionNode : SemanticNode, IBlockExpressionNode
     private IFixedSet<SemanticNode>? controlFlowPreviousContributors;
     public ControlFlowSet ControlFlowFollowing()
         => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
-    public IMaybeExpressionType? ExpectedType
+    public IMaybeType? ExpectedType
         => GrammarAttribute.IsCached(in expectedTypeCached) ? expectedType
             : this.Inherited(ref expectedTypeCached, ref expectedType,
                 Inherited_ExpectedType);
-    private IMaybeExpressionType? expectedType;
+    private IMaybeType? expectedType;
     private bool expectedTypeCached;
     public bool ImplicitRecoveryAllowed()
         => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
@@ -9515,11 +9513,11 @@ file class BlockExpressionNode : SemanticNode, IBlockExpressionNode
                 ExpressionPlainTypesAspect.BlockExpression_PlainType);
     private IMaybePlainType? plainType;
     private bool plainTypeCached;
-    public IMaybeExpressionType Type
+    public IMaybeType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
             : this.Synthetic(ref typeCached, ref type,
                 ExpressionTypesAspect.BlockExpression_Type);
-    private IMaybeExpressionType? type;
+    private IMaybeType? type;
     private bool typeCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
@@ -9557,7 +9555,7 @@ file class BlockExpressionNode : SemanticNode, IBlockExpressionNode
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, descendant))
             return null;
@@ -9651,11 +9649,11 @@ file class NewObjectExpressionNode : SemanticNode, INewObjectExpressionNode
     private IFixedSet<SemanticNode>? controlFlowPreviousContributors;
     public ControlFlowSet ControlFlowFollowing()
         => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
-    public IMaybeExpressionType? ExpectedType
+    public IMaybeType? ExpectedType
         => GrammarAttribute.IsCached(in expectedTypeCached) ? expectedType
             : this.Inherited(ref expectedTypeCached, ref expectedType,
                 Inherited_ExpectedType);
-    private IMaybeExpressionType? expectedType;
+    private IMaybeType? expectedType;
     private bool expectedTypeCached;
     public bool ImplicitRecoveryAllowed()
         => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
@@ -9719,11 +9717,11 @@ file class NewObjectExpressionNode : SemanticNode, INewObjectExpressionNode
                 BindingNamesAspect.NewObjectExpression_ReferencedConstructors);
     private IFixedSet<IConstructorDeclarationNode>? referencedConstructors;
     private bool referencedConstructorsCached;
-    public IMaybeExpressionType Type
+    public IMaybeType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
             : this.Synthetic(ref typeCached, ref type,
                 ExpressionTypesAspect.NewObjectExpression_Type);
-    private IMaybeExpressionType? type;
+    private IMaybeType? type;
     private bool typeCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
@@ -9769,7 +9767,7 @@ file class NewObjectExpressionNode : SemanticNode, INewObjectExpressionNode
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (IndexOfNode(Self.CurrentArguments, descendant) is { } index)
             return ContextualizedCall?.ParameterTypes[index].Type;
@@ -9868,11 +9866,11 @@ file class UnsafeExpressionNode : SemanticNode, IUnsafeExpressionNode
     private IFixedSet<SemanticNode>? controlFlowPreviousContributors;
     public ControlFlowSet ControlFlowFollowing()
         => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
-    public IMaybeExpressionType? ExpectedType
+    public IMaybeType? ExpectedType
         => GrammarAttribute.IsCached(in expectedTypeCached) ? expectedType
             : this.Inherited(ref expectedTypeCached, ref expectedType,
                 Inherited_ExpectedType);
-    private IMaybeExpressionType? expectedType;
+    private IMaybeType? expectedType;
     private bool expectedTypeCached;
     public bool ImplicitRecoveryAllowed()
         => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
@@ -9902,11 +9900,11 @@ file class UnsafeExpressionNode : SemanticNode, IUnsafeExpressionNode
                 ExpressionPlainTypesAspect.UnsafeExpression_PlainType);
     private IMaybePlainType? plainType;
     private bool plainTypeCached;
-    public IMaybeExpressionType Type
+    public IMaybeType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
             : this.Synthetic(ref typeCached, ref type,
                 ExpressionTypesAspect.UnsafeExpression_Type);
-    private IMaybeExpressionType? type;
+    private IMaybeType? type;
     private bool typeCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
@@ -9930,7 +9928,7 @@ file class UnsafeExpressionNode : SemanticNode, IUnsafeExpressionNode
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, descendant))
             return null;
@@ -10009,11 +10007,11 @@ file class BoolLiteralExpressionNode : SemanticNode, IBoolLiteralExpressionNode
     private IFixedSet<SemanticNode>? controlFlowPreviousContributors;
     public ControlFlowSet ControlFlowFollowing()
         => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
-    public IMaybeExpressionType? ExpectedType
+    public IMaybeType? ExpectedType
         => GrammarAttribute.IsCached(in expectedTypeCached) ? expectedType
             : this.Inherited(ref expectedTypeCached, ref expectedType,
                 Inherited_ExpectedType);
-    private IMaybeExpressionType? expectedType;
+    private IMaybeType? expectedType;
     private bool expectedTypeCached;
     public bool ImplicitRecoveryAllowed()
         => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
@@ -10070,7 +10068,7 @@ file class BoolLiteralExpressionNode : SemanticNode, IBoolLiteralExpressionNode
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, descendant))
             return null;
@@ -10149,11 +10147,11 @@ file class IntegerLiteralExpressionNode : SemanticNode, IIntegerLiteralExpressio
     private IFixedSet<SemanticNode>? controlFlowPreviousContributors;
     public ControlFlowSet ControlFlowFollowing()
         => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
-    public IMaybeExpressionType? ExpectedType
+    public IMaybeType? ExpectedType
         => GrammarAttribute.IsCached(in expectedTypeCached) ? expectedType
             : this.Inherited(ref expectedTypeCached, ref expectedType,
                 Inherited_ExpectedType);
-    private IMaybeExpressionType? expectedType;
+    private IMaybeType? expectedType;
     private bool expectedTypeCached;
     public bool ImplicitRecoveryAllowed()
         => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
@@ -10210,7 +10208,7 @@ file class IntegerLiteralExpressionNode : SemanticNode, IIntegerLiteralExpressio
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, descendant))
             return null;
@@ -10289,11 +10287,11 @@ file class NoneLiteralExpressionNode : SemanticNode, INoneLiteralExpressionNode
     private IFixedSet<SemanticNode>? controlFlowPreviousContributors;
     public ControlFlowSet ControlFlowFollowing()
         => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
-    public IMaybeExpressionType? ExpectedType
+    public IMaybeType? ExpectedType
         => GrammarAttribute.IsCached(in expectedTypeCached) ? expectedType
             : this.Inherited(ref expectedTypeCached, ref expectedType,
                 Inherited_ExpectedType);
-    private IMaybeExpressionType? expectedType;
+    private IMaybeType? expectedType;
     private bool expectedTypeCached;
     public bool ImplicitRecoveryAllowed()
         => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
@@ -10350,7 +10348,7 @@ file class NoneLiteralExpressionNode : SemanticNode, INoneLiteralExpressionNode
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, descendant))
             return null;
@@ -10427,11 +10425,11 @@ file class StringLiteralExpressionNode : SemanticNode, IStringLiteralExpressionN
     private IFixedSet<SemanticNode>? controlFlowPreviousContributors;
     public ControlFlowSet ControlFlowFollowing()
         => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
-    public IMaybeExpressionType? ExpectedType
+    public IMaybeType? ExpectedType
         => GrammarAttribute.IsCached(in expectedTypeCached) ? expectedType
             : this.Inherited(ref expectedTypeCached, ref expectedType,
                 Inherited_ExpectedType);
-    private IMaybeExpressionType? expectedType;
+    private IMaybeType? expectedType;
     private bool expectedTypeCached;
     public bool ImplicitRecoveryAllowed()
         => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
@@ -10469,11 +10467,11 @@ file class StringLiteralExpressionNode : SemanticNode, IStringLiteralExpressionN
                 ExpressionPlainTypesAspect.StringLiteralExpression_PlainType);
     private IMaybePlainType? plainType;
     private bool plainTypeCached;
-    public IMaybeExpressionType Type
+    public IMaybeType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
             : this.Synthetic(ref typeCached, ref type,
                 ExpressionTypesAspect.StringLiteralExpression_Type);
-    private IMaybeExpressionType? type;
+    private IMaybeType? type;
     private bool typeCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
@@ -10494,7 +10492,7 @@ file class StringLiteralExpressionNode : SemanticNode, IStringLiteralExpressionN
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, descendant))
             return null;
@@ -10588,11 +10586,11 @@ file class AssignmentExpressionNode : SemanticNode, IAssignmentExpressionNode
     private IFixedSet<SemanticNode>? controlFlowPreviousContributors;
     public ControlFlowSet ControlFlowFollowing()
         => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
-    public IMaybeExpressionType? ExpectedType
+    public IMaybeType? ExpectedType
         => GrammarAttribute.IsCached(in expectedTypeCached) ? expectedType
             : this.Inherited(ref expectedTypeCached, ref expectedType,
                 Inherited_ExpectedType);
-    private IMaybeExpressionType? expectedType;
+    private IMaybeType? expectedType;
     private bool expectedTypeCached;
     public bool ImplicitRecoveryAllowed()
         => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
@@ -10642,11 +10640,11 @@ file class AssignmentExpressionNode : SemanticNode, IAssignmentExpressionNode
                 ExpressionPlainTypesAspect.AssignmentExpression_PlainType);
     private IMaybePlainType? plainType;
     private bool plainTypeCached;
-    public IMaybeExpressionType Type
+    public IMaybeType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
             : this.Synthetic(ref typeCached, ref type,
                 ExpressionTypesAspect.AssignmentExpression_Type);
-    private IMaybeExpressionType? type;
+    private IMaybeType? type;
     private bool typeCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
@@ -10681,7 +10679,7 @@ file class AssignmentExpressionNode : SemanticNode, IAssignmentExpressionNode
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.CurrentRightOperand))
             return LeftOperand?.Type;
@@ -10783,11 +10781,11 @@ file class BinaryOperatorExpressionNode : SemanticNode, IBinaryOperatorExpressio
     private IFixedSet<SemanticNode>? controlFlowPreviousContributors;
     public ControlFlowSet ControlFlowFollowing()
         => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
-    public IMaybeExpressionType? ExpectedType
+    public IMaybeType? ExpectedType
         => GrammarAttribute.IsCached(in expectedTypeCached) ? expectedType
             : this.Inherited(ref expectedTypeCached, ref expectedType,
                 Inherited_ExpectedType);
-    private IMaybeExpressionType? expectedType;
+    private IMaybeType? expectedType;
     private bool expectedTypeCached;
     public bool ImplicitRecoveryAllowed()
         => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
@@ -10829,11 +10827,11 @@ file class BinaryOperatorExpressionNode : SemanticNode, IBinaryOperatorExpressio
                 ExpressionPlainTypesAspect.BinaryOperatorExpression_PlainType);
     private IMaybePlainType? plainType;
     private bool plainTypeCached;
-    public IMaybeExpressionType Type
+    public IMaybeType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
             : this.Synthetic(ref typeCached, ref type,
                 ExpressionTypesAspect.BinaryOperatorExpression_Type);
-    private IMaybeExpressionType? type;
+    private IMaybeType? type;
     private bool typeCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
@@ -10879,7 +10877,7 @@ file class BinaryOperatorExpressionNode : SemanticNode, IBinaryOperatorExpressio
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, descendant))
             return null;
@@ -10973,11 +10971,11 @@ file class UnaryOperatorExpressionNode : SemanticNode, IUnaryOperatorExpressionN
     private IFixedSet<SemanticNode>? controlFlowPreviousContributors;
     public ControlFlowSet ControlFlowFollowing()
         => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
-    public IMaybeExpressionType? ExpectedType
+    public IMaybeType? ExpectedType
         => GrammarAttribute.IsCached(in expectedTypeCached) ? expectedType
             : this.Inherited(ref expectedTypeCached, ref expectedType,
                 Inherited_ExpectedType);
-    private IMaybeExpressionType? expectedType;
+    private IMaybeType? expectedType;
     private bool expectedTypeCached;
     public bool ImplicitRecoveryAllowed()
         => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
@@ -11007,11 +11005,11 @@ file class UnaryOperatorExpressionNode : SemanticNode, IUnaryOperatorExpressionN
                 ExpressionPlainTypesAspect.UnaryOperatorExpression_PlainType);
     private IMaybePlainType? plainType;
     private bool plainTypeCached;
-    public IMaybeExpressionType Type
+    public IMaybeType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
             : this.Synthetic(ref typeCached, ref type,
                 ExpressionTypesAspect.UnaryOperatorExpression_Type);
-    private IMaybeExpressionType? type;
+    private IMaybeType? type;
     private bool typeCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
@@ -11035,7 +11033,7 @@ file class UnaryOperatorExpressionNode : SemanticNode, IUnaryOperatorExpressionN
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, descendant))
             return null;
@@ -11123,11 +11121,11 @@ file class ConversionExpressionNode : SemanticNode, IConversionExpressionNode
     private IFixedSet<SemanticNode>? controlFlowPreviousContributors;
     public ControlFlowSet ControlFlowFollowing()
         => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
-    public IMaybeExpressionType? ExpectedType
+    public IMaybeType? ExpectedType
         => GrammarAttribute.IsCached(in expectedTypeCached) ? expectedType
             : this.Inherited(ref expectedTypeCached, ref expectedType,
                 Inherited_ExpectedType);
-    private IMaybeExpressionType? expectedType;
+    private IMaybeType? expectedType;
     private bool expectedTypeCached;
     public bool ImplicitRecoveryAllowed()
         => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
@@ -11157,11 +11155,11 @@ file class ConversionExpressionNode : SemanticNode, IConversionExpressionNode
                 ExpressionPlainTypesAspect.ConversionExpression_PlainType);
     private IMaybePlainType? plainType;
     private bool plainTypeCached;
-    public IMaybeExpressionType Type
+    public IMaybeType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
             : this.Synthetic(ref typeCached, ref type,
                 ExpressionTypesAspect.ConversionExpression_Type);
-    private IMaybeExpressionType? type;
+    private IMaybeType? type;
     private bool typeCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
@@ -11187,7 +11185,7 @@ file class ConversionExpressionNode : SemanticNode, IConversionExpressionNode
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, descendant))
             return null;
@@ -11273,11 +11271,11 @@ file class ImplicitConversionExpressionNode : SemanticNode, IImplicitConversionE
     private IFixedSet<SemanticNode>? controlFlowPreviousContributors;
     public ControlFlowSet ControlFlowFollowing()
         => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
-    public IMaybeExpressionType? ExpectedType
+    public IMaybeType? ExpectedType
         => GrammarAttribute.IsCached(in expectedTypeCached) ? expectedType
             : this.Inherited(ref expectedTypeCached, ref expectedType,
                 Inherited_ExpectedType);
-    private IMaybeExpressionType? expectedType;
+    private IMaybeType? expectedType;
     private bool expectedTypeCached;
     public bool ImplicitRecoveryAllowed()
         => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
@@ -11301,7 +11299,12 @@ file class ImplicitConversionExpressionNode : SemanticNode, IImplicitConversionE
                 ExpressionTypesAspect.ImplicitConversionExpression_FlowStateAfter);
     private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
-    public IMaybeType Type { [DebuggerStepThrough] get; }
+    public IMaybeType Type
+        => GrammarAttribute.IsCached(in typeCached) ? type!
+            : this.Synthetic(ref typeCached, ref type,
+                ExpressionTypesAspect.ImplicitConversionExpression_Type);
+    private IMaybeType? type;
+    private bool typeCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -11315,7 +11318,6 @@ file class ImplicitConversionExpressionNode : SemanticNode, IImplicitConversionE
     {
         this.referent = Child.Create(this, referent);
         PlainType = plainType;
-        Type = ExpressionTypesAspect.ImplicitConversionExpression_Type(this);
     }
 
     internal override IMaybePlainType? Inherited_ExpectedPlainType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -11327,7 +11329,7 @@ file class ImplicitConversionExpressionNode : SemanticNode, IImplicitConversionE
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.CurrentReferent))
             return null;
@@ -11416,11 +11418,11 @@ file class PatternMatchExpressionNode : SemanticNode, IPatternMatchExpressionNod
     private IFixedSet<SemanticNode>? controlFlowPreviousContributors;
     public ControlFlowSet ControlFlowFollowing()
         => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
-    public IMaybeExpressionType? ExpectedType
+    public IMaybeType? ExpectedType
         => GrammarAttribute.IsCached(in expectedTypeCached) ? expectedType
             : this.Inherited(ref expectedTypeCached, ref expectedType,
                 Inherited_ExpectedType);
-    private IMaybeExpressionType? expectedType;
+    private IMaybeType? expectedType;
     private bool expectedTypeCached;
     public bool ImplicitRecoveryAllowed()
         => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
@@ -11498,7 +11500,7 @@ file class PatternMatchExpressionNode : SemanticNode, IPatternMatchExpressionNod
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, descendant))
             return null;
@@ -11610,11 +11612,11 @@ file class IfExpressionNode : SemanticNode, IIfExpressionNode
     private IFixedSet<SemanticNode>? controlFlowPreviousContributors;
     public ControlFlowSet ControlFlowFollowing()
         => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
-    public IMaybeExpressionType? ExpectedType
+    public IMaybeType? ExpectedType
         => GrammarAttribute.IsCached(in expectedTypeCached) ? expectedType
             : this.Inherited(ref expectedTypeCached, ref expectedType,
                 Inherited_ExpectedType);
-    private IMaybeExpressionType? expectedType;
+    private IMaybeType? expectedType;
     private bool expectedTypeCached;
     public bool ImplicitRecoveryAllowed()
         => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
@@ -11644,11 +11646,11 @@ file class IfExpressionNode : SemanticNode, IIfExpressionNode
                 ExpressionPlainTypesAspect.IfExpression_PlainType);
     private IMaybePlainType? plainType;
     private bool plainTypeCached;
-    public IMaybeExpressionType Type
+    public IMaybeType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
             : this.Synthetic(ref typeCached, ref type,
                 ExpressionTypesAspect.IfExpression_Type);
-    private IMaybeExpressionType? type;
+    private IMaybeType? type;
     private bool typeCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
@@ -11694,7 +11696,7 @@ file class IfExpressionNode : SemanticNode, IIfExpressionNode
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.CurrentCondition))
             return IType.OptionalBool;
@@ -11791,11 +11793,11 @@ file class LoopExpressionNode : SemanticNode, ILoopExpressionNode
     private IFixedSet<SemanticNode>? controlFlowPreviousContributors;
     public ControlFlowSet ControlFlowFollowing()
         => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
-    public IMaybeExpressionType? ExpectedType
+    public IMaybeType? ExpectedType
         => GrammarAttribute.IsCached(in expectedTypeCached) ? expectedType
             : this.Inherited(ref expectedTypeCached, ref expectedType,
                 Inherited_ExpectedType);
-    private IMaybeExpressionType? expectedType;
+    private IMaybeType? expectedType;
     private bool expectedTypeCached;
     public bool ImplicitRecoveryAllowed()
         => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
@@ -11825,11 +11827,11 @@ file class LoopExpressionNode : SemanticNode, ILoopExpressionNode
                 ExpressionPlainTypesAspect.LoopExpression_PlainType);
     private IMaybePlainType? plainType;
     private bool plainTypeCached;
-    public IMaybeExpressionType Type
+    public IMaybeType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
             : this.Synthetic(ref typeCached, ref type,
                 ExpressionTypesAspect.LoopExpression_Type);
-    private IMaybeExpressionType? type;
+    private IMaybeType? type;
     private bool typeCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
@@ -11860,7 +11862,7 @@ file class LoopExpressionNode : SemanticNode, ILoopExpressionNode
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, descendant))
             return null;
@@ -11952,11 +11954,11 @@ file class WhileExpressionNode : SemanticNode, IWhileExpressionNode
     private IFixedSet<SemanticNode>? controlFlowPreviousContributors;
     public ControlFlowSet ControlFlowFollowing()
         => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
-    public IMaybeExpressionType? ExpectedType
+    public IMaybeType? ExpectedType
         => GrammarAttribute.IsCached(in expectedTypeCached) ? expectedType
             : this.Inherited(ref expectedTypeCached, ref expectedType,
                 Inherited_ExpectedType);
-    private IMaybeExpressionType? expectedType;
+    private IMaybeType? expectedType;
     private bool expectedTypeCached;
     public bool ImplicitRecoveryAllowed()
         => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
@@ -11986,11 +11988,11 @@ file class WhileExpressionNode : SemanticNode, IWhileExpressionNode
                 ExpressionPlainTypesAspect.WhileExpression_PlainType);
     private IMaybePlainType? plainType;
     private bool plainTypeCached;
-    public IMaybeExpressionType Type
+    public IMaybeType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
             : this.Synthetic(ref typeCached, ref type,
                 ExpressionTypesAspect.WhileExpression_Type);
-    private IMaybeExpressionType? type;
+    private IMaybeType? type;
     private bool typeCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
@@ -12034,7 +12036,7 @@ file class WhileExpressionNode : SemanticNode, IWhileExpressionNode
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.CurrentCondition))
             return IType.OptionalBool;
@@ -12134,11 +12136,11 @@ file class ForeachExpressionNode : SemanticNode, IForeachExpressionNode
     private IFixedSet<SemanticNode>? controlFlowPreviousContributors;
     public ControlFlowSet ControlFlowFollowing()
         => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
-    public IMaybeExpressionType? ExpectedType
+    public IMaybeType? ExpectedType
         => GrammarAttribute.IsCached(in expectedTypeCached) ? expectedType
             : this.Inherited(ref expectedTypeCached, ref expectedType,
                 Inherited_ExpectedType);
-    private IMaybeExpressionType? expectedType;
+    private IMaybeType? expectedType;
     private bool expectedTypeCached;
     public bool ImplicitRecoveryAllowed()
         => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
@@ -12276,11 +12278,11 @@ file class ForeachExpressionNode : SemanticNode, IForeachExpressionNode
                 ForeachExpressionPlainTypesAspect.ForeachExpression_ReferencedNextMethod);
     private IStandardMethodDeclarationNode? referencedNextMethod;
     private bool referencedNextMethodCached;
-    public IMaybeExpressionType Type
+    public IMaybeType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
             : this.Synthetic(ref typeCached, ref type,
                 ForeachExpressionTypesAspect.ForeachExpression_Type);
-    private IMaybeExpressionType? type;
+    private IMaybeType? type;
     private bool typeCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
@@ -12326,7 +12328,7 @@ file class ForeachExpressionNode : SemanticNode, IForeachExpressionNode
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, descendant))
             return null;
@@ -12421,11 +12423,11 @@ file class BreakExpressionNode : SemanticNode, IBreakExpressionNode
     private IFixedSet<SemanticNode>? controlFlowPreviousContributors;
     public ControlFlowSet ControlFlowFollowing()
         => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
-    public IMaybeExpressionType? ExpectedType
+    public IMaybeType? ExpectedType
         => GrammarAttribute.IsCached(in expectedTypeCached) ? expectedType
             : this.Inherited(ref expectedTypeCached, ref expectedType,
                 Inherited_ExpectedType);
-    private IMaybeExpressionType? expectedType;
+    private IMaybeType? expectedType;
     private bool expectedTypeCached;
     public bool ImplicitRecoveryAllowed()
         => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
@@ -12471,7 +12473,7 @@ file class BreakExpressionNode : SemanticNode, IBreakExpressionNode
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, descendant))
             return null;
@@ -12550,11 +12552,11 @@ file class NextExpressionNode : SemanticNode, INextExpressionNode
     private IFixedSet<SemanticNode>? controlFlowPreviousContributors;
     public ControlFlowSet ControlFlowFollowing()
         => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
-    public IMaybeExpressionType? ExpectedType
+    public IMaybeType? ExpectedType
         => GrammarAttribute.IsCached(in expectedTypeCached) ? expectedType
             : this.Inherited(ref expectedTypeCached, ref expectedType,
                 Inherited_ExpectedType);
-    private IMaybeExpressionType? expectedType;
+    private IMaybeType? expectedType;
     private bool expectedTypeCached;
     public bool ImplicitRecoveryAllowed()
         => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
@@ -12597,7 +12599,7 @@ file class NextExpressionNode : SemanticNode, INextExpressionNode
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, descendant))
             return null;
@@ -12683,11 +12685,11 @@ file class ReturnExpressionNode : SemanticNode, IReturnExpressionNode
     private IFixedSet<SemanticNode>? controlFlowPreviousContributors;
     public ControlFlowSet ControlFlowFollowing()
         => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
-    public IMaybeExpressionType? ExpectedType
+    public IMaybeType? ExpectedType
         => GrammarAttribute.IsCached(in expectedTypeCached) ? expectedType
             : this.Inherited(ref expectedTypeCached, ref expectedType,
                 Inherited_ExpectedType);
-    private IMaybeExpressionType? expectedType;
+    private IMaybeType? expectedType;
     private bool expectedTypeCached;
     public bool ImplicitRecoveryAllowed()
         => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
@@ -12699,11 +12701,11 @@ file class ReturnExpressionNode : SemanticNode, IReturnExpressionNode
                 Inherited_ExpectedPlainType);
     private IMaybePlainType? expectedPlainType;
     private bool expectedPlainTypeCached;
-    public IMaybeExpressionType? ExpectedReturnType
+    public IMaybeType? ExpectedReturnType
         => GrammarAttribute.IsCached(in expectedReturnTypeCached) ? expectedReturnType
             : this.Inherited(ref expectedReturnTypeCached, ref expectedReturnType,
                 Inherited_ExpectedReturnType);
-    private IMaybeExpressionType? expectedReturnType;
+    private IMaybeType? expectedReturnType;
     private bool expectedReturnTypeCached;
     public IExitNode ControlFlowExit()
         => Inherited_ControlFlowExit(GrammarAttribute.CurrentInheritanceContext());
@@ -12756,7 +12758,7 @@ file class ReturnExpressionNode : SemanticNode, IReturnExpressionNode
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.CurrentValue))
             return ExpectedReturnType;
@@ -12854,11 +12856,11 @@ file class UnknownInvocationExpressionNode : SemanticNode, IUnknownInvocationExp
     private IFixedSet<SemanticNode>? controlFlowPreviousContributors;
     public ControlFlowSet ControlFlowFollowing()
         => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
-    public IMaybeExpressionType? ExpectedType
+    public IMaybeType? ExpectedType
         => GrammarAttribute.IsCached(in expectedTypeCached) ? expectedType
             : this.Inherited(ref expectedTypeCached, ref expectedType,
                 Inherited_ExpectedType);
-    private IMaybeExpressionType? expectedType;
+    private IMaybeType? expectedType;
     private bool expectedTypeCached;
     public bool ImplicitRecoveryAllowed()
         => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
@@ -12921,7 +12923,7 @@ file class UnknownInvocationExpressionNode : SemanticNode, IUnknownInvocationExp
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.CurrentExpression))
             return null;
@@ -13027,11 +13029,11 @@ file class FunctionInvocationExpressionNode : SemanticNode, IFunctionInvocationE
     private IFixedSet<SemanticNode>? controlFlowPreviousContributors;
     public ControlFlowSet ControlFlowFollowing()
         => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
-    public IMaybeExpressionType? ExpectedType
+    public IMaybeType? ExpectedType
         => GrammarAttribute.IsCached(in expectedTypeCached) ? expectedType
             : this.Inherited(ref expectedTypeCached, ref expectedType,
                 Inherited_ExpectedType);
-    private IMaybeExpressionType? expectedType;
+    private IMaybeType? expectedType;
     private bool expectedTypeCached;
     public bool ImplicitRecoveryAllowed()
         => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
@@ -13069,11 +13071,11 @@ file class FunctionInvocationExpressionNode : SemanticNode, IFunctionInvocationE
                 ExpressionPlainTypesAspect.FunctionInvocationExpression_PlainType);
     private IMaybePlainType? plainType;
     private bool plainTypeCached;
-    public IMaybeExpressionType Type
+    public IMaybeType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
             : this.Synthetic(ref typeCached, ref type,
                 ExpressionTypesAspect.FunctionInvocationExpression_Type);
-    private IMaybeExpressionType? type;
+    private IMaybeType? type;
     private bool typeCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
@@ -13119,7 +13121,7 @@ file class FunctionInvocationExpressionNode : SemanticNode, IFunctionInvocationE
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (IndexOfNode(Self.CurrentArguments, descendant) is { } index)
             return ContextualizedCall?.ParameterTypes[index].Type;
@@ -13220,11 +13222,11 @@ file class MethodInvocationExpressionNode : SemanticNode, IMethodInvocationExpre
     private IFixedSet<SemanticNode>? controlFlowPreviousContributors;
     public ControlFlowSet ControlFlowFollowing()
         => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
-    public IMaybeExpressionType? ExpectedType
+    public IMaybeType? ExpectedType
         => GrammarAttribute.IsCached(in expectedTypeCached) ? expectedType
             : this.Inherited(ref expectedTypeCached, ref expectedType,
                 Inherited_ExpectedType);
-    private IMaybeExpressionType? expectedType;
+    private IMaybeType? expectedType;
     private bool expectedTypeCached;
     public bool ImplicitRecoveryAllowed()
         => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
@@ -13260,11 +13262,11 @@ file class MethodInvocationExpressionNode : SemanticNode, IMethodInvocationExpre
                 ExpressionPlainTypesAspect.MethodInvocationExpression_PlainType);
     private IMaybePlainType? plainType;
     private bool plainTypeCached;
-    public IMaybeExpressionType Type
+    public IMaybeType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
             : this.Synthetic(ref typeCached, ref type,
                 ExpressionTypesAspect.MethodInvocationExpression_Type);
-    private IMaybeExpressionType? type;
+    private IMaybeType? type;
     private bool typeCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
@@ -13301,7 +13303,7 @@ file class MethodInvocationExpressionNode : SemanticNode, IMethodInvocationExpre
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, descendant))
             return null;
@@ -13399,11 +13401,11 @@ file class GetterInvocationExpressionNode : SemanticNode, IGetterInvocationExpre
     private IFixedSet<SemanticNode>? controlFlowPreviousContributors;
     public ControlFlowSet ControlFlowFollowing()
         => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
-    public IMaybeExpressionType? ExpectedType
+    public IMaybeType? ExpectedType
         => GrammarAttribute.IsCached(in expectedTypeCached) ? expectedType
             : this.Inherited(ref expectedTypeCached, ref expectedType,
                 Inherited_ExpectedType);
-    private IMaybeExpressionType? expectedType;
+    private IMaybeType? expectedType;
     private bool expectedTypeCached;
     public bool ImplicitRecoveryAllowed()
         => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
@@ -13436,11 +13438,11 @@ file class GetterInvocationExpressionNode : SemanticNode, IGetterInvocationExpre
     private IMaybePlainType? plainType;
     private bool plainTypeCached;
     public IGetterMethodDeclarationNode? ReferencedDeclaration { [DebuggerStepThrough] get; }
-    public IMaybeExpressionType Type
+    public IMaybeType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
             : this.Synthetic(ref typeCached, ref type,
                 ExpressionTypesAspect.GetterInvocationExpression_Type);
-    private IMaybeExpressionType? type;
+    private IMaybeType? type;
     private bool typeCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
@@ -13471,7 +13473,7 @@ file class GetterInvocationExpressionNode : SemanticNode, IGetterInvocationExpre
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.CurrentContext))
             return ContextualizedCall?.SelfParameterType?.Type.ToUpperBound();
@@ -13568,11 +13570,11 @@ file class SetterInvocationExpressionNode : SemanticNode, ISetterInvocationExpre
     private IFixedSet<SemanticNode>? controlFlowPreviousContributors;
     public ControlFlowSet ControlFlowFollowing()
         => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
-    public IMaybeExpressionType? ExpectedType
+    public IMaybeType? ExpectedType
         => GrammarAttribute.IsCached(in expectedTypeCached) ? expectedType
             : this.Inherited(ref expectedTypeCached, ref expectedType,
                 Inherited_ExpectedType);
-    private IMaybeExpressionType? expectedType;
+    private IMaybeType? expectedType;
     private bool expectedTypeCached;
     public bool ImplicitRecoveryAllowed()
         => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
@@ -13609,11 +13611,11 @@ file class SetterInvocationExpressionNode : SemanticNode, ISetterInvocationExpre
     private IMaybePlainType? plainType;
     private bool plainTypeCached;
     public ISetterMethodDeclarationNode? ReferencedDeclaration { [DebuggerStepThrough] get; }
-    public IMaybeExpressionType Type
+    public IMaybeType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
             : this.Synthetic(ref typeCached, ref type,
                 ExpressionTypesAspect.SetterInvocationExpression_Type);
-    private IMaybeExpressionType? type;
+    private IMaybeType? type;
     private bool typeCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
@@ -13655,7 +13657,7 @@ file class SetterInvocationExpressionNode : SemanticNode, ISetterInvocationExpre
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.CurrentContext))
             return ContextualizedCall?.SelfParameterType?.Type.ToUpperBound();
@@ -13756,11 +13758,11 @@ file class FunctionReferenceInvocationExpressionNode : SemanticNode, IFunctionRe
     private IFixedSet<SemanticNode>? controlFlowPreviousContributors;
     public ControlFlowSet ControlFlowFollowing()
         => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
-    public IMaybeExpressionType? ExpectedType
+    public IMaybeType? ExpectedType
         => GrammarAttribute.IsCached(in expectedTypeCached) ? expectedType
             : this.Inherited(ref expectedTypeCached, ref expectedType,
                 Inherited_ExpectedType);
-    private IMaybeExpressionType? expectedType;
+    private IMaybeType? expectedType;
     private bool expectedTypeCached;
     public bool ImplicitRecoveryAllowed()
         => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
@@ -13802,11 +13804,11 @@ file class FunctionReferenceInvocationExpressionNode : SemanticNode, IFunctionRe
                 ExpressionPlainTypesAspect.FunctionReferenceInvocationExpression_PlainType);
     private IMaybePlainType? plainType;
     private bool plainTypeCached;
-    public IMaybeExpressionType Type
+    public IMaybeType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
             : this.Synthetic(ref typeCached, ref type,
                 ExpressionTypesAspect.FunctionReferenceInvocationExpression_Type);
-    private IMaybeExpressionType? type;
+    private IMaybeType? type;
     private bool typeCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
@@ -13841,7 +13843,7 @@ file class FunctionReferenceInvocationExpressionNode : SemanticNode, IFunctionRe
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (IndexOfNode(Self.CurrentArguments, descendant) is { } index)
             return FunctionType.Parameters[index].Type;
@@ -13942,11 +13944,11 @@ file class InitializerInvocationExpressionNode : SemanticNode, IInitializerInvoc
     private IFixedSet<SemanticNode>? controlFlowPreviousContributors;
     public ControlFlowSet ControlFlowFollowing()
         => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
-    public IMaybeExpressionType? ExpectedType
+    public IMaybeType? ExpectedType
         => GrammarAttribute.IsCached(in expectedTypeCached) ? expectedType
             : this.Inherited(ref expectedTypeCached, ref expectedType,
                 Inherited_ExpectedType);
-    private IMaybeExpressionType? expectedType;
+    private IMaybeType? expectedType;
     private bool expectedTypeCached;
     public bool ImplicitRecoveryAllowed()
         => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
@@ -13996,11 +13998,11 @@ file class InitializerInvocationExpressionNode : SemanticNode, IInitializerInvoc
                 OverloadResolutionAspect.InitializerInvocationExpression_ReferencedDeclaration);
     private IInitializerDeclarationNode? referencedDeclaration;
     private bool referencedDeclarationCached;
-    public IMaybeExpressionType Type
+    public IMaybeType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
             : this.Synthetic(ref typeCached, ref type,
                 ExpressionTypesAspect.InitializerInvocationExpression_Type);
-    private IMaybeExpressionType? type;
+    private IMaybeType? type;
     private bool typeCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
@@ -14028,7 +14030,7 @@ file class InitializerInvocationExpressionNode : SemanticNode, IInitializerInvoc
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (IndexOfNode(Self.CurrentArguments, descendant) is { } index)
             return ContextualizedCall?.ParameterTypes[index].Type;
@@ -14136,7 +14138,7 @@ file class IdentifierNameExpressionNode : SemanticNode, IIdentifierNameExpressio
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, descendant))
             return null;
@@ -14211,7 +14213,7 @@ file class GenericNameExpressionNode : SemanticNode, IGenericNameExpressionNode
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, descendant))
             return null;
@@ -14268,11 +14270,11 @@ file class UnresolvedMemberAccessExpressionNode : SemanticNode, IUnresolvedMembe
     private IFixedSet<SemanticNode>? controlFlowPreviousContributors;
     public ControlFlowSet ControlFlowFollowing()
         => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
-    public IMaybeExpressionType? ExpectedType
+    public IMaybeType? ExpectedType
         => GrammarAttribute.IsCached(in expectedTypeCached) ? expectedType
             : this.Inherited(ref expectedTypeCached, ref expectedType,
                 Inherited_ExpectedType);
-    private IMaybeExpressionType? expectedType;
+    private IMaybeType? expectedType;
     private bool expectedTypeCached;
     public bool ImplicitRecoveryAllowed()
         => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
@@ -14318,7 +14320,7 @@ file class UnresolvedMemberAccessExpressionNode : SemanticNode, IUnresolvedMembe
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, descendant))
             return null;
@@ -14402,11 +14404,11 @@ file class UnqualifiedNamespaceNameNode : SemanticNode, IUnqualifiedNamespaceNam
     private IFixedSet<SemanticNode>? controlFlowPreviousContributors;
     public ControlFlowSet ControlFlowFollowing()
         => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
-    public IMaybeExpressionType? ExpectedType
+    public IMaybeType? ExpectedType
         => GrammarAttribute.IsCached(in expectedTypeCached) ? expectedType
             : this.Inherited(ref expectedTypeCached, ref expectedType,
                 Inherited_ExpectedType);
-    private IMaybeExpressionType? expectedType;
+    private IMaybeType? expectedType;
     private bool expectedTypeCached;
     public bool ImplicitRecoveryAllowed()
         => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
@@ -14448,7 +14450,7 @@ file class UnqualifiedNamespaceNameNode : SemanticNode, IUnqualifiedNamespaceNam
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, descendant))
             return null;
@@ -14534,11 +14536,11 @@ file class QualifiedNamespaceNameNode : SemanticNode, IQualifiedNamespaceNameNod
     private IFixedSet<SemanticNode>? controlFlowPreviousContributors;
     public ControlFlowSet ControlFlowFollowing()
         => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
-    public IMaybeExpressionType? ExpectedType
+    public IMaybeType? ExpectedType
         => GrammarAttribute.IsCached(in expectedTypeCached) ? expectedType
             : this.Inherited(ref expectedTypeCached, ref expectedType,
                 Inherited_ExpectedType);
-    private IMaybeExpressionType? expectedType;
+    private IMaybeType? expectedType;
     private bool expectedTypeCached;
     public bool ImplicitRecoveryAllowed()
         => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
@@ -14582,7 +14584,7 @@ file class QualifiedNamespaceNameNode : SemanticNode, IQualifiedNamespaceNameNod
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, descendant))
             return null;
@@ -14670,11 +14672,11 @@ file class FunctionGroupNameNode : SemanticNode, IFunctionGroupNameNode
     private IFixedSet<SemanticNode>? controlFlowPreviousContributors;
     public ControlFlowSet ControlFlowFollowing()
         => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
-    public IMaybeExpressionType? ExpectedType
+    public IMaybeType? ExpectedType
         => GrammarAttribute.IsCached(in expectedTypeCached) ? expectedType
             : this.Inherited(ref expectedTypeCached, ref expectedType,
                 Inherited_ExpectedType);
-    private IMaybeExpressionType? expectedType;
+    private IMaybeType? expectedType;
     private bool expectedTypeCached;
     public bool ImplicitRecoveryAllowed()
         => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
@@ -14747,7 +14749,7 @@ file class FunctionGroupNameNode : SemanticNode, IFunctionGroupNameNode
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, descendant))
             return null;
@@ -14842,11 +14844,11 @@ file class FunctionNameNode : SemanticNode, IFunctionNameNode
     private IFixedSet<SemanticNode>? controlFlowPreviousContributors;
     public ControlFlowSet ControlFlowFollowing()
         => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
-    public IMaybeExpressionType? ExpectedType
+    public IMaybeType? ExpectedType
         => GrammarAttribute.IsCached(in expectedTypeCached) ? expectedType
             : this.Inherited(ref expectedTypeCached, ref expectedType,
                 Inherited_ExpectedType);
-    private IMaybeExpressionType? expectedType;
+    private IMaybeType? expectedType;
     private bool expectedTypeCached;
     public bool ImplicitRecoveryAllowed()
         => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
@@ -14872,11 +14874,11 @@ file class FunctionNameNode : SemanticNode, IFunctionNameNode
                 ExpressionPlainTypesAspect.FunctionName_PlainType);
     private IMaybePlainType? plainType;
     private bool plainTypeCached;
-    public IMaybeExpressionType Type
+    public IMaybeType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
             : this.Synthetic(ref typeCached, ref type,
                 ExpressionTypesAspect.FunctionName_Type);
-    private IMaybeExpressionType? type;
+    private IMaybeType? type;
     private bool typeCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
@@ -14914,7 +14916,7 @@ file class FunctionNameNode : SemanticNode, IFunctionNameNode
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, descendant))
             return null;
@@ -15003,11 +15005,11 @@ file class MethodGroupNameNode : SemanticNode, IMethodGroupNameNode
     private IFixedSet<SemanticNode>? controlFlowPreviousContributors;
     public ControlFlowSet ControlFlowFollowing()
         => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
-    public IMaybeExpressionType? ExpectedType
+    public IMaybeType? ExpectedType
         => GrammarAttribute.IsCached(in expectedTypeCached) ? expectedType
             : this.Inherited(ref expectedTypeCached, ref expectedType,
                 Inherited_ExpectedType);
-    private IMaybeExpressionType? expectedType;
+    private IMaybeType? expectedType;
     private bool expectedTypeCached;
     public bool ImplicitRecoveryAllowed()
         => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
@@ -15079,7 +15081,7 @@ file class MethodGroupNameNode : SemanticNode, IMethodGroupNameNode
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, descendant))
             return null;
@@ -15174,11 +15176,11 @@ file class MethodNameNode : SemanticNode, IMethodNameNode
     private IFixedSet<SemanticNode>? controlFlowPreviousContributors;
     public ControlFlowSet ControlFlowFollowing()
         => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
-    public IMaybeExpressionType? ExpectedType
+    public IMaybeType? ExpectedType
         => GrammarAttribute.IsCached(in expectedTypeCached) ? expectedType
             : this.Inherited(ref expectedTypeCached, ref expectedType,
                 Inherited_ExpectedType);
-    private IMaybeExpressionType? expectedType;
+    private IMaybeType? expectedType;
     private bool expectedTypeCached;
     public bool ImplicitRecoveryAllowed()
         => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
@@ -15204,11 +15206,11 @@ file class MethodNameNode : SemanticNode, IMethodNameNode
                 ExpressionPlainTypesAspect.MethodName_PlainType);
     private IMaybePlainType? plainType;
     private bool plainTypeCached;
-    public IMaybeExpressionType Type
+    public IMaybeType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
             : this.Synthetic(ref typeCached, ref type,
                 ExpressionTypesAspect.MethodName_Type);
-    private IMaybeExpressionType? type;
+    private IMaybeType? type;
     private bool typeCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
@@ -15248,7 +15250,7 @@ file class MethodNameNode : SemanticNode, IMethodNameNode
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.CurrentContext))
             return ExpressionTypesAspect.MethodName_Context_ExpectedType(this);
@@ -15339,11 +15341,11 @@ file class FieldAccessExpressionNode : SemanticNode, IFieldAccessExpressionNode
     private IFixedSet<SemanticNode>? controlFlowPreviousContributors;
     public ControlFlowSet ControlFlowFollowing()
         => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
-    public IMaybeExpressionType? ExpectedType
+    public IMaybeType? ExpectedType
         => GrammarAttribute.IsCached(in expectedTypeCached) ? expectedType
             : this.Inherited(ref expectedTypeCached, ref expectedType,
                 Inherited_ExpectedType);
-    private IMaybeExpressionType? expectedType;
+    private IMaybeType? expectedType;
     private bool expectedTypeCached;
     public bool ImplicitRecoveryAllowed()
         => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
@@ -15369,11 +15371,11 @@ file class FieldAccessExpressionNode : SemanticNode, IFieldAccessExpressionNode
                 ExpressionPlainTypesAspect.FieldAccessExpression_PlainType);
     private IMaybePlainType? plainType;
     private bool plainTypeCached;
-    public IMaybeExpressionType Type
+    public IMaybeType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
             : this.Synthetic(ref typeCached, ref type,
                 ExpressionTypesAspect.FieldAccessExpression_Type);
-    private IMaybeExpressionType? type;
+    private IMaybeType? type;
     private bool typeCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
@@ -15401,7 +15403,7 @@ file class FieldAccessExpressionNode : SemanticNode, IFieldAccessExpressionNode
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, descendant))
             return null;
@@ -15482,11 +15484,11 @@ file class VariableNameExpressionNode : SemanticNode, IVariableNameExpressionNod
     private IFixedSet<SemanticNode>? controlFlowPreviousContributors;
     public ControlFlowSet ControlFlowFollowing()
         => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
-    public IMaybeExpressionType? ExpectedType
+    public IMaybeType? ExpectedType
         => GrammarAttribute.IsCached(in expectedTypeCached) ? expectedType
             : this.Inherited(ref expectedTypeCached, ref expectedType,
                 Inherited_ExpectedType);
-    private IMaybeExpressionType? expectedType;
+    private IMaybeType? expectedType;
     private bool expectedTypeCached;
     public bool ImplicitRecoveryAllowed()
         => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
@@ -15518,11 +15520,11 @@ file class VariableNameExpressionNode : SemanticNode, IVariableNameExpressionNod
                 ExpressionPlainTypesAspect.VariableNameExpression_PlainType);
     private IMaybePlainType? plainType;
     private bool plainTypeCached;
-    public IMaybeExpressionType Type
+    public IMaybeType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
             : this.Synthetic(ref typeCached, ref type,
                 ExpressionTypesAspect.VariableNameExpression_Type);
-    private IMaybeExpressionType? type;
+    private IMaybeType? type;
     private bool typeCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
@@ -15546,7 +15548,7 @@ file class VariableNameExpressionNode : SemanticNode, IVariableNameExpressionNod
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, descendant))
             return null;
@@ -15630,11 +15632,11 @@ file class StandardTypeNameExpressionNode : SemanticNode, IStandardTypeNameExpre
     private IFixedSet<SemanticNode>? controlFlowPreviousContributors;
     public ControlFlowSet ControlFlowFollowing()
         => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
-    public IMaybeExpressionType? ExpectedType
+    public IMaybeType? ExpectedType
         => GrammarAttribute.IsCached(in expectedTypeCached) ? expectedType
             : this.Inherited(ref expectedTypeCached, ref expectedType,
                 Inherited_ExpectedType);
-    private IMaybeExpressionType? expectedType;
+    private IMaybeType? expectedType;
     private bool expectedTypeCached;
     public bool ImplicitRecoveryAllowed()
         => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
@@ -15690,7 +15692,7 @@ file class StandardTypeNameExpressionNode : SemanticNode, IStandardTypeNameExpre
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, descendant))
             return null;
@@ -15777,11 +15779,11 @@ file class QualifiedTypeNameExpressionNode : SemanticNode, IQualifiedTypeNameExp
     private IFixedSet<SemanticNode>? controlFlowPreviousContributors;
     public ControlFlowSet ControlFlowFollowing()
         => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
-    public IMaybeExpressionType? ExpectedType
+    public IMaybeType? ExpectedType
         => GrammarAttribute.IsCached(in expectedTypeCached) ? expectedType
             : this.Inherited(ref expectedTypeCached, ref expectedType,
                 Inherited_ExpectedType);
-    private IMaybeExpressionType? expectedType;
+    private IMaybeType? expectedType;
     private bool expectedTypeCached;
     public bool ImplicitRecoveryAllowed()
         => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
@@ -15839,7 +15841,7 @@ file class QualifiedTypeNameExpressionNode : SemanticNode, IQualifiedTypeNameExp
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, descendant))
             return null;
@@ -15926,11 +15928,11 @@ file class InitializerGroupNameNode : SemanticNode, IInitializerGroupNameNode
     private IFixedSet<SemanticNode>? controlFlowPreviousContributors;
     public ControlFlowSet ControlFlowFollowing()
         => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
-    public IMaybeExpressionType? ExpectedType
+    public IMaybeType? ExpectedType
         => GrammarAttribute.IsCached(in expectedTypeCached) ? expectedType
             : this.Inherited(ref expectedTypeCached, ref expectedType,
                 Inherited_ExpectedType);
-    private IMaybeExpressionType? expectedType;
+    private IMaybeType? expectedType;
     private bool expectedTypeCached;
     public bool ImplicitRecoveryAllowed()
         => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
@@ -15976,7 +15978,7 @@ file class InitializerGroupNameNode : SemanticNode, IInitializerGroupNameNode
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, descendant))
             return null;
@@ -16055,11 +16057,11 @@ file class SpecialTypeNameExpressionNode : SemanticNode, ISpecialTypeNameExpress
     private IFixedSet<SemanticNode>? controlFlowPreviousContributors;
     public ControlFlowSet ControlFlowFollowing()
         => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
-    public IMaybeExpressionType? ExpectedType
+    public IMaybeType? ExpectedType
         => GrammarAttribute.IsCached(in expectedTypeCached) ? expectedType
             : this.Inherited(ref expectedTypeCached, ref expectedType,
                 Inherited_ExpectedType);
-    private IMaybeExpressionType? expectedType;
+    private IMaybeType? expectedType;
     private bool expectedTypeCached;
     public bool ImplicitRecoveryAllowed()
         => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
@@ -16098,7 +16100,7 @@ file class SpecialTypeNameExpressionNode : SemanticNode, ISpecialTypeNameExpress
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, descendant))
             return null;
@@ -16177,11 +16179,11 @@ file class SelfExpressionNode : SemanticNode, ISelfExpressionNode
     private IFixedSet<SemanticNode>? controlFlowPreviousContributors;
     public ControlFlowSet ControlFlowFollowing()
         => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
-    public IMaybeExpressionType? ExpectedType
+    public IMaybeType? ExpectedType
         => GrammarAttribute.IsCached(in expectedTypeCached) ? expectedType
             : this.Inherited(ref expectedTypeCached, ref expectedType,
                 Inherited_ExpectedType);
-    private IMaybeExpressionType? expectedType;
+    private IMaybeType? expectedType;
     private bool expectedTypeCached;
     public bool ImplicitRecoveryAllowed()
         => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
@@ -16225,11 +16227,11 @@ file class SelfExpressionNode : SemanticNode, ISelfExpressionNode
                 BindingNamesAspect.SelfExpression_ReferencedDefinition);
     private ISelfParameterNode? referencedDefinition;
     private bool referencedDefinitionCached;
-    public IMaybeExpressionType Type
+    public IMaybeType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
             : this.Synthetic(ref typeCached, ref type,
                 ExpressionTypesAspect.SelfExpression_Type);
-    private IMaybeExpressionType? type;
+    private IMaybeType? type;
     private bool typeCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
@@ -16250,7 +16252,7 @@ file class SelfExpressionNode : SemanticNode, ISelfExpressionNode
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, descendant))
             return null;
@@ -16330,11 +16332,11 @@ file class MissingNameExpressionNode : SemanticNode, IMissingNameExpressionNode
     private IFixedSet<SemanticNode>? controlFlowPreviousContributors;
     public ControlFlowSet ControlFlowFollowing()
         => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
-    public IMaybeExpressionType? ExpectedType
+    public IMaybeType? ExpectedType
         => GrammarAttribute.IsCached(in expectedTypeCached) ? expectedType
             : this.Inherited(ref expectedTypeCached, ref expectedType,
                 Inherited_ExpectedType);
-    private IMaybeExpressionType? expectedType;
+    private IMaybeType? expectedType;
     private bool expectedTypeCached;
     public bool ImplicitRecoveryAllowed()
         => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
@@ -16373,7 +16375,7 @@ file class MissingNameExpressionNode : SemanticNode, IMissingNameExpressionNode
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, descendant))
             return null;
@@ -16453,11 +16455,11 @@ file class UnknownIdentifierNameExpressionNode : SemanticNode, IUnknownIdentifie
     private IFixedSet<SemanticNode>? controlFlowPreviousContributors;
     public ControlFlowSet ControlFlowFollowing()
         => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
-    public IMaybeExpressionType? ExpectedType
+    public IMaybeType? ExpectedType
         => GrammarAttribute.IsCached(in expectedTypeCached) ? expectedType
             : this.Inherited(ref expectedTypeCached, ref expectedType,
                 Inherited_ExpectedType);
-    private IMaybeExpressionType? expectedType;
+    private IMaybeType? expectedType;
     private bool expectedTypeCached;
     public bool ImplicitRecoveryAllowed()
         => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
@@ -16499,7 +16501,7 @@ file class UnknownIdentifierNameExpressionNode : SemanticNode, IUnknownIdentifie
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, descendant))
             return null;
@@ -16582,11 +16584,11 @@ file class UnknownGenericNameExpressionNode : SemanticNode, IUnknownGenericNameE
     private IFixedSet<SemanticNode>? controlFlowPreviousContributors;
     public ControlFlowSet ControlFlowFollowing()
         => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
-    public IMaybeExpressionType? ExpectedType
+    public IMaybeType? ExpectedType
         => GrammarAttribute.IsCached(in expectedTypeCached) ? expectedType
             : this.Inherited(ref expectedTypeCached, ref expectedType,
                 Inherited_ExpectedType);
-    private IMaybeExpressionType? expectedType;
+    private IMaybeType? expectedType;
     private bool expectedTypeCached;
     public bool ImplicitRecoveryAllowed()
         => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
@@ -16632,7 +16634,7 @@ file class UnknownGenericNameExpressionNode : SemanticNode, IUnknownGenericNameE
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, descendant))
             return null;
@@ -16719,11 +16721,11 @@ file class AmbiguousMemberAccessExpressionNode : SemanticNode, IAmbiguousMemberA
     private IFixedSet<SemanticNode>? controlFlowPreviousContributors;
     public ControlFlowSet ControlFlowFollowing()
         => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
-    public IMaybeExpressionType? ExpectedType
+    public IMaybeType? ExpectedType
         => GrammarAttribute.IsCached(in expectedTypeCached) ? expectedType
             : this.Inherited(ref expectedTypeCached, ref expectedType,
                 Inherited_ExpectedType);
-    private IMaybeExpressionType? expectedType;
+    private IMaybeType? expectedType;
     private bool expectedTypeCached;
     public bool ImplicitRecoveryAllowed()
         => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
@@ -16769,7 +16771,7 @@ file class AmbiguousMemberAccessExpressionNode : SemanticNode, IAmbiguousMemberA
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, descendant))
             return null;
@@ -16867,7 +16869,7 @@ file class AmbiguousMoveExpressionNode : SemanticNode, IAmbiguousMoveExpressionN
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, descendant))
             return null;
@@ -16928,11 +16930,11 @@ file class MoveVariableExpressionNode : SemanticNode, IMoveVariableExpressionNod
     private IFixedSet<SemanticNode>? controlFlowPreviousContributors;
     public ControlFlowSet ControlFlowFollowing()
         => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
-    public IMaybeExpressionType? ExpectedType
+    public IMaybeType? ExpectedType
         => GrammarAttribute.IsCached(in expectedTypeCached) ? expectedType
             : this.Inherited(ref expectedTypeCached, ref expectedType,
                 Inherited_ExpectedType);
-    private IMaybeExpressionType? expectedType;
+    private IMaybeType? expectedType;
     private bool expectedTypeCached;
     public bool ImplicitRecoveryAllowed()
         => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
@@ -16956,11 +16958,11 @@ file class MoveVariableExpressionNode : SemanticNode, IMoveVariableExpressionNod
                 ExpressionTypesAspect.MoveVariableExpression_FlowStateAfter);
     private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
-    public IMaybeExpressionType Type
+    public IMaybeType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
             : this.Synthetic(ref typeCached, ref type,
                 ExpressionTypesAspect.MoveExpression_Type);
-    private IMaybeExpressionType? type;
+    private IMaybeType? type;
     private bool typeCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
@@ -16986,7 +16988,7 @@ file class MoveVariableExpressionNode : SemanticNode, IMoveVariableExpressionNod
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, descendant))
             return null;
@@ -17073,11 +17075,11 @@ file class MoveValueExpressionNode : SemanticNode, IMoveValueExpressionNode
     private IFixedSet<SemanticNode>? controlFlowPreviousContributors;
     public ControlFlowSet ControlFlowFollowing()
         => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
-    public IMaybeExpressionType? ExpectedType
+    public IMaybeType? ExpectedType
         => GrammarAttribute.IsCached(in expectedTypeCached) ? expectedType
             : this.Inherited(ref expectedTypeCached, ref expectedType,
                 Inherited_ExpectedType);
-    private IMaybeExpressionType? expectedType;
+    private IMaybeType? expectedType;
     private bool expectedTypeCached;
     public bool ImplicitRecoveryAllowed()
         => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
@@ -17101,11 +17103,11 @@ file class MoveValueExpressionNode : SemanticNode, IMoveValueExpressionNode
                 ExpressionTypesAspect.MoveValueExpression_FlowStateAfter);
     private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
-    public IMaybeExpressionType Type
+    public IMaybeType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
             : this.Synthetic(ref typeCached, ref type,
                 ExpressionTypesAspect.MoveExpression_Type);
-    private IMaybeExpressionType? type;
+    private IMaybeType? type;
     private bool typeCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
@@ -17131,7 +17133,7 @@ file class MoveValueExpressionNode : SemanticNode, IMoveValueExpressionNode
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, descendant))
             return null;
@@ -17219,11 +17221,11 @@ file class ImplicitTempMoveExpressionNode : SemanticNode, IImplicitTempMoveExpre
     private IFixedSet<SemanticNode>? controlFlowPreviousContributors;
     public ControlFlowSet ControlFlowFollowing()
         => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
-    public IMaybeExpressionType? ExpectedType
+    public IMaybeType? ExpectedType
         => GrammarAttribute.IsCached(in expectedTypeCached) ? expectedType
             : this.Inherited(ref expectedTypeCached, ref expectedType,
                 Inherited_ExpectedType);
-    private IMaybeExpressionType? expectedType;
+    private IMaybeType? expectedType;
     private bool expectedTypeCached;
     public bool ImplicitRecoveryAllowed()
         => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
@@ -17247,11 +17249,11 @@ file class ImplicitTempMoveExpressionNode : SemanticNode, IImplicitTempMoveExpre
                 ExpressionTypesAspect.ImplicitTempMoveExpression_FlowStateAfter);
     private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
-    public IMaybeExpressionType Type
+    public IMaybeType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
             : this.Synthetic(ref typeCached, ref type,
                 ExpressionTypesAspect.ImplicitTempMoveExpression_Type);
-    private IMaybeExpressionType? type;
+    private IMaybeType? type;
     private bool typeCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
@@ -17275,7 +17277,7 @@ file class ImplicitTempMoveExpressionNode : SemanticNode, IImplicitTempMoveExpre
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, descendant))
             return null;
@@ -17372,7 +17374,7 @@ file class AmbiguousFreezeExpressionNode : SemanticNode, IAmbiguousFreezeExpress
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, descendant))
             return null;
@@ -17434,11 +17436,11 @@ file class FreezeVariableExpressionNode : SemanticNode, IFreezeVariableExpressio
     private IFixedSet<SemanticNode>? controlFlowPreviousContributors;
     public ControlFlowSet ControlFlowFollowing()
         => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
-    public IMaybeExpressionType? ExpectedType
+    public IMaybeType? ExpectedType
         => GrammarAttribute.IsCached(in expectedTypeCached) ? expectedType
             : this.Inherited(ref expectedTypeCached, ref expectedType,
                 Inherited_ExpectedType);
-    private IMaybeExpressionType? expectedType;
+    private IMaybeType? expectedType;
     private bool expectedTypeCached;
     public bool ImplicitRecoveryAllowed()
         => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
@@ -17462,11 +17464,11 @@ file class FreezeVariableExpressionNode : SemanticNode, IFreezeVariableExpressio
                 ExpressionTypesAspect.FreezeVariableExpression_FlowStateAfter);
     private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
-    public IMaybeExpressionType Type
+    public IMaybeType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
             : this.Synthetic(ref typeCached, ref type,
                 ExpressionTypesAspect.FreezeExpression_Type);
-    private IMaybeExpressionType? type;
+    private IMaybeType? type;
     private bool typeCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
@@ -17494,7 +17496,7 @@ file class FreezeVariableExpressionNode : SemanticNode, IFreezeVariableExpressio
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, descendant))
             return null;
@@ -17582,11 +17584,11 @@ file class FreezeValueExpressionNode : SemanticNode, IFreezeValueExpressionNode
     private IFixedSet<SemanticNode>? controlFlowPreviousContributors;
     public ControlFlowSet ControlFlowFollowing()
         => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
-    public IMaybeExpressionType? ExpectedType
+    public IMaybeType? ExpectedType
         => GrammarAttribute.IsCached(in expectedTypeCached) ? expectedType
             : this.Inherited(ref expectedTypeCached, ref expectedType,
                 Inherited_ExpectedType);
-    private IMaybeExpressionType? expectedType;
+    private IMaybeType? expectedType;
     private bool expectedTypeCached;
     public bool ImplicitRecoveryAllowed()
         => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
@@ -17610,11 +17612,11 @@ file class FreezeValueExpressionNode : SemanticNode, IFreezeValueExpressionNode
                 ExpressionTypesAspect.FreezeValueExpression_FlowStateAfter);
     private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
-    public IMaybeExpressionType Type
+    public IMaybeType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
             : this.Synthetic(ref typeCached, ref type,
                 ExpressionTypesAspect.FreezeExpression_Type);
-    private IMaybeExpressionType? type;
+    private IMaybeType? type;
     private bool typeCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
@@ -17642,7 +17644,7 @@ file class FreezeValueExpressionNode : SemanticNode, IFreezeValueExpressionNode
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, descendant))
             return null;
@@ -17729,11 +17731,11 @@ file class PrepareToReturnExpressionNode : SemanticNode, IPrepareToReturnExpress
     private IFixedSet<SemanticNode>? controlFlowPreviousContributors;
     public ControlFlowSet ControlFlowFollowing()
         => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
-    public IMaybeExpressionType? ExpectedType
+    public IMaybeType? ExpectedType
         => GrammarAttribute.IsCached(in expectedTypeCached) ? expectedType
             : this.Inherited(ref expectedTypeCached, ref expectedType,
                 Inherited_ExpectedType);
-    private IMaybeExpressionType? expectedType;
+    private IMaybeType? expectedType;
     private bool expectedTypeCached;
     public bool ImplicitRecoveryAllowed()
         => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
@@ -17776,7 +17778,7 @@ file class PrepareToReturnExpressionNode : SemanticNode, IPrepareToReturnExpress
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, descendant))
             return null;
@@ -17861,11 +17863,11 @@ file class AsyncBlockExpressionNode : SemanticNode, IAsyncBlockExpressionNode
     private IFixedSet<SemanticNode>? controlFlowPreviousContributors;
     public ControlFlowSet ControlFlowFollowing()
         => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
-    public IMaybeExpressionType? ExpectedType
+    public IMaybeType? ExpectedType
         => GrammarAttribute.IsCached(in expectedTypeCached) ? expectedType
             : this.Inherited(ref expectedTypeCached, ref expectedType,
                 Inherited_ExpectedType);
-    private IMaybeExpressionType? expectedType;
+    private IMaybeType? expectedType;
     private bool expectedTypeCached;
     public bool ImplicitRecoveryAllowed()
         => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
@@ -17905,7 +17907,7 @@ file class AsyncBlockExpressionNode : SemanticNode, IAsyncBlockExpressionNode
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, descendant))
             return null;
@@ -17991,11 +17993,11 @@ file class AsyncStartExpressionNode : SemanticNode, IAsyncStartExpressionNode
     private IFixedSet<SemanticNode>? controlFlowPreviousContributors;
     public ControlFlowSet ControlFlowFollowing()
         => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
-    public IMaybeExpressionType? ExpectedType
+    public IMaybeType? ExpectedType
         => GrammarAttribute.IsCached(in expectedTypeCached) ? expectedType
             : this.Inherited(ref expectedTypeCached, ref expectedType,
                 Inherited_ExpectedType);
-    private IMaybeExpressionType? expectedType;
+    private IMaybeType? expectedType;
     private bool expectedTypeCached;
     public bool ImplicitRecoveryAllowed()
         => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
@@ -18025,11 +18027,11 @@ file class AsyncStartExpressionNode : SemanticNode, IAsyncStartExpressionNode
                 ExpressionPlainTypesAspect.AsyncStartExpression_PlainType);
     private IMaybePlainType? plainType;
     private bool plainTypeCached;
-    public IMaybeExpressionType Type
+    public IMaybeType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
             : this.Synthetic(ref typeCached, ref type,
                 ExpressionTypesAspect.AsyncStartExpression_Type);
-    private IMaybeExpressionType? type;
+    private IMaybeType? type;
     private bool typeCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
@@ -18053,7 +18055,7 @@ file class AsyncStartExpressionNode : SemanticNode, IAsyncStartExpressionNode
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, descendant))
             return null;
@@ -18139,11 +18141,11 @@ file class AwaitExpressionNode : SemanticNode, IAwaitExpressionNode
     private IFixedSet<SemanticNode>? controlFlowPreviousContributors;
     public ControlFlowSet ControlFlowFollowing()
         => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
-    public IMaybeExpressionType? ExpectedType
+    public IMaybeType? ExpectedType
         => GrammarAttribute.IsCached(in expectedTypeCached) ? expectedType
             : this.Inherited(ref expectedTypeCached, ref expectedType,
                 Inherited_ExpectedType);
-    private IMaybeExpressionType? expectedType;
+    private IMaybeType? expectedType;
     private bool expectedTypeCached;
     public bool ImplicitRecoveryAllowed()
         => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
@@ -18173,11 +18175,11 @@ file class AwaitExpressionNode : SemanticNode, IAwaitExpressionNode
                 ExpressionPlainTypesAspect.AwaitExpression_PlainType);
     private IMaybePlainType? plainType;
     private bool plainTypeCached;
-    public IMaybeExpressionType Type
+    public IMaybeType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
             : this.Synthetic(ref typeCached, ref type,
                 ExpressionTypesAspect.AwaitExpression_Type);
-    private IMaybeExpressionType? type;
+    private IMaybeType? type;
     private bool typeCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
@@ -18201,7 +18203,7 @@ file class AwaitExpressionNode : SemanticNode, IAwaitExpressionNode
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, descendant))
             return null;

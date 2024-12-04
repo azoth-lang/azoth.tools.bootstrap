@@ -48,7 +48,7 @@ internal sealed class TypeReplacements
     {
         return pseudotype switch
         {
-            IExpressionType type => ReplaceTypeParametersIn(type),
+            IType type => ReplaceTypeParametersIn(type),
             CapabilityTypeConstraint type => ReplaceTypeParametersIn(type),
             _ => throw ExhaustiveMatch.Failed(pseudotype)
         };
@@ -58,7 +58,7 @@ internal sealed class TypeReplacements
     {
         return pseudotype switch
         {
-            IMaybeExpressionType type => ReplaceTypeParametersIn(type),
+            IMaybeType type => ReplaceTypeParametersIn(type),
             CapabilityTypeConstraint type => ReplaceTypeParametersIn(type),
             _ => throw ExhaustiveMatch.Failed(pseudotype)
         };
@@ -72,31 +72,15 @@ internal sealed class TypeReplacements
         return pseudotype;
     }
 
-    public IMaybeExpressionType ReplaceTypeParametersIn(IMaybeExpressionType type)
+    public IMaybeType ReplaceTypeParametersIn(IMaybeType type)
     {
         return type switch
         {
-            IExpressionType t => ReplaceTypeParametersIn(t),
+            IType t => ReplaceTypeParametersIn(t),
             UnknownType _ => type,
             _ => throw ExhaustiveMatch.Failed(type)
         };
     }
-
-    public IExpressionType ReplaceTypeParametersIn(IExpressionType type)
-        => type switch
-        {
-            IType t => ReplaceTypeParametersIn(t),
-            ConstValueType _ => type,
-            _ => throw ExhaustiveMatch.Failed(type)
-        };
-
-    public IMaybeType ReplaceTypeParametersIn(IMaybeType type)
-        => type switch
-        {
-            IType t => ReplaceTypeParametersIn(t),
-            UnknownType _ => type,
-            _ => throw ExhaustiveMatch.Failed(type)
-        };
 
     public IType ReplaceTypeParametersIn(IType type)
     {
@@ -148,6 +132,7 @@ internal sealed class TypeReplacements
                 break;
             }
             case EmptyType _:
+            case ConstValueType _:
                 break;
             default:
                 throw ExhaustiveMatch.Failed(type);

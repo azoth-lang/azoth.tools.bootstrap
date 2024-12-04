@@ -24,7 +24,7 @@ public static class Intrinsic
     public static readonly IDeclaredUserType PromiseDeclaredType = Promise.DeclaresType;
     public static readonly TypeConstructor PromiseTypeConstructor = PromiseDeclaredType.ToTypeConstructor();
 
-    public static IMaybeExpressionType PromiseOf(IMaybeType type)
+    public static IMaybeType PromiseOf(IMaybeType type)
         => PromiseDeclaredType.WithRead(FixedList.Create(type));
     public static IMaybePlainType PromiseOf(IMaybePlainType plainType)
         => PromiseTypeConstructor.Construct(FixedList.Create(plainType));

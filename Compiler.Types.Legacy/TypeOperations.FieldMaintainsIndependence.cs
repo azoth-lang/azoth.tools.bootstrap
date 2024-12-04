@@ -2,6 +2,7 @@ using System;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Bare;
+using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.ConstValue;
 using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
@@ -24,6 +25,7 @@ public static partial class TypeOperations
             ViewpointType t => t.Referent.FieldMaintainsIndependence(context),
             EmptyType _ => true,
             UnknownType _ => true,
+            ConstValueType _ => true,
             // The referent of an optional type is basically `out T` (covariant)
             OptionalType t => t.Referent.FieldMaintainsIndependence(context.Child(Independence.Disallowed)),
             FunctionType t => t.FieldMaintainsIndependence(),

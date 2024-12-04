@@ -1,7 +1,6 @@
 using System;
 using System.Numerics;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.MemoryLayout;
-using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.ConstValue;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Declared;
@@ -10,7 +9,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter;
 
 internal static class Operations
 {
-    public static AzothValue Convert(this AzothValue value, IExpressionType from, CapabilityType to, bool isOptional)
+    public static AzothValue Convert(this AzothValue value, IType from, CapabilityType to, bool isOptional)
     {
         if (from is IntegerConstValueType)
         {

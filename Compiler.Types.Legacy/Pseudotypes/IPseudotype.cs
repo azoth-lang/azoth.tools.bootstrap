@@ -2,9 +2,9 @@ using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Pseudotypes;
 
-[Closed(typeof(IExpressionType), typeof(CapabilityTypeConstraint))]
+[Closed(typeof(IType), typeof(CapabilityTypeConstraint))]
 public interface IPseudotype : IMaybePseudotype
 {
-    new IExpressionType ToUpperBound();
-    IMaybeExpressionType IMaybePseudotype.ToUpperBound() => ToUpperBound();
+    new IType ToUpperBound();
+    IMaybeType IMaybePseudotype.ToUpperBound() => ToUpperBound();
 }

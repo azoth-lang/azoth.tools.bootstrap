@@ -31,7 +31,7 @@ public abstract class EmptyType : IType
     public abstract EmptyPlainType ToPlainType();
     IPlainType IType.ToPlainType() => ToPlainType();
 
-    public IExpressionType ToUpperBound() => this;
+    public IType ToUpperBound() => this;
 
     /// <summary>
     /// Convert types for constant values to their corresponding types.
@@ -55,7 +55,6 @@ public abstract class EmptyType : IType
     /// <remarks>This can restrict the ability to write to the value.</remarks>
     public IType AccessedVia(ICapabilityConstraint capability) => this;
     IMaybeType IMaybeType.AccessedVia(ICapabilityConstraint capability) => AccessedVia(capability);
-    IMaybeExpressionType IMaybeExpressionType.AccessedVia(ICapabilityConstraint capability) => AccessedVia(capability);
 
     #region Eqauality
     public bool Equals(IMaybePseudotype? other)

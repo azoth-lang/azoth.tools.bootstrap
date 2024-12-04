@@ -8,7 +8,7 @@
 
 // ---------- Special Parts
 ⟳ ElseClause.FlowStateAfter: `IFlowState` initial => IFlowState.Empty;
-↑ BlockOrResult.Type: `IMaybeExpressionType`;
+↑ BlockOrResult.Type: `IMaybeType`;
 
 // ---------- Definitions
 = InvocableDefinition.ParameterTypes;

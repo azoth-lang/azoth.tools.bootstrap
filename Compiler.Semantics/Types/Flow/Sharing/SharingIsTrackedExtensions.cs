@@ -17,7 +17,7 @@ internal static class SharingIsTrackedExtensions
     public static bool SharingIsTracked(this IMaybePseudotype pseudotype)
         => pseudotype.ToUpperBound().SharingIsTracked();
 
-    public static bool SharingIsTracked(this IMaybeExpressionType type)
+    public static bool SharingIsTracked(this IMaybeType type)
     {
         // TODO this isn't correct since optional types and function types need tracked
 

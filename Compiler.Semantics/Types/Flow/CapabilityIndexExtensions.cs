@@ -17,10 +17,10 @@ internal static class CapabilityIndexExtensions
     /// <remarks>The given type must be either the type that the index was created on or the basis
     /// for that type. For example, the index could be from a type constructed by substituting type
     /// parameters into the given type.</remarks>
-    public static IMaybeExpressionType TypeAt(this IMaybeExpressionType type, CapabilityIndex index)
+    public static IMaybeType TypeAt(this IMaybeType type, CapabilityIndex index)
         => type.TypeAt(index, 0);
 
-    private static IMaybeExpressionType TypeAt(this IMaybeExpressionType type, CapabilityIndex index, int depth)
+    private static IMaybeType TypeAt(this IMaybeType type, CapabilityIndex index, int depth)
         => type switch
         {
             OptionalType t => t.Referent.TypeAt(index, depth),

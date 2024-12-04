@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow.Sharing;
-using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Declared;
@@ -244,11 +243,11 @@ internal sealed class FlowState : IFlowState
         return builder.ToImmutable();
     }
 
-    public IMaybeExpressionType Type(IBindingNode? binding) => Type(binding, Functions.Identity);
+    public IMaybeType Type(IBindingNode? binding) => Type(binding, Functions.Identity);
 
-    public IMaybeExpressionType AliasType(IBindingNode? binding) => Type(binding, c => c.OfAlias());
+    public IMaybeType AliasType(IBindingNode? binding) => Type(binding, c => c.OfAlias());
 
-    private IMaybeExpressionType Type(IBindingNode? binding, Func<Capability, Capability> transform)
+    private IMaybeType Type(IBindingNode? binding, Func<Capability, Capability> transform)
     {
         if (binding is null) return IType.Unknown;
         if (!binding.SharingIsTracked())
@@ -335,7 +334,7 @@ internal sealed class FlowState : IFlowState
     public bool IsLent(ValueId valueId)
         => TrackedValues(valueId).Select(value => values.Sets[value]).Any(set => set.Data.IsLent);
 
-    public IFlowState CombineArguments(IEnumerable<ArgumentValueId> arguments, ValueId returnValueId, IMaybeExpressionType returnType)
+    public IFlowState CombineArguments(IEnumerable<ArgumentValueId> arguments, ValueId returnValueId, IMaybeType returnType)
     {
         var argumentsList = arguments.ToFixedList();
 
@@ -430,7 +429,7 @@ internal sealed class FlowState : IFlowState
         ValueId contextValueId,
         CapabilityType contextType,
         DeclaredType containingDeclaredType,
-        IMaybeExpressionType bindingType,
+        IMaybeType bindingType,
         ValueId valueId,
         IEnumerable<CapabilityValue> newValues)
     {
@@ -503,7 +502,7 @@ internal sealed class FlowState : IFlowState
         return builder.ToImmutable();
     }
 
-    public IFlowState Transform(ValueId? valueId, ValueId toValueId, IMaybeExpressionType withType)
+    public IFlowState Transform(ValueId? valueId, ValueId toValueId, IMaybeType withType)
     {
         if (valueId is not ValueId fromValueId) return this;
 

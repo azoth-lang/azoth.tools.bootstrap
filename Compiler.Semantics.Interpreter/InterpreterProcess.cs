@@ -376,7 +376,7 @@ public class InterpreterProcess
 
     private async ValueTask<AzothValue> CallMethodAsync(
         MethodSymbol methodSymbol,
-        IExpressionType selfType,
+        IType selfType,
         AzothValue self,
         IEnumerable<AzothValue> arguments)
     {
@@ -1104,7 +1104,7 @@ public class InterpreterProcess
         return EqualsAsync(type, left, right);
     }
 
-    private static bool EqualsAsync(IExpressionType type, AzothValue left, AzothValue right)
+    private static bool EqualsAsync(IType type, AzothValue left, AzothValue right)
     {
         if (type.Equals(IType.Int)) return left.IntValue.Equals(right.IntValue);
         if (type.Equals(IType.UInt)) return left.IntValue.Equals(right.IntValue);
@@ -1158,7 +1158,7 @@ public class InterpreterProcess
         return CompareAsync(type, left, right);
     }
 
-    private static int CompareAsync(IExpressionType type, AzothValue left, AzothValue right)
+    private static int CompareAsync(IType type, AzothValue left, AzothValue right)
     {
         if (type.Equals(IType.Int)) return left.IntValue.CompareTo(right.IntValue);
         if (type.Equals(IType.UInt)) return left.IntValue.CompareTo(right.IntValue);

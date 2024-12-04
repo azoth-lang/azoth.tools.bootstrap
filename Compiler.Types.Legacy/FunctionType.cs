@@ -43,7 +43,7 @@ public sealed class FunctionType : NonEmptyType, IMaybeFunctionType, INonVoidTyp
     IMaybeType IMaybeType.AccessedVia(ICapabilityConstraint capability) => AccessedVia(capability);
 
     #region Equality
-    public override bool Equals(IMaybeExpressionType? other)
+    public override bool Equals(IMaybeType? other)
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
@@ -61,7 +61,7 @@ public sealed class FunctionType : NonEmptyType, IMaybeFunctionType, INonVoidTyp
         return new(parameters, Return.ToPlainType());
     }
     IMaybeFunctionPlainType IMaybeFunctionType.ToPlainType() => ToPlainType();
-    INonVoidPlainType INonVoidType.ToPlainType() => ToPlainType();
+    IMaybePlainType IMaybeType.ToPlainType() => ToPlainType();
 
     public override string ToSourceCodeString()
         => $"({string.Join(", ", Parameters.Select(t => t.ToSourceCodeString()))}) -> {Return.ToSourceCodeString()}";

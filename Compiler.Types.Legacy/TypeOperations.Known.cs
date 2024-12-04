@@ -16,14 +16,6 @@ public partial class TypeOperations
         return parameters.ToFixedList().As<ParameterType>();
     }
 
-    public static IExpressionType Known(this IMaybeExpressionType type)
-        => type switch
-        {
-            UnknownType _ => throw new InvalidOperationException("Type is not known"),
-            IExpressionType t => t,
-            _ => throw ExhaustiveMatch.Failed(type),
-        };
-
     public static IType Known(this IMaybeType type)
         => type switch
         {

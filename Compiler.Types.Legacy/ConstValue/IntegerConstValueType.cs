@@ -16,7 +16,7 @@ public sealed class IntegerConstValueType : ConstValueType, INumericType
     public override bool IsTypeOfConstValue => true;
     public BigInteger Value { get; }
     public bool IsSigned { get; }
-    IExpressionType INumericType.Type => this;
+    IType INumericType.Type => this;
 
     public IntegerConstValueType(BigInteger value)
         : base(SpecialTypeName.ConstInt)
@@ -62,7 +62,7 @@ public sealed class IntegerConstValueType : ConstValueType, INumericType
     }
 
     #region Equals
-    public override bool Equals(IMaybeExpressionType? other)
+    public override bool Equals(IMaybeType? other)
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
@@ -73,7 +73,7 @@ public sealed class IntegerConstValueType : ConstValueType, INumericType
     public override int GetHashCode() => HashCode.Combine(Value);
     #endregion
 
-    public override IMaybePlainType ToPlainType()
+    public override INonVoidPlainType ToPlainType()
         => new IntegerLiteralTypeConstructor(Value).PlainType;
 
     public override string ToSourceCodeString() => $"int[{Value}]";

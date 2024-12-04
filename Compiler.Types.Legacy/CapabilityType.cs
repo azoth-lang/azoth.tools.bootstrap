@@ -93,7 +93,7 @@ public abstract class CapabilityType : NonEmptyType, INonVoidType
 
     public TypeName Name => DeclaredType.Name;
 
-    public IFixedList<IMaybeExpressionType> TypeArguments => BareType.GenericTypeArguments;
+    public IFixedList<IMaybeType> TypeArguments => BareType.GenericTypeArguments;
 
     public sealed override bool AllowsVariance => BareType.AllowsVariance;
 
@@ -118,9 +118,6 @@ public abstract class CapabilityType : NonEmptyType, INonVoidType
         => BareType.ReplaceTypeParametersIn(type);
 
     public override IMaybeType ReplaceTypeParametersIn(IMaybeType type)
-        => BareType.ReplaceTypeParametersIn(type);
-
-    public override IMaybeExpressionType ReplaceTypeParametersIn(IMaybeExpressionType type)
         => BareType.ReplaceTypeParametersIn(type);
 
     public override IPseudotype ReplaceTypeParametersIn(IPseudotype pseudotype)
@@ -171,7 +168,7 @@ public abstract class CapabilityType : NonEmptyType, INonVoidType
     }
 
     #region Equality
-    public override bool Equals(IMaybeExpressionType? other)
+    public override bool Equals(IMaybeType? other)
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;

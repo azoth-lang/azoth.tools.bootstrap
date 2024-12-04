@@ -24,8 +24,8 @@ public static class TypeError
         CodeFile file,
         TextSpan span,
         BinaryOperator @operator,
-        IMaybeExpressionType leftOperandType,
-        IMaybeExpressionType rightOperandType)
+        IMaybeType leftOperandType,
+        IMaybeType rightOperandType)
     {
         return new(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             3001, $"Operator `{@operator.ToSymbolString()}` cannot be applied to operands of type `{leftOperandType.ToNonConstValueType().ToSourceCodeString()}` and `{rightOperandType.ToNonConstValueType().ToSourceCodeString()}`.");
@@ -35,7 +35,7 @@ public static class TypeError
         CodeFile file,
         TextSpan span,
         UnaryOperator @operator,
-        IMaybeExpressionType operandType)
+        IMaybeType operandType)
     {
         return new(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             3002, $"Operator `{@operator}` cannot be applied to operand of type `{operandType.ToSourceCodeString()}`.");
@@ -59,7 +59,7 @@ public static class TypeError
             3005, "Expression must be of type `bool`");
     }
 
-    public static Diagnostic CannotImplicitlyConvert(CodeFile file, ICodeSyntax expression, IMaybeExpressionType ofType, IMaybeNonVoidType toType)
+    public static Diagnostic CannotImplicitlyConvert(CodeFile file, ICodeSyntax expression, IMaybeType ofType, IMaybeNonVoidType toType)
     {
         return new(file, expression.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             3006, $"Cannot convert expression `{file.Code[expression.Span]}` of type `{ofType.ToSourceCodeString()}` to type `{toType.ToNonConstValueType().ToSourceCodeString()}`");
@@ -89,7 +89,7 @@ public static class TypeError
             3010, $"Cannot assign into a field through a read only `{contextType.ToSourceCodeString()}`");
     }
 
-    public static Diagnostic CannotExplicitlyConvert(CodeFile file, ICodeSyntax expression, IMaybeExpressionType ofType, IMaybeType toType)
+    public static Diagnostic CannotExplicitlyConvert(CodeFile file, ICodeSyntax expression, IMaybeType ofType, IMaybeType toType)
     {
         return new(file, expression.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             3012, $"Cannot explicitly convert expression `{file.Code[expression.Span]}` of type `{ofType.ToNonConstValueType().ToSourceCodeString()}` to type `{toType.ToNonConstValueType().ToSourceCodeString()}`");
@@ -114,7 +114,7 @@ public static class TypeError
             3015, $"Cannot apply `lent` to `{type.ToSourceCodeString()}` because it is a fully `const` or `id` type");
     }
 
-    public static Diagnostic OptionalPatternOnNonOptionalType(CodeFile file, IOptionalPatternSyntax pattern, IMaybeExpressionType type)
+    public static Diagnostic OptionalPatternOnNonOptionalType(CodeFile file, IOptionalPatternSyntax pattern, IMaybeType type)
     {
         return new(file, pattern.Span, DiagnosticLevel.CompilationError, DiagnosticPhase.Analysis,
             3016, $"Optional pattern `{pattern}` cannot be applied to value of non-optional type `{type.ToSourceCodeString()}`");
@@ -126,7 +126,7 @@ public static class TypeError
             3017, $"Self parameter `{self}` must be `const` or `id` because it is in a `const` class.");
     }
 
-    public static Diagnostic CannotAwaitType(CodeFile file, TextSpan span, IMaybeExpressionType type)
+    public static Diagnostic CannotAwaitType(CodeFile file, TextSpan span, IMaybeType type)
     {
         return new(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             3018, $"Cannot await non-awaitable type `{type.ToSourceCodeString()}`.");

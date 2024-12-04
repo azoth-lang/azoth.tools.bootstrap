@@ -25,7 +25,7 @@ public sealed class BoolConstValueType : ConstValueType
 
     public override CapabilityType<BoolType> ToNonConstValueType() => IType.Bool;
 
-    public override IMaybePlainType ToPlainType()
+    public override INonVoidPlainType ToPlainType()
         => Value ? IPlainType.True : IPlainType.False;
 
     public override string ToSourceCodeString() => $"bool[{(Value ? "true" : "false")}]";

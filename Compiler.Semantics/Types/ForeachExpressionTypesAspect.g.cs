@@ -13,7 +13,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 internal static partial class ForeachExpressionTypesAspect
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IMaybeExpressionType ForeachExpression_Type(IForeachExpressionNode node);
+    public static partial IMaybeType ForeachExpression_Type(IForeachExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFlowState ForeachExpression_FlowStateAfter(IForeachExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

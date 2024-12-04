@@ -5,7 +5,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
 
 public static partial class TypeOperations
 {
-    public static bool CanBeExplicitlyConvertedTo(this IMaybeExpressionType fromType, IMaybeType toType, bool safeOnly)
+    public static bool CanBeExplicitlyConvertedTo(this IMaybeType fromType, IMaybeType toType, bool safeOnly)
     {
         return (fromType, toType) switch
         {

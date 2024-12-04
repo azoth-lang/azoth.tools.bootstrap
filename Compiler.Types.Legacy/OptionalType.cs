@@ -68,7 +68,7 @@ public sealed class OptionalType : NonEmptyType, INonVoidType
     IMaybeType IMaybeType.AccessedVia(ICapabilityConstraint capability) => AccessedVia(capability);
 
     #region Equals
-    public override bool Equals(IMaybeExpressionType? other)
+    public override bool Equals(IMaybeType? other)
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;

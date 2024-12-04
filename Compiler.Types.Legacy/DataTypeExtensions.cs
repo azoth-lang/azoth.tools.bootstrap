@@ -18,7 +18,7 @@ public static class DataTypeExtensions
     /// This does not account for implicit conversions, but does allow for borrowing
     /// and sharing. It also allows for isolated upgrading to mutable.
     /// </summary>
-    public static bool IsAssignableFrom(this IMaybeExpressionType target, IMaybeExpressionType source)
+    public static bool IsAssignableFrom(this IMaybeType target, IMaybeType source)
     {
         return (target, source) switch
         {
@@ -75,8 +75,8 @@ public static class DataTypeExtensions
     private static bool IsAssignableFrom(
         DeclaredType declaredType,
         bool targetAllowsWrite,
-        IFixedList<IMaybeExpressionType> target,
-        IFixedList<IMaybeExpressionType> source)
+        IFixedList<IMaybeType> target,
+        IFixedList<IMaybeType> source)
     {
         Requires.That(target.Count == declaredType.GenericParameters.Count, nameof(target), "count must match count of declaredType generic parameters");
         Requires.That(source.Count == target.Count, nameof(source), "count must match count of target");
@@ -205,7 +205,7 @@ public static class DataTypeExtensions
     /// If this is a reference type or an optional reference type, the underlying reference type.
     /// Otherwise, <see langword="null"/>.
     /// </summary>
-    public static CapabilityType? UnderlyingReferenceType(this IMaybeExpressionType type)
+    public static CapabilityType? UnderlyingReferenceType(this IMaybeType type)
     {
         return type switch
         {
@@ -218,7 +218,7 @@ public static class DataTypeExtensions
     /// <summary>
     /// Determine what the common type for two numeric types for a numeric operator is.
     /// </summary>
-    public static IMaybeType? NumericOperatorCommonType(this IMaybeExpressionType leftType, IMaybeExpressionType rightType)
+    public static IMaybeType? NumericOperatorCommonType(this IMaybeType leftType, IMaybeType rightType)
         => (leftType, rightType) switch
         {
             (_, NeverType) => IType.Never,
@@ -234,7 +234,7 @@ public static class DataTypeExtensions
             _ => null,
         };
 
-    private static IMaybeType? OptionalNumericOperatorCommonType(this IMaybeExpressionType leftType, IMaybeExpressionType rightType)
+    private static IMaybeType? OptionalNumericOperatorCommonType(this IMaybeType leftType, IMaybeType rightType)
     {
         var commonType = leftType.NumericOperatorCommonType(rightType);
         return commonType is not null ? OptionalType.Create(commonType) : null;

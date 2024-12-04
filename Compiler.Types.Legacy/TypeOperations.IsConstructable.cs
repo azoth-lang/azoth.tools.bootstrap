@@ -1,4 +1,5 @@
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Bare;
+using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.ConstValue;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Declared;
 using ExhaustiveMatching;
 
@@ -38,6 +39,7 @@ public static partial class TypeOperations
                     break;
                 case EmptyType _:
                 case FunctionType _:
+                case ConstValueType _:
                     // ignore
                     break;
                 default:

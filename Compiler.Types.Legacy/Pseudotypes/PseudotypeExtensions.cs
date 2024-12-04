@@ -8,7 +8,7 @@ public static class PseudotypeExtensions
     {
         return (target, source) switch
         {
-            (IMaybeExpressionType targetType, IMaybeExpressionType sourceType) => DataTypeExtensions.IsAssignableFrom(targetType, sourceType),
+            (IMaybeType targetType, IMaybeType sourceType) => DataTypeExtensions.IsAssignableFrom(targetType, sourceType),
             (CapabilityTypeConstraint targetType, CapabilityType sourceType) => targetType.IsAssignableFrom(sourceType),
             (CapabilityTypeConstraint targetType, CapabilityTypeConstraint sourceType) => targetType.IsAssignableFrom(sourceType),
             _ => false,
@@ -21,7 +21,7 @@ public static class PseudotypeExtensions
         {
             CapabilityType objectType => target.IsAssignableFrom(objectType),
             CapabilityTypeConstraint objectTypeConstraint => target.IsAssignableFrom(objectTypeConstraint),
-            IMaybeExpressionType _ => false,
+            IMaybeType _ => false,
             _ => throw ExhaustiveMatch.Failed(source),
         };
     }
@@ -38,7 +38,7 @@ public static class PseudotypeExtensions
     {
         return source switch
         {
-            IMaybeExpressionType sourceType => target.IsAssignableFrom(sourceType),
+            IMaybeType sourceType => target.IsAssignableFrom(sourceType),
             CapabilityTypeConstraint capabilityTypeConstraint
                 => target.BareType.IsAssignableFrom(target.AllowsWrite, capabilityTypeConstraint.BareType),
             _ => throw ExhaustiveMatch.Failed(source)

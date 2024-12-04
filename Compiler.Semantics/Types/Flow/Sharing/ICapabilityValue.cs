@@ -30,7 +30,7 @@ public interface ICapabilityValue : IValue
 
     private static void ForType<T>(
         ValueId id,
-        IMaybeExpressionType type,
+        IMaybeType type,
         Stack<int> index,
         bool capture,
         Dictionary<T, FlowCapability> values,

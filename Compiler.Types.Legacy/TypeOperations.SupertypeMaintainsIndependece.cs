@@ -1,5 +1,6 @@
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Bare;
+using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.ConstValue;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Declared;
 using ExhaustiveMatching;
 
@@ -14,6 +15,7 @@ public static partial class TypeOperations
             CapabilityType t => t.BareType.SupertypeMaintainsIndependence(exact),
             ViewpointType t => t.Referent.SupertypeMaintainsIndependence(exact, context),
             EmptyType _ => true,
+            ConstValueType _ => true,
             OptionalType t => t.Referent.SupertypeMaintainsIndependence(exact, context),
             FunctionType t => t.SupertypeMaintainsIndependence(),
             _ => throw ExhaustiveMatch.Failed(type),

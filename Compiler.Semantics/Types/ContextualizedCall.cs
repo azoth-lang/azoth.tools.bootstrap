@@ -11,22 +11,22 @@ public sealed class ContextualizedCall
         => new(null, function.ParameterTypes, function.ReturnType);
 
     public static ContextualizedCall Create(
-        IMaybeExpressionType constructingType,
+        IMaybeType constructingType,
         IConstructorDeclarationNode constructor)
         => Create(constructingType, constructor, constructor.SelfParameterType);
 
     public static ContextualizedCall Create(
-        IMaybeExpressionType initializingPlainType,
+        IMaybeType initializingPlainType,
         IInitializerDeclarationNode initializer)
         => Create(initializingPlainType, initializer, initializer.SelfParameterType);
 
     public static ContextualizedCall Create(
-        IMaybeExpressionType contextType,
+        IMaybeType contextType,
         IStandardMethodDeclarationNode method)
         => Create(contextType, method, method.SelfParameterType);
 
     public static ContextualizedCall Create<T>(
-        IMaybeExpressionType contextType,
+        IMaybeType contextType,
         T propertyAccessor)
         where T : IPropertyAccessorDeclarationNode
         => Create(contextType, propertyAccessor, propertyAccessor.SelfParameterType);
@@ -35,7 +35,7 @@ public sealed class ContextualizedCall
         => new(null, functionType.Parameters, functionType.Return);
 
     private static ContextualizedCall Create(
-        IMaybeExpressionType contextType,
+        IMaybeType contextType,
         IInvocableDeclarationNode node,
         IMaybeSelfParameterType selfParameterType)
     {

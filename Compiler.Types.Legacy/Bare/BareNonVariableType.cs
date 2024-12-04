@@ -104,12 +104,6 @@ public abstract class BareNonVariableType : BareType
     public IMaybeType ReplaceTypeParametersIn(IMaybeType type)
         => typeReplacements.Value.ReplaceTypeParametersIn(type);
 
-    public IExpressionType ReplaceTypeParametersIn(IExpressionType type)
-        => typeReplacements.Value.ReplaceTypeParametersIn(type);
-
-    public IMaybeExpressionType ReplaceTypeParametersIn(IMaybeExpressionType type)
-        => typeReplacements.Value.ReplaceTypeParametersIn(type);
-
     public BareReferenceType ReplaceTypeParametersIn(BareReferenceType type)
         => typeReplacements.Value.ReplaceTypeParametersIn(type);
 

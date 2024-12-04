@@ -1,13 +1,14 @@
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.ConstValue;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Declared;
+using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Pseudotypes;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
 
 [Closed(typeof(INonVoidType), typeof(EmptyType))]
-public interface IType : IExpressionType, IMaybeType
+public interface IType : IPseudotype, IMaybeType
 {
     #region Standard Types
     public new static readonly UnknownType Unknown = UnknownType.Instance;
@@ -42,9 +43,15 @@ public interface IType : IExpressionType, IMaybeType
     IMaybePlainType IMaybeType.ToPlainType() => ToPlainType();
 
     /// <summary>
+    /// Convert types for constant values to their corresponding types.
+    /// </summary>
+    new IType ToNonConstValueType();
+    IMaybeType IMaybeType.ToNonConstValueType() => ToNonConstValueType();
+
+    /// <summary>
     /// Return the type for when a value of this type is accessed via a reference with the given capability.
     /// </summary>
     /// <remarks>This can restrict the ability to write to the value.</remarks>
     new IType AccessedVia(ICapabilityConstraint capability);
-    IExpressionType IExpressionType.AccessedVia(ICapabilityConstraint capability) => AccessedVia(capability);
+    IMaybeType IMaybeType.AccessedVia(ICapabilityConstraint capability) => AccessedVia(capability);
 }

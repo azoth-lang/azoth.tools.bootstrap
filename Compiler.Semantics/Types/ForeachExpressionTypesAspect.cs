@@ -39,7 +39,7 @@ internal static partial class ForeachExpressionTypesAspect
         return flowState.Declare(node, node.InExpression?.ValueId);
     }
 
-    public static partial IMaybeExpressionType ForeachExpression_Type(IForeachExpressionNode node)
+    public static partial IMaybeType ForeachExpression_Type(IForeachExpressionNode node)
         // TODO assign correct type to the expression
         => IType.Void;
 

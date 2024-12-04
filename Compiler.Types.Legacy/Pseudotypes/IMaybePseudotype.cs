@@ -4,7 +4,7 @@ using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Pseudotypes;
 
-[Closed(typeof(IPseudotype), typeof(IMaybeExpressionType))]
+[Closed(typeof(IPseudotype), typeof(IMaybeType))]
 public interface IMaybePseudotype : IEquatable<IMaybePseudotype>
 {
     /// <summary>
@@ -15,7 +15,7 @@ public interface IMaybePseudotype : IEquatable<IMaybePseudotype>
     /// <summary>
     /// Create a type with the upper bound of the capability constraint.
     /// </summary>
-    IMaybeExpressionType ToUpperBound();
+    IMaybeType ToUpperBound();
 
     /// <summary>
     /// How this type would be written in source code.
