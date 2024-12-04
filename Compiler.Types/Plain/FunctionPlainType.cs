@@ -4,9 +4,19 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 
 public sealed class FunctionPlainType : INonVoidPlainType, IMaybeFunctionPlainType
 {
+    public static IMaybeFunctionPlainType Create(IEnumerable<IMaybeNonVoidPlainType> parameters, IMaybePlainType @return)
+    {
+        if (@return is not IPlainType returnType) return IPlainType.Unknown;
+
+        if (parameters.AsKnownFixedList() is not { } properParameters) return IPlainType.Unknown;
+
+        return new FunctionPlainType(properParameters.ToFixedList(), returnType);
+    }
+
     public TypeSemantics? Semantics => TypeSemantics.Reference;
     public IFixedList<INonVoidPlainType> Parameters { get; }
     public IPlainType Return { get; }
+    IMaybePlainType IMaybeFunctionPlainType.Return => Return;
 
     public FunctionPlainType(IEnumerable<INonVoidPlainType> parameters, IPlainType returnPlainType)
     {

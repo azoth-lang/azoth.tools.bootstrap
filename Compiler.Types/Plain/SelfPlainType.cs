@@ -16,7 +16,7 @@ public sealed class SelfPlainType : VariablePlainType
     public SelfPlainType(OrdinaryTypeConstructor containingType)
     {
         ContainingType = containingType;
-        Supertypes = containingType.Supertypes.Append(containingType.ConstructWithGenericParameterPlayTypes()).ToFixedSet();
+        Supertypes = containingType.Supertypes.Append(containingType.ConstructWithGenericParameterPlainTypes()).ToFixedSet();
     }
 
     #region Equality

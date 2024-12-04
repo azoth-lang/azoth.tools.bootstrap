@@ -12,8 +12,8 @@ internal static partial class NameBindingPlainTypesAspect
 
     public static partial IMaybePlainType SelfParameter_BindingPlainType(ISelfParameterNode node)
     {
-        var containingDeclaredPlainType = node.ContainingTypeDefinition.DeclaredPlainType;
-        return containingDeclaredPlainType.Construct(containingDeclaredPlainType.GenericParameterPlainTypes);
+        var containingTypeConstructor = node.ContainingTypeDefinition.TypeConstructor;
+        return containingTypeConstructor.Construct(containingTypeConstructor.GenericParameterPlainTypes);
     }
 
     public static partial IMaybePlainType PatternMatchExpression_Pattern_ContextBindingPlainType(IPatternMatchExpressionNode node)

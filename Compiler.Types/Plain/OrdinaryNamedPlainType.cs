@@ -8,6 +8,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 public sealed class OrdinaryNamedPlainType : NamedPlainType, INonVoidPlainType
 {
     public override TypeConstructor TypeConstructor { get; }
+    // TODO Nested Types: add ContainingType and enforce that it must match the context of the TypeConstructor
     public TypeSemantics? Semantics => TypeConstructor.Semantics;
     public override TypeName Name => TypeConstructor.Name;
     public override bool AllowsVariance => TypeConstructor.AllowsVariance;

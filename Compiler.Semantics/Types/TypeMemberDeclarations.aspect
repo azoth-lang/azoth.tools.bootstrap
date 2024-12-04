@@ -20,7 +20,7 @@
     => Parameters[index - 1].FlowStateAfter;
 = MethodDefinition.Body.**.FlowStateBefore()
     => Parameters.LastOrDefault()?.FlowStateAfter ?? SelfParameter.FlowStateAfter;
-= MethodDefinition.Body.**.ExpectedReturnType => Return?.NamedType ?? IType.Void;
+= MethodDefinition.Body.**.ExpectedReturnType => Self.ReturnType;
 = MethodDefinition.Body.ExpectedType => Self.ReturnType;
 = MethodDefinition.ReturnType => Return?.NamedType ?? IType.Void;
 = MethodDefinition.↑.Diagnostics;
@@ -29,7 +29,7 @@
 
 = StandardMethodDefinition.MethodGroupType => Symbol?.MethodGroupType ?? IMaybeFunctionType.Unknown;
 
-// TODO this can given unknown when the return type is known because a parameter type is known
+// TODO this shouldn't use Symbol
 = ConstructorDefinition.ReturnType => Symbol?.ReturnType ?? IMaybeType.Unknown;
 = DefaultConstructorDefinition.SelfParameterType => new SelfParameterType(false, Symbol!.SelfParameterType);
 = SourceConstructorDefinition.SelfParameterType => SelfParameter.ParameterType;
@@ -42,7 +42,7 @@
     => Parameters.LastOrDefault()?.FlowStateAfter ?? SelfParameter.FlowStateAfter;
 = SourceConstructorDefinition.Body.**.ExpectedReturnType => IType.Void;
 
-// TODO this can given unknown when the return type is known because a parameter type is known
+// TODO this shouldn't use Symbol
 = InitializerDefinition.ReturnType => Symbol?.ReturnType ?? IMaybeType.Unknown;
 = DefaultInitializerDefinition.SelfParameterType => new SelfParameterType(false, Symbol!.SelfParameterType);
 = SourceInitializerDefinition.SelfParameterType => SelfParameter.ParameterType;
@@ -65,8 +65,5 @@
     => Parameters[index - 1].FlowStateAfter;
 = AssociatedFunctionDefinition.Body.**.FlowStateBefore()
     => Parameters.LastOrDefault()?.FlowStateAfter ?? Self.FlowStateBefore();
-= AssociatedFunctionDefinition.Body.ExpectedType => Type.Return;
-= AssociatedFunctionDefinition.Body.**.ExpectedReturnType => Type.Return;
-
-// ---------- Control Flow Expressions
-↓ ReturnExpression.ExpectedReturnType: `IMaybeExpressionType`?;
+= AssociatedFunctionDefinition.Body.ExpectedType => Self.ReturnType;
+= AssociatedFunctionDefinition.Body.**.ExpectedReturnType => Self.ReturnType;

@@ -12,7 +12,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.PlainTypes;
 internal static partial class DefinitionPlainTypesAspect
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial OrdinaryTypeConstructor TypeDefinition_DeclaredPlainType(ITypeDefinitionNode node);
+    public static partial IMaybeFunctionPlainType ConcreteFunctionInvocableDefinition_PlainType(IConcreteFunctionInvocableDefinitionNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial OrdinaryTypeConstructor TypeDefinition_TypeConstructor(ITypeDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial SelfPlainType TypeDefinition_SelfPlainType(ITypeDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

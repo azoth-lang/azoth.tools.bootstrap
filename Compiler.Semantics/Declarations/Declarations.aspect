@@ -22,9 +22,11 @@
 
 // ---------- Declarations
 ↑ InvocableDeclaration.ParameterTypes: `IMaybeParameterType`*;
+↑ InvocableDeclaration.ReturnPlainType: `IMaybePlainType`;
 ↑ InvocableDeclaration.ReturnType: `IMaybeType`;
 ↑ InvocableDeclaration.Symbol: `InvocableSymbol`?;
 ↑ FunctionInvocableDeclaration.Symbol: `FunctionSymbol`?;
+↑ FunctionInvocableDeclaration.PlainType: `IMaybeFunctionPlainType`;
 ↑ FunctionInvocableDeclaration.Type: `IMaybeFunctionType`;
 
 // ---------- Namespace Declarations
@@ -56,6 +58,7 @@
 ↑ MethodDeclaration.SelfParameterType: `IMaybeSelfParameterType`;
 ↑ MethodDeclaration.Symbol: `MethodSymbol`?;
 ↑ StandardMethodDeclaration.Arity: `int`;
+↑ StandardMethodDeclaration.MethodGroupPlainType: `IMaybeFunctionPlainType`;
 ↑ StandardMethodDeclaration.MethodGroupType: `IMaybeFunctionType`;
 ↑ ConstructorDeclaration.SelfParameterType: `IMaybeSelfParameterType`;
 ↑ ConstructorDeclaration.Symbol: `ConstructorSymbol`?;

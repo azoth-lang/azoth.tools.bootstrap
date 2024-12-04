@@ -72,7 +72,9 @@
 // ---------- Function Symbol Nodes
 ↑ FunctionSymbol.Name: `IdentifierName` => Symbol.Name;
 = FunctionSymbol.ParameterTypes => Symbol.Type.Parameters;
+= FunctionSymbol.ReturnPlainType => Symbol.Type.Return.ToPlainType();
 = FunctionSymbol.ReturnType => Symbol.Type.Return;
+= FunctionSymbol.PlainType => Symbol.Type.ToPlainType();
 = FunctionSymbol.Type => Symbol.Type;
 
 // ---------- Type Symbol Nodes
@@ -120,23 +122,29 @@
 ↑ MethodSymbol.Name: `IdentifierName` => Symbol.Name;
 = MethodSymbol.SelfParameterType => Symbol.SelfParameterType;
 = MethodSymbol.ParameterTypes => Symbol.MethodGroupType.Parameters;
+= MethodSymbol.ReturnPlainType => Symbol.MethodGroupType.Return.ToPlainType();
 = MethodSymbol.ReturnType => Symbol.MethodGroupType.Return;
 + StandardMethodSymbol.new.Validate;
 = StandardMethodSymbol.Arity => Symbol.Arity;
+= StandardMethodSymbol.MethodGroupPlainType => Symbol.MethodGroupType.ToPlainType();
 = StandardMethodSymbol.MethodGroupType => Symbol.MethodGroupType;
 + GetterMethodSymbol.new.Validate;
 + SetterMethodSymbol.new.Validate;
 ↑ ConstructorSymbol.Name: `IdentifierName`? => Symbol.Name;
 = ConstructorSymbol.SelfParameterType => new SelfParameterType(false, Symbol.SelfParameterType);
 = ConstructorSymbol.ParameterTypes => Symbol.Parameters;
+= ConstructorSymbol.ReturnPlainType => Symbol.ReturnType.ToPlainType();
 = ConstructorSymbol.ReturnType => Symbol.ReturnType;
 ↑ InitializerSymbol.Name: `IdentifierName`? => Symbol.Name;
 = InitializerSymbol.SelfParameterType => new SelfParameterType(false, Symbol.SelfParameterType);
 = InitializerSymbol.ParameterTypes => Symbol.Parameters;
+= InitializerSymbol.ReturnPlainType => Symbol.ReturnType.ToPlainType();
 = InitializerSymbol.ReturnType => Symbol.ReturnType;
 = FieldSymbol.IsMutableBinding => Symbol.IsMutableBinding;
 ↑ FieldSymbol.Name: `IdentifierName` => Symbol.Name;
 = FieldSymbol.BindingType => Symbol.Type;
+= AssociatedFunctionSymbol.PlainType => Symbol.Type.ToPlainType();
 = AssociatedFunctionSymbol.Type => Symbol.Type;
 = AssociatedFunctionSymbol.ParameterTypes => Symbol.Type.Parameters;
+= AssociatedFunctionSymbol.ReturnPlainType => Symbol.Type.Return.ToPlainType();
 = AssociatedFunctionSymbol.ReturnType => Symbol.Type.Return;

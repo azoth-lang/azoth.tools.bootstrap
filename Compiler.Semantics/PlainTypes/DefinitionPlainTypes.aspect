@@ -5,21 +5,40 @@
 
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
-// ---------- Function Definition
+// ---------- Definitions
 // TODO it would be good to refactor to not depend on Type
-= FunctionDefinition.Body.ExpectedPlainType => Type.Return.ToPlainType();
+= ConcreteFunctionInvocableDefinition.ReturnPlainType => (Return?.NamedType ?? IType.Void).ToPlainType();
+= ConcreteFunctionInvocableDefinition.PlainType;
+
+// ---------- Function Definition
+= FunctionDefinition.Body.ExpectedPlainType => Self.ReturnPlainType;
+= FunctionDefinition.Body.**.ExpectedReturnPlainType => Self.ReturnPlainType;
 
 // ---------- Type Definitions
-↑ TypeDefinition.DeclaredPlainType:`OrdinaryTypeConstructor`;
-= TypeDefinition.DeclaredPlainType;
+↑ TypeDefinition.TypeConstructor:`OrdinaryTypeConstructor`;
+= TypeDefinition.TypeConstructor;
 ↑ TypeDefinition.SelfPlainType: `SelfPlainType`;
 = TypeDefinition.SelfPlainType;
 
 // ---------- Member Definitions
-// TODO it would be good to refactor to not depend on Type
+= MethodDefinition.Body.**.ExpectedReturnPlainType => Self.ReturnPlainType;
 = MethodDefinition.Body.ExpectedPlainType
-    => Self.ReturnType.ToPlainType();
+    => Self.ReturnPlainType;
+
+// TODO it would be good to refactor to not depend on Type
+= MethodDefinition.ReturnPlainType => (Return?.NamedType ?? IType.Void).ToPlainType();
 = FieldDefinition.BindingPlainType;
 // TODO it would be good to refactor to not depend on Type
-= AssociatedFunctionDefinition.Body.ExpectedPlainType
-    => Type.Return.ToPlainType();
+= AbstractMethodDefinition.MethodGroupPlainType => MethodGroupType.ToPlainType();
+// TODO it would be good to refactor to not depend on Type
+= StandardMethodDefinition.MethodGroupPlainType => MethodGroupType.ToPlainType();
+= ConstructorDefinition.ReturnPlainType
+    => ContainingTypeDefinition.TypeConstructor.ConstructWithGenericParameterPlainTypes();
+= SourceConstructorDefinition.Body.**.ExpectedReturnPlainType => IPlainType.Void;
+= InitializerDefinition.ReturnPlainType
+    => ContainingTypeDefinition.TypeConstructor.ConstructWithGenericParameterPlainTypes();
+= SourceInitializerDefinition.Body.**.ExpectedReturnPlainType => IPlainType.Void;
+// Null is the signal that this is a field initializer and not a method body
+= FieldDefinition.Initializer.**.ExpectedReturnPlainType => null;
+= AssociatedFunctionDefinition.Body.ExpectedPlainType => Self.ReturnPlainType;
+= AssociatedFunctionDefinition.Body.**.ExpectedReturnPlainType => Self.ReturnPlainType;

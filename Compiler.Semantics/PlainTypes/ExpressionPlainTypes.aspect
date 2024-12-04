@@ -52,7 +52,8 @@
 // ---------- Control Flow Expressions
 = IfExpression.Condition.ExpectedPlainType => IPlainType.OptionalBool;
 = WhileExpression.Condition.ExpectedPlainType => IPlainType.OptionalBool;
-= ReturnExpression.Value.ExpectedPlainType => ExpectedReturnType?.ToPlainType();
+↓ ReturnExpression.ExpectedReturnPlainType: `IMaybePlainType`?;
+= ReturnExpression.Value.ExpectedPlainType => ExpectedReturnPlainType;
 
 // ---------- Invocation Expressions
 = UnknownInvocationExpression.PlainType => IPlainType.Unknown;

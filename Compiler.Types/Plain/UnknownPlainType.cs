@@ -8,6 +8,8 @@ public sealed class UnknownPlainType : IMaybeFunctionPlainType
     private UnknownPlainType() { }
     #endregion
 
+    IMaybePlainType IMaybeFunctionPlainType.Return => IPlainType.Unknown;
+
     public IMaybePlainType ReplaceTypeParametersIn(IMaybePlainType plainType)
         => plainType;
 

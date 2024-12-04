@@ -55,12 +55,13 @@ public sealed class FunctionType : NonEmptyType, IMaybeFunctionType, INonVoidTyp
     public override int GetHashCode() => HashCode.Combine(Parameters, Return);
     #endregion
 
-    public override INonVoidPlainType ToPlainType()
+    public override FunctionPlainType ToPlainType()
     {
         var parameters = Parameters.Select(p => p.Type.ToPlainType()).ToFixedList();
-        return new FunctionPlainType(parameters, Return.ToPlainType());
+        return new(parameters, Return.ToPlainType());
     }
-    IMaybePlainType IMaybeType.ToPlainType() => ToPlainType();
+    IMaybeFunctionPlainType IMaybeFunctionType.ToPlainType() => ToPlainType();
+    INonVoidPlainType INonVoidType.ToPlainType() => ToPlainType();
 
     public override string ToSourceCodeString()
         => $"({string.Join(", ", Parameters.Select(t => t.ToSourceCodeString()))}) -> {Return.ToSourceCodeString()}";

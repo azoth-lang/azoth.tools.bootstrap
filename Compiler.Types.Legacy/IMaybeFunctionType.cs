@@ -1,3 +1,4 @@
+using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
@@ -15,4 +16,7 @@ public interface IMaybeFunctionType : IMaybeNonVoidType
     #endregion
 
     IMaybeType Return { get; }
+
+    new IMaybeFunctionPlainType ToPlainType();
+    IMaybePlainType IMaybeType.ToPlainType() => ToPlainType();
 }

@@ -135,6 +135,7 @@
 = WhileExpression.Block.**.FlowStateBefore
     => Condition?.FlowStateAfter ?? IFlowState.Empty;
 = WhileExpression.Condition.ExpectedType => IType.OptionalBool;
+↓ ReturnExpression.ExpectedReturnType: `IMaybeExpressionType`?;
 = ReturnExpression.Value.ExpectedType => ExpectedReturnType;
 = ReturnExpression.Value.ImplicitRecoveryAllowed() => true;
 = ReturnExpression.Value.ShouldPrepareToReturn() => true;

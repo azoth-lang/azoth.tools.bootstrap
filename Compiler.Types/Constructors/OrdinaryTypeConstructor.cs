@@ -77,10 +77,10 @@ public sealed class OrdinaryTypeConstructor : TypeConstructor
     IPlainType TypeConstructor.Construct(IEnumerable<IPlainType> typeArguments)
         => Construct(typeArguments);
 
-    public NamedPlainType ConstructWithGenericParameterPlayTypes()
+    public NamedPlainType ConstructWithGenericParameterPlainTypes()
         => Construct(GenericParameterPlainTypes);
     IPlainType TypeConstructor.ConstructWithGenericParameterPlainTypes()
-        => ConstructWithGenericParameterPlayTypes();
+        => ConstructWithGenericParameterPlainTypes();
 
     public IPlainType? TryConstructNullary()
         => Parameters.IsEmpty ? new OrdinaryNamedPlainType(this, []) : null;

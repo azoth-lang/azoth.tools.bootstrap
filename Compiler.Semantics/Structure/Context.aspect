@@ -38,6 +38,10 @@
 // ---------- Type Member Definitions
 ↓ computed AlwaysTypeMemberDefinition.ContainingDeclaration: UserTypeDeclaration;
 
+// ---------- Member Definitions
+↓ ConstructorDefinition.ContainingTypeDefinition: TypeDefinition;
+↓ InitializerDefinition.ContainingTypeDefinition: TypeDefinition;
+
 // ---------- Parameters
 ↓ SelfParameter.ContainingTypeDefinition: TypeDefinition;
 ↓ FieldParameter.ContainingTypeDefinition: TypeDefinition;

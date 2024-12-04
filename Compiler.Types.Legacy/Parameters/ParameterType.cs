@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Parameters;
 
@@ -29,6 +30,8 @@ public record class ParameterType(bool IsLent, INonVoidType Type) : IMaybeParame
 
     public bool ReferenceEquals(ParameterType other)
         => IsLent == other.IsLent && ReferenceEquals(Type, other.Type);
+
+    public IMaybeNonVoidPlainType ToPlainType() => Type.ToPlainType();
 
     public override string ToString() => throw new NotSupportedException();
 

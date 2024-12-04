@@ -383,6 +383,8 @@ public partial interface IConcreteFunctionInvocableDefinitionNode : IInvocableDe
     IBodyNode? IInvocableDefinitionNode.Body => Body;
     IMaybeType IInvocableDeclarationNode.ReturnType
         => Return?.NamedType ?? IType.Void;
+    IMaybePlainType IInvocableDeclarationNode.ReturnPlainType
+        => (Return?.NamedType ?? IType.Void).ToPlainType();
 }
 
 // [Closed(typeof(NamespaceBlockDefinitionNode))]
@@ -516,7 +518,7 @@ public partial interface ITypeDefinitionNode : IFacetMemberDefinitionNode, IAsso
     new Symbol ContainingSymbol
         => ContainingDeclaration.Symbol!;
     Symbol? IDefinitionNode.ContainingSymbol => ContainingSymbol;
-    OrdinaryTypeConstructor DeclaredPlainType { get; }
+    OrdinaryTypeConstructor TypeConstructor { get; }
     SelfPlainType SelfPlainType { get; }
     new IFixedSet<BareReferenceType> Supertypes { get; }
     IFixedSet<BareReferenceType> ITypeDeclarationNode.Supertypes => Supertypes;
@@ -758,6 +760,8 @@ public partial interface IMethodDefinitionNode : IAlwaysTypeMemberDefinitionNode
         => SelfParameter.ParameterType;
     IMaybeType IInvocableDeclarationNode.ReturnType
         => Return?.NamedType ?? IType.Void;
+    IMaybePlainType IInvocableDeclarationNode.ReturnPlainType
+        => (Return?.NamedType ?? IType.Void).ToPlainType();
 }
 
 // [Closed(typeof(AbstractMethodDefinitionNode))]
@@ -780,6 +784,8 @@ public partial interface IAbstractMethodDefinitionNode : IMethodDefinitionNode, 
         => MethodKind.Standard;
     int IStandardMethodDeclarationNode.Arity
         => Parameters.Count;
+    IMaybeFunctionPlainType IStandardMethodDeclarationNode.MethodGroupPlainType
+        => MethodGroupType.ToPlainType();
 
     public static IAbstractMethodDefinitionNode Create(
         IAbstractMethodDefinitionSyntax syntax,
@@ -807,6 +813,8 @@ public partial interface IStandardMethodDefinitionNode : IMethodDefinitionNode, 
         => MethodKind.Standard;
     int IStandardMethodDeclarationNode.Arity
         => Parameters.Count;
+    IMaybeFunctionPlainType IStandardMethodDeclarationNode.MethodGroupPlainType
+        => MethodGroupType.ToPlainType();
 
     public static IStandardMethodDefinitionNode Create(
         IStandardMethodDefinitionSyntax syntax,
@@ -876,12 +884,15 @@ public partial interface IConstructorDefinitionNode : IInvocableDefinitionNode, 
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     ITypeMemberDefinitionSyntax? ITypeMemberDefinitionNode.Syntax => Syntax;
+    ITypeDefinitionNode ContainingTypeDefinition { get; }
     new IdentifierName? Name
         => Syntax?.Name;
     StandardName? IPackageFacetChildDeclarationNode.Name => Name;
     IdentifierName? IConstructorDeclarationNode.Name => Name;
     IMaybeType IInvocableDeclarationNode.ReturnType
         => Symbol?.ReturnType ?? IMaybeType.Unknown;
+    IMaybePlainType IInvocableDeclarationNode.ReturnPlainType
+        => ContainingTypeDefinition.TypeConstructor.ConstructWithGenericParameterPlainTypes();
 }
 
 // [Closed(typeof(DefaultConstructorDefinitionNode))]
@@ -943,12 +954,15 @@ public partial interface IInitializerDefinitionNode : IInvocableDefinitionNode, 
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     ITypeMemberDefinitionSyntax? ITypeMemberDefinitionNode.Syntax => Syntax;
+    ITypeDefinitionNode ContainingTypeDefinition { get; }
     new IdentifierName? Name
         => Syntax?.Name;
     StandardName? IPackageFacetChildDeclarationNode.Name => Name;
     IdentifierName? IInitializerDeclarationNode.Name => Name;
     IMaybeType IInvocableDeclarationNode.ReturnType
         => Symbol?.ReturnType ?? IMaybeType.Unknown;
+    IMaybePlainType IInvocableDeclarationNode.ReturnPlainType
+        => ContainingTypeDefinition.TypeConstructor.ConstructWithGenericParameterPlainTypes();
 }
 
 // [Closed(typeof(DefaultInitializerDefinitionNode))]
@@ -2472,8 +2486,9 @@ public partial interface IReturnExpressionNode : INeverTypedExpressionNode
     IAmbiguousExpressionNode? TempValue { get; }
     IExpressionNode? Value { get; }
     IAmbiguousExpressionNode? CurrentValue { get; }
-    IExitNode ControlFlowExit();
     IMaybeExpressionType? ExpectedReturnType { get; }
+    IExitNode ControlFlowExit();
+    IMaybePlainType? ExpectedReturnPlainType { get; }
 
     public static IReturnExpressionNode Create(
         IReturnExpressionSyntax syntax,
@@ -3693,6 +3708,7 @@ public partial interface IPackageFacetChildDeclarationNode : IChildDeclarationNo
 public partial interface IInvocableDeclarationNode : ISymbolDeclarationNode, IChildDeclarationNode
 {
     IFixedList<IMaybeParameterType> ParameterTypes { get; }
+    IMaybePlainType ReturnPlainType { get; }
     IMaybeType ReturnType { get; }
     new InvocableSymbol? Symbol { get; }
     Symbol? ISymbolDeclarationNode.Symbol => Symbol;
@@ -3708,6 +3724,7 @@ public partial interface IFunctionInvocableDeclarationNode : INamedDeclarationNo
     new FunctionSymbol? Symbol { get; }
     InvocableSymbol? IInvocableDeclarationNode.Symbol => Symbol;
     Symbol? ISymbolDeclarationNode.Symbol => Symbol;
+    IMaybeFunctionPlainType PlainType { get; }
     IMaybeFunctionType Type { get; }
 }
 
@@ -3980,6 +3997,7 @@ public partial interface IMethodDeclarationNode : IClassMemberDeclarationNode, I
 public partial interface IStandardMethodDeclarationNode : IMethodDeclarationNode
 {
     int Arity { get; }
+    IMaybeFunctionPlainType MethodGroupPlainType { get; }
     IMaybeFunctionType MethodGroupType { get; }
 }
 
@@ -4163,8 +4181,12 @@ public partial interface IFunctionSymbolNode : IFunctionDeclarationNode, INamesp
     TypeName INamedDeclarationNode.Name => Name;
     IFixedList<IMaybeParameterType> IInvocableDeclarationNode.ParameterTypes
         => Symbol.Type.Parameters;
+    IMaybePlainType IInvocableDeclarationNode.ReturnPlainType
+        => Symbol.Type.Return.ToPlainType();
     IMaybeType IInvocableDeclarationNode.ReturnType
         => Symbol.Type.Return;
+    IMaybeFunctionPlainType IFunctionInvocableDeclarationNode.PlainType
+        => Symbol.Type.ToPlainType();
     IMaybeFunctionType IFunctionInvocableDeclarationNode.Type
         => Symbol.Type;
 
@@ -4411,6 +4433,8 @@ public partial interface IMethodSymbolNode : IMethodDeclarationNode, IClassMembe
         => Symbol.SelfParameterType;
     IFixedList<IMaybeParameterType> IInvocableDeclarationNode.ParameterTypes
         => Symbol.MethodGroupType.Parameters;
+    IMaybePlainType IInvocableDeclarationNode.ReturnPlainType
+        => Symbol.MethodGroupType.Return.ToPlainType();
     IMaybeType IInvocableDeclarationNode.ReturnType
         => Symbol.MethodGroupType.Return;
 }
@@ -4421,6 +4445,8 @@ public partial interface IStandardMethodSymbolNode : IStandardMethodDeclarationN
 {
     int IStandardMethodDeclarationNode.Arity
         => Symbol.Arity;
+    IMaybeFunctionPlainType IStandardMethodDeclarationNode.MethodGroupPlainType
+        => Symbol.MethodGroupType.ToPlainType();
     IMaybeFunctionType IStandardMethodDeclarationNode.MethodGroupType
         => Symbol.MethodGroupType;
 
@@ -4463,6 +4489,8 @@ public partial interface IConstructorSymbolNode : IConstructorDeclarationNode, I
         => new SelfParameterType(false, Symbol.SelfParameterType);
     IFixedList<IMaybeParameterType> IInvocableDeclarationNode.ParameterTypes
         => Symbol.Parameters;
+    IMaybePlainType IInvocableDeclarationNode.ReturnPlainType
+        => Symbol.ReturnType.ToPlainType();
     IMaybeType IInvocableDeclarationNode.ReturnType
         => Symbol.ReturnType;
 
@@ -4487,6 +4515,8 @@ public partial interface IInitializerSymbolNode : IInitializerDeclarationNode, I
         => new SelfParameterType(false, Symbol.SelfParameterType);
     IFixedList<IMaybeParameterType> IInvocableDeclarationNode.ParameterTypes
         => Symbol.Parameters;
+    IMaybePlainType IInvocableDeclarationNode.ReturnPlainType
+        => Symbol.ReturnType.ToPlainType();
     IMaybeType IInvocableDeclarationNode.ReturnType
         => Symbol.ReturnType;
 
@@ -4526,10 +4556,14 @@ public partial interface IAssociatedFunctionSymbolNode : IAssociatedFunctionDecl
     FunctionSymbol? IFunctionInvocableDeclarationNode.Symbol => Symbol;
     InvocableSymbol? IInvocableDeclarationNode.Symbol => Symbol;
     Symbol IChildSymbolNode.Symbol => Symbol;
+    IMaybeFunctionPlainType IFunctionInvocableDeclarationNode.PlainType
+        => Symbol.Type.ToPlainType();
     IMaybeFunctionType IFunctionInvocableDeclarationNode.Type
         => Symbol.Type;
     IFixedList<IMaybeParameterType> IInvocableDeclarationNode.ParameterTypes
         => Symbol.Type.Parameters;
+    IMaybePlainType IInvocableDeclarationNode.ReturnPlainType
+        => Symbol.Type.Return.ToPlainType();
     IMaybeType IInvocableDeclarationNode.ReturnType
         => Symbol.Type.Return;
 
@@ -4685,15 +4719,15 @@ internal abstract partial class SemanticNode : TreeNode, IChildTreeNode<ISemanti
     protected IDeclaredUserType Inherited_ContainingDeclaredType(IInheritanceContext ctx)
         => GetParent(ctx)!.Inherited_ContainingDeclaredType(this, this, ctx);
 
-    internal virtual IFlowState Inherited_FlowStateBefore(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-        => (GetParent(ctx) ?? throw Child.InheritFailed("FlowStateBefore", child, descendant)).Inherited_FlowStateBefore(this, descendant, ctx);
-    protected IFlowState Inherited_FlowStateBefore(IInheritanceContext ctx)
-        => GetParent(ctx)!.Inherited_FlowStateBefore(this, this, ctx);
-
     internal virtual ITypeDefinitionNode Inherited_ContainingTypeDefinition(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
         => (GetParent(ctx) ?? throw Child.InheritFailed("ContainingTypeDefinition", child, descendant)).Inherited_ContainingTypeDefinition(this, descendant, ctx);
     protected ITypeDefinitionNode Inherited_ContainingTypeDefinition(IInheritanceContext ctx)
         => GetParent(ctx)!.Inherited_ContainingTypeDefinition(this, this, ctx);
+
+    internal virtual IFlowState Inherited_FlowStateBefore(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+        => (GetParent(ctx) ?? throw Child.InheritFailed("FlowStateBefore", child, descendant)).Inherited_FlowStateBefore(this, descendant, ctx);
+    protected IFlowState Inherited_FlowStateBefore(IInheritanceContext ctx)
+        => GetParent(ctx)!.Inherited_FlowStateBefore(this, this, ctx);
 
     internal virtual IMaybeExpressionType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
         => (GetParent(ctx) ?? throw Child.InheritFailed("ExpectedType", child, descendant)).Inherited_ExpectedType(this, descendant, ctx);
@@ -4755,15 +4789,20 @@ internal abstract partial class SemanticNode : TreeNode, IChildTreeNode<ISemanti
     protected IMaybeNonVoidType Inherited_ContextBindingType(IInheritanceContext ctx)
         => GetParent(ctx)!.Inherited_ContextBindingType(this, this, ctx);
 
+    internal virtual IMaybeExpressionType? Inherited_ExpectedReturnType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+        => (GetParent(ctx) ?? throw Child.InheritFailed("ExpectedReturnType", child, descendant)).Inherited_ExpectedReturnType(this, descendant, ctx);
+    protected IMaybeExpressionType? Inherited_ExpectedReturnType(IInheritanceContext ctx)
+        => GetParent(ctx)!.Inherited_ExpectedReturnType(this, this, ctx);
+
     internal virtual IExitNode Inherited_ControlFlowExit(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
         => (GetParent(ctx) ?? throw Child.InheritFailed("ControlFlowExit", child, descendant)).Inherited_ControlFlowExit(this, descendant, ctx);
     protected IExitNode Inherited_ControlFlowExit(IInheritanceContext ctx)
         => GetParent(ctx)!.Inherited_ControlFlowExit(this, this, ctx);
 
-    internal virtual IMaybeExpressionType? Inherited_ExpectedReturnType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-        => (GetParent(ctx) ?? throw Child.InheritFailed("ExpectedReturnType", child, descendant)).Inherited_ExpectedReturnType(this, descendant, ctx);
-    protected IMaybeExpressionType? Inherited_ExpectedReturnType(IInheritanceContext ctx)
-        => GetParent(ctx)!.Inherited_ExpectedReturnType(this, this, ctx);
+    internal virtual IMaybePlainType? Inherited_ExpectedReturnPlainType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+        => (GetParent(ctx) ?? throw Child.InheritFailed("ExpectedReturnPlainType", child, descendant)).Inherited_ExpectedReturnPlainType(this, descendant, ctx);
+    protected IMaybePlainType? Inherited_ExpectedReturnPlainType(IInheritanceContext ctx)
+        => GetParent(ctx)!.Inherited_ExpectedReturnPlainType(this, this, ctx);
 
     internal virtual ISymbolTree Inherited_SymbolTree(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
         => (GetParent(ctx) ?? throw Child.InheritFailed("SymbolTree", child, descendant)).Inherited_SymbolTree(this, descendant, ctx);
@@ -5242,6 +5281,12 @@ file class FunctionDefinitionNode : SemanticNode, IFunctionDefinitionNode
                 DefinitionTypesAspect.InvocableDefinition_ParameterTypes);
     private IFixedList<IMaybeParameterType>? parameterTypes;
     private bool parameterTypesCached;
+    public IMaybeFunctionPlainType PlainType
+        => GrammarAttribute.IsCached(in plainTypeCached) ? plainType!
+            : this.Synthetic(ref plainTypeCached, ref plainType,
+                DefinitionPlainTypesAspect.ConcreteFunctionInvocableDefinition_PlainType);
+    private IMaybeFunctionPlainType? plainType;
+    private bool plainTypeCached;
     public FunctionSymbol? Symbol
         => GrammarAttribute.IsCached(in symbolCached) ? symbol
             : this.Synthetic(ref symbolCached, ref symbol,
@@ -5308,21 +5353,28 @@ file class FunctionDefinitionNode : SemanticNode, IFunctionDefinitionNode
     internal override IMaybePlainType? Inherited_ExpectedPlainType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.Body))
-            return Type.Return.ToPlainType();
+            return Self.ReturnPlainType;
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
+    }
+
+    internal override IMaybePlainType? Inherited_ExpectedReturnPlainType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.Body))
+            return Self.ReturnPlainType;
+        return base.Inherited_ExpectedReturnPlainType(child, descendant, ctx);
     }
 
     internal override IMaybeExpressionType? Inherited_ExpectedReturnType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, Self.Body))
-            return Type.Return;
+            return Self.ReturnType;
         return base.Inherited_ExpectedReturnType(child, descendant, ctx);
     }
 
     internal override IMaybeExpressionType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.Body))
-            return Type.Return;
+            return Self.ReturnType;
         return base.Inherited_ExpectedType(child, descendant, ctx);
     }
 
@@ -5397,12 +5449,6 @@ file class ClassDefinitionNode : SemanticNode, IClassDefinitionNode
                 NameLookupAspect.UserTypeDeclaration_AssociatedMembersByName);
     private FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>>? associatedMembersByName;
     private bool associatedMembersByNameCached;
-    public OrdinaryTypeConstructor DeclaredPlainType
-        => GrammarAttribute.IsCached(in declaredPlainTypeCached) ? declaredPlainType!
-            : this.Synthetic(ref declaredPlainTypeCached, ref declaredPlainType,
-                DefinitionPlainTypesAspect.TypeDefinition_DeclaredPlainType);
-    private OrdinaryTypeConstructor? declaredPlainType;
-    private bool declaredPlainTypeCached;
     public ObjectType DeclaredType
         => GrammarAttribute.IsCached(in declaredTypeCached) ? declaredType!
             : this.Synthetic(ref declaredTypeCached, ref declaredType,
@@ -5469,6 +5515,12 @@ file class ClassDefinitionNode : SemanticNode, IClassDefinitionNode
                 SymbolsAspect.TypeDefinition_Symbol);
     private OrdinaryTypeSymbol? symbol;
     private bool symbolCached;
+    public OrdinaryTypeConstructor TypeConstructor
+        => GrammarAttribute.IsCached(in typeConstructorCached) ? typeConstructor!
+            : this.Synthetic(ref typeConstructorCached, ref typeConstructor,
+                DefinitionPlainTypesAspect.TypeDefinition_TypeConstructor);
+    private OrdinaryTypeConstructor? typeConstructor;
+    private bool typeConstructorCached;
 
     public ClassDefinitionNode(
         IClassDefinitionSyntax syntax,
@@ -5571,12 +5623,6 @@ file class StructDefinitionNode : SemanticNode, IStructDefinitionNode
                 NameLookupAspect.UserTypeDeclaration_AssociatedMembersByName);
     private FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>>? associatedMembersByName;
     private bool associatedMembersByNameCached;
-    public OrdinaryTypeConstructor DeclaredPlainType
-        => GrammarAttribute.IsCached(in declaredPlainTypeCached) ? declaredPlainType!
-            : this.Synthetic(ref declaredPlainTypeCached, ref declaredPlainType,
-                DefinitionPlainTypesAspect.TypeDefinition_DeclaredPlainType);
-    private OrdinaryTypeConstructor? declaredPlainType;
-    private bool declaredPlainTypeCached;
     public StructType DeclaredType
         => GrammarAttribute.IsCached(in declaredTypeCached) ? declaredType!
             : this.Synthetic(ref declaredTypeCached, ref declaredType,
@@ -5643,6 +5689,12 @@ file class StructDefinitionNode : SemanticNode, IStructDefinitionNode
                 SymbolsAspect.TypeDefinition_Symbol);
     private OrdinaryTypeSymbol? symbol;
     private bool symbolCached;
+    public OrdinaryTypeConstructor TypeConstructor
+        => GrammarAttribute.IsCached(in typeConstructorCached) ? typeConstructor!
+            : this.Synthetic(ref typeConstructorCached, ref typeConstructor,
+                DefinitionPlainTypesAspect.TypeDefinition_TypeConstructor);
+    private OrdinaryTypeConstructor? typeConstructor;
+    private bool typeConstructorCached;
 
     public StructDefinitionNode(
         IStructDefinitionSyntax syntax,
@@ -5742,12 +5794,6 @@ file class TraitDefinitionNode : SemanticNode, ITraitDefinitionNode
                 NameLookupAspect.UserTypeDeclaration_AssociatedMembersByName);
     private FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>>? associatedMembersByName;
     private bool associatedMembersByNameCached;
-    public OrdinaryTypeConstructor DeclaredPlainType
-        => GrammarAttribute.IsCached(in declaredPlainTypeCached) ? declaredPlainType!
-            : this.Synthetic(ref declaredPlainTypeCached, ref declaredPlainType,
-                DefinitionPlainTypesAspect.TypeDefinition_DeclaredPlainType);
-    private OrdinaryTypeConstructor? declaredPlainType;
-    private bool declaredPlainTypeCached;
     public ObjectType DeclaredType
         => GrammarAttribute.IsCached(in declaredTypeCached) ? declaredType!
             : this.Synthetic(ref declaredTypeCached, ref declaredType,
@@ -5802,6 +5848,12 @@ file class TraitDefinitionNode : SemanticNode, ITraitDefinitionNode
                 SymbolsAspect.TypeDefinition_Symbol);
     private OrdinaryTypeSymbol? symbol;
     private bool symbolCached;
+    public OrdinaryTypeConstructor TypeConstructor
+        => GrammarAttribute.IsCached(in typeConstructorCached) ? typeConstructor!
+            : this.Synthetic(ref typeConstructorCached, ref typeConstructor,
+                DefinitionPlainTypesAspect.TypeDefinition_TypeConstructor);
+    private OrdinaryTypeConstructor? typeConstructor;
+    private bool typeConstructorCached;
 
     public TraitDefinitionNode(
         ITraitDefinitionSyntax syntax,
@@ -6031,14 +6083,21 @@ file class AbstractMethodDefinitionNode : SemanticNode, IAbstractMethodDefinitio
     internal override IMaybePlainType? Inherited_ExpectedPlainType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.Body))
-            return Self.ReturnType.ToPlainType();
+            return Self.ReturnPlainType;
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
+    }
+
+    internal override IMaybePlainType? Inherited_ExpectedReturnPlainType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.Body))
+            return Self.ReturnPlainType;
+        return base.Inherited_ExpectedReturnPlainType(child, descendant, ctx);
     }
 
     internal override IMaybeExpressionType? Inherited_ExpectedReturnType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, Self.Body))
-            return Return?.NamedType ?? IType.Void;
+            return Self.ReturnType;
         return base.Inherited_ExpectedReturnType(child, descendant, ctx);
     }
 
@@ -6206,14 +6265,21 @@ file class StandardMethodDefinitionNode : SemanticNode, IStandardMethodDefinitio
     internal override IMaybePlainType? Inherited_ExpectedPlainType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.Body))
-            return Self.ReturnType.ToPlainType();
+            return Self.ReturnPlainType;
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
+    }
+
+    internal override IMaybePlainType? Inherited_ExpectedReturnPlainType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.Body))
+            return Self.ReturnPlainType;
+        return base.Inherited_ExpectedReturnPlainType(child, descendant, ctx);
     }
 
     internal override IMaybeExpressionType? Inherited_ExpectedReturnType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, Self.Body))
-            return Return?.NamedType ?? IType.Void;
+            return Self.ReturnType;
         return base.Inherited_ExpectedReturnType(child, descendant, ctx);
     }
 
@@ -6380,14 +6446,21 @@ file class GetterMethodDefinitionNode : SemanticNode, IGetterMethodDefinitionNod
     internal override IMaybePlainType? Inherited_ExpectedPlainType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.Body))
-            return Self.ReturnType.ToPlainType();
+            return Self.ReturnPlainType;
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
+    }
+
+    internal override IMaybePlainType? Inherited_ExpectedReturnPlainType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.Body))
+            return Self.ReturnPlainType;
+        return base.Inherited_ExpectedReturnPlainType(child, descendant, ctx);
     }
 
     internal override IMaybeExpressionType? Inherited_ExpectedReturnType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, Self.Body))
-            return Return?.NamedType ?? IType.Void;
+            return Self.ReturnType;
         return base.Inherited_ExpectedReturnType(child, descendant, ctx);
     }
 
@@ -6554,14 +6627,21 @@ file class SetterMethodDefinitionNode : SemanticNode, ISetterMethodDefinitionNod
     internal override IMaybePlainType? Inherited_ExpectedPlainType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.Body))
-            return Self.ReturnType.ToPlainType();
+            return Self.ReturnPlainType;
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
+    }
+
+    internal override IMaybePlainType? Inherited_ExpectedReturnPlainType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.Body))
+            return Self.ReturnPlainType;
+        return base.Inherited_ExpectedReturnPlainType(child, descendant, ctx);
     }
 
     internal override IMaybeExpressionType? Inherited_ExpectedReturnType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, Self.Body))
-            return Return?.NamedType ?? IType.Void;
+            return Self.ReturnType;
         return base.Inherited_ExpectedReturnType(child, descendant, ctx);
     }
 
@@ -6638,6 +6718,12 @@ file class DefaultConstructorDefinitionNode : SemanticNode, IDefaultConstructorD
                 (ctx) => (IPackageFacetNode)Inherited_Facet(ctx));
     private IPackageFacetNode? facet;
     private bool facetCached;
+    public ITypeDefinitionNode ContainingTypeDefinition
+        => GrammarAttribute.IsCached(in containingTypeDefinitionCached) ? containingTypeDefinition!
+            : this.Inherited(ref containingTypeDefinitionCached, ref containingTypeDefinition,
+                Inherited_ContainingTypeDefinition);
+    private ITypeDefinitionNode? containingTypeDefinition;
+    private bool containingTypeDefinitionCached;
     public AccessModifier AccessModifier
         => GrammarAttribute.IsCached(in accessModifierCached) ? accessModifier
             : this.Synthetic(ref accessModifierCached, ref accessModifier, ref syncLock,
@@ -6751,6 +6837,12 @@ file class SourceConstructorDefinitionNode : SemanticNode, ISourceConstructorDef
                 (ctx) => (IPackageFacetNode)Inherited_Facet(ctx));
     private IPackageFacetNode? facet;
     private bool facetCached;
+    public ITypeDefinitionNode ContainingTypeDefinition
+        => GrammarAttribute.IsCached(in containingTypeDefinitionCached) ? containingTypeDefinition!
+            : this.Inherited(ref containingTypeDefinitionCached, ref containingTypeDefinition,
+                Inherited_ContainingTypeDefinition);
+    private ITypeDefinitionNode? containingTypeDefinition;
+    private bool containingTypeDefinitionCached;
     public AccessModifier AccessModifier
         => GrammarAttribute.IsCached(in accessModifierCached) ? accessModifier
             : this.Synthetic(ref accessModifierCached, ref accessModifier, ref syncLock,
@@ -6831,6 +6923,13 @@ file class SourceConstructorDefinitionNode : SemanticNode, ISourceConstructorDef
         return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
     }
 
+    internal override IMaybePlainType? Inherited_ExpectedReturnPlainType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.Body))
+            return IPlainType.Void;
+        return base.Inherited_ExpectedReturnPlainType(child, descendant, ctx);
+    }
+
     internal override IMaybeExpressionType? Inherited_ExpectedReturnType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, Self.Body))
@@ -6888,6 +6987,12 @@ file class DefaultInitializerDefinitionNode : SemanticNode, IDefaultInitializerD
                 (ctx) => (IPackageFacetNode)Inherited_Facet(ctx));
     private IPackageFacetNode? facet;
     private bool facetCached;
+    public ITypeDefinitionNode ContainingTypeDefinition
+        => GrammarAttribute.IsCached(in containingTypeDefinitionCached) ? containingTypeDefinition!
+            : this.Inherited(ref containingTypeDefinitionCached, ref containingTypeDefinition,
+                Inherited_ContainingTypeDefinition);
+    private ITypeDefinitionNode? containingTypeDefinition;
+    private bool containingTypeDefinitionCached;
     public AccessModifier AccessModifier
         => GrammarAttribute.IsCached(in accessModifierCached) ? accessModifier
             : this.Synthetic(ref accessModifierCached, ref accessModifier, ref syncLock,
@@ -7001,6 +7106,12 @@ file class SourceInitializerDefinitionNode : SemanticNode, ISourceInitializerDef
                 (ctx) => (IPackageFacetNode)Inherited_Facet(ctx));
     private IPackageFacetNode? facet;
     private bool facetCached;
+    public ITypeDefinitionNode ContainingTypeDefinition
+        => GrammarAttribute.IsCached(in containingTypeDefinitionCached) ? containingTypeDefinition!
+            : this.Inherited(ref containingTypeDefinitionCached, ref containingTypeDefinition,
+                Inherited_ContainingTypeDefinition);
+    private ITypeDefinitionNode? containingTypeDefinition;
+    private bool containingTypeDefinitionCached;
     public AccessModifier AccessModifier
         => GrammarAttribute.IsCached(in accessModifierCached) ? accessModifier
             : this.Synthetic(ref accessModifierCached, ref accessModifier, ref syncLock,
@@ -7079,6 +7190,13 @@ file class SourceInitializerDefinitionNode : SemanticNode, ISourceInitializerDef
         if (ReferenceEquals(child, Self.Body))
             return ControlFlowSet.CreateNormal(Exit);
         return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
+    }
+
+    internal override IMaybePlainType? Inherited_ExpectedReturnPlainType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.Body))
+            return IPlainType.Void;
+        return base.Inherited_ExpectedReturnPlainType(child, descendant, ctx);
     }
 
     internal override IMaybeExpressionType? Inherited_ExpectedReturnType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -7219,6 +7337,13 @@ file class FieldDefinitionNode : SemanticNode, IFieldDefinitionNode
         return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
     }
 
+    internal override IMaybePlainType? Inherited_ExpectedReturnPlainType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.CurrentInitializer))
+            return null;
+        return base.Inherited_ExpectedReturnPlainType(child, descendant, ctx);
+    }
+
     internal override IMaybeExpressionType? Inherited_ExpectedReturnType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, Self.CurrentInitializer))
@@ -7298,6 +7423,12 @@ file class AssociatedFunctionDefinitionNode : SemanticNode, IAssociatedFunctionD
                 DefinitionTypesAspect.InvocableDefinition_ParameterTypes);
     private IFixedList<IMaybeParameterType>? parameterTypes;
     private bool parameterTypesCached;
+    public IMaybeFunctionPlainType PlainType
+        => GrammarAttribute.IsCached(in plainTypeCached) ? plainType!
+            : this.Synthetic(ref plainTypeCached, ref plainType,
+                DefinitionPlainTypesAspect.ConcreteFunctionInvocableDefinition_PlainType);
+    private IMaybeFunctionPlainType? plainType;
+    private bool plainTypeCached;
     public FunctionSymbol? Symbol
         => GrammarAttribute.IsCached(in symbolCached) ? symbol
             : this.Synthetic(ref symbolCached, ref symbol,
@@ -7362,21 +7493,28 @@ file class AssociatedFunctionDefinitionNode : SemanticNode, IAssociatedFunctionD
     internal override IMaybePlainType? Inherited_ExpectedPlainType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.Body))
-            return Type.Return.ToPlainType();
+            return Self.ReturnPlainType;
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
+    }
+
+    internal override IMaybePlainType? Inherited_ExpectedReturnPlainType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.Body))
+            return Self.ReturnPlainType;
+        return base.Inherited_ExpectedReturnPlainType(child, descendant, ctx);
     }
 
     internal override IMaybeExpressionType? Inherited_ExpectedReturnType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, Self.Body))
-            return Type.Return;
+            return Self.ReturnType;
         return base.Inherited_ExpectedReturnType(child, descendant, ctx);
     }
 
     internal override IMaybeExpressionType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.Body))
-            return Type.Return;
+            return Self.ReturnType;
         return base.Inherited_ExpectedType(child, descendant, ctx);
     }
 
@@ -12471,14 +12609,20 @@ file class ReturnExpressionNode : SemanticNode, IReturnExpressionNode
                 Inherited_ExpectedPlainType);
     private IMaybePlainType? expectedPlainType;
     private bool expectedPlainTypeCached;
-    public IExitNode ControlFlowExit()
-        => Inherited_ControlFlowExit(GrammarAttribute.CurrentInheritanceContext());
     public IMaybeExpressionType? ExpectedReturnType
         => GrammarAttribute.IsCached(in expectedReturnTypeCached) ? expectedReturnType
             : this.Inherited(ref expectedReturnTypeCached, ref expectedReturnType,
                 Inherited_ExpectedReturnType);
     private IMaybeExpressionType? expectedReturnType;
     private bool expectedReturnTypeCached;
+    public IExitNode ControlFlowExit()
+        => Inherited_ControlFlowExit(GrammarAttribute.CurrentInheritanceContext());
+    public IMaybePlainType? ExpectedReturnPlainType
+        => GrammarAttribute.IsCached(in expectedReturnPlainTypeCached) ? expectedReturnPlainType
+            : this.Inherited(ref expectedReturnPlainTypeCached, ref expectedReturnPlainType,
+                Inherited_ExpectedReturnPlainType);
+    private IMaybePlainType? expectedReturnPlainType;
+    private bool expectedReturnPlainTypeCached;
     public ControlFlowSet ControlFlowNext
         => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
             : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
@@ -12516,7 +12660,7 @@ file class ReturnExpressionNode : SemanticNode, IReturnExpressionNode
     internal override IMaybePlainType? Inherited_ExpectedPlainType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.CurrentValue))
-            return ExpectedReturnType?.ToPlainType();
+            return ExpectedReturnPlainType;
         if (ReferenceEquals(child, descendant))
             return null;
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
