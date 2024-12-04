@@ -10,7 +10,7 @@ public sealed class BoolLiteralTypeConstructor : LiteralTypeConstructor
     internal static readonly BoolLiteralTypeConstructor False = new(false);
 
     public bool Value { get; }
-    public override OrdinaryNamedPlainType PlainType { get; }
+    public override ConstructedPlainType PlainType { get; }
     private BoolLiteralTypeConstructor(bool value)
         : base(SpecialTypeName.Bool)
     {

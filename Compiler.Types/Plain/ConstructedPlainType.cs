@@ -5,7 +5,11 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 
-public sealed class OrdinaryNamedPlainType : NamedPlainType, INonVoidPlainType
+/// <summary>
+/// A plain type constructed from a type constructor.
+/// </summary>
+/// <remarks>This includes all types defined in source code, all simple types, and the `Any` type.</remarks>
+public sealed class ConstructedPlainType : NamedPlainType, INonVoidPlainType
 {
     public override TypeConstructor TypeConstructor { get; }
     // TODO Nested Types: add ContainingType and enforce that it must match the context of the TypeConstructor
@@ -13,10 +17,10 @@ public sealed class OrdinaryNamedPlainType : NamedPlainType, INonVoidPlainType
     public override TypeName Name => TypeConstructor.Name;
     public override bool AllowsVariance => TypeConstructor.AllowsVariance;
     public override IFixedList<IPlainType> TypeArguments { get; }
-    public override IFixedSet<OrdinaryNamedPlainType> Supertypes { get; }
+    public override IFixedSet<ConstructedPlainType> Supertypes { get; }
     private readonly PlainTypeReplacements plainTypeReplacements;
 
-    public OrdinaryNamedPlainType(TypeConstructor typeConstructor, IEnumerable<IPlainType> typeArguments)
+    public ConstructedPlainType(TypeConstructor typeConstructor, IEnumerable<IPlainType> typeArguments)
     {
         TypeConstructor = typeConstructor;
         TypeArguments = typeArguments.ToFixedList();
@@ -28,7 +32,7 @@ public sealed class OrdinaryNamedPlainType : NamedPlainType, INonVoidPlainType
 
         plainTypeReplacements = new(TypeConstructor, TypeArguments);
 
-        Supertypes = typeConstructor.Supertypes.Select(s => (OrdinaryNamedPlainType)ReplaceTypeParametersIn(s)).ToFixedSet();
+        Supertypes = typeConstructor.Supertypes.Select(s => (ConstructedPlainType)ReplaceTypeParametersIn(s)).ToFixedSet();
     }
 
     public IPlainType ToNonLiteral()
@@ -38,7 +42,7 @@ public sealed class OrdinaryNamedPlainType : NamedPlainType, INonVoidPlainType
         if (TypeConstructor.Equals(newTypeConstructor)) return this;
         // Literal type constructors will have parameters, whereas their corresponding non-literal
         // types won't. Thus, do not pass any type arguments.
-        return new OrdinaryNamedPlainType(newTypeConstructor, []);
+        return new ConstructedPlainType(newTypeConstructor, []);
     }
 
     public override IMaybePlainType ReplaceTypeParametersIn(IMaybePlainType plainType)
@@ -49,7 +53,7 @@ public sealed class OrdinaryNamedPlainType : NamedPlainType, INonVoidPlainType
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
-        return other is OrdinaryNamedPlainType that
+        return other is ConstructedPlainType that
                && TypeConstructor.Equals(that.TypeConstructor)
                && TypeArguments.Equals(that.TypeArguments);
     }

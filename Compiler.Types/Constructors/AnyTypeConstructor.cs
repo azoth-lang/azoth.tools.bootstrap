@@ -14,8 +14,8 @@ public sealed class AnyTypeConstructor : TypeConstructor
     private AnyTypeConstructor() { }
     #endregion
 
-    internal static readonly OrdinaryNamedPlainType PlainType = new(Instance, []);
-    internal static readonly IFixedSet<OrdinaryNamedPlainType> Set = PlainType.Yield().ToFixedSet();
+    internal static readonly ConstructedPlainType PlainType = new(Instance, []);
+    internal static readonly IFixedSet<ConstructedPlainType> Set = PlainType.Yield().ToFixedSet();
 
     TypeConstructorContext TypeConstructor.Context => PrimitiveContext.Instance;
 
@@ -35,7 +35,7 @@ public sealed class AnyTypeConstructor : TypeConstructor
     IFixedList<GenericParameterPlainType> TypeConstructor.GenericParameterPlainTypes
         => FixedList.Empty<GenericParameterPlainType>();
 
-    IFixedSet<OrdinaryNamedPlainType> TypeConstructor.Supertypes => FixedSet.Empty<OrdinaryNamedPlainType>();
+    IFixedSet<ConstructedPlainType> TypeConstructor.Supertypes => FixedSet.Empty<ConstructedPlainType>();
 
     #region Equality
     public bool Equals(TypeConstructor? other)

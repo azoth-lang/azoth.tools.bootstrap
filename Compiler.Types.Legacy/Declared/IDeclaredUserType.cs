@@ -66,6 +66,6 @@ internal static class DeclaredUserTypeExtensions
         return new(context, isAbstract, declaredType.Name, plainTypeGenericParameters, supertypes, semantics);
     }
 
-    private static IFixedSet<OrdinaryNamedPlainType> PlainTypeSupertypes(this IDeclaredUserType declaredType)
-        => declaredType.Supertypes.Select(t => t.ToPlainType()).Cast<OrdinaryNamedPlainType>().Append(IPlainType.Any).ToFixedSet();
+    private static IFixedSet<ConstructedPlainType> PlainTypeSupertypes(this IDeclaredUserType declaredType)
+        => declaredType.Supertypes.Select(t => t.ToPlainType()).Cast<ConstructedPlainType>().Append(IPlainType.Any).ToFixedSet();
 }

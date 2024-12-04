@@ -41,7 +41,7 @@ public sealed class OrdinaryTypeConstructor : TypeConstructor
     /// variables. These are the types of those variables.
     /// </summary>
     public IFixedList<GenericParameterPlainType> GenericParameterPlainTypes { get; }
-    public IFixedSet<OrdinaryNamedPlainType> Supertypes { get; }
+    public IFixedSet<ConstructedPlainType> Supertypes { get; }
     public TypeSemantics Semantics { get; }
 
     public OrdinaryTypeConstructor(
@@ -49,7 +49,7 @@ public sealed class OrdinaryTypeConstructor : TypeConstructor
         bool isAbstract,
         StandardName name,
         IEnumerable<TypeConstructorParameter> genericParameters,
-        IFixedSet<OrdinaryNamedPlainType> supertypes,
+        IFixedSet<ConstructedPlainType> supertypes,
         TypeSemantics semantics)
     {
         Context = context;
@@ -67,7 +67,7 @@ public sealed class OrdinaryTypeConstructor : TypeConstructor
                                                      .ToFixedList();
     }
 
-    public OrdinaryNamedPlainType Construct(IEnumerable<IPlainType> typeArguments)
+    public ConstructedPlainType Construct(IEnumerable<IPlainType> typeArguments)
     {
         var args = typeArguments.ToFixedList();
         if (args.Count != Parameters.Count)
@@ -77,13 +77,13 @@ public sealed class OrdinaryTypeConstructor : TypeConstructor
     IPlainType TypeConstructor.Construct(IEnumerable<IPlainType> typeArguments)
         => Construct(typeArguments);
 
-    public OrdinaryNamedPlainType ConstructWithGenericParameterPlainTypes()
+    public ConstructedPlainType ConstructWithGenericParameterPlainTypes()
         => Construct(GenericParameterPlainTypes);
     IPlainType TypeConstructor.ConstructWithGenericParameterPlainTypes()
         => ConstructWithGenericParameterPlainTypes();
 
-    public OrdinaryNamedPlainType? TryConstructNullary()
-        => Parameters.IsEmpty ? new OrdinaryNamedPlainType(this, []) : null;
+    public ConstructedPlainType? TryConstructNullary()
+        => Parameters.IsEmpty ? new ConstructedPlainType(this, []) : null;
     IPlainType? TypeConstructor.TryConstructNullary() => TryConstructNullary();
 
     #region Equality

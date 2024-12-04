@@ -10,5 +10,5 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 public interface NumericTypeConstructor : TypeConstructor
 {
     // TODO IntegerLiteralTypeConstructor shouldn't really have a plain type
-    OrdinaryNamedPlainType PlainType { get; }
+    ConstructedPlainType PlainType { get; }
 }

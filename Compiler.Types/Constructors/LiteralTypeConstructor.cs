@@ -34,9 +34,9 @@ public abstract class LiteralTypeConstructor : SimpleOrLiteralTypeConstructor
         => FixedList.Empty<GenericParameterPlainType>();
 
     // TODO should this instead include the non-literal type (e.g. `int` or `bool`)?
-    public sealed override IFixedSet<OrdinaryNamedPlainType> Supertypes => AnyTypeConstructor.Set;
+    public sealed override IFixedSet<ConstructedPlainType> Supertypes => AnyTypeConstructor.Set;
 
-    public abstract OrdinaryNamedPlainType PlainType { get; }
+    public abstract ConstructedPlainType PlainType { get; }
 
     private protected LiteralTypeConstructor(SpecialTypeName name)
     {

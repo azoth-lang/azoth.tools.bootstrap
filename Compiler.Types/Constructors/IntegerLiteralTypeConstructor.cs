@@ -15,8 +15,8 @@ public sealed class IntegerLiteralTypeConstructor : LiteralTypeConstructor, Nume
     public bool IsInt16
         => Value >= TypeConstructor.Int16.MinValue && Value <= TypeConstructor.Int16.MaxValue;
 
-    public override OrdinaryNamedPlainType PlainType => LazyInitializer.EnsureInitialized(ref plainType, ConstructPlainType);
-    private OrdinaryNamedPlainType? plainType;
+    public override ConstructedPlainType PlainType => LazyInitializer.EnsureInitialized(ref plainType, ConstructPlainType);
+    private ConstructedPlainType? plainType;
 
     public IntegerLiteralTypeConstructor(BigInteger value)
         : base(SpecialTypeName.Int)
@@ -100,7 +100,7 @@ public sealed class IntegerLiteralTypeConstructor : LiteralTypeConstructor, Nume
     public override int GetHashCode() => HashCode.Combine(Value);
     #endregion
 
-    private OrdinaryNamedPlainType ConstructPlainType() => new(this, []);
+    private ConstructedPlainType ConstructPlainType() => new(this, []);
 
     public override string ToString() => $"int[{Value}]";
 }

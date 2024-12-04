@@ -48,8 +48,8 @@ public static partial class PlainTypeOperations
             return true;
 
         // TODO remove hack to allow string to exist in both primitives and stdlib
-        if (self is OrdinaryNamedPlainType s
-           && other is OrdinaryNamedPlainType o
+        if (self is ConstructedPlainType s
+           && other is ConstructedPlainType o
            && s.Name == "String" && o.Name == "String"
            && s.TypeConstructor.Context is NamespaceContext sc
            && sc.Namespace == NamespaceName.Global

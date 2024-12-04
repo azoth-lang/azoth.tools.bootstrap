@@ -27,7 +27,7 @@ public abstract class SimpleOrLiteralTypeConstructor : TypeConstructor
 
     public abstract IFixedList<GenericParameterPlainType> GenericParameterPlainTypes { get; }
 
-    public abstract IFixedSet<OrdinaryNamedPlainType> Supertypes { get; }
+    public abstract IFixedSet<ConstructedPlainType> Supertypes { get; }
 
     public abstract IPlainType Construct(IEnumerable<IPlainType> typeArguments);
     public abstract bool Equals(TypeConstructor? other);

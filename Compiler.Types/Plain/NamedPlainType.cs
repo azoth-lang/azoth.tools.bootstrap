@@ -8,7 +8,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 /// <summary>
 /// An plainType that is defined by its name.
 /// </summary>
-[Closed(typeof(OrdinaryNamedPlainType), typeof(VariablePlainType), typeof(EmptyPlainType))]
+[Closed(typeof(ConstructedPlainType), typeof(VariablePlainType), typeof(EmptyPlainType))]
 public abstract class NamedPlainType : IPlainType
 {
     public abstract TypeConstructor? TypeConstructor { get; }

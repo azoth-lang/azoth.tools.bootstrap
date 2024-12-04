@@ -12,7 +12,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 //   * GenericParameterPlainType
 //   * SelfParameterPlainType
 //   * AssociatedPlainType
-// * OrdinaryNamedPlainType
+// * ConstructedPlainType
 public sealed class CapabilityType
 {
 

@@ -28,9 +28,9 @@ public abstract class SimpleTypeConstructor : SimpleOrLiteralTypeConstructor
     public sealed override IFixedList<GenericParameterPlainType> GenericParameterPlainTypes
         => FixedList.Empty<GenericParameterPlainType>();
 
-    public sealed override IFixedSet<OrdinaryNamedPlainType> Supertypes => AnyTypeConstructor.Set;
+    public sealed override IFixedSet<ConstructedPlainType> Supertypes => AnyTypeConstructor.Set;
 
-    public OrdinaryNamedPlainType PlainType { get; }
+    public ConstructedPlainType PlainType { get; }
 
     private protected SimpleTypeConstructor(SpecialTypeName name)
     {

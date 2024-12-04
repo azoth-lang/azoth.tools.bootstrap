@@ -10,7 +10,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
 
 public static class SimpleOrLiteralTypeConstructorExtensions
 {
-    public static IExpressionType ToType(this OrdinaryNamedPlainType plainType)
+    public static IExpressionType ToType(this ConstructedPlainType plainType)
         => plainType.TypeConstructor switch
         {
             SimpleOrLiteralTypeConstructor t => t.ToType(),

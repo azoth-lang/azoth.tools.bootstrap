@@ -452,17 +452,17 @@ internal static partial class ExpressionTypesAspect
         switch (node.LeftOperand)
         {
             case IFieldAccessExpressionNode fieldAccess:
-            {
-                var contextType = fieldAccess.Context.Type;
-                if (contextType is CapabilityType { AllowsWrite: false, AllowsInit: false } capabilityType)
-                    diagnostics.Add(TypeError.CannotAssignFieldOfReadOnly(node.File, node.Syntax.Span, capabilityType));
+                {
+                    var contextType = fieldAccess.Context.Type;
+                    if (contextType is CapabilityType { AllowsWrite: false, AllowsInit: false } capabilityType)
+                        diagnostics.Add(TypeError.CannotAssignFieldOfReadOnly(node.File, node.Syntax.Span, capabilityType));
 
-                // Check for assigning into `let` fields (skip self fields in constructors and initializers)
-                if (contextType is not CapabilityType { AllowsInit: true } && fieldAccess.ReferencedDeclaration.Symbol is
-                    { IsMutableBinding: false, Name: IdentifierName name })
-                    diagnostics.Add(OtherSemanticError.CannotAssignImmutableField(node.File, node.Syntax.Span, name));
-                break;
-            }
+                    // Check for assigning into `let` fields (skip self fields in constructors and initializers)
+                    if (contextType is not CapabilityType { AllowsInit: true } && fieldAccess.ReferencedDeclaration.Symbol is
+                        { IsMutableBinding: false, Name: IdentifierName name })
+                        diagnostics.Add(OtherSemanticError.CannotAssignImmutableField(node.File, node.Syntax.Span, name));
+                    break;
+                }
             case IVariableNameExpressionNode:
                 // TODO fix this condition. It is really about LValues
                 break;
@@ -487,7 +487,7 @@ internal static partial class ExpressionTypesAspect
 
     public static partial IMaybeExpressionType BinaryOperatorExpression_Type(IBinaryOperatorExpressionNode node)
     {
-        if (node.PlainType is OrdinaryNamedPlainType { TypeConstructor: SimpleOrLiteralTypeConstructor simpleOrLiteralTypeConstructor })
+        if (node.PlainType is ConstructedPlainType { TypeConstructor: SimpleOrLiteralTypeConstructor simpleOrLiteralTypeConstructor })
             return simpleOrLiteralTypeConstructor.ToType();
         if (node.PlainType is UnknownPlainType)
             return IType.Unknown;
@@ -678,7 +678,7 @@ internal static partial class ExpressionTypesAspect
     public static partial IMaybeExpressionType UnaryOperatorExpression_Type(IUnaryOperatorExpressionNode node)
         => node.PlainType switch
         {
-            OrdinaryNamedPlainType { TypeConstructor: SimpleOrLiteralTypeConstructor t }
+            ConstructedPlainType { TypeConstructor: SimpleOrLiteralTypeConstructor t }
                 => t.ToType(),
             UnknownPlainType => IType.Unknown,
             _ => throw new InvalidOperationException($"Unexpected plainType {node.PlainType}")

@@ -62,7 +62,7 @@ internal static partial class ExpressionPlainTypesAspect
         var rightPlainType = node.RightOperand?.PlainType ?? IPlainType.Unknown;
         return (leftPlainType, node.Operator, rightPlainType) switch
         {
-            (OrdinaryNamedPlainType { TypeConstructor: IntegerLiteralTypeConstructor },
+            (ConstructedPlainType { TypeConstructor: IntegerLiteralTypeConstructor },
                 BinaryOperator.Plus
                 or BinaryOperator.Minus
                 or BinaryOperator.Asterisk
@@ -73,25 +73,25 @@ internal static partial class ExpressionPlainTypesAspect
                 or BinaryOperator.LessThanOrEqual
                 or BinaryOperator.GreaterThan
                 or BinaryOperator.GreaterThanOrEqual,
-                OrdinaryNamedPlainType { TypeConstructor: IntegerLiteralTypeConstructor }) => null,
+                ConstructedPlainType { TypeConstructor: IntegerLiteralTypeConstructor }) => null,
 
-            (OrdinaryNamedPlainType { TypeConstructor: BoolLiteralTypeConstructor },
+            (ConstructedPlainType { TypeConstructor: BoolLiteralTypeConstructor },
                 BinaryOperator.EqualsEquals
                 or BinaryOperator.NotEqual
                 or BinaryOperator.And
                 or BinaryOperator.Or,
-                OrdinaryNamedPlainType { TypeConstructor: BoolLiteralTypeConstructor }) => null,
+                ConstructedPlainType { TypeConstructor: BoolLiteralTypeConstructor }) => null,
 
             (INonVoidPlainType { Semantics: TypeSemantics.Reference }, BinaryOperator.ReferenceEquals, INonVoidPlainType { Semantics: TypeSemantics.Reference })
                 or (INonVoidPlainType { Semantics: TypeSemantics.Reference }, BinaryOperator.NotReferenceEqual, INonVoidPlainType { Semantics: TypeSemantics.Reference })
                 => null,
 
-            (OrdinaryNamedPlainType { TypeConstructor: BoolTypeConstructor },
+            (ConstructedPlainType { TypeConstructor: BoolTypeConstructor },
                 BinaryOperator.EqualsEquals
                 or BinaryOperator.NotEqual
                 or BinaryOperator.And
                 or BinaryOperator.Or,
-                OrdinaryNamedPlainType { TypeConstructor: BoolTypeConstructor })
+                ConstructedPlainType { TypeConstructor: BoolTypeConstructor })
                 => null,
 
             (IPlainType, BinaryOperator.Plus, IPlainType)
@@ -125,46 +125,46 @@ internal static partial class ExpressionPlainTypesAspect
         var rightPlainType = node.RightOperand?.PlainType ?? IPlainType.Unknown;
         return (leftPlainType, node.Operator, rightPlainType) switch
         {
-            (OrdinaryNamedPlainType { TypeConstructor: IntegerLiteralTypeConstructor left }, BinaryOperator.Plus,
-                OrdinaryNamedPlainType { TypeConstructor: IntegerLiteralTypeConstructor right }) => left.Add(right).PlainType,
-            (OrdinaryNamedPlainType { TypeConstructor: IntegerLiteralTypeConstructor left }, BinaryOperator.Minus,
-                OrdinaryNamedPlainType { TypeConstructor: IntegerLiteralTypeConstructor right }) => left.Subtract(right).PlainType,
-            (OrdinaryNamedPlainType { TypeConstructor: IntegerLiteralTypeConstructor left }, BinaryOperator.Asterisk,
-                OrdinaryNamedPlainType { TypeConstructor: IntegerLiteralTypeConstructor right }) => left.Multiply(right).PlainType,
-            (OrdinaryNamedPlainType { TypeConstructor: IntegerLiteralTypeConstructor left }, BinaryOperator.Slash,
-                OrdinaryNamedPlainType { TypeConstructor: IntegerLiteralTypeConstructor right }) => left.DivideBy(right).PlainType,
-            (OrdinaryNamedPlainType { TypeConstructor: IntegerLiteralTypeConstructor left }, BinaryOperator.EqualsEquals,
-                OrdinaryNamedPlainType { TypeConstructor: IntegerLiteralTypeConstructor right }) => left.Equals(right).PlainType,
-            (OrdinaryNamedPlainType { TypeConstructor: IntegerLiteralTypeConstructor left }, BinaryOperator.NotEqual,
-                OrdinaryNamedPlainType { TypeConstructor: IntegerLiteralTypeConstructor right }) => left.NotEquals(right).PlainType,
-            (OrdinaryNamedPlainType { TypeConstructor: IntegerLiteralTypeConstructor left }, BinaryOperator.LessThan,
-                OrdinaryNamedPlainType { TypeConstructor: IntegerLiteralTypeConstructor right }) => left.LessThan(right).PlainType,
-            (OrdinaryNamedPlainType { TypeConstructor: IntegerLiteralTypeConstructor left }, BinaryOperator.LessThanOrEqual,
-                OrdinaryNamedPlainType { TypeConstructor: IntegerLiteralTypeConstructor right }) => left.LessThanOrEqual(right).PlainType,
-            (OrdinaryNamedPlainType { TypeConstructor: IntegerLiteralTypeConstructor left }, BinaryOperator.GreaterThan,
-                OrdinaryNamedPlainType { TypeConstructor: IntegerLiteralTypeConstructor right }) => left.GreaterThan(right).PlainType,
-            (OrdinaryNamedPlainType { TypeConstructor: IntegerLiteralTypeConstructor left }, BinaryOperator.GreaterThanOrEqual,
-                OrdinaryNamedPlainType { TypeConstructor: IntegerLiteralTypeConstructor right }) => left.GreaterThanOrEqual(right).PlainType,
+            (ConstructedPlainType { TypeConstructor: IntegerLiteralTypeConstructor left }, BinaryOperator.Plus,
+                ConstructedPlainType { TypeConstructor: IntegerLiteralTypeConstructor right }) => left.Add(right).PlainType,
+            (ConstructedPlainType { TypeConstructor: IntegerLiteralTypeConstructor left }, BinaryOperator.Minus,
+                ConstructedPlainType { TypeConstructor: IntegerLiteralTypeConstructor right }) => left.Subtract(right).PlainType,
+            (ConstructedPlainType { TypeConstructor: IntegerLiteralTypeConstructor left }, BinaryOperator.Asterisk,
+                ConstructedPlainType { TypeConstructor: IntegerLiteralTypeConstructor right }) => left.Multiply(right).PlainType,
+            (ConstructedPlainType { TypeConstructor: IntegerLiteralTypeConstructor left }, BinaryOperator.Slash,
+                ConstructedPlainType { TypeConstructor: IntegerLiteralTypeConstructor right }) => left.DivideBy(right).PlainType,
+            (ConstructedPlainType { TypeConstructor: IntegerLiteralTypeConstructor left }, BinaryOperator.EqualsEquals,
+                ConstructedPlainType { TypeConstructor: IntegerLiteralTypeConstructor right }) => left.Equals(right).PlainType,
+            (ConstructedPlainType { TypeConstructor: IntegerLiteralTypeConstructor left }, BinaryOperator.NotEqual,
+                ConstructedPlainType { TypeConstructor: IntegerLiteralTypeConstructor right }) => left.NotEquals(right).PlainType,
+            (ConstructedPlainType { TypeConstructor: IntegerLiteralTypeConstructor left }, BinaryOperator.LessThan,
+                ConstructedPlainType { TypeConstructor: IntegerLiteralTypeConstructor right }) => left.LessThan(right).PlainType,
+            (ConstructedPlainType { TypeConstructor: IntegerLiteralTypeConstructor left }, BinaryOperator.LessThanOrEqual,
+                ConstructedPlainType { TypeConstructor: IntegerLiteralTypeConstructor right }) => left.LessThanOrEqual(right).PlainType,
+            (ConstructedPlainType { TypeConstructor: IntegerLiteralTypeConstructor left }, BinaryOperator.GreaterThan,
+                ConstructedPlainType { TypeConstructor: IntegerLiteralTypeConstructor right }) => left.GreaterThan(right).PlainType,
+            (ConstructedPlainType { TypeConstructor: IntegerLiteralTypeConstructor left }, BinaryOperator.GreaterThanOrEqual,
+                ConstructedPlainType { TypeConstructor: IntegerLiteralTypeConstructor right }) => left.GreaterThanOrEqual(right).PlainType,
 
-            (OrdinaryNamedPlainType { TypeConstructor: BoolLiteralTypeConstructor left }, BinaryOperator.EqualsEquals,
-                OrdinaryNamedPlainType { TypeConstructor: BoolLiteralTypeConstructor right }) => left.Equals(right).PlainType,
-            (OrdinaryNamedPlainType { TypeConstructor: BoolLiteralTypeConstructor left }, BinaryOperator.NotEqual,
-                OrdinaryNamedPlainType { TypeConstructor: BoolLiteralTypeConstructor right }) => left.NotEquals(right).PlainType,
-            (OrdinaryNamedPlainType { TypeConstructor: BoolLiteralTypeConstructor left }, BinaryOperator.And,
-                OrdinaryNamedPlainType { TypeConstructor: BoolLiteralTypeConstructor right }) => left.And(right).PlainType,
-            (OrdinaryNamedPlainType { TypeConstructor: BoolLiteralTypeConstructor left }, BinaryOperator.Or,
-                OrdinaryNamedPlainType { TypeConstructor: BoolLiteralTypeConstructor right }) => left.Or(right).PlainType,
+            (ConstructedPlainType { TypeConstructor: BoolLiteralTypeConstructor left }, BinaryOperator.EqualsEquals,
+                ConstructedPlainType { TypeConstructor: BoolLiteralTypeConstructor right }) => left.Equals(right).PlainType,
+            (ConstructedPlainType { TypeConstructor: BoolLiteralTypeConstructor left }, BinaryOperator.NotEqual,
+                ConstructedPlainType { TypeConstructor: BoolLiteralTypeConstructor right }) => left.NotEquals(right).PlainType,
+            (ConstructedPlainType { TypeConstructor: BoolLiteralTypeConstructor left }, BinaryOperator.And,
+                ConstructedPlainType { TypeConstructor: BoolLiteralTypeConstructor right }) => left.And(right).PlainType,
+            (ConstructedPlainType { TypeConstructor: BoolLiteralTypeConstructor left }, BinaryOperator.Or,
+                ConstructedPlainType { TypeConstructor: BoolLiteralTypeConstructor right }) => left.Or(right).PlainType,
 
             (INonVoidPlainType { Semantics: TypeSemantics.Reference }, BinaryOperator.ReferenceEquals, INonVoidPlainType { Semantics: TypeSemantics.Reference })
                 or (INonVoidPlainType { Semantics: TypeSemantics.Reference }, BinaryOperator.NotReferenceEqual, INonVoidPlainType { Semantics: TypeSemantics.Reference })
                 => IPlainType.Bool,
 
-            (OrdinaryNamedPlainType { TypeConstructor: BoolTypeConstructor },
+            (ConstructedPlainType { TypeConstructor: BoolTypeConstructor },
                 BinaryOperator.EqualsEquals
                 or BinaryOperator.NotEqual
                 or BinaryOperator.And
                 or BinaryOperator.Or,
-                OrdinaryNamedPlainType { TypeConstructor: BoolTypeConstructor })
+                ConstructedPlainType { TypeConstructor: BoolTypeConstructor })
                 => IPlainType.Bool,
 
             (IPlainType, BinaryOperator.Plus, IPlainType)
@@ -271,7 +271,7 @@ internal static partial class ExpressionPlainTypesAspect
 
     public static partial IMaybePlainType AwaitExpression_PlainType(IAwaitExpressionNode node)
     {
-        if (node.Expression?.PlainType is OrdinaryNamedPlainType { TypeConstructor: var typeConstructor } plainType
+        if (node.Expression?.PlainType is ConstructedPlainType { TypeConstructor: var typeConstructor } plainType
             && Intrinsic.PromiseTypeConstructor.Equals(typeConstructor))
             return plainType.TypeArguments[0];
 
@@ -281,7 +281,7 @@ internal static partial class ExpressionPlainTypesAspect
     public static partial void AwaitExpression_Contribute_Diagnostics(IAwaitExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
         // TODO eliminate code duplication with AwaitExpression_PlainType
-        if (node.Expression?.PlainType is OrdinaryNamedPlainType { TypeConstructor: var typeConstructor }
+        if (node.Expression?.PlainType is ConstructedPlainType { TypeConstructor: var typeConstructor }
             && Intrinsic.PromiseTypeConstructor.Equals(typeConstructor))
             return;
 
@@ -299,14 +299,14 @@ internal static partial class ExpressionPlainTypesAspect
 
     private static IMaybePlainType UnaryOperatorExpression_PlainType_Not(IUnaryOperatorExpressionNode node)
     {
-        if (node.Operand?.PlainType is OrdinaryNamedPlainType { TypeConstructor: BoolLiteralTypeConstructor typeConstructor })
+        if (node.Operand?.PlainType is ConstructedPlainType { TypeConstructor: BoolLiteralTypeConstructor typeConstructor })
             return typeConstructor.Not().PlainType;
         return IPlainType.Bool;
     }
 
     private static IMaybePlainType UnaryOperatorExpression_PlainType_Minus(IUnaryOperatorExpressionNode node)
     {
-        if (node.Operand?.PlainType is not OrdinaryNamedPlainType plainType) return IPlainType.Unknown;
+        if (node.Operand?.PlainType is not ConstructedPlainType plainType) return IPlainType.Unknown;
         return plainType.TypeConstructor switch
         {
             IntegerLiteralTypeConstructor t => t.Negate().PlainType,
@@ -321,7 +321,7 @@ internal static partial class ExpressionPlainTypesAspect
     private static IMaybePlainType UnaryOperatorExpression_PlainType_Plus(IUnaryOperatorExpressionNode node)
         => node.Operand?.PlainType switch
         {
-            OrdinaryNamedPlainType { TypeConstructor: NumericTypeConstructor t } => t.PlainType,
+            ConstructedPlainType { TypeConstructor: NumericTypeConstructor t } => t.PlainType,
             _ => IPlainType.Unknown,
         };
 
@@ -331,7 +331,7 @@ internal static partial class ExpressionPlainTypesAspect
     {
         var operandPlainType = node.Operand!.PlainType;
         var cannotBeAppliedToOperandType
-            = operandPlainType is not OrdinaryNamedPlainType { TypeConstructor: var typeConstructor }
+            = operandPlainType is not ConstructedPlainType { TypeConstructor: var typeConstructor }
               || node.Operator switch
               {
                   UnaryOperator.Not => typeConstructor is not (BoolTypeConstructor or BoolLiteralTypeConstructor),
@@ -406,7 +406,7 @@ internal static partial class ExpressionPlainTypesAspect
         => fromType switch
         {
             UnknownPlainType => false,
-            OrdinaryNamedPlainType { TypeConstructor: var typeConstructor }
+            ConstructedPlainType { TypeConstructor: var typeConstructor }
                 => CanPossiblyImplicitlyConvertFrom(typeConstructor),
             OptionalPlainType { Referent: var referent } => CanPossiblyImplicitlyConvertFrom(referent),
             _ => false,
@@ -433,21 +433,21 @@ internal static partial class ExpressionPlainTypesAspect
             case (_, UnknownPlainType):
             case (IPlainType to, IPlainType from) when from.Equals(to):
                 return null;
-            case (OrdinaryNamedPlainType { TypeConstructor: FixedSizeIntegerTypeConstructor to },
-                OrdinaryNamedPlainType { TypeConstructor: FixedSizeIntegerTypeConstructor from }):
+            case (ConstructedPlainType { TypeConstructor: FixedSizeIntegerTypeConstructor to },
+                ConstructedPlainType { TypeConstructor: FixedSizeIntegerTypeConstructor from }):
                 if (to.Bits > from.Bits && (!from.IsSigned || to.IsSigned))
                     return to;
                 return null;
-            case (OrdinaryNamedPlainType { TypeConstructor: FixedSizeIntegerTypeConstructor to },
-                OrdinaryNamedPlainType { TypeConstructor: IntegerLiteralTypeConstructor from }):
+            case (ConstructedPlainType { TypeConstructor: FixedSizeIntegerTypeConstructor to },
+                ConstructedPlainType { TypeConstructor: IntegerLiteralTypeConstructor from }):
             {
                 // TODO make a method on plain types for this check
                 var requireSigned = from.Value < 0;
                 var bits = from.Value.GetByteCount(!to.IsSigned) * 8;
                 return to.Bits >= bits && (!requireSigned || to.IsSigned) ? to : null;
             }
-            case (OrdinaryNamedPlainType { TypeConstructor: PointerSizedIntegerTypeConstructor to },
-                OrdinaryNamedPlainType { TypeConstructor: IntegerLiteralTypeConstructor from }):
+            case (ConstructedPlainType { TypeConstructor: PointerSizedIntegerTypeConstructor to },
+                ConstructedPlainType { TypeConstructor: IntegerLiteralTypeConstructor from }):
             {
                 // TODO make a method on plain types for this check
                 var requireSigned = from.Value < 0;
@@ -456,20 +456,20 @@ internal static partial class ExpressionPlainTypesAspect
                 return bits <= 32 && (!requireSigned || to.IsSigned) ? to : null;
             }
             // Note: Both signed BigIntegerTypeConstructor has already been covered
-            case (OrdinaryNamedPlainType { TypeConstructor: BigIntegerTypeConstructor { IsSigned: true } },
-                OrdinaryNamedPlainType { TypeConstructor: IntegerTypeConstructor }):
-            case (OrdinaryNamedPlainType { TypeConstructor: BigIntegerTypeConstructor { IsSigned: true } },
-                OrdinaryNamedPlainType { TypeConstructor: IntegerLiteralTypeConstructor }):
+            case (ConstructedPlainType { TypeConstructor: BigIntegerTypeConstructor { IsSigned: true } },
+                ConstructedPlainType { TypeConstructor: IntegerTypeConstructor }):
+            case (ConstructedPlainType { TypeConstructor: BigIntegerTypeConstructor { IsSigned: true } },
+                ConstructedPlainType { TypeConstructor: IntegerLiteralTypeConstructor }):
                 return TypeConstructor.Int;
-            case (OrdinaryNamedPlainType { TypeConstructor: BigIntegerTypeConstructor to },
-                OrdinaryNamedPlainType
+            case (ConstructedPlainType { TypeConstructor: BigIntegerTypeConstructor to },
+                ConstructedPlainType
                 {
                     TypeConstructor: IntegerTypeConstructor { IsSigned: false }
                                         or IntegerLiteralTypeConstructor { IsSigned: false }
                 }):
                 return to;
-            case (OrdinaryNamedPlainType { TypeConstructor: BoolTypeConstructor },
-                OrdinaryNamedPlainType { TypeConstructor: BoolLiteralTypeConstructor }):
+            case (ConstructedPlainType { TypeConstructor: BoolTypeConstructor },
+                ConstructedPlainType { TypeConstructor: BoolLiteralTypeConstructor }):
                 return TypeConstructor.Bool;
             // TODO support lifted implicit conversions
             //case (OptionalPlainType { Referent: var to }, OptionalPlainType { Referent: var from }):

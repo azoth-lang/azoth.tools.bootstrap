@@ -2295,7 +2295,7 @@ public partial interface IImplicitConversionExpressionNode : IExpressionNode
 {
     IExpressionNode Referent { get; }
     IExpressionNode CurrentReferent { get; }
-    new OrdinaryNamedPlainType PlainType { get; }
+    new ConstructedPlainType PlainType { get; }
     IMaybePlainType IExpressionNode.PlainType => PlainType;
     new IMaybeType Type { get; }
     IMaybeExpressionType IExpressionNode.Type => Type;
@@ -2309,7 +2309,7 @@ public partial interface IImplicitConversionExpressionNode : IExpressionNode
 
     public static IImplicitConversionExpressionNode Create(
         IExpressionNode referent,
-        OrdinaryNamedPlainType plainType)
+        ConstructedPlainType plainType)
         => new ImplicitConversionExpressionNode(referent, plainType);
 }
 
@@ -11253,7 +11253,7 @@ file class ImplicitConversionExpressionNode : SemanticNode, IImplicitConversionE
         => GrammarAttribute.IsCached(in referentCached) ? referent.UnsafeValue
             : this.RewritableChild(ref referentCached, ref referent);
     public IExpressionNode CurrentReferent => referent.UnsafeValue;
-    public OrdinaryNamedPlainType PlainType { [DebuggerStepThrough] get; }
+    public ConstructedPlainType PlainType { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -11311,7 +11311,7 @@ file class ImplicitConversionExpressionNode : SemanticNode, IImplicitConversionE
 
     public ImplicitConversionExpressionNode(
         IExpressionNode referent,
-        OrdinaryNamedPlainType plainType)
+        ConstructedPlainType plainType)
     {
         this.referent = Child.Create(this, referent);
         PlainType = plainType;
