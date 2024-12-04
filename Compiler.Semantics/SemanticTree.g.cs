@@ -384,7 +384,7 @@ public partial interface IConcreteFunctionInvocableDefinitionNode : IInvocableDe
     IMaybeType IInvocableDeclarationNode.ReturnType
         => Return?.NamedType ?? IType.Void;
     IMaybePlainType IInvocableDeclarationNode.ReturnPlainType
-        => (Return?.NamedType ?? IType.Void).ToPlainType();
+        => Return?.NamedPlainType ?? IPlainType.Void;
 }
 
 // [Closed(typeof(NamespaceBlockDefinitionNode))]
@@ -763,7 +763,7 @@ public partial interface IMethodDefinitionNode : IAlwaysTypeMemberDefinitionNode
     IMaybeNonVoidPlainType IMethodDeclarationNode.SelfParameterPlainType
         => SelfParameter.BindingPlainType;
     IMaybePlainType IInvocableDeclarationNode.ReturnPlainType
-        => (Return?.NamedType ?? IType.Void).ToPlainType();
+        => Return?.NamedPlainType ?? IPlainType.Void;
 }
 
 // [Closed(typeof(AbstractMethodDefinitionNode))]
