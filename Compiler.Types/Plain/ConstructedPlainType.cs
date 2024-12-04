@@ -35,7 +35,7 @@ public sealed class ConstructedPlainType : ConstructedOrVariablePlainType
         Supertypes = typeConstructor.Supertypes.Select(s => (ConstructedPlainType)ReplaceTypeParametersIn(s)).ToFixedSet();
     }
 
-    public IPlainType ToNonLiteral()
+    public override IPlainType ToNonLiteral()
     {
         var newTypeConstructor = TypeConstructor.ToNonLiteral();
         // Avoid constructing a new object when not needed.

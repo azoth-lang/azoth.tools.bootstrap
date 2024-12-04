@@ -24,6 +24,10 @@ public abstract class ConstructedOrVariablePlainType : INonVoidPlainType
 
     public abstract IMaybePlainType ReplaceTypeParametersIn(IMaybePlainType plainType);
 
+    /// <remarks>Needed here to allow <see cref="ConstructedPlainType"/> to override it because the
+    /// interface method will otherwise not get overridden.</remarks>
+    public virtual IPlainType ToNonLiteral() => this;
+
     #region Equality
     public abstract bool Equals(IMaybePlainType? other);
 
