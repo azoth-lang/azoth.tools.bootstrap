@@ -7,7 +7,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.PlainTypes;
 internal static partial class TypeExpressionsPlainTypesAspect
 {
     public static partial IMaybePlainType ViewpointType_NamedPlainType(IViewpointTypeNode node)
-        // Viewpoint has no effect on the plainType
+        // Viewpoint has no effect on the plain type
         => node.Referent.NamedPlainType;
 
     public static partial IMaybePlainType OptionalType_NamedPlainType(IOptionalTypeNode node)
@@ -16,7 +16,7 @@ internal static partial class TypeExpressionsPlainTypesAspect
     // TODO report error for `void?`
 
     public static partial IMaybePlainType CapabilityType_NamedPlainType(ICapabilityTypeNode node)
-        // Capability has not affect on the plainType
+        // Capability has no effect on the plain type
         => node.Referent.NamedPlainType;
 
     public static partial IMaybePlainType SpecialTypeName_NamedPlainType(ISpecialTypeNameNode node)
