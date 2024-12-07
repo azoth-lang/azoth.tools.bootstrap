@@ -11,7 +11,7 @@ using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Declared;
 
-[Closed(typeof(AnyType), typeof(ObjectType), typeof(DeclaredValueType))]
+[Closed(typeof(AnyType), typeof(ObjectType), typeof(StructType), typeof(SimpleType))]
 public abstract class DeclaredType : IEquatable<DeclaredType>
 {
     #region Standard Types

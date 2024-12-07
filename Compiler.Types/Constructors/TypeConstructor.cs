@@ -11,7 +11,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 /// <summary>
 /// A type constructor for a plain type.
 /// </summary>
-/// <remarks>A type constructor is a sort of template, factory, or kind for creating plain types.</remarks>
+/// <remarks><para>A type constructor is a sort of template, factory, or kind for creating plain
+/// types.</para>
+///
+/// <para>Note that this is an interface so that classes can use explicit interface implementation
+/// to hide members (e.g. <see cref="AnyTypeConstructor"/> hides <see cref="Context"/>.).</para></remarks>
 [Closed(
     typeof(OrdinaryTypeConstructor),
     typeof(AnyTypeConstructor),

@@ -10,7 +10,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Declared;
 [Closed(
     typeof(BoolType),
     typeof(NumericType))]
-public abstract class SimpleType : DeclaredValueType
+public abstract class SimpleType : DeclaredType
 {
     public override IdentifierName? ContainingPackage => null;
     public override NamespaceName ContainingNamespace => NamespaceName.Global;
@@ -24,9 +24,11 @@ public abstract class SimpleType : DeclaredValueType
     public abstract BareNonVariableType BareType { get; }
 
     public abstract CapabilityType Type { get; }
+    public override bool CanHaveFields => true;
+    public override bool CanBeSupertype => false;
 
     private protected SimpleType(SpecialTypeName name)
-        : base(isConstType: true, [])
+        : base(isDeclaredConst: true, [])
     {
         Name = name;
     }

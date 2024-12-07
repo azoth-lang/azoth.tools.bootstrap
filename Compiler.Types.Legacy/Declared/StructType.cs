@@ -18,7 +18,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Declared;
 /// A type declared with the struct keyword.
 /// </summary>
 /// <remarks>For now, all structs are copy structs.</remarks>
-public sealed class StructType : DeclaredValueType, IDeclaredUserType
+public sealed class StructType : DeclaredType, IDeclaredUserType
 {
     public static StructType Create(
         IdentifierName containingPackage,
@@ -68,6 +68,8 @@ public sealed class StructType : DeclaredValueType, IDeclaredUserType
     private OrdinaryTypeConstructor? typeConstructor;
 
     DeclaredType IDeclaredUserType.AsDeclaredType => this;
+    public override bool CanHaveFields => true;
+    public override bool CanBeSupertype => false;
 
     /// <summary>
     /// Make a version of this type for use as the default initializer parameter.
