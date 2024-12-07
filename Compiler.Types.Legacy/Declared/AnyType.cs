@@ -22,11 +22,11 @@ public sealed class AnyType : DeclaredReferenceType
     public override IdentifierName? ContainingPackage => null;
     public override NamespaceName ContainingNamespace => NamespaceName.Global;
     public override SpecialTypeName Name => SpecialTypeName.Any;
-    public override IFixedSet<BareReferenceType> Supertypes => [];
+    public override IFixedSet<BareNonVariableType> Supertypes => [];
 
-    public BareReferenceType BareType { get; }
+    public BareNonVariableType BareType { get; }
 
-    public override BareReferenceType With(IFixedList<IType> typeArguments)
+    public override BareNonVariableType With(IFixedList<IType> typeArguments)
     {
         RequiresEmpty(typeArguments);
         return BareType;

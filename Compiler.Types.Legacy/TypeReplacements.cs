@@ -28,7 +28,7 @@ internal sealed class TypeReplacements
         //      if they were copied down the hierarchy, but I don't think it should be needed when
         //      they are properly handled.
         foreach (var supertype in declaredType.Supertypes)
-            foreach (var (typeArg, i) in supertype.GenericTypeArguments.Enumerate())
+            foreach (var (typeArg, i) in supertype.TypeArguments.Enumerate())
             {
                 var genericParameterType = supertype.DeclaredType.GenericParameterTypes[i];
                 if (typeArg is GenericParameterType genericTypeArg)
@@ -150,17 +150,8 @@ internal sealed class TypeReplacements
 
     public BareNonVariableType ReplaceTypeParametersIn(BareNonVariableType type)
     {
-        var replacementTypes = ReplaceTypeParametersIn(type.GenericTypeArguments);
-        if (ReferenceEquals(type.GenericTypeArguments, replacementTypes)) return type;
-
-        return type.With(replacementTypes);
-    }
-
-    public BareReferenceType ReplaceTypeParametersIn(BareReferenceType type)
-    {
-        var replacementTypes = ReplaceTypeParametersIn(type.GenericTypeArguments);
-        if (ReferenceEquals(type.GenericTypeArguments, replacementTypes))
-            return type;
+        var replacementTypes = ReplaceTypeParametersIn(type.TypeArguments);
+        if (ReferenceEquals(type.TypeArguments, replacementTypes)) return type;
 
         return type.With(replacementTypes);
     }

@@ -15,7 +15,7 @@ public abstract class BareType : IEquatable<BareType>
 {
     public abstract DeclaredType? DeclaredType { get; }
     public abstract TypeName Name { get; }
-    public abstract IFixedList<IType> GenericTypeArguments { get; }
+    public abstract IFixedList<IType> TypeArguments { get; }
     public abstract IEnumerable<GenericParameterArgument> GenericParameterArguments { get; }
 
     public abstract CapabilityType With(Capability capability);

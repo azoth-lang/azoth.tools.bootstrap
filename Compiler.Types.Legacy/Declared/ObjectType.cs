@@ -19,8 +19,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Declared;
 /// </summary>
 public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
 {
-    private static readonly IFixedSet<BareReferenceType> AnyTypeSet
-        = AnyType.Instance.BareType.Yield().ToFixedSet<BareReferenceType>();
+    private static readonly IFixedSet<BareNonVariableType> AnyTypeSet
+        = AnyType.Instance.BareType.Yield().ToFixedSet<BareNonVariableType>();
 
     public static ObjectType CreateClass(
         IdentifierName containingPackage,
@@ -46,7 +46,7 @@ public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
         bool isConst,
         string name,
         IFixedList<GenericParameter> genericParameters,
-        IFixedSet<BareReferenceType> supertypes)
+        IFixedSet<BareNonVariableType> supertypes)
         => new(containingPackage, containingNamespace, isAbstract, isConst, isClass: true,
             StandardName.Create(name, genericParameters.Count), genericParameters, supertypes);
 
@@ -57,7 +57,7 @@ public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
         bool isConst,
         StandardName name,
         IFixedList<GenericParameter> genericParameters,
-        IFixedSet<BareReferenceType> supertypes)
+        IFixedSet<BareNonVariableType> supertypes)
     {
         Requires.That(name.GenericParameterCount == genericParameters.Count, nameof(genericParameters), "Count must match name count");
         return new(containingPackage, containingNamespace, isAbstract, isConst, isClass: true, name,
@@ -70,7 +70,7 @@ public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
         bool isConst,
         StandardName name,
         IFixedList<GenericParameter> genericParameters,
-        IFixedSet<BareReferenceType> supertypes)
+        IFixedSet<BareNonVariableType> supertypes)
     {
         Requires.That(name.GenericParameterCount == genericParameters.Count, nameof(genericParameters),
             "Count must match name count");
@@ -109,7 +109,7 @@ public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
         bool isClass,
         StandardName name,
         IFixedList<GenericParameter> genericParameters,
-        IFixedSet<BareReferenceType> supertypes)
+        IFixedSet<BareNonVariableType> supertypes)
         : base(isConstType, isAbstract, isClass, genericParameters)
     {
         ContainingPackage = containingPackage;
@@ -125,7 +125,7 @@ public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
 
     public override StandardName Name { get; }
 
-    public override IFixedSet<BareReferenceType> Supertypes { get; }
+    public override IFixedSet<BareNonVariableType> Supertypes { get; }
     public override IFixedList<GenericParameterType> GenericParameterTypes { get; }
 
     private OrdinaryTypeConstructor? typeConstructor;
@@ -177,7 +177,7 @@ public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
         return With(Capability.Isolated, GenericParameterTypes);
     }
 
-    public override BareReferenceType With(IFixedList<IType> typeArguments)
+    public override BareNonVariableType With(IFixedList<IType> typeArguments)
         => BareNonVariableType.Create(this, typeArguments);
 
     public override CapabilityType With(Capability capability, IFixedList<IType> typeArguments)

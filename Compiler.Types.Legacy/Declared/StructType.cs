@@ -26,7 +26,7 @@ public sealed class StructType : DeclaredValueType, IDeclaredUserType
         bool isConst,
         StandardName name,
         IFixedList<GenericParameter> genericParameters,
-        IFixedSet<BareReferenceType> supertypes)
+        IFixedSet<BareNonVariableType> supertypes)
     {
         Requires.That(name.GenericParameterCount == genericParameters.Count, nameof(genericParameters),
             "Count must match name count");
@@ -40,7 +40,7 @@ public sealed class StructType : DeclaredValueType, IDeclaredUserType
         bool isConstType,
         StandardName name,
         IFixedList<GenericParameter> genericParameters,
-        IFixedSet<BareReferenceType> supertypes)
+        IFixedSet<BareNonVariableType> supertypes)
         : base(isConstType, genericParameters)
     {
         ContainingPackage = containingPackage;
@@ -59,7 +59,7 @@ public sealed class StructType : DeclaredValueType, IDeclaredUserType
 
     public override StandardName Name { get; }
 
-    public override IFixedSet<BareReferenceType> Supertypes { get; }
+    public override IFixedSet<BareNonVariableType> Supertypes { get; }
     public override IFixedList<GenericParameterType> GenericParameterTypes { get; }
 
     private OrdinaryTypeConstructor? typeConstructor;
@@ -111,7 +111,7 @@ public sealed class StructType : DeclaredValueType, IDeclaredUserType
         return With(Capability.Isolated, GenericParameterTypes);
     }
 
-    public override BareValueType With(IFixedList<IType> typeArguments)
+    public override BareNonVariableType With(IFixedList<IType> typeArguments)
         => BareNonVariableType.Create(this, typeArguments);
 
     public override CapabilityType With(Capability capability, IFixedList<IType> typeArguments)

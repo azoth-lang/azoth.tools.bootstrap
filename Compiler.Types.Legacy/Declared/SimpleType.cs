@@ -17,9 +17,9 @@ public abstract class SimpleType : DeclaredValueType
 
     public override SpecialTypeName Name { get; }
 
-    public override IFixedSet<BareReferenceType> Supertypes => [];
+    public override IFixedSet<BareNonVariableType> Supertypes => [];
 
-    public abstract BareValueType BareType { get; }
+    public abstract BareNonVariableType BareType { get; }
 
     public abstract CapabilityType Type { get; }
 
@@ -29,7 +29,7 @@ public abstract class SimpleType : DeclaredValueType
         Name = name;
     }
 
-    public abstract override BareValueType With(IFixedList<IType> typeArguments);
+    public abstract override BareNonVariableType With(IFixedList<IType> typeArguments);
 
     public abstract override CapabilityType With(Capability capability, IFixedList<IType> typeArguments);
 

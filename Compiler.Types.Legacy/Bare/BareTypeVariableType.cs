@@ -13,6 +13,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Bare;
 public abstract class BareTypeVariableType : BareType
 {
     public sealed override DeclaredType? DeclaredType => null;
-    public sealed override IFixedList<IType> GenericTypeArguments => [];
+    public sealed override IFixedList<IType> TypeArguments => [];
     public sealed override IEnumerable<GenericParameterArgument> GenericParameterArguments => [];
 }

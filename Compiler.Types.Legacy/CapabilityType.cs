@@ -84,13 +84,13 @@ public sealed class CapabilityType : NonEmptyType, INonVoidType
 
     public TypeName Name => DeclaredType.Name;
 
-    public IFixedList<IMaybeType> TypeArguments => BareType.GenericTypeArguments;
+    public IFixedList<IMaybeType> TypeArguments => BareType.TypeArguments;
 
     public override bool AllowsVariance => BareType.AllowsVariance;
 
     public override bool HasIndependentTypeArguments => BareType.HasIndependentTypeArguments;
 
-    public IFixedSet<BareReferenceType> Supertypes => BareType.Supertypes;
+    public IFixedSet<BareNonVariableType> Supertypes => BareType.Supertypes;
 
     /// <summary>
     /// Whether this type was declared `const` meaning that most references should be treated as

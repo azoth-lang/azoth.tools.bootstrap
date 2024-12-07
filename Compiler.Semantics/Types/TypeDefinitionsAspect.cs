@@ -4,7 +4,6 @@ using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
-using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Declared;
@@ -87,7 +86,7 @@ internal static partial class TypeDefinitionsAspect
     public static partial GenericParameterType GenericParameter_DeclaredType(IGenericParameterNode node)
         => node.ContainingDeclaredType.GenericParameterTypes.Single(t => t.Parameter == node.Parameter);
 
-    public static partial IFixedSet<BareReferenceType> TypeDefinition_Supertypes(ITypeDefinitionNode node)
+    public static partial IFixedSet<BareNonVariableType> TypeDefinition_Supertypes(ITypeDefinitionNode node)
     {
         // Note: Supertypes is a circular attribute that both declared types and symbols depend on.
         // While there are many ways to write this that will give the correct answer, care should be
@@ -108,13 +107,13 @@ internal static partial class TypeDefinitionsAspect
                .Append(BareNonVariableType.Any)
                .ToFixedSet();
 
-        IEnumerable<BareReferenceType> Build()
+        IEnumerable<BareNonVariableType> Build()
         {
             // Handled by supertype because that is the only syntax we have to apply the compiler
             // errors to. (Could possibly use type arguments in the future.)
             foreach (var supertypeName in node.AllSupertypeNames)
             {
-                if (supertypeName.NamedBareType is not BareReferenceType bareSupertype)
+                if (supertypeName.NamedBareType is not BareNonVariableType { DeclaredType: DeclaredReferenceType } bareSupertype)
                     // A diagnostic will be generated elsewhere for this case
                     continue;
 

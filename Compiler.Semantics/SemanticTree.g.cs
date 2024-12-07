@@ -520,8 +520,8 @@ public partial interface ITypeDefinitionNode : IFacetMemberDefinitionNode, IAsso
     Symbol? IDefinitionNode.ContainingSymbol => ContainingSymbol;
     OrdinaryTypeConstructor TypeConstructor { get; }
     SelfPlainType SelfPlainType { get; }
-    new IFixedSet<BareReferenceType> Supertypes { get; }
-    IFixedSet<BareReferenceType> ITypeDeclarationNode.Supertypes => Supertypes;
+    new IFixedSet<BareNonVariableType> Supertypes { get; }
+    IFixedSet<BareNonVariableType> ITypeDeclarationNode.Supertypes => Supertypes;
     IDeclaredUserType DeclaredType { get; }
     SelfType SelfType { get; }
     new IFixedSet<ITypeMemberDefinitionNode> Members { get; }
@@ -653,7 +653,7 @@ public partial interface IGenericParameterNode : ICodeNode, IGenericParameterDec
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.InclusiveMembers
         => [];
-    IFixedSet<BareReferenceType> ITypeDeclarationNode.Supertypes
+    IFixedSet<BareNonVariableType> ITypeDeclarationNode.Supertypes
         => [];
 
     public static IGenericParameterNode Create(
@@ -3794,7 +3794,7 @@ public partial interface ITypeDeclarationNode : INamedDeclarationNode, ISymbolDe
 {
     IEnumerable<IInstanceMemberDeclarationNode> InclusiveInstanceMembersNamed(StandardName named);
     IEnumerable<IAssociatedMemberDeclarationNode> AssociatedMembersNamed(StandardName named);
-    IFixedSet<BareReferenceType> Supertypes { get; }
+    IFixedSet<BareNonVariableType> Supertypes { get; }
     new TypeSymbol Symbol { get; }
     Symbol? ISymbolDeclarationNode.Symbol => Symbol;
     IFixedSet<ITypeMemberDeclarationNode> Members { get; }
@@ -4238,7 +4238,7 @@ public partial interface IBuiltInTypeSymbolNode : IBuiltInTypeDeclarationNode, I
     IFixedSet<ITypeMemberDeclarationNode> IBuiltInTypeDeclarationNode.Members => Members;
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
     IFixedSet<ITypeMemberSymbolNode> ITypeSymbolNode.Members => Members;
-    IFixedSet<BareReferenceType> ITypeDeclarationNode.Supertypes
+    IFixedSet<BareNonVariableType> ITypeDeclarationNode.Supertypes
         => Symbol.TryGetDeclaredType()?.Supertypes ?? [];
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.InclusiveMembers
         => Members;
@@ -4300,7 +4300,7 @@ public partial interface IOrdinaryTypeSymbolNode : IUserTypeDeclarationNode, ITy
     IFixedSet<ITypeMemberDeclarationNode> IUserTypeDeclarationNode.Members => Members;
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
     IFixedSet<ITypeMemberSymbolNode> ITypeSymbolNode.Members => Members;
-    IFixedSet<BareReferenceType> ITypeDeclarationNode.Supertypes
+    IFixedSet<BareNonVariableType> ITypeDeclarationNode.Supertypes
         => Symbol.TryGetDeclaredType().Supertypes;
 }
 
@@ -4373,7 +4373,7 @@ public partial interface IGenericParameterSymbolNode : IGenericParameterDeclarat
         => [];
     IFixedSet<ITypeMemberDeclarationNode> IGenericParameterDeclarationNode.Members => Members;
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
-    IFixedSet<BareReferenceType> ITypeDeclarationNode.Supertypes
+    IFixedSet<BareNonVariableType> ITypeDeclarationNode.Supertypes
         => Symbol.TryGetDeclaredType()?.Supertypes ?? [];
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.InclusiveMembers
         => [];
@@ -5531,11 +5531,11 @@ file class ClassDefinitionNode : SemanticNode, IClassDefinitionNode
                 TypeDefinitionsAspect.TypeDefinition_SelfType);
     private SelfType? selfType;
     private bool selfTypeCached;
-    public IFixedSet<BareReferenceType> Supertypes
+    public IFixedSet<BareNonVariableType> Supertypes
         => GrammarAttribute.IsCached(in supertypesCached) ? supertypes.UnsafeValue
             : this.Circular(ref supertypesCached, ref supertypes,
                 TypeDefinitionsAspect.TypeDefinition_Supertypes);
-    private Circular<IFixedSet<BareReferenceType>> supertypes = new([]);
+    private Circular<IFixedSet<BareNonVariableType>> supertypes = new([]);
     private bool supertypesCached;
     public LexicalScope SupertypesLexicalScope
         => GrammarAttribute.IsCached(in supertypesLexicalScopeCached) ? supertypesLexicalScope!
@@ -5705,11 +5705,11 @@ file class StructDefinitionNode : SemanticNode, IStructDefinitionNode
                 TypeDefinitionsAspect.TypeDefinition_SelfType);
     private SelfType? selfType;
     private bool selfTypeCached;
-    public IFixedSet<BareReferenceType> Supertypes
+    public IFixedSet<BareNonVariableType> Supertypes
         => GrammarAttribute.IsCached(in supertypesCached) ? supertypes.UnsafeValue
             : this.Circular(ref supertypesCached, ref supertypes,
                 TypeDefinitionsAspect.TypeDefinition_Supertypes);
-    private Circular<IFixedSet<BareReferenceType>> supertypes = new([]);
+    private Circular<IFixedSet<BareNonVariableType>> supertypes = new([]);
     private bool supertypesCached;
     public LexicalScope SupertypesLexicalScope
         => GrammarAttribute.IsCached(in supertypesLexicalScopeCached) ? supertypesLexicalScope!
@@ -5864,11 +5864,11 @@ file class TraitDefinitionNode : SemanticNode, ITraitDefinitionNode
                 TypeDefinitionsAspect.TypeDefinition_SelfType);
     private SelfType? selfType;
     private bool selfTypeCached;
-    public IFixedSet<BareReferenceType> Supertypes
+    public IFixedSet<BareNonVariableType> Supertypes
         => GrammarAttribute.IsCached(in supertypesCached) ? supertypes.UnsafeValue
             : this.Circular(ref supertypesCached, ref supertypes,
                 TypeDefinitionsAspect.TypeDefinition_Supertypes);
-    private Circular<IFixedSet<BareReferenceType>> supertypes = new([]);
+    private Circular<IFixedSet<BareNonVariableType>> supertypes = new([]);
     private bool supertypesCached;
     public LexicalScope SupertypesLexicalScope
         => GrammarAttribute.IsCached(in supertypesLexicalScopeCached) ? supertypesLexicalScope!

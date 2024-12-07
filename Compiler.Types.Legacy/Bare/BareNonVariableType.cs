@@ -8,7 +8,6 @@ using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Declared;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Pseudotypes;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using Azoth.Tools.Bootstrap.Framework;
-using ExhaustiveMatching;
 using MoreLinq.Extensions;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Bare;
@@ -16,38 +15,37 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Bare;
 /// <summary>
 /// A type that could have a reference capability applied, but without a reference capability.
 /// </summary>
-[Closed(typeof(BareReferenceType), typeof(BareValueType))]
-public abstract class BareNonVariableType : BareType
+public sealed class BareNonVariableType : BareType
 {
     #region Standard Types
-    public static readonly BareValueType Bool = DeclaredType.Bool.BareType;
+    public static readonly BareNonVariableType Bool = DeclaredType.Bool.BareType;
 
-    public static readonly BareValueType Int = DeclaredType.Int.BareType;
-    public static readonly BareValueType UInt = DeclaredType.UInt.BareType;
-    public static readonly BareValueType Int8 = DeclaredType.Int8.BareType;
-    public static readonly BareValueType Byte = DeclaredType.Byte.BareType;
-    public static readonly BareValueType Int16 = DeclaredType.Int16.BareType;
-    public static readonly BareValueType UInt16 = DeclaredType.UInt16.BareType;
-    public static readonly BareValueType Int32 = DeclaredType.Int32.BareType;
-    public static readonly BareValueType UInt32 = DeclaredType.UInt32.BareType;
-    public static readonly BareValueType Int64 = DeclaredType.Int64.BareType;
-    public static readonly BareValueType UInt64 = DeclaredType.UInt64.BareType;
-    public static readonly BareValueType Size = DeclaredType.Size.BareType;
-    public static readonly BareValueType Offset = DeclaredType.Offset.BareType;
+    public static readonly BareNonVariableType Int = DeclaredType.Int.BareType;
+    public static readonly BareNonVariableType UInt = DeclaredType.UInt.BareType;
+    public static readonly BareNonVariableType Int8 = DeclaredType.Int8.BareType;
+    public static readonly BareNonVariableType Byte = DeclaredType.Byte.BareType;
+    public static readonly BareNonVariableType Int16 = DeclaredType.Int16.BareType;
+    public static readonly BareNonVariableType UInt16 = DeclaredType.UInt16.BareType;
+    public static readonly BareNonVariableType Int32 = DeclaredType.Int32.BareType;
+    public static readonly BareNonVariableType UInt32 = DeclaredType.UInt32.BareType;
+    public static readonly BareNonVariableType Int64 = DeclaredType.Int64.BareType;
+    public static readonly BareNonVariableType UInt64 = DeclaredType.UInt64.BareType;
+    public static readonly BareNonVariableType Size = DeclaredType.Size.BareType;
+    public static readonly BareNonVariableType Offset = DeclaredType.Offset.BareType;
 
-    public static readonly BareReferenceType Any = DeclaredType.Any.BareType;
+    public static readonly BareNonVariableType Any = DeclaredType.Any.BareType;
     #endregion
 
-    public abstract override DeclaredType DeclaredType { get; }
-    public sealed override TypeName Name => DeclaredType.Name;
-    public sealed override IFixedList<IType> GenericTypeArguments { get; }
-    public sealed override IEnumerable<GenericParameterArgument> GenericParameterArguments
-        => DeclaredType.GenericParameters.EquiZip(GenericTypeArguments, (p, a) => new GenericParameterArgument(p, a));
+    public override DeclaredType DeclaredType { get; }
+    public override TypeName Name => DeclaredType.Name;
+    public override IFixedList<IType> TypeArguments { get; }
+    public override IEnumerable<GenericParameterArgument> GenericParameterArguments
+        => DeclaredType.GenericParameters.EquiZip(TypeArguments, (p, a) => new GenericParameterArgument(p, a));
     public bool AllowsVariance { get; }
     public bool HasIndependentTypeArguments { get; }
 
-    private readonly Lazy<IFixedSet<BareReferenceType>> supertypes;
-    public IFixedSet<BareReferenceType> Supertypes => supertypes.Value;
+    private readonly Lazy<IFixedSet<BareNonVariableType>> supertypes;
+    public IFixedSet<BareNonVariableType> Supertypes => supertypes.Value;
 
     /// <summary>
     /// Whether this type was declared `const` meaning that most references should be treated as
@@ -57,27 +55,28 @@ public abstract class BareNonVariableType : BareType
 
     private readonly Lazy<TypeReplacements> typeReplacements;
 
-    public static BareReferenceType Create(
+    public static BareNonVariableType Create(
         ObjectType declaredType,
         IFixedList<IType> typeArguments)
         => new(declaredType, typeArguments);
 
-    public static BareValueType Create(
+    public static BareNonVariableType Create(
         StructType declaredType,
         IFixedList<IType> typeArguments)
         => new(declaredType, typeArguments);
 
-    private protected BareNonVariableType(DeclaredType declaredType, IFixedList<IType> genericTypeArguments)
+    internal BareNonVariableType(DeclaredType declaredType, IFixedList<IType> typeArguments)
     {
-        if (declaredType.GenericParameters.Count != genericTypeArguments.Count)
+        if (declaredType.GenericParameters.Count != typeArguments.Count)
             throw new ArgumentException(
-                $"Number of type arguments must match. Given `[{genericTypeArguments.ToILString()}]` for `{declaredType}`.",
-                nameof(genericTypeArguments));
-        GenericTypeArguments = genericTypeArguments;
+                $"Number of type arguments must match. Given `[{typeArguments.ToILString()}]` for `{declaredType}`.",
+                nameof(typeArguments));
+        DeclaredType = declaredType;
+        TypeArguments = typeArguments;
         AllowsVariance = declaredType.AllowsVariance
-            || GenericTypeArguments.Any(a => a.AllowsVariance);
+            || TypeArguments.Any(a => a.AllowsVariance);
         HasIndependentTypeArguments = declaredType.HasIndependentGenericParameters
-                                      || GenericTypeArguments.Any(a => a.HasIndependentTypeArguments);
+                                      || TypeArguments.Any(a => a.HasIndependentTypeArguments);
 
         typeReplacements = new(GetTypeReplacements);
         supertypes = new(GetSupertypes);
@@ -85,15 +84,15 @@ public abstract class BareNonVariableType : BareType
 
     public INonVoidPlainType ToPlainType()
     {
-        var typeArguments = GenericTypeArguments.Select(a => a.ToPlainType()).ToFixedList();
+        var typeArguments = TypeArguments.Select(a => a.ToPlainType()).ToFixedList();
         // The ToTypeConstructor() should never result in void since DeclaredType can't be void.
         return (INonVoidPlainType)(DeclaredType.TryToPlainType()
                                   ?? DeclaredType.ToTypeConstructor()?.Construct(typeArguments))!;
     }
 
-    private TypeReplacements GetTypeReplacements() => new(DeclaredType, GenericTypeArguments);
+    private TypeReplacements GetTypeReplacements() => new(DeclaredType, TypeArguments);
 
-    private IFixedSet<BareReferenceType> GetSupertypes()
+    private IFixedSet<BareNonVariableType> GetSupertypes()
         => DeclaredType.Supertypes.Select(typeReplacements.Value.ReplaceTypeParametersIn).ToFixedSet();
 
     public IType ReplaceTypeParametersIn(IType type)
@@ -102,7 +101,7 @@ public abstract class BareNonVariableType : BareType
     public IMaybeType ReplaceTypeParametersIn(IMaybeType type)
         => typeReplacements.Value.ReplaceTypeParametersIn(type);
 
-    public BareReferenceType ReplaceTypeParametersIn(BareReferenceType type)
+    public BareNonVariableType ReplaceTypeParametersIn(BareNonVariableType type)
         => typeReplacements.Value.ReplaceTypeParametersIn(type);
 
     public IPseudotype ReplaceTypeParametersIn(IPseudotype pseudotype)
@@ -111,28 +110,51 @@ public abstract class BareNonVariableType : BareType
     public IMaybePseudotype ReplaceTypeParametersIn(IMaybePseudotype pseudotype)
         => typeReplacements.Value.ReplaceTypeParametersIn(pseudotype);
 
-    public abstract BareNonVariableType AccessedVia(Capability capability);
-
-    protected IFixedList<IType> TypeArgumentsAccessedVia(Capability capability)
+    public BareNonVariableType AccessedVia(Capability capability)
     {
-        var newTypeArguments = new List<IType>(GenericTypeArguments.Count);
+        if (!HasIndependentTypeArguments) return this;
+        var newTypeArguments = TypeArgumentsAccessedVia(capability);
+        if (ReferenceEquals(newTypeArguments, TypeArguments)) return this;
+        return new(DeclaredType, newTypeArguments);
+    }
+
+    private IFixedList<IType> TypeArgumentsAccessedVia(Capability capability)
+    {
+        var newTypeArguments = new List<IType>(TypeArguments.Count);
         var typesReplaced = false;
-        foreach (var arg in GenericTypeArguments)
+        foreach (var arg in TypeArguments)
         {
             var newTypeArg = arg.AccessedVia(capability);
             typesReplaced |= !ReferenceEquals(newTypeArg, arg);
             newTypeArguments.Add(newTypeArg);
         }
-        return typesReplaced ? newTypeArguments.ToFixedList() : GenericTypeArguments;
+        return typesReplaced ? newTypeArguments.ToFixedList() : TypeArguments;
     }
 
-    public abstract BareNonVariableType With(IFixedList<IType> typeArguments);
+    public BareNonVariableType With(IFixedList<IType> typeArguments)
+        => new(DeclaredType, typeArguments);
 
     public CapabilityTypeConstraint With(CapabilitySet capability)
         => new(capability, this);
 
-    public sealed override CapabilityType WithRead()
+    public override CapabilityType With(Capability capability)
+        => CapabilityType.Create(capability, this);
+
+    public override CapabilityType WithRead()
         => With(IsDeclaredConst ? Capability.Constant : Capability.Read);
+
+    #region Equality
+    public override bool Equals(BareType? other)
+    {
+        if (other is null) return false;
+        if (ReferenceEquals(this, other)) return true;
+        return other is BareNonVariableType otherType
+               && DeclaredType == otherType.DeclaredType
+               && TypeArguments.Equals(otherType.TypeArguments);
+    }
+
+    public override int GetHashCode() => HashCode.Combine(DeclaredType, TypeArguments);
+    #endregion
 
     public sealed override string ToSourceCodeString() => ToString(t => t.ToSourceCodeString());
     public sealed override string ToILString() => ToString(t => t.ToILString());
@@ -143,10 +165,10 @@ public abstract class BareNonVariableType : BareType
         builder.Append(DeclaredType.ContainingNamespace);
         if (DeclaredType.ContainingNamespace != NamespaceName.Global) builder.Append('.');
         builder.Append(DeclaredType.Name.ToBareString());
-        if (!GenericTypeArguments.IsEmpty)
+        if (!TypeArguments.IsEmpty)
         {
             builder.Append('[');
-            builder.AppendJoin(", ", GenericTypeArguments.Select(toString));
+            builder.AppendJoin(", ", TypeArguments.Select(toString));
             builder.Append(']');
         }
         return builder.ToString();

@@ -31,7 +31,7 @@ public interface IDeclaredUserType : IEquatable<IDeclaredUserType>
     bool AllowsVariance { get; }
     IFixedList<GenericParameterType> GenericParameterTypes { get; }
     bool IsGeneric { get; }
-    IFixedSet<BareReferenceType> Supertypes { get; }
+    IFixedSet<BareNonVariableType> Supertypes { get; }
 
     public DeclaredType AsDeclaredType { get; }
 

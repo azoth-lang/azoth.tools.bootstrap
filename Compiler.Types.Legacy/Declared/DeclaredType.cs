@@ -52,7 +52,7 @@ public abstract class DeclaredType : IEquatable<DeclaredType>
     public virtual IFixedList<GenericParameterType> GenericParameterTypes
         => FixedList.Empty<GenericParameterType>();
     public bool IsGeneric => !GenericParameters.IsEmpty;
-    public abstract IFixedSet<BareReferenceType> Supertypes { get; }
+    public abstract IFixedSet<BareNonVariableType> Supertypes { get; }
 
     private protected DeclaredType(
         bool isDeclaredConst,

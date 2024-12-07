@@ -65,7 +65,7 @@ public static class DataTypeExtensions
             var declaredType = target.DeclaredType;
             var matchingSourceTypes = source.Supertypes.Prepend(source).Where(t => t.DeclaredType == declaredType);
             foreach (var sourceType in matchingSourceTypes)
-                if (IsAssignableFrom(declaredType, targetAllowsWrite, target.GenericTypeArguments, sourceType.GenericTypeArguments))
+                if (IsAssignableFrom(declaredType, targetAllowsWrite, target.TypeArguments, sourceType.TypeArguments))
                     return true;
         }
 
@@ -209,8 +209,8 @@ public static class DataTypeExtensions
     {
         return type switch
         {
-            CapabilityType { BareType: BareReferenceType } referenceType => referenceType,
-            OptionalType { Referent: CapabilityType { BareType: BareReferenceType } referenceType } => referenceType,
+            CapabilityType { DeclaredType: DeclaredReferenceType } referenceType => referenceType,
+            OptionalType { Referent: CapabilityType { DeclaredType: DeclaredReferenceType } referenceType } => referenceType,
             _ => null
         };
     }

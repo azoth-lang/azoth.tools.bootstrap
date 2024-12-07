@@ -10,7 +10,7 @@
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
 // ---------- Type Definitions
-⟳ TypeDefinition.Supertypes: {`BareReferenceType`} initial => [];
+⟳ TypeDefinition.Supertypes: {`BareNonVariableType`} initial => [];
 = TypeDefinition.Supertypes;
 = TypeDefinition.↑.Diagnostics;
 ↑ TypeDefinition.DeclaredType:`IDeclaredUserType`;
