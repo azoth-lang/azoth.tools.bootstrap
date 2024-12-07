@@ -22,7 +22,7 @@ public sealed class BoolType : SimpleType
 
     public override BareValueType<BoolType> BareType { get; }
 
-    public override CapabilityType<BoolType> Type { get; }
+    public override CapabilityType Type { get; }
 
     public override BareValueType<BoolType> With(IFixedList<IType> typeArguments)
     {
@@ -33,7 +33,7 @@ public sealed class BoolType : SimpleType
     public override CapabilityType With(Capability capability, IFixedList<IType> typeArguments)
         => With(typeArguments).With(capability);
 
-    public override CapabilityType<BoolType> With(Capability capability)
+    public override CapabilityType With(Capability capability)
         => BareType.With(capability);
 
     public override TypeConstructor? ToTypeConstructor() => null;

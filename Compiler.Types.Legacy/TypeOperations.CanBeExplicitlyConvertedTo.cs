@@ -10,15 +10,15 @@ public static partial class TypeOperations
         return (fromType, toType) switch
         {
             // Safe conversions
-            (CapabilityType<BoolType>, CapabilityType { DeclaredType: IntegerType }) => true,
+            (CapabilityType { DeclaredType: BoolType }, CapabilityType { DeclaredType: IntegerType }) => true,
             (BoolConstValueType, CapabilityType { DeclaredType: IntegerType }) => true,
             (CapabilityType { DeclaredType: IntegerType { IsSigned: false } }, CapabilityType { DeclaredType: BigIntegerType })
                 => true,
             (CapabilityType { DeclaredType: IntegerType }, CapabilityType { DeclaredType: BigIntegerType { IsSigned: true } })
                 => true,
-            (CapabilityType<FixedSizeIntegerType> from, CapabilityType<FixedSizeIntegerType> to)
-                when from.DeclaredType.Bits < to.DeclaredType.Bits
-                     || (from.DeclaredType.Bits == to.DeclaredType.Bits && from.DeclaredType.IsSigned == to.DeclaredType.IsSigned)
+            (CapabilityType { DeclaredType: FixedSizeIntegerType from }, CapabilityType { DeclaredType: FixedSizeIntegerType to })
+                when from.Bits < to.Bits
+                     || (from.Bits == to.Bits && from.IsSigned == to.IsSigned)
                 => true,
 
             // TODO conversions for constants

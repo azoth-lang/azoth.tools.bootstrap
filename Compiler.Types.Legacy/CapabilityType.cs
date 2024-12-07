@@ -14,12 +14,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
 /// <summary>
 /// A type that has a capability applied.
 /// </summary>
-public abstract class CapabilityType : NonEmptyType, INonVoidType
+public sealed class CapabilityType : NonEmptyType, INonVoidType
 {
     /// <summary>
     /// Create a reference type for a class.
     /// </summary>
-    public static CapabilityType<ObjectType> CreateClass(
+    public static CapabilityType CreateClass(
         Capability capability,
         IdentifierName containingPackage,
         NamespaceName containingNamespace,
@@ -31,7 +31,7 @@ public abstract class CapabilityType : NonEmptyType, INonVoidType
     /// <summary>
     /// Create a reference type for a trait.
     /// </summary>
-    public static CapabilityType<ObjectType> CreateTrait(
+    public static CapabilityType CreateTrait(
         Capability capability,
         IdentifierName containingPackage,
         NamespaceName containingNamespace,
@@ -40,25 +40,16 @@ public abstract class CapabilityType : NonEmptyType, INonVoidType
         => Create(capability, ObjectType.CreateTrait(containingPackage, containingNamespace, isConst, name), []);
 
     /// <summary>
-    /// Create a object type for a given class or trait.
+    /// Create an object type for a given class or trait.
     /// </summary>
-    public static CapabilityType<ObjectType> Create(
+    public static CapabilityType Create(
         Capability capability,
         ObjectType declaredType,
         IFixedList<IType> typeArguments)
         => Create(capability, BareNonVariableType.Create(declaredType, typeArguments));
 
-    /// <summary>
-    /// Create a object type for a given bare type.
-    /// </summary>
-    public static CapabilityType<ObjectType> Create(Capability capability, BareReferenceType<ObjectType> bareType)
-        => CapabilityType<ObjectType>.Create(capability, bareType);
-
-    /// <summary>
-    /// Create an `Any` type for a given bare type.
-    /// </summary>
-    public static CapabilityType<AnyType> Create(Capability capability, BareReferenceType<AnyType> bareType)
-        => CapabilityType<AnyType>.Create(capability, bareType);
+    public static CapabilityType Create(Capability capability, BareNonVariableType bareType)
+        => new(capability, bareType);
 
     public Capability Capability { get; }
     public bool IsReadOnlyReference => Capability == Capability.Read;
@@ -70,7 +61,7 @@ public abstract class CapabilityType : NonEmptyType, INonVoidType
 
     public bool AllowsInit => Capability.AllowsInit;
 
-    public virtual bool AllowsWrite => Capability.AllowsWrite;
+    public bool AllowsWrite => Capability.AllowsWrite;
 
     /// <summary>
     /// Does this capability allow a reference with it to be moved if reference sharing permits.
@@ -83,9 +74,9 @@ public abstract class CapabilityType : NonEmptyType, INonVoidType
     /// </summary>
     public bool AllowsFreeze => Capability.AllowsFreeze;
 
-    public abstract BareNonVariableType BareType { get; }
+    public BareNonVariableType BareType { get; }
 
-    public virtual DeclaredType DeclaredType => BareType.DeclaredType;
+    public DeclaredType DeclaredType => BareType.DeclaredType;
 
     public IdentifierName? ContainingPackage => DeclaredType.ContainingPackage;
 
@@ -95,9 +86,9 @@ public abstract class CapabilityType : NonEmptyType, INonVoidType
 
     public IFixedList<IMaybeType> TypeArguments => BareType.GenericTypeArguments;
 
-    public sealed override bool AllowsVariance => BareType.AllowsVariance;
+    public override bool AllowsVariance => BareType.AllowsVariance;
 
-    public sealed override bool HasIndependentTypeArguments => BareType.HasIndependentTypeArguments;
+    public override bool HasIndependentTypeArguments => BareType.HasIndependentTypeArguments;
 
     public IFixedSet<BareReferenceType> Supertypes => BareType.Supertypes;
 
@@ -107,9 +98,10 @@ public abstract class CapabilityType : NonEmptyType, INonVoidType
     /// </summary>
     public bool IsDeclaredConst => DeclaredType.IsDeclaredConst;
 
-    private protected CapabilityType(Capability capability)
+    private CapabilityType(Capability capability, BareNonVariableType bareType)
     {
         Capability = capability;
+        BareType = bareType;
     }
 
     public sealed override INonVoidPlainType ToPlainType() => BareType.ToPlainType();
@@ -126,7 +118,11 @@ public abstract class CapabilityType : NonEmptyType, INonVoidType
     public override IMaybePseudotype ReplaceTypeParametersIn(IMaybePseudotype pseudotype)
         => BareType.ReplaceTypeParametersIn(pseudotype);
 
-    public abstract CapabilityType With(Capability capability);
+    public CapabilityType With(Capability capability)
+    {
+        if (capability == Capability) return this;
+        return new(capability, BareType);
+    }
 
     /// <remarks>For constant types, there can still be read only references. For example, inside
     /// the constructor.</remarks>
@@ -192,39 +188,4 @@ public abstract class CapabilityType : NonEmptyType, INonVoidType
 
     public sealed override string ToILString()
         => $"{Capability.ToILString()} {BareType.ToILString()}";
-}
-
-public sealed class CapabilityType<TDeclared> : CapabilityType
-    where TDeclared : DeclaredType
-{
-    public static CapabilityType<TDeclaredReferenceType> Create<TDeclaredReferenceType>(
-        Capability capability,
-        BareReferenceType<TDeclaredReferenceType> bareType)
-        where TDeclaredReferenceType : DeclaredReferenceType, TDeclared
-        => new(capability, bareType);
-
-    public static CapabilityType<TDeclaredValueType> Create<TDeclaredValueType>(
-        Capability capability,
-        BareValueType<TDeclaredValueType> bareType)
-        where TDeclaredValueType : DeclaredValueType, TDeclared
-        => new(capability, bareType);
-
-    public override BareNonVariableType BareType { get; }
-
-    public override TDeclared DeclaredType => (TDeclared)BareType.DeclaredType;
-
-    private CapabilityType(Capability capability, BareNonVariableType bareType)
-        : base(capability)
-    {
-        if (typeof(TDeclared).IsAbstract)
-            throw new ArgumentException($"The type parameter must be a concrete {nameof(DeclaredType)}.", nameof(TDeclared));
-
-        BareType = bareType;
-    }
-
-    public override CapabilityType<TDeclared> With(Capability capability)
-    {
-        if (capability == Capability) return this;
-        return new(capability, BareType);
-    }
 }

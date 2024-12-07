@@ -71,7 +71,7 @@ public sealed class StructType : DeclaredValueType, IDeclaredUserType
     /// </summary>
     /// <remarks>This is always `init mut` because the type is being initialized and can be mutated
     /// inside the constructor via field initializers.</remarks>
-    public CapabilityType<StructType> ToDefaultInitializerSelf()
+    public CapabilityType ToDefaultInitializerSelf()
         => With(Capability.InitMutable, GenericParameterTypes);
 
     /// <summary>
@@ -79,7 +79,7 @@ public sealed class StructType : DeclaredValueType, IDeclaredUserType
     /// </summary>
     /// <remarks>This is always either `iso` or `const` depending on whether the type was declared
     /// with `const` because there are no parameters that could break the new object's isolation.</remarks>
-    public CapabilityType<StructType> ToDefaultInitializerReturn()
+    public CapabilityType ToDefaultInitializerReturn()
         => With(IsDeclaredConst ? Capability.Constant : Capability.Isolated, GenericParameterTypes);
 
     /// <summary>
@@ -87,7 +87,7 @@ public sealed class StructType : DeclaredValueType, IDeclaredUserType
     /// </summary>
     /// <remarks>The capability of the return type is restricted by the parameter types because the
     /// newly constructed object could contain references to them.</remarks>
-    public CapabilityType<StructType> ToInitializerReturn(CapabilityType selfParameterType, IEnumerable<ParameterType> parameterTypes)
+    public CapabilityType ToInitializerReturn(CapabilityType selfParameterType, IEnumerable<ParameterType> parameterTypes)
     {
         if (IsDeclaredConst) return With(Capability.Constant, GenericParameterTypes);
         // Read only self constructors cannot return `mut` or `iso`
@@ -114,7 +114,7 @@ public sealed class StructType : DeclaredValueType, IDeclaredUserType
     public override BareValueType<StructType> With(IFixedList<IType> typeArguments)
         => BareNonVariableType.Create(this, typeArguments);
 
-    public override CapabilityType<StructType> With(Capability capability, IFixedList<IType> typeArguments)
+    public override CapabilityType With(Capability capability, IFixedList<IType> typeArguments)
         => With(typeArguments).With(capability);
 
     public CapabilityTypeConstraint With(CapabilitySet capability, IFixedList<IType> typeArguments)

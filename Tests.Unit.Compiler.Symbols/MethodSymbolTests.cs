@@ -1,3 +1,4 @@
+using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Declared;
 using Xunit;
 
 namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Symbols;
@@ -53,7 +54,7 @@ public class MethodSymbolTests : SymbolTestFixture
         var ns = Namespace();
         var parameters = Params(DataType("T1"), DataType("T2"));
         var selfDataType = DataType("Class");
-        var selfType = Type(ns, selfDataType.DeclaredType);
+        var selfType = Type(ns, (ObjectType)selfDataType.DeclaredType);
         var method = Method("A", selfType, SelfParam(selfDataType), parameters, DataType("T3"));
         var func = Func("A", ns, parameters, DataType("T3"));
 

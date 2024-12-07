@@ -29,7 +29,7 @@ internal static class Operations
             if (to.Equals(IType.NUInt)) return AzothValue.NUInt((nuint)(ulong)value.IntValue);
         }
 
-        if (from is CapabilityType<BoolType> or BoolConstValueType)
+        if (from is CapabilityType { DeclaredType: BoolType } or BoolConstValueType)
         {
             if (to.Equals(IType.Int8)) return AzothValue.I8((sbyte)(value.BoolValue ? 1 : 0));
             if (to.Equals(IType.Byte)) return AzothValue.Byte((byte)(value.BoolValue ? 1 : 0));
@@ -83,7 +83,7 @@ internal static class Operations
             if (to.Equals(IType.Int)) return value;
 
             var fromValue = value.IntValue;
-            if (to is CapabilityType<FixedSizeIntegerType> { DeclaredType: var fixedSizeIntegerType })
+            if (to is CapabilityType { DeclaredType: FixedSizeIntegerType fixedSizeIntegerType })
             {
                 var isSigned = fromValue.Sign < 0;
                 if (isSigned && (!fixedSizeIntegerType.IsSigned

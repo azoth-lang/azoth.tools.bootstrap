@@ -3,7 +3,6 @@ using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
-using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Declared;
@@ -97,7 +96,7 @@ public abstract class SymbolTestFixture
             @return ?? mother.Return);
     }
 
-    protected CapabilityType<ObjectType> DataType(
+    protected CapabilityType DataType(
         string? name = null,
         IdentifierName? containingPackage = null,
         NamespaceName? containingNamespace = null,
@@ -120,6 +119,6 @@ public abstract class SymbolTestFixture
     {
         return new(
             ns ?? Package(),
-            dataType ?? DataType().DeclaredType);
+            dataType ?? (ObjectType)DataType().DeclaredType);
     }
 }

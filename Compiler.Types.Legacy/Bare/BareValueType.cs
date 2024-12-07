@@ -46,8 +46,8 @@ public sealed class BareValueType<TDeclared> : BareValueType
     public override BareValueType<TDeclared> With(IFixedList<IType> typeArguments)
         => new(DeclaredType, typeArguments);
 
-    public override CapabilityType<TDeclared> With(Capability capability)
-        => CapabilityType<TDeclared>.Create(capability, this);
+    public override CapabilityType With(Capability capability)
+        => CapabilityType.Create(capability, this);
 
     #region Equality
     public override bool Equals(BareType? other)

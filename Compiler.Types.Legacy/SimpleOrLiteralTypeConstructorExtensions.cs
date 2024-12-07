@@ -47,7 +47,7 @@ public static class SimpleOrLiteralTypeConstructorExtensions
             _ => throw ExhaustiveMatch.Failed(typeConstructor),
         };
 
-    public static CapabilityType<PointerSizedIntegerType> ToType(this PointerSizedIntegerTypeConstructor typeConstructor)
+    public static CapabilityType ToType(this PointerSizedIntegerTypeConstructor typeConstructor)
     {
         if (typeConstructor.Equals(TypeConstructor.Size))
             return IType.Size;
@@ -64,7 +64,7 @@ public static class SimpleOrLiteralTypeConstructorExtensions
         throw new UnreachableException();
     }
 
-    public static CapabilityType<FixedSizeIntegerType> ToType(this FixedSizeIntegerTypeConstructor typeConstructor)
+    public static CapabilityType ToType(this FixedSizeIntegerTypeConstructor typeConstructor)
         => typeConstructor.Bits switch
         {
             8 => typeConstructor.IsSigned ? IType.Int8 : IType.Byte,

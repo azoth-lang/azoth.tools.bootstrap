@@ -30,7 +30,7 @@ public sealed class FixedSizeIntegerType : IntegerType
 
     public override BareValueType<FixedSizeIntegerType> BareType { get; }
 
-    public override CapabilityType<FixedSizeIntegerType> Type { get; }
+    public override CapabilityType Type { get; }
 
     private FixedSizeIntegerType(SpecialTypeName name, int bits)
         : base(name, bits < 0)
@@ -71,10 +71,10 @@ public sealed class FixedSizeIntegerType : IntegerType
         return BareType;
     }
 
-    public override CapabilityType<FixedSizeIntegerType> With(Capability capability, IFixedList<IType> typeArguments)
+    public override CapabilityType With(Capability capability, IFixedList<IType> typeArguments)
         => With(typeArguments).With(capability);
 
-    public override CapabilityType<FixedSizeIntegerType> With(Capability capability)
+    public override CapabilityType With(Capability capability)
         => BareType.With(capability);
 
     public override TypeConstructor? ToTypeConstructor() => null;

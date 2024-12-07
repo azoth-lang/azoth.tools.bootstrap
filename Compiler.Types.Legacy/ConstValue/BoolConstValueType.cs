@@ -23,7 +23,7 @@ public sealed class BoolConstValueType : ConstValueType
 
     public static implicit operator BoolConstValueType(bool value) => value ? True : False;
 
-    public override CapabilityType<BoolType> ToNonConstValueType() => IType.Bool;
+    public override CapabilityType ToNonConstValueType() => IType.Bool;
 
     public override INonVoidPlainType ToPlainType()
         => Value ? IPlainType.True : IPlainType.False;

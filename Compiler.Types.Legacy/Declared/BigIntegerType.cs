@@ -14,7 +14,7 @@ public sealed class BigIntegerType : IntegerType
 
     public override BareValueType<BigIntegerType> BareType { get; }
 
-    public override CapabilityType<BigIntegerType> Type { get; }
+    public override CapabilityType Type { get; }
 
     private BigIntegerType(SpecialTypeName name, bool isSigned)
         : base(name, isSigned)
@@ -29,10 +29,10 @@ public sealed class BigIntegerType : IntegerType
         return BareType;
     }
 
-    public override CapabilityType<BigIntegerType> With(Capability capability, IFixedList<IType> typeArguments)
+    public override CapabilityType With(Capability capability, IFixedList<IType> typeArguments)
         => With(typeArguments).With(capability);
 
-    public override CapabilityType<BigIntegerType> With(Capability capability)
+    public override CapabilityType With(Capability capability)
         => BareType.With(capability);
 
     public override TypeConstructor? ToTypeConstructor() => null;

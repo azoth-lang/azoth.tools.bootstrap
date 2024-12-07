@@ -32,10 +32,10 @@ public sealed class AnyType : DeclaredReferenceType
         return BareType;
     }
 
-    public override CapabilityType<AnyType> With(Capability capability, IFixedList<IType> typeArguments)
+    public override CapabilityType With(Capability capability, IFixedList<IType> typeArguments)
         => With(typeArguments).With(capability);
 
-    public CapabilityType<AnyType> With(Capability capability)
+    public CapabilityType With(Capability capability)
         => CapabilityType.Create(capability, BareType);
 
     public override TypeConstructor? ToTypeConstructor() => TypeConstructor.Any;
