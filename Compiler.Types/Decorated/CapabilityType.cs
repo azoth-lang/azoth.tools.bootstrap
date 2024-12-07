@@ -40,6 +40,15 @@ public sealed class CapabilityType : INonVoidType
         TypeArguments = typeArguments;
     }
 
+    public CapabilityType(Capability capability, ConstructedPlainType plainType)
+    {
+        Requires.That(plainType.TypeArguments.IsEmpty,
+            nameof(plainType), "Plain type must have no type arguments.");
+        Capability = capability;
+        PlainType = plainType;
+        TypeArguments = [];
+    }
+
     public override string ToString() => throw new NotSupportedException();
 
     public string ToSourceCodeString()
