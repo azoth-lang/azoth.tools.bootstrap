@@ -57,6 +57,8 @@ public sealed class StructType : DeclaredValueType, IDeclaredUserType
     bool IDeclaredUserType.IsClass => false;
     bool IDeclaredUserType.IsAbstract => false;
 
+    public override TypeSemantics Semantics => TypeSemantics.Value;
+
     public override StandardName Name { get; }
 
     public override IFixedSet<BareNonVariableType> Supertypes { get; }

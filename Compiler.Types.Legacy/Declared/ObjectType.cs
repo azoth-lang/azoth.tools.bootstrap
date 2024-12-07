@@ -123,6 +123,8 @@ public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
 
     public override NamespaceName ContainingNamespace { get; }
 
+    public override TypeSemantics Semantics => TypeSemantics.Reference;
+
     public override StandardName Name { get; }
 
     public override IFixedSet<BareNonVariableType> Supertypes { get; }

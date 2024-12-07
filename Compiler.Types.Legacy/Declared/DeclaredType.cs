@@ -44,6 +44,8 @@ public abstract class DeclaredType : IEquatable<DeclaredType>
     /// </summary>
     public bool IsDeclaredConst { get; }
 
+    public abstract TypeSemantics Semantics { get; }
+
     public abstract TypeName Name { get; }
 
     public IFixedList<GenericParameter> GenericParameters { get; }

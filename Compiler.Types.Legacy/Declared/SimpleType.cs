@@ -15,6 +15,8 @@ public abstract class SimpleType : DeclaredValueType
     public override IdentifierName? ContainingPackage => null;
     public override NamespaceName ContainingNamespace => NamespaceName.Global;
 
+    public override TypeSemantics Semantics => TypeSemantics.Value;
+
     public override SpecialTypeName Name { get; }
 
     public override IFixedSet<BareNonVariableType> Supertypes => [];
