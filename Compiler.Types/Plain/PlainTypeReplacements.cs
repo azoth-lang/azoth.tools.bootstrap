@@ -14,7 +14,7 @@ internal sealed class PlainTypeReplacements
     /// </summary>
     public PlainTypeReplacements(TypeConstructor typeConstructor, IFixedList<IPlainType> typeArguments)
     {
-        replacements = typeConstructor.GenericParameterPlainTypes.EquiZip(typeArguments)
+        replacements = typeConstructor.ParameterPlainTypes.EquiZip(typeArguments)
                                    .ToDictionary(t => t.Item1, t => t.Item2);
         if (typeConstructor.Parameters.IsEmpty)
             return;
@@ -25,7 +25,7 @@ internal sealed class PlainTypeReplacements
         foreach (var supertype in typeConstructor.Supertypes)
             foreach (var (supertypeArgument, i) in supertype.TypeArguments.Enumerate())
             {
-                var genericParameterPlainType = supertype.TypeConstructor?.GenericParameterPlainTypes[i];
+                var genericParameterPlainType = supertype.TypeConstructor?.ParameterPlainTypes[i];
                 if (genericParameterPlainType is null)
                     continue;
                 if (supertypeArgument is GenericParameterPlainType genericPlainTypeArg)

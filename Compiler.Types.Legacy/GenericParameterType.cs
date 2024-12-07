@@ -15,13 +15,13 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
 /// </summary>
 public sealed class GenericParameterType : NonEmptyType, INonVoidType
 {
-    public IDeclaredUserType DeclaringType { get; }
+    public OrdinaryDeclaredType DeclaringType { get; }
 
     public GenericParameter Parameter { get; }
 
     public IdentifierName Name => Parameter.Name;
 
-    internal GenericParameterType(IDeclaredUserType declaringType, GenericParameter parameter)
+    internal GenericParameterType(OrdinaryDeclaredType declaringType, GenericParameter parameter)
     {
         DeclaringType = declaringType;
         Parameter = parameter;

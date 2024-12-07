@@ -15,11 +15,11 @@ public sealed class OrdinaryTypeSymbol : TypeSymbol
     public override TypeSymbol? ContextTypeSymbol => null;
     public TypeKind Kind => DeclaresType.Kind;
     public override StandardName Name { get; }
-    public IDeclaredUserType DeclaresType { get; }
+    public OrdinaryDeclaredType DeclaresType { get; }
 
     public OrdinaryTypeSymbol(
         Symbol containingSymbol,
-        IDeclaredUserType declaresType)
+        OrdinaryDeclaredType declaresType)
         : base(declaresType.Name)
     {
         // TODO check the declared type is in the containing namespace and package
@@ -29,7 +29,7 @@ public sealed class OrdinaryTypeSymbol : TypeSymbol
         DeclaresType = declaresType;
     }
 
-    public override DeclaredType TryGetTypeConstructor() => DeclaresType.AsDeclaredType;
+    public override DeclaredType TryGetTypeConstructor() => DeclaresType;
 
     #region Equals
     public override bool Equals(Symbol? other)

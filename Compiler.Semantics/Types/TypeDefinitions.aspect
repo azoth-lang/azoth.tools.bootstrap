@@ -13,7 +13,7 @@
 ⟳ TypeDefinition.Supertypes: {`BareNonVariableType`} initial => [];
 = TypeDefinition.Supertypes;
 = TypeDefinition.↑.Diagnostics;
-↑ TypeDefinition.DeclaredType:`IDeclaredUserType`;
+↑ TypeDefinition.DeclaredType:`OrdinaryDeclaredType`;
 ↑ TypeDefinition.SelfType:`SelfType`;
 = TypeDefinition.SelfType;
 ↑ ClassDefinition.DeclaredType: `OrdinaryDeclaredType`;

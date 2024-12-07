@@ -15,5 +15,5 @@ internal static partial class DefinitionTypesAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFixedList<IMaybeParameterType> InvocableDefinition_ParameterTypes(IInvocableDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IDeclaredUserType TypeDefinition_Children_Broadcast_ContainingDeclaredType(ITypeDefinitionNode node);
+    public static partial OrdinaryDeclaredType TypeDefinition_Children_Broadcast_ContainingDeclaredType(ITypeDefinitionNode node);
 }

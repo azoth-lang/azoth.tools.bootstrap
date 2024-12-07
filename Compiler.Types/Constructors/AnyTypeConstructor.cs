@@ -39,7 +39,7 @@ public sealed class AnyTypeConstructor : TypeConstructor
         => FixedList.Empty<TypeConstructorParameter>();
     public bool AllowsVariance => false;
 
-    IFixedList<GenericParameterPlainType> TypeConstructor.GenericParameterPlainTypes
+    IFixedList<GenericParameterPlainType> TypeConstructor.ParameterPlainTypes
         => FixedList.Empty<GenericParameterPlainType>();
 
     IFixedSet<ConstructedPlainType> TypeConstructor.Supertypes => FixedSet.Empty<ConstructedPlainType>();

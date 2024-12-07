@@ -26,7 +26,7 @@ public abstract class SimpleTypeConstructor : SimpleOrLiteralTypeConstructor
 
     public sealed override bool AllowsVariance => false;
 
-    public sealed override IFixedList<GenericParameterPlainType> GenericParameterPlainTypes
+    public sealed override IFixedList<GenericParameterPlainType> ParameterPlainTypes
         => FixedList.Empty<GenericParameterPlainType>();
 
     public sealed override IFixedSet<ConstructedPlainType> Supertypes => AnyTypeConstructor.Set;

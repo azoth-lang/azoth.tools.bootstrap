@@ -28,13 +28,13 @@
 = TypeDefinition.*.**.ContainingDeclaredType;
 
 // ---------- Type Definition Parts
-↓ GenericParameter.ContainingDeclaredType: `IDeclaredUserType`;
+↓ GenericParameter.ContainingDeclaredType: `OrdinaryDeclaredType`;
 
 // ---------- Member Definitions
-↓ AbstractMethodDefinition.ContainingDeclaredType: `IDeclaredUserType`;
+↓ AbstractMethodDefinition.ContainingDeclaredType: `OrdinaryDeclaredType`;
 
 // ---------- Parameters
-↓ SelfParameter.ContainingDeclaredType: `IDeclaredUserType`;
+↓ SelfParameter.ContainingDeclaredType: `OrdinaryDeclaredType`;
 
 // ---------- Function Parts
 ⟳ Body.FlowStateAfter: `IFlowState` initial => IFlowState.Empty;

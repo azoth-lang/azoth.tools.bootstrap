@@ -75,14 +75,14 @@ public interface TypeConstructor : IEquatable<TypeConstructor>, TypeConstructorC
 
     bool AllowsVariance { get; }
 
-    IFixedList<GenericParameterPlainType> GenericParameterPlainTypes { get; }
+    IFixedList<GenericParameterPlainType> ParameterPlainTypes { get; }
 
     IFixedSet<ConstructedPlainType> Supertypes { get; }
 
     IPlainType Construct(IEnumerable<IPlainType> typeArguments);
 
     IPlainType ConstructWithGenericParameterPlainTypes()
-        => Construct(GenericParameterPlainTypes);
+        => Construct(ParameterPlainTypes);
 
     IMaybePlainType Construct(IEnumerable<IMaybePlainType> typeArguments)
     {

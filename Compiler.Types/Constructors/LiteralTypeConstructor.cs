@@ -31,7 +31,7 @@ public abstract class LiteralTypeConstructor : SimpleOrLiteralTypeConstructor
 
     public sealed override bool AllowsVariance => false;
 
-    public sealed override IFixedList<GenericParameterPlainType> GenericParameterPlainTypes
+    public sealed override IFixedList<GenericParameterPlainType> ParameterPlainTypes
         => FixedList.Empty<GenericParameterPlainType>();
 
     // TODO should this instead include the non-literal type (e.g. `int` or `bool`)?

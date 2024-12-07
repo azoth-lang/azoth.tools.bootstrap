@@ -92,6 +92,13 @@ public abstract class DeclaredType : IEquatable<DeclaredType>
     public CapabilityType WithRead(IFixedList<IType> typeArguments)
         => With(typeArguments).WithRead();
 
+    public IMaybeType WithRead(IFixedList<IMaybeType> typeArguments)
+    {
+        var properTypeArguments = typeArguments.As<IType>();
+        if (properTypeArguments is null) return IType.Unknown;
+        return WithRead(properTypeArguments);
+    }
+
     public abstract TypeConstructor? ToTypeConstructor();
 
     public abstract IPlainType? TryToPlainType();

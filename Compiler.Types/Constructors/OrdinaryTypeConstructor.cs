@@ -54,9 +54,10 @@ public sealed class OrdinaryTypeConstructor : TypeConstructor
     /// Within the type constructor declaration, any generic parameters will appear as type
     /// variables. These are the types of those variables.
     /// </summary>
-    public IFixedList<GenericParameterPlainType> GenericParameterPlainTypes { get; }
+    public IFixedList<GenericParameterPlainType> ParameterPlainTypes { get; }
     public IFixedSet<ConstructedPlainType> Supertypes { get; }
-    public TypeSemantics Semantics { get; }
+    public TypeSemantics Semantics
+        => Kind == TypeKind.Struct ? TypeSemantics.Value : TypeSemantics.Reference;
 
     public OrdinaryTypeConstructor(
         TypeConstructorContext context,
@@ -64,8 +65,7 @@ public sealed class OrdinaryTypeConstructor : TypeConstructor
         TypeKind kind,
         StandardName name,
         IEnumerable<TypeConstructorParameter> genericParameters,
-        IFixedSet<ConstructedPlainType> supertypes,
-        TypeSemantics semantics)
+        IFixedSet<ConstructedPlainType> supertypes)
     {
         Requires.That((kind == TypeKind.Trait).Implies(isAbstract), nameof(isAbstract), "Traits must be abstract.");
         Requires.That((kind == TypeKind.Struct).Implies(!isAbstract), nameof(isAbstract), "Structs cannot be abstract.");
@@ -77,12 +77,11 @@ public sealed class OrdinaryTypeConstructor : TypeConstructor
         Requires.That(Name.GenericParameterCount == Parameters.Count, nameof(genericParameters),
             "Count must match name count");
         AllowsVariance = Parameters.Any(p => p.Variance != TypeVariance.Invariant);
-        Semantics = semantics;
 
         Requires.That(supertypes.Contains(IPlainType.Any), nameof(supertypes),
             "All ordinary type constructors must have `Any` as a supertype.");
         Supertypes = supertypes;
-        GenericParameterPlainTypes = Parameters.Select(p => new GenericParameterPlainType(this, p))
+        ParameterPlainTypes = Parameters.Select(p => new GenericParameterPlainType(this, p))
                                                      .ToFixedList();
     }
 
@@ -97,7 +96,7 @@ public sealed class OrdinaryTypeConstructor : TypeConstructor
         => Construct(typeArguments);
 
     public ConstructedPlainType ConstructWithGenericParameterPlainTypes()
-        => Construct(GenericParameterPlainTypes);
+        => Construct(ParameterPlainTypes);
     IPlainType TypeConstructor.ConstructWithGenericParameterPlainTypes()
         => ConstructWithGenericParameterPlainTypes();
 
@@ -114,7 +113,7 @@ public sealed class OrdinaryTypeConstructor : TypeConstructor
                && Context.Equals(that.Context)
                && Name.Equals(that.Name)
                && Parameters.Equals(that.Parameters);
-        // GenericParameterPlainTypes is derived from GenericParameters and doesn't need to be compared
+        // ParameterPlainTypes is derived from Parameters and doesn't need to be compared
     }
 
     public override int GetHashCode()

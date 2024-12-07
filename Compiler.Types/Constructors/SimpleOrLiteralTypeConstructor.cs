@@ -29,7 +29,7 @@ public abstract class SimpleOrLiteralTypeConstructor : TypeConstructor
 
     public abstract bool AllowsVariance { get; }
 
-    public abstract IFixedList<GenericParameterPlainType> GenericParameterPlainTypes { get; }
+    public abstract IFixedList<GenericParameterPlainType> ParameterPlainTypes { get; }
 
     public abstract IFixedSet<ConstructedPlainType> Supertypes { get; }
 

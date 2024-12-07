@@ -15,7 +15,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 internal static partial class TypeDefinitionsAspect
 {
     public static partial SelfType TypeDefinition_SelfType(ITypeDefinitionNode node)
-        => new SelfType(node.DeclaredType.AsDeclaredType);
+        => new SelfType(node.DeclaredType);
 
     public static partial OrdinaryDeclaredType ClassDefinition_DeclaredType(IClassDefinitionNode node)
     {
@@ -96,7 +96,7 @@ internal static partial class TypeDefinitionsAspect
 
         // Avoid loading the declared type unless necessary because it is a cycle and accessing it
         // prevents caching.
-        IDeclaredUserType? declaredType = null;
+        OrdinaryDeclaredType? declaredType = null;
         return Build()
                // Exclude any cycles that exist in the supertypes by excluding this type
                .Where(t =>
@@ -160,7 +160,7 @@ internal static partial class TypeDefinitionsAspect
                 diagnostics.Add(OtherSemanticError.CircularDefinitionInSupertype(node.File, supertypeName.Syntax));
     }
 
-    private static bool InheritsFrom(this IStandardTypeNameNode node, IDeclaredUserType type)
+    private static bool InheritsFrom(this IStandardTypeNameNode node, OrdinaryDeclaredType type)
         => node.ReferencedDeclaration?.Supertypes.Any(t => t.TypeConstructor.Equals(type)) ?? false;
 
     private static void CheckTypeArgumentsAreConstructable(ITypeDefinitionNode node, DiagnosticCollectionBuilder diagnostics)

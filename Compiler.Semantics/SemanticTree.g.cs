@@ -522,7 +522,7 @@ public partial interface ITypeDefinitionNode : IFacetMemberDefinitionNode, IAsso
     SelfPlainType SelfPlainType { get; }
     new IFixedSet<BareNonVariableType> Supertypes { get; }
     IFixedSet<BareNonVariableType> ITypeDeclarationNode.Supertypes => Supertypes;
-    IDeclaredUserType DeclaredType { get; }
+    OrdinaryDeclaredType DeclaredType { get; }
     SelfType SelfType { get; }
     new IFixedSet<ITypeMemberDefinitionNode> Members { get; }
     IFixedSet<ITypeMemberDeclarationNode> IUserTypeDeclarationNode.Members => Members;
@@ -546,8 +546,6 @@ public partial interface IClassDefinitionNode : ITypeDefinitionNode, IClassDecla
     IFixedList<IClassMemberDefinitionNode> SourceMembers { get; }
     bool IsAbstract
         => Syntax.AbstractModifier is not null;
-    new OrdinaryDeclaredType DeclaredType { get; }
-    IDeclaredUserType ITypeDefinitionNode.DeclaredType => DeclaredType;
     new IFixedSet<IClassMemberDefinitionNode> Members { get; }
     IFixedSet<ITypeMemberDefinitionNode> ITypeDefinitionNode.Members => Members;
     IFixedSet<ITypeMemberDeclarationNode> IUserTypeDeclarationNode.Members => Members;
@@ -578,8 +576,6 @@ public partial interface IStructDefinitionNode : ITypeDefinitionNode, IStructDec
     ISyntax? ISemanticNode.Syntax => Syntax;
     ITypeMemberDefinitionSyntax? ITypeMemberDefinitionNode.Syntax => Syntax;
     IFixedList<IStructMemberDefinitionNode> SourceMembers { get; }
-    new OrdinaryDeclaredType DeclaredType { get; }
-    IDeclaredUserType ITypeDefinitionNode.DeclaredType => DeclaredType;
     new IFixedSet<IStructMemberDefinitionNode> Members { get; }
     IFixedSet<ITypeMemberDefinitionNode> ITypeDefinitionNode.Members => Members;
     IFixedSet<ITypeMemberDeclarationNode> IUserTypeDeclarationNode.Members => Members;
@@ -611,8 +607,6 @@ public partial interface ITraitDefinitionNode : ITypeDefinitionNode, ITraitDecla
     IFixedSet<ITypeMemberDeclarationNode> IUserTypeDeclarationNode.Members => Members;
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
     IFixedSet<ITraitMemberDeclarationNode> ITraitDeclarationNode.Members => Members;
-    new OrdinaryDeclaredType DeclaredType { get; }
-    IDeclaredUserType ITypeDefinitionNode.DeclaredType => DeclaredType;
 
     public static ITraitDefinitionNode Create(
         ITraitDefinitionSyntax syntax,
@@ -644,7 +638,7 @@ public partial interface IGenericParameterNode : ICodeNode, IGenericParameterDec
         => Syntax.Variance;
     OrdinaryTypeSymbol ContainingSymbol
         => ContainingDeclaration.Symbol;
-    IDeclaredUserType ContainingDeclaredType { get; }
+    OrdinaryDeclaredType ContainingDeclaredType { get; }
     GenericParameter Parameter { get; }
     GenericParameterType DeclaredType { get; }
     new IFixedSet<ITypeMemberDefinitionNode> Members
@@ -779,7 +773,7 @@ public partial interface IAbstractMethodDefinitionNode : IMethodDefinitionNode, 
     new IBodyNode? Body
         => null;
     IBodyNode? IInvocableDefinitionNode.Body => Body;
-    IDeclaredUserType ContainingDeclaredType { get; }
+    OrdinaryDeclaredType ContainingDeclaredType { get; }
     IMaybeFunctionType IStandardMethodDeclarationNode.MethodGroupType
         => Symbol?.MethodGroupType ?? IMaybeFunctionType.Unknown;
     MethodKind IMethodDefinitionNode.Kind
@@ -1240,7 +1234,7 @@ public partial interface ISelfParameterNode : IParameterNode, IBindingNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     IMaybeSelfParameterType ParameterType { get; }
     ITypeDefinitionNode ContainingTypeDefinition { get; }
-    IDeclaredUserType ContainingDeclaredType { get; }
+    OrdinaryDeclaredType ContainingDeclaredType { get; }
     new ValueId BindingValueId { get; }
     ValueId IParameterNode.BindingValueId => BindingValueId;
     ValueId IBindingNode.BindingValueId => BindingValueId;
@@ -4742,9 +4736,9 @@ internal abstract partial class SemanticNode : TreeNode, IChildTreeNode<ISemanti
     protected IPackageFacetDeclarationNode Inherited_Facet(IInheritanceContext ctx)
         => GetParent(ctx)!.Inherited_Facet(this, this, ctx);
 
-    internal virtual IDeclaredUserType Inherited_ContainingDeclaredType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal virtual OrdinaryDeclaredType Inherited_ContainingDeclaredType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
         => (GetParent(ctx) ?? throw Child.InheritFailed("ContainingDeclaredType", child, descendant)).Inherited_ContainingDeclaredType(this, descendant, ctx);
-    protected IDeclaredUserType Inherited_ContainingDeclaredType(IInheritanceContext ctx)
+    protected OrdinaryDeclaredType Inherited_ContainingDeclaredType(IInheritanceContext ctx)
         => GetParent(ctx)!.Inherited_ContainingDeclaredType(this, this, ctx);
 
     internal virtual ITypeDefinitionNode Inherited_ContainingTypeDefinition(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -5577,7 +5571,7 @@ file class ClassDefinitionNode : SemanticNode, IClassDefinitionNode
         return this;
     }
 
-    internal override IDeclaredUserType Inherited_ContainingDeclaredType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override OrdinaryDeclaredType Inherited_ContainingDeclaredType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         return DefinitionTypesAspect.TypeDefinition_Children_Broadcast_ContainingDeclaredType(this);
     }
@@ -5749,7 +5743,7 @@ file class StructDefinitionNode : SemanticNode, IStructDefinitionNode
         return this;
     }
 
-    internal override IDeclaredUserType Inherited_ContainingDeclaredType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override OrdinaryDeclaredType Inherited_ContainingDeclaredType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         return DefinitionTypesAspect.TypeDefinition_Children_Broadcast_ContainingDeclaredType(this);
     }
@@ -5908,7 +5902,7 @@ file class TraitDefinitionNode : SemanticNode, ITraitDefinitionNode
         return this;
     }
 
-    internal override IDeclaredUserType Inherited_ContainingDeclaredType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override OrdinaryDeclaredType Inherited_ContainingDeclaredType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         return DefinitionTypesAspect.TypeDefinition_Children_Broadcast_ContainingDeclaredType(this);
     }
@@ -5961,11 +5955,11 @@ file class GenericParameterNode : SemanticNode, IGenericParameterNode
         => Inherited_Facet(GrammarAttribute.CurrentInheritanceContext());
     public IUserTypeDeclarationNode ContainingDeclaration
         => (IUserTypeDeclarationNode)Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
-    public IDeclaredUserType ContainingDeclaredType
+    public OrdinaryDeclaredType ContainingDeclaredType
         => GrammarAttribute.IsCached(in containingDeclaredTypeCached) ? containingDeclaredType!
             : this.Inherited(ref containingDeclaredTypeCached, ref containingDeclaredType,
                 Inherited_ContainingDeclaredType);
-    private IDeclaredUserType? containingDeclaredType;
+    private OrdinaryDeclaredType? containingDeclaredType;
     private bool containingDeclaredTypeCached;
     public GenericParameterType DeclaredType
         => GrammarAttribute.IsCached(in declaredTypeCached) ? declaredType!
@@ -6028,11 +6022,11 @@ file class AbstractMethodDefinitionNode : SemanticNode, IAbstractMethodDefinitio
     private bool facetCached;
     public IUserTypeDeclarationNode ContainingDeclaration
         => (IUserTypeDeclarationNode)Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
-    public IDeclaredUserType ContainingDeclaredType
+    public OrdinaryDeclaredType ContainingDeclaredType
         => GrammarAttribute.IsCached(in containingDeclaredTypeCached) ? containingDeclaredType!
             : this.Inherited(ref containingDeclaredTypeCached, ref containingDeclaredType,
                 Inherited_ContainingDeclaredType);
-    private IDeclaredUserType? containingDeclaredType;
+    private OrdinaryDeclaredType? containingDeclaredType;
     private bool containingDeclaredTypeCached;
     public AccessModifier AccessModifier
         => GrammarAttribute.IsCached(in accessModifierCached) ? accessModifier
@@ -7808,11 +7802,11 @@ file class ConstructorSelfParameterNode : SemanticNode, IConstructorSelfParamete
                 Inherited_ContainingTypeDefinition);
     private ITypeDefinitionNode? containingTypeDefinition;
     private bool containingTypeDefinitionCached;
-    public IDeclaredUserType ContainingDeclaredType
+    public OrdinaryDeclaredType ContainingDeclaredType
         => GrammarAttribute.IsCached(in containingDeclaredTypeCached) ? containingDeclaredType!
             : this.Inherited(ref containingDeclaredTypeCached, ref containingDeclaredType,
                 Inherited_ContainingDeclaredType);
-    private IDeclaredUserType? containingDeclaredType;
+    private OrdinaryDeclaredType? containingDeclaredType;
     private bool containingDeclaredTypeCached;
     public IMaybeNonVoidPlainType BindingPlainType
         => GrammarAttribute.IsCached(in bindingPlainTypeCached) ? bindingPlainType!
@@ -7889,11 +7883,11 @@ file class InitializerSelfParameterNode : SemanticNode, IInitializerSelfParamete
                 Inherited_ContainingTypeDefinition);
     private ITypeDefinitionNode? containingTypeDefinition;
     private bool containingTypeDefinitionCached;
-    public IDeclaredUserType ContainingDeclaredType
+    public OrdinaryDeclaredType ContainingDeclaredType
         => GrammarAttribute.IsCached(in containingDeclaredTypeCached) ? containingDeclaredType!
             : this.Inherited(ref containingDeclaredTypeCached, ref containingDeclaredType,
                 Inherited_ContainingDeclaredType);
-    private IDeclaredUserType? containingDeclaredType;
+    private OrdinaryDeclaredType? containingDeclaredType;
     private bool containingDeclaredTypeCached;
     public IMaybeNonVoidPlainType BindingPlainType
         => GrammarAttribute.IsCached(in bindingPlainTypeCached) ? bindingPlainType!
@@ -7970,11 +7964,11 @@ file class MethodSelfParameterNode : SemanticNode, IMethodSelfParameterNode
                 Inherited_ContainingTypeDefinition);
     private ITypeDefinitionNode? containingTypeDefinition;
     private bool containingTypeDefinitionCached;
-    public IDeclaredUserType ContainingDeclaredType
+    public OrdinaryDeclaredType ContainingDeclaredType
         => GrammarAttribute.IsCached(in containingDeclaredTypeCached) ? containingDeclaredType!
             : this.Inherited(ref containingDeclaredTypeCached, ref containingDeclaredType,
                 Inherited_ContainingDeclaredType);
-    private IDeclaredUserType? containingDeclaredType;
+    private OrdinaryDeclaredType? containingDeclaredType;
     private bool containingDeclaredTypeCached;
     public IMaybeNonVoidPlainType BindingPlainType
         => GrammarAttribute.IsCached(in bindingPlainTypeCached) ? bindingPlainType!

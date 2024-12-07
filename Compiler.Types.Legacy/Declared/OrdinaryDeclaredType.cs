@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
+using Azoth.Tools.Bootstrap.Compiler.Types.Constructors.Contexts;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Parameters;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Pseudotypes;
@@ -14,7 +16,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Declared;
 
-public sealed class OrdinaryDeclaredType : DeclaredType, IDeclaredUserType
+public sealed class OrdinaryDeclaredType : DeclaredType
 {
     private static readonly IFixedSet<BareNonVariableType> AnyTypeSet
      = AnyType.Instance.BareType.Yield().ToFixedSet();
@@ -150,7 +152,6 @@ public sealed class OrdinaryDeclaredType : DeclaredType, IDeclaredUserType
 
     private OrdinaryTypeConstructor? typeConstructor;
 
-    DeclaredType IDeclaredUserType.AsDeclaredType => this;
     public override bool CanBeSupertype => Kind != TypeKind.Struct;
     public bool IsAbstract { get; }
 
@@ -217,7 +218,7 @@ public sealed class OrdinaryDeclaredType : DeclaredType, IDeclaredUserType
 
     public override OrdinaryTypeConstructor ToTypeConstructor()
         // Lazy initialize to prevent evaluation of lazy supertypes when constructing
-        => LazyInitializer.EnsureInitialized(ref typeConstructor, this.ConstructTypeConstructor);
+        => LazyInitializer.EnsureInitialized(ref typeConstructor, ConstructTypeConstructor);
     public override IPlainType? TryToPlainType() => ToTypeConstructor().TryConstructNullary();
 
     #region Equals
@@ -236,8 +237,6 @@ public sealed class OrdinaryDeclaredType : DeclaredType, IDeclaredUserType
         // Supertypes and GenericParameterTypes are not considered because they are derived. Also,
         // that prevents infinite recursion.
     }
-
-    public bool Equals(IDeclaredUserType? other) => Equals(other as DeclaredType);
 
     public override int GetHashCode()
         => HashCode.Combine(ContainingPackage, ContainingNamespace, IsAbstract, IsDeclaredConst, Kind, Name, GenericParameters);
@@ -263,4 +262,19 @@ public sealed class OrdinaryDeclaredType : DeclaredType, IDeclaredUserType
         builder.AppendJoin(", ", GenericParameters);
         builder.Append(']');
     }
+
+    /// <remarks>Used to construct the equivalent <see cref="TypeConstructor"/>. Do not use
+    /// directly. Use <see cref="ToTypeConstructor"/> instead.</remarks>
+    private OrdinaryTypeConstructor ConstructTypeConstructor()
+    {
+        var context = new NamespaceContext(ContainingPackage, ContainingNamespace);
+        var plainTypeGenericParameters = GenericParameters
+                                                     // Treat self as non-writeable because plain types should permit anything that could possibly be allowed by the types
+                                                     .Select(p => new TypeConstructorParameter(p.Name, p.Variance.ToTypeVariance(true)));
+        var supertypes = PlainTypeSupertypes();
+        return new(context, IsAbstract, Kind, Name, plainTypeGenericParameters, supertypes);
+    }
+
+    private IFixedSet<ConstructedPlainType> PlainTypeSupertypes()
+        => Supertypes.Select(t => t.ToPlainType()).Cast<ConstructedPlainType>().Append(IPlainType.Any).ToFixedSet();
 }
