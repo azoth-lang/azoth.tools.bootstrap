@@ -20,6 +20,8 @@ public abstract class DeclaredReferenceType : DeclaredType
     /// </summary>
     public bool IsClass { get; }
 
+    public override bool CanBeSupertype => true;
+
     private protected DeclaredReferenceType(
         bool isDeclaredConst,
         bool isAbstract,

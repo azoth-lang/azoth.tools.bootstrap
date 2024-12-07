@@ -12,7 +12,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Bare;
 [Closed(typeof(SelfType))]
 public abstract class BareAssociatedType : BareType
 {
-    public sealed override DeclaredType? DeclaredType => null;
+    public sealed override DeclaredType? TypeConstructor => null;
     public sealed override IFixedList<IType> TypeArguments => [];
     public sealed override IEnumerable<GenericParameterArgument> GenericParameterArguments => [];
 }

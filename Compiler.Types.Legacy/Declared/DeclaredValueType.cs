@@ -7,6 +7,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Declared;
 [Closed(typeof(SimpleType), typeof(StructType))]
 public abstract class DeclaredValueType : DeclaredType
 {
+    public override bool CanHaveFields => true;
+
+    public override bool CanBeSupertype => false;
+
     private protected DeclaredValueType(bool isConstType, IFixedList<GenericParameter> genericParameters)
         : base(isConstType, genericParameters) { }
 

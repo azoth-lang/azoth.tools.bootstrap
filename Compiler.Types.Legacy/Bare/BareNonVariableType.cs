@@ -36,11 +36,11 @@ public sealed class BareNonVariableType : BareType
     public static readonly BareNonVariableType Any = DeclaredType.Any.BareType;
     #endregion
 
-    public override DeclaredType DeclaredType { get; }
-    public override TypeName Name => DeclaredType.Name;
+    public override DeclaredType TypeConstructor { get; }
+    public override TypeName Name => TypeConstructor.Name;
     public override IFixedList<IType> TypeArguments { get; }
     public override IEnumerable<GenericParameterArgument> GenericParameterArguments
-        => DeclaredType.GenericParameters.EquiZip(TypeArguments, (p, a) => new GenericParameterArgument(p, a));
+        => TypeConstructor.GenericParameters.EquiZip(TypeArguments, (p, a) => new GenericParameterArgument(p, a));
     public bool AllowsVariance { get; }
     public bool HasIndependentTypeArguments { get; }
 
@@ -51,7 +51,7 @@ public sealed class BareNonVariableType : BareType
     /// Whether this type was declared `const` meaning that most references should be treated as
     /// const.
     /// </summary>
-    public bool IsDeclaredConst => DeclaredType.IsDeclaredConst;
+    public bool IsDeclaredConst => TypeConstructor.IsDeclaredConst;
 
     private readonly Lazy<TypeReplacements> typeReplacements;
 
@@ -71,7 +71,7 @@ public sealed class BareNonVariableType : BareType
             throw new ArgumentException(
                 $"Number of type arguments must match. Given `[{typeArguments.ToILString()}]` for `{declaredType}`.",
                 nameof(typeArguments));
-        DeclaredType = declaredType;
+        TypeConstructor = declaredType;
         TypeArguments = typeArguments;
         AllowsVariance = declaredType.AllowsVariance
             || TypeArguments.Any(a => a.AllowsVariance);
@@ -86,14 +86,14 @@ public sealed class BareNonVariableType : BareType
     {
         var typeArguments = TypeArguments.Select(a => a.ToPlainType()).ToFixedList();
         // The ToTypeConstructor() should never result in void since DeclaredType can't be void.
-        return (INonVoidPlainType)(DeclaredType.TryToPlainType()
-                                  ?? DeclaredType.ToTypeConstructor()?.Construct(typeArguments))!;
+        return (INonVoidPlainType)(TypeConstructor.TryToPlainType()
+                                  ?? TypeConstructor.ToTypeConstructor()?.Construct(typeArguments))!;
     }
 
-    private TypeReplacements GetTypeReplacements() => new(DeclaredType, TypeArguments);
+    private TypeReplacements GetTypeReplacements() => new(TypeConstructor, TypeArguments);
 
     private IFixedSet<BareNonVariableType> GetSupertypes()
-        => DeclaredType.Supertypes.Select(typeReplacements.Value.ReplaceTypeParametersIn).ToFixedSet();
+        => TypeConstructor.Supertypes.Select(typeReplacements.Value.ReplaceTypeParametersIn).ToFixedSet();
 
     public IType ReplaceTypeParametersIn(IType type)
         => typeReplacements.Value.ReplaceTypeParametersIn(type);
@@ -115,7 +115,7 @@ public sealed class BareNonVariableType : BareType
         if (!HasIndependentTypeArguments) return this;
         var newTypeArguments = TypeArgumentsAccessedVia(capability);
         if (ReferenceEquals(newTypeArguments, TypeArguments)) return this;
-        return new(DeclaredType, newTypeArguments);
+        return new(TypeConstructor, newTypeArguments);
     }
 
     private IFixedList<IType> TypeArgumentsAccessedVia(Capability capability)
@@ -132,7 +132,7 @@ public sealed class BareNonVariableType : BareType
     }
 
     public BareNonVariableType With(IFixedList<IType> typeArguments)
-        => new(DeclaredType, typeArguments);
+        => new(TypeConstructor, typeArguments);
 
     public CapabilityTypeConstraint With(CapabilitySet capability)
         => new(capability, this);
@@ -149,11 +149,11 @@ public sealed class BareNonVariableType : BareType
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
         return other is BareNonVariableType otherType
-               && DeclaredType == otherType.DeclaredType
+               && TypeConstructor == otherType.TypeConstructor
                && TypeArguments.Equals(otherType.TypeArguments);
     }
 
-    public override int GetHashCode() => HashCode.Combine(DeclaredType, TypeArguments);
+    public override int GetHashCode() => HashCode.Combine(TypeConstructor, TypeArguments);
     #endregion
 
     public sealed override string ToSourceCodeString() => ToString(t => t.ToSourceCodeString());
@@ -162,9 +162,9 @@ public sealed class BareNonVariableType : BareType
     private string ToString(Func<IType, string> toString)
     {
         var builder = new StringBuilder();
-        builder.Append(DeclaredType.ContainingNamespace);
-        if (DeclaredType.ContainingNamespace != NamespaceName.Global) builder.Append('.');
-        builder.Append(DeclaredType.Name.ToBareString());
+        builder.Append(TypeConstructor.ContainingNamespace);
+        if (TypeConstructor.ContainingNamespace != NamespaceName.Global) builder.Append('.');
+        builder.Append(TypeConstructor.Name.ToBareString());
         if (!TypeArguments.IsEmpty)
         {
             builder.Append('[');

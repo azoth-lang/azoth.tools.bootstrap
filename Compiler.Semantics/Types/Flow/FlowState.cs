@@ -113,7 +113,7 @@ internal sealed class FlowState : IFlowState
         if (oldValueType.Equals(newValueType)) return aliasValueMap;
 
         var declaredSupertypes = oldValueType.DeclaredType.Supertypes
-                                             .Where(s => s.DeclaredType == newValueType.DeclaredType)
+                                             .Where(s => s.TypeConstructor == newValueType.DeclaredType)
                                              .ToFixedList();
 
         if (declaredSupertypes.Count > 1)

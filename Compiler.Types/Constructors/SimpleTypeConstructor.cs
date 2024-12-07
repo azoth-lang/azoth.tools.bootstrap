@@ -12,6 +12,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
     typeof(IntegerTypeConstructor))]
 public abstract class SimpleTypeConstructor : SimpleOrLiteralTypeConstructor
 {
+    /// <remarks>Simple types are all structs with values so they effectively do have fields.</remarks>
+    public override bool CanHaveFields => true;
+
     public sealed override bool CanBeInstantiated => true;
 
     public sealed override TypeSemantics Semantics => TypeSemantics.Value;

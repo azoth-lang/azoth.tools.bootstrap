@@ -46,6 +46,14 @@ public abstract class DeclaredType : IEquatable<DeclaredType>
 
     public abstract TypeSemantics Semantics { get; }
 
+    /// <summary>
+    /// Whether this type can have fields.
+    /// </summary>
+    /// <remarks>Even if a type cannot have fields, a subtype still could.</remarks>
+    public abstract bool CanHaveFields { get; }
+
+    public abstract bool CanBeSupertype { get; }
+
     public abstract TypeName Name { get; }
 
     public IFixedList<GenericParameter> GenericParameters { get; }

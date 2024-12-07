@@ -13,7 +13,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Bare;
 [DebuggerDisplay("{" + nameof(ToILString) + "(),nq}")]
 public abstract class BareType : IEquatable<BareType>
 {
-    public abstract DeclaredType? DeclaredType { get; }
+    public abstract DeclaredType? TypeConstructor { get; }
     public abstract TypeName Name { get; }
     public abstract IFixedList<IType> TypeArguments { get; }
     public abstract IEnumerable<GenericParameterArgument> GenericParameterArguments { get; }

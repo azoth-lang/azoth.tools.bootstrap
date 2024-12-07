@@ -100,9 +100,9 @@ internal static partial class TypeDefinitionsAspect
                // Exclude any cycles that exist in the supertypes by excluding this type
                .Where(t =>
                    // Try to avoid loading the declared type by checking names first
-                   t.DeclaredType.Name != node.Name
+                   t.TypeConstructor.Name != node.Name
                    // But the real check is on the declared type
-                   || !t.DeclaredType.Equals(declaredType ??= node.DeclaredType))
+                   || !t.TypeConstructor.Equals(declaredType ??= node.DeclaredType))
                // Everything has `Any` as a supertype (added after filter to avoid loading declared type)
                .Append(BareNonVariableType.Any)
                .ToFixedSet();
@@ -113,7 +113,7 @@ internal static partial class TypeDefinitionsAspect
             // errors to. (Could possibly use type arguments in the future.)
             foreach (var supertypeName in node.AllSupertypeNames)
             {
-                if (supertypeName.NamedBareType is not BareNonVariableType { DeclaredType: DeclaredReferenceType } bareSupertype)
+                if (supertypeName.NamedBareType is not BareNonVariableType { TypeConstructor.CanBeSupertype: true } bareSupertype)
                     // A diagnostic will be generated elsewhere for this case
                     continue;
 
@@ -160,7 +160,7 @@ internal static partial class TypeDefinitionsAspect
     }
 
     private static bool InheritsFrom(this IStandardTypeNameNode node, IDeclaredUserType type)
-        => node.ReferencedDeclaration?.Supertypes.Any(t => t.DeclaredType.Equals(type)) ?? false;
+        => node.ReferencedDeclaration?.Supertypes.Any(t => t.TypeConstructor.Equals(type)) ?? false;
 
     private static void CheckTypeArgumentsAreConstructable(ITypeDefinitionNode node, DiagnosticCollectionBuilder diagnostics)
     {

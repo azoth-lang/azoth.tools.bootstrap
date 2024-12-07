@@ -7,6 +7,7 @@ using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
+using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Declared;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
@@ -148,14 +149,15 @@ internal static partial class SymbolNodeAspect
         => GetMembers<ITypeMemberSymbolNode>(node);
 
     public static partial void Validate_ClassSymbolNode(OrdinaryTypeSymbol symbol)
-        => Requires.That(symbol.DeclaresType is ObjectType { IsClass: true }, nameof(symbol),
+        => Requires.That(symbol.DeclaresType is { Kind: TypeKind.Class }, nameof(symbol),
             "Symbol must be for an class type.");
 
     public static partial IFixedSet<IClassMemberSymbolNode> ClassSymbol_Members(IClassSymbolNode node)
         => GetMembers<IClassMemberSymbolNode>(node);
 
     public static partial void Validate_StructSymbolNode(OrdinaryTypeSymbol symbol)
-        => Requires.That(symbol.DeclaresType is StructType, nameof(symbol), "Symbol must be for a struct type.");
+        => Requires.That(symbol.DeclaresType is { Kind: TypeKind.Struct }, nameof(symbol),
+            "Symbol must be for a struct type.");
 
     public static partial IFixedSet<IStructMemberSymbolNode> StructSymbol_Members(IStructSymbolNode node)
         => GetMembers<IStructMemberSymbolNode>(node);

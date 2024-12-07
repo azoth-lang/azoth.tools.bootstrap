@@ -17,6 +17,8 @@ public abstract class SimpleOrLiteralTypeConstructor : TypeConstructor
 {
     TypeConstructorContext TypeConstructor.Context => PrimitiveContext.Instance;
 
+    public abstract bool CanHaveFields { get; }
+
     public abstract bool CanBeInstantiated { get; }
 
     public abstract TypeSemantics Semantics { get; }

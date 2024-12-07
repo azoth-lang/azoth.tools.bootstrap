@@ -24,6 +24,7 @@ public interface IDeclaredUserType : IEquatable<IDeclaredUserType>
     NamespaceName ContainingNamespace { get; }
     bool IsDeclaredConst { get; }
     bool IsClass { get; }
+    TypeKind Kind { get; }
     bool IsAbstract { get; }
     StandardName Name { get; }
     IFixedList<GenericParameter> GenericParameters { get; }
@@ -58,12 +59,13 @@ internal static class DeclaredUserTypeExtensions
     {
         var context = new NamespaceContext(declaredType.ContainingPackage, declaredType.ContainingNamespace);
         var isAbstract = declaredType.IsAbstract;
+        var kind = declaredType.Kind;
         var plainTypeGenericParameters = declaredType.GenericParameters
             // Treat self as non-writeable because plain types should permit anything that could possibly be allowed by the types
             .Select(p => new TypeConstructorParameter(p.Name, p.Variance.ToTypeVariance(true)));
         var semantics = declaredType is ObjectType ? TypeSemantics.Reference : TypeSemantics.Value;
         var supertypes = declaredType.PlainTypeSupertypes();
-        return new(context, isAbstract, declaredType.Name, plainTypeGenericParameters, supertypes, semantics);
+        return new(context, isAbstract, kind, declaredType.Name, plainTypeGenericParameters, supertypes, semantics);
     }
 
     private static IFixedSet<ConstructedPlainType> PlainTypeSupertypes(this IDeclaredUserType declaredType)

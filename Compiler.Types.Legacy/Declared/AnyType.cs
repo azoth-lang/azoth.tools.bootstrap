@@ -22,6 +22,7 @@ public sealed class AnyType : DeclaredReferenceType
     public override IdentifierName? ContainingPackage => null;
     public override NamespaceName ContainingNamespace => NamespaceName.Global;
     public override TypeSemantics Semantics => TypeSemantics.Reference;
+    public override bool CanHaveFields => false;
     public override SpecialTypeName Name => SpecialTypeName.Any;
     public override IFixedSet<BareNonVariableType> Supertypes => [];
 

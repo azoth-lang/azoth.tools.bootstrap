@@ -76,7 +76,9 @@ public sealed class CapabilityType : NonEmptyType, INonVoidType
 
     public BareNonVariableType BareType { get; }
 
-    public DeclaredType DeclaredType => BareType.DeclaredType;
+    public TypeSemantics Semantics => DeclaredType.Semantics;
+
+    public DeclaredType DeclaredType => BareType.TypeConstructor;
 
     public IdentifierName? ContainingPackage => DeclaredType.ContainingPackage;
 
@@ -156,7 +158,7 @@ public sealed class CapabilityType : NonEmptyType, INonVoidType
             return this;
 
         // TODO this will fail if the type implements the target type in multiple ways.
-        var supertype = Supertypes.Where(s => s.DeclaredType == target).TrySingle();
+        var supertype = Supertypes.Where(s => s.TypeConstructor == target).TrySingle();
         if (supertype is null)
             throw new ArgumentException($"The type {target} is not a supertype of {this}.");
 

@@ -28,7 +28,7 @@ public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
         bool isAbstract,
         bool isConst,
         string name)
-        => new(containingPackage, containingNamespace, isAbstract, isConst, isClass: true, name,
+        => new(containingPackage, containingNamespace, isAbstract, isConst, TypeKind.Class, name,
             [], AnyTypeSet);
 
     public static ObjectType CreateTrait(
@@ -36,7 +36,7 @@ public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
         NamespaceName containingNamespace,
         bool isConst,
         string name)
-        => new(containingPackage, containingNamespace, isAbstract: true, isConst, isClass: false,
+        => new(containingPackage, containingNamespace, isAbstract: true, isConst, TypeKind.Trait,
             name, [], AnyTypeSet);
 
     public static ObjectType CreateClass(
@@ -47,7 +47,7 @@ public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
         string name,
         IFixedList<GenericParameter> genericParameters,
         IFixedSet<BareNonVariableType> supertypes)
-        => new(containingPackage, containingNamespace, isAbstract, isConst, isClass: true,
+        => new(containingPackage, containingNamespace, isAbstract, isConst, TypeKind.Class,
             StandardName.Create(name, genericParameters.Count), genericParameters, supertypes);
 
     public static ObjectType CreateClass(
@@ -60,7 +60,7 @@ public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
         IFixedSet<BareNonVariableType> supertypes)
     {
         Requires.That(name.GenericParameterCount == genericParameters.Count, nameof(genericParameters), "Count must match name count");
-        return new(containingPackage, containingNamespace, isAbstract, isConst, isClass: true, name,
+        return new(containingPackage, containingNamespace, isAbstract, isConst, TypeKind.Class, name,
             genericParameters, supertypes);
     }
 
@@ -74,7 +74,7 @@ public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
     {
         Requires.That(name.GenericParameterCount == genericParameters.Count, nameof(genericParameters),
             "Count must match name count");
-        return new(containingPackage, containingNamespace, isAbstract: true, isConst, isClass: false, name,
+        return new(containingPackage, containingNamespace, isAbstract: true, isConst, TypeKind.Trait, name,
             genericParameters, supertypes);
     }
 
@@ -86,7 +86,7 @@ public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
         string name,
         params GenericParameter[] genericParameters)
     {
-        return new(containingPackage, containingNamespace, isAbstract, isConst, isClass: true,
+        return new(containingPackage, containingNamespace, isAbstract, isConst, TypeKind.Class,
             StandardName.Create(name, genericParameters.Length), genericParameters.ToFixedList(), AnyTypeSet);
     }
 
@@ -97,7 +97,7 @@ public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
         string name,
         params GenericParameter[] genericParameters)
     {
-        return new(containingPackage, containingNamespace, isAbstract: true, isConst, isClass: false,
+        return new(containingPackage, containingNamespace, isAbstract: true, isConst, TypeKind.Trait,
             StandardName.Create(name, genericParameters.Length), genericParameters.ToFixedList(), AnyTypeSet);
     }
 
@@ -106,14 +106,15 @@ public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
         NamespaceName containingNamespace,
         bool isAbstract,
         bool isConstType,
-        bool isClass,
+        TypeKind kind,
         StandardName name,
         IFixedList<GenericParameter> genericParameters,
         IFixedSet<BareNonVariableType> supertypes)
-        : base(isConstType, isAbstract, isClass, genericParameters)
+        : base(isConstType, isAbstract, kind == TypeKind.Class, genericParameters)
     {
         ContainingPackage = containingPackage;
         ContainingNamespace = containingNamespace;
+        Kind = kind;
         Name = name;
         Supertypes = supertypes;
         GenericParameterTypes = GenericParameters.Select(p => new GenericParameterType(this, p)).ToFixedList();
@@ -124,6 +125,10 @@ public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
     public override NamespaceName ContainingNamespace { get; }
 
     public override TypeSemantics Semantics => TypeSemantics.Reference;
+
+    public TypeKind Kind { get; }
+
+    public override bool CanHaveFields => Kind != TypeKind.Trait;
 
     public override StandardName Name { get; }
 

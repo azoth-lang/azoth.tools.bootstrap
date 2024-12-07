@@ -13,6 +13,7 @@ using Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.ControlFlow;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.MemoryLayout;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.MemoryLayout.BoundedLists;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
+using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.ConstValue;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Declared;
@@ -401,11 +402,11 @@ public class InterpreterProcess
         CapabilityType selfType,
         AzothValue self,
         IEnumerable<AzothValue> arguments)
-        => selfType.BareType.DeclaredType switch
+        => selfType.BareType.TypeConstructor.Semantics switch
         {
-            DeclaredValueType _ => await CallStructMethod(methodSymbol, selfType, self, arguments),
-            DeclaredReferenceType _ => await CallClassMethodAsync(methodSymbol, self, arguments),
-            _ => throw ExhaustiveMatch.Failed(selfType.BareType.DeclaredType),
+            TypeSemantics.Value => await CallStructMethod(methodSymbol, selfType, self, arguments),
+            TypeSemantics.Reference => await CallClassMethodAsync(methodSymbol, self, arguments),
+            _ => throw ExhaustiveMatch.Failed(selfType.BareType.TypeConstructor.Semantics),
         };
 
     private async ValueTask<AzothValue> CallClassMethodAsync(
@@ -1122,8 +1123,8 @@ public class InterpreterProcess
 
     private async ValueTask<bool> ReferenceEqualsAsync(IExpressionNode leftExp, IExpressionNode rightExp, LocalVariableScope variables)
     {
-        if (leftExp.Type is not CapabilityType { DeclaredType: DeclaredReferenceType }
-            || rightExp.Type is not CapabilityType { DeclaredType: DeclaredReferenceType })
+        if (leftExp.Type is not CapabilityType { DeclaredType.Semantics: TypeSemantics.Reference }
+            || rightExp.Type is not CapabilityType { DeclaredType.Semantics: TypeSemantics.Reference })
             throw new InvalidOperationException(
                 $"Can't compare expressions of type {leftExp.Type.ToILString()} and {rightExp.Type.ToILString()} for reference equality.");
         var left = await ExecuteAsync(leftExp, variables).ConfigureAwait(false);

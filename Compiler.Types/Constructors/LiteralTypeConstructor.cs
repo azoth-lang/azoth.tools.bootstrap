@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Text;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
@@ -17,6 +16,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 // TODO possibly remove this type and make the literal types simple types
 public abstract class LiteralTypeConstructor : SimpleOrLiteralTypeConstructor
 {
+    /// <remarks>Literal types don't carry state, so they don't have fields.</remarks>
+    public override bool CanHaveFields => false;
+
     public sealed override bool CanBeInstantiated => true;
 
     public sealed override TypeSemantics Semantics => TypeSemantics.Value;

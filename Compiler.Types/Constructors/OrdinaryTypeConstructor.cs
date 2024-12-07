@@ -23,12 +23,24 @@ public sealed class OrdinaryTypeConstructor : TypeConstructor
     /// <remarks>Classes can be declared abstract with the <c>abstract</c> keyword. Traits are
     /// always abstract. Structs are never abstract.</remarks>
     public bool IsAbstract { get; }
+
+    /// <summary>
+    /// What kind of type this is (e.g. class, trait, or struct).
+    /// </summary>
+    public TypeKind Kind { get; }
+
     /// <summary>
     /// Whether types constructed with this type constructor can be instantiated directly. Even if
     /// a type cannot be instantiated, it may be the case that a subtype can. So it is still possible
     /// that instances compatible with the type exist.
     /// </summary>
     public bool CanBeInstantiated => !IsAbstract;
+
+    /// <summary>
+    /// Whether this type can have fields.
+    /// </summary>
+    /// <remarks>Even if a type cannot have fields, a subtype still could.</remarks>
+    public bool CanHaveFields => Kind != TypeKind.Trait;
 
     public StandardName Name { get; }
     TypeName TypeConstructor.Name => Name;
@@ -49,19 +61,24 @@ public sealed class OrdinaryTypeConstructor : TypeConstructor
     public OrdinaryTypeConstructor(
         TypeConstructorContext context,
         bool isAbstract,
+        TypeKind kind,
         StandardName name,
         IEnumerable<TypeConstructorParameter> genericParameters,
         IFixedSet<ConstructedPlainType> supertypes,
         TypeSemantics semantics)
     {
+        Requires.That((kind == TypeKind.Trait).Implies(isAbstract), nameof(isAbstract), "Traits must be abstract.");
+        Requires.That((kind == TypeKind.Struct).Implies(!isAbstract), nameof(isAbstract), "Structs cannot be abstract.");
         Context = context;
+        IsAbstract = isAbstract;
+        Kind = kind;
         Name = name;
         Parameters = genericParameters.ToFixedList();
         Requires.That(Name.GenericParameterCount == Parameters.Count, nameof(genericParameters),
             "Count must match name count");
         AllowsVariance = Parameters.Any(p => p.Variance != TypeVariance.Invariant);
         Semantics = semantics;
-        IsAbstract = isAbstract;
+
         Requires.That(supertypes.Contains(IPlainType.Any), nameof(supertypes),
             "All ordinary type constructors must have `Any` as a supertype.");
         Supertypes = supertypes;

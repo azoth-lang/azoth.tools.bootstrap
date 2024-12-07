@@ -57,6 +57,12 @@ public interface TypeConstructor : IEquatable<TypeConstructor>, TypeConstructorC
     /// </summary>
     bool CanBeInstantiated { get; }
 
+    /// <summary>
+    /// Whether this type can have fields.
+    /// </summary>
+    /// <remarks>Even if a type cannot have fields, a subtype still could.</remarks>
+    public bool CanHaveFields { get; }
+
     TypeSemantics Semantics { get; }
 
     TypeName Name { get; }

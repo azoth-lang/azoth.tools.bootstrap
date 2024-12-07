@@ -62,8 +62,8 @@ public static class DataTypeExtensions
 
         if (target.AllowsVariance || target.HasIndependentTypeArguments)
         {
-            var declaredType = target.DeclaredType;
-            var matchingSourceTypes = source.Supertypes.Prepend(source).Where(t => t.DeclaredType == declaredType);
+            var declaredType = target.TypeConstructor;
+            var matchingSourceTypes = source.Supertypes.Prepend(source).Where(t => t.TypeConstructor == declaredType);
             foreach (var sourceType in matchingSourceTypes)
                 if (IsAssignableFrom(declaredType, targetAllowsWrite, target.TypeArguments, sourceType.TypeArguments))
                     return true;
@@ -209,8 +209,8 @@ public static class DataTypeExtensions
     {
         return type switch
         {
-            CapabilityType { DeclaredType: DeclaredReferenceType } referenceType => referenceType,
-            OptionalType { Referent: CapabilityType { DeclaredType: DeclaredReferenceType } referenceType } => referenceType,
+            CapabilityType { Semantics: TypeSemantics.Reference } referenceType => referenceType,
+            OptionalType { Referent: CapabilityType { Semantics: TypeSemantics.Reference } referenceType } => referenceType,
             _ => null
         };
     }

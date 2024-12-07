@@ -22,6 +22,11 @@ public sealed class AnyTypeConstructor : TypeConstructor
     TypeConstructorContext TypeConstructor.Context => PrimitiveContext.Instance;
 
     /// <summary>
+    /// The `Any` type is like a trait in the sense that it is known to not have fields.
+    /// </summary>
+    public bool CanHaveFields => false;
+
+    /// <summary>
     /// The `Any` type cannot be instantiated because it is abstract.
     /// </summary>
     public bool CanBeInstantiated => false;
