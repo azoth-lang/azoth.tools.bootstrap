@@ -28,7 +28,7 @@ public abstract class SymbolTestFixture
     protected static IdentifierName? Name(string? name = null) => name is null ? null : new IdentifierName(name);
 
     protected IFixedList<ParameterType> Params(int? count = null)
-        => Enumerable.Range(1, count ?? ++unique).Select(_ => ParameterType.Int).ToFixedList();
+        => Enumerable.Range(1, count ?? ++unique).Select(_ => IntParameter).ToFixedList();
 
     protected static IFixedList<ParameterType> Params(INonVoidType param, params INonVoidType[] @params)
         => @params.Prepend(param).Select(t => new ParameterType(false, t)).ToFixedList();
@@ -121,4 +121,6 @@ public abstract class SymbolTestFixture
             ns ?? Package(),
             dataType ?? (ObjectType)DataType().DeclaredType);
     }
+
+    public static readonly ParameterType IntParameter = new(false, IType.Int);
 }

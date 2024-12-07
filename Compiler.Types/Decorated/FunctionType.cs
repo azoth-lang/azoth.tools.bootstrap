@@ -9,10 +9,10 @@ public sealed class FunctionType : INonVoidType
 {
     public FunctionPlainType PlainType { get; }
     INonVoidPlainType INonVoidType.PlainType => PlainType;
-    public IFixedList<INonVoidType> Parameters { get; }
+    public IFixedList<ParameterType> Parameters { get; }
     public IType Return { get; }
 
-    public FunctionType(FunctionPlainType plainType, IFixedList<INonVoidType> parameters, IType @return)
+    public FunctionType(FunctionPlainType plainType, IFixedList<ParameterType> parameters, IType @return)
     {
         Requires.That(plainType.Parameters.SequenceEqual(parameters.Select(p => p.PlainType)), nameof(parameters),
             "Parameters must match plain type.");

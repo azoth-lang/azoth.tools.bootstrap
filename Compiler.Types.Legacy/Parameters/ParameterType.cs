@@ -6,7 +6,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Parameters;
 
 /// <summary>
 /// For function types it is necessary to know not only the type of each parameter, but whether it
-/// was declared `lent`. This type packages those to values.
+/// was declared `lent`. This type packages those two values.
 /// </summary>
 [DebuggerDisplay("{" + nameof(ToILString) + "(),nq}")]
 public record class ParameterType(bool IsLent, INonVoidType Type) : IMaybeParameterType
@@ -17,8 +17,6 @@ public record class ParameterType(bool IsLent, INonVoidType Type) : IMaybeParame
             return new ParameterType(isLent, t);
         return IType.Unknown;
     }
-
-    public static readonly ParameterType Int = new(false, IType.Int);
 
     IMaybeNonVoidType IMaybeParameterType.Type => Type;
 
