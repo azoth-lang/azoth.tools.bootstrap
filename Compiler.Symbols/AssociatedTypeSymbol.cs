@@ -8,9 +8,9 @@ public sealed class AssociatedTypeSymbol : TypeSymbol
     public override PackageSymbol Package => ContainingSymbol.Package ?? throw new ArgumentNullException();
     public override OrdinaryTypeSymbol ContainingSymbol { get; }
     public override OrdinaryTypeSymbol ContextTypeSymbol => ContainingSymbol;
-    public BareTypeVariableType Type { get; }
+    public BareAssociatedType Type { get; }
 
-    public AssociatedTypeSymbol(OrdinaryTypeSymbol containingSymbol, BareTypeVariableType type)
+    public AssociatedTypeSymbol(OrdinaryTypeSymbol containingSymbol, BareAssociatedType type)
         : base(type.Name)
     {
         ContainingSymbol = containingSymbol;

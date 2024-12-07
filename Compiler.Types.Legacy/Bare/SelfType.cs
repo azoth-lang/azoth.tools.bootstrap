@@ -5,7 +5,7 @@ using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Declared;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Bare;
 
-public sealed class SelfType : BareTypeVariableType
+public sealed class SelfType : BareAssociatedType
 {
     public DeclaredType ContainingType { get; }
     public override TypeName Name => SpecialTypeName.Self;

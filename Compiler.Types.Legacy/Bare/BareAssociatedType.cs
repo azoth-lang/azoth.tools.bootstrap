@@ -7,10 +7,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Bare;
 
 /// <summary>
 /// The type of a type variable that is inherently bare (i.e. a <see cref="SelfType"/> or an
-/// <c>AssociatedType</c>).
+/// <c>OrdinaryAssociatedType</c>).
 /// </summary>
 [Closed(typeof(SelfType))]
-public abstract class BareTypeVariableType : BareType
+public abstract class BareAssociatedType : BareType
 {
     public sealed override DeclaredType? DeclaredType => null;
     public sealed override IFixedList<IType> TypeArguments => [];
