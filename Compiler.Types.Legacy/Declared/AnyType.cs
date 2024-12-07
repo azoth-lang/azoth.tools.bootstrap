@@ -7,15 +7,16 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Declared;
 
-public sealed class AnyType : DeclaredReferenceType
+public sealed class AnyType : DeclaredType
 {
     #region Singleton
     internal static readonly AnyType Instance = new();
 
     private AnyType()
-        : base(isDeclaredConst: false, isAbstract: true, isClass: false, [])
+        : base(isDeclaredConst: false, [])
     {
         BareType = new(this, []);
+        IsAbstract = true;
     }
     #endregion
 
@@ -27,6 +28,8 @@ public sealed class AnyType : DeclaredReferenceType
     public override IFixedSet<BareNonVariableType> Supertypes => [];
 
     public BareNonVariableType BareType { get; }
+    public override bool CanBeSupertype => true;
+    public bool IsAbstract { get; }
 
     public override BareNonVariableType With(IFixedList<IType> typeArguments)
     {

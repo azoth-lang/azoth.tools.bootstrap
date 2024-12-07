@@ -17,10 +17,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Declared;
 /// <summary>
 /// The type declared by a class or trait declaration.
 /// </summary>
-public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
+public sealed class ObjectType : DeclaredType, IDeclaredUserType
 {
     private static readonly IFixedSet<BareNonVariableType> AnyTypeSet
-        = AnyType.Instance.BareType.Yield().ToFixedSet<BareNonVariableType>();
+        = AnyType.Instance.BareType.Yield().ToFixedSet();
 
     public static ObjectType CreateClass(
         IdentifierName containingPackage,
@@ -110,10 +110,11 @@ public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
         StandardName name,
         IFixedList<GenericParameter> genericParameters,
         IFixedSet<BareNonVariableType> supertypes)
-        : base(isConstType, isAbstract, kind == TypeKind.Class, genericParameters)
+        : base(isConstType, genericParameters)
     {
         ContainingPackage = containingPackage;
         ContainingNamespace = containingNamespace;
+        IsAbstract = isAbstract;
         Kind = kind;
         Name = name;
         Supertypes = supertypes;
@@ -138,6 +139,8 @@ public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
     private OrdinaryTypeConstructor? typeConstructor;
 
     DeclaredType IDeclaredUserType.AsDeclaredType => this;
+    public override bool CanBeSupertype => true;
+    public bool IsAbstract { get; }
 
     /// <summary>
     /// Make a version of this type for use as the default constructor parameter.

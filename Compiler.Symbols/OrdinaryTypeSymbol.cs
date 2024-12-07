@@ -1,5 +1,6 @@
 using System;
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Declared;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
@@ -12,6 +13,7 @@ public sealed class OrdinaryTypeSymbol : TypeSymbol
     public override PackageSymbol Package { get; }
     public override Symbol ContainingSymbol { get; }
     public override TypeSymbol? ContextTypeSymbol => null;
+    public TypeKind Kind => DeclaresType.Kind;
     public override StandardName Name { get; }
     public IDeclaredUserType DeclaresType { get; }
 

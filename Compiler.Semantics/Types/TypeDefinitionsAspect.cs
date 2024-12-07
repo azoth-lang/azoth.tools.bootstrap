@@ -4,6 +4,7 @@ using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
+using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Declared;
@@ -35,7 +36,7 @@ internal static partial class TypeDefinitionsAspect
 
     private static void CheckBaseTypeMustBeAClass(IClassDefinitionNode node, DiagnosticCollectionBuilder diagnostics)
     {
-        if (node.BaseTypeName?.ReferencedSymbol is not null and not OrdinaryTypeSymbol { DeclaresType.IsClass: true })
+        if (node.BaseTypeName?.ReferencedSymbol is not null and not OrdinaryTypeSymbol { Kind: TypeKind.Class })
             diagnostics.Add(OtherSemanticError.BaseTypeMustBeClass(node.File, node.Name, node.BaseTypeName.Syntax));
     }
 

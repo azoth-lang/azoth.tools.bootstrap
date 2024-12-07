@@ -23,7 +23,6 @@ public interface IDeclaredUserType : IEquatable<IDeclaredUserType>
     IdentifierName ContainingPackage { get; }
     NamespaceName ContainingNamespace { get; }
     bool IsDeclaredConst { get; }
-    bool IsClass { get; }
     TypeKind Kind { get; }
     bool IsAbstract { get; }
     StandardName Name { get; }

@@ -1,7 +1,7 @@
 using System;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Declared;
+using Azoth.Tools.Bootstrap.Compiler.Types;
 using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
@@ -36,15 +36,12 @@ internal static class SymbolBinder
         };
 
     private static IUserTypeDeclarationNode UserTypeSymbol(OrdinaryTypeSymbol symbol)
-         => symbol.DeclaresType switch
+         => symbol.DeclaresType.Kind switch
          {
-             StructType _ => IStructSymbolNode.Create(symbol),
-             ObjectType t => t.IsClass switch
-             {
-                 true => IClassSymbolNode.Create(symbol),
-                 false => ITraitSymbolNode.Create(symbol),
-             },
-             _ => throw ExhaustiveMatch.Failed(symbol.DeclaresType),
+             TypeKind.Struct => IStructSymbolNode.Create(symbol),
+             TypeKind.Class => IClassSymbolNode.Create(symbol),
+             TypeKind.Trait => ITraitSymbolNode.Create(symbol),
+             _ => throw ExhaustiveMatch.Failed(symbol.DeclaresType.Kind),
          };
 
     private static IEmptyTypeSymbolNode EmptyTypeSymbol(EmptyTypeSymbol sym)

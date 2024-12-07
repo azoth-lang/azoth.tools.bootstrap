@@ -8,7 +8,6 @@ using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Declared;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 
@@ -163,7 +162,7 @@ internal static partial class SymbolNodeAspect
         => GetMembers<IStructMemberSymbolNode>(node);
 
     public static partial void Validate_TraitSymbolNode(OrdinaryTypeSymbol symbol)
-        => Requires.That(symbol.DeclaresType is ObjectType { IsClass: false }, nameof(symbol),
+        => Requires.That(symbol.DeclaresType is { Kind: TypeKind.Trait }, nameof(symbol),
             "Symbol must be for an trait type.");
 
     public static partial IFixedSet<ITraitMemberSymbolNode> TraitSymbol_Members(ITraitSymbolNode node)
