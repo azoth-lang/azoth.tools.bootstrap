@@ -24,9 +24,9 @@ public sealed class AnyType : DeclaredReferenceType
     public override SpecialTypeName Name => SpecialTypeName.Any;
     public override IFixedSet<BareReferenceType> Supertypes => [];
 
-    public BareReferenceType<AnyType> BareType { get; }
+    public BareReferenceType BareType { get; }
 
-    public override BareReferenceType<AnyType> With(IFixedList<IType> typeArguments)
+    public override BareReferenceType With(IFixedList<IType> typeArguments)
     {
         RequiresEmpty(typeArguments);
         return BareType;

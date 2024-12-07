@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using Azoth.Tools.Bootstrap.Compiler.Names;
@@ -18,7 +17,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Bare;
 /// A type that could have a reference capability applied, but without a reference capability.
 /// </summary>
 [Closed(typeof(BareReferenceType), typeof(BareValueType))]
-[DebuggerDisplay("{" + nameof(ToILString) + "(),nq}")]
 public abstract class BareNonVariableType : BareType
 {
     #region Standard Types
@@ -37,7 +35,7 @@ public abstract class BareNonVariableType : BareType
     public static readonly BareValueType<PointerSizedIntegerType> Size = DeclaredType.Size.BareType;
     public static readonly BareValueType<PointerSizedIntegerType> Offset = DeclaredType.Offset.BareType;
 
-    public static readonly BareReferenceType<AnyType> Any = DeclaredType.Any.BareType;
+    public static readonly BareReferenceType Any = DeclaredType.Any.BareType;
     #endregion
 
     public abstract override DeclaredType DeclaredType { get; }
@@ -59,7 +57,7 @@ public abstract class BareNonVariableType : BareType
 
     private readonly Lazy<TypeReplacements> typeReplacements;
 
-    public static BareReferenceType<ObjectType> Create(
+    public static BareReferenceType Create(
         ObjectType declaredType,
         IFixedList<IType> typeArguments)
         => new(declaredType, typeArguments);

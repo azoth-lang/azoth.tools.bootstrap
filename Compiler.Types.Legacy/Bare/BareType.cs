@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Declared;
@@ -9,6 +10,7 @@ using ExhaustiveMatching;
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Bare;
 
 [Closed(typeof(BareNonVariableType), typeof(BareTypeVariableType))]
+[DebuggerDisplay("{" + nameof(ToILString) + "(),nq}")]
 public abstract class BareType : IEquatable<BareType>
 {
     public abstract DeclaredType? DeclaredType { get; }

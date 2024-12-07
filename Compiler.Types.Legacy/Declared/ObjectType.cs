@@ -177,7 +177,7 @@ public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
         return With(Capability.Isolated, GenericParameterTypes);
     }
 
-    public override BareReferenceType<ObjectType> With(IFixedList<IType> typeArguments)
+    public override BareReferenceType With(IFixedList<IType> typeArguments)
         => BareNonVariableType.Create(this, typeArguments);
 
     public override CapabilityType With(Capability capability, IFixedList<IType> typeArguments)
