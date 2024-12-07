@@ -61,6 +61,7 @@ internal sealed class PlainTypeReplacements
         => plainType switch
         {
             NeverPlainType a => a,
+            OrdinaryAssociatedPlainType a => a,
             SelfPlainType a => a,
             ConstructedPlainType a => ReplaceTypeParametersIn(a),
             GenericParameterPlainType a => ReplaceTypeParametersIn(a),

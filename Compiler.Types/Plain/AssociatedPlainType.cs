@@ -3,7 +3,9 @@ using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 
-[Closed(typeof(SelfPlainType))]
+[Closed(
+    typeof(OrdinaryAssociatedPlainType),
+    typeof(SelfPlainType))]
 public abstract class AssociatedPlainType : VariablePlainType
 {
     public OrdinaryTypeConstructor ContainingType { get; }
