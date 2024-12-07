@@ -20,20 +20,20 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Bare;
 public abstract class BareNonVariableType : BareType
 {
     #region Standard Types
-    public static readonly BareValueType<BoolType> Bool = DeclaredType.Bool.BareType;
+    public static readonly BareValueType Bool = DeclaredType.Bool.BareType;
 
-    public static readonly BareValueType<BigIntegerType> Int = DeclaredType.Int.BareType;
-    public static readonly BareValueType<BigIntegerType> UInt = DeclaredType.UInt.BareType;
-    public static readonly BareValueType<FixedSizeIntegerType> Int8 = DeclaredType.Int8.BareType;
-    public static readonly BareValueType<FixedSizeIntegerType> Byte = DeclaredType.Byte.BareType;
-    public static readonly BareValueType<FixedSizeIntegerType> Int16 = DeclaredType.Int16.BareType;
-    public static readonly BareValueType<FixedSizeIntegerType> UInt16 = DeclaredType.UInt16.BareType;
-    public static readonly BareValueType<FixedSizeIntegerType> Int32 = DeclaredType.Int32.BareType;
-    public static readonly BareValueType<FixedSizeIntegerType> UInt32 = DeclaredType.UInt32.BareType;
-    public static readonly BareValueType<FixedSizeIntegerType> Int64 = DeclaredType.Int64.BareType;
-    public static readonly BareValueType<FixedSizeIntegerType> UInt64 = DeclaredType.UInt64.BareType;
-    public static readonly BareValueType<PointerSizedIntegerType> Size = DeclaredType.Size.BareType;
-    public static readonly BareValueType<PointerSizedIntegerType> Offset = DeclaredType.Offset.BareType;
+    public static readonly BareValueType Int = DeclaredType.Int.BareType;
+    public static readonly BareValueType UInt = DeclaredType.UInt.BareType;
+    public static readonly BareValueType Int8 = DeclaredType.Int8.BareType;
+    public static readonly BareValueType Byte = DeclaredType.Byte.BareType;
+    public static readonly BareValueType Int16 = DeclaredType.Int16.BareType;
+    public static readonly BareValueType UInt16 = DeclaredType.UInt16.BareType;
+    public static readonly BareValueType Int32 = DeclaredType.Int32.BareType;
+    public static readonly BareValueType UInt32 = DeclaredType.UInt32.BareType;
+    public static readonly BareValueType Int64 = DeclaredType.Int64.BareType;
+    public static readonly BareValueType UInt64 = DeclaredType.UInt64.BareType;
+    public static readonly BareValueType Size = DeclaredType.Size.BareType;
+    public static readonly BareValueType Offset = DeclaredType.Offset.BareType;
 
     public static readonly BareReferenceType Any = DeclaredType.Any.BareType;
     #endregion
@@ -62,7 +62,7 @@ public abstract class BareNonVariableType : BareType
         IFixedList<IType> typeArguments)
         => new(declaredType, typeArguments);
 
-    public static BareValueType<StructType> Create(
+    public static BareValueType Create(
         StructType declaredType,
         IFixedList<IType> typeArguments)
         => new(declaredType, typeArguments);

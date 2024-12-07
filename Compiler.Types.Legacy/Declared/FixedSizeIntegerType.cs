@@ -28,7 +28,7 @@ public sealed class FixedSizeIntegerType : IntegerType
     public BigInteger MaxValue;
     public BigInteger MinValue;
 
-    public override BareValueType<FixedSizeIntegerType> BareType { get; }
+    public override BareValueType BareType { get; }
 
     public override CapabilityType Type { get; }
 
@@ -65,7 +65,7 @@ public sealed class FixedSizeIntegerType : IntegerType
         return Int;
     }
 
-    public override BareValueType<FixedSizeIntegerType> With(IFixedList<IType> typeArguments)
+    public override BareValueType With(IFixedList<IType> typeArguments)
     {
         RequiresEmpty(typeArguments);
         return BareType;

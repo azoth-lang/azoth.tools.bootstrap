@@ -19,7 +19,7 @@ public sealed class PointerSizedIntegerType : IntegerType
     internal new static readonly PointerSizedIntegerType NInt = new(SpecialTypeName.NInt, true);
     internal new static readonly PointerSizedIntegerType NUInt = new(SpecialTypeName.NUInt, false);
 
-    public override BareValueType<PointerSizedIntegerType> BareType { get; }
+    public override BareValueType BareType { get; }
 
     public override CapabilityType Type { get; }
 
@@ -41,7 +41,7 @@ public sealed class PointerSizedIntegerType : IntegerType
         throw new UnreachableException("All types should be covered");
     }
 
-    public override BareValueType<PointerSizedIntegerType> With(IFixedList<IType> typeArguments)
+    public override BareValueType With(IFixedList<IType> typeArguments)
     {
         RequiresEmpty(typeArguments);
         return BareType;

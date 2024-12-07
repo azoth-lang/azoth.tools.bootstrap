@@ -20,11 +20,11 @@ public sealed class BoolType : SimpleType
     }
     #endregion
 
-    public override BareValueType<BoolType> BareType { get; }
+    public override BareValueType BareType { get; }
 
     public override CapabilityType Type { get; }
 
-    public override BareValueType<BoolType> With(IFixedList<IType> typeArguments)
+    public override BareValueType With(IFixedList<IType> typeArguments)
     {
         RequiresEmpty(typeArguments);
         return BareType;

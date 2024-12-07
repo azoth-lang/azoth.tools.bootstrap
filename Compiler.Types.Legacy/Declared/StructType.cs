@@ -111,7 +111,7 @@ public sealed class StructType : DeclaredValueType, IDeclaredUserType
         return With(Capability.Isolated, GenericParameterTypes);
     }
 
-    public override BareValueType<StructType> With(IFixedList<IType> typeArguments)
+    public override BareValueType With(IFixedList<IType> typeArguments)
         => BareNonVariableType.Create(this, typeArguments);
 
     public override CapabilityType With(Capability capability, IFixedList<IType> typeArguments)

@@ -12,7 +12,7 @@ public sealed class BigIntegerType : IntegerType
     internal new static readonly BigIntegerType Int = new(SpecialTypeName.Int, true);
     internal new static readonly BigIntegerType UInt = new(SpecialTypeName.UInt, false);
 
-    public override BareValueType<BigIntegerType> BareType { get; }
+    public override BareValueType BareType { get; }
 
     public override CapabilityType Type { get; }
 
@@ -23,7 +23,7 @@ public sealed class BigIntegerType : IntegerType
         Type = BareType.With(Capability.Constant);
     }
 
-    public override BareValueType<BigIntegerType> With(IFixedList<IType> typeArguments)
+    public override BareValueType With(IFixedList<IType> typeArguments)
     {
         RequiresEmpty(typeArguments);
         return BareType;

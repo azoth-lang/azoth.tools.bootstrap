@@ -8,34 +8,17 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Bare;
 /// <summary>
 /// A value type without a reference capability.
 /// </summary>
-public abstract class BareValueType : BareNonVariableType
+public sealed class BareValueType : BareNonVariableType
 {
-    public abstract override DeclaredValueType DeclaredType { get; }
+    public override DeclaredValueType DeclaredType { get; }
 
-    private protected BareValueType(DeclaredType declaredType, IFixedList<IType> typeArguments)
-        : base(declaredType, typeArguments) { }
-
-    public abstract override BareValueType AccessedVia(Capability capability);
-
-    public abstract override BareValueType With(IFixedList<IType> typeArguments);
-
-    public abstract override CapabilityType With(Capability capability);
-}
-
-public sealed class BareValueType<TDeclared> : BareValueType
-    where TDeclared : DeclaredValueType
-{
-    public override TDeclared DeclaredType { get; }
-
-    internal BareValueType(TDeclared declaredType, IFixedList<IType> typeArguments)
+    internal BareValueType(DeclaredValueType declaredType, IFixedList<IType> typeArguments)
         : base(declaredType, typeArguments)
     {
-        if (typeof(TDeclared).IsAbstract)
-            throw new ArgumentException($"The type parameter must be a concrete {nameof(DeclaredValueType)}.", nameof(TDeclared));
         DeclaredType = declaredType;
     }
 
-    public override BareValueType<TDeclared> AccessedVia(Capability capability)
+    public override BareValueType AccessedVia(Capability capability)
     {
         if (!HasIndependentTypeArguments) return this;
         var newTypeArguments = TypeArgumentsAccessedVia(capability);
@@ -43,18 +26,17 @@ public sealed class BareValueType<TDeclared> : BareValueType
         return new(DeclaredType, newTypeArguments);
     }
 
-    public override BareValueType<TDeclared> With(IFixedList<IType> typeArguments)
+    public override BareValueType With(IFixedList<IType> typeArguments)
         => new(DeclaredType, typeArguments);
 
-    public override CapabilityType With(Capability capability)
-        => CapabilityType.Create(capability, this);
+    public override CapabilityType With(Capability capability) => CapabilityType.Create(capability, this);
 
     #region Equality
     public override bool Equals(BareType? other)
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
-        return other is BareValueType<TDeclared> otherType
+        return other is BareValueType otherType
                && DeclaredType == otherType.DeclaredType
                && GenericTypeArguments.Equals(otherType.GenericTypeArguments);
     }
