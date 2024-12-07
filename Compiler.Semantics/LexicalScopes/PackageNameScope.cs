@@ -92,9 +92,8 @@ public sealed class PackageNameScope
         => declaredType switch
         {
             AnyType t => Lookup(t),
-            ObjectType t => Lookup((IDeclaredUserType)t),
+            OrdinaryDeclaredType t => Lookup(t),
             SimpleType t => Lookup(t),
-            StructType t => Lookup((IDeclaredUserType)t),
             _ => throw ExhaustiveMatch.Failed(declaredType),
         };
 
@@ -104,7 +103,7 @@ public sealed class PackageNameScope
     private ITypeDeclarationNode Lookup(SimpleType declaredType)
         => builtIns[declaredType.Name];
 
-    private ITypeDeclarationNode Lookup(IDeclaredUserType declaredType)
+    private ITypeDeclarationNode Lookup(OrdinaryDeclaredType declaredType)
     {
         // TODO is there a problem with types using package names and this using package aliases?
         var globalNamespace = GlobalScopeForPackage(declaredType.ContainingPackage);

@@ -24,7 +24,7 @@ public sealed class InitializerSymbol : FunctionOrInitializerSymbol
         CapabilityType selfParameterType,
         IFixedList<ParameterType> parameterTypes)
         : base(parameterTypes,
-            ((StructType)containingTypeSymbol.DeclaresType).ToInitializerReturn(selfParameterType, parameterTypes))
+            ((OrdinaryDeclaredType)containingTypeSymbol.DeclaresType).ToConstructorReturn(selfParameterType, parameterTypes))
     {
         ContextTypeSymbol = containingTypeSymbol;
         ContainingSymbol = containingTypeSymbol;
@@ -36,7 +36,7 @@ public sealed class InitializerSymbol : FunctionOrInitializerSymbol
 
     public static InitializerSymbol CreateDefault(OrdinaryTypeSymbol containingTypeSymbol)
         => new(containingTypeSymbol, null,
-            ((StructType)containingTypeSymbol.DeclaresType).ToDefaultInitializerSelf(),
+            ((OrdinaryDeclaredType)containingTypeSymbol.DeclaresType).ToDefaultConstructorSelf(),
             FixedList.Empty<ParameterType>());
 
     public override bool Equals(Symbol? other)

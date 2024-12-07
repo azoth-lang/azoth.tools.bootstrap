@@ -17,12 +17,12 @@ internal static partial class TypeDefinitionsAspect
     public static partial SelfType TypeDefinition_SelfType(ITypeDefinitionNode node)
         => new SelfType(node.DeclaredType.AsDeclaredType);
 
-    public static partial ObjectType ClassDefinition_DeclaredType(IClassDefinitionNode node)
+    public static partial OrdinaryDeclaredType ClassDefinition_DeclaredType(IClassDefinitionNode node)
     {
         // TODO use ContainingDeclaredType in case this is a nested type
         NamespaceName containingNamespaceName = GetContainingNamespaceName(node);
 
-        return ObjectType.CreateClass(node.Package.Name, containingNamespaceName,
+        return OrdinaryDeclaredType.CreateClass(node.Package.Name, containingNamespaceName,
             node.IsAbstract, node.IsConst, node.Name,
             GetGenericParameters(node), node.Supertypes);
     }
@@ -51,20 +51,20 @@ internal static partial class TypeDefinitionsAspect
             diagnostics.Add(TypeError.SupertypeMustMaintainIndependence(node.File, typeName.Syntax));
     }
 
-    public static partial StructType StructDefinition_DeclaredType(IStructDefinitionNode node)
+    public static partial OrdinaryDeclaredType StructDefinition_DeclaredType(IStructDefinitionNode node)
     {
         // TODO use ContainingDeclaredType in case this is a nested type
         NamespaceName containingNamespaceName = GetContainingNamespaceName(node);
-        return StructType.Create(node.Package.Name, containingNamespaceName,
+        return OrdinaryDeclaredType.CreateStruct(node.Package.Name, containingNamespaceName,
             node.IsConst, node.Name,
             GetGenericParameters(node), node.Supertypes);
     }
 
-    public static partial ObjectType TraitDefinition_DeclaredType(ITraitDefinitionNode node)
+    public static partial OrdinaryDeclaredType TraitDefinition_DeclaredType(ITraitDefinitionNode node)
     {
         // TODO use ContainingDeclaredType in case this is a nested type
         NamespaceName containingNamespaceName = GetContainingNamespaceName(node);
-        return ObjectType.CreateTrait(node.Package.Name, containingNamespaceName,
+        return OrdinaryDeclaredType.CreateTrait(node.Package.Name, containingNamespaceName,
             node.IsConst, node.Name,
             GetGenericParameters(node), node.Supertypes);
     }
@@ -173,7 +173,7 @@ internal static partial class TypeDefinitionsAspect
     {
         foreach (var node in typeNode.SupertypeNames)
             // Null symbol will report a separate name binding error
-            if (node.ReferencedSymbol is not null and not OrdinaryTypeSymbol { DeclaresType: ObjectType })
+            if (node.ReferencedSymbol is OrdinaryTypeSymbol { Kind: TypeKind.Struct })
                 diagnostics.Add(OtherSemanticError.SupertypeMustBeClassOrTrait(node.File, typeNode.Name, node.Syntax));
     }
 

@@ -26,7 +26,7 @@ public sealed class CapabilityType : NonEmptyType, INonVoidType
         bool isAbstract,
         bool isConst,
         string name)
-        => Create(capability, ObjectType.CreateClass(containingPackage, containingNamespace, isAbstract, isConst, name), []);
+        => Create(capability, OrdinaryDeclaredType.CreateClass(containingPackage, containingNamespace, isAbstract, isConst, name), []);
 
     /// <summary>
     /// Create a reference type for a trait.
@@ -37,14 +37,14 @@ public sealed class CapabilityType : NonEmptyType, INonVoidType
         NamespaceName containingNamespace,
         bool isConst,
         string name)
-        => Create(capability, ObjectType.CreateTrait(containingPackage, containingNamespace, isConst, name), []);
+        => Create(capability, OrdinaryDeclaredType.CreateTrait(containingPackage, containingNamespace, isConst, name), []);
 
     /// <summary>
     /// Create an object type for a given class or trait.
     /// </summary>
     public static CapabilityType Create(
         Capability capability,
-        ObjectType declaredType,
+        OrdinaryDeclaredType declaredType,
         IFixedList<IType> typeArguments)
         => Create(capability, BareNonVariableType.Create(declaredType, typeArguments));
 

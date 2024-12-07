@@ -14,15 +14,26 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Declared;
 
-/// <summary>
-/// The type declared by a class or trait declaration.
-/// </summary>
-public sealed class ObjectType : DeclaredType, IDeclaredUserType
+public sealed class OrdinaryDeclaredType : DeclaredType, IDeclaredUserType
 {
     private static readonly IFixedSet<BareNonVariableType> AnyTypeSet
-        = AnyType.Instance.BareType.Yield().ToFixedSet();
+     = AnyType.Instance.BareType.Yield().ToFixedSet();
 
-    public static ObjectType CreateClass(
+    public static OrdinaryDeclaredType CreateStruct(
+    IdentifierName containingPackage,
+    NamespaceName containingNamespace,
+    bool isConst,
+    StandardName name,
+    IFixedList<GenericParameter> genericParameters,
+    IFixedSet<BareNonVariableType> supertypes)
+    {
+        Requires.That(name.GenericParameterCount == genericParameters.Count, nameof(genericParameters),
+            "Count must match name count");
+        return new(containingPackage, containingNamespace, isAbstract: false, isConst, TypeKind.Struct, name,
+            genericParameters, supertypes);
+    }
+
+    public static OrdinaryDeclaredType CreateClass(
         IdentifierName containingPackage,
         NamespaceName containingNamespace,
         bool isAbstract,
@@ -31,7 +42,7 @@ public sealed class ObjectType : DeclaredType, IDeclaredUserType
         => new(containingPackage, containingNamespace, isAbstract, isConst, TypeKind.Class, name,
             [], AnyTypeSet);
 
-    public static ObjectType CreateTrait(
+    public static OrdinaryDeclaredType CreateTrait(
         IdentifierName containingPackage,
         NamespaceName containingNamespace,
         bool isConst,
@@ -39,7 +50,7 @@ public sealed class ObjectType : DeclaredType, IDeclaredUserType
         => new(containingPackage, containingNamespace, isAbstract: true, isConst, TypeKind.Trait,
             name, [], AnyTypeSet);
 
-    public static ObjectType CreateClass(
+    public static OrdinaryDeclaredType CreateClass(
         IdentifierName containingPackage,
         NamespaceName containingNamespace,
         bool isAbstract,
@@ -50,7 +61,7 @@ public sealed class ObjectType : DeclaredType, IDeclaredUserType
         => new(containingPackage, containingNamespace, isAbstract, isConst, TypeKind.Class,
             StandardName.Create(name, genericParameters.Count), genericParameters, supertypes);
 
-    public static ObjectType CreateClass(
+    public static OrdinaryDeclaredType CreateClass(
         IdentifierName containingPackage,
         NamespaceName containingNamespace,
         bool isAbstract,
@@ -64,7 +75,7 @@ public sealed class ObjectType : DeclaredType, IDeclaredUserType
             genericParameters, supertypes);
     }
 
-    public static ObjectType CreateTrait(
+    public static OrdinaryDeclaredType CreateTrait(
         IdentifierName containingPackage,
         NamespaceName containingNamespace,
         bool isConst,
@@ -78,7 +89,7 @@ public sealed class ObjectType : DeclaredType, IDeclaredUserType
             genericParameters, supertypes);
     }
 
-    public static ObjectType CreateClass(
+    public static OrdinaryDeclaredType CreateClass(
         IdentifierName containingPackage,
         NamespaceName containingNamespace,
         bool isAbstract,
@@ -90,7 +101,7 @@ public sealed class ObjectType : DeclaredType, IDeclaredUserType
             StandardName.Create(name, genericParameters.Length), genericParameters.ToFixedList(), AnyTypeSet);
     }
 
-    public static ObjectType CreateTrait(
+    public static OrdinaryDeclaredType CreateTrait(
         IdentifierName containingPackage,
         NamespaceName containingNamespace,
         bool isConst,
@@ -101,16 +112,16 @@ public sealed class ObjectType : DeclaredType, IDeclaredUserType
             StandardName.Create(name, genericParameters.Length), genericParameters.ToFixedList(), AnyTypeSet);
     }
 
-    private ObjectType(
+    private OrdinaryDeclaredType(
         IdentifierName containingPackage,
         NamespaceName containingNamespace,
         bool isAbstract,
-        bool isConstType,
+        bool isDeclaredConst,
         TypeKind kind,
         StandardName name,
         IFixedList<GenericParameter> genericParameters,
         IFixedSet<BareNonVariableType> supertypes)
-        : base(isConstType, genericParameters)
+        : base(isDeclaredConst, genericParameters)
     {
         ContainingPackage = containingPackage;
         ContainingNamespace = containingNamespace;
@@ -125,7 +136,8 @@ public sealed class ObjectType : DeclaredType, IDeclaredUserType
 
     public override NamespaceName ContainingNamespace { get; }
 
-    public override TypeSemantics Semantics => TypeSemantics.Reference;
+    public override TypeSemantics Semantics
+        => Kind == TypeKind.Struct ? TypeSemantics.Value : TypeSemantics.Reference;
 
     public TypeKind Kind { get; }
 
@@ -139,11 +151,11 @@ public sealed class ObjectType : DeclaredType, IDeclaredUserType
     private OrdinaryTypeConstructor? typeConstructor;
 
     DeclaredType IDeclaredUserType.AsDeclaredType => this;
-    public override bool CanBeSupertype => true;
+    public override bool CanBeSupertype => Kind != TypeKind.Struct;
     public bool IsAbstract { get; }
 
     /// <summary>
-    /// Make a version of this type for use as the default constructor parameter.
+    /// Make a version of this type for use as the default constructor or initializer parameter.
     /// </summary>
     /// <remarks>This is always `init mut` because the type is being initialized and can be mutated
     /// inside the constructor via field initializers.</remarks>
@@ -151,7 +163,7 @@ public sealed class ObjectType : DeclaredType, IDeclaredUserType
         => With(Capability.InitMutable, GenericParameterTypes);
 
     /// <summary>
-    /// Make a version of this type for use as the return type of the default constructor.
+    /// Make a version of this type for use as the return type of the default constructor or initializer.
     /// </summary>
     /// <remarks>This is always either `iso` or `const` depending on whether the type was declared
     /// with `const` because there are no parameters that could break the new objects isolation.</remarks>
@@ -159,7 +171,7 @@ public sealed class ObjectType : DeclaredType, IDeclaredUserType
         => With(IsDeclaredConst ? Capability.Constant : Capability.Isolated, GenericParameterTypes);
 
     /// <summary>
-    /// Determine the return type of a constructor with the given parameter types.
+    /// Determine the return type of a constructor or initializer with the given parameter types.
     /// </summary>
     /// <remarks>The capability of the return type is restricted by the parameter types because the
     /// newly constructed object could contain references to them.</remarks>
@@ -204,7 +216,7 @@ public sealed class ObjectType : DeclaredType, IDeclaredUserType
         => With(IsDeclaredConst ? Capability.Constant : Capability.Mutable, typeArguments);
 
     public override OrdinaryTypeConstructor ToTypeConstructor()
-        // Lazy initialize to prevent evaluation of lazy supertypes when constructing ObjectType
+        // Lazy initialize to prevent evaluation of lazy supertypes when constructing
         => LazyInitializer.EnsureInitialized(ref typeConstructor, this.ConstructTypeConstructor);
     public override IPlainType? TryToPlainType() => ToTypeConstructor().TryConstructNullary();
 
@@ -213,13 +225,14 @@ public sealed class ObjectType : DeclaredType, IDeclaredUserType
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
-        return other is ObjectType objectType
-            && ContainingPackage == objectType.ContainingPackage
-            && ContainingNamespace == objectType.ContainingNamespace
-            && IsAbstract == objectType.IsAbstract
-            && IsDeclaredConst == objectType.IsDeclaredConst
-            && Name == objectType.Name
-            && GenericParameters.Equals(objectType.GenericParameters);
+        return other is OrdinaryDeclaredType otherType
+            && ContainingPackage == otherType.ContainingPackage
+            && ContainingNamespace == otherType.ContainingNamespace
+            && IsAbstract == otherType.IsAbstract
+            && IsDeclaredConst == otherType.IsDeclaredConst
+            && Kind == otherType.Kind
+            && Name == otherType.Name
+            && GenericParameters.Equals(otherType.GenericParameters);
         // Supertypes and GenericParameterTypes are not considered because they are derived. Also,
         // that prevents infinite recursion.
     }
@@ -227,7 +240,7 @@ public sealed class ObjectType : DeclaredType, IDeclaredUserType
     public bool Equals(IDeclaredUserType? other) => Equals(other as DeclaredType);
 
     public override int GetHashCode()
-        => HashCode.Combine(ContainingPackage, ContainingNamespace, IsAbstract, IsDeclaredConst, Name, GenericParameters);
+        => HashCode.Combine(ContainingPackage, ContainingNamespace, IsAbstract, IsDeclaredConst, Kind, Name, GenericParameters);
     #endregion
 
     public override string ToString()

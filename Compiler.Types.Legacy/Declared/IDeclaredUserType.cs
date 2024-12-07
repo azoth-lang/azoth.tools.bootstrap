@@ -17,7 +17,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Declared;
 /// A declared type that is not a simple type or the `Any` type. Thus it is declared by the "user".
 /// </summary>
 /// <remarks>Some intrinsic types also fall into this category.</remarks>
-[Closed(typeof(ObjectType), typeof(StructType))]
+[Closed(typeof(OrdinaryDeclaredType))]
 public interface IDeclaredUserType : IEquatable<IDeclaredUserType>
 {
     IdentifierName ContainingPackage { get; }
@@ -25,6 +25,7 @@ public interface IDeclaredUserType : IEquatable<IDeclaredUserType>
     bool IsDeclaredConst { get; }
     TypeKind Kind { get; }
     bool IsAbstract { get; }
+    TypeSemantics Semantics { get; }
     StandardName Name { get; }
     IFixedList<GenericParameter> GenericParameters { get; }
     bool HasIndependentGenericParameters { get; }
@@ -62,7 +63,7 @@ internal static class DeclaredUserTypeExtensions
         var plainTypeGenericParameters = declaredType.GenericParameters
             // Treat self as non-writeable because plain types should permit anything that could possibly be allowed by the types
             .Select(p => new TypeConstructorParameter(p.Name, p.Variance.ToTypeVariance(true)));
-        var semantics = declaredType is ObjectType ? TypeSemantics.Reference : TypeSemantics.Value;
+        var semantics = declaredType.Semantics;
         var supertypes = declaredType.PlainTypeSupertypes();
         return new(context, isAbstract, kind, declaredType.Name, plainTypeGenericParameters, supertypes, semantics);
     }

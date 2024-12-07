@@ -22,7 +22,7 @@ public sealed class ConstructorSymbol : InvocableSymbol
         CapabilityType selfParameterType,
         IFixedList<ParameterType> parameterTypes)
         : base(parameterTypes,
-            ((ObjectType)containingSymbol.DeclaresType).ToConstructorReturn(selfParameterType, parameterTypes))
+            ((OrdinaryDeclaredType)containingSymbol.DeclaresType).ToConstructorReturn(selfParameterType, parameterTypes))
     {
         ContainingSymbol = containingSymbol;
         Name = name;
@@ -32,7 +32,7 @@ public sealed class ConstructorSymbol : InvocableSymbol
 
     public static ConstructorSymbol CreateDefault(OrdinaryTypeSymbol containingSymbol)
         => new(containingSymbol, null,
-            ((ObjectType)containingSymbol.DeclaresType).ToDefaultConstructorSelf(),
+            ((OrdinaryDeclaredType)containingSymbol.DeclaresType).ToDefaultConstructorSelf(),
             FixedList.Empty<ParameterType>());
 
     public override bool Equals(Symbol? other)

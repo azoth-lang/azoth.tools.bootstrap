@@ -546,7 +546,7 @@ public partial interface IClassDefinitionNode : ITypeDefinitionNode, IClassDecla
     IFixedList<IClassMemberDefinitionNode> SourceMembers { get; }
     bool IsAbstract
         => Syntax.AbstractModifier is not null;
-    new ObjectType DeclaredType { get; }
+    new OrdinaryDeclaredType DeclaredType { get; }
     IDeclaredUserType ITypeDefinitionNode.DeclaredType => DeclaredType;
     new IFixedSet<IClassMemberDefinitionNode> Members { get; }
     IFixedSet<ITypeMemberDefinitionNode> ITypeDefinitionNode.Members => Members;
@@ -578,7 +578,7 @@ public partial interface IStructDefinitionNode : ITypeDefinitionNode, IStructDec
     ISyntax? ISemanticNode.Syntax => Syntax;
     ITypeMemberDefinitionSyntax? ITypeMemberDefinitionNode.Syntax => Syntax;
     IFixedList<IStructMemberDefinitionNode> SourceMembers { get; }
-    new StructType DeclaredType { get; }
+    new OrdinaryDeclaredType DeclaredType { get; }
     IDeclaredUserType ITypeDefinitionNode.DeclaredType => DeclaredType;
     new IFixedSet<IStructMemberDefinitionNode> Members { get; }
     IFixedSet<ITypeMemberDefinitionNode> ITypeDefinitionNode.Members => Members;
@@ -611,7 +611,7 @@ public partial interface ITraitDefinitionNode : ITypeDefinitionNode, ITraitDecla
     IFixedSet<ITypeMemberDeclarationNode> IUserTypeDeclarationNode.Members => Members;
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
     IFixedSet<ITraitMemberDeclarationNode> ITraitDeclarationNode.Members => Members;
-    new ObjectType DeclaredType { get; }
+    new OrdinaryDeclaredType DeclaredType { get; }
     IDeclaredUserType ITypeDefinitionNode.DeclaredType => DeclaredType;
 
     public static ITraitDefinitionNode Create(
@@ -5483,11 +5483,11 @@ file class ClassDefinitionNode : SemanticNode, IClassDefinitionNode
                 NameLookupAspect.UserTypeDeclaration_AssociatedMembersByName);
     private FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>>? associatedMembersByName;
     private bool associatedMembersByNameCached;
-    public ObjectType DeclaredType
+    public OrdinaryDeclaredType DeclaredType
         => GrammarAttribute.IsCached(in declaredTypeCached) ? declaredType!
             : this.Synthetic(ref declaredTypeCached, ref declaredType,
                 TypeDefinitionsAspect.ClassDefinition_DeclaredType);
-    private ObjectType? declaredType;
+    private OrdinaryDeclaredType? declaredType;
     private bool declaredTypeCached;
     public IDefaultConstructorDefinitionNode? DefaultConstructor
         => GrammarAttribute.IsCached(in defaultConstructorCached) ? defaultConstructor
@@ -5657,11 +5657,11 @@ file class StructDefinitionNode : SemanticNode, IStructDefinitionNode
                 NameLookupAspect.UserTypeDeclaration_AssociatedMembersByName);
     private FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>>? associatedMembersByName;
     private bool associatedMembersByNameCached;
-    public StructType DeclaredType
+    public OrdinaryDeclaredType DeclaredType
         => GrammarAttribute.IsCached(in declaredTypeCached) ? declaredType!
             : this.Synthetic(ref declaredTypeCached, ref declaredType,
                 TypeDefinitionsAspect.StructDefinition_DeclaredType);
-    private StructType? declaredType;
+    private OrdinaryDeclaredType? declaredType;
     private bool declaredTypeCached;
     public IDefaultInitializerDefinitionNode? DefaultInitializer
         => GrammarAttribute.IsCached(in defaultInitializerCached) ? defaultInitializer
@@ -5828,11 +5828,11 @@ file class TraitDefinitionNode : SemanticNode, ITraitDefinitionNode
                 NameLookupAspect.UserTypeDeclaration_AssociatedMembersByName);
     private FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>>? associatedMembersByName;
     private bool associatedMembersByNameCached;
-    public ObjectType DeclaredType
+    public OrdinaryDeclaredType DeclaredType
         => GrammarAttribute.IsCached(in declaredTypeCached) ? declaredType!
             : this.Synthetic(ref declaredTypeCached, ref declaredType,
                 TypeDefinitionsAspect.TraitDefinition_DeclaredType);
-    private ObjectType? declaredType;
+    private OrdinaryDeclaredType? declaredType;
     private bool declaredTypeCached;
     public FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>> InclusiveInstanceMembersByName
         => GrammarAttribute.IsCached(in inclusiveInstanceMembersByNameCached) ? inclusiveInstanceMembersByName!

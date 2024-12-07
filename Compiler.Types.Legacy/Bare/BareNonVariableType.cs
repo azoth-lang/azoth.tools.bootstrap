@@ -56,12 +56,7 @@ public sealed class BareNonVariableType : BareType
     private readonly Lazy<TypeReplacements> typeReplacements;
 
     public static BareNonVariableType Create(
-        ObjectType declaredType,
-        IFixedList<IType> typeArguments)
-        => new(declaredType, typeArguments);
-
-    public static BareNonVariableType Create(
-        StructType declaredType,
+        OrdinaryDeclaredType declaredType,
         IFixedList<IType> typeArguments)
         => new(declaredType, typeArguments);
 

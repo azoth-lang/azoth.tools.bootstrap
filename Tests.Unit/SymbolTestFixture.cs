@@ -115,11 +115,11 @@ public abstract class SymbolTestFixture
 
     protected OrdinaryTypeSymbol Type(
         NamespaceSymbol? ns = null,
-        ObjectType? dataType = null)
+        OrdinaryDeclaredType? dataType = null)
     {
         return new(
             ns ?? Package(),
-            dataType ?? (ObjectType)DataType().DeclaredType);
+            dataType ?? (OrdinaryDeclaredType)DataType().DeclaredType);
     }
 
     public static readonly ParameterType IntParameter = new(false, IType.Int);

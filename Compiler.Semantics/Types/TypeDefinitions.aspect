@@ -16,9 +16,9 @@
 ↑ TypeDefinition.DeclaredType:`IDeclaredUserType`;
 ↑ TypeDefinition.SelfType:`SelfType`;
 = TypeDefinition.SelfType;
-↑ ClassDefinition.DeclaredType: `ObjectType`;
-↑ StructDefinition.DeclaredType: `StructType`;
-↑ TraitDefinition.DeclaredType: `ObjectType`;
+↑ ClassDefinition.DeclaredType: `OrdinaryDeclaredType`;
+↑ StructDefinition.DeclaredType: `OrdinaryDeclaredType`;
+↑ TraitDefinition.DeclaredType: `OrdinaryDeclaredType`;
 = ClassDefinition.↑.Diagnostics;
 
 // ---------- Type Definition Parts

@@ -24,11 +24,11 @@ internal static partial class TypeDefinitionsAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial void ClassDefinition_Contribute_Diagnostics(IClassDefinitionNode node, DiagnosticCollectionBuilder diagnostics);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial ObjectType ClassDefinition_DeclaredType(IClassDefinitionNode node);
+    public static partial OrdinaryDeclaredType ClassDefinition_DeclaredType(IClassDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial StructType StructDefinition_DeclaredType(IStructDefinitionNode node);
+    public static partial OrdinaryDeclaredType StructDefinition_DeclaredType(IStructDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial ObjectType TraitDefinition_DeclaredType(ITraitDefinitionNode node);
+    public static partial OrdinaryDeclaredType TraitDefinition_DeclaredType(ITraitDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial GenericParameter GenericParameter_Parameter(IGenericParameterNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

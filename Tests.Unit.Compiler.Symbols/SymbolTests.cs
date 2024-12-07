@@ -19,7 +19,7 @@ public class SymbolTests : SymbolTestFixture
     public void Symbol_in_namespace_is_not_global()
     {
         var ns = Namespace();
-        var type = ObjectType.CreateClass(ns.Package!.Name, ns.Name, isAbstract: false,
+        var type = OrdinaryDeclaredType.CreateClass(ns.Package!.Name, ns.Name, isAbstract: false,
             isConst: false, "My_Class");
         var symbol = new OrdinaryTypeSymbol(ns, type);
 

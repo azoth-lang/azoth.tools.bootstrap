@@ -107,10 +107,10 @@ public static class Intrinsic
         return azothNamespace;
     }
 
-    private static ObjectType BuildPromiseSymbol(LocalNamespaceSymbol azothNamespace, SymbolTreeBuilder tree)
+    private static OrdinaryDeclaredType BuildPromiseSymbol(LocalNamespaceSymbol azothNamespace, SymbolTreeBuilder tree)
     {
         var intrinsicsPackage = azothNamespace.Package;
-        var promiseType = ObjectType.CreateClass(intrinsicsPackage.Name, azothNamespace.NamespaceName,
+        var promiseType = OrdinaryDeclaredType.CreateClass(intrinsicsPackage.Name, azothNamespace.NamespaceName,
                        isAbstract: false, isConst: false, "Promise", GenericParameter.Out(CapabilitySet.Any, "T"));
         var classSymbol = new OrdinaryTypeSymbol(azothNamespace, promiseType);
         tree.Add(classSymbol);
@@ -118,7 +118,7 @@ public static class Intrinsic
         return promiseType;
     }
 
-    private static ObjectType BuildSpecializedCollectionSymbols(
+    private static OrdinaryDeclaredType BuildSpecializedCollectionSymbols(
         LocalNamespaceSymbol azothNamespace,
         SymbolTreeBuilder tree)
     {
@@ -130,9 +130,9 @@ public static class Intrinsic
         return BuildRawHybridBoundedListSymbol(tree, specializedNamespace);
     }
 
-    private static ObjectType BuildRawHybridBoundedListSymbol(SymbolTreeBuilder tree, LocalNamespaceSymbol @namespace)
+    private static OrdinaryDeclaredType BuildRawHybridBoundedListSymbol(SymbolTreeBuilder tree, LocalNamespaceSymbol @namespace)
     {
-        var classType = ObjectType.CreateClass(@namespace.Package.Name, @namespace.NamespaceName,
+        var classType = OrdinaryDeclaredType.CreateClass(@namespace.Package.Name, @namespace.NamespaceName,
             isAbstract: false, isConst: false, "Raw_Hybrid_Bounded_List",
             GenericParameter.Independent(CapabilitySet.Aliasable, "F"), GenericParameter.Independent(CapabilitySet.Aliasable, "T"));
         var fixedType = classType.GenericParameterTypes[0];
