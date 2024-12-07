@@ -11,7 +11,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 /// nested inside.</remarks>
 [Closed(
     typeof(GenericParameterPlainType),
-    typeof(SelfPlainType))]
+    typeof(AssociatedPlainType))]
 public abstract class VariablePlainType : ConstructedOrVariablePlainType
 {
     public sealed override TypeConstructor? TypeConstructor => null;

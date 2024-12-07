@@ -7,15 +7,14 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 /// <summary>
 /// The type variable referred to with the `Self` type variable.
 /// </summary>
-public sealed class SelfPlainType : VariablePlainType
+public sealed class SelfPlainType : AssociatedPlainType
 {
-    public OrdinaryTypeConstructor ContainingType { get; }
     public override TypeName Name => SpecialTypeName.Self;
     public override IFixedSet<ConstructedPlainType> Supertypes { get; }
 
     public SelfPlainType(OrdinaryTypeConstructor containingType)
+    : base(containingType)
     {
-        ContainingType = containingType;
         Supertypes = containingType.Supertypes.Append(containingType.ConstructWithGenericParameterPlainTypes()).ToFixedSet();
     }
 
@@ -30,6 +29,4 @@ public sealed class SelfPlainType : VariablePlainType
 
     public override int GetHashCode() => HashCode.Combine(typeof(SelfPlainType), ContainingType);
     #endregion
-
-    public override string ToString() => $"{ContainingType}.Self";
 }
