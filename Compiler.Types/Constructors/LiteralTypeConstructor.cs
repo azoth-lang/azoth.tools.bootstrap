@@ -49,14 +49,14 @@ public abstract class LiteralTypeConstructor : SimpleOrLiteralTypeConstructor
     /// </summary>
     public abstract TypeConstructor ToNonLiteral();
 
-    public sealed override IPlainType Construct(IEnumerable<IPlainType> typeArguments)
+    public sealed override IPlainType Construct(IFixedList<IPlainType> typeArguments)
        => throw new NotImplementedException("Constructing literal types requires value type parameters.");
 
-    public IMaybePlainType Construct(IEnumerable<IMaybePlainType> typeArguments)
+    public IMaybePlainType Construct(IFixedList<IMaybePlainType> typeArguments)
     {
         var properTypeArguments = typeArguments.ToFixedList().As<IPlainType>();
         if (properTypeArguments is null) return IPlainType.Unknown;
-        return Construct(properTypeArguments.AsEnumerable());
+        return Construct((IFixedList<IMaybePlainType>)properTypeArguments.AsEnumerable());
     }
 
     /// <remarks>All literal types take a type parameter and cannot be nullary constructed.</remarks>

@@ -92,12 +92,12 @@ public sealed class OrdinaryTypeConstructor : TypeConstructor
             throw new ArgumentException("Incorrect number of type arguments.");
         return new(this, args);
     }
-    IPlainType TypeConstructor.Construct(IEnumerable<IPlainType> typeArguments)
+    IPlainType TypeConstructor.Construct(IFixedList<IPlainType> typeArguments)
         => Construct(typeArguments);
 
     public ConstructedPlainType ConstructWithGenericParameterPlainTypes()
         => Construct(ParameterPlainTypes);
-    IPlainType TypeConstructor.ConstructWithGenericParameterPlainTypes()
+    IPlainType TypeConstructor.ConstructWithParameterPlainTypes()
         => ConstructWithGenericParameterPlainTypes();
 
     public ConstructedPlainType? TryConstructNullary()

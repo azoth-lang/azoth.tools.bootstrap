@@ -42,7 +42,7 @@ public sealed class AnyTypeConstructor : TypeConstructor
     IFixedList<GenericParameterPlainType> TypeConstructor.ParameterPlainTypes
         => FixedList.Empty<GenericParameterPlainType>();
 
-    IFixedSet<ConstructedPlainType> TypeConstructor.Supertypes => FixedSet.Empty<ConstructedPlainType>();
+    IFixedSet<ConstructedPlainType> TypeConstructor.Supertypes => [];
 
     #region Equality
     public bool Equals(TypeConstructor? other)
@@ -52,18 +52,18 @@ public sealed class AnyTypeConstructor : TypeConstructor
     public override int GetHashCode() => HashCode.Combine(typeof(AnyTypeConstructor));
     #endregion
 
-    public IPlainType Construct(IEnumerable<IPlainType> typeArguments)
+    public IPlainType Construct(IFixedList<IPlainType> typeArguments)
     {
         if (typeArguments.Any())
             throw new ArgumentException("Incorrect number of type arguments.");
         return PlainType;
     }
 
-    public IMaybePlainType Construct(IEnumerable<IMaybePlainType> typeArguments)
+    public IMaybePlainType Construct(IFixedList<IMaybePlainType> typeArguments)
     {
         var properTypeArguments = typeArguments.ToFixedList().As<IPlainType>();
         if (properTypeArguments is null) return IPlainType.Unknown;
-        return Construct(properTypeArguments.AsEnumerable());
+        return Construct((IFixedList<IMaybePlainType>)properTypeArguments.AsEnumerable());
     }
 
     public IPlainType TryConstructNullary() => PlainType;

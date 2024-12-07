@@ -33,7 +33,7 @@ public abstract class SimpleOrLiteralTypeConstructor : TypeConstructor
 
     public abstract IFixedSet<ConstructedPlainType> Supertypes { get; }
 
-    public abstract IPlainType Construct(IEnumerable<IPlainType> typeArguments);
+    public abstract IPlainType Construct(IFixedList<IPlainType> typeArguments);
     public abstract bool Equals(TypeConstructor? other);
     public abstract IPlainType? TryConstructNullary();
 

@@ -39,7 +39,7 @@ public abstract class SimpleTypeConstructor : SimpleOrLiteralTypeConstructor
         PlainType = new(this, []);
     }
 
-    public sealed override IPlainType Construct(IEnumerable<IPlainType> typeArguments)
+    public sealed override IPlainType Construct(IFixedList<IPlainType> typeArguments)
     {
         if (typeArguments.Any())
             throw new ArgumentException("Simple type cannot have type arguments", nameof(typeArguments));

@@ -79,16 +79,16 @@ public interface TypeConstructor : IEquatable<TypeConstructor>, TypeConstructorC
 
     IFixedSet<ConstructedPlainType> Supertypes { get; }
 
-    IPlainType Construct(IEnumerable<IPlainType> typeArguments);
+    IPlainType Construct(IFixedList<IPlainType> typeArguments);
 
-    IPlainType ConstructWithGenericParameterPlainTypes()
+    IPlainType ConstructWithParameterPlainTypes()
         => Construct(ParameterPlainTypes);
 
-    IMaybePlainType Construct(IEnumerable<IMaybePlainType> typeArguments)
+    IMaybePlainType Construct(IFixedList<IMaybePlainType> typeArguments)
     {
-        var properTypeArguments = typeArguments.ToFixedList().As<IPlainType>();
+        var properTypeArguments = typeArguments.As<IPlainType>();
         if (properTypeArguments is null) return IPlainType.Unknown;
-        return Construct(properTypeArguments.AsEnumerable());
+        return Construct(properTypeArguments);
     }
 
     IPlainType? TryConstructNullary();
