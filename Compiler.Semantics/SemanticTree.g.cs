@@ -4239,7 +4239,7 @@ public partial interface IBuiltInTypeSymbolNode : IBuiltInTypeDeclarationNode, I
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
     IFixedSet<ITypeMemberSymbolNode> ITypeSymbolNode.Members => Members;
     IFixedSet<BareNonVariableType> ITypeDeclarationNode.Supertypes
-        => Symbol.TryGetDeclaredType()?.Supertypes ?? [];
+        => Symbol.TryGetTypeConstructor()?.Supertypes ?? [];
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.InclusiveMembers
         => Members;
 }
@@ -4301,7 +4301,7 @@ public partial interface IOrdinaryTypeSymbolNode : IUserTypeDeclarationNode, ITy
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
     IFixedSet<ITypeMemberSymbolNode> ITypeSymbolNode.Members => Members;
     IFixedSet<BareNonVariableType> ITypeDeclarationNode.Supertypes
-        => Symbol.TryGetDeclaredType().Supertypes;
+        => Symbol.TryGetTypeConstructor().Supertypes;
 }
 
 // [Closed(typeof(ClassSymbolNode))]
@@ -4374,7 +4374,7 @@ public partial interface IGenericParameterSymbolNode : IGenericParameterDeclarat
     IFixedSet<ITypeMemberDeclarationNode> IGenericParameterDeclarationNode.Members => Members;
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
     IFixedSet<BareNonVariableType> ITypeDeclarationNode.Supertypes
-        => Symbol.TryGetDeclaredType()?.Supertypes ?? [];
+        => Symbol.TryGetTypeConstructor()?.Supertypes ?? [];
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.InclusiveMembers
         => [];
 

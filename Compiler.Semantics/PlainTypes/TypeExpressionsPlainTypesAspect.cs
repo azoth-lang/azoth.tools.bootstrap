@@ -23,7 +23,7 @@ internal static partial class TypeExpressionsPlainTypesAspect
     {
         // TODO do not use symbols at this stage of the compiler
         return node.ReferencedSymbol.TryGetType()?.ToPlainType()
-               ?? node.ReferencedSymbol.TryGetDeclaredType()?.TryToPlainType()
+               ?? node.ReferencedSymbol.TryGetTypeConstructor()?.TryToPlainType()
                ?? IMaybePlainType.Unknown;
     }
 
@@ -44,7 +44,7 @@ internal static partial class TypeExpressionsPlainTypesAspect
         // TODO do not use symbols at this stage of the compiler
         var referencedSymbol = node.ReferencedDeclaration?.Symbol;
         return referencedSymbol?.TryGetType()?.ToPlainType()
-               ?? referencedSymbol?.TryGetDeclaredType()?.TryToPlainType()
+               ?? referencedSymbol?.TryGetTypeConstructor()?.TryToPlainType()
                ?? IMaybePlainType.Unknown;
     }
 
@@ -52,7 +52,7 @@ internal static partial class TypeExpressionsPlainTypesAspect
     {
         // TODO do not use symbols at this stage of the compiler
         var referencedSymbol = node.ReferencedDeclaration?.Symbol;
-        var declaredPlainType = referencedSymbol?.TryGetDeclaredType()?.ToTypeConstructor();
+        var declaredPlainType = referencedSymbol?.TryGetTypeConstructor()?.ToTypeConstructor();
         if (declaredPlainType is null)
             return IPlainType.Unknown;
         var plainTypeArguments = node.TypeArguments.Select(a => a.NamedPlainType).OfType<IPlainType>().ToFixedList();
@@ -65,7 +65,7 @@ internal static partial class TypeExpressionsPlainTypesAspect
     {
         // TODO do not use symbols at this stage of the compiler
         var referencedSymbol = node.ReferencedDeclaration.Symbol;
-        var declaredPlainType = referencedSymbol.TryGetDeclaredType()?.ToTypeConstructor();
+        var declaredPlainType = referencedSymbol.TryGetTypeConstructor()?.ToTypeConstructor();
         if (declaredPlainType is null)
             return IPlainType.Unknown;
         var plainTypeArguments = node.TypeArguments.Select(a => a.NamedPlainType).OfType<IPlainType>().ToFixedList();

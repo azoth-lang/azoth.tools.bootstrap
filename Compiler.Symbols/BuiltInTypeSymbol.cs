@@ -10,23 +10,23 @@ public sealed class BuiltInTypeSymbol : TypeSymbol
     public override Symbol? ContainingSymbol => null;
     public override TypeSymbol? ContextTypeSymbol => null;
     public override SpecialTypeName Name { get; }
-    public DeclaredType DeclaresType { get; }
+    public DeclaredType TypeConstructor { get; }
 
-    public BuiltInTypeSymbol(AnyType declaresType)
-        : base(declaresType.Name)
+    public BuiltInTypeSymbol(AnyType typeConstructor)
+        : base(typeConstructor.Name)
     {
-        Name = declaresType.Name;
-        DeclaresType = declaresType;
+        Name = typeConstructor.Name;
+        TypeConstructor = typeConstructor;
     }
 
-    public BuiltInTypeSymbol(SimpleType declaresType)
-        : base(declaresType.Name)
+    public BuiltInTypeSymbol(SimpleType typeConstructor)
+        : base(typeConstructor.Name)
     {
-        Name = declaresType.Name;
-        DeclaresType = declaresType;
+        Name = typeConstructor.Name;
+        TypeConstructor = typeConstructor;
     }
 
-    public override DeclaredType TryGetDeclaredType() => DeclaresType;
+    public override DeclaredType TryGetTypeConstructor() => TypeConstructor;
 
     #region Equality
     public override bool Equals(Symbol? other)
@@ -35,10 +35,10 @@ public sealed class BuiltInTypeSymbol : TypeSymbol
         if (ReferenceEquals(this, other)) return true;
         return other is BuiltInTypeSymbol otherType
                && Name == otherType.Name
-               && DeclaresType == otherType.DeclaresType;
+               && TypeConstructor == otherType.TypeConstructor;
     }
 
-    public override int GetHashCode() => HashCode.Combine(Name, DeclaresType);
+    public override int GetHashCode() => HashCode.Combine(Name, TypeConstructor);
     #endregion
 
     public override string ToILString() => Name.ToString();

@@ -27,7 +27,7 @@ public sealed class OrdinaryTypeSymbol : TypeSymbol
         DeclaresType = declaresType;
     }
 
-    public override DeclaredType TryGetDeclaredType() => DeclaresType.AsDeclaredType;
+    public override DeclaredType TryGetTypeConstructor() => DeclaresType.AsDeclaredType;
 
     #region Equals
     public override bool Equals(Symbol? other)

@@ -83,7 +83,7 @@
 
 ↑ BuiltInTypeSymbol.SymbolTree(): `PrimitiveSymbolTree` => Primitive.SymbolTree;
 ↑ BuiltInTypeSymbol.Name: `SpecialTypeName`;
-= BuiltInTypeSymbol.Supertypes => Symbol.TryGetDeclaredType()?.Supertypes ?? [];
+= BuiltInTypeSymbol.Supertypes => Symbol.TryGetTypeConstructor()?.Supertypes ?? [];
 ↑ child BuiltInTypeSymbol.Members: {TypeMemberSymbol};
 = BuiltInTypeSymbol.Members;
 // For now, the symbol tree already includes all inherited members.
@@ -94,7 +94,7 @@
 
 ↑ OrdinaryTypeSymbol.Name: `StandardName` => Symbol.Name;
 ↑ child OrdinaryTypeSymbol.GenericParameters: GenericParameterSymbol*;
-= OrdinaryTypeSymbol.Supertypes => Symbol.TryGetDeclaredType().Supertypes;
+= OrdinaryTypeSymbol.Supertypes => Symbol.TryGetTypeConstructor().Supertypes;
 = OrdinaryTypeSymbol.GenericParameters;
 ↑ child OrdinaryTypeSymbol.Members: {TypeMemberSymbol};
 
@@ -115,7 +115,7 @@
 
 // ---------- Type Declaration Parts
 ↑ GenericParameterSymbol.Name: `IdentifierName` => Symbol.Name;
-= GenericParameterSymbol.Supertypes => Symbol.TryGetDeclaredType()?.Supertypes ?? [];
+= GenericParameterSymbol.Supertypes => Symbol.TryGetTypeConstructor()?.Supertypes ?? [];
 ↑ child GenericParameterSymbol.Members: {TypeMemberSymbol} => [];
 = GenericParameterSymbol.InclusiveMembers => [];
 

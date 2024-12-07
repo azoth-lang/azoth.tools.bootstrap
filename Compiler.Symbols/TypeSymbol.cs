@@ -22,7 +22,7 @@ public abstract class TypeSymbol : Symbol
         Name = name;
     }
 
-    public virtual DeclaredType? TryGetDeclaredType() => null;
+    public virtual DeclaredType? TryGetTypeConstructor() => null;
 
     public virtual IType? TryGetType() => null;
 }
