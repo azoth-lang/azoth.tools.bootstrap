@@ -25,7 +25,6 @@ public static partial class TypeOperations
             ViewpointType t => t.Referent.FieldMaintainsIndependence(context),
             EmptyType _ => true,
             UnknownType _ => true,
-            ConstValueType _ => true,
             // The referent of an optional type is basically `out T` (covariant)
             OptionalType t => t.Referent.FieldMaintainsIndependence(context.Child(Independence.Disallowed)),
             FunctionType t => t.FieldMaintainsIndependence(),

@@ -39,7 +39,6 @@ public static partial class TypeOperations
                     break;
                 case EmptyType _:
                 case FunctionType _:
-                case ConstValueType _:
                     // ignore
                     break;
                 default:

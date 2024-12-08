@@ -1,4 +1,3 @@
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.ConstValue;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using ExhaustiveMatching;
 
@@ -10,8 +9,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
     typeof(ViewpointType),
     typeof(FunctionType),
     typeof(OptionalType),
-    typeof(NeverType),
-    typeof(ConstValueType))]
+    typeof(NeverType))]
 public interface INonVoidType : IType, IMaybeNonVoidType
 {
     public new INonVoidPlainType ToPlainType();

@@ -12,7 +12,6 @@ using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Bare;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.ConstValue;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Parameters;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Pseudotypes;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
@@ -113,11 +112,11 @@ internal static partial class ExpressionTypesAspect
         ContributeCannotUnionDiagnostics(node, flowStateBefore, argumentValueIds, diagnostics);
     }
 
-    public static partial BoolConstValueType BoolLiteralExpression_Type(IBoolLiteralExpressionNode node)
+    public static partial CapabilityType BoolLiteralExpression_Type(IBoolLiteralExpressionNode node)
         => node.Value ? IType.True : IType.False;
 
-    public static partial IntegerConstValueType IntegerLiteralExpression_Type(IIntegerLiteralExpressionNode node)
-        => new IntegerConstValueType(node.Value);
+    public static partial CapabilityType IntegerLiteralExpression_Type(IIntegerLiteralExpressionNode node)
+        => new CapabilityType(Capability.Constant, BareNonVariableType.Create(new IntegerLiteralTypeConstructor(node.Value), []));
 
     public static partial OptionalType NoneLiteralExpression_Type(INoneLiteralExpressionNode node)
         => IType.None;

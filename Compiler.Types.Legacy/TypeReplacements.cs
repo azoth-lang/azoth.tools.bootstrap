@@ -135,7 +135,6 @@ internal sealed class TypeReplacements
                 break;
             }
             case EmptyType _:
-            case ConstValueType _:
                 break;
             default:
                 throw ExhaustiveMatch.Failed(type);

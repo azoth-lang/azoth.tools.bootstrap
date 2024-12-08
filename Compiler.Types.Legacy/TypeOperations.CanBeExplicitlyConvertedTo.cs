@@ -1,5 +1,4 @@
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.ConstValue;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
 
@@ -11,7 +10,7 @@ public static partial class TypeOperations
         {
             // Safe conversions
             (CapabilityType { TypeConstructor: BoolTypeConstructor }, CapabilityType { TypeConstructor: IntegerTypeConstructor }) => true,
-            (BoolConstValueType, CapabilityType { TypeConstructor: IntegerTypeConstructor }) => true,
+            (CapabilityType { TypeConstructor: BoolLiteralTypeConstructor }, CapabilityType { TypeConstructor: IntegerTypeConstructor }) => true,
             (CapabilityType { TypeConstructor: IntegerTypeConstructor { IsSigned: false } }, CapabilityType { TypeConstructor: BigIntegerTypeConstructor })
                 => true,
             (CapabilityType { TypeConstructor: IntegerTypeConstructor }, CapabilityType { TypeConstructor: BigIntegerTypeConstructor { IsSigned: true } })

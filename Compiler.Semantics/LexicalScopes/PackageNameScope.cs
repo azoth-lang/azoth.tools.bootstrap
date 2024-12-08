@@ -6,7 +6,6 @@ using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors.Contexts;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.ConstValue;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
@@ -77,7 +76,6 @@ public sealed class PackageNameScope
             EmptyType _ => null,
             FunctionType _ => null,
             OptionalType _ => throw new NotImplementedException(),
-            ConstValueType _ => throw new NotImplementedException(),
             CapabilityType t => Lookup(t.TypeConstructor),
             GenericParameterType t => Lookup(t),
             ViewpointType t => Lookup(t.Referent),

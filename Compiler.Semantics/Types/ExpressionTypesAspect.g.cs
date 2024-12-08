@@ -3,7 +3,6 @@ using System.Runtime.CompilerServices;
 using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.ConstValue;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Pseudotypes;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
@@ -95,9 +94,9 @@ internal static partial class ExpressionTypesAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFlowState UnsafeExpression_FlowStateAfter(IUnsafeExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial BoolConstValueType BoolLiteralExpression_Type(IBoolLiteralExpressionNode node);
+    public static partial CapabilityType BoolLiteralExpression_Type(IBoolLiteralExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IntegerConstValueType IntegerLiteralExpression_Type(IIntegerLiteralExpressionNode node);
+    public static partial CapabilityType IntegerLiteralExpression_Type(IIntegerLiteralExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial OptionalType NoneLiteralExpression_Type(INoneLiteralExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

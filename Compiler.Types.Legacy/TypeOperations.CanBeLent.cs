@@ -37,7 +37,6 @@ public static partial class TypeOperations
             EmptyType _ => false,
             UnknownType _ => false,
             FunctionType _ => false,
-            ConstValueType _ => false,
             _ => throw ExhaustiveMatch.Failed(type),
         };
 
@@ -59,7 +58,6 @@ public static partial class TypeOperations
             EmptyType _ => false,
             UnknownType _ => false,
             FunctionType _ => false,
-            ConstValueType _ => false,
             _ => throw ExhaustiveMatch.Failed(type),
         };
 }

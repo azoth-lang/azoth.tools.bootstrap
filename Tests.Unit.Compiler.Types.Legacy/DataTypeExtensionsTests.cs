@@ -1,5 +1,6 @@
+using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.ConstValue;
+using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Bare;
 using Xunit;
 using static Azoth.Tools.Bootstrap.Compiler.Types.Capabilities.Capability;
 
@@ -19,9 +20,9 @@ public class DataTypeExtensionsTests
     [InlineData(-1)]
     [InlineData(int.MinValue)]
     [InlineData((long)int.MinValue - 1)]
-    public void Integer_constant_types_not_assignable_to_int32(long value)
+    public void Integer_literal_types_not_assignable_to_int32(long value)
     {
-        var constType = new IntegerConstValueType(value);
+        var constType = new CapabilityType(Constant, BareNonVariableType.Create(new IntegerLiteralTypeConstructor(value), []));
 
         var assignable = IType.Int32.IsAssignableFrom(constType);
 

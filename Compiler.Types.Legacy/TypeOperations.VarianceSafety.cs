@@ -48,7 +48,6 @@ public static partial class TypeOperations
             CapabilityTypeConstraint t => t.BareType.IsVarianceSafe(t.Capability, context, nonwritableSelf),
             EmptyType _ => true,
             UnknownType _ => true,
-            ConstValueType _ => true,
             // The referent of an optional type is basically `out T` (covariant)
             OptionalType t => t.Referent.IsVarianceSafe(context, nonwritableSelf),
             FunctionType t => t.IsVarianceSafe(context, nonwritableSelf),

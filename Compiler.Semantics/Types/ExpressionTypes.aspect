@@ -3,7 +3,6 @@
 ◊using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 ◊using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 ◊using Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
-◊using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.ConstValue;
 ◊using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Pseudotypes;
 
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
@@ -104,8 +103,8 @@
 // ---------- Literal Expressions
 ↓ LiteralExpression.FlowStateBefore(): `IFlowState`;
 = LiteralExpression.FlowStateAfter;
-↑ BoolLiteralExpression.Type: `BoolConstValueType`;
-↑ IntegerLiteralExpression.Type: `IntegerConstValueType`;
+↑ BoolLiteralExpression.Type: `CapabilityType`;
+↑ IntegerLiteralExpression.Type: `CapabilityType`;
 ↑ NoneLiteralExpression.Type:`OptionalType`;
 = StringLiteralExpression.↑.Diagnostics;
 

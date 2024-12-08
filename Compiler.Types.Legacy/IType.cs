@@ -1,6 +1,5 @@
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Bare;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.ConstValue;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Pseudotypes;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using ExhaustiveMatching;
@@ -16,8 +15,8 @@ public interface IType : IPseudotype, IMaybeType
     public static readonly NeverType Never = NeverType.Instance;
     public static readonly CapabilityType Bool = new(Capability.Constant, BareNonVariableType.Bool);
     public static readonly OptionalType OptionalBool = new(Bool);
-    public static readonly BoolConstValueType True = BoolConstValueType.True;
-    public static readonly BoolConstValueType False = BoolConstValueType.False;
+    public static readonly CapabilityType True = new(Capability.Constant, BareNonVariableType.True);
+    public static readonly CapabilityType False = new(Capability.Constant, BareNonVariableType.False);
     public static readonly CapabilityType Int = new(Capability.Constant, BareNonVariableType.Int);
     public static readonly CapabilityType UInt = new(Capability.Constant, BareNonVariableType.UInt);
     public static readonly CapabilityType Int8 = new(Capability.Constant, BareNonVariableType.Int8);

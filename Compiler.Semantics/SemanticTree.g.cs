@@ -31,7 +31,6 @@ using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Bare;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.ConstValue;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Parameters;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Pseudotypes;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
@@ -2117,7 +2116,7 @@ public partial interface IBoolLiteralExpressionNode : ILiteralExpressionNode
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    new BoolConstValueType Type { get; }
+    new CapabilityType Type { get; }
     IMaybeType IExpressionNode.Type => Type;
     bool Value
         => Syntax.Value;
@@ -2135,7 +2134,7 @@ public partial interface IIntegerLiteralExpressionNode : ILiteralExpressionNode
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    new IntegerConstValueType Type { get; }
+    new CapabilityType Type { get; }
     IMaybeType IExpressionNode.Type => Type;
     BigInteger Value
         => Syntax.Value;
@@ -10017,11 +10016,11 @@ file class BoolLiteralExpressionNode : SemanticNode, IBoolLiteralExpressionNode
                 ExpressionPlainTypesAspect.BoolLiteralExpression_PlainType);
     private IMaybePlainType? plainType;
     private bool plainTypeCached;
-    public BoolConstValueType Type
+    public CapabilityType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
             : this.Synthetic(ref typeCached, ref type,
                 ExpressionTypesAspect.BoolLiteralExpression_Type);
-    private BoolConstValueType? type;
+    private CapabilityType? type;
     private bool typeCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
@@ -10157,11 +10156,11 @@ file class IntegerLiteralExpressionNode : SemanticNode, IIntegerLiteralExpressio
                 ExpressionPlainTypesAspect.IntegerLiteralExpression_PlainType);
     private IMaybePlainType? plainType;
     private bool plainTypeCached;
-    public IntegerConstValueType Type
+    public CapabilityType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
             : this.Synthetic(ref typeCached, ref type,
                 ExpressionTypesAspect.IntegerLiteralExpression_Type);
-    private IntegerConstValueType? type;
+    private CapabilityType? type;
     private bool typeCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId

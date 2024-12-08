@@ -20,6 +20,9 @@ public sealed class BareNonVariableType : BareType
     #region Standard Types
     public static readonly BareNonVariableType Bool = new(TypeConstructor.Bool, []);
 
+    public static readonly BareNonVariableType True = new(TypeConstructor.True, []);
+    public static readonly BareNonVariableType False = new(TypeConstructor.False, []);
+
     public static readonly BareNonVariableType Int = new(TypeConstructor.Int, []);
     public static readonly BareNonVariableType UInt = new(TypeConstructor.UInt, []);
     public static readonly BareNonVariableType Int8 = new(TypeConstructor.Int8, []);

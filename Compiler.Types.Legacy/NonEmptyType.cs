@@ -17,8 +17,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
     typeof(GenericParameterType),
     typeof(ViewpointType),
     typeof(FunctionType),
-    typeof(OptionalType),
-    typeof(ConstValueType))]
+    typeof(OptionalType))]
 [DebuggerDisplay("{" + nameof(ToILString) + "(),nq}")]
 // TODO move ConstValueType out of this class since it makes this really a NonEmptyExpressionType
 public abstract class NonEmptyType : INonVoidType

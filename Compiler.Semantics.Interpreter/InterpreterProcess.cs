@@ -14,8 +14,8 @@ using Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.MemoryLayout;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.MemoryLayout.BoundedLists;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types;
+using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.ConstValue;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 
@@ -386,7 +386,6 @@ public class InterpreterProcess
             case GenericParameterType _:
             case FunctionType _:
             case ViewpointType _:
-            case ConstValueType _:
                 var methodSignature = methodSignatures[methodSymbol];
                 throw new InvalidOperationException($"Can't call {methodSignature} on {selfType}");
             case CapabilityType capabilityType:
@@ -1178,16 +1177,16 @@ public class InterpreterProcess
     private async ValueTask<AzothValue> NegateAsync(IExpressionNode expression, LocalVariableScope variables)
     {
         var value = await ExecuteAsync(expression, variables).ConfigureAwait(false);
-        var dataType = expression.Type;
-        if (dataType.Equals(IType.Int)) return AzothValue.Int(-value.IntValue);
-        if (dataType.Equals(IType.Int8)) return AzothValue.I8((sbyte)-value.I8Value);
-        if (dataType.Equals(IType.Int16)) return AzothValue.I16((short)-value.I16Value);
-        if (dataType.Equals(IType.Int32)) return AzothValue.I32(-value.I32Value);
-        if (dataType.Equals(IType.Int64)) return AzothValue.I64(-value.I64Value);
-        if (dataType.Equals(IType.Offset)) return AzothValue.Offset(-value.OffsetValue);
-        if (dataType.Equals(IType.NInt)) return AzothValue.NInt(-value.NIntValue);
-        if (dataType is IntegerConstValueType) return AzothValue.Int(-value.IntValue);
-        throw new NotImplementedException($"Negate {dataType.ToILString()}");
+        var type = expression.Type;
+        if (type.Equals(IType.Int)) return AzothValue.Int(-value.IntValue);
+        if (type.Equals(IType.Int8)) return AzothValue.I8((sbyte)-value.I8Value);
+        if (type.Equals(IType.Int16)) return AzothValue.I16((short)-value.I16Value);
+        if (type.Equals(IType.Int32)) return AzothValue.I32(-value.I32Value);
+        if (type.Equals(IType.Int64)) return AzothValue.I64(-value.I64Value);
+        if (type.Equals(IType.Offset)) return AzothValue.Offset(-value.OffsetValue);
+        if (type.Equals(IType.NInt)) return AzothValue.NInt(-value.NIntValue);
+        if (type is CapabilityType { TypeConstructor: IntegerLiteralTypeConstructor }) return AzothValue.Int(-value.IntValue);
+        throw new NotImplementedException($"Negate {type.ToILString()}");
     }
 
     private static AzothValue IdentityHash(AzothValue value)

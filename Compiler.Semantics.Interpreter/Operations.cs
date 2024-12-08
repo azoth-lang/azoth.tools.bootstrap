@@ -3,7 +3,6 @@ using System.Numerics;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.MemoryLayout;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.ConstValue;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter;
 
@@ -11,7 +10,7 @@ internal static class Operations
 {
     public static AzothValue Convert(this AzothValue value, IType from, CapabilityType to, bool isOptional)
     {
-        if (from is IntegerConstValueType)
+        if (from is CapabilityType { TypeConstructor: IntegerLiteralTypeConstructor })
         {
             if (to.Equals(IType.Int)) return AzothValue.Int(value.IntValue);
             if (to.Equals(IType.UInt)) return AzothValue.Int(value.IntValue);
@@ -29,7 +28,7 @@ internal static class Operations
             if (to.Equals(IType.NUInt)) return AzothValue.NUInt((nuint)(ulong)value.IntValue);
         }
 
-        if (from is CapabilityType { TypeConstructor: BoolTypeConstructor } or BoolConstValueType)
+        if (from is CapabilityType { TypeConstructor: BoolTypeConstructor or BoolLiteralTypeConstructor })
         {
             if (to.Equals(IType.Int8)) return AzothValue.I8((sbyte)(value.BoolValue ? 1 : 0));
             if (to.Equals(IType.Byte)) return AzothValue.Byte((byte)(value.BoolValue ? 1 : 0));
