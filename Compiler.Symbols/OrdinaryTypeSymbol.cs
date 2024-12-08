@@ -1,7 +1,7 @@
 using System;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Declared;
+using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 
@@ -13,23 +13,23 @@ public sealed class OrdinaryTypeSymbol : TypeSymbol
     public override PackageSymbol Package { get; }
     public override Symbol ContainingSymbol { get; }
     public override TypeSymbol? ContextTypeSymbol => null;
-    public TypeKind Kind => DeclaresType.Kind;
+    public TypeKind Kind => TypeConstructor.Kind;
     public override StandardName Name { get; }
-    public OrdinaryDeclaredType DeclaresType { get; }
+    public OrdinaryTypeConstructor TypeConstructor { get; }
 
     public OrdinaryTypeSymbol(
         Symbol containingSymbol,
-        OrdinaryDeclaredType declaresType)
-        : base(declaresType.Name)
+        OrdinaryTypeConstructor typeConstructor)
+        : base(typeConstructor.Name)
     {
         // TODO check the declared type is in the containing namespace and package
         Package = containingSymbol.Package ?? throw new ArgumentException("Must be a proper container for a type.", nameof(containingSymbol));
         ContainingSymbol = containingSymbol;
-        Name = declaresType.Name;
-        DeclaresType = declaresType;
+        Name = typeConstructor.Name;
+        TypeConstructor = typeConstructor;
     }
 
-    public override DeclaredType TryGetTypeConstructor() => DeclaresType;
+    public override OrdinaryTypeConstructor TryGetTypeConstructor() => TypeConstructor;
 
     #region Equals
     public override bool Equals(Symbol? other)
@@ -39,16 +39,16 @@ public sealed class OrdinaryTypeSymbol : TypeSymbol
         return other is OrdinaryTypeSymbol otherType
                && ContainingSymbol == otherType.ContainingSymbol
                && Name == otherType.Name
-               && DeclaresType.Equals(otherType.DeclaresType); // Must use Equals because they are interface types
+               && TypeConstructor.Equals(otherType.TypeConstructor); // Must use Equals because they are interface types
     }
 
     public override int GetHashCode()
-        => HashCode.Combine(ContainingSymbol, Name, DeclaresType);
+        => HashCode.Combine(ContainingSymbol, Name, TypeConstructor);
     #endregion
 
     public override string ToILString()
     {
-        var genericParametersCount = DeclaresType.GenericParameters.Count;
+        var genericParametersCount = TypeConstructor.Parameters.Count;
         var value = $"{ContainingSymbol.ToILString()}.{Name.ToBareString()}";
         if (genericParametersCount > 0)
             value += $"[{new string(',', genericParametersCount - 1)}]";

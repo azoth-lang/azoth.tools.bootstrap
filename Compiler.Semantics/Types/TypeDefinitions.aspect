@@ -4,24 +4,20 @@
 ◊using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 ◊using Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
 ◊using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Bare;
-◊using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Declared;
 ◊using Azoth.Tools.Bootstrap.Framework;
 
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
 // ---------- Type Definitions
-⟳ TypeDefinition.Supertypes: {`BareNonVariableType`} initial => [];
+⟳ TypeDefinition.Supertypes: {`TypeConstructor.Supertype`} initial
+    => Compiler.Types.Constructors.TypeConstructor.Supertype.AnySet;
 = TypeDefinition.Supertypes;
 = TypeDefinition.↑.Diagnostics;
-↑ TypeDefinition.DeclaredType:`OrdinaryDeclaredType`;
 ↑ TypeDefinition.SelfType:`SelfType`;
 = TypeDefinition.SelfType;
-↑ ClassDefinition.DeclaredType: `OrdinaryDeclaredType`;
-↑ StructDefinition.DeclaredType: `OrdinaryDeclaredType`;
-↑ TraitDefinition.DeclaredType: `OrdinaryDeclaredType`;
 = ClassDefinition.↑.Diagnostics;
 
 // ---------- Type Definition Parts
 = GenericParameter.Supertypes => [];
-↑ GenericParameter.Parameter: `GenericParameter`;
+↑ GenericParameter.Parameter: `TypeConstructor.Parameter`;
 ↑ GenericParameter.DeclaredType: `GenericParameterType`

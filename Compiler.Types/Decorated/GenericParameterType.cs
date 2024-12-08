@@ -16,6 +16,21 @@ public sealed class GenericParameterType : INonVoidType
         PlainType = plainType;
     }
 
+    #region Equality
+    public bool Equals(IMaybeType? other)
+    {
+        if (other is null) return false;
+        if (ReferenceEquals(this, other)) return true;
+        return other is GenericParameterType otherType
+               && PlainType.Equals(otherType.PlainType);
+    }
+
+    public override bool Equals(object? obj)
+        => ReferenceEquals(this, obj) || obj is GenericParameterType other && Equals(other);
+
+    public override int GetHashCode() => HashCode.Combine(PlainType);
+    #endregion
+
     public override string ToString() => throw new NotSupportedException();
 
     public string ToSourceCodeString() => PlainType.ToString();

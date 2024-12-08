@@ -22,7 +22,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
     typeof(SimpleOrLiteralTypeConstructor))]
 [SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "Using as a trait.")]
 // ReSharper disable once InconsistentNaming
-public interface TypeConstructor : IEquatable<TypeConstructor>, TypeConstructorContext
+public partial interface TypeConstructor : IEquatable<TypeConstructor>, TypeConstructorContext
 {
     #region Standard Type Constructors
     public static readonly AnyTypeConstructor Any = AnyTypeConstructor.Instance;
@@ -48,6 +48,89 @@ public interface TypeConstructor : IEquatable<TypeConstructor>, TypeConstructorC
     public static readonly BoolLiteralTypeConstructor False = BoolLiteralTypeConstructor.False;
     #endregion
 
+    #region CreateX(...)
+    public static OrdinaryTypeConstructor CreateStruct(
+        IdentifierName containingPackage,
+        NamespaceName containingNamespace,
+        bool isConst,
+        StandardName name,
+        IFixedList<Parameter> genericParameters,
+        IFixedSet<Supertype> supertypes)
+        => new(new NamespaceContext(containingPackage, containingNamespace),
+            isAbstract: false, isConst, TypeKind.Struct, name, genericParameters, supertypes);
+
+    public static OrdinaryTypeConstructor CreateClass(
+        IdentifierName containingPackage,
+        NamespaceName containingNamespace,
+        bool isAbstract,
+        bool isConst,
+        string name)
+        => new(new NamespaceContext(containingPackage, containingNamespace),
+            isAbstract, isConst, TypeKind.Class, name, [], Supertype.AnySet);
+
+    public static OrdinaryTypeConstructor CreateTrait(
+        IdentifierName containingPackage,
+        NamespaceName containingNamespace,
+        bool isConst,
+        string name)
+        => new(new NamespaceContext(containingPackage, containingNamespace),
+            isAbstract: true, isConst, TypeKind.Trait, name, [], Supertype.AnySet);
+
+    public static OrdinaryTypeConstructor CreateClass(
+        IdentifierName containingPackage,
+        NamespaceName containingNamespace,
+        bool isAbstract,
+        bool isConst,
+        string name,
+        IFixedList<Parameter> genericParameters,
+        IFixedSet<Supertype> supertypes)
+        => new(new NamespaceContext(containingPackage, containingNamespace),
+            isAbstract, isConst, TypeKind.Class, StandardName.Create(name, genericParameters.Count),
+            genericParameters, supertypes);
+
+    public static OrdinaryTypeConstructor CreateClass(
+        IdentifierName containingPackage,
+        NamespaceName containingNamespace,
+        bool isAbstract,
+        bool isConst,
+        StandardName name,
+        IFixedList<Parameter> genericParameters,
+        IFixedSet<Supertype> supertypes)
+        => new(new NamespaceContext(containingPackage, containingNamespace),
+            isAbstract, isConst, TypeKind.Class, name, genericParameters, supertypes);
+
+    public static OrdinaryTypeConstructor CreateTrait(
+        IdentifierName containingPackage,
+        NamespaceName containingNamespace,
+        bool isConst,
+        StandardName name,
+        IFixedList<Parameter> genericParameters,
+        IFixedSet<Supertype> supertypes)
+        => new(new NamespaceContext(containingPackage, containingNamespace),
+            isAbstract: true, isConst, TypeKind.Trait, name, genericParameters, supertypes);
+
+    public static OrdinaryTypeConstructor CreateClass(
+        IdentifierName containingPackage,
+        NamespaceName containingNamespace,
+        bool isAbstract,
+        bool isConst,
+        string name,
+        params Parameter[] genericParameters)
+        => new(new NamespaceContext(containingPackage, containingNamespace),
+            isAbstract, isConst, TypeKind.Class, StandardName.Create(name, genericParameters.Length),
+            genericParameters.ToFixedList(), Supertype.AnySet);
+
+    public static OrdinaryTypeConstructor CreateTrait(
+        IdentifierName containingPackage,
+        NamespaceName containingNamespace,
+        bool isConst,
+        string name,
+        params Parameter[] genericParameters)
+        => new(new NamespaceContext(containingPackage, containingNamespace),
+            isAbstract: true, isConst, TypeKind.Trait, StandardName.Create(name, genericParameters.Length),
+             genericParameters.ToFixedList(), Supertype.AnySet);
+    #endregion
+
     void TypeConstructorContext.AppendContextPrefix(StringBuilder builder)
     {
         ToString(builder);
@@ -55,6 +138,11 @@ public interface TypeConstructor : IEquatable<TypeConstructor>, TypeConstructorC
     }
 
     TypeConstructorContext Context { get; }
+
+    /// <summary>
+    /// Whether this type was declared `const` meaning that most references should be treated as const.
+    /// </summary>
+    public bool IsDeclaredConst { get; }
 
     /// <summary>
     /// Whether this type can be constructed. Abstract types and type variables cannot be constructed.
@@ -67,21 +155,28 @@ public interface TypeConstructor : IEquatable<TypeConstructor>, TypeConstructorC
     /// <remarks>Even if a type cannot have fields, a subtype still could.</remarks>
     public bool CanHaveFields { get; }
 
-    TypeSemantics Semantics { get; }
+    /// <summary>
+    /// Whether this type is allowed to be used as a supertype.
+    /// </summary>
+    public bool CanBeSupertype { get; }
 
+    TypeSemantics Semantics { get; }
     TypeName Name { get; }
 
-    IFixedList<TypeConstructorParameter> Parameters { get; }
+    bool HasParameters { get; }
+    IFixedList<Parameter> Parameters { get; }
 
     bool AllowsVariance { get; }
 
+    bool HasIndependentParameters { get; }
+
     IFixedList<GenericParameterPlainType> ParameterPlainTypes { get; }
 
-    IFixedSet<ConstructedPlainType> Supertypes { get; }
+    IFixedSet<Supertype> Supertypes { get; }
 
-    IPlainType Construct(IFixedList<IPlainType> typeArguments);
+    ConstructedPlainType Construct(IFixedList<IPlainType> typeArguments);
 
-    IPlainType ConstructWithParameterPlainTypes()
+    ConstructedPlainType ConstructWithParameterPlainTypes()
         => Construct(ParameterPlainTypes);
 
     IMaybePlainType Construct(IFixedList<IMaybePlainType> typeArguments)

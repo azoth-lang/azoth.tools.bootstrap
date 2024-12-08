@@ -21,7 +21,6 @@
 ◊using Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
 ◊using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Bare;
 ◊using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.ConstValue;
-◊using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Declared;
 ◊using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Parameters;
 ◊using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Pseudotypes;
 ◊using Azoth.Tools.Bootstrap.Compiler.Types.Plain;

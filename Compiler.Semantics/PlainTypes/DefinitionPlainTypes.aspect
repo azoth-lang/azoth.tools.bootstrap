@@ -17,7 +17,6 @@
 
 // ---------- Type Definitions
 ↑ TypeDefinition.TypeConstructor:`OrdinaryTypeConstructor`;
-= TypeDefinition.TypeConstructor;
 ↑ TypeDefinition.SelfPlainType: `SelfPlainType`;
 = TypeDefinition.SelfPlainType;
 
@@ -34,15 +33,15 @@
 // TODO it would be good to refactor to not depend on Type
 = StandardMethodDefinition.MethodGroupPlainType => MethodGroupType.ToPlainType();
 = ConstructorDefinition.ReturnPlainType
-    => ContainingTypeDefinition.TypeConstructor.ConstructWithGenericParameterPlainTypes();
+    => ContainingTypeDefinition.TypeConstructor.ConstructWithParameterPlainTypes();
 = DefaultConstructorDefinition.SelfParameterPlainType
-    => ContainingTypeDefinition.TypeConstructor.ConstructWithGenericParameterPlainTypes();
+    => ContainingTypeDefinition.TypeConstructor.ConstructWithParameterPlainTypes();
 = SourceConstructorDefinition.SelfParameterPlainType => SelfParameter.BindingPlainType;
 = SourceConstructorDefinition.Body.**.ExpectedReturnPlainType => IPlainType.Void;
 = InitializerDefinition.ReturnPlainType
-    => ContainingTypeDefinition.TypeConstructor.ConstructWithGenericParameterPlainTypes();
+    => ContainingTypeDefinition.TypeConstructor.ConstructWithParameterPlainTypes();
 = DefaultInitializerDefinition.SelfParameterPlainType
-    => ContainingTypeDefinition.TypeConstructor.ConstructWithGenericParameterPlainTypes();
+    => ContainingTypeDefinition.TypeConstructor.ConstructWithParameterPlainTypes();
 = SourceInitializerDefinition.SelfParameterPlainType => SelfParameter.BindingPlainType;
 = SourceInitializerDefinition.Body.**.ExpectedReturnPlainType => IPlainType.Void;
 // Null is the signal that this is a field initializer and not a method body

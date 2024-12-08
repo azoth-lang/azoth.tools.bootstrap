@@ -12,6 +12,8 @@ public sealed class FunctionType : INonVoidType
     public IFixedList<ParameterType> Parameters { get; }
     public IType Return { get; }
 
+    /// <remarks>This constructor takes <paramref name="plainType"/> even though it is fully implied
+    /// by the other parameters to avoid allocating duplicate <see cref="FunctionPlainType"/>s.</remarks>
     public FunctionType(FunctionPlainType plainType, IFixedList<ParameterType> parameters, IType @return)
     {
         Requires.That(plainType.Parameters.SequenceEqual(parameters.Select(p => p.PlainType)), nameof(parameters),
@@ -22,6 +24,22 @@ public sealed class FunctionType : INonVoidType
         Parameters = parameters;
         Return = @return;
     }
+
+    #region Equality
+    public bool Equals(IMaybeType? other)
+    {
+        if (other is null) return false;
+        if (ReferenceEquals(this, other)) return true;
+        return other is FunctionType otherType
+               && Parameters.Equals(otherType.Parameters)
+               && Return.Equals(otherType.Return);
+    }
+
+    public override bool Equals(object? obj)
+        => ReferenceEquals(this, obj) || obj is FunctionType other && Equals(other);
+
+    public override int GetHashCode() => HashCode.Combine(Parameters, Return);
+    #endregion
 
     public override string ToString() => throw new NotSupportedException();
 

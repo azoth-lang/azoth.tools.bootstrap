@@ -1,4 +1,5 @@
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
+using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
@@ -15,6 +16,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
     typeof(EmptyPlainType))]
 public interface IPlainType : IMaybePlainType
 {
+    internal static readonly IFixedSet<ConstructedPlainType> AnySet
+        = AnyTypeConstructor.PlainType.Yield().ToFixedSet();
+
     #region Standard Types
     public new static readonly UnknownPlainType Unknown = UnknownPlainType.Instance;
     public static readonly VoidPlainType Void = VoidPlainType.Instance;

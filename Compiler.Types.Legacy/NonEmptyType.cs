@@ -134,6 +134,9 @@ public abstract class NonEmptyType : INonVoidType
     /// </summary>
     /// <remarks>This can restrict the ability to write to the value.</remarks>
     public virtual IType AccessedVia(ICapabilityConstraint capability) => this;
+
+    public abstract Decorated.INonVoidType ToDecoratedType();
+
     IMaybeType IMaybeType.AccessedVia(ICapabilityConstraint capability)
         => AccessedVia(capability);
 

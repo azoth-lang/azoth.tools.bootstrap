@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Declared;
+using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Pseudotypes;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using Azoth.Tools.Bootstrap.Framework;
@@ -18,94 +18,101 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Bare;
 public sealed class BareNonVariableType : BareType
 {
     #region Standard Types
-    public static readonly BareNonVariableType Bool = DeclaredType.Bool.BareType;
+    public static readonly BareNonVariableType Bool = new(TypeConstructor.Bool, []);
 
-    public static readonly BareNonVariableType Int = DeclaredType.Int.BareType;
-    public static readonly BareNonVariableType UInt = DeclaredType.UInt.BareType;
-    public static readonly BareNonVariableType Int8 = DeclaredType.Int8.BareType;
-    public static readonly BareNonVariableType Byte = DeclaredType.Byte.BareType;
-    public static readonly BareNonVariableType Int16 = DeclaredType.Int16.BareType;
-    public static readonly BareNonVariableType UInt16 = DeclaredType.UInt16.BareType;
-    public static readonly BareNonVariableType Int32 = DeclaredType.Int32.BareType;
-    public static readonly BareNonVariableType UInt32 = DeclaredType.UInt32.BareType;
-    public static readonly BareNonVariableType Int64 = DeclaredType.Int64.BareType;
-    public static readonly BareNonVariableType UInt64 = DeclaredType.UInt64.BareType;
-    public static readonly BareNonVariableType Size = DeclaredType.Size.BareType;
-    public static readonly BareNonVariableType Offset = DeclaredType.Offset.BareType;
+    public static readonly BareNonVariableType Int = new(TypeConstructor.Int, []);
+    public static readonly BareNonVariableType UInt = new(TypeConstructor.UInt, []);
+    public static readonly BareNonVariableType Int8 = new(TypeConstructor.Int8, []);
+    public static readonly BareNonVariableType Byte = new(TypeConstructor.Byte, []);
+    public static readonly BareNonVariableType Int16 = new(TypeConstructor.Int16, []);
+    public static readonly BareNonVariableType UInt16 = new(TypeConstructor.UInt16, []);
+    public static readonly BareNonVariableType Int32 = new(TypeConstructor.Int32, []);
+    public static readonly BareNonVariableType UInt32 = new(TypeConstructor.UInt32, []);
+    public static readonly BareNonVariableType Int64 = new(TypeConstructor.Int64, []);
+    public static readonly BareNonVariableType UInt64 = new(TypeConstructor.UInt64, []);
+    public static readonly BareNonVariableType Size = new(TypeConstructor.Size, []);
+    public static readonly BareNonVariableType Offset = new(TypeConstructor.Offset, []);
+    public static readonly BareNonVariableType NInt = new(TypeConstructor.NInt, []);
+    public static readonly BareNonVariableType NUInt = new(TypeConstructor.NUInt, []);
 
-    public static readonly BareNonVariableType Any = DeclaredType.Any.BareType;
+    public static readonly BareNonVariableType Any = new(TypeConstructor.Any, []);
     #endregion
 
-    public override DeclaredType TypeConstructor { get; }
+    public override TypeConstructor TypeConstructor { get; }
     public override TypeName Name => TypeConstructor.Name;
     public override IFixedList<IType> TypeArguments { get; }
     public override IEnumerable<GenericParameterArgument> GenericParameterArguments
-        => TypeConstructor.GenericParameters.EquiZip(TypeArguments, (p, a) => new GenericParameterArgument(p, a));
-    public bool AllowsVariance { get; }
-    public bool HasIndependentTypeArguments { get; }
+        => TypeConstructor.Parameters.EquiZip(TypeArguments, (p, a) => new GenericParameterArgument(p, a));
+    public override bool AllowsVariance { get; }
+    public override bool HasIndependentTypeArguments { get; }
 
     private readonly Lazy<IFixedSet<BareNonVariableType>> supertypes;
-    public IFixedSet<BareNonVariableType> Supertypes => supertypes.Value;
+    public override IFixedSet<BareNonVariableType> Supertypes => supertypes.Value;
 
     /// <summary>
     /// Whether this type was declared `const` meaning that most references should be treated as
     /// const.
     /// </summary>
-    public bool IsDeclaredConst => TypeConstructor.IsDeclaredConst;
+    public override bool IsDeclaredConst => TypeConstructor.IsDeclaredConst;
 
     private readonly Lazy<TypeReplacements> typeReplacements;
 
     public static BareNonVariableType Create(
-        OrdinaryDeclaredType declaredType,
+        TypeConstructor typeConstructor,
         IFixedList<IType> typeArguments)
-        => new(declaredType, typeArguments);
+        => new(typeConstructor, typeArguments);
 
-    internal BareNonVariableType(DeclaredType declaredType, IFixedList<IType> typeArguments)
+    internal BareNonVariableType(TypeConstructor typeConstructor, IFixedList<IType> typeArguments)
     {
-        if (declaredType.GenericParameters.Count != typeArguments.Count)
+        if (typeConstructor.Parameters.Count != typeArguments.Count)
             throw new ArgumentException(
-                $"Number of type arguments must match. Given `[{typeArguments.ToILString()}]` for `{declaredType}`.",
+                $"Number of type arguments must match. Given `[{typeArguments.ToILString()}]` for `{typeConstructor}`.",
                 nameof(typeArguments));
-        TypeConstructor = declaredType;
+        TypeConstructor = typeConstructor;
         TypeArguments = typeArguments;
-        AllowsVariance = declaredType.AllowsVariance
+        AllowsVariance = typeConstructor.AllowsVariance
             || TypeArguments.Any(a => a.AllowsVariance);
-        HasIndependentTypeArguments = declaredType.HasIndependentGenericParameters
+        HasIndependentTypeArguments = typeConstructor.HasIndependentParameters
                                       || TypeArguments.Any(a => a.HasIndependentTypeArguments);
 
         typeReplacements = new(GetTypeReplacements);
         supertypes = new(GetSupertypes);
     }
 
-    public INonVoidPlainType ToPlainType()
+    public override ConstructedPlainType ToPlainType()
     {
         var typeArguments = TypeArguments.Select(a => a.ToPlainType()).ToFixedList();
-        // The ToTypeConstructor() should never result in void since DeclaredType can't be void.
-        return (INonVoidPlainType)(TypeConstructor.TryToPlainType()
-                                  ?? TypeConstructor.ToTypeConstructor()?.Construct(typeArguments))!;
+        // Should never result in void since TypeConstructor can't be void.
+        return TypeConstructor.Construct(typeArguments)!;
+    }
+
+    public TypeConstructor.Supertype ToSupertype()
+    {
+        var typeArguments = TypeArguments.Select(a => a.ToDecoratedType()).ToFixedList();
+        return new(ToPlainType(), typeArguments);
     }
 
     private TypeReplacements GetTypeReplacements() => new(TypeConstructor, TypeArguments);
 
     private IFixedSet<BareNonVariableType> GetSupertypes()
-        => TypeConstructor.Supertypes.Select(typeReplacements.Value.ReplaceTypeParametersIn).ToFixedSet();
+        => TypeConstructor.Supertypes.Select(t => typeReplacements.Value.ReplaceTypeParametersIn(t.ToType())).ToFixedSet();
 
-    public IType ReplaceTypeParametersIn(IType type)
+    public override IType ReplaceTypeParametersIn(IType type)
         => typeReplacements.Value.ReplaceTypeParametersIn(type);
 
-    public IMaybeType ReplaceTypeParametersIn(IMaybeType type)
+    public override IMaybeType ReplaceTypeParametersIn(IMaybeType type)
         => typeReplacements.Value.ReplaceTypeParametersIn(type);
 
     public BareNonVariableType ReplaceTypeParametersIn(BareNonVariableType type)
         => typeReplacements.Value.ReplaceTypeParametersIn(type);
 
-    public IPseudotype ReplaceTypeParametersIn(IPseudotype pseudotype)
+    public override IPseudotype ReplaceTypeParametersIn(IPseudotype pseudotype)
         => typeReplacements.Value.ReplaceTypeParametersIn(pseudotype);
 
-    public IMaybePseudotype ReplaceTypeParametersIn(IMaybePseudotype pseudotype)
+    public override IMaybePseudotype ReplaceTypeParametersIn(IMaybePseudotype pseudotype)
         => typeReplacements.Value.ReplaceTypeParametersIn(pseudotype);
 
-    public BareNonVariableType AccessedVia(Capability capability)
+    public override BareNonVariableType AccessedVia(Capability capability)
     {
         if (!HasIndependentTypeArguments) return this;
         var newTypeArguments = TypeArgumentsAccessedVia(capability);
@@ -126,14 +133,14 @@ public sealed class BareNonVariableType : BareType
         return typesReplaced ? newTypeArguments.ToFixedList() : TypeArguments;
     }
 
-    public BareNonVariableType With(IFixedList<IType> typeArguments)
+    public override BareNonVariableType With(IFixedList<IType> typeArguments)
         => new(TypeConstructor, typeArguments);
 
     public CapabilityTypeConstraint With(CapabilitySet capability)
         => new(capability, this);
 
     public override CapabilityType With(Capability capability)
-        => CapabilityType.Create(capability, this);
+        => (CapabilityType)new(capability, this);
 
     public override CapabilityType WithRead()
         => With(IsDeclaredConst ? Capability.Constant : Capability.Read);
@@ -144,7 +151,7 @@ public sealed class BareNonVariableType : BareType
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
         return other is BareNonVariableType otherType
-               && TypeConstructor == otherType.TypeConstructor
+               && TypeConstructor.Equals(otherType.TypeConstructor)
                && TypeArguments.Equals(otherType.TypeArguments);
     }
 
@@ -157,8 +164,7 @@ public sealed class BareNonVariableType : BareType
     private string ToString(Func<IType, string> toString)
     {
         var builder = new StringBuilder();
-        builder.Append(TypeConstructor.ContainingNamespace);
-        if (TypeConstructor.ContainingNamespace != NamespaceName.Global) builder.Append('.');
+        TypeConstructor.Context.AppendContextPrefix(builder);
         builder.Append(TypeConstructor.Name.ToBareString());
         if (!TypeArguments.IsEmpty)
         {

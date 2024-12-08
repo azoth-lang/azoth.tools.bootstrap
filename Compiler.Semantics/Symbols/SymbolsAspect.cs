@@ -30,7 +30,7 @@ internal static partial class SymbolsAspect
     }
 
     public static partial OrdinaryTypeSymbol TypeDefinition_Symbol(ITypeDefinitionNode node)
-        => new(node.ContainingSymbol, node.DeclaredType);
+        => new(node.ContainingSymbol, node.TypeConstructor);
 
     public static partial GenericParameterTypeSymbol GenericParameter_Symbol(IGenericParameterNode node)
         => new(node.ContainingSymbol, node.DeclaredType);

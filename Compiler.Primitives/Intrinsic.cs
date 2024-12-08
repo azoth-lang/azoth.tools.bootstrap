@@ -5,7 +5,6 @@ using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Declared;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Parameters;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using Azoth.Tools.Bootstrap.Framework;
@@ -21,11 +20,10 @@ public static class Intrinsic
 
     public static readonly OrdinaryTypeSymbol Promise = Find<OrdinaryTypeSymbol>("Promise");
 
-    public static readonly OrdinaryDeclaredType PromiseDeclaredType = Promise.DeclaresType;
-    public static readonly TypeConstructor PromiseTypeConstructor = PromiseDeclaredType.ToTypeConstructor();
+    public static readonly TypeConstructor PromiseTypeConstructor = Promise.TypeConstructor;
 
     public static IMaybeType PromiseOf(IMaybeType type)
-        => PromiseDeclaredType.WithRead(FixedList.Create(type));
+        => PromiseTypeConstructor.WithRead(FixedList.Create(type));
     public static IMaybePlainType PromiseOf(IMaybePlainType plainType)
         => PromiseTypeConstructor.Construct(FixedList.Create(plainType));
 
@@ -107,18 +105,18 @@ public static class Intrinsic
         return azothNamespace;
     }
 
-    private static OrdinaryDeclaredType BuildPromiseSymbol(LocalNamespaceSymbol azothNamespace, SymbolTreeBuilder tree)
+    private static OrdinaryTypeConstructor BuildPromiseSymbol(LocalNamespaceSymbol azothNamespace, SymbolTreeBuilder tree)
     {
         var intrinsicsPackage = azothNamespace.Package;
-        var promiseType = OrdinaryDeclaredType.CreateClass(intrinsicsPackage.Name, azothNamespace.NamespaceName,
-                       isAbstract: false, isConst: false, "Promise", GenericParameter.Out(CapabilitySet.Any, "T"));
+        var promiseType = TypeConstructor.CreateClass(intrinsicsPackage.Name, azothNamespace.NamespaceName,
+                       isAbstract: false, isConst: false, "Promise", TypeConstructor.Parameter.Out(CapabilitySet.Any, "T"));
         var classSymbol = new OrdinaryTypeSymbol(azothNamespace, promiseType);
         tree.Add(classSymbol);
 
         return promiseType;
     }
 
-    private static OrdinaryDeclaredType BuildSpecializedCollectionSymbols(
+    private static OrdinaryTypeConstructor BuildSpecializedCollectionSymbols(
         LocalNamespaceSymbol azothNamespace,
         SymbolTreeBuilder tree)
     {
@@ -130,16 +128,18 @@ public static class Intrinsic
         return BuildRawHybridBoundedListSymbol(tree, specializedNamespace);
     }
 
-    private static OrdinaryDeclaredType BuildRawHybridBoundedListSymbol(SymbolTreeBuilder tree, LocalNamespaceSymbol @namespace)
+    private static OrdinaryTypeConstructor BuildRawHybridBoundedListSymbol(SymbolTreeBuilder tree, LocalNamespaceSymbol @namespace)
     {
-        var classType = OrdinaryDeclaredType.CreateClass(@namespace.Package.Name, @namespace.NamespaceName,
+        var classType = TypeConstructor.CreateClass(@namespace.Package.Name, @namespace.NamespaceName,
             isAbstract: false, isConst: false, "Raw_Hybrid_Bounded_List",
-            GenericParameter.Independent(CapabilitySet.Aliasable, "F"), GenericParameter.Independent(CapabilitySet.Aliasable, "T"));
-        var fixedType = classType.GenericParameterTypes[0];
-        var readClassParamType = new SelfParameterType(false, classType.WithRead(classType.GenericParameterTypes));
-        var mutClassType = classType.WithMutate(classType.GenericParameterTypes);
+            TypeConstructor.Parameter.Independent(CapabilitySet.Aliasable, "F"),
+            TypeConstructor.Parameter.Independent(CapabilitySet.Aliasable, "T"));
+        var genericParameterTypes = classType.GenericParameterTypes();
+        var fixedType = genericParameterTypes[0];
+        var readClassParamType = new SelfParameterType(false, classType.WithRead(genericParameterTypes));
+        var mutClassType = classType.WithMutate(genericParameterTypes);
         var mutClassParamType = new SelfParameterType(false, mutClassType);
-        var itemType = classType.GenericParameterTypes[1];
+        var itemType = genericParameterTypes[1];
         var classSymbol = new OrdinaryTypeSymbol(@namespace, classType);
         tree.Add(classSymbol);
 

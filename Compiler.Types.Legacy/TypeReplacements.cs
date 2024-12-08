@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.ConstValue;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Declared;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Parameters;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Pseudotypes;
 using Azoth.Tools.Bootstrap.Framework;
@@ -19,29 +19,32 @@ internal sealed class TypeReplacements
     /// Build a dictionary of type replacements. Generic parameter types of both this type and the
     /// supertypes can be replaced with type arguments of this type.
     /// </summary>
-    public TypeReplacements(DeclaredType declaredType, IFixedList<IType> typeArguments)
+    public TypeReplacements(TypeConstructor typeConstructor, IFixedList<IType> typeArguments)
     {
-        replacements = declaredType.GenericParameterTypes.EquiZip(typeArguments)
+        replacements = typeConstructor.GenericParameterTypes().EquiZip(typeArguments)
                                    .ToDictionary(t => t.Item1, t => t.Item2);
         // Set up replacements for supertype generic parameters
         // TODO this might have been needed when inheritance was implemented by treating methods as
         //      if they were copied down the hierarchy, but I don't think it should be needed when
         //      they are properly handled.
-        foreach (var supertype in declaredType.Supertypes)
-            foreach (var (typeArg, i) in supertype.TypeArguments.Enumerate())
+        foreach (var supertype in typeConstructor.Supertypes)
+        {
+            var genericParameterTypes = supertype.TypeConstructor.GenericParameterTypes();
+            foreach (var (typeArg, i) in supertype.TypeArguments.Select(arg => arg.ToType()).Enumerate())
             {
-                var genericParameterType = supertype.TypeConstructor.GenericParameterTypes[i];
+                var genericParameterType = genericParameterTypes[i];
                 if (typeArg is GenericParameterType genericTypeArg)
                 {
                     if (replacements.TryGetValue(genericTypeArg, out var replacement))
                         replacements.Add(genericParameterType, replacement);
                     else
                         throw new InvalidOperationException(
-                            $"Could not find replacement for `{typeArg}` in type `{declaredType}` with arguments `{typeArguments}`.");
+                            $"Could not find replacement for `{typeArg}` in type `{typeConstructor}` with arguments `{typeArguments}`.");
                 }
                 else
                     replacements.Add(genericParameterType, ReplaceTypeParametersIn(typeArg));
             }
+        }
     }
 
     public IPseudotype ReplaceTypeParametersIn(IPseudotype pseudotype)
@@ -146,6 +149,14 @@ internal sealed class TypeReplacements
         if (replacements.TryGetValue(type, out var replacementType))
             return replacementType;
         return type;
+    }
+
+    public BareType ReplaceTypeParametersIn(BareType type)
+    {
+        var replacementTypes = ReplaceTypeParametersIn(type.TypeArguments);
+        if (ReferenceEquals(type.TypeArguments, replacementTypes)) return type;
+
+        return type.With(replacementTypes);
     }
 
     public BareNonVariableType ReplaceTypeParametersIn(BareNonVariableType type)

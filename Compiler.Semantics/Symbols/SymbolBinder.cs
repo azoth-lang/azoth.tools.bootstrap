@@ -36,12 +36,12 @@ internal static class SymbolBinder
         };
 
     private static IUserTypeDeclarationNode UserTypeSymbol(OrdinaryTypeSymbol symbol)
-         => symbol.DeclaresType.Kind switch
+         => symbol.TypeConstructor.Kind switch
          {
              TypeKind.Struct => IStructSymbolNode.Create(symbol),
              TypeKind.Class => IClassSymbolNode.Create(symbol),
              TypeKind.Trait => ITraitSymbolNode.Create(symbol),
-             _ => throw ExhaustiveMatch.Failed(symbol.DeclaresType.Kind),
+             _ => throw ExhaustiveMatch.Failed(symbol.TypeConstructor.Kind),
          };
 
     private static IEmptyTypeSymbolNode EmptyTypeSymbol(EmptyTypeSymbol sym)

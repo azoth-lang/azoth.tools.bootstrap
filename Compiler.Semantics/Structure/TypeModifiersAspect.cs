@@ -25,7 +25,7 @@ internal static partial class TypeModifiersAspect
     public static partial void AbstractMethodDefinition_Contribute_Diagnostics(IAbstractMethodDefinitionNode node, DiagnosticCollectionBuilder diagnostics)
     {
         // TODO this would be better handled on the class node
-        var concreteClass = !node.ContainingDeclaredType.IsAbstract;
+        var concreteClass = !node.ContainingTypeConstructor.IsAbstract;
         if (concreteClass)
             diagnostics.Add(OtherSemanticError.AbstractMethodNotInAbstractClass(node.File, node.Syntax.Span, node.Name));
     }

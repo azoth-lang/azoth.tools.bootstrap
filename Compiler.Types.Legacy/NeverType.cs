@@ -27,4 +27,5 @@ public sealed class NeverType : EmptyType, INonVoidType
     INonVoidPlainType INonVoidType.ToPlainType() => ToPlainType();
 
     IMaybeNonVoidType IMaybeNonVoidType.WithoutWrite() => this;
+    public override Decorated.INonVoidType ToDecoratedType() => Decorated.IType.Never;
 }

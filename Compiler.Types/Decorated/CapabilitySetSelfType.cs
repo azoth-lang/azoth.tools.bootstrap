@@ -21,6 +21,22 @@ public sealed class CapabilitySetSelfType : INonVoidType
         SelfType = selfType;
     }
 
+    #region Equality
+    public bool Equals(IMaybeType? other)
+    {
+        if (other is null) return false;
+        if (ReferenceEquals(this, other)) return true;
+        return other is CapabilitySetSelfType otherType
+               && Capability.Equals(otherType.Capability)
+               && SelfType.Equals(otherType.SelfType);
+    }
+
+    public override bool Equals(object? obj)
+        => ReferenceEquals(this, obj) || obj is CapabilitySetSelfType other && Equals(other);
+
+    public override int GetHashCode() => HashCode.Combine(Capability, SelfType);
+    #endregion
+
     public override string ToString() => throw new NotSupportedException();
 
     public string ToSourceCodeString() => $"{Capability.ToSourceCodeString()} {SelfType}";

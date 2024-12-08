@@ -28,7 +28,7 @@ internal sealed class PlainTypeReplacements
                 var genericParameterPlainType = supertype.TypeConstructor?.ParameterPlainTypes[i];
                 if (genericParameterPlainType is null)
                     continue;
-                if (supertypeArgument is GenericParameterPlainType genericPlainTypeArg)
+                if (supertypeArgument.PlainType is GenericParameterPlainType genericPlainTypeArg)
                 {
                     if (replacements.TryGetValue(genericPlainTypeArg, out var replacement))
                         replacements.Add(genericParameterPlainType, replacement);
@@ -37,7 +37,7 @@ internal sealed class PlainTypeReplacements
                             $"Could not find replacement for `{supertypeArgument}` in type constructor `{typeConstructor}` with arguments `{typeArguments}`.");
                 }
                 else
-                    replacements.Add(genericParameterPlainType, ReplaceTypeParametersIn(supertypeArgument));
+                    replacements.Add(genericParameterPlainType, ReplaceTypeParametersIn(supertypeArgument.PlainType));
             }
     }
 

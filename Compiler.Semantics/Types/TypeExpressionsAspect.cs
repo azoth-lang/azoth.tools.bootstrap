@@ -1,7 +1,6 @@
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
-using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Parameters;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Pseudotypes;
@@ -23,8 +22,7 @@ internal static partial class TypeExpressionsAspect
     {
         var capability = node.Capability.Capability;
         if (capability.AllowsWrite && node.NamedType is CapabilityType { IsDeclaredConst: true } capabilityType)
-            diagnostics.Add(TypeError.CannotApplyCapabilityToConstantType(node.File, node.Syntax, capability,
-                capabilityType.DeclaredType));
+            diagnostics.Add(TypeError.CannotApplyCapabilityToConstantType(node.File, node.Syntax, capability, capabilityType.TypeConstructor!));
         if (node.Referent.NamedType is GenericParameterType)
             diagnostics.Add(TypeError.CapabilityAppliedToTypeParameter(node.File, node.Syntax));
         if (node.Referent.NamedType is EmptyType)

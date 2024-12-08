@@ -2,8 +2,8 @@ using System;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
+using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Bare;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Declared;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Pseudotypes;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using Azoth.Tools.Bootstrap.Framework;
@@ -26,7 +26,7 @@ public sealed class CapabilityType : NonEmptyType, INonVoidType
         bool isAbstract,
         bool isConst,
         string name)
-        => Create(capability, OrdinaryDeclaredType.CreateClass(containingPackage, containingNamespace, isAbstract, isConst, name), []);
+        => Create(capability, TypeConstructor.CreateClass(containingPackage, containingNamespace, isAbstract, isConst, name), []);
 
     /// <summary>
     /// Create a reference type for a trait.
@@ -37,19 +37,19 @@ public sealed class CapabilityType : NonEmptyType, INonVoidType
         NamespaceName containingNamespace,
         bool isConst,
         string name)
-        => Create(capability, OrdinaryDeclaredType.CreateTrait(containingPackage, containingNamespace, isConst, name), []);
+        => Create(capability, TypeConstructor.CreateTrait(containingPackage, containingNamespace, isConst, name), []);
 
     /// <summary>
     /// Create an object type for a given class or trait.
     /// </summary>
     public static CapabilityType Create(
         Capability capability,
-        OrdinaryDeclaredType declaredType,
+        OrdinaryTypeConstructor typeConstructor,
         IFixedList<IType> typeArguments)
-        => Create(capability, BareNonVariableType.Create(declaredType, typeArguments));
-
-    public static CapabilityType Create(Capability capability, BareNonVariableType bareType)
-        => new(capability, bareType);
+    {
+        BareNonVariableType bareType = BareNonVariableType.Create(typeConstructor, typeArguments);
+        return new(capability, bareType);
+    }
 
     public Capability Capability { get; }
     public bool IsReadOnlyReference => Capability == Capability.Read;
@@ -74,19 +74,15 @@ public sealed class CapabilityType : NonEmptyType, INonVoidType
     /// </summary>
     public bool AllowsFreeze => Capability.AllowsFreeze;
 
-    public BareNonVariableType BareType { get; }
+    public BareType BareType { get; }
 
-    public TypeSemantics Semantics => DeclaredType.Semantics;
+    public TypeSemantics? Semantics => TypeConstructor?.Semantics;
 
-    public DeclaredType DeclaredType => BareType.TypeConstructor;
+    public TypeConstructor? TypeConstructor => BareType.TypeConstructor;
 
-    public IdentifierName? ContainingPackage => DeclaredType.ContainingPackage;
+    public TypeName? Name => TypeConstructor?.Name;
 
-    public NamespaceName ContainingNamespace => DeclaredType.ContainingNamespace;
-
-    public TypeName Name => DeclaredType.Name;
-
-    public IFixedList<IMaybeType> TypeArguments => BareType.TypeArguments;
+    public IFixedList<IType> TypeArguments => BareType.TypeArguments;
 
     public override bool AllowsVariance => BareType.AllowsVariance;
 
@@ -98,15 +94,15 @@ public sealed class CapabilityType : NonEmptyType, INonVoidType
     /// Whether this type was declared `const` meaning that most references should be treated as
     /// `const`.
     /// </summary>
-    public bool IsDeclaredConst => DeclaredType.IsDeclaredConst;
+    public bool IsDeclaredConst => BareType.IsDeclaredConst;
 
-    private CapabilityType(Capability capability, BareNonVariableType bareType)
+    public CapabilityType(Capability capability, BareType bareType)
     {
         Capability = capability;
         BareType = bareType;
     }
 
-    public sealed override INonVoidPlainType ToPlainType() => BareType.ToPlainType();
+    public override ConstructedOrVariablePlainType ToPlainType() => BareType.ToPlainType();
 
     public override IType ReplaceTypeParametersIn(IType type)
         => BareType.ReplaceTypeParametersIn(type);
@@ -150,15 +146,19 @@ public sealed class CapabilityType : NonEmptyType, INonVoidType
                 throw ExhaustiveMatch.Failed(capability);
         }
     }
+
+    public override Decorated.CapabilityType ToDecoratedType()
+        => new Decorated.CapabilityType(Capability, ToPlainType(), TypeArguments.ToDecoratedTypes());
+
     IMaybeType IMaybeType.AccessedVia(ICapabilityConstraint capability) => AccessedVia(capability);
 
-    public CapabilityType UpcastTo(DeclaredType target)
+    public CapabilityType UpcastTo(TypeConstructor target)
     {
-        if (DeclaredType.Equals(target))
+        if (TypeConstructor?.Equals(target) ?? false)
             return this;
 
         // TODO this will fail if the type implements the target type in multiple ways.
-        var supertype = Supertypes.Where(s => s.TypeConstructor == target).TrySingle();
+        var supertype = Supertypes.Where(s => s.TypeConstructor.Equals(target)).TrySingle();
         if (supertype is null)
             throw new ArgumentException($"The type {target} is not a supertype of {this}.");
 
@@ -181,7 +181,7 @@ public sealed class CapabilityType : NonEmptyType, INonVoidType
 
     public sealed override string ToSourceCodeString()
     {
-        if (Capability == Capability.Read || (Capability == Capability.Constant && DeclaredType.IsDeclaredConst))
+        if (Capability == Capability.Read || (Capability == Capability.Constant && BareType.IsDeclaredConst))
             return BareType.ToSourceCodeString();
 
         return $"{Capability.ToSourceCodeString()} {BareType.ToSourceCodeString()}";

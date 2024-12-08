@@ -26,16 +26,16 @@ public abstract class LiteralTypeConstructor : SimpleOrLiteralTypeConstructor
     public sealed override SpecialTypeName Name { get; }
 
     // TODO these need type parameters that are values
-    public sealed override IFixedList<TypeConstructorParameter> Parameters
-        => FixedList.Empty<TypeConstructorParameter>();
+    public sealed override IFixedList<TypeConstructor.Parameter> Parameters => [];
 
     public sealed override bool AllowsVariance => false;
 
-    public sealed override IFixedList<GenericParameterPlainType> ParameterPlainTypes
-        => FixedList.Empty<GenericParameterPlainType>();
+    public override bool HasIndependentParameters => false;
+
+    public sealed override IFixedList<GenericParameterPlainType> ParameterPlainTypes => [];
 
     // TODO should this instead include the non-literal type (e.g. `int` or `bool`)?
-    public sealed override IFixedSet<ConstructedPlainType> Supertypes => AnyTypeConstructor.Set;
+    public sealed override IFixedSet<TypeConstructor.Supertype> Supertypes => TypeConstructor.Supertype.AnySet;
 
     public abstract ConstructedPlainType PlainType { get; }
 
@@ -49,14 +49,14 @@ public abstract class LiteralTypeConstructor : SimpleOrLiteralTypeConstructor
     /// </summary>
     public abstract TypeConstructor ToNonLiteral();
 
-    public sealed override IPlainType Construct(IFixedList<IPlainType> typeArguments)
+    public sealed override ConstructedPlainType Construct(IFixedList<IPlainType> typeArguments)
        => throw new NotImplementedException("Constructing literal types requires value type parameters.");
 
     public IMaybePlainType Construct(IFixedList<IMaybePlainType> typeArguments)
     {
-        var properTypeArguments = typeArguments.ToFixedList().As<IPlainType>();
+        var properTypeArguments = typeArguments.As<IPlainType>();
         if (properTypeArguments is null) return IPlainType.Unknown;
-        return Construct((IFixedList<IMaybePlainType>)properTypeArguments.AsEnumerable());
+        return Construct(properTypeArguments);
     }
 
     /// <remarks>All literal types take a type parameter and cannot be nullary constructed.</remarks>

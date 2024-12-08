@@ -37,4 +37,6 @@ public record class ParameterType(bool IsLent, INonVoidType Type) : IMaybeParame
 
     public string ToSourceCodeString()
         => IsLent ? $"lent {Type.ToSourceCodeString()}" : Type.ToSourceCodeString();
+
+    public Decorated.ParameterType ToDecoratedType() => new(IsLent, Type.ToDecoratedType());
 }

@@ -17,23 +17,29 @@ public abstract class SimpleOrLiteralTypeConstructor : TypeConstructor
 {
     TypeConstructorContext TypeConstructor.Context => PrimitiveContext.Instance;
 
+    public bool IsDeclaredConst => true;
+
     public abstract bool CanHaveFields { get; }
 
     public abstract bool CanBeInstantiated { get; }
+
+    public bool CanBeSupertype => false;
 
     public abstract TypeSemantics Semantics { get; }
 
     public abstract TypeName Name { get; }
 
-    public abstract IFixedList<TypeConstructorParameter> Parameters { get; }
+    public bool HasParameters => !Parameters.IsEmpty;
+    public abstract IFixedList<TypeConstructor.Parameter> Parameters { get; }
 
     public abstract bool AllowsVariance { get; }
+    public abstract bool HasIndependentParameters { get; }
 
     public abstract IFixedList<GenericParameterPlainType> ParameterPlainTypes { get; }
 
-    public abstract IFixedSet<ConstructedPlainType> Supertypes { get; }
+    public abstract IFixedSet<TypeConstructor.Supertype> Supertypes { get; }
 
-    public abstract IPlainType Construct(IFixedList<IPlainType> typeArguments);
+    public abstract ConstructedPlainType Construct(IFixedList<IPlainType> typeArguments);
     public abstract bool Equals(TypeConstructor? other);
     public abstract IPlainType? TryConstructNullary();
 

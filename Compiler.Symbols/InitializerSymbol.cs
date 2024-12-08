@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Declared;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Parameters;
 using Azoth.Tools.Bootstrap.Framework;
 
@@ -15,7 +14,7 @@ public sealed class InitializerSymbol : FunctionOrInitializerSymbol
     public override OrdinaryTypeSymbol ContainingSymbol { get; }
     public override IdentifierName? Name { get; }
     public CapabilityType SelfParameterType { get; }
-    public CapabilityType ReturnType { get; }
+    public override CapabilityType ReturnType { get; }
     public FunctionType InitializerGroupType { get; }
 
     public InitializerSymbol(
@@ -23,20 +22,19 @@ public sealed class InitializerSymbol : FunctionOrInitializerSymbol
         IdentifierName? initializerName,
         CapabilityType selfParameterType,
         IFixedList<ParameterType> parameterTypes)
-        : base(parameterTypes,
-            ((OrdinaryDeclaredType)containingTypeSymbol.DeclaresType).ToConstructorReturn(selfParameterType, parameterTypes))
+        : base(parameterTypes)
     {
         ContextTypeSymbol = containingTypeSymbol;
         ContainingSymbol = containingTypeSymbol;
         Name = initializerName;
         SelfParameterType = selfParameterType;
-        ReturnType = (CapabilityType)Return;
+        ReturnType = containingTypeSymbol.TypeConstructor.ToConstructorReturn(selfParameterType, parameterTypes);
         InitializerGroupType = new FunctionType(parameterTypes, ReturnType);
     }
 
     public static InitializerSymbol CreateDefault(OrdinaryTypeSymbol containingTypeSymbol)
         => new(containingTypeSymbol, null,
-            ((OrdinaryDeclaredType)containingTypeSymbol.DeclaresType).ToDefaultConstructorSelf(),
+            containingTypeSymbol.TypeConstructor.ToDefaultConstructorSelf(),
             FixedList.Empty<ParameterType>());
 
     public override bool Equals(Symbol? other)
@@ -46,16 +44,16 @@ public sealed class InitializerSymbol : FunctionOrInitializerSymbol
         return other is InitializerSymbol otherInitializer
             && ContextTypeSymbol == otherInitializer.ContextTypeSymbol
             && Name == otherInitializer.Name
-            && Parameters.SequenceEqual(otherInitializer.Parameters);
+            && ParameterTypes.SequenceEqual(otherInitializer.ParameterTypes);
     }
 
     public override int GetHashCode()
-        => HashCode.Combine(ContextTypeSymbol, Name, Parameters);
+        => HashCode.Combine(ContextTypeSymbol, Name, ParameterTypes);
 
     public override string ToILString()
     {
         var name = Name is not null ? $".{Name}" : "";
         var selfParameterType = new ParameterType(false, SelfParameterType);
-        return $"{ContextTypeSymbol}::init{name}({string.Join(", ", Parameters.Prepend(selfParameterType).Select(d => d.ToILString()))})";
+        return $"{ContextTypeSymbol}::init{name}({string.Join(", ", ParameterTypes.Prepend(selfParameterType).Select(d => d.ToILString()))})";
     }
 }

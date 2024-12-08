@@ -1,5 +1,4 @@
 using Azoth.Tools.Bootstrap.Compiler.Names;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Declared;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Legacy.ConstValue;
@@ -27,6 +26,8 @@ public sealed class BoolConstValueType : ConstValueType
 
     public override INonVoidPlainType ToPlainType()
         => Value ? IPlainType.True : IPlainType.False;
+
+    public override Decorated.CapabilityType ToDecoratedType() => Value ? Decorated.IType.True : Decorated.IType.False;
 
     public override string ToSourceCodeString() => $"bool[{(Value ? "true" : "false")}]";
 

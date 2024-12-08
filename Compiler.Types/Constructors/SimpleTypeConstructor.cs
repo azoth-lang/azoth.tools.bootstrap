@@ -21,15 +21,15 @@ public abstract class SimpleTypeConstructor : SimpleOrLiteralTypeConstructor
 
     public sealed override SpecialTypeName Name { get; }
 
-    public sealed override IFixedList<TypeConstructorParameter> Parameters
-        => FixedList.Empty<TypeConstructorParameter>();
+    public sealed override IFixedList<TypeConstructor.Parameter> Parameters => [];
 
     public sealed override bool AllowsVariance => false;
 
-    public sealed override IFixedList<GenericParameterPlainType> ParameterPlainTypes
-        => FixedList.Empty<GenericParameterPlainType>();
+    public override bool HasIndependentParameters => false;
 
-    public sealed override IFixedSet<ConstructedPlainType> Supertypes => AnyTypeConstructor.Set;
+    public sealed override IFixedList<GenericParameterPlainType> ParameterPlainTypes => [];
+
+    public sealed override IFixedSet<TypeConstructor.Supertype> Supertypes => TypeConstructor.Supertype.AnySet;
 
     public ConstructedPlainType PlainType { get; }
 
@@ -39,7 +39,7 @@ public abstract class SimpleTypeConstructor : SimpleOrLiteralTypeConstructor
         PlainType = new(this, []);
     }
 
-    public sealed override IPlainType Construct(IFixedList<IPlainType> typeArguments)
+    public sealed override ConstructedPlainType Construct(IFixedList<IPlainType> typeArguments)
     {
         if (typeArguments.Any())
             throw new ArgumentException("Simple type cannot have type arguments", nameof(typeArguments));

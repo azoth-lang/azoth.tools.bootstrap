@@ -1,6 +1,6 @@
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
+using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.ConstValue;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Declared;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Pseudotypes;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using ExhaustiveMatching;
@@ -14,24 +14,24 @@ public interface IType : IPseudotype, IMaybeType
     public new static readonly UnknownType Unknown = UnknownType.Instance;
     public static readonly VoidType Void = VoidType.Instance;
     public static readonly NeverType Never = NeverType.Instance;
-    public static readonly CapabilityType Bool = DeclaredType.Bool.Type;
+    public static readonly CapabilityType Bool = new(Capability.Constant, BareNonVariableType.Bool);
     public static readonly OptionalType OptionalBool = new(Bool);
     public static readonly BoolConstValueType True = BoolConstValueType.True;
     public static readonly BoolConstValueType False = BoolConstValueType.False;
-    public static readonly CapabilityType Int = DeclaredType.Int.Type;
-    public static readonly CapabilityType UInt = DeclaredType.UInt.Type;
-    public static readonly CapabilityType Int8 = DeclaredType.Int8.Type;
-    public static readonly CapabilityType Byte = DeclaredType.Byte.Type;
-    public static readonly CapabilityType Int16 = DeclaredType.Int16.Type;
-    public static readonly CapabilityType UInt16 = DeclaredType.UInt16.Type;
-    public static readonly CapabilityType Int32 = DeclaredType.Int32.Type;
-    public static readonly CapabilityType UInt32 = DeclaredType.UInt32.Type;
-    public static readonly CapabilityType Int64 = DeclaredType.Int64.Type;
-    public static readonly CapabilityType UInt64 = DeclaredType.UInt64.Type;
-    public static readonly CapabilityType Size = DeclaredType.Size.Type;
-    public static readonly CapabilityType Offset = DeclaredType.Offset.Type;
-    public static readonly CapabilityType NInt = DeclaredType.NInt.Type;
-    public static readonly CapabilityType NUInt = DeclaredType.NUInt.Type;
+    public static readonly CapabilityType Int = new(Capability.Constant, BareNonVariableType.Int);
+    public static readonly CapabilityType UInt = new(Capability.Constant, BareNonVariableType.UInt);
+    public static readonly CapabilityType Int8 = new(Capability.Constant, BareNonVariableType.Int8);
+    public static readonly CapabilityType Byte = new(Capability.Constant, BareNonVariableType.Byte);
+    public static readonly CapabilityType Int16 = new(Capability.Constant, BareNonVariableType.Int16);
+    public static readonly CapabilityType UInt16 = new(Capability.Constant, BareNonVariableType.UInt16);
+    public static readonly CapabilityType Int32 = new(Capability.Constant, BareNonVariableType.Int32);
+    public static readonly CapabilityType UInt32 = new(Capability.Constant, BareNonVariableType.UInt32);
+    public static readonly CapabilityType Int64 = new(Capability.Constant, BareNonVariableType.Int64);
+    public static readonly CapabilityType UInt64 = new(Capability.Constant, BareNonVariableType.UInt64);
+    public static readonly CapabilityType Size = new(Capability.Constant, BareNonVariableType.Size);
+    public static readonly CapabilityType Offset = new(Capability.Constant, BareNonVariableType.Offset);
+    public static readonly CapabilityType NInt = new(Capability.Constant, BareNonVariableType.NInt);
+    public static readonly CapabilityType NUInt = new(Capability.Constant, BareNonVariableType.NUInt);
 
     /// <summary>
     /// The value `none` has this type, which is `never?`.
@@ -54,4 +54,6 @@ public interface IType : IPseudotype, IMaybeType
     /// <remarks>This can restrict the ability to write to the value.</remarks>
     new IType AccessedVia(ICapabilityConstraint capability);
     IMaybeType IMaybeType.AccessedVia(ICapabilityConstraint capability) => AccessedVia(capability);
+
+    Decorated.IType ToDecoratedType();
 }

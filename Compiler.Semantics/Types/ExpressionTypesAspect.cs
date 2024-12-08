@@ -664,8 +664,8 @@ internal static partial class ExpressionTypesAspect
 
     public static partial IMaybeType AwaitExpression_Type(IAwaitExpressionNode node)
     {
-        if (node.Expression?.Type is CapabilityType { DeclaredType: var declaredType } type
-            && Intrinsic.PromiseDeclaredType.Equals(declaredType))
+        if (node.Expression?.Type is CapabilityType { TypeConstructor: var typeConstructor } type
+            && Intrinsic.PromiseTypeConstructor.Equals(typeConstructor))
             return type.TypeArguments[0];
 
         return IType.Unknown;

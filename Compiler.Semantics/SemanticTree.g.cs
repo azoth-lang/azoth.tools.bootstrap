@@ -32,7 +32,6 @@ using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.ConstValue;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Declared;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Parameters;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Pseudotypes;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
@@ -520,9 +519,8 @@ public partial interface ITypeDefinitionNode : IFacetMemberDefinitionNode, IAsso
     Symbol? IDefinitionNode.ContainingSymbol => ContainingSymbol;
     OrdinaryTypeConstructor TypeConstructor { get; }
     SelfPlainType SelfPlainType { get; }
-    new IFixedSet<BareNonVariableType> Supertypes { get; }
-    IFixedSet<BareNonVariableType> ITypeDeclarationNode.Supertypes => Supertypes;
-    OrdinaryDeclaredType DeclaredType { get; }
+    new IFixedSet<TypeConstructor.Supertype> Supertypes { get; }
+    IFixedSet<TypeConstructor.Supertype> ITypeDeclarationNode.Supertypes => Supertypes;
     SelfType SelfType { get; }
     new IFixedSet<ITypeMemberDefinitionNode> Members { get; }
     IFixedSet<ITypeMemberDeclarationNode> IUserTypeDeclarationNode.Members => Members;
@@ -638,8 +636,8 @@ public partial interface IGenericParameterNode : ICodeNode, IGenericParameterDec
         => Syntax.Variance;
     OrdinaryTypeSymbol ContainingSymbol
         => ContainingDeclaration.Symbol;
-    OrdinaryDeclaredType ContainingDeclaredType { get; }
-    GenericParameter Parameter { get; }
+    OrdinaryTypeConstructor ContainingTypeConstructor { get; }
+    TypeConstructor.Parameter Parameter { get; }
     GenericParameterType DeclaredType { get; }
     new IFixedSet<ITypeMemberDefinitionNode> Members
         => [];
@@ -647,7 +645,7 @@ public partial interface IGenericParameterNode : ICodeNode, IGenericParameterDec
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.InclusiveMembers
         => [];
-    IFixedSet<BareNonVariableType> ITypeDeclarationNode.Supertypes
+    IFixedSet<TypeConstructor.Supertype> ITypeDeclarationNode.Supertypes
         => [];
 
     public static IGenericParameterNode Create(
@@ -773,7 +771,7 @@ public partial interface IAbstractMethodDefinitionNode : IMethodDefinitionNode, 
     new IBodyNode? Body
         => null;
     IBodyNode? IInvocableDefinitionNode.Body => Body;
-    OrdinaryDeclaredType ContainingDeclaredType { get; }
+    OrdinaryTypeConstructor ContainingTypeConstructor { get; }
     IMaybeFunctionType IStandardMethodDeclarationNode.MethodGroupType
         => Symbol?.MethodGroupType ?? IMaybeFunctionType.Unknown;
     MethodKind IMethodDefinitionNode.Kind
@@ -888,7 +886,7 @@ public partial interface IConstructorDefinitionNode : IInvocableDefinitionNode, 
     IMaybeType IInvocableDeclarationNode.ReturnType
         => Symbol?.ReturnType ?? IMaybeType.Unknown;
     IMaybePlainType IInvocableDeclarationNode.ReturnPlainType
-        => ContainingTypeDefinition.TypeConstructor.ConstructWithGenericParameterPlainTypes();
+        => ContainingTypeDefinition.TypeConstructor.ConstructWithParameterPlainTypes();
 }
 
 // [Closed(typeof(DefaultConstructorDefinitionNode))]
@@ -911,7 +909,7 @@ public partial interface IDefaultConstructorDefinitionNode : IConstructorDefinit
     IMaybeSelfParameterType IConstructorDeclarationNode.SelfParameterType
         => new SelfParameterType(false, Symbol!.SelfParameterType);
     IMaybeNonVoidPlainType IConstructorDeclarationNode.SelfParameterPlainType
-        => ContainingTypeDefinition.TypeConstructor.ConstructWithGenericParameterPlainTypes();
+        => ContainingTypeDefinition.TypeConstructor.ConstructWithParameterPlainTypes();
 
     public static IDefaultConstructorDefinitionNode Create()
         => new DefaultConstructorDefinitionNode();
@@ -962,7 +960,7 @@ public partial interface IInitializerDefinitionNode : IInvocableDefinitionNode, 
     IMaybeType IInvocableDeclarationNode.ReturnType
         => Symbol?.ReturnType ?? IMaybeType.Unknown;
     IMaybePlainType IInvocableDeclarationNode.ReturnPlainType
-        => ContainingTypeDefinition.TypeConstructor.ConstructWithGenericParameterPlainTypes();
+        => ContainingTypeDefinition.TypeConstructor.ConstructWithParameterPlainTypes();
 }
 
 // [Closed(typeof(DefaultInitializerDefinitionNode))]
@@ -985,7 +983,7 @@ public partial interface IDefaultInitializerDefinitionNode : IInitializerDefinit
     IMaybeSelfParameterType IInitializerDeclarationNode.SelfParameterType
         => new SelfParameterType(false, Symbol!.SelfParameterType);
     IMaybeNonVoidPlainType IInitializerDeclarationNode.SelfParameterPlainType
-        => ContainingTypeDefinition.TypeConstructor.ConstructWithGenericParameterPlainTypes();
+        => ContainingTypeDefinition.TypeConstructor.ConstructWithParameterPlainTypes();
 
     public static IDefaultInitializerDefinitionNode Create()
         => new DefaultInitializerDefinitionNode();
@@ -1234,7 +1232,7 @@ public partial interface ISelfParameterNode : IParameterNode, IBindingNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     IMaybeSelfParameterType ParameterType { get; }
     ITypeDefinitionNode ContainingTypeDefinition { get; }
-    OrdinaryDeclaredType ContainingDeclaredType { get; }
+    OrdinaryTypeConstructor ContainingTypeConstructor { get; }
     new ValueId BindingValueId { get; }
     ValueId IParameterNode.BindingValueId => BindingValueId;
     ValueId IBindingNode.BindingValueId => BindingValueId;
@@ -3788,7 +3786,7 @@ public partial interface ITypeDeclarationNode : INamedDeclarationNode, ISymbolDe
 {
     IEnumerable<IInstanceMemberDeclarationNode> InclusiveInstanceMembersNamed(StandardName named);
     IEnumerable<IAssociatedMemberDeclarationNode> AssociatedMembersNamed(StandardName named);
-    IFixedSet<BareNonVariableType> Supertypes { get; }
+    IFixedSet<TypeConstructor.Supertype> Supertypes { get; }
     new TypeSymbol Symbol { get; }
     Symbol? ISymbolDeclarationNode.Symbol => Symbol;
     IFixedSet<ITypeMemberDeclarationNode> Members { get; }
@@ -4232,7 +4230,7 @@ public partial interface IBuiltInTypeSymbolNode : IBuiltInTypeDeclarationNode, I
     IFixedSet<ITypeMemberDeclarationNode> IBuiltInTypeDeclarationNode.Members => Members;
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
     IFixedSet<ITypeMemberSymbolNode> ITypeSymbolNode.Members => Members;
-    IFixedSet<BareNonVariableType> ITypeDeclarationNode.Supertypes
+    IFixedSet<TypeConstructor.Supertype> ITypeDeclarationNode.Supertypes
         => Symbol.TryGetTypeConstructor()?.Supertypes ?? [];
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.InclusiveMembers
         => Members;
@@ -4294,7 +4292,7 @@ public partial interface IOrdinaryTypeSymbolNode : IUserTypeDeclarationNode, ITy
     IFixedSet<ITypeMemberDeclarationNode> IUserTypeDeclarationNode.Members => Members;
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
     IFixedSet<ITypeMemberSymbolNode> ITypeSymbolNode.Members => Members;
-    IFixedSet<BareNonVariableType> ITypeDeclarationNode.Supertypes
+    IFixedSet<TypeConstructor.Supertype> ITypeDeclarationNode.Supertypes
         => Symbol.TryGetTypeConstructor().Supertypes;
 }
 
@@ -4367,7 +4365,7 @@ public partial interface IGenericParameterSymbolNode : IGenericParameterDeclarat
         => [];
     IFixedSet<ITypeMemberDeclarationNode> IGenericParameterDeclarationNode.Members => Members;
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
-    IFixedSet<BareNonVariableType> ITypeDeclarationNode.Supertypes
+    IFixedSet<TypeConstructor.Supertype> ITypeDeclarationNode.Supertypes
         => Symbol.TryGetTypeConstructor()?.Supertypes ?? [];
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.InclusiveMembers
         => [];
@@ -4502,9 +4500,9 @@ public partial interface IConstructorSymbolNode : IConstructorDeclarationNode, I
     IMaybeSelfParameterType IConstructorDeclarationNode.SelfParameterType
         => new SelfParameterType(false, Symbol.SelfParameterType);
     IFixedList<IMaybeNonVoidPlainType> IInvocableDeclarationNode.ParameterPlainTypes
-        => Symbol.Parameters.ToPlainTypes();
+        => Symbol.ParameterTypes.ToPlainTypes();
     IFixedList<IMaybeParameterType> IInvocableDeclarationNode.ParameterTypes
-        => Symbol.Parameters;
+        => Symbol.ParameterTypes;
     IMaybePlainType IInvocableDeclarationNode.ReturnPlainType
         => Symbol.ReturnType.ToPlainType();
     IMaybeType IInvocableDeclarationNode.ReturnType
@@ -4532,9 +4530,9 @@ public partial interface IInitializerSymbolNode : IInitializerDeclarationNode, I
     IMaybeSelfParameterType IInitializerDeclarationNode.SelfParameterType
         => new SelfParameterType(false, Symbol.SelfParameterType);
     IFixedList<IMaybeNonVoidPlainType> IInvocableDeclarationNode.ParameterPlainTypes
-        => Symbol.Parameters.ToPlainTypes();
+        => Symbol.ParameterTypes.ToPlainTypes();
     IFixedList<IMaybeParameterType> IInvocableDeclarationNode.ParameterTypes
-        => Symbol.Parameters;
+        => Symbol.ParameterTypes;
     IMaybePlainType IInvocableDeclarationNode.ReturnPlainType
         => Symbol.ReturnType.ToPlainType();
     IMaybeType IInvocableDeclarationNode.ReturnType
@@ -4736,10 +4734,10 @@ internal abstract partial class SemanticNode : TreeNode, IChildTreeNode<ISemanti
     protected IPackageFacetDeclarationNode Inherited_Facet(IInheritanceContext ctx)
         => GetParent(ctx)!.Inherited_Facet(this, this, ctx);
 
-    internal virtual OrdinaryDeclaredType Inherited_ContainingDeclaredType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-        => (GetParent(ctx) ?? throw Child.InheritFailed("ContainingDeclaredType", child, descendant)).Inherited_ContainingDeclaredType(this, descendant, ctx);
-    protected OrdinaryDeclaredType Inherited_ContainingDeclaredType(IInheritanceContext ctx)
-        => GetParent(ctx)!.Inherited_ContainingDeclaredType(this, this, ctx);
+    internal virtual OrdinaryTypeConstructor Inherited_ContainingTypeConstructor(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+        => (GetParent(ctx) ?? throw Child.InheritFailed("ContainingTypeConstructor", child, descendant)).Inherited_ContainingTypeConstructor(this, descendant, ctx);
+    protected OrdinaryTypeConstructor Inherited_ContainingTypeConstructor(IInheritanceContext ctx)
+        => GetParent(ctx)!.Inherited_ContainingTypeConstructor(this, this, ctx);
 
     internal virtual ITypeDefinitionNode Inherited_ContainingTypeDefinition(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
         => (GetParent(ctx) ?? throw Child.InheritFailed("ContainingTypeDefinition", child, descendant)).Inherited_ContainingTypeDefinition(this, descendant, ctx);
@@ -5477,12 +5475,6 @@ file class ClassDefinitionNode : SemanticNode, IClassDefinitionNode
                 NameLookupAspect.UserTypeDeclaration_AssociatedMembersByName);
     private FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>>? associatedMembersByName;
     private bool associatedMembersByNameCached;
-    public OrdinaryDeclaredType DeclaredType
-        => GrammarAttribute.IsCached(in declaredTypeCached) ? declaredType!
-            : this.Synthetic(ref declaredTypeCached, ref declaredType,
-                TypeDefinitionsAspect.ClassDefinition_DeclaredType);
-    private OrdinaryDeclaredType? declaredType;
-    private bool declaredTypeCached;
     public IDefaultConstructorDefinitionNode? DefaultConstructor
         => GrammarAttribute.IsCached(in defaultConstructorCached) ? defaultConstructor
             : this.Synthetic(ref defaultConstructorCached, ref defaultConstructor,
@@ -5525,11 +5517,11 @@ file class ClassDefinitionNode : SemanticNode, IClassDefinitionNode
                 TypeDefinitionsAspect.TypeDefinition_SelfType);
     private SelfType? selfType;
     private bool selfTypeCached;
-    public IFixedSet<BareNonVariableType> Supertypes
+    public IFixedSet<TypeConstructor.Supertype> Supertypes
         => GrammarAttribute.IsCached(in supertypesCached) ? supertypes.UnsafeValue
             : this.Circular(ref supertypesCached, ref supertypes,
                 TypeDefinitionsAspect.TypeDefinition_Supertypes);
-    private Circular<IFixedSet<BareNonVariableType>> supertypes = new([]);
+    private Circular<IFixedSet<TypeConstructor.Supertype>> supertypes = new(Compiler.Types.Constructors.TypeConstructor.Supertype.AnySet);
     private bool supertypesCached;
     public LexicalScope SupertypesLexicalScope
         => GrammarAttribute.IsCached(in supertypesLexicalScopeCached) ? supertypesLexicalScope!
@@ -5546,7 +5538,7 @@ file class ClassDefinitionNode : SemanticNode, IClassDefinitionNode
     public OrdinaryTypeConstructor TypeConstructor
         => GrammarAttribute.IsCached(in typeConstructorCached) ? typeConstructor!
             : this.Synthetic(ref typeConstructorCached, ref typeConstructor,
-                DefinitionPlainTypesAspect.TypeDefinition_TypeConstructor);
+                DefinitionPlainTypesAspect.ClassDefinition_TypeConstructor);
     private OrdinaryTypeConstructor? typeConstructor;
     private bool typeConstructorCached;
 
@@ -5571,11 +5563,6 @@ file class ClassDefinitionNode : SemanticNode, IClassDefinitionNode
         return this;
     }
 
-    internal override OrdinaryDeclaredType Inherited_ContainingDeclaredType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        return DefinitionTypesAspect.TypeDefinition_Children_Broadcast_ContainingDeclaredType(this);
-    }
-
     internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ContainsNode(Self.GenericParameters, child))
@@ -5585,6 +5572,11 @@ file class ClassDefinitionNode : SemanticNode, IClassDefinitionNode
         if (ContainsNode(Self.Members, child))
             return LexicalScopingAspect.TypeDefinition_Members_Broadcast_ContainingLexicalScope(this);
         return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
+    }
+
+    internal override OrdinaryTypeConstructor Inherited_ContainingTypeConstructor(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return DefinitionTypesAspect.TypeDefinition_Children_Broadcast_ContainingTypeConstructor(this);
     }
 
     internal override ITypeDefinitionNode Inherited_ContainingTypeDefinition(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -5651,12 +5643,6 @@ file class StructDefinitionNode : SemanticNode, IStructDefinitionNode
                 NameLookupAspect.UserTypeDeclaration_AssociatedMembersByName);
     private FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>>? associatedMembersByName;
     private bool associatedMembersByNameCached;
-    public OrdinaryDeclaredType DeclaredType
-        => GrammarAttribute.IsCached(in declaredTypeCached) ? declaredType!
-            : this.Synthetic(ref declaredTypeCached, ref declaredType,
-                TypeDefinitionsAspect.StructDefinition_DeclaredType);
-    private OrdinaryDeclaredType? declaredType;
-    private bool declaredTypeCached;
     public IDefaultInitializerDefinitionNode? DefaultInitializer
         => GrammarAttribute.IsCached(in defaultInitializerCached) ? defaultInitializer
             : this.Synthetic(ref defaultInitializerCached, ref defaultInitializer,
@@ -5699,11 +5685,11 @@ file class StructDefinitionNode : SemanticNode, IStructDefinitionNode
                 TypeDefinitionsAspect.TypeDefinition_SelfType);
     private SelfType? selfType;
     private bool selfTypeCached;
-    public IFixedSet<BareNonVariableType> Supertypes
+    public IFixedSet<TypeConstructor.Supertype> Supertypes
         => GrammarAttribute.IsCached(in supertypesCached) ? supertypes.UnsafeValue
             : this.Circular(ref supertypesCached, ref supertypes,
                 TypeDefinitionsAspect.TypeDefinition_Supertypes);
-    private Circular<IFixedSet<BareNonVariableType>> supertypes = new([]);
+    private Circular<IFixedSet<TypeConstructor.Supertype>> supertypes = new(Compiler.Types.Constructors.TypeConstructor.Supertype.AnySet);
     private bool supertypesCached;
     public LexicalScope SupertypesLexicalScope
         => GrammarAttribute.IsCached(in supertypesLexicalScopeCached) ? supertypesLexicalScope!
@@ -5720,7 +5706,7 @@ file class StructDefinitionNode : SemanticNode, IStructDefinitionNode
     public OrdinaryTypeConstructor TypeConstructor
         => GrammarAttribute.IsCached(in typeConstructorCached) ? typeConstructor!
             : this.Synthetic(ref typeConstructorCached, ref typeConstructor,
-                DefinitionPlainTypesAspect.TypeDefinition_TypeConstructor);
+                DefinitionPlainTypesAspect.StructDefinition_TypeConstructor);
     private OrdinaryTypeConstructor? typeConstructor;
     private bool typeConstructorCached;
 
@@ -5743,11 +5729,6 @@ file class StructDefinitionNode : SemanticNode, IStructDefinitionNode
         return this;
     }
 
-    internal override OrdinaryDeclaredType Inherited_ContainingDeclaredType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        return DefinitionTypesAspect.TypeDefinition_Children_Broadcast_ContainingDeclaredType(this);
-    }
-
     internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ContainsNode(Self.GenericParameters, child))
@@ -5757,6 +5738,11 @@ file class StructDefinitionNode : SemanticNode, IStructDefinitionNode
         if (ContainsNode(Self.Members, child))
             return LexicalScopingAspect.TypeDefinition_Members_Broadcast_ContainingLexicalScope(this);
         return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
+    }
+
+    internal override OrdinaryTypeConstructor Inherited_ContainingTypeConstructor(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return DefinitionTypesAspect.TypeDefinition_Children_Broadcast_ContainingTypeConstructor(this);
     }
 
     internal override ITypeDefinitionNode Inherited_ContainingTypeDefinition(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -5822,12 +5808,6 @@ file class TraitDefinitionNode : SemanticNode, ITraitDefinitionNode
                 NameLookupAspect.UserTypeDeclaration_AssociatedMembersByName);
     private FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>>? associatedMembersByName;
     private bool associatedMembersByNameCached;
-    public OrdinaryDeclaredType DeclaredType
-        => GrammarAttribute.IsCached(in declaredTypeCached) ? declaredType!
-            : this.Synthetic(ref declaredTypeCached, ref declaredType,
-                TypeDefinitionsAspect.TraitDefinition_DeclaredType);
-    private OrdinaryDeclaredType? declaredType;
-    private bool declaredTypeCached;
     public FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>> InclusiveInstanceMembersByName
         => GrammarAttribute.IsCached(in inclusiveInstanceMembersByNameCached) ? inclusiveInstanceMembersByName!
             : this.Synthetic(ref inclusiveInstanceMembersByNameCached, ref inclusiveInstanceMembersByName,
@@ -5858,11 +5838,11 @@ file class TraitDefinitionNode : SemanticNode, ITraitDefinitionNode
                 TypeDefinitionsAspect.TypeDefinition_SelfType);
     private SelfType? selfType;
     private bool selfTypeCached;
-    public IFixedSet<BareNonVariableType> Supertypes
+    public IFixedSet<TypeConstructor.Supertype> Supertypes
         => GrammarAttribute.IsCached(in supertypesCached) ? supertypes.UnsafeValue
             : this.Circular(ref supertypesCached, ref supertypes,
                 TypeDefinitionsAspect.TypeDefinition_Supertypes);
-    private Circular<IFixedSet<BareNonVariableType>> supertypes = new([]);
+    private Circular<IFixedSet<TypeConstructor.Supertype>> supertypes = new(Compiler.Types.Constructors.TypeConstructor.Supertype.AnySet);
     private bool supertypesCached;
     public LexicalScope SupertypesLexicalScope
         => GrammarAttribute.IsCached(in supertypesLexicalScopeCached) ? supertypesLexicalScope!
@@ -5879,7 +5859,7 @@ file class TraitDefinitionNode : SemanticNode, ITraitDefinitionNode
     public OrdinaryTypeConstructor TypeConstructor
         => GrammarAttribute.IsCached(in typeConstructorCached) ? typeConstructor!
             : this.Synthetic(ref typeConstructorCached, ref typeConstructor,
-                DefinitionPlainTypesAspect.TypeDefinition_TypeConstructor);
+                DefinitionPlainTypesAspect.TraitDefinition_TypeConstructor);
     private OrdinaryTypeConstructor? typeConstructor;
     private bool typeConstructorCached;
 
@@ -5902,11 +5882,6 @@ file class TraitDefinitionNode : SemanticNode, ITraitDefinitionNode
         return this;
     }
 
-    internal override OrdinaryDeclaredType Inherited_ContainingDeclaredType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        return DefinitionTypesAspect.TypeDefinition_Children_Broadcast_ContainingDeclaredType(this);
-    }
-
     internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ContainsNode(Self.GenericParameters, child))
@@ -5916,6 +5891,11 @@ file class TraitDefinitionNode : SemanticNode, ITraitDefinitionNode
         if (ContainsNode(Self.Members, child))
             return LexicalScopingAspect.TypeDefinition_Members_Broadcast_ContainingLexicalScope(this);
         return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
+    }
+
+    internal override OrdinaryTypeConstructor Inherited_ContainingTypeConstructor(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return DefinitionTypesAspect.TypeDefinition_Children_Broadcast_ContainingTypeConstructor(this);
     }
 
     internal override ITypeDefinitionNode Inherited_ContainingTypeDefinition(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -5955,23 +5935,23 @@ file class GenericParameterNode : SemanticNode, IGenericParameterNode
         => Inherited_Facet(GrammarAttribute.CurrentInheritanceContext());
     public IUserTypeDeclarationNode ContainingDeclaration
         => (IUserTypeDeclarationNode)Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
-    public OrdinaryDeclaredType ContainingDeclaredType
-        => GrammarAttribute.IsCached(in containingDeclaredTypeCached) ? containingDeclaredType!
-            : this.Inherited(ref containingDeclaredTypeCached, ref containingDeclaredType,
-                Inherited_ContainingDeclaredType);
-    private OrdinaryDeclaredType? containingDeclaredType;
-    private bool containingDeclaredTypeCached;
+    public OrdinaryTypeConstructor ContainingTypeConstructor
+        => GrammarAttribute.IsCached(in containingTypeConstructorCached) ? containingTypeConstructor!
+            : this.Inherited(ref containingTypeConstructorCached, ref containingTypeConstructor,
+                Inherited_ContainingTypeConstructor);
+    private OrdinaryTypeConstructor? containingTypeConstructor;
+    private bool containingTypeConstructorCached;
     public GenericParameterType DeclaredType
         => GrammarAttribute.IsCached(in declaredTypeCached) ? declaredType!
             : this.Synthetic(ref declaredTypeCached, ref declaredType,
                 TypeDefinitionsAspect.GenericParameter_DeclaredType);
     private GenericParameterType? declaredType;
     private bool declaredTypeCached;
-    public GenericParameter Parameter
+    public TypeConstructor.Parameter Parameter
         => GrammarAttribute.IsCached(in parameterCached) ? parameter!
             : this.Synthetic(ref parameterCached, ref parameter,
                 TypeDefinitionsAspect.GenericParameter_Parameter);
-    private GenericParameter? parameter;
+    private TypeConstructor.Parameter? parameter;
     private bool parameterCached;
     public GenericParameterTypeSymbol Symbol
         => GrammarAttribute.IsCached(in symbolCached) ? symbol!
@@ -6022,12 +6002,12 @@ file class AbstractMethodDefinitionNode : SemanticNode, IAbstractMethodDefinitio
     private bool facetCached;
     public IUserTypeDeclarationNode ContainingDeclaration
         => (IUserTypeDeclarationNode)Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
-    public OrdinaryDeclaredType ContainingDeclaredType
-        => GrammarAttribute.IsCached(in containingDeclaredTypeCached) ? containingDeclaredType!
-            : this.Inherited(ref containingDeclaredTypeCached, ref containingDeclaredType,
-                Inherited_ContainingDeclaredType);
-    private OrdinaryDeclaredType? containingDeclaredType;
-    private bool containingDeclaredTypeCached;
+    public OrdinaryTypeConstructor ContainingTypeConstructor
+        => GrammarAttribute.IsCached(in containingTypeConstructorCached) ? containingTypeConstructor!
+            : this.Inherited(ref containingTypeConstructorCached, ref containingTypeConstructor,
+                Inherited_ContainingTypeConstructor);
+    private OrdinaryTypeConstructor? containingTypeConstructor;
+    private bool containingTypeConstructorCached;
     public AccessModifier AccessModifier
         => GrammarAttribute.IsCached(in accessModifierCached) ? accessModifier
             : this.Synthetic(ref accessModifierCached, ref accessModifier, ref syncLock,
@@ -7802,12 +7782,12 @@ file class ConstructorSelfParameterNode : SemanticNode, IConstructorSelfParamete
                 Inherited_ContainingTypeDefinition);
     private ITypeDefinitionNode? containingTypeDefinition;
     private bool containingTypeDefinitionCached;
-    public OrdinaryDeclaredType ContainingDeclaredType
-        => GrammarAttribute.IsCached(in containingDeclaredTypeCached) ? containingDeclaredType!
-            : this.Inherited(ref containingDeclaredTypeCached, ref containingDeclaredType,
-                Inherited_ContainingDeclaredType);
-    private OrdinaryDeclaredType? containingDeclaredType;
-    private bool containingDeclaredTypeCached;
+    public OrdinaryTypeConstructor ContainingTypeConstructor
+        => GrammarAttribute.IsCached(in containingTypeConstructorCached) ? containingTypeConstructor!
+            : this.Inherited(ref containingTypeConstructorCached, ref containingTypeConstructor,
+                Inherited_ContainingTypeConstructor);
+    private OrdinaryTypeConstructor? containingTypeConstructor;
+    private bool containingTypeConstructorCached;
     public IMaybeNonVoidPlainType BindingPlainType
         => GrammarAttribute.IsCached(in bindingPlainTypeCached) ? bindingPlainType!
             : this.Synthetic(ref bindingPlainTypeCached, ref bindingPlainType,
@@ -7883,12 +7863,12 @@ file class InitializerSelfParameterNode : SemanticNode, IInitializerSelfParamete
                 Inherited_ContainingTypeDefinition);
     private ITypeDefinitionNode? containingTypeDefinition;
     private bool containingTypeDefinitionCached;
-    public OrdinaryDeclaredType ContainingDeclaredType
-        => GrammarAttribute.IsCached(in containingDeclaredTypeCached) ? containingDeclaredType!
-            : this.Inherited(ref containingDeclaredTypeCached, ref containingDeclaredType,
-                Inherited_ContainingDeclaredType);
-    private OrdinaryDeclaredType? containingDeclaredType;
-    private bool containingDeclaredTypeCached;
+    public OrdinaryTypeConstructor ContainingTypeConstructor
+        => GrammarAttribute.IsCached(in containingTypeConstructorCached) ? containingTypeConstructor!
+            : this.Inherited(ref containingTypeConstructorCached, ref containingTypeConstructor,
+                Inherited_ContainingTypeConstructor);
+    private OrdinaryTypeConstructor? containingTypeConstructor;
+    private bool containingTypeConstructorCached;
     public IMaybeNonVoidPlainType BindingPlainType
         => GrammarAttribute.IsCached(in bindingPlainTypeCached) ? bindingPlainType!
             : this.Synthetic(ref bindingPlainTypeCached, ref bindingPlainType,
@@ -7964,12 +7944,12 @@ file class MethodSelfParameterNode : SemanticNode, IMethodSelfParameterNode
                 Inherited_ContainingTypeDefinition);
     private ITypeDefinitionNode? containingTypeDefinition;
     private bool containingTypeDefinitionCached;
-    public OrdinaryDeclaredType ContainingDeclaredType
-        => GrammarAttribute.IsCached(in containingDeclaredTypeCached) ? containingDeclaredType!
-            : this.Inherited(ref containingDeclaredTypeCached, ref containingDeclaredType,
-                Inherited_ContainingDeclaredType);
-    private OrdinaryDeclaredType? containingDeclaredType;
-    private bool containingDeclaredTypeCached;
+    public OrdinaryTypeConstructor ContainingTypeConstructor
+        => GrammarAttribute.IsCached(in containingTypeConstructorCached) ? containingTypeConstructor!
+            : this.Inherited(ref containingTypeConstructorCached, ref containingTypeConstructor,
+                Inherited_ContainingTypeConstructor);
+    private OrdinaryTypeConstructor? containingTypeConstructor;
+    private bool containingTypeConstructorCached;
     public IMaybeNonVoidPlainType BindingPlainType
         => GrammarAttribute.IsCached(in bindingPlainTypeCached) ? bindingPlainType!
             : this.Synthetic(ref bindingPlainTypeCached, ref bindingPlainType,

@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Declared;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Parameters;
 using Azoth.Tools.Bootstrap.Framework;
 
@@ -14,25 +13,24 @@ public sealed class ConstructorSymbol : InvocableSymbol
     public override OrdinaryTypeSymbol ContextTypeSymbol => ContainingSymbol;
     public override IdentifierName? Name { get; }
     public CapabilityType SelfParameterType { get; }
-    public CapabilityType ReturnType { get; }
+    public override CapabilityType ReturnType { get; }
 
     public ConstructorSymbol(
         OrdinaryTypeSymbol containingSymbol,
         IdentifierName? name,
         CapabilityType selfParameterType,
         IFixedList<ParameterType> parameterTypes)
-        : base(parameterTypes,
-            ((OrdinaryDeclaredType)containingSymbol.DeclaresType).ToConstructorReturn(selfParameterType, parameterTypes))
+        : base(parameterTypes)
     {
         ContainingSymbol = containingSymbol;
         Name = name;
         SelfParameterType = selfParameterType;
-        ReturnType = (CapabilityType)Return;
+        ReturnType = containingSymbol.TypeConstructor.ToConstructorReturn(selfParameterType, parameterTypes);
     }
 
     public static ConstructorSymbol CreateDefault(OrdinaryTypeSymbol containingSymbol)
         => new(containingSymbol, null,
-            ((OrdinaryDeclaredType)containingSymbol.DeclaresType).ToDefaultConstructorSelf(),
+            containingSymbol.TypeConstructor.ToDefaultConstructorSelf(),
             FixedList.Empty<ParameterType>());
 
     public override bool Equals(Symbol? other)
@@ -42,16 +40,16 @@ public sealed class ConstructorSymbol : InvocableSymbol
         return other is ConstructorSymbol otherConstructor
                && ContainingSymbol == otherConstructor.ContainingSymbol
                && Name == otherConstructor.Name
-               && Parameters.SequenceEqual(otherConstructor.Parameters);
+               && ParameterTypes.SequenceEqual(otherConstructor.ParameterTypes);
     }
 
     public override int GetHashCode()
-        => HashCode.Combine(ContainingSymbol, Name, Parameters);
+        => HashCode.Combine(ContainingSymbol, Name, ParameterTypes);
 
     public override string ToILString()
     {
         var name = Name is null ? $".{Name}" : "";
         var selfParameterType = new ParameterType(false, SelfParameterType);
-        return $"{ContainingSymbol}::new{name}({string.Join(", ", Parameters.Prepend(selfParameterType).Select(d => d.ToILString()))})";
+        return $"{ContainingSymbol}::new{name}({string.Join(", ", ParameterTypes.Prepend(selfParameterType).Select(d => d.ToILString()))})";
     }
 }

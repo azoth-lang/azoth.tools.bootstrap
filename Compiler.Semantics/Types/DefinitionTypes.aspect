@@ -1,6 +1,6 @@
 ◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 ◊name DefinitionTypesAspect;
-◊using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Declared;
+◊using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 ◊using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Parameters;
 ◊using Azoth.Tools.Bootstrap.Framework;
 
@@ -25,16 +25,16 @@
 = FunctionDefinition.Body.**.ExpectedReturnType => Self.ReturnType;
 
 // ---------- Type Definitions
-= TypeDefinition.*.**.ContainingDeclaredType;
+= TypeDefinition.*.**.ContainingTypeConstructor;
 
 // ---------- Type Definition Parts
-↓ GenericParameter.ContainingDeclaredType: `OrdinaryDeclaredType`;
+↓ GenericParameter.ContainingTypeConstructor: `OrdinaryTypeConstructor`;
 
 // ---------- Member Definitions
-↓ AbstractMethodDefinition.ContainingDeclaredType: `OrdinaryDeclaredType`;
+↓ AbstractMethodDefinition.ContainingTypeConstructor: `OrdinaryTypeConstructor`;
 
 // ---------- Parameters
-↓ SelfParameter.ContainingDeclaredType: `OrdinaryDeclaredType`;
+↓ SelfParameter.ContainingTypeConstructor: `OrdinaryTypeConstructor`;
 
 // ---------- Function Parts
 ⟳ Body.FlowStateAfter: `IFlowState` initial => IFlowState.Empty;

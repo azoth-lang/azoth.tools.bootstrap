@@ -1,9 +1,8 @@
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
-using Azoth.Tools.Bootstrap.Compiler.Types;
+using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Bare;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Declared;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
@@ -22,7 +21,7 @@ internal static partial class BareTypeAspect
         return declaredType is not null ? BuildBareType(declaredType, typeArguments) : null;
     }
 
-    private static BareNonVariableType? BuildBareType(DeclaredType type, IFixedList<IMaybeType> typeArguments)
+    private static BareNonVariableType? BuildBareType(TypeConstructor type, IFixedList<IMaybeType> typeArguments)
         // The number of arguments will match the type because name binding will only pick a matching type
         => type.With(typeArguments);
 

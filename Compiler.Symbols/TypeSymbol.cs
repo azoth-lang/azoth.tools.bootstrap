@@ -1,6 +1,6 @@
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Declared;
 using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
@@ -22,7 +22,7 @@ public abstract class TypeSymbol : Symbol
         Name = name;
     }
 
-    public virtual DeclaredType? TryGetTypeConstructor() => null;
+    public virtual TypeConstructor? TryGetTypeConstructor() => null;
 
     public virtual IType? TryGetType() => null;
 }

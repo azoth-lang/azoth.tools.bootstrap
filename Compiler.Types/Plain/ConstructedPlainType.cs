@@ -32,7 +32,7 @@ public sealed class ConstructedPlainType : ConstructedOrVariablePlainType
 
         plainTypeReplacements = new(TypeConstructor, TypeArguments);
 
-        Supertypes = typeConstructor.Supertypes.Select(s => (ConstructedPlainType)ReplaceTypeParametersIn(s)).ToFixedSet();
+        Supertypes = typeConstructor.Supertypes.Select(s => ReplaceTypeParametersIn(s)).ToFixedSet();
     }
 
     public override IPlainType ToNonLiteral()
@@ -48,6 +48,9 @@ public sealed class ConstructedPlainType : ConstructedOrVariablePlainType
     public override IMaybePlainType ReplaceTypeParametersIn(IMaybePlainType plainType)
         => plainTypeReplacements.ReplaceTypeParametersIn(plainType);
 
+    public ConstructedPlainType ReplaceTypeParametersIn(ConstructedPlainType plainType)
+        => plainTypeReplacements.ReplaceTypeParametersIn(plainType);
+
     #region Equality
     public override bool Equals(IMaybePlainType? other)
     {
@@ -61,7 +64,13 @@ public sealed class ConstructedPlainType : ConstructedOrVariablePlainType
     public override int GetHashCode() => HashCode.Combine(TypeConstructor, TypeArguments);
     #endregion
 
-    public override string ToBareString() => $"{TypeConstructor.Context}{TypeConstructor.Name.ToBareString()}";
+    public override string ToBareString()
+    {
+        var builder = new StringBuilder();
+        TypeConstructor.Context.AppendContextPrefix(builder);
+        builder.Append(TypeConstructor.Name.ToBareString());
+        return builder.ToString();
+    }
 
     public override string ToString()
     {
@@ -72,7 +81,7 @@ public sealed class ConstructedPlainType : ConstructedOrVariablePlainType
 
     public void ToString(StringBuilder builder)
     {
-        builder.Append(TypeConstructor.Context);
+        TypeConstructor.Context.AppendContextPrefix(builder);
         builder.Append(TypeConstructor.Name.ToBareString());
         if (TypeArguments.IsEmpty)
             return;

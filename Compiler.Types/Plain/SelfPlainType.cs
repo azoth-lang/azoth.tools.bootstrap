@@ -12,10 +12,12 @@ public sealed class SelfPlainType : AssociatedPlainType
     public override TypeName Name => SpecialTypeName.Self;
     public override IFixedSet<ConstructedPlainType> Supertypes { get; }
 
-    public SelfPlainType(OrdinaryTypeConstructor containingType)
-    : base(containingType)
+    public SelfPlainType(TypeConstructor containingType)
+        : base(containingType)
     {
-        Supertypes = containingType.Supertypes.Append(containingType.ConstructWithGenericParameterPlainTypes()).ToFixedSet();
+        Supertypes = containingType.Supertypes.Select(s => s.PlainType)
+                                   .Append(containingType.ConstructWithParameterPlainTypes())
+                                   .ToFixedSet();
     }
 
     #region Equality

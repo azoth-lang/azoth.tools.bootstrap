@@ -15,6 +15,7 @@ public sealed class MethodSymbol : InvocableSymbol
     public MethodKind Kind { get; }
     public override IdentifierName Name { get; }
     public SelfParameterType SelfParameterType { get; }
+    public override IType ReturnType { get; }
     public FunctionType MethodGroupType { get; }
 
     public MethodSymbol(
@@ -22,15 +23,16 @@ public sealed class MethodSymbol : InvocableSymbol
         MethodKind kind,
         IdentifierName name,
         SelfParameterType selfParameterType,
-        IFixedList<ParameterType> parameters,
+        IFixedList<ParameterType> parameterTypes,
         IType returnType)
-        : base(parameters, returnType)
+        : base(parameterTypes)
     {
         ContainingSymbol = containingSymbol;
+        Kind = kind;
         Name = name;
         SelfParameterType = selfParameterType;
-        Kind = kind;
-        MethodGroupType = new FunctionType(parameters, returnType);
+        ReturnType = returnType;
+        MethodGroupType = new FunctionType(parameterTypes, returnType);
     }
 
     public override bool Equals(Symbol? other)
@@ -41,17 +43,17 @@ public sealed class MethodSymbol : InvocableSymbol
                && ContainingSymbol == otherMethod.ContainingSymbol
                && Name == otherMethod.Name
                && SelfParameterType == otherMethod.SelfParameterType
-               && Parameters.SequenceEqual(otherMethod.Parameters)
-               && Return.Equals(otherMethod.Return);
+               && ParameterTypes.SequenceEqual(otherMethod.ParameterTypes)
+               && ReturnType.Equals(otherMethod.ReturnType);
     }
 
     public override int GetHashCode()
-        => HashCode.Combine(Name, SelfParameterType, Parameters, Return);
+        => HashCode.Combine(Name, SelfParameterType, ParameterTypes, ReturnType);
 
     public override string ToILString()
     {
-        var parameterSeparator = Parameters.Any() ? ", " : "";
-        string parameters = string.Join(", ", Parameters.Select(d => d.ToILString()));
-        return $"{ContainingSymbol.ToILString()}::{Name}({SelfParameterType.ToILString()}{parameterSeparator}{parameters}) -> {Return.ToILString()}";
+        var parameterSeparator = ParameterTypes.Any() ? ", " : "";
+        string parameters = string.Join(", ", ParameterTypes.Select(d => d.ToILString()));
+        return $"{ContainingSymbol.ToILString()}::{Name}({SelfParameterType.ToILString()}{parameterSeparator}{parameters}) -> {ReturnType.ToILString()}";
     }
 }

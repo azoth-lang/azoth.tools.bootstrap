@@ -148,21 +148,21 @@ internal static partial class SymbolNodeAspect
         => GetMembers<ITypeMemberSymbolNode>(node);
 
     public static partial void Validate_ClassSymbolNode(OrdinaryTypeSymbol symbol)
-        => Requires.That(symbol.DeclaresType is { Kind: TypeKind.Class }, nameof(symbol),
+        => Requires.That(symbol.TypeConstructor is { Kind: TypeKind.Class }, nameof(symbol),
             "Symbol must be for an class type.");
 
     public static partial IFixedSet<IClassMemberSymbolNode> ClassSymbol_Members(IClassSymbolNode node)
         => GetMembers<IClassMemberSymbolNode>(node);
 
     public static partial void Validate_StructSymbolNode(OrdinaryTypeSymbol symbol)
-        => Requires.That(symbol.DeclaresType is { Kind: TypeKind.Struct }, nameof(symbol),
+        => Requires.That(symbol.TypeConstructor is { Kind: TypeKind.Struct }, nameof(symbol),
             "Symbol must be for a struct type.");
 
     public static partial IFixedSet<IStructMemberSymbolNode> StructSymbol_Members(IStructSymbolNode node)
         => GetMembers<IStructMemberSymbolNode>(node);
 
     public static partial void Validate_TraitSymbolNode(OrdinaryTypeSymbol symbol)
-        => Requires.That(symbol.DeclaresType is { Kind: TypeKind.Trait }, nameof(symbol),
+        => Requires.That(symbol.TypeConstructor is { Kind: TypeKind.Trait }, nameof(symbol),
             "Symbol must be for an trait type.");
 
     public static partial IFixedSet<ITraitMemberSymbolNode> TraitSymbol_Members(ITraitSymbolNode node)

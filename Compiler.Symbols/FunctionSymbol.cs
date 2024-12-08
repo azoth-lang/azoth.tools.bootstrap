@@ -13,17 +13,19 @@ public sealed class FunctionSymbol : FunctionOrInitializerSymbol
     public override Symbol ContainingSymbol { get; }
     public override TypeSymbol? ContextTypeSymbol => null;
     public override IdentifierName Name { get; }
+    public override IType ReturnType { get; }
     public FunctionType Type { get; }
 
     public FunctionSymbol(
         Symbol containingSymbol,
         IdentifierName name,
         FunctionType type)
-        : base(type.Parameters, type.Return)
+        : base(type.Parameters)
     {
         ContainingSymbol = containingSymbol;
         Name = name;
         Type = type;
+        ReturnType = type.Return;
     }
 
     public override bool Equals(Symbol? other)
@@ -33,13 +35,13 @@ public sealed class FunctionSymbol : FunctionOrInitializerSymbol
         return other is FunctionSymbol otherFunction
                && ContainingSymbol == otherFunction.ContainingSymbol
                && Name == otherFunction.Name
-               && Parameters.SequenceEqual(otherFunction.Parameters)
-               && Return.Equals(otherFunction.Return);
+               && ParameterTypes.SequenceEqual(otherFunction.ParameterTypes)
+               && ReturnType.Equals(otherFunction.ReturnType);
     }
 
     public override int GetHashCode()
-        => HashCode.Combine(ContainingSymbol, Name, Parameters, Return);
+        => HashCode.Combine(ContainingSymbol, Name, ParameterTypes, ReturnType);
 
     public override string ToILString()
-        => $"{ContainingSymbol.ToILString()}.{Name}({string.Join(", ", Parameters.Select(d => d.ToILString()))}) -> {Return.ToILString()}";
+        => $"{ContainingSymbol.ToILString()}.{Name}({string.Join(", ", ParameterTypes.Select(d => d.ToILString()))}) -> {ReturnType.ToILString()}";
 }

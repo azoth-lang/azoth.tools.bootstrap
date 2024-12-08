@@ -4,8 +4,8 @@ using System.Collections.Immutable;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow.Sharing;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
+using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Declared;
 using Azoth.Tools.Bootstrap.Framework;
 using Azoth.Tools.Bootstrap.Framework.Collections;
 using DotNet.Collections.Generic;
@@ -112,8 +112,8 @@ internal sealed class FlowState : IFlowState
         var aliasValueMap = AliasValueMultiMapping(oldValueId, newValueId);
         if (oldValueType.Equals(newValueType)) return aliasValueMap;
 
-        var declaredSupertypes = oldValueType.DeclaredType.Supertypes
-                                             .Where(s => s.TypeConstructor == newValueType.DeclaredType)
+        var declaredSupertypes = oldValueType.Supertypes
+                                             .Where(s => s.TypeConstructor.Equals(newValueType.TypeConstructor))
                                              .ToFixedList();
 
         if (declaredSupertypes.Count > 1)
@@ -428,12 +428,12 @@ internal sealed class FlowState : IFlowState
     private MultiMapHashSet<CapabilityValue, ICapabilityValue> AccessFieldValueMapping(
         ValueId contextValueId,
         CapabilityType contextType,
-        DeclaredType containingDeclaredType,
+        TypeConstructor containingTypeConstructor,
         IMaybeType bindingType,
         ValueId valueId,
         IEnumerable<CapabilityValue> newValues)
     {
-        var effectiveContextType = contextType.UpcastTo(containingDeclaredType);
+        var effectiveContextType = contextType.UpcastTo(containingTypeConstructor);
         var valueMap = SupertypeValueMapping(contextValueId, contextType, valueId, effectiveContextType);
 
         var rootValue = CapabilityValue.CreateTopLevel(valueId);
@@ -446,7 +446,7 @@ internal sealed class FlowState : IFlowState
             CapabilityValue mapFromValue;
             if (typeAtIndex is GenericParameterType { Parameter.HasIndependence: true } t)
             {
-                var parameterIndex = containingDeclaredType.GenericParameters.IndexOf(t.Parameter)
+                var parameterIndex = containingTypeConstructor.Parameters.IndexOf(t.Parameter)
                     // Types nested in a type with independent parameters are not implemented
                     ?? throw new NotImplementedException("Independent parameter not from containing type.");
                 // Find the corresponding value in the context

@@ -1,5 +1,5 @@
+using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.ConstValue;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Declared;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
 
@@ -10,20 +10,20 @@ public static partial class TypeOperations
         return (fromType, toType) switch
         {
             // Safe conversions
-            (CapabilityType { DeclaredType: BoolType }, CapabilityType { DeclaredType: IntegerType }) => true,
-            (BoolConstValueType, CapabilityType { DeclaredType: IntegerType }) => true,
-            (CapabilityType { DeclaredType: IntegerType { IsSigned: false } }, CapabilityType { DeclaredType: BigIntegerType })
+            (CapabilityType { TypeConstructor: BoolTypeConstructor }, CapabilityType { TypeConstructor: IntegerTypeConstructor }) => true,
+            (BoolConstValueType, CapabilityType { TypeConstructor: IntegerTypeConstructor }) => true,
+            (CapabilityType { TypeConstructor: IntegerTypeConstructor { IsSigned: false } }, CapabilityType { TypeConstructor: BigIntegerTypeConstructor })
                 => true,
-            (CapabilityType { DeclaredType: IntegerType }, CapabilityType { DeclaredType: BigIntegerType { IsSigned: true } })
+            (CapabilityType { TypeConstructor: IntegerTypeConstructor }, CapabilityType { TypeConstructor: BigIntegerTypeConstructor { IsSigned: true } })
                 => true,
-            (CapabilityType { DeclaredType: FixedSizeIntegerType from }, CapabilityType { DeclaredType: FixedSizeIntegerType to })
+            (CapabilityType { TypeConstructor: FixedSizeIntegerTypeConstructor from }, CapabilityType { TypeConstructor: FixedSizeIntegerTypeConstructor to })
                 when from.Bits < to.Bits
                      || (from.Bits == to.Bits && from.IsSigned == to.IsSigned)
                 => true,
 
             // TODO conversions for constants
             // Unsafe conversions
-            (CapabilityType { DeclaredType: IntegerType }, CapabilityType { DeclaredType: IntegerType }) => !safeOnly,
+            (CapabilityType { TypeConstructor: IntegerTypeConstructor }, CapabilityType { TypeConstructor: IntegerTypeConstructor }) => !safeOnly,
 
             // Of course, anything that can be assigned is also fine
             _ => toType.IsAssignableFrom(fromType),

@@ -7,7 +7,6 @@ using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors.Contexts;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.ConstValue;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Declared;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
@@ -79,7 +78,7 @@ public sealed class PackageNameScope
             FunctionType _ => null,
             OptionalType _ => throw new NotImplementedException(),
             ConstValueType _ => throw new NotImplementedException(),
-            CapabilityType t => Lookup(t.DeclaredType),
+            CapabilityType t => Lookup(t.TypeConstructor),
             GenericParameterType t => Lookup(t),
             ViewpointType t => Lookup(t.Referent),
             _ => throw ExhaustiveMatch.Failed(type),
@@ -87,32 +86,6 @@ public sealed class PackageNameScope
 
     public ITypeDeclarationNode Lookup(GenericParameterType type)
         => throw new NotImplementedException();
-
-    private ITypeDeclarationNode Lookup(DeclaredType declaredType)
-        => declaredType switch
-        {
-            AnyType t => Lookup(t),
-            OrdinaryDeclaredType t => Lookup(t),
-            SimpleType t => Lookup(t),
-            _ => throw ExhaustiveMatch.Failed(declaredType),
-        };
-
-    private ITypeDeclarationNode Lookup(AnyType declaredType)
-        => builtIns[declaredType.Name];
-
-    private ITypeDeclarationNode Lookup(SimpleType declaredType)
-        => builtIns[declaredType.Name];
-
-    private ITypeDeclarationNode Lookup(OrdinaryDeclaredType declaredType)
-    {
-        // TODO is there a problem with types using package names and this using package aliases?
-        var globalNamespace = GlobalScopeForPackage(declaredType.ContainingPackage);
-        var ns = globalNamespace;
-        foreach (var name in declaredType.ContainingNamespace.Segments)
-            ns = ns.GetChildNamespaceScope(name) ?? throw new UnreachableException("Type namespace must exist");
-
-        return ns.Lookup(declaredType.Name).OfType<ITypeDeclarationNode>().Single();
-    }
     #endregion
 
     #region Lookup(IMaybeExpressionPlainType)
@@ -130,9 +103,13 @@ public sealed class PackageNameScope
             _ => throw ExhaustiveMatch.Failed(plainType),
         };
 
-    public ITypeDeclarationNode? Lookup(TypeConstructor typeConstructor)
+    #endregion
+
+    #region Lookup(*TypeConstructor)
+    public ITypeDeclarationNode? Lookup(TypeConstructor? typeConstructor)
         => typeConstructor switch
         {
+            null => null,
             SimpleTypeConstructor t => Lookup(t),
             // TODO There are no declarations for const value type, but perhaps there should be?
             LiteralTypeConstructor _ => null,

@@ -46,7 +46,7 @@ public static partial class TypeOperations
         };
     }
 
-    private static bool FieldMaintainsIndependence(this BareNonVariableType type, Independence context)
+    private static bool FieldMaintainsIndependence(this BareType type, Independence context)
     {
         foreach (var (parameter, argument) in type.GenericParameterArguments)
         {

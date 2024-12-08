@@ -41,7 +41,7 @@
 ↑ FunctionDeclaration.Symbol: `FunctionSymbol`?;
 
 // ---------- Type Declarations
-↑ TypeDeclaration.Supertypes: {`BareNonVariableType`};
+↑ TypeDeclaration.Supertypes: {`TypeConstructor.Supertype`};
 ↑ TypeDeclaration.Symbol: `TypeSymbol`;
 ↑ TypeDeclaration.Members: {TypeMemberDeclaration};
 /// Members including ones inherited from supertypes

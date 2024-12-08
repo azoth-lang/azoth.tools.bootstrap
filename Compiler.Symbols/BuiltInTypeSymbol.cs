@@ -1,6 +1,6 @@
 using System;
 using Azoth.Tools.Bootstrap.Compiler.Names;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Declared;
+using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 
@@ -10,23 +10,23 @@ public sealed class BuiltInTypeSymbol : TypeSymbol
     public override Symbol? ContainingSymbol => null;
     public override TypeSymbol? ContextTypeSymbol => null;
     public override SpecialTypeName Name { get; }
-    public DeclaredType TypeConstructor { get; }
+    public TypeConstructor TypeConstructor { get; }
 
-    public BuiltInTypeSymbol(AnyType typeConstructor)
+    public BuiltInTypeSymbol(AnyTypeConstructor typeConstructor)
         : base(typeConstructor.Name)
     {
         Name = typeConstructor.Name;
         TypeConstructor = typeConstructor;
     }
 
-    public BuiltInTypeSymbol(SimpleType typeConstructor)
+    public BuiltInTypeSymbol(SimpleTypeConstructor typeConstructor)
         : base(typeConstructor.Name)
     {
         Name = typeConstructor.Name;
         TypeConstructor = typeConstructor;
     }
 
-    public override DeclaredType TryGetTypeConstructor() => TypeConstructor;
+    public override TypeConstructor TryGetTypeConstructor() => TypeConstructor;
 
     #region Equality
     public override bool Equals(Symbol? other)

@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Framework;
@@ -8,18 +7,17 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 /// <summary>
 /// The type introduced by a generic parameter.
 /// </summary>
-// TODO maybe this should be tied to a TypeConstructorParameter?
 public sealed class GenericParameterPlainType : VariablePlainType
 {
     public OrdinaryTypeConstructor DeclaringTypeConstructor { get; }
-    public TypeConstructorParameter Parameter { get; }
+    public TypeConstructor.Parameter Parameter { get; }
     public override IdentifierName Name => Parameter.Name;
     // TODO this should be based on generic constraints
-    public override IFixedSet<ConstructedPlainType> Supertypes => FixedSet.Empty<ConstructedPlainType>();
+    public override IFixedSet<ConstructedPlainType> Supertypes => IPlainType.AnySet;
 
     public GenericParameterPlainType(
         OrdinaryTypeConstructor declaringTypeConstructor,
-        TypeConstructorParameter parameter)
+        TypeConstructor.Parameter parameter)
     {
         DeclaringTypeConstructor = declaringTypeConstructor;
         Parameter = parameter;

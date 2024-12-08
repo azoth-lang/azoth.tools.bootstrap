@@ -4,6 +4,7 @@ using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors.Contexts;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using Azoth.Tools.Bootstrap.Framework;
+using static Azoth.Tools.Bootstrap.Compiler.Types.Constructors.TypeConstructor;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 
@@ -17,14 +18,17 @@ public sealed class AnyTypeConstructor : TypeConstructor
     #endregion
 
     internal static readonly ConstructedPlainType PlainType = new(Instance, []);
-    internal static readonly IFixedSet<ConstructedPlainType> Set = PlainType.Yield().ToFixedSet();
 
     TypeConstructorContext TypeConstructor.Context => PrimitiveContext.Instance;
+
+    public bool IsDeclaredConst => false;
 
     /// <summary>
     /// The `Any` type is like a trait in the sense that it is known to not have fields.
     /// </summary>
     public bool CanHaveFields => false;
+
+    public bool CanBeSupertype => true;
 
     /// <summary>
     /// The `Any` type cannot be instantiated because it is abstract.
@@ -35,14 +39,12 @@ public sealed class AnyTypeConstructor : TypeConstructor
     public SpecialTypeName Name => SpecialTypeName.Any;
     TypeName TypeConstructor.Name => Name;
 
-    IFixedList<TypeConstructorParameter> TypeConstructor.Parameters
-        => FixedList.Empty<TypeConstructorParameter>();
-    public bool AllowsVariance => false;
-
-    IFixedList<GenericParameterPlainType> TypeConstructor.ParameterPlainTypes
-        => FixedList.Empty<GenericParameterPlainType>();
-
-    IFixedSet<ConstructedPlainType> TypeConstructor.Supertypes => [];
+    bool TypeConstructor.HasParameters => false;
+    IFixedList<Parameter> TypeConstructor.Parameters => [];
+    bool TypeConstructor.AllowsVariance => false;
+    bool TypeConstructor.HasIndependentParameters => false;
+    IFixedList<GenericParameterPlainType> TypeConstructor.ParameterPlainTypes => [];
+    IFixedSet<Supertype> TypeConstructor.Supertypes => [];
 
     #region Equality
     public bool Equals(TypeConstructor? other)
@@ -52,7 +54,7 @@ public sealed class AnyTypeConstructor : TypeConstructor
     public override int GetHashCode() => HashCode.Combine(typeof(AnyTypeConstructor));
     #endregion
 
-    public IPlainType Construct(IFixedList<IPlainType> typeArguments)
+    public ConstructedPlainType Construct(IFixedList<IPlainType> typeArguments)
     {
         if (typeArguments.Any())
             throw new ArgumentException("Incorrect number of type arguments.");
@@ -61,9 +63,9 @@ public sealed class AnyTypeConstructor : TypeConstructor
 
     public IMaybePlainType Construct(IFixedList<IMaybePlainType> typeArguments)
     {
-        var properTypeArguments = typeArguments.ToFixedList().As<IPlainType>();
+        var properTypeArguments = typeArguments.As<IPlainType>();
         if (properTypeArguments is null) return IPlainType.Unknown;
-        return Construct((IFixedList<IMaybePlainType>)properTypeArguments.AsEnumerable());
+        return Construct(properTypeArguments);
     }
 
     public IPlainType TryConstructNullary() => PlainType;

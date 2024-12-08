@@ -4,8 +4,8 @@ using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
+using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Declared;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Parameters;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Pseudotypes;
 using Azoth.Tools.Bootstrap.Framework;
@@ -59,7 +59,7 @@ public abstract class SymbolTestFixture
         return new FunctionSymbol(
             ns ?? mother.ContainingSymbol,
             Name(name) ?? mother.Name,
-            new FunctionType(@params ?? mother.Parameters, @return ?? mother.Return));
+            new FunctionType(@params ?? mother.ParameterTypes, @return ?? mother.ReturnType));
     }
 
     protected MethodSymbol Method(
@@ -74,7 +74,7 @@ public abstract class SymbolTestFixture
             containing,
             MethodKind.Standard,
             Name(name) ?? DefaultName("method"),
-            self ?? new SelfParameterType(false, containing.DeclaresType.With(Capability.Read, [])),
+            self ?? new SelfParameterType(false, containing.TypeConstructor.With(Capability.Read, [])),
             @params ?? Params(),
             @return ?? DataType());
     }
@@ -92,8 +92,8 @@ public abstract class SymbolTestFixture
             MethodKind.Standard,
             Name(name) ?? mother.Name,
             self ?? mother.SelfParameterType,
-            @params ?? mother.Parameters,
-            @return ?? mother.Return);
+            @params ?? mother.ParameterTypes,
+            @return ?? mother.ReturnType);
     }
 
     protected CapabilityType DataType(
@@ -115,11 +115,11 @@ public abstract class SymbolTestFixture
 
     protected OrdinaryTypeSymbol Type(
         NamespaceSymbol? ns = null,
-        OrdinaryDeclaredType? dataType = null)
+        OrdinaryTypeConstructor? dataType = null)
     {
         return new(
             ns ?? Package(),
-            dataType ?? (OrdinaryDeclaredType)DataType().DeclaredType);
+            dataType ?? (OrdinaryTypeConstructor)DataType().TypeConstructor!);
     }
 
     public static readonly ParameterType IntParameter = new(false, IType.Int);

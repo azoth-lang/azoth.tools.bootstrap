@@ -1,8 +1,8 @@
 using System;
 using System.Numerics;
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Declared;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Legacy.ConstValue;
@@ -11,12 +11,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Legacy.ConstValue;
 /// This is the type of an integer constant value, it isn't possible to declare a
 /// variable to have this type.
 /// </summary>
-public sealed class IntegerConstValueType : ConstValueType, INumericType
+public sealed class IntegerConstValueType : ConstValueType
 {
     public override bool IsTypeOfConstValue => true;
     public BigInteger Value { get; }
     public bool IsSigned { get; }
-    IType INumericType.Type => this;
 
     public IntegerConstValueType(BigInteger value)
         : base(SpecialTypeName.ConstInt)
@@ -25,8 +24,8 @@ public sealed class IntegerConstValueType : ConstValueType, INumericType
         IsSigned = value.Sign < 0;
     }
 
-    public bool IsUInt16 => Value >= DeclaredType.UInt16.MinValue && Value <= DeclaredType.UInt16.MaxValue;
-    public bool IsInt16 => Value >= DeclaredType.Int16.MinValue && Value <= DeclaredType.Int16.MaxValue;
+    public bool IsUInt16 => Value >= TypeConstructor.UInt16.MinValue && Value <= TypeConstructor.UInt16.MaxValue;
+    public bool IsInt16 => Value >= TypeConstructor.Int16.MinValue && Value <= TypeConstructor.Int16.MaxValue;
 
     /// <summary>
     /// The default non-constant type to places values of this type in. For
@@ -37,28 +36,28 @@ public sealed class IntegerConstValueType : ConstValueType, INumericType
     /// integer constants might produce small fixed size integers leading to overflow.</remarks>
     public override CapabilityType ToNonConstValueType() => IType.Int;
 
-    public NumericType ToSmallestSignedIntegerType()
+    public NumericTypeConstructor ToSmallestSignedIntegerType()
     {
-        if (Value > DeclaredType.Int64.MaxValue) return DeclaredType.Int;
-        if (Value > DeclaredType.Int32.MaxValue) return DeclaredType.Int64;
-        if (Value > DeclaredType.Int16.MaxValue) return DeclaredType.Int32;
-        if (Value > DeclaredType.Int8.MaxValue) return DeclaredType.Int16;
-        if (Value < DeclaredType.Int64.MinValue) return DeclaredType.Int;
-        if (Value < DeclaredType.Int32.MinValue) return DeclaredType.Int64;
-        if (Value < DeclaredType.Int16.MinValue) return DeclaredType.Int32;
-        if (Value < DeclaredType.Int8.MinValue) return DeclaredType.Int16;
-        return DeclaredType.Int8;
+        if (Value > TypeConstructor.Int64.MaxValue) return TypeConstructor.Int;
+        if (Value > TypeConstructor.Int32.MaxValue) return TypeConstructor.Int64;
+        if (Value > TypeConstructor.Int16.MaxValue) return TypeConstructor.Int32;
+        if (Value > TypeConstructor.Int8.MaxValue) return TypeConstructor.Int16;
+        if (Value < TypeConstructor.Int64.MinValue) return TypeConstructor.Int;
+        if (Value < TypeConstructor.Int32.MinValue) return TypeConstructor.Int64;
+        if (Value < TypeConstructor.Int16.MinValue) return TypeConstructor.Int32;
+        if (Value < TypeConstructor.Int8.MinValue) return TypeConstructor.Int16;
+        return TypeConstructor.Int8;
     }
 
-    public NumericType ToSmallestUnsignedIntegerType()
+    public NumericTypeConstructor ToSmallestUnsignedIntegerType()
     {
         if (IsSigned)
             throw new InvalidOperationException("Cannot convert signed value type to unsigned type.");
-        if (Value > DeclaredType.Int64.MaxValue) return DeclaredType.UInt;
-        if (Value > DeclaredType.Int32.MaxValue) return DeclaredType.UInt64;
-        if (Value > DeclaredType.Int16.MaxValue) return DeclaredType.UInt32;
-        if (Value > DeclaredType.Byte.MaxValue) return DeclaredType.UInt16;
-        return DeclaredType.Byte;
+        if (Value > TypeConstructor.Int64.MaxValue) return TypeConstructor.UInt;
+        if (Value > TypeConstructor.Int32.MaxValue) return TypeConstructor.UInt64;
+        if (Value > TypeConstructor.Int16.MaxValue) return TypeConstructor.UInt32;
+        if (Value > TypeConstructor.Byte.MaxValue) return TypeConstructor.UInt16;
+        return TypeConstructor.Byte;
     }
 
     #region Equals
@@ -75,6 +74,9 @@ public sealed class IntegerConstValueType : ConstValueType, INumericType
 
     public override INonVoidPlainType ToPlainType()
         => new IntegerLiteralTypeConstructor(Value).PlainType;
+
+    public override Decorated.CapabilityType ToDecoratedType()
+        => new(Capability.Constant, new(new IntegerLiteralTypeConstructor(Value), []));
 
     public override string ToSourceCodeString() => $"int[{Value}]";
 

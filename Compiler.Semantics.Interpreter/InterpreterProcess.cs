@@ -123,13 +123,13 @@ public class InterpreterProcess
         {
             var entryPoint = package.EntryPoint!;
             var arguments = new List<AzothValue>();
-            foreach (var parameterType in entryPoint.Symbol.Assigned().Parameters)
+            foreach (var parameterType in entryPoint.Symbol.Assigned().ParameterTypes)
                 arguments.Add(await ConstructMainParameterAsync((IType)parameterType.Type));
 
             var returnValue = await CallFunctionAsync(entryPoint, arguments).ConfigureAwait(false);
             // Flush any buffered output
             await standardOutputWriter.FlushAsync().ConfigureAwait(false);
-            var returnType = entryPoint.Symbol.Assigned().Return;
+            var returnType = entryPoint.Symbol.Assigned().ReturnType;
             if (returnType.Equals(IType.Void))
                 exitCode = 0;
             else if (returnType.Equals(IType.Byte))
@@ -199,7 +199,7 @@ public class InterpreterProcess
 
         // TODO further restrict what can be passed to main
 
-        var @class = userTypes.Values.OfType<IClassDefinitionNode>().Single(c => c.Symbol.DeclaresType.Equals(type.DeclaredType));
+        var @class = userTypes.Values.OfType<IClassDefinitionNode>().Single(c => c.Symbol.TypeConstructor.Equals(type.TypeConstructor));
         var constructorSymbol = @class.DefaultConstructor?.Symbol.Assigned()
             ?? @class.Members.OfType<IConstructorDefinitionNode>().Select(c => c.Symbol.Assigned())
                      .Single(c => c.Arity == 0);
@@ -401,8 +401,9 @@ public class InterpreterProcess
         CapabilityType selfType,
         AzothValue self,
         IEnumerable<AzothValue> arguments)
-        => selfType.BareType.TypeConstructor.Semantics switch
+        => selfType.BareType.TypeConstructor?.Semantics switch
         {
+            null => throw new UnreachableException("Shouldn't be attempting to call method on type without type constructor"),
             TypeSemantics.Value => await CallStructMethod(methodSymbol, selfType, self, arguments),
             TypeSemantics.Reference => await CallClassMethodAsync(methodSymbol, self, arguments),
             _ => throw ExhaustiveMatch.Failed(selfType.BareType.TypeConstructor.Semantics),
@@ -781,7 +782,7 @@ public class InterpreterProcess
                     var selfType = (CapabilityType)exp.InExpression!.Type;
                     var iterateMethod = exp.ReferencedIterateMethod!.Symbol.Assigned();
                     iterator = await CallMethodAsync(iterateMethod, selfType, iterable, []).ConfigureAwait(false);
-                    iteratorType = (CapabilityType)iterateMethod.Return;
+                    iteratorType = (CapabilityType)iterateMethod.ReturnType;
                 }
                 else
                 {
@@ -927,7 +928,7 @@ public class InterpreterProcess
     {
         if (constructor == Intrinsic.NewRawBoundedList)
         {
-            var listType = constructor.ContainingSymbol.DeclaresType.GenericParameterTypes[0];
+            var listType = constructor.ContainingSymbol.TypeConstructor.GenericParameterTypes()[0];
             nuint capacity = arguments[0].SizeValue;
             IRawBoundedList list;
             if (listType.Equals(IType.Byte))
@@ -1122,8 +1123,8 @@ public class InterpreterProcess
 
     private async ValueTask<bool> ReferenceEqualsAsync(IExpressionNode leftExp, IExpressionNode rightExp, LocalVariableScope variables)
     {
-        if (leftExp.Type is not CapabilityType { DeclaredType.Semantics: TypeSemantics.Reference }
-            || rightExp.Type is not CapabilityType { DeclaredType.Semantics: TypeSemantics.Reference })
+        if (leftExp.Type is not CapabilityType { TypeConstructor.Semantics: TypeSemantics.Reference }
+            || rightExp.Type is not CapabilityType { TypeConstructor.Semantics: TypeSemantics.Reference })
             throw new InvalidOperationException(
                 $"Can't compare expressions of type {leftExp.Type.ToILString()} and {rightExp.Type.ToILString()} for reference equality.");
         var left = await ExecuteAsync(leftExp, variables).ConfigureAwait(false);

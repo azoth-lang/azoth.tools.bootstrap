@@ -1,13 +1,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
-using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types;
+using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Bare;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Declared;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
@@ -15,17 +14,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 internal static partial class TypeDefinitionsAspect
 {
     public static partial SelfType TypeDefinition_SelfType(ITypeDefinitionNode node)
-        => new SelfType(node.DeclaredType);
-
-    public static partial OrdinaryDeclaredType ClassDefinition_DeclaredType(IClassDefinitionNode node)
-    {
-        // TODO use ContainingDeclaredType in case this is a nested type
-        NamespaceName containingNamespaceName = GetContainingNamespaceName(node);
-
-        return OrdinaryDeclaredType.CreateClass(node.Package.Name, containingNamespaceName,
-            node.IsAbstract, node.IsConst, node.Name,
-            GetGenericParameters(node), node.Supertypes);
-    }
+        => new SelfType(node.TypeConstructor);
 
     public static partial void ClassDefinition_Contribute_Diagnostics(IClassDefinitionNode node, DiagnosticCollectionBuilder diagnostics)
     {
@@ -42,52 +31,22 @@ internal static partial class TypeDefinitionsAspect
 
     private static void CheckBaseTypeMustMaintainIndependence(IClassDefinitionNode node, DiagnosticCollectionBuilder diagnostics)
     {
-        var declaresType = node.Symbol.DeclaresType;
+        var typeConstructor = node.Symbol.TypeConstructor;
         // TODO nested classes and traits need to be checked if nested inside of generic types?
-        if (!declaresType.HasIndependentGenericParameters) return;
+        if (!typeConstructor.HasIndependentParameters) return;
 
         if (node.BaseTypeName is not null and var typeName
             && (!typeName.NamedBareType?.SupertypeMaintainsIndependence(exact: true) ?? false))
             diagnostics.Add(TypeError.SupertypeMustMaintainIndependence(node.File, typeName.Syntax));
     }
 
-    public static partial OrdinaryDeclaredType StructDefinition_DeclaredType(IStructDefinitionNode node)
-    {
-        // TODO use ContainingDeclaredType in case this is a nested type
-        NamespaceName containingNamespaceName = GetContainingNamespaceName(node);
-        return OrdinaryDeclaredType.CreateStruct(node.Package.Name, containingNamespaceName,
-            node.IsConst, node.Name,
-            GetGenericParameters(node), node.Supertypes);
-    }
-
-    public static partial OrdinaryDeclaredType TraitDefinition_DeclaredType(ITraitDefinitionNode node)
-    {
-        // TODO use ContainingDeclaredType in case this is a nested type
-        NamespaceName containingNamespaceName = GetContainingNamespaceName(node);
-        return OrdinaryDeclaredType.CreateTrait(node.Package.Name, containingNamespaceName,
-            node.IsConst, node.Name,
-            GetGenericParameters(node), node.Supertypes);
-    }
-
-    private static NamespaceName GetContainingNamespaceName(ITypeMemberDefinitionNode node)
-    {
-        // TODO correctly deal with containing namespace
-        var containingSymbol = node.ContainingSymbol!; // Since it is a type or namespace, it will have a symbol
-        while (containingSymbol is not NamespaceSymbol) containingSymbol = containingSymbol.ContainingSymbol!;
-        var containingNamespaceName = ((NamespaceSymbol)containingSymbol).NamespaceName;
-        return containingNamespaceName;
-    }
-
-    private static IFixedList<GenericParameter> GetGenericParameters(ITypeDefinitionNode node)
-        => node.GenericParameters.Select(p => p.Parameter).ToFixedList();
-
-    public static partial GenericParameter GenericParameter_Parameter(IGenericParameterNode node)
-        => new GenericParameter(node.Constraint.Constraint, node.Name, node.Independence, node.Variance);
+    public static partial TypeConstructor.Parameter GenericParameter_Parameter(IGenericParameterNode node)
+        => new TypeConstructor.Parameter(node.Constraint.Constraint, node.Name, node.Independence, node.Variance);
 
     public static partial GenericParameterType GenericParameter_DeclaredType(IGenericParameterNode node)
-        => node.ContainingDeclaredType.GenericParameterTypes.Single(t => t.Parameter == node.Parameter);
+        => node.ContainingTypeConstructor.GenericParameterTypes().Single(t => t.Parameter.Equals(node.Parameter));
 
-    public static partial IFixedSet<BareNonVariableType> TypeDefinition_Supertypes(ITypeDefinitionNode node)
+    public static partial IFixedSet<TypeConstructor.Supertype> TypeDefinition_Supertypes(ITypeDefinitionNode node)
     {
         // Note: Supertypes is a circular attribute that both declared types and symbols depend on.
         // While there are many ways to write this that will give the correct answer, care should be
@@ -96,19 +55,19 @@ internal static partial class TypeDefinitionsAspect
 
         // Avoid loading the declared type unless necessary because it is a cycle and accessing it
         // prevents caching.
-        OrdinaryDeclaredType? declaredType = null;
+        OrdinaryTypeConstructor? typeConstructor = null;
         return Build()
                // Exclude any cycles that exist in the supertypes by excluding this type
                .Where(t =>
                    // Try to avoid loading the declared type by checking names first
                    t.TypeConstructor.Name != node.Name
                    // But the real check is on the declared type
-                   || !t.TypeConstructor.Equals(declaredType ??= node.DeclaredType))
+                   || !t.TypeConstructor.Equals(typeConstructor ??= node.TypeConstructor))
                // Everything has `Any` as a supertype (added after filter to avoid loading declared type)
-               .Append(BareNonVariableType.Any)
+               .Append(TypeConstructor.Supertype.Any)
                .ToFixedSet();
 
-        IEnumerable<BareNonVariableType> Build()
+        IEnumerable<TypeConstructor.Supertype> Build()
         {
             // Handled by supertype because that is the only syntax we have to apply the compiler
             // errors to. (Could possibly use type arguments in the future.)
@@ -119,7 +78,7 @@ internal static partial class TypeDefinitionsAspect
                     continue;
 
                 // First, include the direct supertype
-                yield return bareSupertype;
+                yield return bareSupertype.ToSupertype();
 
                 var referencedDeclaration = supertypeName.ReferencedDeclaration;
                 if (referencedDeclaration is null)
@@ -132,7 +91,7 @@ internal static partial class TypeDefinitionsAspect
                 {
                     // Since this is our supertype's supertype, we need to replace any type
                     // parameters with those given to the supertype.
-                    yield return bareSupertype.ReplaceTypeParametersIn(supertype);
+                    yield return bareSupertype.ReplaceTypeParametersIn(supertype.ToType()).ToSupertype();
                 }
             }
         }
@@ -154,13 +113,13 @@ internal static partial class TypeDefinitionsAspect
 
     private static void CheckSupertypesForCycle(ITypeDefinitionNode node, DiagnosticCollectionBuilder diagnostics)
     {
-        var declaredType = node.DeclaredType;
+        var typeConstructor = node.TypeConstructor;
         foreach (var supertypeName in node.AllSupertypeNames)
-            if (supertypeName.InheritsFrom(declaredType))
+            if (supertypeName.InheritsFrom(typeConstructor))
                 diagnostics.Add(OtherSemanticError.CircularDefinitionInSupertype(node.File, supertypeName.Syntax));
     }
 
-    private static bool InheritsFrom(this IStandardTypeNameNode node, OrdinaryDeclaredType type)
+    private static bool InheritsFrom(this IStandardTypeNameNode node, OrdinaryTypeConstructor type)
         => node.ReferencedDeclaration?.Supertypes.Any(t => t.TypeConstructor.Equals(type)) ?? false;
 
     private static void CheckTypeArgumentsAreConstructable(ITypeDefinitionNode node, DiagnosticCollectionBuilder diagnostics)
@@ -179,10 +138,10 @@ internal static partial class TypeDefinitionsAspect
 
     private static void CheckAllSupertypesAreOutputSafe(ITypeDefinitionNode node, DiagnosticCollectionBuilder diagnostics)
     {
-        var declaresType = node.Symbol.DeclaresType;
+        var typeConstructor = node.Symbol.TypeConstructor;
         // TODO nested classes and traits need to be checked if nested inside of generic types
-        if (!declaresType.IsGeneric) return;
-        var nonwritableSelf = declaresType.IsDeclaredConst ? true : (bool?)null;
+        if (!typeConstructor.HasParameters) return;
+        var nonwritableSelf = typeConstructor.IsDeclaredConst ? true : (bool?)null;
         foreach (var typeName in node.AllSupertypeNames)
         {
             var type = typeName.NamedBareType;
@@ -195,9 +154,9 @@ internal static partial class TypeDefinitionsAspect
         ITypeDefinitionNode typeDefinition,
         DiagnosticCollectionBuilder diagnostics)
     {
-        var declaresType = typeDefinition.Symbol.DeclaresType;
+        var declaresType = typeDefinition.Symbol.TypeConstructor;
         // TODO nested classes and traits need to be checked if nested inside of generic types?
-        if (!declaresType.HasIndependentGenericParameters) return;
+        if (!declaresType.HasIndependentParameters) return;
 
         foreach (var typeName in typeDefinition.SupertypeNames)
             if (!typeName.NamedBareType?.SupertypeMaintainsIndependence(exact: false) ?? false)

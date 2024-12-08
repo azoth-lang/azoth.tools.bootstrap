@@ -1,10 +1,11 @@
+using System;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
+using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
+using Azoth.Tools.Bootstrap.Compiler.Types.Constructors.Contexts;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Bare;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.ConstValue;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Declared;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Parameters;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
@@ -41,13 +42,25 @@ public static class DataTypeExtensions
     {
         if (!target.Capability.IsAssignableFrom(source.Capability)) return false;
 
-        if (IsAssignableFrom(target.BareType, target.AllowsWrite, source.BareType))
+        if (target.BareType.IsAssignableFrom(target.AllowsWrite, source.BareType))
             return true;
 
         // TODO remove hack to allow string to exist in both primitives and stdlib
-        return target.Name == "String" && source.Name == "String"
-            && target.ContainingNamespace == NamespaceName.Global
-            && source.ContainingNamespace == NamespaceName.Global;
+        return target.Name == "String"
+               && source.Name == "String"
+               && source.TypeConstructor?.Context is NamespaceContext sc
+               && sc.Namespace == NamespaceName.Global
+               && target.TypeConstructor?.Context is NamespaceContext tc
+               && tc.Namespace == NamespaceName.Global;
+    }
+
+    public static bool IsAssignableFrom(this BareType target, bool targetAllowsWrite, BareType source)
+    {
+        return (target, source) switch
+        {
+            (BareNonVariableType t, BareNonVariableType s) => t.IsAssignableFrom(targetAllowsWrite, s),
+            _ => throw new NotImplementedException()
+        };
     }
 
     /// <remarks>We currently support implicit boxing, so any bare type with the correct supertype
@@ -73,32 +86,32 @@ public static class DataTypeExtensions
     }
 
     private static bool IsAssignableFrom(
-        DeclaredType declaredType,
+        TypeConstructor typeConstructor,
         bool targetAllowsWrite,
         IFixedList<IMaybeType> target,
         IFixedList<IMaybeType> source)
     {
-        Requires.That(target.Count == declaredType.GenericParameters.Count, nameof(target), "count must match count of declaredType generic parameters");
+        Requires.That(target.Count == typeConstructor.Parameters.Count, nameof(target), "count must match count of typeConstructor generic parameters");
         Requires.That(source.Count == target.Count, nameof(source), "count must match count of target");
-        for (int i = 0; i < declaredType.GenericParameters.Count; i++)
+        for (int i = 0; i < typeConstructor.Parameters.Count; i++)
         {
             var from = source[i];
             var to = target[i];
-            var genericParameter = declaredType.GenericParameters[i];
-            switch (genericParameter.Variance)
+            var parameter = typeConstructor.Parameters[i];
+            switch (parameter.Variance)
             {
                 default:
-                    throw ExhaustiveMatch.Failed(genericParameter.Variance);
+                    throw ExhaustiveMatch.Failed(parameter.Variance);
                 case TypeParameterVariance.Invariant:
                     if (!from.Equals(to))
                     {
                         // When target allows write, acts invariant regardless of independence
                         if (targetAllowsWrite) return false;
 
-                        switch (genericParameter.Independence)
+                        switch (parameter.Independence)
                         {
                             default:
-                                throw ExhaustiveMatch.Failed(genericParameter.Independence);
+                                throw ExhaustiveMatch.Failed(parameter.Independence);
                             case TypeParameterIndependence.Independent:
                             {
                                 if (from is not CapabilityType fromCapabilityType
@@ -206,14 +219,12 @@ public static class DataTypeExtensions
     /// Otherwise, <see langword="null"/>.
     /// </summary>
     public static CapabilityType? UnderlyingReferenceType(this IMaybeType type)
-    {
-        return type switch
+        => type switch
         {
             CapabilityType { Semantics: TypeSemantics.Reference } referenceType => referenceType,
             OptionalType { Referent: CapabilityType { Semantics: TypeSemantics.Reference } referenceType } => referenceType,
             _ => null
         };
-    }
 
     /// <summary>
     /// Determine what the common type for two numeric types for a numeric operator is.
@@ -229,8 +240,8 @@ public static class DataTypeExtensions
                 => left.OptionalNumericOperatorCommonType(right),
             (OptionalType { Referent: var left }, _) => left.OptionalNumericOperatorCommonType(rightType),
             (_, OptionalType { Referent: var right }) => leftType.OptionalNumericOperatorCommonType(right),
-            (NonEmptyType left, NonEmptyType right)
-                => left.AsNumericType()?.NumericOperatorCommonType(right.AsNumericType()),
+            (CapabilityType { TypeConstructor: var left }, CapabilityType { TypeConstructor: var right })
+                => left.NumericOperatorCommonType(right),
             _ => null,
         };
 
@@ -243,49 +254,51 @@ public static class DataTypeExtensions
     /// <summary>
     /// Determine what the common type for two numeric types for a numeric operator is.
     /// </summary>
-    internal static IMaybeType? NumericOperatorCommonType(this INumericType? leftType, INumericType? rightType)
-        => (leftType, rightType) switch
+    internal static IMaybeType? NumericOperatorCommonType(
+        this TypeConstructor? leftTypeConstructor,
+        TypeConstructor? rightTypeConstructor)
+        => (leftTypeConstructor, rightTypeConstructor) switch
         {
-            (BigIntegerType left, IntegerType right)
+            (BigIntegerTypeConstructor left, IntegerTypeConstructor right)
                 => left.IsSigned || right.IsSigned ? IType.Int : IType.UInt,
-            (IntegerType left, BigIntegerType right)
+            (IntegerTypeConstructor left, BigIntegerTypeConstructor right)
                 => left.IsSigned || right.IsSigned ? IType.Int : IType.UInt,
-            (BigIntegerType left, IntegerConstValueType right)
+            (BigIntegerTypeConstructor left, IntegerLiteralTypeConstructor right)
                 => left.IsSigned || right.IsSigned ? IType.Int : IType.UInt,
-            (IntegerConstValueType left, BigIntegerType right)
+            (IntegerLiteralTypeConstructor left, BigIntegerTypeConstructor right)
                 => left.IsSigned || right.IsSigned ? IType.Int : IType.UInt,
-            (PointerSizedIntegerType left, PointerSizedIntegerType right)
+            (PointerSizedIntegerTypeConstructor left, PointerSizedIntegerTypeConstructor right)
                 => left.IsSigned || right.IsSigned ? IType.Offset : IType.Size,
-            (PointerSizedIntegerType { IsSigned: true }, IntegerConstValueType { IsInt16: true })
+            (PointerSizedIntegerTypeConstructor { IsSigned: true }, IntegerLiteralTypeConstructor { IsInt16: true })
                 => IType.Offset,
-            (PointerSizedIntegerType { IsSigned: false }, IntegerConstValueType { IsUInt16: true })
+            (PointerSizedIntegerTypeConstructor { IsSigned: false }, IntegerLiteralTypeConstructor { IsUInt16: true })
                 => IType.Size,
-            (PointerSizedIntegerType left, IntegerConstValueType right)
+            (PointerSizedIntegerTypeConstructor left, IntegerLiteralTypeConstructor right)
                 => left.IsSigned || right.IsSigned ? IType.Int : IType.UInt,
-            (IntegerConstValueType { IsInt16: true }, PointerSizedIntegerType { IsSigned: true })
+            (IntegerLiteralTypeConstructor { IsInt16: true }, PointerSizedIntegerTypeConstructor { IsSigned: true })
                 => IType.Offset,
-            (IntegerConstValueType { IsUInt16: true }, PointerSizedIntegerType { IsSigned: false })
+            (IntegerLiteralTypeConstructor { IsUInt16: true }, PointerSizedIntegerTypeConstructor { IsSigned: false })
                 => IType.Size,
-            (IntegerConstValueType left, PointerSizedIntegerType right)
+            (IntegerLiteralTypeConstructor left, PointerSizedIntegerTypeConstructor right)
                 => left.IsSigned || right.IsSigned ? IType.Int : IType.UInt,
-            (FixedSizeIntegerType left, FixedSizeIntegerType right)
+            (FixedSizeIntegerTypeConstructor left, FixedSizeIntegerTypeConstructor right)
                 when left.IsSigned == right.IsSigned
-                => (left.Bits >= right.Bits ? left : right).Type,
-            (FixedSizeIntegerType { IsSigned: true } left, FixedSizeIntegerType right)
+                => (left.Bits >= right.Bits ? left : right).TryConstructConstNullary(),
+            (FixedSizeIntegerTypeConstructor { IsSigned: true } left, FixedSizeIntegerTypeConstructor right)
                 when left.Bits > right.Bits
-                => left.Type,
-            (FixedSizeIntegerType left, FixedSizeIntegerType { IsSigned: true } right)
+                => left.TryConstructConstNullary(),
+            (FixedSizeIntegerTypeConstructor left, FixedSizeIntegerTypeConstructor { IsSigned: true } right)
                 when left.Bits < right.Bits
-                => right.Type,
-            (FixedSizeIntegerType { IsSigned: true } left, IntegerConstValueType right)
+                => right.TryConstructConstNullary(),
+            (FixedSizeIntegerTypeConstructor { IsSigned: true } left, IntegerLiteralTypeConstructor right)
                 when left.IsSigned || right.IsSigned
                 => left.NumericOperatorCommonType(right.ToSmallestSignedIntegerType()),
-            (FixedSizeIntegerType { IsSigned: false } left, IntegerConstValueType { IsSigned: false } right)
+            (FixedSizeIntegerTypeConstructor { IsSigned: false } left, IntegerLiteralTypeConstructor { IsSigned: false } right)
                 => left.NumericOperatorCommonType(right.ToSmallestUnsignedIntegerType()),
-            (IntegerConstValueType left, FixedSizeIntegerType right)
+            (IntegerLiteralTypeConstructor left, FixedSizeIntegerTypeConstructor right)
                 when left.IsSigned || right.IsSigned
                 => left.ToSmallestSignedIntegerType().NumericOperatorCommonType(right),
-            (IntegerConstValueType { IsSigned: false } left, FixedSizeIntegerType { IsSigned: false } right)
+            (IntegerLiteralTypeConstructor { IsSigned: false } left, FixedSizeIntegerTypeConstructor { IsSigned: false } right)
                 => left.ToSmallestSignedIntegerType().NumericOperatorCommonType(right),
             _ => null
         };

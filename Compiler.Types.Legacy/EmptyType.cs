@@ -54,6 +54,9 @@ public abstract class EmptyType : IType
     /// </summary>
     /// <remarks>This can restrict the ability to write to the value.</remarks>
     public IType AccessedVia(ICapabilityConstraint capability) => this;
+
+    public abstract Decorated.IType ToDecoratedType();
+
     IMaybeType IMaybeType.AccessedVia(ICapabilityConstraint capability) => AccessedVia(capability);
 
     #region Eqauality

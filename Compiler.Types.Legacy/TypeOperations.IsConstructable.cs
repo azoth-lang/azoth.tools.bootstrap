@@ -1,6 +1,6 @@
+using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.ConstValue;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Declared;
 using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
@@ -13,7 +13,7 @@ public static partial class TypeOperations
 
         return Check(param, arg);
 
-        static bool Check(GenericParameter param, IType arg)
+        static bool Check(TypeConstructor.Parameter param, IType arg)
         {
             switch (arg)
             {

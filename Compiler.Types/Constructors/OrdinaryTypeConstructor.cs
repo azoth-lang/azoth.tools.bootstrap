@@ -17,12 +17,15 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 public sealed class OrdinaryTypeConstructor : TypeConstructor
 {
     public TypeConstructorContext Context { get; }
+
     /// <summary>
     /// Whether the declaration for this type constructor is abstract.
     /// </summary>
     /// <remarks>Classes can be declared abstract with the <c>abstract</c> keyword. Traits are
     /// always abstract. Structs are never abstract.</remarks>
     public bool IsAbstract { get; }
+
+    public bool IsDeclaredConst { get; }
 
     /// <summary>
     /// What kind of type this is (e.g. class, trait, or struct).
@@ -42,30 +45,36 @@ public sealed class OrdinaryTypeConstructor : TypeConstructor
     /// <remarks>Even if a type cannot have fields, a subtype still could.</remarks>
     public bool CanHaveFields => Kind != TypeKind.Trait;
 
+    public bool CanBeSupertype => Kind != TypeKind.Struct;
+
     public StandardName Name { get; }
     TypeName TypeConstructor.Name => Name;
 
+    public bool HasParameters => !Parameters.IsEmpty;
     /// <summary>
     /// The parameters to this type constructor. Commonly referred to as "generic parameters".
     /// </summary>
-    public IFixedList<TypeConstructorParameter> Parameters { get; }
+    public IFixedList<TypeConstructor.Parameter> Parameters { get; }
     public bool AllowsVariance { get; }
+    public bool HasIndependentParameters { get; }
+
     /// <summary>
     /// Within the type constructor declaration, any generic parameters will appear as type
     /// variables. These are the types of those variables.
     /// </summary>
     public IFixedList<GenericParameterPlainType> ParameterPlainTypes { get; }
-    public IFixedSet<ConstructedPlainType> Supertypes { get; }
+    public IFixedSet<TypeConstructor.Supertype> Supertypes { get; }
     public TypeSemantics Semantics
         => Kind == TypeKind.Struct ? TypeSemantics.Value : TypeSemantics.Reference;
 
     public OrdinaryTypeConstructor(
         TypeConstructorContext context,
         bool isAbstract,
+        bool isDeclaredConst,
         TypeKind kind,
         StandardName name,
-        IEnumerable<TypeConstructorParameter> genericParameters,
-        IFixedSet<ConstructedPlainType> supertypes)
+        IEnumerable<TypeConstructor.Parameter> genericParameters,
+        IFixedSet<TypeConstructor.Supertype> supertypes)
     {
         Requires.That((kind == TypeKind.Trait).Implies(isAbstract), nameof(isAbstract), "Traits must be abstract.");
         Requires.That((kind == TypeKind.Struct).Implies(!isAbstract), nameof(isAbstract), "Structs cannot be abstract.");
@@ -76,13 +85,15 @@ public sealed class OrdinaryTypeConstructor : TypeConstructor
         Parameters = genericParameters.ToFixedList();
         Requires.That(Name.GenericParameterCount == Parameters.Count, nameof(genericParameters),
             "Count must match name count");
-        AllowsVariance = Parameters.Any(p => p.Variance != TypeVariance.Invariant);
+        AllowsVariance = Parameters.Any(p => p.Variance != TypeParameterVariance.Invariant);
+        HasIndependentParameters = Parameters.Any(p => p.HasIndependence);
 
-        Requires.That(supertypes.Contains(IPlainType.Any), nameof(supertypes),
+        Requires.That(supertypes.Contains(TypeConstructor.Supertype.Any), nameof(supertypes),
             "All ordinary type constructors must have `Any` as a supertype.");
         Supertypes = supertypes;
+        IsDeclaredConst = isDeclaredConst;
         ParameterPlainTypes = Parameters.Select(p => new GenericParameterPlainType(this, p))
-                                                     .ToFixedList();
+                                        .ToFixedList();
     }
 
     public ConstructedPlainType Construct(IEnumerable<IPlainType> typeArguments)
@@ -92,13 +103,11 @@ public sealed class OrdinaryTypeConstructor : TypeConstructor
             throw new ArgumentException("Incorrect number of type arguments.");
         return new(this, args);
     }
-    IPlainType TypeConstructor.Construct(IFixedList<IPlainType> typeArguments)
+    ConstructedPlainType TypeConstructor.Construct(IFixedList<IPlainType> typeArguments)
         => Construct(typeArguments);
 
-    public ConstructedPlainType ConstructWithGenericParameterPlainTypes()
+    public ConstructedPlainType ConstructWithParameterPlainTypes()
         => Construct(ParameterPlainTypes);
-    IPlainType TypeConstructor.ConstructWithParameterPlainTypes()
-        => ConstructWithGenericParameterPlainTypes();
 
     public ConstructedPlainType? TryConstructNullary()
         => Parameters.IsEmpty ? new ConstructedPlainType(this, []) : null;

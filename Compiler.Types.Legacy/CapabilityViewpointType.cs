@@ -1,5 +1,6 @@
 using System;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
+using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
 
@@ -15,7 +16,7 @@ public sealed class CapabilityViewpointType : ViewpointType
             _ => referent,
         };
 
-    public static IType Create(Capability capability, GenericParameterType referent)
+    public static INonVoidType Create(Capability capability, GenericParameterType referent)
     {
         if (capability == Capability.Mutable || capability == Capability.InitMutable)
             return referent;
@@ -33,6 +34,10 @@ public sealed class CapabilityViewpointType : ViewpointType
     }
 
     #region Equals
+
+    public override Decorated.CapabilityType ToDecoratedType()
+        => new Decorated.CapabilityType(Capability, ToPlainType(), []);
+
     public override bool Equals(IMaybeType? other)
     {
         if (other is null) return false;
@@ -50,4 +55,5 @@ public sealed class CapabilityViewpointType : ViewpointType
         => $"{Capability.ToSourceCodeString()}|>{Referent.ToSourceCodeString()}";
 
     public override string ToILString() => $"{Capability.ToILString()}|>{Referent.ToILString()}";
+    public override GenericParameterPlainType ToPlainType() => Referent.ToPlainType();
 }

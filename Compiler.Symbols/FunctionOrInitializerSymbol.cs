@@ -1,4 +1,3 @@
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Parameters;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
@@ -13,8 +12,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 [Closed(typeof(FunctionSymbol), typeof(InitializerSymbol))]
 public abstract class FunctionOrInitializerSymbol : InvocableSymbol
 {
-    private protected FunctionOrInitializerSymbol(IFixedList<ParameterType> parameters, IType returnType)
-        : base(parameters, returnType)
+    private protected FunctionOrInitializerSymbol(IFixedList<ParameterType> parameterTypes)
+        : base(parameterTypes)
     {
     }
 }

@@ -1,9 +1,9 @@
 using System;
 using System.Numerics;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.MemoryLayout;
+using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.ConstValue;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Declared;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter;
 
@@ -29,7 +29,7 @@ internal static class Operations
             if (to.Equals(IType.NUInt)) return AzothValue.NUInt((nuint)(ulong)value.IntValue);
         }
 
-        if (from is CapabilityType { DeclaredType: BoolType } or BoolConstValueType)
+        if (from is CapabilityType { TypeConstructor: BoolTypeConstructor } or BoolConstValueType)
         {
             if (to.Equals(IType.Int8)) return AzothValue.I8((sbyte)(value.BoolValue ? 1 : 0));
             if (to.Equals(IType.Byte)) return AzothValue.Byte((byte)(value.BoolValue ? 1 : 0));
@@ -83,7 +83,7 @@ internal static class Operations
             if (to.Equals(IType.Int)) return value;
 
             var fromValue = value.IntValue;
-            if (to is CapabilityType { DeclaredType: FixedSizeIntegerType fixedSizeIntegerType })
+            if (to is { TypeConstructor: FixedSizeIntegerTypeConstructor fixedSizeIntegerType })
             {
                 var isSigned = fromValue.Sign < 0;
                 if (isSigned && (!fixedSizeIntegerType.IsSigned

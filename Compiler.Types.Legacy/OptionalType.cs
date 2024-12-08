@@ -59,10 +59,12 @@ public sealed class OptionalType : NonEmptyType, INonVoidType
         Referent = referent;
     }
 
-    public override INonVoidPlainType ToPlainType()
-        => new OptionalPlainType(Referent.ToPlainType());
+    public override OptionalPlainType ToPlainType() => new(Referent.ToPlainType());
 
-    IMaybeType IMaybeType.AccessedVia(IMaybePseudotype contextType) => (IMaybeType)AccessedVia(contextType);
+    public override Decorated.OptionalType ToDecoratedType()
+        => new(ToPlainType(), Referent.ToDecoratedType());
+
+    IMaybeType IMaybeType.AccessedVia(IMaybePseudotype contextType) => AccessedVia(contextType);
 
     public override IType AccessedVia(ICapabilityConstraint capability) => this;
     IMaybeType IMaybeType.AccessedVia(ICapabilityConstraint capability) => AccessedVia(capability);

@@ -24,8 +24,5 @@ public class OptionalTypeTests
         Assert.Equal(type1, type2);
     }
 
-    private static NamespaceName Namespace(params string[] segments)
-    {
-        return new NamespaceName(segments);
-    }
+    private static NamespaceName Namespace(params string[] segments) => new(segments);
 }

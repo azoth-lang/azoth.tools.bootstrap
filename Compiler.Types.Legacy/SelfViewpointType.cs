@@ -1,5 +1,6 @@
 using System;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
+using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
@@ -31,7 +32,7 @@ public sealed class SelfViewpointType : ViewpointType
             _ => throw ExhaustiveMatch.Failed(referent),
         };
 
-    public static IType Create(CapabilitySet capability, INonVoidType referent)
+    public static SelfViewpointType Create(CapabilitySet capability, INonVoidType referent)
         => new SelfViewpointType(capability, referent);
 
     public override CapabilitySet Capability { get; }
@@ -45,6 +46,9 @@ public sealed class SelfViewpointType : ViewpointType
     }
 
     #region Equals
+
+    public override Decorated.SelfViewpointType ToDecoratedType() => new(Capability, Referent.ToDecoratedType());
+
     public override bool Equals(IMaybeType? other)
     {
         if (other is null) return false;
@@ -62,4 +66,6 @@ public sealed class SelfViewpointType : ViewpointType
 
     public override string ToILString()
         => $"{Capability.ToILString()} self|>{Referent.ToILString()}";
+
+    public sealed override INonVoidPlainType ToPlainType() => Referent.ToPlainType();
 }

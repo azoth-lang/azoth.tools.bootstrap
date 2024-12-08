@@ -2,10 +2,9 @@ using Azoth.Tools.Bootstrap.Compiler.Core.Code;
 using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 using Azoth.Tools.Bootstrap.Compiler.Syntax;
-using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
+using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Declared;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Pseudotypes;
 using UnaryOperator = Azoth.Tools.Bootstrap.Compiler.Core.Operators.UnaryOperator;
 
@@ -95,7 +94,7 @@ public static class TypeError
             3012, $"Cannot explicitly convert expression `{file.Code[expression.Span]}` of type `{ofType.ToNonConstValueType().ToSourceCodeString()}` to type `{toType.ToNonConstValueType().ToSourceCodeString()}`");
     }
 
-    public static Diagnostic CannotApplyCapabilityToConstantType(CodeFile file, ICodeSyntax expression, Capability capability, DeclaredType type)
+    public static Diagnostic CannotApplyCapabilityToConstantType(CodeFile file, ICodeSyntax expression, Capability capability, TypeConstructor type)
     {
         return new(file, expression.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             3013, $"Cannot use `{capability.ToSourceCodeString()}` on constant type `{type}`");
@@ -216,7 +215,7 @@ public static class TypeError
             3032, $"Special type `{typeSyntax}` cannot be used here.");
     }
 
-    public static Diagnostic CapabilityNotCompatibleWithConstraint(CodeFile file, ICodeSyntax typeSyntax, GenericParameter parameter, IType arg)
+    public static Diagnostic CapabilityNotCompatibleWithConstraint(CodeFile file, ICodeSyntax typeSyntax, TypeConstructor.Parameter parameter, IType arg)
     {
         return new(file, typeSyntax.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             3033, $"In `{typeSyntax}` the capability of `{arg.ToSourceCodeString()}` is not compatible with the capability constraint on `{parameter}`.");

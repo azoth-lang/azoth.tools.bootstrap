@@ -1,6 +1,6 @@
 using System.CodeDom.Compiler;
 using System.Runtime.CompilerServices;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Declared;
+using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Parameters;
 using Azoth.Tools.Bootstrap.Framework;
 
@@ -15,5 +15,5 @@ internal static partial class DefinitionTypesAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFixedList<IMaybeParameterType> InvocableDefinition_ParameterTypes(IInvocableDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial OrdinaryDeclaredType TypeDefinition_Children_Broadcast_ContainingDeclaredType(ITypeDefinitionNode node);
+    public static partial OrdinaryTypeConstructor TypeDefinition_Children_Broadcast_ContainingTypeConstructor(ITypeDefinitionNode node);
 }

@@ -17,9 +17,13 @@ internal static partial class DefinitionPlainTypesAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IMaybeFunctionPlainType ConcreteFunctionInvocableDefinition_PlainType(IConcreteFunctionInvocableDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial OrdinaryTypeConstructor TypeDefinition_TypeConstructor(ITypeDefinitionNode node);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial SelfPlainType TypeDefinition_SelfPlainType(ITypeDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IMaybeNonVoidPlainType FieldDefinition_BindingPlainType(IFieldDefinitionNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial OrdinaryTypeConstructor ClassDefinition_TypeConstructor(IClassDefinitionNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial OrdinaryTypeConstructor StructDefinition_TypeConstructor(IStructDefinitionNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial OrdinaryTypeConstructor TraitDefinition_TypeConstructor(ITraitDefinitionNode node);
 }

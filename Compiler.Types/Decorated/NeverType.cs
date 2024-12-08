@@ -15,6 +15,18 @@ public sealed class NeverType : INonVoidType
     public NeverPlainType PlainType => NeverPlainType.Instance;
     INonVoidPlainType INonVoidType.PlainType => PlainType;
 
+    #region Equality
+    public bool Equals(IMaybeType? other)
+        // Singleton, so a reference equality suffices
+        => ReferenceEquals(this, other);
+
+    public override bool Equals(object? obj)
+        // Singleton, so a reference equality suffices
+        => ReferenceEquals(this, obj);
+
+    public override int GetHashCode() => HashCode.Combine(typeof(NeverType));
+    #endregion
+
     public override string ToString() => throw new NotSupportedException();
 
     public string ToSourceCodeString() => PlainType.ToString();

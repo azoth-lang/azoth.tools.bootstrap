@@ -8,9 +8,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
     typeof(SelfPlainType))]
 public abstract class AssociatedPlainType : VariablePlainType
 {
-    public OrdinaryTypeConstructor ContainingType { get; }
+    public TypeConstructor ContainingType { get; }
 
-    protected AssociatedPlainType(OrdinaryTypeConstructor containingType)
+    protected AssociatedPlainType(TypeConstructor containingType)
     {
         ContainingType = containingType;
     }
