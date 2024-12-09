@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Bare;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.ConstValue;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Parameters;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Pseudotypes;
 using Azoth.Tools.Bootstrap.Framework;

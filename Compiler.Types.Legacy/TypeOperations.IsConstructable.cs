@@ -1,6 +1,5 @@
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Bare;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.ConstValue;
 using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
