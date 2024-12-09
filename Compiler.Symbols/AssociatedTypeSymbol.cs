@@ -1,5 +1,5 @@
 using System;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Bare;
+using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 
@@ -8,9 +8,9 @@ public sealed class AssociatedTypeSymbol : TypeSymbol
     public override PackageSymbol Package => ContainingSymbol.Package ?? throw new ArgumentNullException();
     public override OrdinaryTypeSymbol ContainingSymbol { get; }
     public override OrdinaryTypeSymbol ContextTypeSymbol => ContainingSymbol;
-    public BareAssociatedType Type { get; }
+    public AssociatedPlainType Type { get; }
 
-    public AssociatedTypeSymbol(OrdinaryTypeSymbol containingSymbol, BareAssociatedType type)
+    public AssociatedTypeSymbol(OrdinaryTypeSymbol containingSymbol, AssociatedPlainType type)
         : base(type.Name)
     {
         ContainingSymbol = containingSymbol;

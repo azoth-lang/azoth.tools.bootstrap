@@ -11,7 +11,7 @@ using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Bare;
 
-[Closed(typeof(BareNonVariableType), typeof(BareAssociatedType))]
+[Closed(typeof(BareNonVariableType), typeof(SelfType))]
 [DebuggerDisplay("{" + nameof(ToILString) + "(),nq}")]
 public abstract class BareType : IEquatable<BareType>
 {
