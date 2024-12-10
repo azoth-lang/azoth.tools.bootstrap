@@ -5,7 +5,7 @@ using static Azoth.Tools.Bootstrap.Compiler.Types.Capabilities.Capability;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 
-[DebuggerDisplay("{ToILString()}")]
+[DebuggerDisplay("{" + nameof(ToILString) + "(),nq}")]
 public sealed class CapabilitySet : ICapabilityConstraint
 {
     /// <summary>

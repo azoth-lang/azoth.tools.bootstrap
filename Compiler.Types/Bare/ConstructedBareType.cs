@@ -1,3 +1,4 @@
+using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using Azoth.Tools.Bootstrap.Framework;
@@ -16,4 +17,11 @@ public sealed class ConstructedBareType : BareType
         PlainType = plainType;
         TypeArguments = typeArguments;
     }
+
+    public CapabilityType With(Capability capability)
+        => new CapabilityType(capability, PlainType, TypeArguments);
+
+    public CapabilityType WithRead() => With(Capability.Read);
+
+    public CapabilityType WithMutate() => With(Capability.Mutable);
 }

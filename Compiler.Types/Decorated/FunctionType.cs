@@ -25,6 +25,11 @@ public sealed class FunctionType : INonVoidType
         Return = @return;
     }
 
+    public FunctionType(IFixedList<ParameterType> parameters, IType @return)
+        : this(new(parameters.Select(p => p.PlainType), @return.PlainType), parameters, @return)
+    {
+    }
+
     #region Equality
     public bool Equals(IMaybeType? other)
     {

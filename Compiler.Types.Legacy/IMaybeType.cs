@@ -47,4 +47,6 @@ public interface IMaybeType : IMaybePseudotype
     /// </summary>
     /// <remarks>This can restrict the ability to write to the value.</remarks>
     IMaybeType AccessedVia(ICapabilityConstraint capability);
+
+    Decorated.IMaybeType ToDecoratedType();
 }

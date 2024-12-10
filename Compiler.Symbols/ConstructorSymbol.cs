@@ -1,8 +1,7 @@
 using System;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Names;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Parameters;
+using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
@@ -13,7 +12,7 @@ public sealed class ConstructorSymbol : InvocableSymbol
     public override OrdinaryTypeSymbol ContextTypeSymbol => ContainingSymbol;
     public override IdentifierName? Name { get; }
     public CapabilityType SelfParameterType { get; }
-    public override CapabilityType ReturnType { get; }
+    public override IType ReturnType { get; }
 
     public ConstructorSymbol(
         OrdinaryTypeSymbol containingSymbol,
@@ -40,11 +39,12 @@ public sealed class ConstructorSymbol : InvocableSymbol
         return other is ConstructorSymbol otherConstructor
                && ContainingSymbol == otherConstructor.ContainingSymbol
                && Name == otherConstructor.Name
+               && SelfParameterType.Equals(otherConstructor.SelfParameterType)
                && ParameterTypes.SequenceEqual(otherConstructor.ParameterTypes);
     }
 
     public override int GetHashCode()
-        => HashCode.Combine(ContainingSymbol, Name, ParameterTypes);
+        => HashCode.Combine(ContainingSymbol, Name, SelfParameterType, ParameterTypes);
 
     public override string ToILString()
     {

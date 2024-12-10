@@ -1,4 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
+using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
+using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using ExhaustiveMatching;
 
@@ -11,5 +13,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 // ReSharper disable once InconsistentNaming
 public interface BareType
 {
+    CapabilityType With(Capability capability);
 
+    CapabilityType WithRead();
+
+    CapabilityType WithMutate();
 }

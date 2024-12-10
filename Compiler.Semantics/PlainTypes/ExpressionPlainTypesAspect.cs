@@ -211,7 +211,7 @@ internal static partial class ExpressionPlainTypesAspect
         var rangeTypeDeclaration = containingLexicalScope.Lookup("azoth")
             .OfType<INamespaceDeclarationNode>().SelectMany(ns => ns.MembersNamed("range"))
             .OfType<ITypeDeclarationNode>().TrySingle();
-        var rangePlainType = rangeTypeDeclaration?.Symbol.TryGetTypeConstructor()?.TryConstructNullary()
+        var rangePlainType = rangeTypeDeclaration?.Symbol.TryGetTypeConstructor()?.TryConstructNullaryPlainType()
                              ?? IMaybePlainType.Unknown;
         return rangePlainType;
     }
@@ -220,7 +220,7 @@ internal static partial class ExpressionPlainTypesAspect
     {
         var typeSymbolNode = node.ContainingLexicalScope.Lookup(StringTypeName)
                                  .OfType<ITypeDeclarationNode>().TrySingle();
-        return (IMaybePlainType?)typeSymbolNode?.Symbol.TryGetTypeConstructor()?.TryConstructNullary() ?? IPlainType.Unknown;
+        return (IMaybePlainType?)typeSymbolNode?.Symbol.TryGetTypeConstructor()?.TryConstructNullaryPlainType() ?? IPlainType.Unknown;
     }
 
     private static readonly IdentifierName StringTypeName = "String";

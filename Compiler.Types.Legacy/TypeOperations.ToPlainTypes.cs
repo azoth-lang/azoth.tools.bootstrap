@@ -10,4 +10,7 @@ public static partial class TypeOperations
 {
     public static IFixedList<IMaybeNonVoidPlainType> ToPlainTypes(this IEnumerable<IMaybeParameterType> parameters)
         => parameters.Select(p => p.ToPlainType()).ToFixedList();
+
+    public static IFixedList<IMaybeNonVoidPlainType> ToPlainTypes(this IEnumerable<Decorated.ParameterType> parameters)
+        => parameters.Select(p => p.PlainType).ToFixedList();
 }

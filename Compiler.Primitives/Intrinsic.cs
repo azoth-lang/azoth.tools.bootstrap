@@ -4,8 +4,7 @@ using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Parameters;
+using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using Azoth.Tools.Bootstrap.Framework;
 using static Azoth.Tools.Bootstrap.Compiler.Primitives.SymbolBuilder;
@@ -23,7 +22,7 @@ public static class Intrinsic
     public static readonly TypeConstructor PromiseTypeConstructor = Promise.TypeConstructor;
 
     public static IMaybeType PromiseOf(IMaybeType type)
-        => PromiseTypeConstructor.WithRead(FixedList.Create(type));
+        => PromiseTypeConstructor.Construct(FixedList.Create(type))?.WithRead() ?? IMaybeType.Unknown;
     public static IMaybePlainType PromiseOf(IMaybePlainType plainType)
         => PromiseTypeConstructor.Construct(FixedList.Create(plainType));
 
@@ -78,7 +77,7 @@ public static class Intrinsic
         _ = BuildPromiseSymbol(azothNamespace, tree);
 
         var rawHybridBoundedListType = BuildSpecializedCollectionSymbols(azothNamespace, tree);
-        var readBytesType = rawHybridBoundedListType.WithRead([IType.Void, IType.Byte]);
+        var readBytesType = rawHybridBoundedListType.Construct([IType.Void, IType.Byte]).WithRead();
 
         // fn print_raw_utf8_bytes(bytes: Raw_Hybrid_Bounded_List[byte], start: size, byte_count: size)
         var print = Function(intrinsicsNamespace, "print_raw_utf8_bytes",
@@ -130,58 +129,57 @@ public static class Intrinsic
 
     private static OrdinaryTypeConstructor BuildRawHybridBoundedListSymbol(SymbolTreeBuilder tree, LocalNamespaceSymbol @namespace)
     {
-        var classType = TypeConstructor.CreateClass(@namespace.Package.Name, @namespace.NamespaceName,
+        var typeConstructor = TypeConstructor.CreateClass(@namespace.Package.Name, @namespace.NamespaceName,
             isAbstract: false, isConst: false, "Raw_Hybrid_Bounded_List",
             TypeConstructor.Parameter.Independent(CapabilitySet.Aliasable, "F"),
             TypeConstructor.Parameter.Independent(CapabilitySet.Aliasable, "T"));
-        var genericParameterTypes = classType.GenericParameterTypes();
-        var fixedType = genericParameterTypes[0];
-        var readClassParamType = new SelfParameterType(false, classType.WithRead(genericParameterTypes));
-        var mutClassType = classType.WithMutate(genericParameterTypes);
-        var mutClassParamType = new SelfParameterType(false, mutClassType);
-        var itemType = genericParameterTypes[1];
-        var classSymbol = new OrdinaryTypeSymbol(@namespace, classType);
+        var bareType = typeConstructor.ConstructWithParameterTypes();
+        var fixedType = typeConstructor.ParameterTypes[0];
+        var readType = bareType.WithRead();
+        var mutType = bareType.WithMutate();
+        var itemType = typeConstructor.ParameterTypes[1];
+        var classSymbol = new OrdinaryTypeSymbol(@namespace, typeConstructor);
         tree.Add(classSymbol);
 
         // published new(.fixed, .capacity) {...}
-        var constructor = new ConstructorSymbol(classSymbol, null, mutClassType, Params(fixedType, IType.Size));
+        var constructor = new ConstructorSymbol(classSymbol, null, mutType, Params(fixedType, IType.Size));
         tree.Add(constructor);
 
         // published get fixed(self) -> F;
-        var getFixed = Getter(classSymbol, "fixed", readClassParamType, fixedType);
+        var getFixed = Getter(classSymbol, "fixed", readType, fixedType);
         tree.Add(getFixed);
 
         // published set fixed(mut self, fixed: F);
-        var setFixed = Setter(classSymbol, "fixed", mutClassParamType, Param(fixedType));
+        var setFixed = Setter(classSymbol, "fixed", mutType, Param(fixedType));
         tree.Add(setFixed);
 
         // published get capacity(self) -> size;
-        var capacity = Getter(classSymbol, "capacity", readClassParamType, IType.Size);
+        var capacity = Getter(classSymbol, "capacity", readType, IType.Size);
         tree.Add(capacity);
 
         // published get count(self) -> size
-        var count = Getter(classSymbol, "count", readClassParamType, IType.Size);
+        var count = Getter(classSymbol, "count", readType, IType.Size);
         tree.Add(count);
 
         // published /* unsafe */ fn at(self, index: size) -> T
         // TODO replace with at method returning a `ref var`
-        var at = Method(classSymbol, "at", readClassParamType,
+        var at = Method(classSymbol, "at", readType,
             Params(IType.Size), itemType);
         tree.Add(at);
 
         // published /* unsafe */ fn set_at(mut self, index: size, T value)
         // TODO replace with at method returning a `ref var`
-        var setAt = Method(classSymbol, "set_at", mutClassParamType, Params(IType.Size, itemType));
+        var setAt = Method(classSymbol, "set_at", mutType, Params(IType.Size, itemType));
         tree.Add(setAt);
 
         // published fn add(mut self, value: T);
-        var add = Method(classSymbol, "add", mutClassParamType, Params(itemType));
+        var add = Method(classSymbol, "add", mutType, Params(itemType));
         tree.Add(add);
 
         // published fn shrink(mut self, count: size)
-        var shrink = Method(classSymbol, "shrink", mutClassParamType, Params(IType.Size));
+        var shrink = Method(classSymbol, "shrink", mutType, Params(IType.Size));
         tree.Add(shrink);
 
-        return classType;
+        return typeConstructor;
     }
 }

@@ -5,9 +5,7 @@ using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Parameters;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Pseudotypes;
+using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Tests.Unit;
@@ -32,8 +30,6 @@ public abstract class SymbolTestFixture
 
     protected static IFixedList<ParameterType> Params(INonVoidType param, params INonVoidType[] @params)
         => @params.Prepend(param).Select(t => new ParameterType(false, t)).ToFixedList();
-
-    protected static SelfParameterType SelfParam(IPseudotype param) => new SelfParameterType(false, param);
 
     protected static ParameterType Param(INonVoidType param) => new ParameterType(false, param);
 
@@ -65,7 +61,7 @@ public abstract class SymbolTestFixture
     protected MethodSymbol Method(
         string? name = null,
         OrdinaryTypeSymbol? containing = null,
-        SelfParameterType? self = null,
+        INonVoidType? self = null,
         IFixedList<ParameterType>? @params = null,
         IType? @return = null)
     {
@@ -74,7 +70,7 @@ public abstract class SymbolTestFixture
             containing,
             MethodKind.Standard,
             Name(name) ?? DefaultName("method"),
-            self ?? new SelfParameterType(false, containing.TypeConstructor.With(Capability.Read, [])),
+            self ?? containing.TypeConstructor.ConstructNullaryType().WithRead(),
             @params ?? Params(),
             @return ?? DataType());
     }
@@ -83,7 +79,7 @@ public abstract class SymbolTestFixture
         MethodSymbol mother,
         string? name = null,
         OrdinaryTypeSymbol? containing = null,
-        SelfParameterType? self = null,
+        INonVoidType? self = null,
         IFixedList<ParameterType>? @params = null,
         IType? @return = null)
     {
@@ -104,13 +100,14 @@ public abstract class SymbolTestFixture
         Capability? referenceCapability = null)
     {
         var finalName = Name(name) ?? DefaultName("DataType");
-        return CapabilityType.CreateClass(
-            referenceCapability ?? Capability.Constant,
+        return TypeConstructor.CreateClass(
             containingPackage ?? DefaultName("package"),
             containingNamespace ?? NamespaceName.Global,
             isAbstract: false,
             isConst ?? false,
-            finalName.Text);
+            finalName.Text)
+                              .ConstructNullaryType()
+                              .With(referenceCapability ?? Capability.Constant);
     }
 
     protected OrdinaryTypeSymbol Type(
@@ -119,7 +116,7 @@ public abstract class SymbolTestFixture
     {
         return new(
             ns ?? Package(),
-            dataType ?? (OrdinaryTypeConstructor)DataType().TypeConstructor!);
+            dataType ?? (OrdinaryTypeConstructor)DataType().PlainType.TypeConstructor!);
     }
 
     public static readonly ParameterType IntParameter = new(false, IType.Int);

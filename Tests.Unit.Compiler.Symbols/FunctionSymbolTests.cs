@@ -57,8 +57,8 @@ public class FunctionSymbolTests : SymbolTestFixture
         var parameters = Params(DataType("T1"), DataType("T2"));
         var funcA = Func("A", ns, parameters, DataType("T3"));
         var selfDataType = DataType("Class");
-        var selfType = Type(ns, (OrdinaryTypeConstructor)selfDataType.TypeConstructor!);
-        var methodA = Method("A", selfType, SelfParam(selfDataType), parameters, DataType("T3"));
+        var selfType = Type(ns, (OrdinaryTypeConstructor)selfDataType.PlainType.TypeConstructor!);
+        var methodA = Method("A", selfType, selfDataType, parameters, DataType("T3"));
 
         // Note: assert false used to ensure which object Equals is called on
         Assert.False(funcA.Equals(methodA));

@@ -7,4 +7,5 @@ public interface IPseudotype : IMaybePseudotype
 {
     new IType ToUpperBound();
     IMaybeType IMaybePseudotype.ToUpperBound() => ToUpperBound();
+    Decorated.IType ToDecoratedType();
 }

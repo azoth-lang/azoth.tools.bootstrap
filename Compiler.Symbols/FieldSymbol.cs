@@ -1,29 +1,28 @@
 using System;
 using Azoth.Tools.Bootstrap.Compiler.Names;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
+using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 
 public sealed class FieldSymbol : Symbol
 {
-    public override IdentifierName Name { get; }
-    public INonVoidType Type { get; }
+    public override PackageSymbol Package => ContainingSymbol.Package;
     public override OrdinaryTypeSymbol ContainingSymbol { get; }
     public override OrdinaryTypeSymbol ContextTypeSymbol => ContainingSymbol;
-    public override PackageSymbol Package { get; }
+    public override IdentifierName Name { get; }
+    public INonVoidType Type { get; }
     public bool IsMutableBinding { get; }
 
     public FieldSymbol(
         OrdinaryTypeSymbol containingSymbol,
-        IdentifierName name,
         bool isMutableBinding,
-        INonVoidType dataType)
+        IdentifierName name,
+        INonVoidType type)
     {
-        Name = name;
-        Type = dataType;
-        Package = containingSymbol.Package ?? throw new ArgumentNullException(nameof(containingSymbol));
         ContainingSymbol = containingSymbol;
         IsMutableBinding = isMutableBinding;
+        Name = name;
+        Type = type;
     }
 
     #region Equality
@@ -33,13 +32,13 @@ public sealed class FieldSymbol : Symbol
         if (ReferenceEquals(this, other)) return true;
         return other is FieldSymbol otherField
                && ContainingSymbol == otherField.ContainingSymbol
-               && Name == otherField.Name
                && IsMutableBinding == otherField.IsMutableBinding
+               && Name == otherField.Name
                && Type.Equals(otherField.Type);
     }
 
     public override int GetHashCode()
-        => HashCode.Combine(ContainingSymbol, Name, IsMutableBinding, Type);
+        => HashCode.Combine(ContainingSymbol, IsMutableBinding, Name, Type);
     #endregion
 
     public override string ToILString()

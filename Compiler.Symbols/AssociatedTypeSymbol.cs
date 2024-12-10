@@ -5,7 +5,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 
 public sealed class AssociatedTypeSymbol : TypeSymbol
 {
-    public override PackageSymbol Package => ContainingSymbol.Package ?? throw new ArgumentNullException();
+    public override PackageSymbol Package => ContainingSymbol.Package;
     public override OrdinaryTypeSymbol ContainingSymbol { get; }
     public override OrdinaryTypeSymbol ContextTypeSymbol => ContainingSymbol;
     public AssociatedPlainType Type { get; }

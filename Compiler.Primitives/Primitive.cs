@@ -5,8 +5,7 @@ using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Bare;
+using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 using static Azoth.Tools.Bootstrap.Compiler.Primitives.SymbolBuilder;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Primitives;
@@ -34,7 +33,8 @@ public static class Primitive
         var tree = SymbolTreeBuilder.CreateForPrimitives();
 
         // TODO: This is a hack to "have" a string type from here. Replace by extending primitive types with string related methods.
-        var stringType = CapabilityType.CreateClass(Capability.Constant, "fake", NamespaceName.Global, false, false, "String");
+        var stringType = TypeConstructor.CreateClass("fake", NamespaceName.Global, false, false, "String")
+                                        .ConstructNullaryType().With(Capability.Constant);
 
         // Simple Types
         BuildBoolSymbol(tree);
@@ -55,8 +55,8 @@ public static class Primitive
         BuildIntegerTypeSymbol(tree, TypeConstructor.NInt, stringType);
         BuildIntegerTypeSymbol(tree, TypeConstructor.NUInt, stringType);
 
-        BuildEmptyTypeSymbol(tree, IType.Void);
-        BuildEmptyTypeSymbol(tree, IType.Never);
+        tree.Add(VoidTypeSymbol.Instance);
+        tree.Add(NeverTypeSymbol.Instance);
 
         BuildAnyTypeSymbol(tree);
 
@@ -71,27 +71,21 @@ public static class Primitive
 
     private static void BuildIntegerTypeSymbol(
         SymbolTreeBuilder tree,
-        IntegerTypeConstructor integerType,
+        IntegerTypeConstructor integerTypeConstructor,
         IType stringType)
     {
-        var type = new BuiltInTypeSymbol(integerType);
+        var type = new BuiltInTypeSymbol(integerTypeConstructor);
         tree.Add(type);
 
-        var integerParamType = SelfParam(integerType.ToType());
+        var integerType = integerTypeConstructor.Type;
 
         // published fn remainder(self, other: T) -> T
-        var remainderMethod = Method(type, "remainder", integerParamType, Params(integerType.ToType()), integerType.ToType());
+        var remainderMethod = Method(type, "remainder", integerType, Params(integerType), integerType);
         tree.Add(remainderMethod);
 
         // published fn to_display_string(self) -> String
-        var displayStringMethod = Method(type, "to_display_string", integerParamType, Params(), stringType);
+        var displayStringMethod = Method(type, "to_display_string", integerType, Params(), stringType);
         tree.Add(displayStringMethod);
-    }
-
-    private static void BuildEmptyTypeSymbol(SymbolTreeBuilder tree, EmptyType emptyType)
-    {
-        var symbol = new EmptyTypeSymbol(emptyType);
-        tree.Add(symbol);
     }
 
     private static void BuildAnyTypeSymbol(SymbolTreeBuilder tree)
@@ -99,10 +93,8 @@ public static class Primitive
         var symbol = new BuiltInTypeSymbol(TypeConstructor.Any);
         tree.Add(symbol);
 
-        var idAnyType = BareNonVariableType.Any.With(Capability.Identity);
-
         // published fn identity_hash(id self) -> nuint
-        var identityHash = Method(symbol, "identity_hash", SelfParam(idAnyType), Params(), IType.NUInt);
+        var identityHash = Method(symbol, "identity_hash", IType.IdAny, Params(), IType.NUInt);
         tree.Add(identityHash);
     }
 }

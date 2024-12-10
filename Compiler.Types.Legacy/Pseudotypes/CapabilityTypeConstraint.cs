@@ -19,6 +19,10 @@ public sealed class CapabilityTypeConstraint : IPseudotype
 
     public CapabilityType ToUpperBound()
         => BareType.With(Capability.UpperBound);
+
+    public Decorated.IType ToDecoratedType()
+        => new Decorated.CapabilitySetSelfType(Capability, new(BareType.TypeConstructor));
+
     IType IPseudotype.ToUpperBound() => ToUpperBound();
 
     public IMaybePlainType ToPlainType() => BareType.ToPlainType();

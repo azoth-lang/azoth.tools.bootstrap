@@ -1,7 +1,9 @@
 using System.Text;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors.Contexts;
+using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using Azoth.Tools.Bootstrap.Framework;
 
@@ -92,6 +94,52 @@ public sealed class OrdinaryTypeConstructor : TypeConstructor
                                         .ToFixedList();
     }
 
+    /// <summary>
+    /// Make a version of this type for use as the default constructor or initializer parameter.
+    /// </summary>
+    /// <remarks>This is always `init mut` because the type is being initialized and can be mutated
+    /// inside the constructor via field initializers.</remarks>
+    public CapabilityType ToDefaultConstructorSelf()
+        // TODO switch to `init mut Self`
+        => ConstructWithParameterTypes().With(Capability.InitMutable);
+
+    /// <summary>
+    /// Make a version of this type for use as the return type of the default constructor or initializer.
+    /// </summary>
+    /// <remarks>This is always either `iso` or `const` depending on whether the type was declared
+    /// with `const` because there are no parameters that could break the new objects isolation.</remarks>
+    public CapabilityType ToDefaultConstructorReturn()
+        => ConstructWithParameterTypes().With(IsDeclaredConst ? Capability.Constant : Capability.Isolated);
+
+    /// <summary>
+    /// Determine the return type of a constructor or initializer with the given parameter types.
+    /// </summary>
+    /// <remarks>The capability of the return type is restricted by the parameter types because the
+    /// newly constructed object could contain references to them.</remarks>
+    public CapabilityType ToConstructorReturn(CapabilityType selfParameterType, IEnumerable<ParameterType> parameterTypes)
+    {
+        var bareType = ConstructWithParameterTypes();
+        if (IsDeclaredConst) return bareType.With(Capability.Constant);
+        // Read only self constructors cannot return `mut` or `iso`
+        if (!selfParameterType.Capability.AllowsWrite)
+            return bareType.With(Capability.Read);
+
+        var capability = parameterTypes.Any(BreaksIsolation) ? Capability.Mutable : Capability.Isolated;
+        return bareType.With(capability);
+    }
+
+    private static bool BreaksIsolation(ParameterType parameterType)
+        => BreaksIsolation(parameterType.IsLent, parameterType.Type);
+    private static bool BreaksIsolation(bool isLent, IType type)
+        => type switch
+        {
+            CapabilityType when isLent => false,
+            CapabilityType { Capability: var c } when c == Capability.Constant || c == Capability.Isolated => false,
+            OptionalType { Referent: var referent } when !BreaksIsolation(isLent, referent) => false,
+            NeverType => false,
+            _ => true
+        };
+
     public override ConstructedPlainType Construct(IFixedList<IPlainType> typeArguments)
     {
         if (typeArguments.Count != Parameters.Count)
@@ -99,7 +147,7 @@ public sealed class OrdinaryTypeConstructor : TypeConstructor
         return new(this, typeArguments);
     }
 
-    public override ConstructedPlainType? TryConstructNullary()
+    public override ConstructedPlainType? TryConstructNullaryPlainType()
         => Parameters.IsEmpty ? new ConstructedPlainType(this, []) : null;
 
     #region Equality

@@ -124,12 +124,12 @@ public class InterpreterProcess
             var entryPoint = package.EntryPoint!;
             var arguments = new List<AzothValue>();
             foreach (var parameterType in entryPoint.Symbol.Assigned().ParameterTypes)
-                arguments.Add(await ConstructMainParameterAsync((IType)parameterType.Type));
+                arguments.Add(await ConstructMainParameterAsync(parameterType.Type.ToType()));
 
             var returnValue = await CallFunctionAsync(entryPoint, arguments).ConfigureAwait(false);
             // Flush any buffered output
             await standardOutputWriter.FlushAsync().ConfigureAwait(false);
-            var returnType = entryPoint.Symbol.Assigned().ReturnType;
+            var returnType = entryPoint.Symbol.Assigned().ReturnType.ToType();
             if (returnType.Equals(IType.Void))
                 exitCode = 0;
             else if (returnType.Equals(IType.Byte))
@@ -781,7 +781,7 @@ public class InterpreterProcess
                     var selfType = (CapabilityType)exp.InExpression!.Type;
                     var iterateMethod = exp.ReferencedIterateMethod!.Symbol.Assigned();
                     iterator = await CallMethodAsync(iterateMethod, selfType, iterable, []).ConfigureAwait(false);
-                    iteratorType = (CapabilityType)iterateMethod.ReturnType;
+                    iteratorType = (CapabilityType)iterateMethod.ReturnType.ToType();
                 }
                 else
                 {

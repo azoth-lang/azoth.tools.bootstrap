@@ -41,7 +41,7 @@ public sealed class FunctionType : NonEmptyType, IMaybeFunctionType, INonVoidTyp
     public override IType AccessedVia(ICapabilityConstraint capability)
         => this;
 
-    public override Decorated.INonVoidType ToDecoratedType()
+    public override Decorated.FunctionType ToDecoratedType()
         => new Decorated.FunctionType(ToPlainType(), Parameters.ToDecoratedTypes(), Return.ToDecoratedType());
 
     IMaybeType IMaybeType.AccessedVia(ICapabilityConstraint capability) => AccessedVia(capability);

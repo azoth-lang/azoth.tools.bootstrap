@@ -22,23 +22,24 @@ internal sealed class PlainTypeReplacements
         // TODO this might have been needed when inheritance was implemented by treating methods as
         //      if they were copied down the hierarchy, but I don't think it should be needed when
         //      they are properly handled.
-        foreach (var supertype in typeConstructor.Supertypes)
-            foreach (var (supertypeArgument, i) in supertype.TypeArguments.Enumerate())
-            {
-                var genericParameterPlainType = supertype.TypeConstructor?.ParameterPlainTypes[i];
-                if (genericParameterPlainType is null)
-                    continue;
-                if (supertypeArgument.PlainType is GenericParameterPlainType genericPlainTypeArg)
-                {
-                    if (replacements.TryGetValue(genericPlainTypeArg, out var replacement))
-                        replacements.Add(genericParameterPlainType, replacement);
-                    else
-                        throw new InvalidOperationException(
-                            $"Could not find replacement for `{supertypeArgument}` in type constructor `{typeConstructor}` with arguments `{typeArguments}`.");
-                }
-                else
-                    replacements.Add(genericParameterPlainType, ReplaceTypeParametersIn(supertypeArgument.PlainType));
-            }
+        // TODO this also can't work because you can implement a trait multiple times with different type arguments
+        //foreach (var supertype in typeConstructor.Supertypes)
+        //    foreach (var (supertypeArgument, i) in supertype.TypeArguments.Enumerate())
+        //    {
+        //        var genericParameterPlainType = supertype.TypeConstructor?.ParameterPlainTypes[i];
+        //        if (genericParameterPlainType is null)
+        //            continue;
+        //        if (supertypeArgument.PlainType is GenericParameterPlainType genericPlainTypeArg)
+        //        {
+        //            if (replacements.TryGetValue(genericPlainTypeArg, out var replacement))
+        //                replacements.Add(genericParameterPlainType, replacement);
+        //            else
+        //                throw new InvalidOperationException(
+        //                    $"Could not find replacement for `{supertypeArgument}` in type constructor `{typeConstructor}` with arguments `{typeArguments}`.");
+        //        }
+        //        else
+        //            replacements.Add(genericParameterPlainType, ReplaceTypeParametersIn(supertypeArgument.PlainType));
+        //    }
     }
 
     public IMaybePlainType ReplaceTypeParametersIn(IMaybePlainType plainType)

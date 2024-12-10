@@ -655,7 +655,7 @@ internal static partial class ExpressionTypesAspect
         => node.Referent.FlowStateAfter.Transform(node.Referent.ValueId, node.ValueId, node.Type);
 
     public static partial IMaybeType AsyncStartExpression_Type(IAsyncStartExpressionNode node)
-        => Intrinsic.PromiseOf(node.Expression?.Type.ToNonConstValueType() ?? IType.Unknown);
+        => Intrinsic.PromiseOf(node.Expression?.Type.ToNonConstValueType().ToDecoratedType() ?? Compiler.Types.Decorated.IType.Unknown).ToType();
 
     public static partial IFlowState AsyncStartExpression_FlowStateAfter(IAsyncStartExpressionNode node)
         // TODO this isn't correct, async start can act like a delayed lambda. It is also a transform that wraps

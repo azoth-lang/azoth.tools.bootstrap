@@ -1,26 +1,28 @@
 using System;
 using Azoth.Tools.Bootstrap.Compiler.Names;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
+using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
+using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 
 public sealed class GenericParameterTypeSymbol : TypeSymbol
 {
-    public override PackageSymbol Package => ContainingSymbol.Package ?? throw new ArgumentNullException();
+    public override PackageSymbol Package => ContainingSymbol.Package;
     public override OrdinaryTypeSymbol ContainingSymbol { get; }
     public override OrdinaryTypeSymbol ContextTypeSymbol => ContainingSymbol;
-    public GenericParameterType Type { get; }
+    public GenericParameterPlainType PlainType { get; }
     public override IdentifierName Name => (IdentifierName)base.Name;
 
-    public override IType TryGetType() => Type;
+    public override IPlainType TryGetPlainType() => PlainType;
+    public override IType? TryGetType() => new GenericParameterType(PlainType);
 
     public GenericParameterTypeSymbol(
         OrdinaryTypeSymbol containingSymbol,
-        GenericParameterType type)
-        : base(type.Name)
+        GenericParameterPlainType plainType)
+        : base(plainType.Name)
     {
         ContainingSymbol = containingSymbol;
-        Type = type;
+        PlainType = plainType;
     }
 
     #region Equals

@@ -40,7 +40,7 @@ public sealed class CapabilityType : INonVoidType
         TypeArguments = typeArguments;
     }
 
-    public CapabilityType(Capability capability, ConstructedPlainType plainType)
+    public CapabilityType(Capability capability, ConstructedOrVariablePlainType plainType)
     {
         Requires.That(plainType.TypeArguments.IsEmpty,
             nameof(plainType), "Plain type must have no type arguments.");

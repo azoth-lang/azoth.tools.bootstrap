@@ -1,4 +1,6 @@
+using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors.Contexts;
+using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using ExhaustiveMatching;
 
@@ -17,4 +19,9 @@ public abstract class SimpleOrLiteralTypeConstructor : TypeConstructor
     public override bool CanBeSupertype => false;
 
     public abstract ConstructedPlainType PlainType { get; }
+
+    public CapabilityType Type
+        => LazyInitializer.EnsureInitialized(ref type, () => new(Capability.Constant, PlainType));
+
+    private CapabilityType? type;
 }

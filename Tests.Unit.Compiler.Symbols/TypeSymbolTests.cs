@@ -12,8 +12,8 @@ public class TypeSymbolTests : SymbolTestFixture
     {
         var container = Package("my.package");
         var type = DataType("T1");
-        var sym1 = Type(container, (OrdinaryTypeConstructor)type.TypeConstructor!);
-        var sym2 = Type(container, (OrdinaryTypeConstructor)type.TypeConstructor!);
+        var sym1 = Type(container, (OrdinaryTypeConstructor)type.PlainType.TypeConstructor!);
+        var sym2 = Type(container, (OrdinaryTypeConstructor)type.PlainType.TypeConstructor!);
 
         Assert.Equal(sym1, sym2);
     }
@@ -23,9 +23,9 @@ public class TypeSymbolTests : SymbolTestFixture
     {
         var container = Package("my.package");
         var type1 = DataType("My_Class1");
-        var sym1 = Type(container, (OrdinaryTypeConstructor)type1.TypeConstructor!);
+        var sym1 = Type(container, (OrdinaryTypeConstructor)type1.PlainType.TypeConstructor!);
         var type2 = DataType("My_Class2");
-        var sym2 = Type(container, (OrdinaryTypeConstructor)type2.TypeConstructor!);
+        var sym2 = Type(container, (OrdinaryTypeConstructor)type2.PlainType.TypeConstructor!);
 
         Assert.NotEqual(sym1, sym2);
     }
@@ -35,9 +35,9 @@ public class TypeSymbolTests : SymbolTestFixture
     {
         var container = new PackageSymbol(Name("my.package"));
         var type1 = DataType("T1");
-        var sym1 = Type(container, (OrdinaryTypeConstructor)type1.TypeConstructor!);
+        var sym1 = Type(container, (OrdinaryTypeConstructor)type1.PlainType.TypeConstructor!);
         var type2 = DataType("T2");
-        var sym2 = Type(container, (OrdinaryTypeConstructor)type2.TypeConstructor!);
+        var sym2 = Type(container, (OrdinaryTypeConstructor)type2.PlainType.TypeConstructor!);
 
         Assert.NotEqual(sym1, sym2);
     }

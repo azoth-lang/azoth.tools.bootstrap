@@ -70,6 +70,8 @@ public sealed class UnknownType : IMaybeFunctionType, IMaybeParameterType, IMayb
     /// <remarks>This can restrict the ability to write to the value.</remarks>
     public IMaybeType AccessedVia(ICapabilityConstraint capability) => this;
 
+    public Decorated.IMaybeType ToDecoratedType() => Decorated.IType.Unknown;
+
     public bool Equals(IMaybePseudotype? other)
         // The unknown type is a singleton, so reference equality suffices
         => ReferenceEquals(this, other);

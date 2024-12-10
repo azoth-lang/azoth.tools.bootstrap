@@ -34,11 +34,10 @@ public sealed class BuiltInTypeSymbol : TypeSymbol
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
         return other is BuiltInTypeSymbol otherType
-               && Name == otherType.Name
-               && TypeConstructor == otherType.TypeConstructor;
+               && TypeConstructor.Equals(otherType.TypeConstructor);
     }
 
-    public override int GetHashCode() => HashCode.Combine(Name, TypeConstructor);
+    public override int GetHashCode() => HashCode.Combine(TypeConstructor);
     #endregion
 
     public override string ToILString() => Name.ToString();

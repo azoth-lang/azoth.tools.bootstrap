@@ -1,12 +1,14 @@
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
+using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
+using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 
 [Closed(
-    typeof(EmptyTypeSymbol),
+    typeof(NeverTypeSymbol),
+    typeof(VoidTypeSymbol),
     typeof(BuiltInTypeSymbol),
     typeof(OrdinaryTypeSymbol),
     typeof(GenericParameterTypeSymbol),
@@ -23,6 +25,8 @@ public abstract class TypeSymbol : Symbol
     }
 
     public virtual TypeConstructor? TryGetTypeConstructor() => null;
+
+    public virtual IPlainType? TryGetPlainType() => null;
 
     public virtual IType? TryGetType() => null;
 }

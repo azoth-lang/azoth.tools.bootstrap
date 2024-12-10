@@ -483,7 +483,8 @@ FunctionSymbol <: FunctionDeclaration, NamespaceMemberSymbol = Symbol:`FunctionS
 // ---------- Type Symbol Nodes
 TypeSymbol <: TypeDeclaration, ChildSymbol = Symbol:`TypeSymbol`;
 BuiltInTypeSymbol <: BuiltInTypeDeclaration, TypeSymbol;
-EmptyTypeSymbol <: BuiltInTypeSymbol = Symbol:`EmptyTypeSymbol`;
+VoidTypeSymbol <: BuiltInTypeSymbol = Symbol:`VoidTypeSymbol`;
+NeverTypeSymbol <: BuiltInTypeSymbol = Symbol:`NeverTypeSymbol`;
 PrimitiveTypeSymbol <: BuiltInTypeSymbol = Symbol:`BuiltInTypeSymbol`;
 OrdinaryTypeSymbol <: UserTypeDeclaration, TypeSymbol, NamespaceMemberSymbol = Symbol:`OrdinaryTypeSymbol`;
 ClassSymbol <: ClassDeclaration, OrdinaryTypeSymbol = /GenericParameters/ /Members/;

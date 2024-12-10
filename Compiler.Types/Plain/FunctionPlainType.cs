@@ -12,7 +12,7 @@ public sealed class FunctionPlainType : INonVoidPlainType, IMaybeFunctionPlainTy
 
         if (parameters.AsKnownFixedList() is not { } properParameters) return IPlainType.Unknown;
 
-        return new FunctionPlainType(properParameters.ToFixedList(), returnType);
+        return new FunctionPlainType(properParameters, returnType);
     }
 
     public TypeSemantics? Semantics => TypeSemantics.Reference;
@@ -22,8 +22,8 @@ public sealed class FunctionPlainType : INonVoidPlainType, IMaybeFunctionPlainTy
 
     public FunctionPlainType(IEnumerable<INonVoidPlainType> parameters, IPlainType returnPlainType)
     {
-        Return = returnPlainType;
         Parameters = parameters.ToFixedList();
+        Return = returnPlainType;
     }
 
     public IMaybePlainType ReplaceTypeParametersIn(IMaybePlainType plainType)

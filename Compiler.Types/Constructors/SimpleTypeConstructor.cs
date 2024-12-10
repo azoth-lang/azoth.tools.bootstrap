@@ -46,7 +46,7 @@ public abstract class SimpleTypeConstructor : SimpleOrLiteralTypeConstructor
         return PlainType;
     }
 
-    public sealed override IPlainType TryConstructNullary() => PlainType;
+    public sealed override IPlainType TryConstructNullaryPlainType() => PlainType;
 
     #region Equality
     public sealed override bool Equals(TypeConstructor? other)

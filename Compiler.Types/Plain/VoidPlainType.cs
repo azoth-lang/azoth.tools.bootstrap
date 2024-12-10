@@ -23,7 +23,7 @@ public sealed class VoidPlainType : EmptyPlainType
 
     #region Equality
     public override bool Equals(IMaybePlainType? other)
-        // VoidPlainType is a singleton, so we can use reference equality.
+        // This is a singleton, so we can use reference equality.
         => ReferenceEquals(this, other);
 
     public override int GetHashCode() => HashCode.Combine(typeof(VoidPlainType));

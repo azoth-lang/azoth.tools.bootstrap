@@ -772,7 +772,7 @@ public partial interface IAbstractMethodDefinitionNode : IMethodDefinitionNode, 
     IBodyNode? IInvocableDefinitionNode.Body => Body;
     OrdinaryTypeConstructor ContainingTypeConstructor { get; }
     IMaybeFunctionType IStandardMethodDeclarationNode.MethodGroupType
-        => Symbol?.MethodGroupType ?? IMaybeFunctionType.Unknown;
+        => Symbol?.MethodGroupType.ToType() ?? IMaybeFunctionType.Unknown;
     MethodKind IMethodDefinitionNode.Kind
         => MethodKind.Standard;
     int IStandardMethodDeclarationNode.Arity
@@ -801,7 +801,7 @@ public partial interface IStandardMethodDefinitionNode : IMethodDefinitionNode, 
     new IBodyNode Body { get; }
     IBodyNode? IInvocableDefinitionNode.Body => Body;
     IMaybeFunctionType IStandardMethodDeclarationNode.MethodGroupType
-        => Symbol?.MethodGroupType ?? IMaybeFunctionType.Unknown;
+        => Symbol?.MethodGroupType.ToType() ?? IMaybeFunctionType.Unknown;
     MethodKind IMethodDefinitionNode.Kind
         => MethodKind.Standard;
     int IStandardMethodDeclarationNode.Arity
@@ -883,7 +883,7 @@ public partial interface IConstructorDefinitionNode : IInvocableDefinitionNode, 
     StandardName? IPackageFacetChildDeclarationNode.Name => Name;
     IdentifierName? IConstructorDeclarationNode.Name => Name;
     IMaybeType IInvocableDeclarationNode.ReturnType
-        => Symbol?.ReturnType ?? IMaybeType.Unknown;
+        => Symbol?.ReturnType.ToType() ?? IMaybeType.Unknown;
     IMaybePlainType IInvocableDeclarationNode.ReturnPlainType
         => ContainingTypeDefinition.TypeConstructor.ConstructWithParameterPlainTypes();
 }
@@ -906,7 +906,7 @@ public partial interface IDefaultConstructorDefinitionNode : IConstructorDefinit
         => null;
     IBodyNode? IInvocableDefinitionNode.Body => Body;
     IMaybeSelfParameterType IConstructorDeclarationNode.SelfParameterType
-        => new SelfParameterType(false, Symbol!.SelfParameterType);
+        => new SelfParameterType(false, Symbol!.SelfParameterType.ToType());
     IMaybeNonVoidPlainType IConstructorDeclarationNode.SelfParameterPlainType
         => ContainingTypeDefinition.TypeConstructor.ConstructWithParameterPlainTypes();
 
@@ -957,7 +957,7 @@ public partial interface IInitializerDefinitionNode : IInvocableDefinitionNode, 
     StandardName? IPackageFacetChildDeclarationNode.Name => Name;
     IdentifierName? IInitializerDeclarationNode.Name => Name;
     IMaybeType IInvocableDeclarationNode.ReturnType
-        => Symbol?.ReturnType ?? IMaybeType.Unknown;
+        => Symbol?.ReturnType.ToType() ?? IMaybeType.Unknown;
     IMaybePlainType IInvocableDeclarationNode.ReturnPlainType
         => ContainingTypeDefinition.TypeConstructor.ConstructWithParameterPlainTypes();
 }
@@ -980,7 +980,7 @@ public partial interface IDefaultInitializerDefinitionNode : IInitializerDefinit
         => null;
     IBodyNode? IInvocableDefinitionNode.Body => Body;
     IMaybeSelfParameterType IInitializerDeclarationNode.SelfParameterType
-        => new SelfParameterType(false, Symbol!.SelfParameterType);
+        => new SelfParameterType(false, Symbol!.SelfParameterType.ToType());
     IMaybeNonVoidPlainType IInitializerDeclarationNode.SelfParameterPlainType
         => ContainingTypeDefinition.TypeConstructor.ConstructWithParameterPlainTypes();
 
@@ -4185,15 +4185,15 @@ public partial interface IFunctionSymbolNode : IFunctionDeclarationNode, INamesp
     IFixedList<IMaybeNonVoidPlainType> IInvocableDeclarationNode.ParameterPlainTypes
         => Symbol.Type.Parameters.ToPlainTypes();
     IFixedList<IMaybeParameterType> IInvocableDeclarationNode.ParameterTypes
-        => Symbol.Type.Parameters;
+        => Symbol.Type.Parameters.ToTypes();
     IMaybePlainType IInvocableDeclarationNode.ReturnPlainType
-        => Symbol.Type.Return.ToPlainType();
+        => Symbol.Type.Return.PlainType;
     IMaybeType IInvocableDeclarationNode.ReturnType
-        => Symbol.Type.Return;
+        => Symbol.Type.Return.ToType();
     IMaybeFunctionPlainType IFunctionInvocableDeclarationNode.PlainType
-        => Symbol.Type.ToPlainType();
+        => Symbol.Type.PlainType;
     IMaybeFunctionType IFunctionInvocableDeclarationNode.Type
-        => Symbol.Type;
+        => Symbol.Type.ToType();
 
     public static IFunctionSymbolNode Create(FunctionSymbol symbol)
         => new FunctionSymbolNode(symbol);
@@ -4214,7 +4214,8 @@ public partial interface ITypeSymbolNode : ITypeDeclarationNode, IChildSymbolNod
 }
 
 [Closed(
-    typeof(IEmptyTypeSymbolNode),
+    typeof(IVoidTypeSymbolNode),
+    typeof(INeverTypeSymbolNode),
     typeof(IPrimitiveTypeSymbolNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IBuiltInTypeSymbolNode : IBuiltInTypeDeclarationNode, ITypeSymbolNode
@@ -4235,11 +4236,11 @@ public partial interface IBuiltInTypeSymbolNode : IBuiltInTypeDeclarationNode, I
         => Members;
 }
 
-// [Closed(typeof(EmptyTypeSymbolNode))]
+// [Closed(typeof(VoidTypeSymbolNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IEmptyTypeSymbolNode : IBuiltInTypeSymbolNode
+public partial interface IVoidTypeSymbolNode : IBuiltInTypeSymbolNode
 {
-    new EmptyTypeSymbol Symbol { get; }
+    new VoidTypeSymbol Symbol { get; }
     TypeSymbol ITypeDeclarationNode.Symbol => Symbol;
     Symbol? ISymbolDeclarationNode.Symbol => Symbol;
     TypeSymbol ITypeSymbolNode.Symbol => Symbol;
@@ -4247,8 +4248,24 @@ public partial interface IEmptyTypeSymbolNode : IBuiltInTypeSymbolNode
     SpecialTypeName IBuiltInTypeSymbolNode.Name
         => Symbol.Name;
 
-    public static IEmptyTypeSymbolNode Create(EmptyTypeSymbol symbol)
-        => new EmptyTypeSymbolNode(symbol);
+    public static IVoidTypeSymbolNode Create(VoidTypeSymbol symbol)
+        => new VoidTypeSymbolNode(symbol);
+}
+
+// [Closed(typeof(NeverTypeSymbolNode))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
+public partial interface INeverTypeSymbolNode : IBuiltInTypeSymbolNode
+{
+    new NeverTypeSymbol Symbol { get; }
+    TypeSymbol ITypeDeclarationNode.Symbol => Symbol;
+    Symbol? ISymbolDeclarationNode.Symbol => Symbol;
+    TypeSymbol ITypeSymbolNode.Symbol => Symbol;
+    Symbol IChildSymbolNode.Symbol => Symbol;
+    SpecialTypeName IBuiltInTypeSymbolNode.Name
+        => Symbol.Name;
+
+    public static INeverTypeSymbolNode Create(NeverTypeSymbol symbol)
+        => new NeverTypeSymbolNode(symbol);
 }
 
 // [Closed(typeof(PrimitiveTypeSymbolNode))]
@@ -4435,17 +4452,17 @@ public partial interface IMethodSymbolNode : IMethodDeclarationNode, IClassMembe
     StandardName? IPackageFacetChildDeclarationNode.Name => Name;
     TypeName INamedDeclarationNode.Name => Name;
     IMaybeNonVoidPlainType IMethodDeclarationNode.SelfParameterPlainType
-        => Symbol.SelfParameterType.ToPlainType();
+        => Symbol.SelfParameterType.PlainType;
     IMaybeSelfParameterType IMethodDeclarationNode.SelfParameterType
-        => Symbol.SelfParameterType;
+        => Symbol.SelfParameterType.ToSelfParameterType();
     IFixedList<IMaybeNonVoidPlainType> IInvocableDeclarationNode.ParameterPlainTypes
         => Symbol.MethodGroupType.Parameters.ToPlainTypes();
     IFixedList<IMaybeParameterType> IInvocableDeclarationNode.ParameterTypes
-        => Symbol.MethodGroupType.Parameters;
+        => Symbol.MethodGroupType.Parameters.ToTypes();
     IMaybePlainType IInvocableDeclarationNode.ReturnPlainType
-        => Symbol.MethodGroupType.Return.ToPlainType();
+        => Symbol.MethodGroupType.Return.PlainType;
     IMaybeType IInvocableDeclarationNode.ReturnType
-        => Symbol.MethodGroupType.Return;
+        => Symbol.MethodGroupType.Return.ToType();
 }
 
 // [Closed(typeof(StandardMethodSymbolNode))]
@@ -4455,9 +4472,9 @@ public partial interface IStandardMethodSymbolNode : IStandardMethodDeclarationN
     int IStandardMethodDeclarationNode.Arity
         => Symbol.Arity;
     IMaybeFunctionPlainType IStandardMethodDeclarationNode.MethodGroupPlainType
-        => Symbol.MethodGroupType.ToPlainType();
+        => Symbol.MethodGroupType.PlainType;
     IMaybeFunctionType IStandardMethodDeclarationNode.MethodGroupType
-        => Symbol.MethodGroupType;
+        => Symbol.MethodGroupType.ToType();
 
     public static IStandardMethodSymbolNode Create(MethodSymbol symbol)
         => new StandardMethodSymbolNode(symbol);
@@ -4495,17 +4512,17 @@ public partial interface IConstructorSymbolNode : IConstructorDeclarationNode, I
     IdentifierName? IConstructorDeclarationNode.Name => Name;
     StandardName? IPackageFacetChildDeclarationNode.Name => Name;
     IMaybeNonVoidPlainType IConstructorDeclarationNode.SelfParameterPlainType
-        => Symbol.SelfParameterType.ToPlainType();
+        => Symbol.SelfParameterType.PlainType;
     IMaybeSelfParameterType IConstructorDeclarationNode.SelfParameterType
-        => new SelfParameterType(false, Symbol.SelfParameterType);
+        => Symbol.SelfParameterType.ToSelfParameterType();
     IFixedList<IMaybeNonVoidPlainType> IInvocableDeclarationNode.ParameterPlainTypes
         => Symbol.ParameterTypes.ToPlainTypes();
     IFixedList<IMaybeParameterType> IInvocableDeclarationNode.ParameterTypes
-        => Symbol.ParameterTypes;
+        => Symbol.ParameterTypes.ToTypes();
     IMaybePlainType IInvocableDeclarationNode.ReturnPlainType
-        => Symbol.ReturnType.ToPlainType();
+        => Symbol.ReturnType.PlainType;
     IMaybeType IInvocableDeclarationNode.ReturnType
-        => Symbol.ReturnType;
+        => Symbol.ReturnType.ToType();
 
     public static IConstructorSymbolNode Create(ConstructorSymbol symbol)
         => new ConstructorSymbolNode(symbol);
@@ -4525,17 +4542,17 @@ public partial interface IInitializerSymbolNode : IInitializerDeclarationNode, I
     IdentifierName? IInitializerDeclarationNode.Name => Name;
     StandardName? IPackageFacetChildDeclarationNode.Name => Name;
     IMaybeNonVoidPlainType IInitializerDeclarationNode.SelfParameterPlainType
-        => Symbol.SelfParameterType.ToPlainType();
+        => Symbol.SelfParameterType.PlainType;
     IMaybeSelfParameterType IInitializerDeclarationNode.SelfParameterType
-        => new SelfParameterType(false, Symbol.SelfParameterType);
+        => Symbol.SelfParameterType.ToSelfParameterType();
     IFixedList<IMaybeNonVoidPlainType> IInvocableDeclarationNode.ParameterPlainTypes
         => Symbol.ParameterTypes.ToPlainTypes();
     IFixedList<IMaybeParameterType> IInvocableDeclarationNode.ParameterTypes
-        => Symbol.ParameterTypes;
+        => Symbol.ParameterTypes.ToTypes();
     IMaybePlainType IInvocableDeclarationNode.ReturnPlainType
-        => Symbol.ReturnType.ToPlainType();
+        => Symbol.ReturnType.PlainType;
     IMaybeType IInvocableDeclarationNode.ReturnType
-        => Symbol.ReturnType;
+        => Symbol.ReturnType.ToType();
 
     public static IInitializerSymbolNode Create(InitializerSymbol symbol)
         => new InitializerSymbolNode(symbol);
@@ -4558,7 +4575,7 @@ public partial interface IFieldSymbolNode : IFieldDeclarationNode, IClassMemberS
     bool IFieldDeclarationNode.IsMutableBinding
         => Symbol.IsMutableBinding;
     IMaybeNonVoidType IFieldDeclarationNode.BindingType
-        => Symbol.Type;
+        => Symbol.Type.ToType();
 
     public static IFieldSymbolNode Create(FieldSymbol symbol)
         => new FieldSymbolNode(symbol);
@@ -4574,17 +4591,17 @@ public partial interface IAssociatedFunctionSymbolNode : IAssociatedFunctionDecl
     InvocableSymbol? IInvocableDeclarationNode.Symbol => Symbol;
     Symbol IChildSymbolNode.Symbol => Symbol;
     IMaybeFunctionPlainType IFunctionInvocableDeclarationNode.PlainType
-        => Symbol.Type.ToPlainType();
+        => Symbol.Type.PlainType;
     IMaybeFunctionType IFunctionInvocableDeclarationNode.Type
-        => Symbol.Type;
+        => Symbol.Type.ToType();
     IFixedList<IMaybeNonVoidPlainType> IInvocableDeclarationNode.ParameterPlainTypes
         => Symbol.Type.Parameters.ToPlainTypes();
     IFixedList<IMaybeParameterType> IInvocableDeclarationNode.ParameterTypes
-        => Symbol.Type.Parameters;
+        => Symbol.Type.Parameters.ToTypes();
     IMaybePlainType IInvocableDeclarationNode.ReturnPlainType
-        => Symbol.Type.Return.ToPlainType();
+        => Symbol.Type.Return.PlainType;
     IMaybeType IInvocableDeclarationNode.ReturnType
-        => Symbol.Type.Return;
+        => Symbol.Type.Return.ToType();
 
     public static IAssociatedFunctionSymbolNode Create(
         StandardName name,
@@ -18360,11 +18377,11 @@ file class FunctionSymbolNode : SemanticNode, IFunctionSymbolNode
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class EmptyTypeSymbolNode : SemanticNode, IEmptyTypeSymbolNode
+file class VoidTypeSymbolNode : SemanticNode, IVoidTypeSymbolNode
 {
-    private IEmptyTypeSymbolNode Self { [Inline] get => this; }
+    private IVoidTypeSymbolNode Self { [Inline] get => this; }
 
-    public EmptyTypeSymbol Symbol { [DebuggerStepThrough] get; }
+    public VoidTypeSymbol Symbol { [DebuggerStepThrough] get; }
     public ISymbolDeclarationNode ContainingDeclaration
         => Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
     public IPackageDeclarationNode Package
@@ -18388,7 +18405,47 @@ file class EmptyTypeSymbolNode : SemanticNode, IEmptyTypeSymbolNode
     private IFixedSet<ITypeMemberSymbolNode>? members;
     private bool membersCached;
 
-    public EmptyTypeSymbolNode(EmptyTypeSymbol symbol)
+    public VoidTypeSymbolNode(VoidTypeSymbol symbol)
+    {
+        Symbol = symbol;
+    }
+
+    internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return this;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class NeverTypeSymbolNode : SemanticNode, INeverTypeSymbolNode
+{
+    private INeverTypeSymbolNode Self { [Inline] get => this; }
+
+    public NeverTypeSymbol Symbol { [DebuggerStepThrough] get; }
+    public ISymbolDeclarationNode ContainingDeclaration
+        => Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
+    public IPackageDeclarationNode Package
+        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>> AssociatedMembersByName
+        => GrammarAttribute.IsCached(in associatedMembersByNameCached) ? associatedMembersByName!
+            : this.Synthetic(ref associatedMembersByNameCached, ref associatedMembersByName,
+                NameLookupAspect.BuiltInTypeDeclaration_AssociatedMembersByName);
+    private FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>>? associatedMembersByName;
+    private bool associatedMembersByNameCached;
+    public FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>> InclusiveInstanceMembersByName
+        => GrammarAttribute.IsCached(in inclusiveInstanceMembersByNameCached) ? inclusiveInstanceMembersByName!
+            : this.Synthetic(ref inclusiveInstanceMembersByNameCached, ref inclusiveInstanceMembersByName,
+                NameLookupAspect.BuiltInTypeDeclaration_InclusiveInstanceMembersByName);
+    private FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>>? inclusiveInstanceMembersByName;
+    private bool inclusiveInstanceMembersByNameCached;
+    public IFixedSet<ITypeMemberSymbolNode> Members
+        => GrammarAttribute.IsCached(in membersCached) ? members!
+            : this.Synthetic(ref membersCached, ref members,
+                n => ChildSet.Attach(this, SymbolNodeAspect.BuiltInTypeSymbol_Members(n)));
+    private IFixedSet<ITypeMemberSymbolNode>? members;
+    private bool membersCached;
+
+    public NeverTypeSymbolNode(NeverTypeSymbol symbol)
     {
         Symbol = symbol;
     }

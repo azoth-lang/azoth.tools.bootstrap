@@ -1,8 +1,7 @@
 using System;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Names;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Parameters;
+using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
@@ -14,7 +13,7 @@ public sealed class InitializerSymbol : FunctionOrInitializerSymbol
     public override OrdinaryTypeSymbol ContainingSymbol { get; }
     public override IdentifierName? Name { get; }
     public CapabilityType SelfParameterType { get; }
-    public override CapabilityType ReturnType { get; }
+    public override INonVoidType ReturnType { get; }
     public FunctionType InitializerGroupType { get; }
 
     public InitializerSymbol(
@@ -44,11 +43,12 @@ public sealed class InitializerSymbol : FunctionOrInitializerSymbol
         return other is InitializerSymbol otherInitializer
             && ContextTypeSymbol == otherInitializer.ContextTypeSymbol
             && Name == otherInitializer.Name
+            && SelfParameterType.Equals(otherInitializer.SelfParameterType)
             && ParameterTypes.SequenceEqual(otherInitializer.ParameterTypes);
     }
 
     public override int GetHashCode()
-        => HashCode.Combine(ContextTypeSymbol, Name, ParameterTypes);
+        => HashCode.Combine(ContextTypeSymbol, Name, SelfParameterType, ParameterTypes);
 
     public override string ToILString()
     {

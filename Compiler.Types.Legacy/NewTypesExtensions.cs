@@ -52,53 +52,6 @@ public static class NewTypesExtensions
         return typeConstructor.WithRead(properTypeArguments);
     }
 
-    /// <summary>
-    /// Make a version of this type for use as the default constructor or initializer parameter.
-    /// </summary>
-    /// <remarks>This is always `init mut` because the type is being initialized and can be mutated
-    /// inside the constructor via field initializers.</remarks>
-    public static CapabilityType ToDefaultConstructorSelf(this OrdinaryTypeConstructor typeConstructor)
-        => typeConstructor.With(Capability.InitMutable, typeConstructor.GenericParameterTypes());
-
-    /// <summary>
-    /// Make a version of this type for use as the return type of the default constructor or initializer.
-    /// </summary>
-    /// <remarks>This is always either `iso` or `const` depending on whether the type was declared
-    /// with `const` because there are no parameters that could break the new objects isolation.</remarks>
-    public static CapabilityType ToDefaultConstructorReturn(this OrdinaryTypeConstructor typeConstructor)
-        => typeConstructor.With(typeConstructor.IsDeclaredConst ? Capability.Constant : Capability.Isolated,
-            typeConstructor.GenericParameterTypes());
-
-    /// <summary>
-    /// Determine the return type of a constructor or initializer with the given parameter types.
-    /// </summary>
-    /// <remarks>The capability of the return type is restricted by the parameter types because the
-    /// newly constructed object could contain references to them.</remarks>
-    public static CapabilityType ToConstructorReturn(this OrdinaryTypeConstructor typeConstructor, CapabilityType selfParameterType, IEnumerable<ParameterType> parameterTypes)
-    {
-        if (typeConstructor.IsDeclaredConst) return typeConstructor.With(Capability.Constant,
-            typeConstructor.GenericParameterTypes());
-        // Read only self constructors cannot return `mut` or `iso`
-        if (!selfParameterType.AllowsWrite)
-            return typeConstructor.With(Capability.Read, typeConstructor.GenericParameterTypes());
-        foreach (var parameterType in parameterTypes)
-            switch (parameterType.Type)
-            {
-                case CapabilityType when parameterType.IsLent:
-                case CapabilityType { IsConstantReference: true }:
-                case CapabilityType { IsIsolatedReference: true }:
-                case OptionalType { Referent: CapabilityType } when parameterType.IsLent:
-                case OptionalType { Referent: CapabilityType { IsConstantReference: true } }:
-                case OptionalType { Referent: CapabilityType { IsIsolatedReference: true } }:
-                case EmptyType:
-                    continue;
-                default:
-                    return typeConstructor.With(Capability.Mutable, typeConstructor.GenericParameterTypes());
-            }
-
-        return typeConstructor.With(Capability.Isolated, typeConstructor.GenericParameterTypes());
-    }
-
     public static IFixedList<GenericParameterType> GenericParameterTypes(this TypeConstructor typeConstructor)
     {
         if (typeConstructor.ParameterPlainTypes.IsEmpty) return [];
@@ -126,6 +79,14 @@ public static class NewTypesExtensions
         return new(supertype.TypeConstructor, args);
     }
 
+    public static IMaybeType ToType(this Decorated.IMaybeType type)
+        => type switch
+        {
+            Decorated.UnknownType _ => IType.Unknown,
+            Decorated.IType t => t.ToType(),
+            _ => throw ExhaustiveMatch.Failed(type)
+        };
+
     public static IType ToType(this Decorated.IType type)
         => type switch
         {
@@ -138,7 +99,7 @@ public static class NewTypesExtensions
         => type switch
         {
             Decorated.CapabilityType t => t.ToType(),
-            Decorated.FunctionType t => new FunctionType(t.Parameters.ToTypes(), t.Return.ToType()),
+            Decorated.FunctionType t => ToType(t),
             Decorated.GenericParameterType t => new GenericParameterType(t.PlainType.DeclaringTypeConstructor, t.PlainType.Parameter),
             Decorated.NeverType _ => IType.Never,
             Decorated.OptionalType t => new OptionalType(t.Referent.ToType()),
@@ -146,6 +107,9 @@ public static class NewTypesExtensions
             Decorated.CapabilitySetSelfType _ => throw new NotImplementedException("CapabilitySetSelfType would be a psuedo type"),
             _ => throw ExhaustiveMatch.Failed(type)
         };
+
+    public static FunctionType ToType(this Decorated.FunctionType type)
+        => new(type.Parameters.ToTypes(), type.Return.ToType());
 
     public static INonVoidType ToType(this Decorated.CapabilityType type)
     {
@@ -238,4 +202,7 @@ public static class NewTypesExtensions
             64 => typeConstructor.IsSigned ? IType.Int64 : IType.UInt64,
             _ => throw new UnreachableException("Bits not an expected value"),
         };
+
+    public static SelfParameterType ToSelfParameterType(this Decorated.INonVoidType type)
+        => new(false, type.ToType());
 }

@@ -29,7 +29,8 @@ internal static class SymbolBinder
             OrdinaryTypeSymbol sym => UserTypeSymbol(sym),
             // These will be needed because the generic parameter type could be used in a type expression
             GenericParameterTypeSymbol sym => GenericParameterTypeSymbol(sym),
-            EmptyTypeSymbol sym => EmptyTypeSymbol(sym),
+            VoidTypeSymbol sym => VoidTypeSymbol(sym),
+            NeverTypeSymbol sym => NeverTypeSymbol(sym),
             BuiltInTypeSymbol sym => PrimitiveTypeSymbol(sym),
             AssociatedTypeSymbol _ => throw new NotImplementedException(),
             _ => throw ExhaustiveMatch.Failed(symbol),
@@ -44,8 +45,11 @@ internal static class SymbolBinder
              _ => throw ExhaustiveMatch.Failed(symbol.TypeConstructor.Kind),
          };
 
-    private static IEmptyTypeSymbolNode EmptyTypeSymbol(EmptyTypeSymbol sym)
-        => IEmptyTypeSymbolNode.Create(sym);
+    private static IVoidTypeSymbolNode VoidTypeSymbol(VoidTypeSymbol sym)
+        => IVoidTypeSymbolNode.Create(sym);
+
+    private static INeverTypeSymbolNode NeverTypeSymbol(NeverTypeSymbol sym)
+        => INeverTypeSymbolNode.Create(sym);
 
     private static IPrimitiveTypeSymbolNode PrimitiveTypeSymbol(BuiltInTypeSymbol sym)
         => IPrimitiveTypeSymbolNode.Create(sym);

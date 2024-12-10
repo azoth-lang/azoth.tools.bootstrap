@@ -58,7 +58,7 @@ public sealed class AnyTypeConstructor : TypeConstructor
         return PlainType;
     }
 
-    public override IPlainType TryConstructNullary() => PlainType;
+    public override IPlainType TryConstructNullaryPlainType() => PlainType;
 
     public override string ToString() => Name.ToString();
 

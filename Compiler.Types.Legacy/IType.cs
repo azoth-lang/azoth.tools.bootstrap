@@ -54,5 +54,7 @@ public interface IType : IPseudotype, IMaybeType
     new IType AccessedVia(ICapabilityConstraint capability);
     IMaybeType IMaybeType.AccessedVia(ICapabilityConstraint capability) => AccessedVia(capability);
 
-    Decorated.IType ToDecoratedType();
+    new Decorated.IType ToDecoratedType();
+    Decorated.IType IPseudotype.ToDecoratedType() => ToDecoratedType();
+    Decorated.IMaybeType IMaybeType.ToDecoratedType() => ToDecoratedType();
 }

@@ -1,7 +1,9 @@
 using System.Diagnostics;
 using System.Text;
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors.Contexts;
+using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
@@ -167,12 +169,24 @@ public abstract partial class TypeConstructor : IEquatable<TypeConstructor>, Typ
 
     public abstract IFixedList<GenericParameterPlainType> ParameterPlainTypes { get; }
 
+    public IFixedList<GenericParameterType> ParameterTypes
+        => LazyInitializer.EnsureInitialized(ref parameterTypes,
+            () => ParameterPlainTypes.Select(p => new GenericParameterType(p)).ToFixedList());
+    private IFixedList<GenericParameterType>? parameterTypes;
+
     public abstract IFixedSet<Supertype> Supertypes { get; }
+
+    private ConstructedPlainType? withParameterPlainTypes;
+    private ConstructedBareType? withParameterTypes;
 
     public abstract ConstructedPlainType Construct(IFixedList<IPlainType> typeArguments);
 
     public ConstructedPlainType ConstructWithParameterPlainTypes()
-        => Construct(ParameterPlainTypes);
+        => LazyInitializer.EnsureInitialized(ref withParameterPlainTypes, () => Construct(ParameterPlainTypes));
+
+    public ConstructedBareType ConstructWithParameterTypes()
+        => LazyInitializer.EnsureInitialized(ref withParameterTypes,
+            () => new(ConstructWithParameterPlainTypes(), ParameterTypes));
 
     public IMaybePlainType Construct(IFixedList<IMaybePlainType> typeArguments)
     {
@@ -181,7 +195,26 @@ public abstract partial class TypeConstructor : IEquatable<TypeConstructor>, Typ
         return Construct(properTypeArguments);
     }
 
-    public abstract IPlainType? TryConstructNullary();
+    public ConstructedBareType Construct(IFixedList<IType> typeArguments)
+    {
+        var plainType = Construct(typeArguments.Select(a => a.PlainType).ToFixedList());
+        return new(plainType, typeArguments);
+    }
+
+    public ConstructedBareType? Construct(IFixedList<IMaybeType> typeArguments)
+    {
+        var properTypeArguments = typeArguments.As<IType>();
+        if (properTypeArguments is null) return null;
+        return Construct(properTypeArguments);
+    }
+
+    public ConstructedBareType ConstructNullaryType()
+    {
+        var plainType = Construct(FixedList.Empty<IPlainType>());
+        return new(plainType, []);
+    }
+
+    public abstract IPlainType? TryConstructNullaryPlainType();
 
     /// <summary>
     /// The default non-constant type to place values of this type in.

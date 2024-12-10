@@ -2,8 +2,7 @@ using System;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Names;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Parameters;
+using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
@@ -14,7 +13,7 @@ public sealed class MethodSymbol : InvocableSymbol
     public override TypeSymbol ContextTypeSymbol => ContainingSymbol;
     public MethodKind Kind { get; }
     public override IdentifierName Name { get; }
-    public SelfParameterType SelfParameterType { get; }
+    public INonVoidType SelfParameterType { get; }
     public override IType ReturnType { get; }
     public FunctionType MethodGroupType { get; }
 
@@ -22,7 +21,8 @@ public sealed class MethodSymbol : InvocableSymbol
         TypeSymbol containingSymbol,
         MethodKind kind,
         IdentifierName name,
-        SelfParameterType selfParameterType,
+        // TODO once `Self` is used, this can just be a capability constraint
+        INonVoidType selfParameterType,
         IFixedList<ParameterType> parameterTypes,
         IType returnType)
         : base(parameterTypes)
@@ -42,7 +42,7 @@ public sealed class MethodSymbol : InvocableSymbol
         return other is MethodSymbol otherMethod
                && ContainingSymbol == otherMethod.ContainingSymbol
                && Name == otherMethod.Name
-               && SelfParameterType == otherMethod.SelfParameterType
+               && SelfParameterType.Equals(otherMethod.SelfParameterType)
                && ParameterTypes.SequenceEqual(otherMethod.ParameterTypes)
                && ReturnType.Equals(otherMethod.ReturnType);
     }

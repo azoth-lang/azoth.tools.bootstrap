@@ -37,6 +37,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Compiler.Syntax\Compiler.Syntax.csproj" />
     <ProjectReference Include="..\Compiler.Core\Compiler.Core.csproj" />
+    <ProjectReference Include="..\Compiler.Types.Legacy\Compiler.Types.Legacy.csproj" />
     <ProjectReference Include="..\Framework\Framework.csproj" />
     <ProjectReference Include="..\Compiler.Primitives\Compiler.Primitives.csproj" />
   </ItemGroup>
