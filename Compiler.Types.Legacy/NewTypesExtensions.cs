@@ -197,45 +197,45 @@ public static class NewTypesExtensions
     public static CapabilityType ToType(this LiteralTypeConstructor typeConstructor)
         => typeConstructor switch
         {
-        BoolLiteralTypeConstructor t => t.Value ? IType.True : IType.False,
-        IntegerLiteralTypeConstructor t => new(Capability.Constant, new BareNonVariableType(t, [])),
+            BoolLiteralTypeConstructor t => t.Value ? IType.True : IType.False,
+            IntegerLiteralTypeConstructor t => new(Capability.Constant, new BareNonVariableType(t, [])),
             _ => throw ExhaustiveMatch.Failed(typeConstructor),
         };
 
-public static CapabilityType ToType(this SimpleTypeConstructor typeConstructor)
-    => typeConstructor switch
+    public static CapabilityType ToType(this SimpleTypeConstructor typeConstructor)
+        => typeConstructor switch
+        {
+            BoolTypeConstructor _ => IType.Bool,
+            BigIntegerTypeConstructor t => t.IsSigned ? IType.Int : IType.UInt,
+            PointerSizedIntegerTypeConstructor t => t.ToType(),
+            FixedSizeIntegerTypeConstructor t => t.ToType(),
+            _ => throw ExhaustiveMatch.Failed(typeConstructor),
+        };
+
+    public static CapabilityType ToType(this PointerSizedIntegerTypeConstructor typeConstructor)
     {
-        BoolTypeConstructor _ => IType.Bool,
-        BigIntegerTypeConstructor t => t.IsSigned ? IType.Int : IType.UInt,
-        PointerSizedIntegerTypeConstructor t => t.ToType(),
-        FixedSizeIntegerTypeConstructor t => t.ToType(),
-        _ => throw ExhaustiveMatch.Failed(typeConstructor),
-    };
+        if (typeConstructor.Equals(TypeConstructor.Size))
+            return IType.Size;
 
-public static CapabilityType ToType(this PointerSizedIntegerTypeConstructor typeConstructor)
-{
-    if (typeConstructor.Equals(TypeConstructor.Size))
-        return IType.Size;
+        if (typeConstructor.Equals(TypeConstructor.Offset))
+            return IType.Offset;
 
-    if (typeConstructor.Equals(TypeConstructor.Offset))
-        return IType.Offset;
+        if (typeConstructor.Equals(TypeConstructor.NInt))
+            return IType.NInt;
 
-    if (typeConstructor.Equals(TypeConstructor.NInt))
-        return IType.NInt;
+        if (typeConstructor.Equals(TypeConstructor.NUInt))
+            return IType.NUInt;
 
-    if (typeConstructor.Equals(TypeConstructor.NUInt))
-        return IType.NUInt;
+        throw new UnreachableException();
+    }
 
-    throw new UnreachableException();
-}
-
-public static CapabilityType ToType(this FixedSizeIntegerTypeConstructor typeConstructor)
-    => typeConstructor.Bits switch
-    {
-        8 => typeConstructor.IsSigned ? IType.Int8 : IType.Byte,
-        16 => typeConstructor.IsSigned ? IType.Int16 : IType.UInt16,
-        32 => typeConstructor.IsSigned ? IType.Int32 : IType.UInt32,
-        64 => typeConstructor.IsSigned ? IType.Int64 : IType.UInt64,
-        _ => throw new UnreachableException("Bits not an expected value"),
-    };
+    public static CapabilityType ToType(this FixedSizeIntegerTypeConstructor typeConstructor)
+        => typeConstructor.Bits switch
+        {
+            8 => typeConstructor.IsSigned ? IType.Int8 : IType.Byte,
+            16 => typeConstructor.IsSigned ? IType.Int16 : IType.UInt16,
+            32 => typeConstructor.IsSigned ? IType.Int32 : IType.UInt32,
+            64 => typeConstructor.IsSigned ? IType.Int64 : IType.UInt64,
+            _ => throw new UnreachableException("Bits not an expected value"),
+        };
 }
