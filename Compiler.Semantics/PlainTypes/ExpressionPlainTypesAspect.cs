@@ -321,7 +321,8 @@ internal static partial class ExpressionPlainTypesAspect
     private static IMaybePlainType UnaryOperatorExpression_PlainType_Plus(IUnaryOperatorExpressionNode node)
         => node.Operand?.PlainType switch
         {
-            ConstructedPlainType { TypeConstructor: NumericTypeConstructor t } => t.PlainType,
+            ConstructedPlainType { TypeConstructor: IntegerTypeConstructor t } => t.PlainType,
+            ConstructedPlainType { TypeConstructor: IntegerLiteralTypeConstructor t } => t.PlainType,
             _ => IPlainType.Unknown,
         };
 
@@ -335,8 +336,8 @@ internal static partial class ExpressionPlainTypesAspect
               || node.Operator switch
               {
                   UnaryOperator.Not => typeConstructor is not (BoolTypeConstructor or BoolLiteralTypeConstructor),
-                  UnaryOperator.Minus => typeConstructor is not NumericTypeConstructor,
-                  UnaryOperator.Plus => typeConstructor is not NumericTypeConstructor,
+                  UnaryOperator.Minus => typeConstructor is not (IntegerTypeConstructor or IntegerLiteralTypeConstructor),
+                  UnaryOperator.Plus => typeConstructor is not (IntegerTypeConstructor or IntegerLiteralTypeConstructor),
                   _ => throw ExhaustiveMatch.Failed(node.Operator),
               };
 

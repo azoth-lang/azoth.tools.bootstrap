@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Text;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Names;
@@ -13,10 +12,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 /// <see cref="SimpleTypeConstructor"/>s). That is, it was declared with a <c>class</c>,
 /// <c>struct</c>, or <c>trait</c> declaration.
 /// </summary>
-[DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
 public sealed class OrdinaryTypeConstructor : TypeConstructor
 {
-    public TypeConstructorContext Context { get; }
+    public override TypeConstructorContext Context { get; }
 
     /// <summary>
     /// Whether the declaration for this type constructor is abstract.
@@ -25,7 +23,7 @@ public sealed class OrdinaryTypeConstructor : TypeConstructor
     /// always abstract. Structs are never abstract.</remarks>
     public bool IsAbstract { get; }
 
-    public bool IsDeclaredConst { get; }
+    public override bool IsDeclaredConst { get; }
 
     /// <summary>
     /// What kind of type this is (e.g. class, trait, or struct).
@@ -37,34 +35,32 @@ public sealed class OrdinaryTypeConstructor : TypeConstructor
     /// a type cannot be instantiated, it may be the case that a subtype can. So it is still possible
     /// that instances compatible with the type exist.
     /// </summary>
-    public bool CanBeInstantiated => !IsAbstract;
+    public override bool CanBeInstantiated => !IsAbstract;
 
     /// <summary>
     /// Whether this type can have fields.
     /// </summary>
     /// <remarks>Even if a type cannot have fields, a subtype still could.</remarks>
-    public bool CanHaveFields => Kind != TypeKind.Trait;
+    public override bool CanHaveFields => Kind != TypeKind.Trait;
 
-    public bool CanBeSupertype => Kind != TypeKind.Struct;
+    public override bool CanBeSupertype => Kind != TypeKind.Struct;
 
-    public StandardName Name { get; }
-    TypeName TypeConstructor.Name => Name;
+    public override StandardName Name { get; }
 
-    public bool HasParameters => !Parameters.IsEmpty;
     /// <summary>
     /// The parameters to this type constructor. Commonly referred to as "generic parameters".
     /// </summary>
-    public IFixedList<TypeConstructor.Parameter> Parameters { get; }
-    public bool AllowsVariance { get; }
-    public bool HasIndependentParameters { get; }
+    public override IFixedList<Parameter> Parameters { get; }
+    public override bool AllowsVariance { get; }
+    public override bool HasIndependentParameters { get; }
 
     /// <summary>
     /// Within the type constructor declaration, any generic parameters will appear as type
     /// variables. These are the types of those variables.
     /// </summary>
-    public IFixedList<GenericParameterPlainType> ParameterPlainTypes { get; }
-    public IFixedSet<TypeConstructor.Supertype> Supertypes { get; }
-    public TypeSemantics Semantics
+    public override IFixedList<GenericParameterPlainType> ParameterPlainTypes { get; }
+    public override IFixedSet<Supertype> Supertypes { get; }
+    public override TypeSemantics Semantics
         => Kind == TypeKind.Struct ? TypeSemantics.Value : TypeSemantics.Reference;
 
     public OrdinaryTypeConstructor(
@@ -73,8 +69,8 @@ public sealed class OrdinaryTypeConstructor : TypeConstructor
         bool isDeclaredConst,
         TypeKind kind,
         StandardName name,
-        IEnumerable<TypeConstructor.Parameter> genericParameters,
-        IFixedSet<TypeConstructor.Supertype> supertypes)
+        IEnumerable<Parameter> genericParameters,
+        IFixedSet<Supertype> supertypes)
     {
         Requires.That((kind == TypeKind.Trait).Implies(isAbstract), nameof(isAbstract), "Traits must be abstract.");
         Requires.That((kind == TypeKind.Struct).Implies(!isAbstract), nameof(isAbstract), "Structs cannot be abstract.");
@@ -96,25 +92,18 @@ public sealed class OrdinaryTypeConstructor : TypeConstructor
                                         .ToFixedList();
     }
 
-    public ConstructedPlainType Construct(IEnumerable<IPlainType> typeArguments)
+    public override ConstructedPlainType Construct(IFixedList<IPlainType> typeArguments)
     {
-        var args = typeArguments.ToFixedList();
-        if (args.Count != Parameters.Count)
+        if (typeArguments.Count != Parameters.Count)
             throw new ArgumentException("Incorrect number of type arguments.");
-        return new(this, args);
+        return new(this, typeArguments);
     }
-    ConstructedPlainType TypeConstructor.Construct(IFixedList<IPlainType> typeArguments)
-        => Construct(typeArguments);
 
-    public ConstructedPlainType ConstructWithParameterPlainTypes()
-        => Construct(ParameterPlainTypes);
-
-    public ConstructedPlainType? TryConstructNullary()
+    public override ConstructedPlainType? TryConstructNullary()
         => Parameters.IsEmpty ? new ConstructedPlainType(this, []) : null;
-    IPlainType? TypeConstructor.TryConstructNullary() => TryConstructNullary();
 
     #region Equality
-    public bool Equals(TypeConstructor? other)
+    public override bool Equals(TypeConstructor? other)
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
@@ -129,14 +118,7 @@ public sealed class OrdinaryTypeConstructor : TypeConstructor
         => HashCode.Combine(Context, Name, Parameters);
     #endregion
 
-    public override string ToString()
-    {
-        var builder = new StringBuilder();
-        ToString(builder);
-        return builder.ToString();
-    }
-
-    public void ToString(StringBuilder builder)
+    public override void ToString(StringBuilder builder)
     {
         Context.AppendContextPrefix(builder);
         builder.Append(Name.ToBareString());

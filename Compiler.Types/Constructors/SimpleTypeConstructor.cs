@@ -21,7 +21,7 @@ public abstract class SimpleTypeConstructor : SimpleOrLiteralTypeConstructor
 
     public sealed override SpecialTypeName Name { get; }
 
-    public sealed override IFixedList<TypeConstructor.Parameter> Parameters => [];
+    public sealed override IFixedList<Parameter> Parameters => [];
 
     public sealed override bool AllowsVariance => false;
 
@@ -29,9 +29,9 @@ public abstract class SimpleTypeConstructor : SimpleOrLiteralTypeConstructor
 
     public sealed override IFixedList<GenericParameterPlainType> ParameterPlainTypes => [];
 
-    public sealed override IFixedSet<TypeConstructor.Supertype> Supertypes => TypeConstructor.Supertype.AnySet;
+    public sealed override IFixedSet<Supertype> Supertypes => Supertype.AnySet;
 
-    public ConstructedPlainType PlainType { get; }
+    public sealed override ConstructedPlainType PlainType { get; }
 
     private protected SimpleTypeConstructor(SpecialTypeName name)
     {
@@ -53,8 +53,7 @@ public abstract class SimpleTypeConstructor : SimpleOrLiteralTypeConstructor
         // All simple type constructors are singletons, so we can use reference equality.
         => ReferenceEquals(this, other);
 
-    public sealed override bool Equals(object? obj)
-        => obj is IMaybePlainType other && Equals(other);
+
 
     public sealed override int GetHashCode()
         => RuntimeHelpers.GetHashCode(this);

@@ -6,14 +6,14 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 
 public sealed class FixedSizeIntegerTypeConstructor : IntegerTypeConstructor
 {
-    internal static readonly FixedSizeIntegerTypeConstructor Int8 = new(SpecialTypeName.Int8, 8, true);
-    internal static readonly FixedSizeIntegerTypeConstructor Byte = new(SpecialTypeName.Byte, 8, false);
-    internal static readonly FixedSizeIntegerTypeConstructor Int16 = new(SpecialTypeName.Int16, 16, true);
-    internal static readonly FixedSizeIntegerTypeConstructor UInt16 = new(SpecialTypeName.UInt16, 16, false);
-    internal static readonly FixedSizeIntegerTypeConstructor Int32 = new(SpecialTypeName.Int32, 32, true);
-    internal static readonly FixedSizeIntegerTypeConstructor UInt32 = new(SpecialTypeName.UInt32, 32, false);
-    internal static readonly FixedSizeIntegerTypeConstructor Int64 = new(SpecialTypeName.Int64, 64, true);
-    internal static readonly FixedSizeIntegerTypeConstructor UInt64 = new(SpecialTypeName.UInt64, 64, false);
+    internal new static readonly FixedSizeIntegerTypeConstructor Int8 = new(SpecialTypeName.Int8, 8, true);
+    internal new static readonly FixedSizeIntegerTypeConstructor Byte = new(SpecialTypeName.Byte, 8, false);
+    internal new static readonly FixedSizeIntegerTypeConstructor Int16 = new(SpecialTypeName.Int16, 16, true);
+    internal new static readonly FixedSizeIntegerTypeConstructor UInt16 = new(SpecialTypeName.UInt16, 16, false);
+    internal new static readonly FixedSizeIntegerTypeConstructor Int32 = new(SpecialTypeName.Int32, 32, true);
+    internal new static readonly FixedSizeIntegerTypeConstructor UInt32 = new(SpecialTypeName.UInt32, 32, false);
+    internal new static readonly FixedSizeIntegerTypeConstructor Int64 = new(SpecialTypeName.Int64, 64, true);
+    internal new static readonly FixedSizeIntegerTypeConstructor UInt64 = new(SpecialTypeName.UInt64, 64, false);
 
     public int Bits { get; }
     public BigInteger MaxValue;

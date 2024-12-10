@@ -5,15 +5,15 @@ using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 
 // TODO this isn't right. The value should be a type parameter
-public sealed class IntegerLiteralTypeConstructor : LiteralTypeConstructor, NumericTypeConstructor
+public sealed class IntegerLiteralTypeConstructor : LiteralTypeConstructor
 {
     public BigInteger Value { get; }
     public bool IsSigned => Value.Sign < 0;
 
     public bool IsUInt16
-        => Value >= TypeConstructor.UInt16.MinValue && Value <= TypeConstructor.UInt16.MaxValue;
+        => Value >= UInt16.MinValue && Value <= UInt16.MaxValue;
     public bool IsInt16
-        => Value >= TypeConstructor.Int16.MinValue && Value <= TypeConstructor.Int16.MaxValue;
+        => Value >= Int16.MinValue && Value <= Int16.MaxValue;
 
     public override ConstructedPlainType PlainType => LazyInitializer.EnsureInitialized(ref plainType, ConstructPlainType);
     private ConstructedPlainType? plainType;
@@ -29,29 +29,29 @@ public sealed class IntegerLiteralTypeConstructor : LiteralTypeConstructor, Nume
     /// integer type constructor that contains the value. However, that would lead to unexpected
     /// behavior in some cases because small integer constants might produce small fixed size
     /// integers leading to overflow.</remarks>
-    public override TypeConstructor ToNonLiteral() => TypeConstructor.Int;
+    public override TypeConstructor ToNonLiteral() => Int;
 
     public IntegerTypeConstructor ToSmallestSignedIntegerType()
     {
-        if (Value > TypeConstructor.Int64.MaxValue) return TypeConstructor.Int;
-        if (Value > TypeConstructor.Int32.MaxValue) return TypeConstructor.Int64;
-        if (Value > TypeConstructor.Int16.MaxValue) return TypeConstructor.Int32;
-        if (Value > TypeConstructor.Int8.MaxValue) return TypeConstructor.Int16;
-        if (Value < TypeConstructor.Int64.MinValue) return TypeConstructor.Int;
-        if (Value < TypeConstructor.Int32.MinValue) return TypeConstructor.Int64;
-        if (Value < TypeConstructor.Int16.MinValue) return TypeConstructor.Int32;
-        if (Value < TypeConstructor.Int8.MinValue) return TypeConstructor.Int16;
-        return TypeConstructor.Int8;
+        if (Value > Int64.MaxValue) return Int;
+        if (Value > Int32.MaxValue) return Int64;
+        if (Value > Int16.MaxValue) return Int32;
+        if (Value > Int8.MaxValue) return Int16;
+        if (Value < Int64.MinValue) return Int;
+        if (Value < Int32.MinValue) return Int64;
+        if (Value < Int16.MinValue) return Int32;
+        if (Value < Int8.MinValue) return Int16;
+        return Int8;
     }
 
     public IntegerTypeConstructor ToSmallestUnsignedIntegerType()
     {
         if (IsSigned) throw new InvalidOperationException("Cannot convert signed value type to unsigned type.");
-        if (Value > TypeConstructor.Int64.MaxValue) return TypeConstructor.UInt;
-        if (Value > TypeConstructor.Int32.MaxValue) return TypeConstructor.UInt64;
-        if (Value > TypeConstructor.Int16.MaxValue) return TypeConstructor.UInt32;
-        if (Value > TypeConstructor.Byte.MaxValue) return TypeConstructor.UInt16;
-        return TypeConstructor.Byte;
+        if (Value > Int64.MaxValue) return UInt;
+        if (Value > Int32.MaxValue) return UInt64;
+        if (Value > Int16.MaxValue) return UInt32;
+        if (Value > Byte.MaxValue) return UInt16;
+        return Byte;
     }
 
     #region Operations

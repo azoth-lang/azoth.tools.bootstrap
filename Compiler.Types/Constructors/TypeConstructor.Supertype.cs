@@ -7,7 +7,7 @@ using Azoth.Tools.Bootstrap.Framework;
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 
 // ReSharper disable once InconsistentNaming
-public partial interface TypeConstructor
+public partial class TypeConstructor
 {
     [DebuggerDisplay("{" + nameof(ToILString) + "(),nq}")]
     public sealed class Supertype : IEquatable<Supertype>

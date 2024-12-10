@@ -7,7 +7,7 @@ using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 
 // ReSharper disable once InconsistentNaming
-public partial interface TypeConstructor
+public partial class TypeConstructor
 {
     /// <summary>
     /// A generic parameter definition for a type constructor.

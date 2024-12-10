@@ -26,7 +26,7 @@ public abstract class LiteralTypeConstructor : SimpleOrLiteralTypeConstructor
     public sealed override SpecialTypeName Name { get; }
 
     // TODO these need type parameters that are values
-    public sealed override IFixedList<TypeConstructor.Parameter> Parameters => [];
+    public sealed override IFixedList<Parameter> Parameters => [];
 
     public sealed override bool AllowsVariance => false;
 
@@ -35,41 +35,20 @@ public abstract class LiteralTypeConstructor : SimpleOrLiteralTypeConstructor
     public sealed override IFixedList<GenericParameterPlainType> ParameterPlainTypes => [];
 
     // TODO should this instead include the non-literal type (e.g. `int` or `bool`)?
-    public sealed override IFixedSet<TypeConstructor.Supertype> Supertypes => TypeConstructor.Supertype.AnySet;
-
-    public abstract ConstructedPlainType PlainType { get; }
+    public sealed override IFixedSet<Supertype> Supertypes => Supertype.AnySet;
 
     private protected LiteralTypeConstructor(SpecialTypeName name)
     {
         Name = name;
     }
 
-    /// <summary>
-    /// The default non-constant type to place values of this type in.
-    /// </summary>
-    public abstract TypeConstructor ToNonLiteral();
+    public abstract override TypeConstructor ToNonLiteral();
 
     public sealed override ConstructedPlainType Construct(IFixedList<IPlainType> typeArguments)
        => throw new NotImplementedException("Constructing literal types requires value type parameters.");
 
-    public IMaybePlainType Construct(IFixedList<IMaybePlainType> typeArguments)
-    {
-        var properTypeArguments = typeArguments.As<IPlainType>();
-        if (properTypeArguments is null) return IPlainType.Unknown;
-        return Construct(properTypeArguments);
-    }
-
     /// <remarks>All literal types take a type parameter and cannot be nullary constructed.</remarks>
     public sealed override IPlainType? TryConstructNullary() => null;
-
-    #region Equality
-    public abstract override bool Equals(TypeConstructor? other);
-
-    public sealed override bool Equals(object? obj)
-        => obj is IMaybePlainType other && Equals(other);
-
-    public abstract override int GetHashCode();
-    #endregion
 
     public override void ToString(StringBuilder builder) => builder.Append(ToString());
 }

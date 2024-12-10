@@ -1,4 +1,4 @@
-using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics;
 using System.Text;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors.Contexts;
@@ -11,18 +11,13 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 /// <summary>
 /// A type constructor for a plain type.
 /// </summary>
-/// <remarks><para>A type constructor is a sort of template, factory, or kind for creating plain
-/// types.</para>
-///
-/// <para>Note that this is an interface so that classes can use explicit interface implementation
-/// to hide members (e.g. <see cref="AnyTypeConstructor"/> hides <see cref="Context"/>.).</para></remarks>
+/// <remarks>A type constructor is a sort of template, factory, or kind for creating plain types.</remarks>
 [Closed(
     typeof(OrdinaryTypeConstructor),
     typeof(AnyTypeConstructor),
     typeof(SimpleOrLiteralTypeConstructor))]
-[SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "Using as a trait.")]
-// ReSharper disable once InconsistentNaming
-public partial interface TypeConstructor : IEquatable<TypeConstructor>, TypeConstructorContext
+[DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
+public abstract partial class TypeConstructor : IEquatable<TypeConstructor>, TypeConstructorContext
 {
     #region Standard Type Constructors
     public static readonly AnyTypeConstructor Any = AnyTypeConstructor.Instance;
@@ -137,63 +132,80 @@ public partial interface TypeConstructor : IEquatable<TypeConstructor>, TypeCons
         builder.Append('.');
     }
 
-    TypeConstructorContext Context { get; }
+    public abstract TypeConstructorContext Context { get; }
 
     /// <summary>
     /// Whether this type was declared `const` meaning that most references should be treated as const.
     /// </summary>
-    public bool IsDeclaredConst { get; }
+    public abstract bool IsDeclaredConst { get; }
 
     /// <summary>
     /// Whether this type can be constructed. Abstract types and type variables cannot be constructed.
     /// </summary>
-    bool CanBeInstantiated { get; }
+    public abstract bool CanBeInstantiated { get; }
 
     /// <summary>
     /// Whether this type can have fields.
     /// </summary>
     /// <remarks>Even if a type cannot have fields, a subtype still could.</remarks>
-    public bool CanHaveFields { get; }
+    public abstract bool CanHaveFields { get; }
 
     /// <summary>
     /// Whether this type is allowed to be used as a supertype.
     /// </summary>
-    public bool CanBeSupertype { get; }
+    public abstract bool CanBeSupertype { get; }
 
-    TypeSemantics Semantics { get; }
-    TypeName Name { get; }
+    public abstract TypeSemantics Semantics { get; }
+    public abstract TypeName Name { get; }
 
-    bool HasParameters { get; }
-    IFixedList<Parameter> Parameters { get; }
+    public bool HasParameters => !Parameters.IsEmpty;
+    public abstract IFixedList<Parameter> Parameters { get; }
 
-    bool AllowsVariance { get; }
+    public abstract bool AllowsVariance { get; }
 
-    bool HasIndependentParameters { get; }
+    public abstract bool HasIndependentParameters { get; }
 
-    IFixedList<GenericParameterPlainType> ParameterPlainTypes { get; }
+    public abstract IFixedList<GenericParameterPlainType> ParameterPlainTypes { get; }
 
-    IFixedSet<Supertype> Supertypes { get; }
+    public abstract IFixedSet<Supertype> Supertypes { get; }
 
-    ConstructedPlainType Construct(IFixedList<IPlainType> typeArguments);
+    public abstract ConstructedPlainType Construct(IFixedList<IPlainType> typeArguments);
 
-    ConstructedPlainType ConstructWithParameterPlainTypes()
+    public ConstructedPlainType ConstructWithParameterPlainTypes()
         => Construct(ParameterPlainTypes);
 
-    IMaybePlainType Construct(IFixedList<IMaybePlainType> typeArguments)
+    public IMaybePlainType Construct(IFixedList<IMaybePlainType> typeArguments)
     {
         var properTypeArguments = typeArguments.As<IPlainType>();
         if (properTypeArguments is null) return IPlainType.Unknown;
         return Construct(properTypeArguments);
     }
 
-    IPlainType? TryConstructNullary();
+    public abstract IPlainType? TryConstructNullary();
 
-    TypeConstructor ToNonLiteral() => this;
+    /// <summary>
+    /// The default non-constant type to place values of this type in.
+    /// </summary>
+    public virtual TypeConstructor ToNonLiteral() => this;
 
     #region Equality
+    public abstract bool Equals(TypeConstructor? other);
+
+    public sealed override bool Equals(object? obj)
+        => ReferenceEquals(this, obj) || obj is TypeConstructor other && Equals(other);
+
     bool IEquatable<TypeConstructorContext>.Equals(TypeConstructorContext? other)
         => ReferenceEquals(this, other) || other is TypeConstructor that && Equals(that);
+
+    public abstract override int GetHashCode();
     #endregion
 
-    public void ToString(StringBuilder builder);
+    public override string ToString()
+    {
+        var builder = new StringBuilder();
+        ToString(builder);
+        return builder.ToString();
+    }
+
+    public abstract void ToString(StringBuilder builder);
 }

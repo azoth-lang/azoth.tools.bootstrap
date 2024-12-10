@@ -1,14 +1,11 @@
-using System.Diagnostics;
 using System.Text;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors.Contexts;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using Azoth.Tools.Bootstrap.Framework;
-using static Azoth.Tools.Bootstrap.Compiler.Types.Constructors.TypeConstructor;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 
-[DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
 public sealed class AnyTypeConstructor : TypeConstructor
 {
     #region Singleton
@@ -19,58 +16,51 @@ public sealed class AnyTypeConstructor : TypeConstructor
 
     internal static readonly ConstructedPlainType PlainType = new(Instance, []);
 
-    TypeConstructorContext TypeConstructor.Context => PrimitiveContext.Instance;
+    public override PrimitiveContext Context => PrimitiveContext.Instance;
 
-    public bool IsDeclaredConst => false;
+    public override bool IsDeclaredConst => false;
 
     /// <summary>
     /// The `Any` type is like a trait in the sense that it is known to not have fields.
     /// </summary>
-    public bool CanHaveFields => false;
+    public override bool CanHaveFields => false;
 
-    public bool CanBeSupertype => true;
+    public override bool CanBeSupertype => true;
 
     /// <summary>
     /// The `Any` type cannot be instantiated because it is abstract.
     /// </summary>
-    public bool CanBeInstantiated => false;
+    public override bool CanBeInstantiated => false;
 
-    public TypeSemantics Semantics => TypeSemantics.Reference;
-    public SpecialTypeName Name => SpecialTypeName.Any;
-    TypeName TypeConstructor.Name => Name;
+    public override TypeSemantics Semantics => TypeSemantics.Reference;
+    public override SpecialTypeName Name => SpecialTypeName.Any;
 
-    bool TypeConstructor.HasParameters => false;
-    IFixedList<Parameter> TypeConstructor.Parameters => [];
-    bool TypeConstructor.AllowsVariance => false;
-    bool TypeConstructor.HasIndependentParameters => false;
-    IFixedList<GenericParameterPlainType> TypeConstructor.ParameterPlainTypes => [];
-    IFixedSet<Supertype> TypeConstructor.Supertypes => [];
+    public override IFixedList<Parameter> Parameters => [];
+    public override bool AllowsVariance => false;
+    public override bool HasIndependentParameters => false;
+    public override IFixedList<GenericParameterPlainType> ParameterPlainTypes => [];
+
+    /// <remarks>Because `Any` is the base of the constructed type hierarchy, it has no supertypes.</remarks>
+    public override IFixedSet<Supertype> Supertypes => [];
 
     #region Equality
-    public bool Equals(TypeConstructor? other)
+    public override bool Equals(TypeConstructor? other)
         // AnyTypeConstructor is a singleton, so we can use reference equality.
         => ReferenceEquals(this, other);
 
     public override int GetHashCode() => HashCode.Combine(typeof(AnyTypeConstructor));
     #endregion
 
-    public ConstructedPlainType Construct(IFixedList<IPlainType> typeArguments)
+    public override ConstructedPlainType Construct(IFixedList<IPlainType> typeArguments)
     {
         if (typeArguments.Any())
             throw new ArgumentException("Incorrect number of type arguments.");
         return PlainType;
     }
 
-    public IMaybePlainType Construct(IFixedList<IMaybePlainType> typeArguments)
-    {
-        var properTypeArguments = typeArguments.As<IPlainType>();
-        if (properTypeArguments is null) return IPlainType.Unknown;
-        return Construct(properTypeArguments);
-    }
-
-    public IPlainType TryConstructNullary() => PlainType;
+    public override IPlainType TryConstructNullary() => PlainType;
 
     public override string ToString() => Name.ToString();
 
-    public void ToString(StringBuilder builder) => builder.Append(Name);
+    public override void ToString(StringBuilder builder) => builder.Append(Name);
 }
