@@ -27,6 +27,14 @@ Decorated types are plain types with the reference capability decorations. These
 surface level types in an Azoth program. As such, they are named just *`Types` rather than
 *`DecoratedTypes`.
 
+## Bare Types
+
+During type computation, it is necessary to have as an intermediate step, a type that has reference
+capabilities on type arguments, but does not *yet* have a reference capability at the top-level.
+These are referred to as *bare types*. They really aren't a valid or complete system of types.
+Rather an incomplete subset of the types. Namely, those that could have a capability applied to
+them.
+
 ## Conventions
 
 This project doesn't prefix interfaces used as traits with "`I`". This is because the

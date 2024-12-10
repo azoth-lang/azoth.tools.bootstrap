@@ -4,6 +4,8 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 
+// TODO this properly represent an associated type used from within a class, but there are also
+// those used from outside which need type arguments for the containing type
 public sealed class OrdinaryAssociatedPlainType : AssociatedPlainType
 {
     public override StandardName Name { get; }
