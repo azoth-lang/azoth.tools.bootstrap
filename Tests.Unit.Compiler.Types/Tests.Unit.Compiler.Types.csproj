@@ -1,18 +1,26 @@
 <Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
-    <AssemblyName>Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Core</AssemblyName>
-    <RootNamespace>Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Core</RootNamespace>
+    <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>enable</Nullable>
+
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+    <AssemblyName>Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Types</AssemblyName>
+    <RootNamespace>Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Types</RootNamespace>
   </PropertyGroup>
+
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <WarningsAsErrors />
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
   </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="ExhaustiveMatching.Analyzer" Version="0.5.0" />
-    <PackageReference Include="FsCheck.Xunit" Version="2.16.6" />
     <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="8.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -22,13 +30,16 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="xunit.core" Version="2.9.2" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2">
       <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
   </ItemGroup>
+
   <ItemGroup>
-    <ProjectReference Include="..\Compiler.Core\Compiler.Core.csproj" />
-    <ProjectReference Include="..\Tests.Unit\Tests.Unit.csproj" />
+    <ProjectReference Include="..\Compiler.Types\Compiler.Types.csproj" />
+    <ProjectReference Include="..\Tests.Asserts\Tests.Asserts.csproj" />
   </ItemGroup>
+
 </Project>
