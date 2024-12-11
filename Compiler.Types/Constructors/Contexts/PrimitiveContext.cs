@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Text;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors.Contexts;
@@ -7,7 +6,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors.Contexts;
 /// The context for type constructors for simple and literal types. This represents not being in any
 /// package or namespace.
 /// </summary>
-[DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
 public sealed class PrimitiveContext : TypeConstructorContext
 {
     #region Singleton
@@ -16,16 +14,12 @@ public sealed class PrimitiveContext : TypeConstructorContext
     private PrimitiveContext() { }
     #endregion
 
-    public void AppendContextPrefix(StringBuilder builder) { /* no prefix */ }
+    public override void AppendContextPrefix(StringBuilder builder) { /* no prefix */ }
 
     #region Equality
-    public bool Equals(TypeConstructorContext? other)
+    public override bool Equals(TypeConstructorContext? other)
         // This type is a singleton, so we can use reference equality.
         => ReferenceEquals(this, other);
-
-    public override bool Equals(object? obj)
-        // This type is a singleton, so we can use reference equality.
-        => ReferenceEquals(this, obj);
 
     public override int GetHashCode() => HashCode.Combine(typeof(PrimitiveContext));
     #endregion

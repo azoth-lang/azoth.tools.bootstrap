@@ -19,7 +19,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
     typeof(AnyTypeConstructor),
     typeof(SimpleOrLiteralTypeConstructor))]
 [DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
-public abstract partial class TypeConstructor : IEquatable<TypeConstructor>, TypeConstructorContext
+public abstract partial class TypeConstructor : TypeConstructorContext, IEquatable<TypeConstructor>
 {
     #region Standard Type Constructors
     public static readonly AnyTypeConstructor Any = AnyTypeConstructor.Instance;
@@ -128,7 +128,7 @@ public abstract partial class TypeConstructor : IEquatable<TypeConstructor>, Typ
              genericParameters.ToFixedList(), Supertype.AnySet);
     #endregion
 
-    void TypeConstructorContext.AppendContextPrefix(StringBuilder builder)
+    public sealed override void AppendContextPrefix(StringBuilder builder)
     {
         ToString(builder);
         builder.Append('.');
@@ -141,9 +141,13 @@ public abstract partial class TypeConstructor : IEquatable<TypeConstructor>, Typ
     /// </summary>
     public abstract bool IsDeclaredConst { get; }
 
+    // TODO add bool IsDeclaredMove { get; } once that is being supported
+
     /// <summary>
-    /// Whether this type can be constructed. Abstract types and type variables cannot be constructed.
+    /// Whether this type can be instantiated. Abstract types and type variables cannot be instantiated.
     /// </summary>
+    /// <remarks>Even if a type can't be instantiated, a subtype may still be. Thus, there could still
+    /// be instances for this type.</remarks>
     public abstract bool CanBeInstantiated { get; }
 
     /// <summary>
@@ -158,6 +162,7 @@ public abstract partial class TypeConstructor : IEquatable<TypeConstructor>, Typ
     public abstract bool CanBeSupertype { get; }
 
     public abstract TypeSemantics Semantics { get; }
+
     public abstract TypeName Name { get; }
 
     public bool HasParameters => !Parameters.IsEmpty;
@@ -193,16 +198,26 @@ public abstract partial class TypeConstructor : IEquatable<TypeConstructor>, Typ
 
     public abstract ConstructedPlainType Construct(IFixedList<IPlainType> arguments);
 
+    /// <summary>
+    /// Construct a type using the <see cref="ParameterPlainTypes"/> to create a plain type as it
+    /// would be used inside the type definition.
+    /// </summary>
+    // TODO will this be needed once `Self` is properly used?
     public ConstructedPlainType ConstructWithParameterPlainTypes()
         => LazyInitializer.EnsureInitialized(ref withParameterPlainTypes, () => Construct(ParameterPlainTypes));
 
+    /// <summary>
+    /// Construct a type using the <see cref="ParameterTypes"/> to create a type as it would be
+    /// used inside the type definition.
+    /// </summary>
+    // TODO will this be needed once `Self` is properly used?
     public ConstructedBareType ConstructWithParameterTypes()
         => LazyInitializer.EnsureInitialized(ref withParameterTypes,
             () => new(ConstructWithParameterPlainTypes(), ParameterTypes));
 
     /// <summary>
-    /// Attempt to construct a type from this type constructor with possibly unknown arguments. If
-    /// any argument is unknown, the result is the unknown type.
+    /// Attempt to construct a plain type from this type constructor with possibly unknown arguments.
+    /// If any argument is unknown, the result is the unknown plain type.
     /// </summary>
     public IMaybePlainType Construct(IFixedList<IMaybePlainType> arguments)
     {
@@ -254,13 +269,8 @@ public abstract partial class TypeConstructor : IEquatable<TypeConstructor>, Typ
     #region Equality
     public abstract bool Equals(TypeConstructor? other);
 
-    public sealed override bool Equals(object? obj)
-        => ReferenceEquals(this, obj) || obj is TypeConstructor other && Equals(other);
-
-    public bool Equals(TypeConstructorContext? other)
+    public sealed override bool Equals(TypeConstructorContext? other)
         => ReferenceEquals(this, other) || other is TypeConstructor that && Equals(that);
-
-    public abstract override int GetHashCode();
     #endregion
 
     public override string ToString()

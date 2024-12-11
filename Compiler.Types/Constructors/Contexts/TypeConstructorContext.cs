@@ -1,23 +1,34 @@
-using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics;
 using System.Text;
 using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors.Contexts;
 
+/// <summary>
+/// The context a type constructor is in. This supports nested types by allowing type constructors
+/// to exist inside of other type constructors.
+/// </summary>
 [Closed(
     typeof(PrimitiveContext),
     typeof(NamespaceContext),
     typeof(TypeConstructor))]
-// TODO convert to a class
-[SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "Using as a trait.")]
-// ReSharper disable once InconsistentNaming
-public interface TypeConstructorContext : IEquatable<TypeConstructorContext>
+[DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
+public abstract class TypeConstructorContext : IEquatable<TypeConstructorContext>
 {
     /// <summary>
     /// Append the prefix the context applies to the name of type constructors in the context to the
     /// given <see cref="StringBuilder"/>.
     /// </summary>
-    void AppendContextPrefix(StringBuilder builder);
+    public abstract void AppendContextPrefix(StringBuilder builder);
 
-    string ToString();
+    #region Equality
+    public abstract bool Equals(TypeConstructorContext? other);
+
+    public sealed override bool Equals(object? obj)
+        => ReferenceEquals(this, obj) || obj is TypeConstructorContext other && Equals(other);
+
+    public abstract override int GetHashCode();
+    #endregion
+
+    public abstract override string ToString();
 }
