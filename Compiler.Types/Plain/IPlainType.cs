@@ -14,6 +14,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 [Closed(
     typeof(INonVoidPlainType),
     typeof(EmptyPlainType))]
+// TODO consider converting to class
 public interface IPlainType : IMaybePlainType
 {
     internal static readonly IFixedSet<ConstructedPlainType> AnySet

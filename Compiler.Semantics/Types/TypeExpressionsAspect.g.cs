@@ -1,9 +1,7 @@
 using System.CodeDom.Compiler;
 using System.Runtime.CompilerServices;
 using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Parameters;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Pseudotypes;
+using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 
@@ -14,7 +12,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 internal static partial class TypeExpressionsAspect
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IMaybePseudotype? MethodDefinition_Children_Broadcast_MethodSelfType(IMethodDefinitionNode node);
+    public static partial IMaybeType? MethodDefinition_Children_Broadcast_MethodSelfType(IMethodDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IMaybeType TypeName_NamedType(ITypeNameNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

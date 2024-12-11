@@ -15,6 +15,8 @@ public sealed class VoidType : IType
     public VoidPlainType PlainType => VoidPlainType.Instance;
     IPlainType IType.PlainType => PlainType;
 
+    public bool HasIndependentTypeArguments => false;
+
     #region Equality
     public bool Equals(IMaybeType? other)
         // Singleton, so a reference equality suffices

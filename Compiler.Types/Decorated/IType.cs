@@ -12,7 +12,7 @@ public interface IType : IMaybeType
     public static new readonly UnknownType Unknown = UnknownType.Instance;
     public static readonly VoidType Void = VoidType.Instance;
     public static readonly NeverType Never = NeverType.Instance;
-    public static readonly CapabilityType IdAny = new(Capability.Identity, IPlainType.Any);
+    public static readonly CapabilityType IdAny = CapabilityType.Create(Capability.Identity, IPlainType.Any);
     public static readonly CapabilityType Bool = TypeConstructor.Bool.Type;
     public static readonly OptionalType OptionalBool = new(IPlainType.OptionalBool, Bool);
     public static readonly CapabilityType Int = TypeConstructor.Int.Type;
@@ -43,4 +43,12 @@ public interface IType : IMaybeType
 
     new IPlainType PlainType { get; }
     IMaybePlainType IMaybeType.PlainType => PlainType;
+
+    /// <summary>
+    /// Convert types for literals (e.g. <c>bool[true]</c>, <c>int[42]</c> etc.) to their
+    /// corresponding types.
+    /// </summary>
+    // TODO this makes literal types special. Perhaps there should be a way to declare other literal types in code
+    new IType ToNonLiteral() => this;
+    IMaybeType IMaybeType.ToNonLiteral() => this;
 }

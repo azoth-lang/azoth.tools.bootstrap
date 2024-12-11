@@ -4,7 +4,7 @@ using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 
 [DebuggerDisplay("{" + nameof(ToILString) + "(),nq}")]
-public sealed class UnknownType : IMaybeType
+public sealed class UnknownType : IMaybeFunctionType, IMaybeParameterType
 {
     #region Singleton
     internal static readonly UnknownType Instance = new UnknownType();
@@ -13,7 +13,16 @@ public sealed class UnknownType : IMaybeType
     #endregion
 
     public UnknownPlainType PlainType => UnknownPlainType.Instance;
+    bool IMaybeType.HasIndependentTypeArguments => false;
     IMaybePlainType IMaybeType.PlainType => PlainType;
+    IMaybeFunctionPlainType IMaybeFunctionType.PlainType => PlainType;
+
+    IMaybeType IMaybeFunctionType.Return => this;
+
+    #region Parmaeter Types
+    bool IMaybeParameterType.IsLent => false;
+    IMaybeNonVoidType IMaybeParameterType.Type => this;
+    #endregion
 
     #region Equality
     public bool Equals(IMaybeType? other)

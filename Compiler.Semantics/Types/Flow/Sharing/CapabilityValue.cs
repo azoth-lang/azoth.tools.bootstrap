@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Pseudotypes;
+using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow.Sharing;
 
@@ -19,7 +19,7 @@ internal sealed class CapabilityValue : ICapabilityValue
     public static CapabilityValue CreateTopLevel(ValueId id)
         => TopLevelCache.GetOrAdd(id.Value, TopLevelFactory);
 
-    public static IReadOnlyDictionary<CapabilityValue, FlowCapability> ForType(ValueId id, IMaybePseudotype type)
+    public static IReadOnlyDictionary<CapabilityValue, FlowCapability> ForType(ValueId id, IMaybeType type)
         => ICapabilityValue.ForType(id, type, Create);
 
     public bool IsVariableOrParameter => false;

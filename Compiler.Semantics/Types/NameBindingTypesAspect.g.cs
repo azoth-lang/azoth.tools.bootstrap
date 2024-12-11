@@ -2,9 +2,7 @@ using System.CodeDom.Compiler;
 using System.Runtime.CompilerServices;
 using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Parameters;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Pseudotypes;
+using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 
@@ -17,7 +15,7 @@ internal static partial class NameBindingTypesAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial void NamedParameter_Contribute_Diagnostics(INamedParameterNode node, DiagnosticCollectionBuilder diagnostics);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IMaybeSelfParameterType SelfParameter_ParameterType(ISelfParameterNode node);
+    public static partial IMaybeNonVoidType SelfParameter_ParameterType(ISelfParameterNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial void ConstructorSelfParameter_Contribute_Diagnostics(IConstructorSelfParameterNode node, DiagnosticCollectionBuilder diagnostics);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -45,7 +43,7 @@ internal static partial class NameBindingTypesAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial CapabilityType InitializerSelfParameter_BindingType(IInitializerSelfParameterNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IMaybePseudotype MethodSelfParameter_BindingType(IMethodSelfParameterNode node);
+    public static partial IMaybeType MethodSelfParameter_BindingType(IMethodSelfParameterNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IMaybeNonVoidType FieldParameter_BindingType(IFieldParameterNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

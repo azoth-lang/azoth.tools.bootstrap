@@ -8,9 +8,19 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 /// was declared `lent`. This class packages those two values.
 /// </summary>
 [DebuggerDisplay("{" + nameof(ToILString) + "(),nq}")]
-public record class ParameterType(bool IsLent, INonVoidType Type)
+public record class ParameterType(bool IsLent, INonVoidType Type) : IMaybeParameterType
 {
+    public static IMaybeParameterType Create(bool isLent, IMaybeNonVoidType type)
+    {
+        if (type is INonVoidType t) return new ParameterType(isLent, t);
+        return IType.Unknown;
+    }
+    IMaybeNonVoidType IMaybeParameterType.Type => Type;
+
     public INonVoidPlainType PlainType => Type.PlainType;
+
+    public bool ReferenceEquals(ParameterType other)
+        => IsLent == other.IsLent && ReferenceEquals(Type, other.Type);
 
     public override string ToString() => throw new NotSupportedException();
 

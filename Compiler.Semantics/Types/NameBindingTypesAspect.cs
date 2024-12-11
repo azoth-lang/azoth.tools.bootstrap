@@ -5,9 +5,7 @@ using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 using Azoth.Tools.Bootstrap.Compiler.Syntax;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Parameters;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Pseudotypes;
+using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
@@ -22,7 +20,7 @@ internal static partial class NameBindingTypesAspect
         IVariableDeclarationStatementNode node,
         ICapabilityNode? capability)
     {
-        if (node.Initializer?.Type.ToNonConstValueType() is not INonVoidType type)
+        if (node.Initializer?.Type.ToNonLiteral() is not INonVoidType type)
             return null;
 
         if (capability is null)
@@ -60,7 +58,7 @@ internal static partial class NameBindingTypesAspect
 
     public static partial IMaybeNonVoidType PatternMatchExpression_Pattern_ContextBindingType(IPatternMatchExpressionNode node)
         // TODO report an error for void type
-        => node.Referent?.Type.ToNonConstValueType().ToNonVoidType() ?? IType.Unknown;
+        => node.Referent?.Type.ToNonLiteral().ToNonVoidType() ?? IType.Unknown;
 
     public static partial IMaybeNonVoidType OptionalPattern_Pattern_ContextBindingType(IOptionalPatternNode node)
     {
@@ -84,16 +82,19 @@ internal static partial class NameBindingTypesAspect
         return ParameterType.Create(isLent, node.BindingType);
     }
 
-    public static partial IMaybePseudotype MethodSelfParameter_BindingType(IMethodSelfParameterNode node)
+    public static partial IMaybeType MethodSelfParameter_BindingType(IMethodSelfParameterNode node)
     {
+        // TODO this whole method needs cleaned up
         var typeConstructor = node.ContainingTypeConstructor;
-        var genericParameterTypes = typeConstructor.GenericParameterTypes();
+        var bareType = typeConstructor.ConstructWithParameterTypes();
         var capability = node.Capability;
         // TODO shouldn't their be an overload of .With() that takes an ICapabilityConstraint (e.g. `capability.Constraint`)
         return capability switch
         {
-            ICapabilityNode n => typeConstructor.With(n.Capability, genericParameterTypes),
-            ICapabilitySetNode n => typeConstructor.With(n.Constraint, genericParameterTypes),
+            ICapabilityNode n => bareType.With(n.Capability),
+            // TODO this is currently a hack to avoid `Self`. Instead, use `Self`.
+            ICapabilitySetNode n => new SelfViewpointType(n.Constraint, bareType.WithMutate()),
+            //node.ContainingTypeDefinition.SelfPlainType.With(n.Constraint),
             _ => throw ExhaustiveMatch.Failed(capability)
         };
     }
@@ -108,9 +109,9 @@ internal static partial class NameBindingTypesAspect
 
     public static partial CapabilityType ConstructorSelfParameter_BindingType(IConstructorSelfParameterNode node)
     {
-        var typeConstructor = node.ContainingTypeConstructor;
+        var bareType = node.ContainingTypeConstructor.ConstructWithParameterTypes();
         var capability = node.Syntax.Capability.Declared.ToSelfParameterCapability();
-        return typeConstructor.With(capability, typeConstructor.GenericParameterTypes());
+        return bareType.With(capability);
     }
 
     // TODO this is strange because a FieldParameter isn't a binding
@@ -119,9 +120,9 @@ internal static partial class NameBindingTypesAspect
 
     public static partial CapabilityType InitializerSelfParameter_BindingType(IInitializerSelfParameterNode node)
     {
-        var typeConstructor = node.ContainingTypeConstructor;
+        var bareType = node.ContainingTypeConstructor.ConstructWithParameterTypes();
         var capability = node.Syntax.Capability.Declared.ToSelfParameterCapability();
-        return typeConstructor.With(capability, typeConstructor.GenericParameterTypes());
+        return bareType.With(capability);
     }
 
     private static void CheckInvalidConstructorSelfParameterCapability(
@@ -148,11 +149,8 @@ internal static partial class NameBindingTypesAspect
         }
     }
 
-    public static partial IMaybeSelfParameterType SelfParameter_ParameterType(ISelfParameterNode node)
-    {
-        bool isLent = node.IsLentBinding && node.BindingType.CanBeLent();
-        return SelfParameterType.Create(isLent, node.BindingType);
-    }
+    public static partial IMaybeNonVoidType SelfParameter_ParameterType(ISelfParameterNode node)
+        => node.BindingType.ToNonVoidType();
 
     public static partial void MethodSelfParameter_Contribute_Diagnostics(IMethodSelfParameterNode node, DiagnosticCollectionBuilder diagnostics)
     {
@@ -166,13 +164,12 @@ internal static partial class NameBindingTypesAspect
         DiagnosticCollectionBuilder diagnostics)
     {
         var inConstClass = node.ContainingTypeConstructor.IsDeclaredConst;
-        var selfParameterType = node.ParameterType;
-        var selfType = selfParameterType.Type;
+        var selfType = node.ParameterType;
         if (inConstClass
             && ((selfType is CapabilityType { Capability: var selfCapability }
                  && selfCapability != Capability.Constant
                  && selfCapability != Capability.Identity)
-                || selfType is CapabilityTypeConstraint))
+                || selfType is CapabilitySetSelfType))
             diagnostics.Add(TypeError.ConstClassSelfParameterCannotHaveCapability(node.File, node.Syntax));
     }
 

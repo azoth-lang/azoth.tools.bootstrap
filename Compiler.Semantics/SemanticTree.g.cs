@@ -27,12 +27,10 @@ using Azoth.Tools.Bootstrap.Compiler.Semantics.Variables;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 using Azoth.Tools.Bootstrap.Compiler.Syntax;
+using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Bare;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Parameters;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Pseudotypes;
+using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
@@ -107,7 +105,7 @@ public partial interface IBindingNode : ICodeNode, IBindingDeclarationNode
 {
     ValueId BindingValueId { get; }
     IMaybeNonVoidPlainType BindingPlainType { get; }
-    IMaybePseudotype BindingType { get; }
+    IMaybeType BindingType { get; }
     bool IsLentBinding { get; }
 }
 
@@ -119,7 +117,7 @@ public partial interface INamedBindingNode : IBindingNode, INamedBindingDeclarat
 {
     LexicalScope ContainingLexicalScope { get; }
     new IMaybeNonVoidType BindingType { get; }
-    IMaybePseudotype IBindingNode.BindingType => BindingType;
+    IMaybeType IBindingNode.BindingType => BindingType;
     bool IsMutableBinding { get; }
 }
 
@@ -520,10 +518,10 @@ public partial interface ITypeDefinitionNode : IFacetMemberDefinitionNode, IAsso
     SelfPlainType SelfPlainType { get; }
     new IFixedSet<TypeConstructor.Supertype> Supertypes { get; }
     IFixedSet<TypeConstructor.Supertype> ITypeDeclarationNode.Supertypes => Supertypes;
-    SelfType SelfType { get; }
     new IFixedSet<ITypeMemberDefinitionNode> Members { get; }
     IFixedSet<ITypeMemberDeclarationNode> IUserTypeDeclarationNode.Members => Members;
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
+    SelfPlainType BareSelfType { get; }
     new AccessModifier AccessModifier { get; }
     AccessModifier IFacetMemberDefinitionNode.AccessModifier => AccessModifier;
     AccessModifier ITypeMemberDefinitionNode.AccessModifier => AccessModifier;
@@ -747,7 +745,7 @@ public partial interface IMethodDefinitionNode : IAlwaysTypeMemberDefinitionNode
     IdentifierName IMethodDeclarationNode.Name => Name;
     TypeName INamedDeclarationNode.Name => Name;
     MethodKind Kind { get; }
-    IMaybeSelfParameterType IMethodDeclarationNode.SelfParameterType
+    IMaybeNonVoidType IMethodDeclarationNode.SelfParameterType
         => SelfParameter.ParameterType;
     IMaybeType IInvocableDeclarationNode.ReturnType
         => Return?.NamedType ?? IType.Void;
@@ -772,13 +770,13 @@ public partial interface IAbstractMethodDefinitionNode : IMethodDefinitionNode, 
     IBodyNode? IInvocableDefinitionNode.Body => Body;
     OrdinaryTypeConstructor ContainingTypeConstructor { get; }
     IMaybeFunctionType IStandardMethodDeclarationNode.MethodGroupType
-        => Symbol?.MethodGroupType.ToType() ?? IMaybeFunctionType.Unknown;
+        => Symbol?.MethodGroupType ?? IMaybeFunctionType.Unknown;
     MethodKind IMethodDefinitionNode.Kind
         => MethodKind.Standard;
     int IStandardMethodDeclarationNode.Arity
         => Parameters.Count;
     IMaybeFunctionPlainType IStandardMethodDeclarationNode.MethodGroupPlainType
-        => MethodGroupType.ToPlainType();
+        => MethodGroupType.PlainType;
 
     public static IAbstractMethodDefinitionNode Create(
         IAbstractMethodDefinitionSyntax syntax,
@@ -801,13 +799,13 @@ public partial interface IStandardMethodDefinitionNode : IMethodDefinitionNode, 
     new IBodyNode Body { get; }
     IBodyNode? IInvocableDefinitionNode.Body => Body;
     IMaybeFunctionType IStandardMethodDeclarationNode.MethodGroupType
-        => Symbol?.MethodGroupType.ToType() ?? IMaybeFunctionType.Unknown;
+        => Symbol?.MethodGroupType ?? IMaybeFunctionType.Unknown;
     MethodKind IMethodDefinitionNode.Kind
         => MethodKind.Standard;
     int IStandardMethodDeclarationNode.Arity
         => Parameters.Count;
     IMaybeFunctionPlainType IStandardMethodDeclarationNode.MethodGroupPlainType
-        => MethodGroupType.ToPlainType();
+        => MethodGroupType.PlainType;
 
     public static IStandardMethodDefinitionNode Create(
         IStandardMethodDefinitionSyntax syntax,
@@ -883,7 +881,7 @@ public partial interface IConstructorDefinitionNode : IInvocableDefinitionNode, 
     StandardName? IPackageFacetChildDeclarationNode.Name => Name;
     IdentifierName? IConstructorDeclarationNode.Name => Name;
     IMaybeType IInvocableDeclarationNode.ReturnType
-        => Symbol?.ReturnType.ToType() ?? IMaybeType.Unknown;
+        => Symbol?.ReturnType ?? IMaybeType.Unknown;
     IMaybePlainType IInvocableDeclarationNode.ReturnPlainType
         => ContainingTypeDefinition.TypeConstructor.ConstructWithParameterPlainTypes();
 }
@@ -905,8 +903,8 @@ public partial interface IDefaultConstructorDefinitionNode : IConstructorDefinit
     new IBodyNode? Body
         => null;
     IBodyNode? IInvocableDefinitionNode.Body => Body;
-    IMaybeSelfParameterType IConstructorDeclarationNode.SelfParameterType
-        => new SelfParameterType(false, Symbol!.SelfParameterType.ToType());
+    IMaybeNonVoidType IConstructorDeclarationNode.SelfParameterType
+        => Symbol!.SelfParameterType;
     IMaybeNonVoidPlainType IConstructorDeclarationNode.SelfParameterPlainType
         => ContainingTypeDefinition.TypeConstructor.ConstructWithParameterPlainTypes();
 
@@ -927,7 +925,7 @@ public partial interface ISourceConstructorDefinitionNode : IConstructorDefiniti
     IConstructorSelfParameterNode SelfParameter { get; }
     new IBlockBodyNode Body { get; }
     IBodyNode? IInvocableDefinitionNode.Body => Body;
-    IMaybeSelfParameterType IConstructorDeclarationNode.SelfParameterType
+    IMaybeNonVoidType IConstructorDeclarationNode.SelfParameterType
         => SelfParameter.ParameterType;
     IMaybeNonVoidPlainType IConstructorDeclarationNode.SelfParameterPlainType
         => SelfParameter.BindingPlainType;
@@ -957,7 +955,7 @@ public partial interface IInitializerDefinitionNode : IInvocableDefinitionNode, 
     StandardName? IPackageFacetChildDeclarationNode.Name => Name;
     IdentifierName? IInitializerDeclarationNode.Name => Name;
     IMaybeType IInvocableDeclarationNode.ReturnType
-        => Symbol?.ReturnType.ToType() ?? IMaybeType.Unknown;
+        => Symbol?.ReturnType ?? IMaybeType.Unknown;
     IMaybePlainType IInvocableDeclarationNode.ReturnPlainType
         => ContainingTypeDefinition.TypeConstructor.ConstructWithParameterPlainTypes();
 }
@@ -979,8 +977,8 @@ public partial interface IDefaultInitializerDefinitionNode : IInitializerDefinit
     new IBodyNode? Body
         => null;
     IBodyNode? IInvocableDefinitionNode.Body => Body;
-    IMaybeSelfParameterType IInitializerDeclarationNode.SelfParameterType
-        => new SelfParameterType(false, Symbol!.SelfParameterType.ToType());
+    IMaybeNonVoidType IInitializerDeclarationNode.SelfParameterType
+        => Symbol!.SelfParameterType;
     IMaybeNonVoidPlainType IInitializerDeclarationNode.SelfParameterPlainType
         => ContainingTypeDefinition.TypeConstructor.ConstructWithParameterPlainTypes();
 
@@ -1001,7 +999,7 @@ public partial interface ISourceInitializerDefinitionNode : IInitializerDefiniti
     IInitializerSelfParameterNode SelfParameter { get; }
     new IBlockBodyNode Body { get; }
     IBodyNode? IInvocableDefinitionNode.Body => Body;
-    IMaybeSelfParameterType IInitializerDeclarationNode.SelfParameterType
+    IMaybeNonVoidType IInitializerDeclarationNode.SelfParameterType
         => SelfParameter.ParameterType;
     IMaybeNonVoidPlainType IInitializerDeclarationNode.SelfParameterPlainType
         => SelfParameter.BindingPlainType;
@@ -1032,7 +1030,7 @@ public partial interface IFieldDefinitionNode : IAlwaysTypeMemberDefinitionNode,
     LexicalScope INamedBindingNode.ContainingLexicalScope => ContainingLexicalScope;
     new IMaybeNonVoidType BindingType { get; }
     IMaybeNonVoidType INamedBindingNode.BindingType => BindingType;
-    IMaybePseudotype IBindingNode.BindingType => BindingType;
+    IMaybeType IBindingNode.BindingType => BindingType;
     IMaybeNonVoidType IFieldDeclarationNode.BindingType => BindingType;
     new bool IsMutableBinding
         => Syntax.IsMutableBinding;
@@ -1156,7 +1154,7 @@ public partial interface IParameterNode : ICodeNode
     IFlowState FlowStateBefore();
     IFlowState FlowStateAfter { get; }
     IMaybeNonVoidPlainType BindingPlainType { get; }
-    IMaybePseudotype BindingType { get; }
+    IMaybeType BindingType { get; }
     IdentifierName? Name { get; }
     bool Unused
         => Name?.Text.StartsWith('_') ?? false;
@@ -1173,7 +1171,7 @@ public partial interface IConstructorOrInitializerParameterNode : IParameterNode
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     new IMaybeNonVoidType BindingType { get; }
-    IMaybePseudotype IParameterNode.BindingType => BindingType;
+    IMaybeType IParameterNode.BindingType => BindingType;
     IMaybeParameterType ParameterType { get; }
     new IdentifierName Name { get; }
     IdentifierName? IParameterNode.Name => Name;
@@ -1204,9 +1202,9 @@ public partial interface INamedParameterNode : IConstructorOrInitializerParamete
     IMaybeNonVoidPlainType IBindingNode.BindingPlainType => BindingPlainType;
     new IMaybeNonVoidType BindingType { get; }
     IMaybeNonVoidType IConstructorOrInitializerParameterNode.BindingType => BindingType;
-    IMaybePseudotype IParameterNode.BindingType => BindingType;
+    IMaybeType IParameterNode.BindingType => BindingType;
     IMaybeNonVoidType INamedBindingNode.BindingType => BindingType;
-    IMaybePseudotype IBindingNode.BindingType => BindingType;
+    IMaybeType IBindingNode.BindingType => BindingType;
     bool IBindingNode.IsLentBinding
         => Syntax.IsLentBinding;
     bool INamedBindingNode.IsMutableBinding
@@ -1229,7 +1227,7 @@ public partial interface ISelfParameterNode : IParameterNode, IBindingNode
     IParameterSyntax IParameterNode.Syntax => Syntax;
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    IMaybeSelfParameterType ParameterType { get; }
+    IMaybeNonVoidType ParameterType { get; }
     ITypeDefinitionNode ContainingTypeDefinition { get; }
     OrdinaryTypeConstructor ContainingTypeConstructor { get; }
     new ValueId BindingValueId { get; }
@@ -1238,9 +1236,9 @@ public partial interface ISelfParameterNode : IParameterNode, IBindingNode
     new IMaybeNonVoidPlainType BindingPlainType { get; }
     IMaybeNonVoidPlainType IParameterNode.BindingPlainType => BindingPlainType;
     IMaybeNonVoidPlainType IBindingNode.BindingPlainType => BindingPlainType;
-    new IMaybePseudotype BindingType { get; }
-    IMaybePseudotype IParameterNode.BindingType => BindingType;
-    IMaybePseudotype IBindingNode.BindingType => BindingType;
+    new IMaybeType BindingType { get; }
+    IMaybeType IParameterNode.BindingType => BindingType;
+    IMaybeType IBindingNode.BindingType => BindingType;
     IdentifierName? IParameterNode.Name
         => null;
     bool IBindingNode.IsLentBinding
@@ -1258,9 +1256,9 @@ public partial interface IConstructorSelfParameterNode : ISelfParameterNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     ICapabilityNode Capability { get; }
     new CapabilityType BindingType { get; }
-    IMaybePseudotype ISelfParameterNode.BindingType => BindingType;
-    IMaybePseudotype IParameterNode.BindingType => BindingType;
-    IMaybePseudotype IBindingNode.BindingType => BindingType;
+    IMaybeType ISelfParameterNode.BindingType => BindingType;
+    IMaybeType IParameterNode.BindingType => BindingType;
+    IMaybeType IBindingNode.BindingType => BindingType;
 
     public static IConstructorSelfParameterNode Create(
         IConstructorSelfParameterSyntax syntax,
@@ -1279,9 +1277,9 @@ public partial interface IInitializerSelfParameterNode : ISelfParameterNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     ICapabilityNode Capability { get; }
     new CapabilityType BindingType { get; }
-    IMaybePseudotype ISelfParameterNode.BindingType => BindingType;
-    IMaybePseudotype IParameterNode.BindingType => BindingType;
-    IMaybePseudotype IBindingNode.BindingType => BindingType;
+    IMaybeType ISelfParameterNode.BindingType => BindingType;
+    IMaybeType IParameterNode.BindingType => BindingType;
+    IMaybeType IBindingNode.BindingType => BindingType;
 
     public static IInitializerSelfParameterNode Create(
         IInitializerSelfParameterSyntax syntax,
@@ -1637,7 +1635,7 @@ public partial interface ISelfViewpointTypeNode : IViewpointTypeNode
     ITypeSyntax ITypeNode.Syntax => Syntax;
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    IMaybePseudotype? MethodSelfType { get; }
+    IMaybeType? MethodSelfType { get; }
 
     public static ISelfViewpointTypeNode Create(
         ISelfViewpointTypeSyntax syntax,
@@ -3246,7 +3244,7 @@ public partial interface ISelfExpressionNode : IInstanceExpressionNode, ILocalBi
     ISyntax? ISemanticNode.Syntax => Syntax;
     INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
     ISimpleNameSyntax IUnresolvedSimpleNameNode.Syntax => Syntax;
-    IMaybePseudotype Pseudotype { get; }
+    IMaybeType Pseudotype { get; }
     IExecutableDefinitionNode ContainingDeclaration { get; }
     bool IsImplicit
         => Syntax.IsImplicit;
@@ -3984,7 +3982,7 @@ public partial interface IMethodDeclarationNode : IClassMemberDeclarationNode, I
     StandardName? IPackageFacetChildDeclarationNode.Name => Name;
     TypeName INamedDeclarationNode.Name => Name;
     IMaybeNonVoidPlainType SelfParameterPlainType { get; }
-    IMaybeSelfParameterType SelfParameterType { get; }
+    IMaybeNonVoidType SelfParameterType { get; }
     new MethodSymbol? Symbol { get; }
     Symbol? ISymbolDeclarationNode.Symbol => Symbol;
     InvocableSymbol? IInvocableDeclarationNode.Symbol => Symbol;
@@ -4035,7 +4033,7 @@ public partial interface IConstructorDeclarationNode : IAssociatedMemberDeclarat
     new IdentifierName? Name { get; }
     StandardName? IPackageFacetChildDeclarationNode.Name => Name;
     IMaybeNonVoidPlainType SelfParameterPlainType { get; }
-    IMaybeSelfParameterType SelfParameterType { get; }
+    IMaybeNonVoidType SelfParameterType { get; }
     new ConstructorSymbol? Symbol { get; }
     Symbol? ISymbolDeclarationNode.Symbol => Symbol;
     InvocableSymbol? IInvocableDeclarationNode.Symbol => Symbol;
@@ -4050,7 +4048,7 @@ public partial interface IInitializerDeclarationNode : IAssociatedMemberDeclarat
     new IdentifierName? Name { get; }
     StandardName? IPackageFacetChildDeclarationNode.Name => Name;
     IMaybeNonVoidPlainType SelfParameterPlainType { get; }
-    IMaybeSelfParameterType SelfParameterType { get; }
+    IMaybeNonVoidType SelfParameterType { get; }
     new InitializerSymbol? Symbol { get; }
     Symbol? ISymbolDeclarationNode.Symbol => Symbol;
     InvocableSymbol? IInvocableDeclarationNode.Symbol => Symbol;
@@ -4185,15 +4183,15 @@ public partial interface IFunctionSymbolNode : IFunctionDeclarationNode, INamesp
     IFixedList<IMaybeNonVoidPlainType> IInvocableDeclarationNode.ParameterPlainTypes
         => Symbol.Type.Parameters.ToPlainTypes();
     IFixedList<IMaybeParameterType> IInvocableDeclarationNode.ParameterTypes
-        => Symbol.Type.Parameters.ToTypes();
+        => Symbol.Type.Parameters;
     IMaybePlainType IInvocableDeclarationNode.ReturnPlainType
         => Symbol.Type.Return.PlainType;
     IMaybeType IInvocableDeclarationNode.ReturnType
-        => Symbol.Type.Return.ToType();
+        => Symbol.Type.Return;
     IMaybeFunctionPlainType IFunctionInvocableDeclarationNode.PlainType
         => Symbol.Type.PlainType;
     IMaybeFunctionType IFunctionInvocableDeclarationNode.Type
-        => Symbol.Type.ToType();
+        => Symbol.Type;
 
     public static IFunctionSymbolNode Create(FunctionSymbol symbol)
         => new FunctionSymbolNode(symbol);
@@ -4453,16 +4451,16 @@ public partial interface IMethodSymbolNode : IMethodDeclarationNode, IClassMembe
     TypeName INamedDeclarationNode.Name => Name;
     IMaybeNonVoidPlainType IMethodDeclarationNode.SelfParameterPlainType
         => Symbol.SelfParameterType.PlainType;
-    IMaybeSelfParameterType IMethodDeclarationNode.SelfParameterType
-        => Symbol.SelfParameterType.ToSelfParameterType();
+    IMaybeNonVoidType IMethodDeclarationNode.SelfParameterType
+        => Symbol.SelfParameterType;
     IFixedList<IMaybeNonVoidPlainType> IInvocableDeclarationNode.ParameterPlainTypes
         => Symbol.MethodGroupType.Parameters.ToPlainTypes();
     IFixedList<IMaybeParameterType> IInvocableDeclarationNode.ParameterTypes
-        => Symbol.MethodGroupType.Parameters.ToTypes();
+        => Symbol.MethodGroupType.Parameters;
     IMaybePlainType IInvocableDeclarationNode.ReturnPlainType
         => Symbol.MethodGroupType.Return.PlainType;
     IMaybeType IInvocableDeclarationNode.ReturnType
-        => Symbol.MethodGroupType.Return.ToType();
+        => Symbol.MethodGroupType.Return;
 }
 
 // [Closed(typeof(StandardMethodSymbolNode))]
@@ -4474,7 +4472,7 @@ public partial interface IStandardMethodSymbolNode : IStandardMethodDeclarationN
     IMaybeFunctionPlainType IStandardMethodDeclarationNode.MethodGroupPlainType
         => Symbol.MethodGroupType.PlainType;
     IMaybeFunctionType IStandardMethodDeclarationNode.MethodGroupType
-        => Symbol.MethodGroupType.ToType();
+        => Symbol.MethodGroupType;
 
     public static IStandardMethodSymbolNode Create(MethodSymbol symbol)
         => new StandardMethodSymbolNode(symbol);
@@ -4513,16 +4511,16 @@ public partial interface IConstructorSymbolNode : IConstructorDeclarationNode, I
     StandardName? IPackageFacetChildDeclarationNode.Name => Name;
     IMaybeNonVoidPlainType IConstructorDeclarationNode.SelfParameterPlainType
         => Symbol.SelfParameterType.PlainType;
-    IMaybeSelfParameterType IConstructorDeclarationNode.SelfParameterType
-        => Symbol.SelfParameterType.ToSelfParameterType();
+    IMaybeNonVoidType IConstructorDeclarationNode.SelfParameterType
+        => Symbol.SelfParameterType;
     IFixedList<IMaybeNonVoidPlainType> IInvocableDeclarationNode.ParameterPlainTypes
         => Symbol.ParameterTypes.ToPlainTypes();
     IFixedList<IMaybeParameterType> IInvocableDeclarationNode.ParameterTypes
-        => Symbol.ParameterTypes.ToTypes();
+        => Symbol.ParameterTypes;
     IMaybePlainType IInvocableDeclarationNode.ReturnPlainType
         => Symbol.ReturnType.PlainType;
     IMaybeType IInvocableDeclarationNode.ReturnType
-        => Symbol.ReturnType.ToType();
+        => Symbol.ReturnType;
 
     public static IConstructorSymbolNode Create(ConstructorSymbol symbol)
         => new ConstructorSymbolNode(symbol);
@@ -4543,16 +4541,16 @@ public partial interface IInitializerSymbolNode : IInitializerDeclarationNode, I
     StandardName? IPackageFacetChildDeclarationNode.Name => Name;
     IMaybeNonVoidPlainType IInitializerDeclarationNode.SelfParameterPlainType
         => Symbol.SelfParameterType.PlainType;
-    IMaybeSelfParameterType IInitializerDeclarationNode.SelfParameterType
-        => Symbol.SelfParameterType.ToSelfParameterType();
+    IMaybeNonVoidType IInitializerDeclarationNode.SelfParameterType
+        => Symbol.SelfParameterType;
     IFixedList<IMaybeNonVoidPlainType> IInvocableDeclarationNode.ParameterPlainTypes
         => Symbol.ParameterTypes.ToPlainTypes();
     IFixedList<IMaybeParameterType> IInvocableDeclarationNode.ParameterTypes
-        => Symbol.ParameterTypes.ToTypes();
+        => Symbol.ParameterTypes;
     IMaybePlainType IInvocableDeclarationNode.ReturnPlainType
         => Symbol.ReturnType.PlainType;
     IMaybeType IInvocableDeclarationNode.ReturnType
-        => Symbol.ReturnType.ToType();
+        => Symbol.ReturnType;
 
     public static IInitializerSymbolNode Create(InitializerSymbol symbol)
         => new InitializerSymbolNode(symbol);
@@ -4575,7 +4573,7 @@ public partial interface IFieldSymbolNode : IFieldDeclarationNode, IClassMemberS
     bool IFieldDeclarationNode.IsMutableBinding
         => Symbol.IsMutableBinding;
     IMaybeNonVoidType IFieldDeclarationNode.BindingType
-        => Symbol.Type.ToType();
+        => Symbol.Type;
 
     public static IFieldSymbolNode Create(FieldSymbol symbol)
         => new FieldSymbolNode(symbol);
@@ -4593,15 +4591,15 @@ public partial interface IAssociatedFunctionSymbolNode : IAssociatedFunctionDecl
     IMaybeFunctionPlainType IFunctionInvocableDeclarationNode.PlainType
         => Symbol.Type.PlainType;
     IMaybeFunctionType IFunctionInvocableDeclarationNode.Type
-        => Symbol.Type.ToType();
+        => Symbol.Type;
     IFixedList<IMaybeNonVoidPlainType> IInvocableDeclarationNode.ParameterPlainTypes
         => Symbol.Type.Parameters.ToPlainTypes();
     IFixedList<IMaybeParameterType> IInvocableDeclarationNode.ParameterTypes
-        => Symbol.Type.Parameters.ToTypes();
+        => Symbol.Type.Parameters;
     IMaybePlainType IInvocableDeclarationNode.ReturnPlainType
         => Symbol.Type.Return.PlainType;
     IMaybeType IInvocableDeclarationNode.ReturnType
-        => Symbol.Type.Return.ToType();
+        => Symbol.Type.Return;
 
     public static IAssociatedFunctionSymbolNode Create(
         StandardName name,
@@ -4780,9 +4778,9 @@ internal abstract partial class SemanticNode : TreeNode, IChildTreeNode<ISemanti
     protected bool Inherited_IsAttributeType(IInheritanceContext ctx)
         => GetParent(ctx)!.Inherited_IsAttributeType(this, this, ctx);
 
-    internal virtual IMaybePseudotype? Inherited_MethodSelfType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal virtual IMaybeType? Inherited_MethodSelfType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
         => (GetParent(ctx) ?? throw Child.InheritFailed("MethodSelfType", child, descendant)).Inherited_MethodSelfType(this, descendant, ctx);
-    protected IMaybePseudotype? Inherited_MethodSelfType(IInheritanceContext ctx)
+    protected IMaybeType? Inherited_MethodSelfType(IInheritanceContext ctx)
         => GetParent(ctx)!.Inherited_MethodSelfType(this, this, ctx);
 
     internal virtual IEntryNode Inherited_ControlFlowEntry(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -5491,6 +5489,12 @@ file class ClassDefinitionNode : SemanticNode, IClassDefinitionNode
                 NameLookupAspect.UserTypeDeclaration_AssociatedMembersByName);
     private FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>>? associatedMembersByName;
     private bool associatedMembersByNameCached;
+    public SelfPlainType BareSelfType
+        => GrammarAttribute.IsCached(in bareSelfTypeCached) ? bareSelfType!
+            : this.Synthetic(ref bareSelfTypeCached, ref bareSelfType,
+                BareTypeAspect.TypeDefinition_BareSelfType);
+    private SelfPlainType? bareSelfType;
+    private bool bareSelfTypeCached;
     public IDefaultConstructorDefinitionNode? DefaultConstructor
         => GrammarAttribute.IsCached(in defaultConstructorCached) ? defaultConstructor
             : this.Synthetic(ref defaultConstructorCached, ref defaultConstructor,
@@ -5527,12 +5531,6 @@ file class ClassDefinitionNode : SemanticNode, IClassDefinitionNode
                 DefinitionPlainTypesAspect.TypeDefinition_SelfPlainType);
     private SelfPlainType? selfPlainType;
     private bool selfPlainTypeCached;
-    public SelfType SelfType
-        => GrammarAttribute.IsCached(in selfTypeCached) ? selfType!
-            : this.Synthetic(ref selfTypeCached, ref selfType,
-                TypeDefinitionsAspect.TypeDefinition_SelfType);
-    private SelfType? selfType;
-    private bool selfTypeCached;
     public IFixedSet<TypeConstructor.Supertype> Supertypes
         => GrammarAttribute.IsCached(in supertypesCached) ? supertypes.UnsafeValue
             : this.Circular(ref supertypesCached, ref supertypes,
@@ -5659,6 +5657,12 @@ file class StructDefinitionNode : SemanticNode, IStructDefinitionNode
                 NameLookupAspect.UserTypeDeclaration_AssociatedMembersByName);
     private FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>>? associatedMembersByName;
     private bool associatedMembersByNameCached;
+    public SelfPlainType BareSelfType
+        => GrammarAttribute.IsCached(in bareSelfTypeCached) ? bareSelfType!
+            : this.Synthetic(ref bareSelfTypeCached, ref bareSelfType,
+                BareTypeAspect.TypeDefinition_BareSelfType);
+    private SelfPlainType? bareSelfType;
+    private bool bareSelfTypeCached;
     public IDefaultInitializerDefinitionNode? DefaultInitializer
         => GrammarAttribute.IsCached(in defaultInitializerCached) ? defaultInitializer
             : this.Synthetic(ref defaultInitializerCached, ref defaultInitializer,
@@ -5695,12 +5699,6 @@ file class StructDefinitionNode : SemanticNode, IStructDefinitionNode
                 DefinitionPlainTypesAspect.TypeDefinition_SelfPlainType);
     private SelfPlainType? selfPlainType;
     private bool selfPlainTypeCached;
-    public SelfType SelfType
-        => GrammarAttribute.IsCached(in selfTypeCached) ? selfType!
-            : this.Synthetic(ref selfTypeCached, ref selfType,
-                TypeDefinitionsAspect.TypeDefinition_SelfType);
-    private SelfType? selfType;
-    private bool selfTypeCached;
     public IFixedSet<TypeConstructor.Supertype> Supertypes
         => GrammarAttribute.IsCached(in supertypesCached) ? supertypes.UnsafeValue
             : this.Circular(ref supertypesCached, ref supertypes,
@@ -5824,6 +5822,12 @@ file class TraitDefinitionNode : SemanticNode, ITraitDefinitionNode
                 NameLookupAspect.UserTypeDeclaration_AssociatedMembersByName);
     private FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>>? associatedMembersByName;
     private bool associatedMembersByNameCached;
+    public SelfPlainType BareSelfType
+        => GrammarAttribute.IsCached(in bareSelfTypeCached) ? bareSelfType!
+            : this.Synthetic(ref bareSelfTypeCached, ref bareSelfType,
+                BareTypeAspect.TypeDefinition_BareSelfType);
+    private SelfPlainType? bareSelfType;
+    private bool bareSelfTypeCached;
     public FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>> InclusiveInstanceMembersByName
         => GrammarAttribute.IsCached(in inclusiveInstanceMembersByNameCached) ? inclusiveInstanceMembersByName!
             : this.Synthetic(ref inclusiveInstanceMembersByNameCached, ref inclusiveInstanceMembersByName,
@@ -5848,12 +5852,6 @@ file class TraitDefinitionNode : SemanticNode, ITraitDefinitionNode
                 DefinitionPlainTypesAspect.TypeDefinition_SelfPlainType);
     private SelfPlainType? selfPlainType;
     private bool selfPlainTypeCached;
-    public SelfType SelfType
-        => GrammarAttribute.IsCached(in selfTypeCached) ? selfType!
-            : this.Synthetic(ref selfTypeCached, ref selfType,
-                TypeDefinitionsAspect.TypeDefinition_SelfType);
-    private SelfType? selfType;
-    private bool selfTypeCached;
     public IFixedSet<TypeConstructor.Supertype> Supertypes
         => GrammarAttribute.IsCached(in supertypesCached) ? supertypes.UnsafeValue
             : this.Circular(ref supertypesCached, ref supertypes,
@@ -6151,7 +6149,7 @@ file class AbstractMethodDefinitionNode : SemanticNode, IAbstractMethodDefinitio
         return base.Inherited_FlowStateBefore(child, descendant, ctx);
     }
 
-    internal override IMaybePseudotype? Inherited_MethodSelfType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeType? Inherited_MethodSelfType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         return TypeExpressionsAspect.MethodDefinition_Children_Broadcast_MethodSelfType(this);
     }
@@ -6339,7 +6337,7 @@ file class StandardMethodDefinitionNode : SemanticNode, IStandardMethodDefinitio
         return base.Inherited_FlowStateBefore(child, descendant, ctx);
     }
 
-    internal override IMaybePseudotype? Inherited_MethodSelfType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeType? Inherited_MethodSelfType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         return TypeExpressionsAspect.MethodDefinition_Children_Broadcast_MethodSelfType(this);
     }
@@ -6526,7 +6524,7 @@ file class GetterMethodDefinitionNode : SemanticNode, IGetterMethodDefinitionNod
         return base.Inherited_FlowStateBefore(child, descendant, ctx);
     }
 
-    internal override IMaybePseudotype? Inherited_MethodSelfType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeType? Inherited_MethodSelfType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         return TypeExpressionsAspect.MethodDefinition_Children_Broadcast_MethodSelfType(this);
     }
@@ -6713,7 +6711,7 @@ file class SetterMethodDefinitionNode : SemanticNode, ISetterMethodDefinitionNod
         return base.Inherited_FlowStateBefore(child, descendant, ctx);
     }
 
-    internal override IMaybePseudotype? Inherited_MethodSelfType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeType? Inherited_MethodSelfType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         return TypeExpressionsAspect.MethodDefinition_Children_Broadcast_MethodSelfType(this);
     }
@@ -7828,11 +7826,11 @@ file class ConstructorSelfParameterNode : SemanticNode, IConstructorSelfParamete
                 ExpressionTypesAspect.SelfParameter_FlowStateAfter);
     private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
-    public IMaybeSelfParameterType ParameterType
+    public IMaybeNonVoidType ParameterType
         => GrammarAttribute.IsCached(in parameterTypeCached) ? parameterType!
             : this.Synthetic(ref parameterTypeCached, ref parameterType,
                 NameBindingTypesAspect.SelfParameter_ParameterType);
-    private IMaybeSelfParameterType? parameterType;
+    private IMaybeNonVoidType? parameterType;
     private bool parameterTypeCached;
 
     public ConstructorSelfParameterNode(
@@ -7909,11 +7907,11 @@ file class InitializerSelfParameterNode : SemanticNode, IInitializerSelfParamete
                 ExpressionTypesAspect.SelfParameter_FlowStateAfter);
     private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
-    public IMaybeSelfParameterType ParameterType
+    public IMaybeNonVoidType ParameterType
         => GrammarAttribute.IsCached(in parameterTypeCached) ? parameterType!
             : this.Synthetic(ref parameterTypeCached, ref parameterType,
                 NameBindingTypesAspect.SelfParameter_ParameterType);
-    private IMaybeSelfParameterType? parameterType;
+    private IMaybeNonVoidType? parameterType;
     private bool parameterTypeCached;
 
     public InitializerSelfParameterNode(
@@ -7972,11 +7970,11 @@ file class MethodSelfParameterNode : SemanticNode, IMethodSelfParameterNode
                 NameBindingPlainTypesAspect.SelfParameter_BindingPlainType);
     private IMaybeNonVoidPlainType? bindingPlainType;
     private bool bindingPlainTypeCached;
-    public IMaybePseudotype BindingType
+    public IMaybeType BindingType
         => GrammarAttribute.IsCached(in bindingTypeCached) ? bindingType!
             : this.Synthetic(ref bindingTypeCached, ref bindingType,
                 NameBindingTypesAspect.MethodSelfParameter_BindingType);
-    private IMaybePseudotype? bindingType;
+    private IMaybeType? bindingType;
     private bool bindingTypeCached;
     public ValueId BindingValueId
         => GrammarAttribute.IsCached(in bindingValueIdCached) ? bindingValueId
@@ -7990,11 +7988,11 @@ file class MethodSelfParameterNode : SemanticNode, IMethodSelfParameterNode
                 ExpressionTypesAspect.SelfParameter_FlowStateAfter);
     private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
-    public IMaybeSelfParameterType ParameterType
+    public IMaybeNonVoidType ParameterType
         => GrammarAttribute.IsCached(in parameterTypeCached) ? parameterType!
             : this.Synthetic(ref parameterTypeCached, ref parameterType,
                 NameBindingTypesAspect.SelfParameter_ParameterType);
-    private IMaybeSelfParameterType? parameterType;
+    private IMaybeNonVoidType? parameterType;
     private bool parameterTypeCached;
 
     public MethodSelfParameterNode(
@@ -8627,11 +8625,11 @@ file class SelfViewpointTypeNode : SemanticNode, ISelfViewpointTypeNode
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
-    public IMaybePseudotype? MethodSelfType
+    public IMaybeType? MethodSelfType
         => GrammarAttribute.IsCached(in methodSelfTypeCached) ? methodSelfType
             : this.Inherited(ref methodSelfTypeCached, ref methodSelfType,
                 Inherited_MethodSelfType);
-    private IMaybePseudotype? methodSelfType;
+    private IMaybeType? methodSelfType;
     private bool methodSelfTypeCached;
     public IMaybePlainType NamedPlainType
         => GrammarAttribute.IsCached(in namedPlainTypeCached) ? namedPlainType!
@@ -9751,7 +9749,7 @@ file class NewObjectExpressionNode : SemanticNode, INewObjectExpressionNode
     internal override IMaybePlainType? Inherited_ExpectedPlainType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (IndexOfNode(Self.CurrentArguments, descendant) is { } index)
-            return ContextualizedCall?.ParameterTypes[index].Type.ToPlainType();
+            return ContextualizedCall?.ParameterTypes[index].Type.PlainType;
         if (ReferenceEquals(child, descendant))
             return null;
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
@@ -13466,7 +13464,7 @@ file class GetterInvocationExpressionNode : SemanticNode, IGetterInvocationExpre
     internal override IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.CurrentContext))
-            return ContextualizedCall?.SelfParameterType?.Type.ToUpperBound();
+            return ContextualizedCall?.SelfParameterType?.ToUpperBound();
         if (ReferenceEquals(child, descendant))
             return null;
         return base.Inherited_ExpectedType(child, descendant, ctx);
@@ -13650,7 +13648,7 @@ file class SetterInvocationExpressionNode : SemanticNode, ISetterInvocationExpre
     internal override IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.CurrentContext))
-            return ContextualizedCall?.SelfParameterType?.Type.ToUpperBound();
+            return ContextualizedCall?.SelfParameterType?.ToUpperBound();
         if (ReferenceEquals(descendant, Self.CurrentValue))
             return ContextualizedCall?.ParameterTypes[0].Type;
         if (ReferenceEquals(child, descendant))
@@ -16205,11 +16203,11 @@ file class SelfExpressionNode : SemanticNode, ISelfExpressionNode
                 ExpressionPlainTypesAspect.SelfExpression_PlainType);
     private IMaybePlainType? plainType;
     private bool plainTypeCached;
-    public IMaybePseudotype Pseudotype
+    public IMaybeType Pseudotype
         => GrammarAttribute.IsCached(in pseudotypeCached) ? pseudotype!
             : this.Synthetic(ref pseudotypeCached, ref pseudotype,
                 ExpressionTypesAspect.SelfExpression_Pseudotype);
-    private IMaybePseudotype? pseudotype;
+    private IMaybeType? pseudotype;
     private bool pseudotypeCached;
     public ISelfParameterNode? ReferencedDefinition
         => GrammarAttribute.IsCached(in referencedDefinitionCached) ? referencedDefinition

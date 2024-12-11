@@ -1,6 +1,7 @@
 using System.CodeDom.Compiler;
 using System.Runtime.CompilerServices;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Bare;
+using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
+using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 
@@ -10,6 +11,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 [GeneratedCode("AzothCompilerCodeGen", null)]
 internal static partial class BareTypeAspect
 {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial SelfPlainType TypeDefinition_BareSelfType(ITypeDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial BareType? TypeNameExpression_NamedBareType(ITypeNameExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

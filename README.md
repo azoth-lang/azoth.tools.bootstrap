@@ -110,6 +110,13 @@ None Currently
   the same "kind" of entity without much regard to sub-kinds. Originally, this was not the case.
   Types were separated into many sub-namespaces, but this ended up being more trouble than it was
   worth. In practice, one still just used the go to type functionality to find types.
+* For many classes, there isn't a single string representation that makes the most sense. For these,
+  a `ToILString()` and `ToSourceCodeString()` method have been added. Originally, the `ToString()`
+  would throw `NotSupportedException`. However, there are cases with the .NET framework calls
+  `ToString()` in order to create some exception message. As a result, throwing
+  `NotSupportedException` causes problems. So instead, it should forward to `ToILString()` since
+  that is the developer relevant string. Likewise, `ToILString()` is used as the debug
+  representation.
 
 ## Line Count
 

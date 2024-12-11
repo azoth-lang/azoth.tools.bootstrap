@@ -1,8 +1,13 @@
 ◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 ◊name BareTypeAspect;
-◊using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Bare;
+◊using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
+◊using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
+
+// ---------- Type Definitions
+↑ TypeDefinition.BareSelfType:`SelfPlainType`;
+= TypeDefinition.BareSelfType;
 
 // ---------- Types
 ↑ TypeName.NamedBareType: `BareType`?;

@@ -1,9 +1,7 @@
 using System;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Names;
-using Azoth.Tools.Bootstrap.Compiler.Types;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Parameters;
+using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.MemoryLayout;
@@ -11,14 +9,14 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.MemoryLayout;
 internal class MethodSignature : IEquatable<MethodSignature>
 {
     public IdentifierName Name { get; }
-    public SelfParameterType SelfType { get; }
+    public INonVoidType SelfType { get; }
     public IFixedList<ParameterType> ParameterTypes { get; }
     public IType ReturnType { get; }
     private readonly int hashCode;
 
     public MethodSignature(
         IdentifierName name,
-        SelfParameterType selfType,
+        INonVoidType selfType,
         IFixedList<ParameterType> parameterTypes,
         IType returnType)
     {
@@ -32,17 +30,17 @@ internal class MethodSignature : IEquatable<MethodSignature>
     public bool EqualsOrOverrides(MethodSignature other)
     {
         if (ReferenceEquals(this, other)) return true;
-        var selfType = (NonEmptyType)SelfType.Type;
+        var selfType = SelfType;
         return Name.Equals(other.Name)
-               && SelfType.CanOverride(selfType.ReplaceTypeParametersIn(other.SelfType))
+               && SelfType.CanOverride(selfType.TypeReplacements.ReplaceTypeParametersIn(other.SelfType))
                && ParametersCompatible(selfType, other)
-               && ReturnType.ReturnCanOverride(selfType.ReplaceTypeParametersIn(other.ReturnType));
+               && ReturnType.ReturnCanOverride(selfType.TypeReplacements.ReplaceTypeParametersIn(other.ReturnType));
     }
 
-    private bool ParametersCompatible(NonEmptyType selfType, MethodSignature other)
+    private bool ParametersCompatible(INonVoidType selfType, MethodSignature other)
     {
         if (ParameterTypes.Count != other.ParameterTypes.Count) return false;
-        foreach (var (paramType, baseParamType) in ParameterTypes.EquiZip(other.ParameterTypes.Select(selfType.ReplaceTypeParametersIn)))
+        foreach (var (paramType, baseParamType) in ParameterTypes.EquiZip(other.ParameterTypes.Select(selfType.TypeReplacements.ReplaceTypeParametersIn)))
             // A null baseParamType means that the parameter was replaced to `void` and dropped out
             // of the parameter list.
             if (baseParamType is null || !paramType.CanOverride(baseParamType))

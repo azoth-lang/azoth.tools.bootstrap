@@ -1,7 +1,7 @@
 using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
+using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 
@@ -9,10 +9,10 @@ internal static partial class ForeachExpressionTypesAspect
 {
     public static partial IMaybeNonVoidType ForeachExpression_IteratorType(IForeachExpressionNode node)
     {
-        var iterableType = node.InExpression?.Type.ToNonConstValueType() ?? IType.Unknown;
+        var iterableType = node.InExpression?.Type.ToNonLiteral() ?? IType.Unknown;
         var iterateMethod = node.ReferencedIterateMethod;
-        var iteratorType = iterableType is NonEmptyType nonEmptyIterableType && iterateMethod is not null
-            ? nonEmptyIterableType.ReplaceTypeParametersIn(iterateMethod.MethodGroupType.Return)
+        var iteratorType = iterableType is INonVoidType nonVoidIterableType && iterateMethod is not null
+            ? nonVoidIterableType.TypeReplacements.ReplaceTypeParametersIn(iterateMethod.MethodGroupType.Return)
             : iterableType;
         // TODO report an error for void type
         return iteratorType.ToNonVoidType();
@@ -24,11 +24,11 @@ internal static partial class ForeachExpressionTypesAspect
         if (nextMethodReturnType is not OptionalType { Referent: var iteratedType })
             return IType.Unknown;
 
-        if (node.IteratorType is not NonEmptyType nonEmptyIteratorType)
+        if (node.IteratorType is not INonVoidType nonVoidIteratorType)
             return iteratedType;
 
         // TODO report an error for void type
-        return nonEmptyIteratorType.ReplaceTypeParametersIn(iteratedType).ToNonConstValueType().ToNonVoidType();
+        return nonVoidIteratorType.TypeReplacements.ReplaceTypeParametersIn(iteratedType).ToNonLiteral().ToNonVoidType();
     }
 
     public static partial IFlowState ForeachExpression_FlowStateBeforeBlock(IForeachExpressionNode node)
@@ -56,8 +56,8 @@ internal static partial class ForeachExpressionTypesAspect
             return;
 
         if (node.IteratorType is UnknownType)
-            diagnostics.Add(OtherSemanticError.ForeachNoIterateOrNextMethod(node.File, node.TempInExpression.Syntax, iterableType.ToNonConstValueType()));
+            diagnostics.Add(OtherSemanticError.ForeachNoIterateOrNextMethod(node.File, node.TempInExpression.Syntax, iterableType.ToNonLiteral()));
         else if (node.ReferencedNextMethod is null)
-            diagnostics.Add(OtherSemanticError.ForeachNoNextMethod(node.File, node.TempInExpression.Syntax, iterableType.ToNonConstValueType()));
+            diagnostics.Add(OtherSemanticError.ForeachNoNextMethod(node.File, node.TempInExpression.Syntax, iterableType.ToNonLiteral()));
     }
 }

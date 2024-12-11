@@ -7,6 +7,7 @@ public interface ICapabilityConstraint
 {
     bool AnyCapabilityAllowsWrite { get; }
     bool IsAssignableFrom(ICapabilityConstraint from);
+    bool IsSubtypeOf(ICapabilityConstraint other);
     public string ToILString();
     public string ToSourceCodeString();
 }

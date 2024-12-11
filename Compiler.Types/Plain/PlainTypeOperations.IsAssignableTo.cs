@@ -13,6 +13,7 @@ public static partial class PlainTypeOperations
         if (self.IsSubtypeOf(other))
             return true;
 
+        // TODO split this out into conversion rules
         return (self, other) switch
         {
             (VoidPlainType, _) => false,

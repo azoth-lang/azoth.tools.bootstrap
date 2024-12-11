@@ -57,16 +57,16 @@
 
 // ---------- Member Declarations
 ↑ MethodDeclaration.SelfParameterPlainType: `IMaybeNonVoidPlainType`;
-↑ MethodDeclaration.SelfParameterType: `IMaybeSelfParameterType`;
+↑ MethodDeclaration.SelfParameterType: `IMaybeNonVoidType`;
 ↑ MethodDeclaration.Symbol: `MethodSymbol`?;
 ↑ StandardMethodDeclaration.Arity: `int`;
 ↑ StandardMethodDeclaration.MethodGroupPlainType: `IMaybeFunctionPlainType`;
 ↑ StandardMethodDeclaration.MethodGroupType: `IMaybeFunctionType`;
 ↑ ConstructorDeclaration.SelfParameterPlainType: `IMaybeNonVoidPlainType`;
-↑ ConstructorDeclaration.SelfParameterType: `IMaybeSelfParameterType`;
+↑ ConstructorDeclaration.SelfParameterType: `IMaybeNonVoidType`;
 ↑ ConstructorDeclaration.Symbol: `ConstructorSymbol`?;
 ↑ InitializerDeclaration.SelfParameterPlainType: `IMaybeNonVoidPlainType`;
-↑ InitializerDeclaration.SelfParameterType: `IMaybeSelfParameterType`;
+↑ InitializerDeclaration.SelfParameterType: `IMaybeNonVoidType`;
 ↑ InitializerDeclaration.Symbol: `InitializerSymbol`?;
 ↑ FieldDeclaration.IsMutableBinding: `bool`;
 ↑ FieldDeclaration.BindingType: `IMaybeNonVoidType`;

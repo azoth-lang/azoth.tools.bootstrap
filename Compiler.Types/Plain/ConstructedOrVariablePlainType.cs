@@ -17,8 +17,10 @@ public abstract class ConstructedOrVariablePlainType : INonVoidPlainType
     public abstract TypeSemantics? Semantics { get; }
     public abstract TypeName Name { get; }
     public abstract bool AllowsVariance { get; }
-    public virtual IFixedList<IPlainType> TypeArguments => FixedList.Empty<IPlainType>();
+    public virtual IFixedList<IPlainType> Arguments => FixedList.Empty<IPlainType>();
     public abstract IFixedSet<ConstructedPlainType> Supertypes { get; }
+
+    internal abstract PlainTypeReplacements TypeReplacements { get; }
 
     private protected ConstructedOrVariablePlainType() { }
 

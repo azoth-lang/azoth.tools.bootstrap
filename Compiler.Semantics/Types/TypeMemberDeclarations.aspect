@@ -2,7 +2,7 @@
 ◊name TypeMemberDeclarationsAspect;
 ◊using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 ◊using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
-◊using Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
+◊using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
@@ -26,14 +26,14 @@
 = MethodDefinition.↑.Diagnostics;
 
 // TODO this shouldn't use Symbol
-= AbstractMethodDefinition.MethodGroupType => Symbol?.MethodGroupType.ToType() ?? IMaybeFunctionType.Unknown;
+= AbstractMethodDefinition.MethodGroupType => Symbol?.MethodGroupType ?? IMaybeFunctionType.Unknown;
 
 // TODO this shouldn't use Symbol
-= StandardMethodDefinition.MethodGroupType => Symbol?.MethodGroupType.ToType() ?? IMaybeFunctionType.Unknown;
+= StandardMethodDefinition.MethodGroupType => Symbol?.MethodGroupType ?? IMaybeFunctionType.Unknown;
 
 // TODO this shouldn't use Symbol
-= ConstructorDefinition.ReturnType => Symbol?.ReturnType.ToType() ?? IMaybeType.Unknown;
-= DefaultConstructorDefinition.SelfParameterType => new SelfParameterType(false, Symbol!.SelfParameterType.ToType());
+= ConstructorDefinition.ReturnType => Symbol?.ReturnType ?? IMaybeType.Unknown;
+= DefaultConstructorDefinition.SelfParameterType => Symbol!.SelfParameterType;
 = SourceConstructorDefinition.SelfParameterType => SelfParameter.ParameterType;
 = SourceConstructorDefinition.SelfParameter.**.FlowStateBefore() => Self.FlowStateBefore();
 = SourceConstructorDefinition.Parameters[0].**.FlowStateBefore()
@@ -45,8 +45,8 @@
 = SourceConstructorDefinition.Body.**.ExpectedReturnType => IType.Void;
 
 // TODO this shouldn't use Symbol
-= InitializerDefinition.ReturnType => Symbol?.ReturnType.ToType() ?? IMaybeType.Unknown;
-= DefaultInitializerDefinition.SelfParameterType => new SelfParameterType(false, Symbol!.SelfParameterType.ToType());
+= InitializerDefinition.ReturnType => Symbol?.ReturnType ?? IMaybeType.Unknown;
+= DefaultInitializerDefinition.SelfParameterType => Symbol!.SelfParameterType;
 = SourceInitializerDefinition.SelfParameterType => SelfParameter.ParameterType;
 = SourceInitializerDefinition.SelfParameter.**.FlowStateBefore() => Self.FlowStateBefore();
 = SourceInitializerDefinition.Parameters[0].**.FlowStateBefore()

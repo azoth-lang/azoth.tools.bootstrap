@@ -1,14 +1,14 @@
+using System;
 using System.Linq;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Parameters;
+using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 
-public sealed class ContextualizedCall
+public sealed class ContextualizedCall : IEquatable<ContextualizedCall>
 {
     public static ContextualizedCall Create(IFunctionInvocableDeclarationNode function)
-        => new(null, function.ParameterTypes, function.ReturnType);
+        => new(null, null, function.ParameterTypes, function.ReturnType);
 
     public static ContextualizedCall Create(
         IMaybeType constructingType,
@@ -16,9 +16,9 @@ public sealed class ContextualizedCall
         => Create(constructingType, constructor, constructor.SelfParameterType);
 
     public static ContextualizedCall Create(
-        IMaybeType initializingPlainType,
+        IMaybeType initializingType,
         IInitializerDeclarationNode initializer)
-        => Create(initializingPlainType, initializer, initializer.SelfParameterType);
+        => Create(initializingType, initializer, initializer.SelfParameterType);
 
     public static ContextualizedCall Create(
         IMaybeType contextType,
@@ -32,51 +32,74 @@ public sealed class ContextualizedCall
         => Create(contextType, propertyAccessor, propertyAccessor.SelfParameterType);
 
     public static ContextualizedCall Create(FunctionType functionType)
-        => new(null, functionType.Parameters, functionType.Return);
+        => new(null, null, functionType.Parameters, functionType.Return);
 
     private static ContextualizedCall Create(
         IMaybeType contextType,
         IInvocableDeclarationNode node,
-        IMaybeSelfParameterType selfParameterType)
+        IMaybeNonVoidType selfParameterType)
     {
-        if (contextType is NonEmptyType nonEmptyContextType)
+        if (contextType is INonVoidType nonVoidContextType)
         {
-            selfParameterType = CreateSelfParameterType(nonEmptyContextType, selfParameterType);
-            var parameterTypes = CreateParameterTypes(nonEmptyContextType, node);
-            var returnType = CreateReturnType(nonEmptyContextType, node);
-            return new(selfParameterType, parameterTypes, returnType);
+            selfParameterType = CreateSelfParameterType(nonVoidContextType, selfParameterType);
+            var parameterTypes = CreateParameterTypes(nonVoidContextType, node);
+            var returnType = CreateReturnType(nonVoidContextType, node);
+            return new(contextType, selfParameterType, parameterTypes, returnType);
         }
-        return new(selfParameterType, node.ParameterTypes, node.ReturnType);
+        return new(contextType, selfParameterType, node.ParameterTypes, node.ReturnType);
     }
 
-    private static IMaybeSelfParameterType CreateSelfParameterType(
-        NonEmptyType contextType,
-        IMaybeSelfParameterType symbolSelfParameterType)
-        => contextType.ReplaceTypeParametersIn(symbolSelfParameterType);
+    private static IMaybeNonVoidType CreateSelfParameterType(
+        INonVoidType contextType,
+        IMaybeNonVoidType symbolSelfParameterType)
+        // TODO eliminate cast
+        => (IMaybeNonVoidType)contextType.TypeReplacements.ReplaceTypeParametersIn(symbolSelfParameterType);
 
     private static IFixedList<IMaybeParameterType> CreateParameterTypes(
-        NonEmptyType contextType,
+        INonVoidType contextType,
         IInvocableDeclarationNode node)
         => node.ParameterTypes.Select(p => CreateParameterType(contextType, p)).WhereNotNull().ToFixedList();
 
-    private static IMaybeParameterType? CreateParameterType(NonEmptyType contextType, IMaybeParameterType parameter)
-        => contextType.ReplaceTypeParametersIn(parameter);
+    private static IMaybeParameterType? CreateParameterType(INonVoidType contextType, IMaybeParameterType parameter)
+        => contextType.TypeReplacements.ReplaceTypeParametersIn(parameter);
 
-    private static IMaybeType CreateReturnType(NonEmptyType contextType, IInvocableDeclarationNode node)
-        => contextType.ReplaceTypeParametersIn(node.ReturnType);
+    private static IMaybeType CreateReturnType(INonVoidType contextType, IInvocableDeclarationNode node)
+        => contextType.TypeReplacements.ReplaceTypeParametersIn(node.ReturnType);
 
-    public IMaybeSelfParameterType? SelfParameterType { get; }
+    public IMaybeType? ContextType { get; }
+    public IMaybeNonVoidType? SelfParameterType { get; }
     public IFixedList<IMaybeParameterType> ParameterTypes { get; }
     public int Arity => ParameterTypes.Count;
     public IMaybeType ReturnType { get; }
 
     private ContextualizedCall(
-        IMaybeSelfParameterType? selfParameterType,
+        IMaybeType? contextType,
+        IMaybeNonVoidType? selfParameterType,
         IFixedList<IMaybeParameterType> parameterTypes,
         IMaybeType returnType)
     {
+        ContextType = contextType;
         SelfParameterType = selfParameterType;
-        ParameterTypes = parameterTypes.ToFixedList();
+        ParameterTypes = parameterTypes;
         ReturnType = returnType;
     }
+
+    #region Equality
+    public bool Equals(ContextualizedCall? other)
+    {
+        if (other is null) return false;
+        if (ReferenceEquals(this, other)) return true;
+
+        return Equals(ContextType, other.ContextType)
+               && Equals(SelfParameterType, other.SelfParameterType)
+               && ParameterTypes.Equals(other.ParameterTypes)
+               && ReturnType.Equals(other.ReturnType);
+    }
+
+    public override bool Equals(object? obj)
+        => ReferenceEquals(this, obj) || obj is ContextualizedCall other && Equals(other);
+
+    public override int GetHashCode()
+        => HashCode.Combine(ContextType, SelfParameterType, ParameterTypes, ReturnType);
+    #endregion
 }

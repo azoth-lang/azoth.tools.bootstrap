@@ -5,12 +5,29 @@ using Azoth.Tools.Bootstrap.Framework;
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 
 [DebuggerDisplay("{" + nameof(ToILString) + "(),nq}")]
-public sealed class FunctionType : INonVoidType
+public sealed class FunctionType : INonVoidType, IMaybeFunctionType
 {
+    public static IMaybeFunctionType Create(IEnumerable<IMaybeParameterType> parameters, IMaybeType @return)
+    {
+        if (@return is not IType returnType) return IType.Unknown;
+
+        if (parameters.AsKnownFixedList() is not { } properParameters) return IType.Unknown;
+
+        return new FunctionType(properParameters.ToFixedList(), returnType);
+    }
+
     public FunctionPlainType PlainType { get; }
     INonVoidPlainType INonVoidType.PlainType => PlainType;
+    IMaybePlainType IMaybeType.PlainType => PlainType;
+    IMaybeNonVoidPlainType IMaybeNonVoidType.PlainType => PlainType;
+    IMaybeFunctionPlainType IMaybeFunctionType.PlainType => PlainType;
     public IFixedList<ParameterType> Parameters { get; }
     public IType Return { get; }
+    IMaybeType IMaybeFunctionType.Return => Return;
+
+    public TypeReplacements TypeReplacements => TypeReplacements.None;
+
+    public bool HasIndependentTypeArguments => false;
 
     /// <remarks>This constructor takes <paramref name="plainType"/> even though it is fully implied
     /// by the other parameters to avoid allocating duplicate <see cref="FunctionPlainType"/>s.</remarks>

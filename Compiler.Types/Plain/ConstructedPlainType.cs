@@ -16,21 +16,21 @@ public sealed class ConstructedPlainType : ConstructedOrVariablePlainType
     public override TypeSemantics? Semantics => TypeConstructor.Semantics;
     public override TypeName Name => TypeConstructor.Name;
     public override bool AllowsVariance => TypeConstructor.AllowsVariance;
-    public override IFixedList<IPlainType> TypeArguments { get; }
+    public override IFixedList<IPlainType> Arguments { get; }
     public override IFixedSet<ConstructedPlainType> Supertypes { get; }
-    private readonly PlainTypeReplacements plainTypeReplacements;
+    internal override PlainTypeReplacements TypeReplacements { get; }
 
     public ConstructedPlainType(TypeConstructor typeConstructor, IEnumerable<IPlainType> typeArguments)
     {
         TypeConstructor = typeConstructor;
-        TypeArguments = typeArguments.ToFixedList();
-        if (TypeConstructor.Parameters.Count != TypeArguments.Count)
+        Arguments = typeArguments.ToFixedList();
+        if (TypeConstructor.Parameters.Count != Arguments.Count)
             throw new ArgumentException(
                 $"Number of type arguments must match the type constructor. "
-                + $"Given `[{string.Join(", ", TypeArguments)}]` for `{typeConstructor}`.",
+                + $"Given `[{string.Join(", ", Arguments)}]` for `{typeConstructor}`.",
                 nameof(typeArguments));
 
-        plainTypeReplacements = new(TypeConstructor, TypeArguments);
+        TypeReplacements = new(TypeConstructor, Arguments);
 
         Supertypes = typeConstructor.Supertypes.Select(s => ReplaceTypeParametersIn(s)).ToFixedSet();
     }
@@ -46,10 +46,10 @@ public sealed class ConstructedPlainType : ConstructedOrVariablePlainType
     }
 
     public override IMaybePlainType ReplaceTypeParametersIn(IMaybePlainType plainType)
-        => plainTypeReplacements.ReplaceTypeParametersIn(plainType);
+        => TypeReplacements.ReplaceTypeParametersIn(plainType);
 
     public ConstructedPlainType ReplaceTypeParametersIn(ConstructedPlainType plainType)
-        => plainTypeReplacements.ReplaceTypeParametersIn(plainType);
+        => TypeReplacements.ReplaceTypeParametersIn(plainType);
 
     #region Equality
     public override bool Equals(IMaybePlainType? other)
@@ -58,10 +58,10 @@ public sealed class ConstructedPlainType : ConstructedOrVariablePlainType
         if (ReferenceEquals(this, other)) return true;
         return other is ConstructedPlainType that
                && TypeConstructor.Equals(that.TypeConstructor)
-               && TypeArguments.Equals(that.TypeArguments);
+               && Arguments.Equals(that.Arguments);
     }
 
-    public override int GetHashCode() => HashCode.Combine(TypeConstructor, TypeArguments);
+    public override int GetHashCode() => HashCode.Combine(TypeConstructor, Arguments);
     #endregion
 
     public override string ToBareString()
@@ -83,10 +83,10 @@ public sealed class ConstructedPlainType : ConstructedOrVariablePlainType
     {
         TypeConstructor.Context.AppendContextPrefix(builder);
         builder.Append(TypeConstructor.Name.ToBareString());
-        if (TypeArguments.IsEmpty)
+        if (Arguments.IsEmpty)
             return;
         builder.Append('[');
-        builder.AppendJoin(", ", TypeArguments);
+        builder.AppendJoin(", ", Arguments);
         builder.Append(']');
     }
 }

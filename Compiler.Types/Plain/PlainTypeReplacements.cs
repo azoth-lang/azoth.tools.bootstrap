@@ -6,7 +6,14 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 
 internal sealed class PlainTypeReplacements
 {
+    public static readonly PlainTypeReplacements None = new();
+
     private readonly Dictionary<GenericParameterPlainType, IPlainType> replacements;
+
+    private PlainTypeReplacements()
+    {
+        replacements = new();
+    }
 
     /// <summary>
     /// Build a dictionary of type replacements. Generic parameter types of both this type and the
@@ -24,7 +31,7 @@ internal sealed class PlainTypeReplacements
         //      they are properly handled.
         // TODO this also can't work because you can implement a trait multiple times with different type arguments
         //foreach (var supertype in typeConstructor.Supertypes)
-        //    foreach (var (supertypeArgument, i) in supertype.TypeArguments.Enumerate())
+        //    foreach (var (supertypeArgument, i) in supertype.Arguments.Enumerate())
         //    {
         //        var genericParameterPlainType = supertype.TypeConstructor?.ParameterPlainTypes[i];
         //        if (genericParameterPlainType is null)
@@ -73,8 +80,8 @@ internal sealed class PlainTypeReplacements
 
     public ConstructedPlainType ReplaceTypeParametersIn(ConstructedPlainType plainType)
     {
-        var replacementTypeArguments = ReplaceTypeParametersIn(plainType.TypeArguments);
-        if (ReferenceEquals(plainType.TypeArguments, replacementTypeArguments))
+        var replacementTypeArguments = ReplaceTypeParametersIn(plainType.Arguments);
+        if (ReferenceEquals(plainType.Arguments, replacementTypeArguments))
             return plainType;
 
         return new(plainType.TypeConstructor, replacementTypeArguments);

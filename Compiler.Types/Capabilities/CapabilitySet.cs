@@ -71,6 +71,8 @@ public sealed class CapabilitySet : ICapabilityConstraint
             _ => throw ExhaustiveMatch.Failed(from)
         };
 
+    public bool IsSubtypeOf(ICapabilityConstraint other) => other.IsAssignableFrom(this);
+
     public override string ToString() => throw new NotSupportedException();
 
     public string ToILString() => name;

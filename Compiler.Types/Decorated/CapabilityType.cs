@@ -1,8 +1,12 @@
 using System.Diagnostics;
 using System.Text;
+using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
+using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using Azoth.Tools.Bootstrap.Framework;
+using ExhaustiveMatching;
+using MoreLinq;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 
@@ -20,33 +24,140 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 //   * AssociatedPlainType
 // * ConstructedPlainType
 [DebuggerDisplay("{" + nameof(ToILString) + "(),nq}")]
+// TODO maybe this should be a wrapper around ConstructedBareType. It seems to share a lot of logic
 public sealed class CapabilityType : INonVoidType
 {
+    public static CapabilityType Create(Capability capability, ConstructedPlainType plainType)
+        => new(capability, plainType, []);
+
+    public static CapabilityType Create(
+        Capability capability,
+        ConstructedPlainType plainType,
+        IFixedList<IType> arguments)
+        => new(capability, plainType, arguments);
+
+    public static CapabilityType Create(Capability capability, AssociatedPlainType plainType)
+        => new(capability, plainType, []);
+
+    public static CapabilityType Create(
+        Capability capability,
+        AssociatedPlainType plainType,
+        IFixedList<IType> arguments)
+        => new(capability, plainType, arguments);
+
+    public static IMaybeType LaxCreate(Capability capability, IMaybeType referent)
+        => referent switch
+        {
+            GenericParameterType t => new CapabilityType(capability, t.PlainType, []),
+            CapabilityType t => t.AccessedVia(capability),
+            VoidType t => t,
+            NeverType t => t,
+            _ => IType.Unknown,
+        };
+
+    public static INonVoidType LaxCreate(
+        Capability capability,
+        ConstructedOrVariablePlainType plainType,
+        IFixedList<IType> arguments)
+        => plainType switch
+        {
+            ConstructedPlainType t => Create(capability, t, arguments),
+            GenericParameterPlainType t => LaxCreate(capability, t, arguments),
+            AssociatedPlainType t => Create(capability, t, arguments),
+            _ => throw ExhaustiveMatch.Failed(plainType),
+        };
+
+    /// <summary>
+    /// Create a type that represents a viewpoint on a generic parameter (e.g. `const |> T`).
+    /// </summary>
+    /// <remarks>While this can produce a <see cref="Capability"/>, it can also produce a
+    /// <see cref="GenericParameterType"/> when the capability would have no effect.</remarks>
+    public static INonVoidType LaxCreate(Capability capability, GenericParameterPlainType plainType)
+        => LaxCreate(capability, plainType, []);
+
+    /// <summary>
+    /// Create a type that represents a viewpoint on a generic parameter (e.g. `const |> T`).
+    /// </summary>
+    /// <remarks>While this can produce a <see cref="Capability"/>, it can also produce a
+    /// <see cref="GenericParameterType"/> when the capability would have no effect.</remarks>
+    public static INonVoidType LaxCreate(
+        Capability capability,
+        GenericParameterPlainType plainType,
+        IFixedList<IType> arguments)
+    {
+        // TODO should this be considered lax or just how it ought to work?
+        if (capability == Capability.Mutable || capability == Capability.InitMutable)
+            return new GenericParameterType(plainType);
+        return new CapabilityType(capability, plainType, arguments);
+    }
+
     public Capability Capability { get; }
     public ConstructedOrVariablePlainType PlainType { get; }
     INonVoidPlainType INonVoidType.PlainType => PlainType;
+    IMaybePlainType IMaybeType.PlainType => PlainType;
 
-    public IFixedList<IType> TypeArguments { get; }
+    public TypeConstructor? TypeConstructor => PlainType.TypeConstructor;
 
-    public CapabilityType(
+    public IFixedList<IType> Arguments { get; }
+
+    public bool HasIndependentTypeArguments { get; }
+
+    public IFixedList<TypeParameterArgument> TypeParameterArguments { get; }
+
+    public TypeReplacements TypeReplacements { get; }
+
+    private CapabilityType(
         Capability capability,
         ConstructedOrVariablePlainType plainType,
-        IFixedList<IType> typeArguments)
+        IFixedList<IType> arguments)
     {
-        Requires.That(plainType.TypeArguments.SequenceEqual(typeArguments.Select(a => a.PlainType)), nameof(typeArguments),
+        Requires.That(plainType is not GenericParameterPlainType { Parameter.HasIndependence: true }, nameof(plainType),
+            "Most not be an independent generic parameter.");
+        Requires.That(plainType.Arguments.SequenceEqual(arguments.Select(a => a.PlainType)), nameof(arguments),
             "Type arguments must match plain type.");
         Capability = capability;
         PlainType = plainType;
-        TypeArguments = typeArguments;
+        Arguments = arguments;
+        HasIndependentTypeArguments = (PlainType.TypeConstructor?.HasIndependentParameters ?? false)
+                                      || Arguments.Any(a => a.HasIndependentTypeArguments);
+        TypeParameterArguments = (PlainType.TypeConstructor?.Parameters ?? [])
+                                 .EquiZip(Arguments, (p, a) => new TypeParameterArgument(p, a)).ToFixedList();
+        // TODO could pass TypeParameterArguments instead?
+        TypeReplacements = plainType.TypeConstructor is null ? TypeReplacements.None
+            : new(plainType.TypeReplacements, plainType.TypeConstructor, Arguments);
     }
 
-    public CapabilityType(Capability capability, ConstructedOrVariablePlainType plainType)
+    public IType ToNonLiteral()
     {
-        Requires.That(plainType.TypeArguments.IsEmpty,
-            nameof(plainType), "Plain type must have no type arguments.");
-        Capability = capability;
-        PlainType = plainType;
-        TypeArguments = [];
+        var newPlainType = PlainType.ToNonLiteral();
+        if (ReferenceEquals(PlainType, newPlainType)) return this;
+        // TODO eliminate this cast
+        return new CapabilityType(Capability, (ConstructedPlainType)newPlainType, Arguments);
+    }
+
+    public CapabilityType With(Capability capability) => new(capability, PlainType, Arguments);
+
+    public CapabilityType With(IFixedList<IType> arguments) => new(Capability, PlainType, arguments);
+
+    public CapabilityType UpcastTo(TypeConstructor target)
+    {
+        if (TypeConstructor?.Equals(target) ?? false) return this;
+
+        // TODO this will fail if the type implements the target type in multiple ways.
+        var supertype = TypeConstructor?.Supertypes.Where(s => s.TypeConstructor.Equals(target)).TrySingle();
+        if (supertype is null) throw new ArgumentException($"The type {target} is not a supertype of {ToILString()}.");
+
+        var bareType = new ConstructedBareType(supertype.PlainType, supertype.Arguments);
+        bareType = TypeReplacements.ReplaceTypeParametersIn(bareType);
+
+        return bareType.With(Capability);
+    }
+
+    public bool BareTypeEquals(CapabilityType other)
+    {
+        if (ReferenceEquals(this, other)) return true;
+        return PlainType.Equals(other.PlainType)
+               && Arguments.Equals(other.Arguments);
     }
 
     #region Equality
@@ -57,16 +168,16 @@ public sealed class CapabilityType : INonVoidType
         return other is CapabilityType otherType
                && Capability.Equals(otherType.Capability)
                && PlainType.Equals(otherType.PlainType)
-               && TypeArguments.Equals(otherType.TypeArguments);
+               && Arguments.Equals(otherType.Arguments);
     }
 
     public override bool Equals(object? obj)
         => ReferenceEquals(this, obj) || obj is CapabilityType other && Equals(other);
 
-    public override int GetHashCode() => HashCode.Combine(Capability, PlainType, TypeArguments);
+    public override int GetHashCode() => HashCode.Combine(Capability, PlainType, Arguments);
     #endregion
 
-    public override string ToString() => throw new NotSupportedException();
+    public override string ToString() => ToILString();
 
     public string ToSourceCodeString()
         => ToString(Capability.ToSourceCodeString(), t => t.ToSourceCodeString());
@@ -76,15 +187,20 @@ public sealed class CapabilityType : INonVoidType
 
     private string ToString(string capability, Func<IType, string> toString)
     {
-        // TODO when the referent is a generic parameter type, this becomes a viewpoint type
         var builder = new StringBuilder();
         builder.Append(capability);
-        builder.Append(' ');
+
+        // When the referent is a generic parameter type, this becomes a viewpoint type
+        if (PlainType is GenericParameterPlainType)
+            builder.Append(" |> ");
+        else
+            builder.Append(' ');
+
         builder.Append(PlainType.ToBareString());
-        if (!TypeArguments.IsEmpty)
+        if (!Arguments.IsEmpty)
         {
             builder.Append('[');
-            builder.AppendJoin(", ", TypeArguments.Select(toString));
+            builder.AppendJoin(", ", Arguments.Select(toString));
             builder.Append(']');
         }
 

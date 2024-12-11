@@ -1,9 +1,7 @@
 ◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 ◊name TypeExpressionsAspect;
 ◊using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
-◊using Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
-◊using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Parameters;
-◊using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Pseudotypes;
+◊using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
@@ -16,5 +14,5 @@
 ↑ ParameterType.Parameter: `IMaybeParameterType`;
 = CapabilityType.↑.Diagnostics;
 = CapabilityViewpointType.↑.Diagnostics;
-↓ SelfViewpointType.MethodSelfType: `IMaybePseudotype`?;
+↓ SelfViewpointType.MethodSelfType: `IMaybeType`?;
 = SelfViewpointType.↑.Diagnostics;

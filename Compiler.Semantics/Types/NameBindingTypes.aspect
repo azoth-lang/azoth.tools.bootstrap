@@ -2,9 +2,7 @@
 ◊name NameBindingTypesAspect;
 ◊using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 ◊using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
-◊using Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
-◊using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Parameters;
-◊using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Pseudotypes;
+◊using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
@@ -12,18 +10,18 @@ struct `ParameterType`;
 struct `SelfParameterType`;
 
 // ---------- Bindings
-↑ Binding.BindingType: `IMaybePseudotype`;
+↑ Binding.BindingType: `IMaybeType`;
 ↑ NamedBinding.BindingType: `IMaybeNonVoidType`;
 
 // ---------- Member Definitions
 ↑ FieldDefinition.BindingType: `IMaybeNonVoidType`;
 
 // ---------- Parameters
-↑ Parameter.BindingType: `IMaybePseudotype`;
+↑ Parameter.BindingType: `IMaybeType`;
 ↑ ConstructorOrInitializerParameter.BindingType: `IMaybeNonVoidType`;
 ↑ ConstructorOrInitializerParameter.ParameterType: `IMaybeParameterType`;
 = NamedParameter.↑.Diagnostics;
-↑ SelfParameter.ParameterType:`IMaybeSelfParameterType`;
+↑ SelfParameter.ParameterType:`IMaybeNonVoidType`;
 = SelfParameter.ParameterType;
 ↑ ConstructorSelfParameter.BindingType: `CapabilityType`;
 = ConstructorSelfParameter.↑.Diagnostics;

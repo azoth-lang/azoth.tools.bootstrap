@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
@@ -10,6 +11,13 @@ public sealed class GenericParameterType : INonVoidType
 {
     public GenericParameterPlainType PlainType { get; }
     INonVoidPlainType INonVoidType.PlainType => PlainType;
+    IMaybePlainType IMaybeType.PlainType => PlainType;
+
+    public TypeConstructor.Parameter Parameter => PlainType.Parameter;
+
+    public TypeReplacements TypeReplacements => TypeReplacements.None;
+
+    public bool HasIndependentTypeArguments => false;
 
     public GenericParameterType(GenericParameterPlainType plainType)
     {
@@ -31,7 +39,9 @@ public sealed class GenericParameterType : INonVoidType
     public override int GetHashCode() => HashCode.Combine(PlainType);
     #endregion
 
-    public override string ToString() => throw new NotSupportedException();
+    /// <remarks>There are cases where the framework calls <see cref="ToString"/> so it needs to map
+    /// to something reasonable.</remarks>
+    public override string ToString() => ToILString();
 
     public string ToSourceCodeString() => PlainType.ToString();
 

@@ -18,6 +18,8 @@ public abstract class VariablePlainType : ConstructedOrVariablePlainType
     public override TypeSemantics? Semantics => null;
     public sealed override bool AllowsVariance => false;
 
+    internal override PlainTypeReplacements TypeReplacements => PlainTypeReplacements.None;
+
     public override IMaybePlainType ReplaceTypeParametersIn(IMaybePlainType plainType)
         => plainType;
 

@@ -21,7 +21,8 @@ public abstract class SimpleOrLiteralTypeConstructor : TypeConstructor
     public abstract ConstructedPlainType PlainType { get; }
 
     public CapabilityType Type
-        => LazyInitializer.EnsureInitialized(ref type, () => new(Capability.Constant, PlainType));
+        => LazyInitializer.EnsureInitialized(ref type,
+            () => CapabilityType.Create(Capability.Constant, PlainType));
 
     private CapabilityType? type;
 }

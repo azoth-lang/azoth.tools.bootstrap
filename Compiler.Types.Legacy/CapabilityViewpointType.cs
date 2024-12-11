@@ -34,9 +34,8 @@ public sealed class CapabilityViewpointType : ViewpointType
     }
 
     #region Equals
-
-    public override Decorated.CapabilityType ToDecoratedType()
-        => new Decorated.CapabilityType(Capability, ToPlainType(), []);
+    public override Decorated.INonVoidType ToDecoratedType()
+        => Decorated.CapabilityType.LaxCreate(Capability, ToPlainType());
 
     public override bool Equals(IMaybeType? other)
     {

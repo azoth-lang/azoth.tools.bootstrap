@@ -5,7 +5,7 @@ using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors.Contexts;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
+using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
@@ -68,17 +68,19 @@ public sealed class PackageNameScope
         throw new InvalidOperationException($"Package '{packageName}' is not referenced.");
     }
 
-    #region Loopkup(DataType)
+    #region Loopkup(Type)
     public ITypeDeclarationNode? Lookup(IMaybeType type)
         => type switch
         {
             UnknownType _ => null,
-            EmptyType _ => null,
+            NeverType _ => null,
+            VoidType _ => null,
             FunctionType _ => null,
             OptionalType _ => throw new NotImplementedException(),
-            CapabilityType t => Lookup(t.TypeConstructor),
+            CapabilityType t => Lookup(t.PlainType.TypeConstructor),
             GenericParameterType t => Lookup(t),
-            ViewpointType t => Lookup(t.Referent),
+            SelfViewpointType t => Lookup(t.Referent),
+            CapabilitySetSelfType t => null,
             _ => throw ExhaustiveMatch.Failed(type),
         };
 

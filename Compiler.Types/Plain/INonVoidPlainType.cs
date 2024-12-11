@@ -7,6 +7,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
     typeof(FunctionPlainType),
     typeof(ConstructedOrVariablePlainType),
     typeof(NeverPlainType))]
+// TODO consider converting to class
 public interface INonVoidPlainType : IPlainType, IMaybeNonVoidPlainType
 {
     TypeSemantics? Semantics { get; }

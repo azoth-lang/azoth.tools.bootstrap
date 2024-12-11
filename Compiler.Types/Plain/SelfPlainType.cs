@@ -1,5 +1,7 @@
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
+using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
@@ -19,6 +21,8 @@ public sealed class SelfPlainType : AssociatedPlainType
                                    .Append(containingType.ConstructWithParameterPlainTypes())
                                    .ToFixedSet();
     }
+
+    public CapabilitySetSelfType With(CapabilitySet capability) => new(capability, this);
 
     #region Equality
     public override bool Equals(IMaybePlainType? other)

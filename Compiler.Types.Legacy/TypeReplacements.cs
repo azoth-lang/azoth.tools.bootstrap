@@ -29,7 +29,7 @@ internal sealed class TypeReplacements
         foreach (var supertype in typeConstructor.Supertypes)
         {
             var genericParameterTypes = supertype.TypeConstructor.GenericParameterTypes();
-            foreach (var (typeArg, i) in supertype.TypeArguments.Select(arg => arg.ToType()).Enumerate())
+            foreach (var (typeArg, i) in supertype.Arguments.Select(arg => arg.ToType()).Enumerate())
             {
                 var genericParameterType = genericParameterTypes[i];
                 if (typeArg is GenericParameterType genericTypeArg)

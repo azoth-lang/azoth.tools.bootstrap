@@ -36,7 +36,8 @@ public sealed class FunctionType : NonEmptyType, IMaybeFunctionType, INonVoidTyp
 
     IMaybeNonVoidType IMaybeNonVoidType.WithoutWrite() => this;
 
-    IMaybeType IMaybeType.AccessedVia(IMaybePseudotype contextType) => (IMaybeType)AccessedVia(contextType);
+    IMaybeType IMaybeType.AccessedVia(IMaybePseudotype contextType)
+        => AccessedVia(contextType);
 
     public override IType AccessedVia(ICapabilityConstraint capability)
         => this;

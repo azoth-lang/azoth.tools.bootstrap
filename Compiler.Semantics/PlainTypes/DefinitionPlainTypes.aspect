@@ -29,9 +29,9 @@
 = MethodDefinition.ReturnPlainType => Return?.NamedPlainType ?? IPlainType.Void;
 = FieldDefinition.BindingPlainType;
 // TODO it would be good to refactor to not depend on Type
-= AbstractMethodDefinition.MethodGroupPlainType => MethodGroupType.ToPlainType();
+= AbstractMethodDefinition.MethodGroupPlainType => MethodGroupType.PlainType;
 // TODO it would be good to refactor to not depend on Type
-= StandardMethodDefinition.MethodGroupPlainType => MethodGroupType.ToPlainType();
+= StandardMethodDefinition.MethodGroupPlainType => MethodGroupType.PlainType;
 = ConstructorDefinition.ReturnPlainType
     => ContainingTypeDefinition.TypeConstructor.ConstructWithParameterPlainTypes();
 = DefaultConstructorDefinition.SelfParameterPlainType

@@ -1,8 +1,6 @@
 using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Core;
-using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
-using Azoth.Tools.Bootstrap.Compiler.Types.Constructors.Contexts;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 
@@ -14,8 +12,7 @@ public static partial class PlainTypeOperations
     /// Whether this plainType is a subtype of the other plainType.
     /// </summary>
     public static bool IsSubtypeOf(this IMaybePlainType self, IMaybePlainType other)
-    {
-        return (self, other) switch
+        => (self, other) switch
         {
             (UnknownPlainType, _) or (_, UnknownPlainType)
                 => true,
@@ -23,11 +20,9 @@ public static partial class PlainTypeOperations
                 => s.IsSubtypeOf(o),
             _ => throw new UnreachableException()
         };
-    }
 
     public static bool IsSubtypeOf(this IPlainType self, IPlainType other)
-    {
-        return (self, other) switch
+        => (self, other) switch
         {
             (_, _) when self.Equals(other) => true,
             (NeverPlainType, _) => true,
@@ -38,7 +33,6 @@ public static partial class PlainTypeOperations
             (FunctionPlainType s, FunctionPlainType o) => s.IsSubtypeOf(o),
             _ => false
         };
-    }
 
     public static bool IsSubtypeOf(
         this ConstructedOrVariablePlainType self,
@@ -48,13 +42,7 @@ public static partial class PlainTypeOperations
             return true;
 
         // TODO remove hack to allow string to exist in both primitives and stdlib
-        if (self is ConstructedPlainType s
-           && other is ConstructedPlainType o
-           && s.Name == "String" && o.Name == "String"
-           && s.TypeConstructor.Context is NamespaceContext sc
-           && sc.Namespace == NamespaceName.Global
-           && o.TypeConstructor.Context is NamespaceContext oc
-           && oc.Namespace == NamespaceName.Global)
+        if (self.IsStringType() && other.IsStringType())
             return true;
 
         var otherTypeConstructor = other.TypeConstructor;
@@ -63,7 +51,7 @@ public static partial class PlainTypeOperations
             var selfPlainTypes = self.Supertypes.Prepend(self)
                                     .Where(t => otherTypeConstructor.Equals(t.TypeConstructor));
             foreach (var selfPlainType in selfPlainTypes)
-                if (IsSubtypeOf(otherTypeConstructor, selfPlainType.TypeArguments, other.TypeArguments))
+                if (IsSubtypeOf(otherTypeConstructor, selfPlainType.Arguments, other.Arguments))
                     return true;
         }
 

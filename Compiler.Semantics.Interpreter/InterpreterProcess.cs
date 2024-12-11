@@ -15,7 +15,7 @@ using Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.MemoryLayout.BoundedL
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
+using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 
@@ -124,12 +124,12 @@ public class InterpreterProcess
             var entryPoint = package.EntryPoint!;
             var arguments = new List<AzothValue>();
             foreach (var parameterType in entryPoint.Symbol.Assigned().ParameterTypes)
-                arguments.Add(await ConstructMainParameterAsync(parameterType.Type.ToType()));
+                arguments.Add(await ConstructMainParameterAsync(parameterType.Type));
 
             var returnValue = await CallFunctionAsync(entryPoint, arguments).ConfigureAwait(false);
             // Flush any buffered output
             await standardOutputWriter.FlushAsync().ConfigureAwait(false);
-            var returnType = entryPoint.Symbol.Assigned().ReturnType.ToType();
+            var returnType = entryPoint.Symbol.Assigned().ReturnType;
             if (returnType.Equals(IType.Void))
                 exitCode = 0;
             else if (returnType.Equals(IType.Byte))
@@ -193,7 +193,7 @@ public class InterpreterProcess
 
     private async Task<AzothValue> ConstructMainParameterAsync(IType parameterType)
     {
-        if (parameterType is not CapabilityType { TypeArguments.Count: 0 } type)
+        if (parameterType is not CapabilityType { Arguments.Count: 0 } type)
             throw new InvalidOperationException(
                 $"Parameter to main of type {parameterType.ToILString()} not supported");
 
@@ -381,11 +381,13 @@ public class InterpreterProcess
     {
         switch (selfType)
         {
-            case EmptyType _:
+            case VoidType _:
+            case NeverType _:
             case OptionalType _:
             case GenericParameterType _:
             case FunctionType _:
-            case ViewpointType _:
+            case CapabilitySetSelfType _:
+            case SelfViewpointType _:
                 var methodSignature = methodSignatures[methodSymbol];
                 throw new InvalidOperationException($"Can't call {methodSignature} on {selfType}");
             case CapabilityType capabilityType:
@@ -400,12 +402,12 @@ public class InterpreterProcess
         CapabilityType selfType,
         AzothValue self,
         IEnumerable<AzothValue> arguments)
-        => selfType.BareType.TypeConstructor?.Semantics switch
+        => selfType.TypeConstructor?.Semantics switch
         {
             null => throw new UnreachableException("Shouldn't be attempting to call method on type without type constructor"),
             TypeSemantics.Value => await CallStructMethod(methodSymbol, selfType, self, arguments),
             TypeSemantics.Reference => await CallClassMethodAsync(methodSymbol, self, arguments),
-            _ => throw ExhaustiveMatch.Failed(selfType.BareType.TypeConstructor.Semantics),
+            _ => throw ExhaustiveMatch.Failed(selfType.TypeConstructor.Semantics),
         };
 
     private async ValueTask<AzothValue> CallClassMethodAsync(
@@ -781,7 +783,7 @@ public class InterpreterProcess
                     var selfType = (CapabilityType)exp.InExpression!.Type;
                     var iterateMethod = exp.ReferencedIterateMethod!.Symbol.Assigned();
                     iterator = await CallMethodAsync(iterateMethod, selfType, iterable, []).ConfigureAwait(false);
-                    iteratorType = (CapabilityType)iterateMethod.ReturnType.ToType();
+                    iteratorType = (CapabilityType)iterateMethod.ReturnType;
                 }
                 else
                 {
@@ -927,7 +929,7 @@ public class InterpreterProcess
     {
         if (constructor == Intrinsic.NewRawBoundedList)
         {
-            var listType = constructor.ContainingSymbol.TypeConstructor.GenericParameterTypes()[0];
+            var listType = constructor.ContainingSymbol.TypeConstructor.ParameterTypes[0];
             nuint capacity = arguments[0].SizeValue;
             IRawBoundedList list;
             if (listType.Equals(IType.Byte))

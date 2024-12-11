@@ -72,11 +72,11 @@
 // ---------- Function Symbol Nodes
 ↑ FunctionSymbol.Name: `IdentifierName` => Symbol.Name;
 = FunctionSymbol.ParameterPlainTypes => Symbol.Type.Parameters.ToPlainTypes();
-= FunctionSymbol.ParameterTypes => Symbol.Type.Parameters.ToTypes();
+= FunctionSymbol.ParameterTypes => Symbol.Type.Parameters;
 = FunctionSymbol.ReturnPlainType => Symbol.Type.Return.PlainType;
-= FunctionSymbol.ReturnType => Symbol.Type.Return.ToType();
+= FunctionSymbol.ReturnType => Symbol.Type.Return;
 = FunctionSymbol.PlainType => Symbol.Type.PlainType;
-= FunctionSymbol.Type => Symbol.Type.ToType();
+= FunctionSymbol.Type => Symbol.Type;
 
 // ---------- Type Symbol Nodes
 ↑ child TypeSymbol.Members: {TypeMemberSymbol};
@@ -123,37 +123,37 @@
 // ---------- Member Symbol Nodes
 ↑ MethodSymbol.Name: `IdentifierName` => Symbol.Name;
 = MethodSymbol.SelfParameterPlainType => Symbol.SelfParameterType.PlainType;
-= MethodSymbol.SelfParameterType => Symbol.SelfParameterType.ToSelfParameterType();
+= MethodSymbol.SelfParameterType => Symbol.SelfParameterType;
 = MethodSymbol.ParameterPlainTypes => Symbol.MethodGroupType.Parameters.ToPlainTypes();
-= MethodSymbol.ParameterTypes => Symbol.MethodGroupType.Parameters.ToTypes();
+= MethodSymbol.ParameterTypes => Symbol.MethodGroupType.Parameters;
 = MethodSymbol.ReturnPlainType => Symbol.MethodGroupType.Return.PlainType;
-= MethodSymbol.ReturnType => Symbol.MethodGroupType.Return.ToType();
+= MethodSymbol.ReturnType => Symbol.MethodGroupType.Return;
 + StandardMethodSymbol.new.Validate;
 = StandardMethodSymbol.Arity => Symbol.Arity;
 = StandardMethodSymbol.MethodGroupPlainType => Symbol.MethodGroupType.PlainType;
-= StandardMethodSymbol.MethodGroupType => Symbol.MethodGroupType.ToType();
+= StandardMethodSymbol.MethodGroupType => Symbol.MethodGroupType;
 + GetterMethodSymbol.new.Validate;
 + SetterMethodSymbol.new.Validate;
 ↑ ConstructorSymbol.Name: `IdentifierName`? => Symbol.Name;
 = ConstructorSymbol.SelfParameterPlainType => Symbol.SelfParameterType.PlainType;
-= ConstructorSymbol.SelfParameterType => Symbol.SelfParameterType.ToSelfParameterType();
+= ConstructorSymbol.SelfParameterType => Symbol.SelfParameterType;
 = ConstructorSymbol.ParameterPlainTypes => Symbol.ParameterTypes.ToPlainTypes();
-= ConstructorSymbol.ParameterTypes => Symbol.ParameterTypes.ToTypes();
+= ConstructorSymbol.ParameterTypes => Symbol.ParameterTypes;
 = ConstructorSymbol.ReturnPlainType => Symbol.ReturnType.PlainType;
-= ConstructorSymbol.ReturnType => Symbol.ReturnType.ToType();
+= ConstructorSymbol.ReturnType => Symbol.ReturnType;
 ↑ InitializerSymbol.Name: `IdentifierName`? => Symbol.Name;
 = InitializerSymbol.SelfParameterPlainType => Symbol.SelfParameterType.PlainType;
-= InitializerSymbol.SelfParameterType => Symbol.SelfParameterType.ToSelfParameterType();
+= InitializerSymbol.SelfParameterType => Symbol.SelfParameterType;
 = InitializerSymbol.ParameterPlainTypes => Symbol.ParameterTypes.ToPlainTypes();
-= InitializerSymbol.ParameterTypes => Symbol.ParameterTypes.ToTypes();
+= InitializerSymbol.ParameterTypes => Symbol.ParameterTypes;
 = InitializerSymbol.ReturnPlainType => Symbol.ReturnType.PlainType;
-= InitializerSymbol.ReturnType => Symbol.ReturnType.ToType();
+= InitializerSymbol.ReturnType => Symbol.ReturnType;
 = FieldSymbol.IsMutableBinding => Symbol.IsMutableBinding;
 ↑ FieldSymbol.Name: `IdentifierName` => Symbol.Name;
-= FieldSymbol.BindingType => Symbol.Type.ToType();
+= FieldSymbol.BindingType => Symbol.Type;
 = AssociatedFunctionSymbol.PlainType => Symbol.Type.PlainType;
-= AssociatedFunctionSymbol.Type => Symbol.Type.ToType();
+= AssociatedFunctionSymbol.Type => Symbol.Type;
 = AssociatedFunctionSymbol.ParameterPlainTypes => Symbol.Type.Parameters.ToPlainTypes();
-= AssociatedFunctionSymbol.ParameterTypes => Symbol.Type.Parameters.ToTypes();
+= AssociatedFunctionSymbol.ParameterTypes => Symbol.Type.Parameters;
 = AssociatedFunctionSymbol.ReturnPlainType => Symbol.Type.Return.PlainType;
-= AssociatedFunctionSymbol.ReturnType => Symbol.Type.Return.ToType();
+= AssociatedFunctionSymbol.ReturnType => Symbol.Type.Return;

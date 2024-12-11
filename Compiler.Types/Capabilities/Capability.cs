@@ -174,6 +174,8 @@ public sealed class Capability : ICapabilityConstraint
         return true;
     }
 
+    public bool IsSubtypeOf(ICapabilityConstraint other) => other.IsAssignableFrom(this);
+
     /// <summary>
     /// Can a reference with this capability be assigned from a reference with the given capability
     /// constraint ignoring lent.

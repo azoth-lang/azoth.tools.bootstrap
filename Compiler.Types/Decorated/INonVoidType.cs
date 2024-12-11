@@ -11,8 +11,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
     typeof(OptionalType),
     typeof(SelfViewpointType),
     typeof(NeverType))]
-public interface INonVoidType : IType
+public interface INonVoidType : IType, IMaybeNonVoidType
 {
     new INonVoidPlainType PlainType { get; }
     IPlainType IType.PlainType => PlainType;
+    IMaybeNonVoidPlainType IMaybeNonVoidType.PlainType => PlainType;
+
+    public TypeReplacements TypeReplacements { get; }
 }

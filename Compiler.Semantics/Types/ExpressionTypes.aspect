@@ -2,8 +2,7 @@
 ◊name ExpressionTypesAspect;
 ◊using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 ◊using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
-◊using Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
-◊using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Pseudotypes;
+◊using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
@@ -159,12 +158,12 @@
 = MethodInvocationExpression.↑.Diagnostics;
 ↑ GetterInvocationExpression.ContextualizedCall: `ContextualizedCall`?;
 = GetterInvocationExpression.Context.ExpectedType
-    => ContextualizedCall?.SelfParameterType?.Type.ToUpperBound();
+    => ContextualizedCall?.SelfParameterType?.ToUpperBound();
 = GetterInvocationExpression.FlowStateAfter;
 = GetterInvocationExpression.↑.Diagnostics;
 = SetterInvocationExpression.Value.**.FlowStateBefore() => Context.FlowStateAfter;
 = SetterInvocationExpression.Context.ExpectedType
-    => ContextualizedCall?.SelfParameterType?.Type.ToUpperBound();
+    => ContextualizedCall?.SelfParameterType?.ToUpperBound();
 = SetterInvocationExpression.Value.ExpectedType
     => ContextualizedCall?.ParameterTypes[0].Type;
 ↑ SetterInvocationExpression.ContextualizedCall: `ContextualizedCall`?;
@@ -216,7 +215,7 @@
 = TypeNameExpression.Type => IType.Unknown;
 = InitializerGroupName.Type => throw new NotImplementedException();
 ↑ SpecialTypeNameExpression.Type:`UnknownType` => IType.Unknown;
-↑ SelfExpression.Pseudotype: `IMaybePseudotype`;
+↑ SelfExpression.Pseudotype: `IMaybeType`;
 = SelfExpression.FlowStateAfter;
 ↑ MissingNameExpression.Type: `UnknownType` => IType.Unknown;
 ↑ UnknownNameExpression.Type: `UnknownType` => IType.Unknown;

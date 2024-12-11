@@ -4,8 +4,7 @@ using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 using Azoth.Tools.Bootstrap.Compiler.Syntax;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Pseudotypes;
+using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 using UnaryOperator = Azoth.Tools.Bootstrap.Compiler.Core.Operators.UnaryOperator;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
@@ -27,7 +26,7 @@ public static class TypeError
         IMaybeType rightOperandType)
     {
         return new(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
-            3001, $"Operator `{@operator.ToSymbolString()}` cannot be applied to operands of type `{leftOperandType.ToNonConstValueType().ToSourceCodeString()}` and `{rightOperandType.ToNonConstValueType().ToSourceCodeString()}`.");
+            3001, $"Operator `{@operator.ToSymbolString()}` cannot be applied to operands of type `{leftOperandType.ToNonLiteral().ToSourceCodeString()}` and `{rightOperandType.ToNonLiteral().ToSourceCodeString()}`.");
     }
 
     public static Diagnostic OperatorCannotBeAppliedToOperandOfType(
@@ -61,7 +60,7 @@ public static class TypeError
     public static Diagnostic CannotImplicitlyConvert(CodeFile file, ICodeSyntax expression, IMaybeType ofType, IMaybeNonVoidType toType)
     {
         return new(file, expression.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
-            3006, $"Cannot convert expression `{file.Code[expression.Span]}` of type `{ofType.ToSourceCodeString()}` to type `{toType.ToNonConstValueType().ToSourceCodeString()}`");
+            3006, $"Cannot convert expression `{file.Code[expression.Span]}` of type `{ofType.ToSourceCodeString()}` to type `{toType.ToNonLiteral().ToSourceCodeString()}`");
     }
 
     public static Diagnostic MustBeInvocable(CodeFile file, IExpressionSyntax expression)
@@ -91,7 +90,7 @@ public static class TypeError
     public static Diagnostic CannotExplicitlyConvert(CodeFile file, ICodeSyntax expression, IMaybeType ofType, IMaybeType toType)
     {
         return new(file, expression.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
-            3012, $"Cannot explicitly convert expression `{file.Code[expression.Span]}` of type `{ofType.ToNonConstValueType().ToSourceCodeString()}` to type `{toType.ToNonConstValueType().ToSourceCodeString()}`");
+            3012, $"Cannot explicitly convert expression `{file.Code[expression.Span]}` of type `{ofType.ToNonLiteral().ToSourceCodeString()}` to type `{toType.ToNonLiteral().ToSourceCodeString()}`");
     }
 
     public static Diagnostic CannotApplyCapabilityToConstantType(CodeFile file, ICodeSyntax expression, Capability capability, TypeConstructor type)
@@ -107,7 +106,7 @@ public static class TypeError
             3014, $"Constructor self parameter cannot have reference capability `{capability.ToSourceCodeString()}`. Only `mut` and read-only are allowed");
     }
 
-    public static Diagnostic TypeCannotBeLent(CodeFile file, TextSpan span, IMaybePseudotype type)
+    public static Diagnostic TypeCannotBeLent(CodeFile file, TextSpan span, IMaybeType type)
     {
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Analysis,
             3015, $"Cannot apply `lent` to `{type.ToSourceCodeString()}` because it is a fully `const` or `id` type");
@@ -134,28 +133,28 @@ public static class TypeError
     public static Diagnostic CapabilityAppliedToTypeParameter(CodeFile file, ITypeSyntax typeSyntax)
     {
         return new(file, typeSyntax.Span, DiagnosticLevel.CompilationError, DiagnosticPhase.Analysis,
-            3019, $"Reference capabilities cannot be applied to type parameters `{typeSyntax.ToString()}`.");
+            3019, $"Reference capabilities cannot be applied to type parameters `{typeSyntax}`.");
     }
 
     public static Diagnostic CapabilityViewpointNotAppliedToTypeParameter(CodeFile file, ICapabilityViewpointTypeSyntax typeSyntax)
     {
         return new(file, typeSyntax.Span, DiagnosticLevel.CompilationError, DiagnosticPhase.Analysis,
-            3020, $"Reference capabilities viewpoint must be applied to type parameter `{typeSyntax.ToString()}`.");
+            3020, $"Reference capabilities viewpoint must be applied to type parameter `{typeSyntax}`.");
     }
 
     public static Diagnostic SelfViewpointNotAppliedToTypeParameter(CodeFile file, ISelfViewpointTypeSyntax typeSyntax)
     {
         return new(file, typeSyntax.Span, DiagnosticLevel.CompilationError, DiagnosticPhase.Analysis,
-            3021, $"Self viewpoint must be applied to type parameter `{typeSyntax.ToString()}`.");
+            3021, $"Self viewpoint must be applied to type parameter `{typeSyntax}`.");
     }
 
     public static Diagnostic SelfViewpointNotAvailable(CodeFile file, ISelfViewpointTypeSyntax typeSyntax)
     {
         return new(file, typeSyntax.Span, DiagnosticLevel.CompilationError, DiagnosticPhase.Analysis,
-            3022, $"Self viewpoint not available `{typeSyntax.ToString()}`.");
+            3022, $"Self viewpoint not available `{typeSyntax}`.");
     }
 
-    public static Diagnostic CannotAccessMutableBindingFieldOfIdentityReference(CodeFile file, IMemberAccessExpressionSyntax exp, IMaybePseudotype contextType)
+    public static Diagnostic CannotAccessMutableBindingFieldOfIdentityReference(CodeFile file, IMemberAccessExpressionSyntax exp, IMaybeType contextType)
     {
         return new(file, exp.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             3023, $"Cannot access `var` field `{exp.MemberName}` from type `{contextType.ToSourceCodeString()}`.");
@@ -164,19 +163,19 @@ public static class TypeError
     public static Diagnostic CapabilityAppliedToEmptyType(CodeFile file, ICapabilityTypeSyntax typeSyntax)
     {
         return new(file, typeSyntax.Span, DiagnosticLevel.CompilationError, DiagnosticPhase.Analysis,
-            3024, $"Reference capabilities cannot be applied to empty types `{typeSyntax.ToString()}`.");
+            3024, $"Reference capabilities cannot be applied to empty types `{typeSyntax}`.");
     }
 
     public static Diagnostic SupertypeMustBeOutputSafe(CodeFile file, IStandardTypeNameSyntax typeSyntax)
     {
         return new(file, typeSyntax.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
-            3025, $"Supertype `{typeSyntax.ToString()}` is not output safe.");
+            3025, $"Supertype `{typeSyntax}` is not output safe.");
     }
 
     public static Diagnostic ParameterMustBeInputSafe(CodeFile file, IParameterSyntax parameterSyntax, IMaybeType type)
     {
         return new(file, parameterSyntax.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
-            3026, $"Parameter `{parameterSyntax.ToString()}` with type `{type.ToSourceCodeString()}` is not input safe.");
+            3026, $"Parameter `{parameterSyntax}` with type `{type.ToSourceCodeString()}` is not input safe.");
     }
 
     public static Diagnostic ReturnTypeMustBeOutputSafe(CodeFile file, ITypeSyntax typeSyntax, IMaybeType type)
@@ -224,18 +223,18 @@ public static class TypeError
     public static Diagnostic SupertypeMustMaintainIndependence(CodeFile file, IStandardTypeNameSyntax typeSyntax)
     {
         return new(file, typeSyntax.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
-            3034, $"Supertype `{typeSyntax.ToString()}` does not maintain independence.");
+            3034, $"Supertype `{typeSyntax}` does not maintain independence.");
     }
 
     public static Diagnostic AmbiguousFunctionGroup(CodeFile file, INameExpressionSyntax nameSyntax, IMaybeFunctionType functionType)
     {
         return new(file, nameSyntax.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
-            3035, $"Function group `{nameSyntax.ToString()}` has multiple functions that match the expected type `{functionType.ToSourceCodeString()}`.");
+            3035, $"Function group `{nameSyntax}` has multiple functions that match the expected type `{functionType.ToSourceCodeString()}`.");
     }
 
     public static Diagnostic AmbiguousMethodGroup(CodeFile file, INameExpressionSyntax nameSyntax, IMaybeFunctionType functionType)
     {
         return new(file, nameSyntax.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
-            3036, $"Method group `{nameSyntax.ToString()}` has multiple methods that match the expected type `{functionType.ToSourceCodeString()}`.");
+            3036, $"Method group `{nameSyntax}` has multiple methods that match the expected type `{functionType.ToSourceCodeString()}`.");
     }
 }

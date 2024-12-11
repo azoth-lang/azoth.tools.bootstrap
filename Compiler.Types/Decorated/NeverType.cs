@@ -14,6 +14,11 @@ public sealed class NeverType : INonVoidType
 
     public NeverPlainType PlainType => NeverPlainType.Instance;
     INonVoidPlainType INonVoidType.PlainType => PlainType;
+    IMaybePlainType IMaybeType.PlainType => PlainType;
+
+    public TypeReplacements TypeReplacements => TypeReplacements.None;
+
+    public bool HasIndependentTypeArguments => false;
 
     #region Equality
     public bool Equals(IMaybeType? other)

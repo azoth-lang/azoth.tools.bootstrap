@@ -143,7 +143,7 @@ public sealed class BareNonVariableType : BareType
         => new(capability, this);
 
     public override CapabilityType With(Capability capability)
-        => (CapabilityType)new(capability, this);
+        => new(capability, this);
 
     public override CapabilityType WithRead()
         => With(IsDeclaredConst ? Capability.Constant : Capability.Read);

@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Azoth.Tools.Bootstrap.Compiler.Types;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Pseudotypes;
+using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow.Sharing;
@@ -19,7 +17,7 @@ public interface ICapabilityValue : IValue
     ulong Value { get; }
     CapabilityIndex Index { get; }
 
-    protected static IReadOnlyDictionary<T, FlowCapability> ForType<T>(ValueId id, IMaybePseudotype type, Func<ValueId, CapabilityIndex, T> create)
+    protected static IReadOnlyDictionary<T, FlowCapability> ForType<T>(ValueId id, IMaybeType type, Func<ValueId, CapabilityIndex, T> create)
         where T : ICapabilityValue
     {
         var index = new Stack<int>();
@@ -52,7 +50,7 @@ public interface ICapabilityValue : IValue
             return;
 
         var capabilityType = (CapabilityType)type;
-        foreach (var (arg, i) in capabilityType.BareType.GenericParameterArguments.Enumerate())
+        foreach (var (arg, i) in capabilityType.TypeParameterArguments.Enumerate())
         {
             if (arg is { ParameterHasIndependence: false, Argument.HasIndependentTypeArguments: false })
                 continue;

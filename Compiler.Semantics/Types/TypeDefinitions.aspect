@@ -2,8 +2,7 @@
 ◊name TypeDefinitionsAspect;
 ◊using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 ◊using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
-◊using Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
-◊using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Bare;
+◊using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 ◊using Azoth.Tools.Bootstrap.Framework;
 
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
@@ -13,8 +12,6 @@
     => Compiler.Types.Constructors.TypeConstructor.Supertype.AnySet;
 = TypeDefinition.Supertypes;
 = TypeDefinition.↑.Diagnostics;
-↑ TypeDefinition.SelfType:`SelfType`;
-= TypeDefinition.SelfType;
 = ClassDefinition.↑.Diagnostics;
 
 // ---------- Type Definition Parts

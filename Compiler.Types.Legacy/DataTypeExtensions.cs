@@ -76,7 +76,7 @@ public static class DataTypeExtensions
         if (target.AllowsVariance || target.HasIndependentTypeArguments)
         {
             var declaredType = target.TypeConstructor;
-            var matchingSourceTypes = source.Supertypes.Prepend(source).Where(t => t.TypeConstructor == declaredType);
+            var matchingSourceTypes = source.Supertypes.Prepend(source).Where(t => t.TypeConstructor.Equals(declaredType));
             foreach (var sourceType in matchingSourceTypes)
                 if (IsAssignableFrom(declaredType, targetAllowsWrite, target.TypeArguments, sourceType.TypeArguments))
                     return true;

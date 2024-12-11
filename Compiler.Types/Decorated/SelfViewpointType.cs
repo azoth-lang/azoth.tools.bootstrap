@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
+using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 
@@ -8,11 +9,25 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 [DebuggerDisplay("{" + nameof(ToILString) + "(),nq}")]
 public sealed class SelfViewpointType : INonVoidType
 {
+    public static IMaybeType Create(CapabilitySet capability, IMaybeType referent)
+        => referent switch
+        {
+            INonVoidType t => new SelfViewpointType(capability, t),
+            VoidType _ => IType.Void,
+            UnknownType _ => IType.Unknown,
+            _ => throw ExhaustiveMatch.Failed(referent),
+        };
+
     public CapabilitySet Capability { get; }
 
     public INonVoidType Referent { get; }
 
     public INonVoidPlainType PlainType => Referent.PlainType;
+    IMaybePlainType IMaybeType.PlainType => PlainType;
+
+    public TypeReplacements TypeReplacements => Referent.TypeReplacements;
+
+    public bool HasIndependentTypeArguments => Referent.HasIndependentTypeArguments;
 
     public SelfViewpointType(CapabilitySet capability, INonVoidType referent)
     {
@@ -36,9 +51,9 @@ public sealed class SelfViewpointType : INonVoidType
     public override int GetHashCode() => HashCode.Combine(Capability, Referent);
     #endregion
 
-    public override string ToString() => throw new NotSupportedException();
+    public override string ToString() => ToILString();
 
     public string ToSourceCodeString() => $"{Capability.ToSourceCodeString()} self |> {Referent}";
 
-    public string ToILString() => $"{Capability.ToILString()} self |> {Referent}";
+    public string ToILString() => $"{Capability.ToILString()} |> {Referent}";
 }

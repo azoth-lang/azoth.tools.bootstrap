@@ -10,10 +10,7 @@ using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Bare;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Parameters;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Pseudotypes;
+using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
@@ -24,10 +21,11 @@ internal static partial class ExpressionTypesAspect
 {
     public static partial void Expression_Contribute_Diagnostics(IExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
+        // TODO should ExpectedType be `IMaybeNonVoidType?` or even `INonVoidType?` ?
         if (node.ExpectedType is not { } expectedType)
             return;
 
-        if (!expectedType.IsAssignableFrom(node.Type))
+        if (!node.Type.IsSubtypeOf(expectedType))
             diagnostics.Add(TypeError.CannotImplicitlyConvert(node.File, node.Syntax, node.Type, (IMaybeNonVoidType)expectedType));
     }
 
@@ -116,7 +114,7 @@ internal static partial class ExpressionTypesAspect
         => node.Value ? IType.True : IType.False;
 
     public static partial CapabilityType IntegerLiteralExpression_Type(IIntegerLiteralExpressionNode node)
-        => new CapabilityType(Capability.Constant, BareNonVariableType.Create(new IntegerLiteralTypeConstructor(node.Value), []));
+        => CapabilityType.Create(Capability.Constant, new IntegerLiteralTypeConstructor(node.Value).PlainType);
 
     public static partial OptionalType NoneLiteralExpression_Type(INoneLiteralExpressionNode node)
         => IType.None;
@@ -124,7 +122,7 @@ internal static partial class ExpressionTypesAspect
     public static partial IMaybeType StringLiteralExpression_Type(IStringLiteralExpressionNode node)
     {
         var typeSymbolNode = node.ContainingLexicalScope.Lookup(StringTypeName).OfType<ITypeDeclarationNode>().TrySingle();
-        return typeSymbolNode?.Symbol.TryGetTypeConstructor()?.With(Capability.Constant, []) ?? IMaybeType.Unknown;
+        return typeSymbolNode?.Symbol.TryGetTypeConstructor()?.ConstructNullaryType().With(Capability.Constant) ?? IMaybeType.Unknown;
     }
 
     public static partial IFlowState LiteralExpression_FlowStateAfter(ILiteralExpressionNode node)
@@ -158,7 +156,7 @@ internal static partial class ExpressionTypesAspect
 
         var isTemporary = expectedCapability == Capability.TemporarilyIsolated;
 
-        var type = node.Type.ToNonConstValueType();
+        var type = node.Type.ToNonLiteral();
         if (type is not CapabilityType { Capability: var capability } || capability == expectedCapability)
             return null;
 
@@ -185,7 +183,7 @@ internal static partial class ExpressionTypesAspect
 
         var isTemporary = expectedCapability == Capability.TemporarilyConstant;
 
-        var type = node.Type.ToNonConstValueType();
+        var type = node.Type.ToNonLiteral();
         if (type is not CapabilityType { Capability: var capability } || capability == expectedCapability)
             return null;
 
@@ -209,7 +207,7 @@ internal static partial class ExpressionTypesAspect
 
     public static partial IMaybeType MethodInvocationExpression_Type(IMethodInvocationExpressionNode node)
     {
-        var selfType = node.Method.Context.Type.ToNonConstValueType();
+        var selfType = node.Method.Context.Type.ToNonLiteral();
         // TODO does this need to be modified by flow typing?
         var unboundType = node.ContextualizedCall?.ReturnType;
         var boundType = unboundType?.ReplaceSelfWith(selfType);
@@ -238,7 +236,7 @@ internal static partial class ExpressionTypesAspect
 
     public static partial IMaybeType GetterInvocationExpression_Type(IGetterInvocationExpressionNode node)
     {
-        var selfType = node.Context.Type.ToNonConstValueType();
+        var selfType = node.Context.Type.ToNonLiteral();
         var unboundType = node.ContextualizedCall?.ReturnType;
         var boundType = unboundType?.ReplaceSelfWith(selfType);
         return boundType ?? IType.Unknown;
@@ -265,7 +263,7 @@ internal static partial class ExpressionTypesAspect
 
     public static partial IMaybeType SetterInvocationExpression_Type(ISetterInvocationExpressionNode node)
     {
-        var selfType = node.Context.Type.ToNonConstValueType();
+        var selfType = node.Context.Type.ToNonLiteral();
         var unboundType = node.ContextualizedCall?.ParameterTypes[0].Type;
         var boundType = unboundType?.ReplaceSelfWith(selfType);
         return boundType ?? IType.Unknown;
@@ -301,9 +299,9 @@ internal static partial class ExpressionTypesAspect
         var parameterTypes = overload.ParameterTypes.AsEnumerable();
         if (selfArgument is not null)
         {
-            if (overload.SelfParameterType is not SelfParameterType selfParameterType)
+            if (overload.SelfParameterType is not INonVoidType selfParameterType)
                 throw new InvalidOperationException("Self argument provided for overload without self parameter");
-            parameterTypes = parameterTypes.Prepend(selfParameterType.ToUpperBound());
+            parameterTypes = parameterTypes.Prepend(ParameterType.Create(false, selfParameterType.ToUpperBound()));
         }
         return parameterTypes.EquiZip(allArguments)
                              .Select((p, a) => new ArgumentValueId(p.IsLent, a.ValueId));
@@ -317,9 +315,9 @@ internal static partial class ExpressionTypesAspect
         // Access must be applied first, so it can account for independent generic parameters.
         var type = fieldType.AccessedVia(contextType);
         // Then type parameters can be replaced now that they have the correct access
-        if (contextType is NonEmptyType nonEmptyContext)
+        if (contextType is INonVoidType nonVoidContext)
             // resolve generic type fields
-            type = nonEmptyContext.ReplaceTypeParametersIn(type);
+            type = nonVoidContext.TypeReplacements.ReplaceTypeParametersIn(type);
 
         return type;
     }
@@ -347,7 +345,7 @@ internal static partial class ExpressionTypesAspect
     public static partial IMaybeType SelfExpression_Type(ISelfExpressionNode node)
         => node.FlowStateAfter.AliasType(node.ReferencedDefinition);
 
-    public static partial IMaybePseudotype SelfExpression_Pseudotype(ISelfExpressionNode node)
+    public static partial IMaybeType SelfExpression_Pseudotype(ISelfExpressionNode node)
         => node.ReferencedDefinition?.BindingType ?? IType.Unknown;
 
     public static partial IFlowState AmbiguousMemberAccessExpression_FlowStateAfter(IAmbiguousMemberAccessExpressionNode node)
@@ -403,7 +401,7 @@ internal static partial class ExpressionTypesAspect
         var bareType = node.NamedBareType;
         if (bareType is null) return;
 
-        foreach (GenericParameterArgument arg in bareType.GenericParameterArguments)
+        foreach (TypeParameterArgument arg in bareType.TypeParameterArguments)
             if (!arg.IsConstructable())
                 diagnostics.Add(TypeError.CapabilityNotCompatibleWithConstraint(node.File, node.Syntax, arg.Parameter, (IType)arg.Argument));
     }
@@ -453,11 +451,11 @@ internal static partial class ExpressionTypesAspect
             case IFieldAccessExpressionNode fieldAccess:
             {
                 var contextType = fieldAccess.Context.Type;
-                if (contextType is CapabilityType { AllowsWrite: false, AllowsInit: false } capabilityType)
+                if (contextType is CapabilityType { Capability: { AllowsWrite: false, AllowsInit: false } } capabilityType)
                     diagnostics.Add(TypeError.CannotAssignFieldOfReadOnly(node.File, node.Syntax.Span, capabilityType));
 
                 // Check for assigning into `let` fields (skip self fields in constructors and initializers)
-                if (contextType is not CapabilityType { AllowsInit: true } && fieldAccess.ReferencedDeclaration.Symbol is
+                if (contextType is not CapabilityType { Capability.AllowsInit: true } && fieldAccess.ReferencedDeclaration.Symbol is
                     { IsMutableBinding: false, Name: IdentifierName name })
                     diagnostics.Add(OtherSemanticError.CannotAssignImmutableField(node.File, node.Syntax.Span, name));
                 break;
@@ -487,7 +485,7 @@ internal static partial class ExpressionTypesAspect
     public static partial IMaybeType BinaryOperatorExpression_Type(IBinaryOperatorExpressionNode node)
     {
         if (node.PlainType is ConstructedPlainType { TypeConstructor: SimpleOrLiteralTypeConstructor simpleOrLiteralTypeConstructor })
-            return simpleOrLiteralTypeConstructor.ToType();
+            return simpleOrLiteralTypeConstructor.Type;
         if (node.PlainType is UnknownPlainType)
             return IType.Unknown;
 
@@ -519,7 +517,7 @@ internal static partial class ExpressionTypesAspect
         var rangeTypeDeclaration = containingLexicalScope.Lookup("azoth")
             .OfType<INamespaceDeclarationNode>().SelectMany(ns => ns.MembersNamed("range"))
             .OfType<ITypeDeclarationNode>().TrySingle();
-        var rangePlainType = rangeTypeDeclaration?.Symbol.TryGetTypeConstructor()?.With(Capability.Constant, [])
+        var rangePlainType = rangeTypeDeclaration?.Symbol.TryGetTypeConstructor()?.ConstructNullaryType().With(Capability.Constant)
                              ?? IMaybeType.Unknown;
         return rangePlainType;
     }
@@ -544,14 +542,14 @@ internal static partial class ExpressionTypesAspect
     public static partial IMaybeType IfExpression_Type(IIfExpressionNode node)
     {
         if (node.ElseClause is null)
-            return OptionalType.Create(node.ThenBlock.Type.ToNonConstValueType());
+            return OptionalType.Create(node.ThenBlock.Type.ToNonLiteral());
 
         // TODO unify with else clause
         return node.ThenBlock.Type;
     }
 
     public static partial IMaybeType ResultStatement_Type(IResultStatementNode node)
-        => node.Expression?.Type.ToNonConstValueType() ?? IType.Unknown;
+        => node.Expression?.Type.ToNonLiteral() ?? IType.Unknown;
 
     public static partial IFlowState IfExpression_FlowStateAfter(IIfExpressionNode node)
     {
@@ -643,19 +641,19 @@ internal static partial class ExpressionTypesAspect
         var convertFromType = node.Referent!.Type;
         var convertToType = node.ConvertToType.NamedType;
         if (!convertFromType.CanBeExplicitlyConvertedTo(convertToType, node.Operator == ConversionOperator.Safe))
-            diagnostics.Add(TypeError.CannotExplicitlyConvert(node.File, node.Referent.Syntax, convertFromType, (IMaybeType)convertToType));
+            diagnostics.Add(TypeError.CannotExplicitlyConvert(node.File, node.Referent.Syntax, convertFromType, convertToType));
     }
 
     public static partial IMaybeType ImplicitConversionExpression_Type(IImplicitConversionExpressionNode node)
         // the type will always be a simple type which will be an IMaybeType
         // TODO eliminate the need for a cast
-        => (IMaybeType)node.PlainType.ToType();
+        => ((SimpleTypeConstructor)node.PlainType.TypeConstructor).Type;
 
     public static partial IFlowState ImplicitConversionExpression_FlowStateAfter(IImplicitConversionExpressionNode node)
         => node.Referent.FlowStateAfter.Transform(node.Referent.ValueId, node.ValueId, node.Type);
 
     public static partial IMaybeType AsyncStartExpression_Type(IAsyncStartExpressionNode node)
-        => Intrinsic.PromiseOf(node.Expression?.Type.ToNonConstValueType().ToDecoratedType() ?? Compiler.Types.Decorated.IType.Unknown).ToType();
+        => Intrinsic.PromiseOf(node.Expression?.Type.ToNonLiteral() ?? IType.Unknown);
 
     public static partial IFlowState AsyncStartExpression_FlowStateAfter(IAsyncStartExpressionNode node)
         // TODO this isn't correct, async start can act like a delayed lambda. It is also a transform that wraps
@@ -665,7 +663,7 @@ internal static partial class ExpressionTypesAspect
     {
         if (node.Expression?.Type is CapabilityType { TypeConstructor: var typeConstructor } type
             && Intrinsic.PromiseTypeConstructor.Equals(typeConstructor))
-            return type.TypeArguments[0];
+            return type.Arguments[0];
 
         return IType.Unknown;
     }
@@ -678,7 +676,7 @@ internal static partial class ExpressionTypesAspect
         => node.PlainType switch
         {
             ConstructedPlainType { TypeConstructor: SimpleOrLiteralTypeConstructor t }
-                => t.ToType(),
+                => t.Type,
             UnknownPlainType => IType.Unknown,
             _ => throw new InvalidOperationException($"Unexpected plainType {node.PlainType}")
         };
@@ -697,7 +695,7 @@ internal static partial class ExpressionTypesAspect
 
     // TODO this is strange and maybe a hack
     public static partial IMaybeType? MethodName_Context_ExpectedType(IMethodNameNode node)
-        => (node.Parent as IMethodInvocationExpressionNode)?.ContextualizedCall?.SelfParameterType?.Type.ToUpperBound();
+        => (node.Parent as IMethodInvocationExpressionNode)?.ContextualizedCall?.SelfParameterType?.ToUpperBound();
 
     public static partial IMaybeType FreezeExpression_Type(IFreezeExpressionNode node)
     {
@@ -735,7 +733,7 @@ internal static partial class ExpressionTypesAspect
         if (node.Referent.Type is not CapabilityType capabilityType)
             return;
 
-        if (!capabilityType.AllowsFreeze)
+        if (!capabilityType.Capability.AllowsFreeze)
             diagnostics.Add(TypeError.NotImplemented(node.File, node.Syntax.Span, "Reference capability does not allow freezing"));
         else if (!node.IsTemporary && !node.Referent.FlowStateAfter.CanFreezeExceptFor(node.Referent.ReferencedDefinition, node.Referent.ValueId))
             diagnostics.Add(FlowTypingError.CannotFreezeValue(node.File, node.Syntax, node.Referent.Syntax));
@@ -745,7 +743,7 @@ internal static partial class ExpressionTypesAspect
     {
         if (node.Referent.Type is not CapabilityType capabilityType) return;
 
-        if (!capabilityType.AllowsFreeze)
+        if (!capabilityType.Capability.AllowsFreeze)
             diagnostics.Add(TypeError.NotImplemented(node.File, node.Syntax.Span, "Reference capability does not allow freezing"));
         else if (!node.IsTemporary && !node.Referent.FlowStateAfter.CanFreeze(node.Referent.ValueId))
             diagnostics.Add(FlowTypingError.CannotFreezeValue(node.File, node.Syntax, node.Referent.Syntax));
@@ -759,7 +757,7 @@ internal static partial class ExpressionTypesAspect
         // Even if the capability doesn't allow move, a move expression always results in an
         // isolated reference. A diagnostic is generated if the capability doesn't allow move.
         // TODO maybe `temp iso` should require `temp move`?
-        return capabilityType.IsTemporarilyIsolatedReference ? capabilityType
+        return capabilityType.Capability == Capability.TemporarilyIsolated ? capabilityType
             : capabilityType.With(Capability.Isolated);
     }
 
@@ -774,7 +772,7 @@ internal static partial class ExpressionTypesAspect
         if (node.Referent.Type is not CapabilityType capabilityType)
             return;
 
-        if (!capabilityType.AllowsMove)
+        if (!capabilityType.Capability.AllowsMove)
             diagnostics.Add(TypeError.NotImplemented(node.File, node.Syntax.Span, "Reference capability does not allow moving"));
         else if (!node.Referent.FlowStateAfter.IsIsolatedExceptFor(node.Referent.ReferencedDefinition, node.Referent.ValueId))
             diagnostics.Add(FlowTypingError.CannotMoveValue(node.File, node.Syntax, node.Referent.Syntax));
@@ -790,7 +788,7 @@ internal static partial class ExpressionTypesAspect
     {
         if (node.Referent.Type is not CapabilityType capabilityType) return;
 
-        if (!capabilityType.AllowsMove)
+        if (!capabilityType.Capability.AllowsMove)
             diagnostics.Add(TypeError.NotImplemented(node.File, node.Syntax.Span, "Reference capability does not allow moving"));
         else if (!node.Referent.FlowStateAfter.IsIsolated(node.Referent.ValueId))
             diagnostics.Add(FlowTypingError.CannotMoveValue(node.File, node.Syntax, node.Referent.Syntax));

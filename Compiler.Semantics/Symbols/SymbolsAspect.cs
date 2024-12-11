@@ -4,9 +4,7 @@ using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Primitives;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Parameters;
-using Azoth.Tools.Bootstrap.Framework;
+using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 
@@ -32,7 +30,7 @@ internal static partial class SymbolsAspect
         => new(node.ContainingSymbol, node.TypeConstructor);
 
     public static partial GenericParameterTypeSymbol GenericParameter_Symbol(IGenericParameterNode node)
-        => new(node.ContainingSymbol, node.DeclaredType.ToPlainType());
+        => new(node.ContainingSymbol, node.DeclaredType.PlainType);
 
     public static partial TypeSymbol? StandardTypeName_ReferencedSymbol(IStandardTypeNameNode node)
         => node.ReferencedDeclaration?.Symbol;
@@ -51,25 +49,25 @@ internal static partial class SymbolsAspect
     {
         if (node.Type is not FunctionType type)
             return null;
-        return new(node.ContainingSymbol, node.Name, type.ToDecoratedType());
+        return new(node.ContainingSymbol, node.Name, type);
     }
 
     #region Member Definitions
     public static partial MethodSymbol? MethodDefinition_Symbol(IMethodDefinitionNode node)
     {
-        if (node.SelfParameterType is not SelfParameterType selfParameterType)
+        if (node.SelfParameterType is not INonVoidType selfParameterType)
             return null;
         if (node.ReturnType is not IType returnType)
             return null;
         if (node.ParameterTypes.AsKnownFixedList() is not { } parameters)
             return null;
-        return new(node.ContainingSymbol, node.Kind, node.Name, (Compiler.Types.Decorated.INonVoidType)selfParameterType.Type.ToDecoratedType(), parameters.ToDecoratedTypes(), returnType.ToDecoratedType());
+        return new(node.ContainingSymbol, node.Kind, node.Name, selfParameterType, parameters, returnType);
     }
 
     public static partial ConstructorSymbol? SourceConstructorDefinition_Symbol(ISourceConstructorDefinitionNode node)
     {
         if (node.ParameterTypes.AsKnownFixedList() is not { } parameters) return null;
-        return new(node.ContainingSymbol, node.Name, node.SelfParameter.BindingType.ToDecoratedType(), parameters.ToDecoratedTypes());
+        return new(node.ContainingSymbol, node.Name, node.SelfParameter.BindingType, parameters);
     }
 
     public static partial ConstructorSymbol? DefaultConstructorDefinition_Symbol(IDefaultConstructorDefinitionNode node)
@@ -78,7 +76,7 @@ internal static partial class SymbolsAspect
     public static partial InitializerSymbol? SourceInitializerDefinition_Symbol(ISourceInitializerDefinitionNode node)
     {
         if (node.ParameterTypes.AsKnownFixedList() is not { } parameters) return null;
-        return new(node.ContainingSymbol, node.Name, node.SelfParameter.BindingType.ToDecoratedType(), parameters.ToDecoratedTypes());
+        return new(node.ContainingSymbol, node.Name, node.SelfParameter.BindingType, parameters);
     }
 
     public static partial InitializerSymbol? DefaultInitializerDefinition_Symbol(IDefaultInitializerDefinitionNode node)
@@ -87,14 +85,14 @@ internal static partial class SymbolsAspect
     public static partial FieldSymbol? FieldDefinition_Symbol(IFieldDefinitionNode node)
     {
         if (node.BindingType is not INonVoidType bindingType) return null;
-        return new(node.ContainingSymbol, node.IsMutableBinding, node.Name, bindingType.ToDecoratedType());
+        return new(node.ContainingSymbol, node.IsMutableBinding, node.Name, bindingType);
     }
 
     public static partial FunctionSymbol? AssociatedFunctionDefinition_Symbol(IAssociatedFunctionDefinitionNode node)
     {
         if (node.Type is not FunctionType type)
             return null;
-        return new(node.ContainingSymbol, node.Name, type.ToDecoratedType());
+        return new(node.ContainingSymbol, node.Name, type);
     }
 
     #endregion

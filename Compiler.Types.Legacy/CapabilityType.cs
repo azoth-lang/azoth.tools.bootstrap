@@ -147,8 +147,8 @@ public sealed class CapabilityType : NonEmptyType, INonVoidType
         }
     }
 
-    public override Decorated.CapabilityType ToDecoratedType()
-        => new Decorated.CapabilityType(Capability, ToPlainType(), TypeArguments.ToDecoratedTypes());
+    public override Decorated.INonVoidType ToDecoratedType()
+        => Decorated.CapabilityType.LaxCreate(Capability, ToPlainType(), TypeArguments.ToDecoratedTypes());
 
     IMaybeType IMaybeType.AccessedVia(ICapabilityConstraint capability) => AccessedVia(capability);
 

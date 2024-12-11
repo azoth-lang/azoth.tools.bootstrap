@@ -7,7 +7,7 @@ using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
+using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
@@ -38,7 +38,7 @@ internal static partial class ExpressionPlainTypesAspect
     public static partial IMaybePlainType FieldAccessExpression_PlainType(IFieldAccessExpressionNode node)
     {
         // TODO should probably use PlainType on the declaration
-        var unboundPlainType = node.ReferencedDeclaration.BindingType.ToPlainType();
+        var unboundPlainType = node.ReferencedDeclaration.BindingType.PlainType;
         var boundPlainType = node.Context.PlainType.ReplaceTypeParametersIn(unboundPlainType);
         return boundPlainType;
     }
@@ -273,7 +273,7 @@ internal static partial class ExpressionPlainTypesAspect
     {
         if (node.Expression?.PlainType is ConstructedPlainType { TypeConstructor: var typeConstructor } plainType
             && Intrinsic.PromiseTypeConstructor.Equals(typeConstructor))
-            return plainType.TypeArguments[0];
+            return plainType.Arguments[0];
 
         return IPlainType.Unknown;
     }

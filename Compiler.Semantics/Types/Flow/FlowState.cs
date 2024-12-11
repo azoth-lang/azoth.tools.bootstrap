@@ -5,7 +5,7 @@ using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow.Sharing;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
+using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 using Azoth.Tools.Bootstrap.Framework;
 using Azoth.Tools.Bootstrap.Framework.Collections;
 using DotNet.Collections.Generic;
@@ -106,13 +106,13 @@ internal sealed class FlowState : IFlowState
         ValueId newValueId,
         CapabilityType newValueType)
     {
-        Requires.That(newValueType.IsAssignableFrom(newValueType), nameof(newValueType),
+        Requires.That(oldValueType.IsSubtypeOf(newValueType), nameof(newValueType),
             $"Must be a supertype of {nameof(oldValueType)}");
 
         var aliasValueMap = AliasValueMultiMapping(oldValueId, newValueId);
         if (oldValueType.Equals(newValueType)) return aliasValueMap;
 
-        var declaredSupertypes = oldValueType.Supertypes
+        var declaredSupertypes = oldValueType.PlainType.Supertypes
                                              .Where(s => s.TypeConstructor.Equals(newValueType.TypeConstructor))
                                              .ToFixedList();
 

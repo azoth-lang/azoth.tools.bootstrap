@@ -4,18 +4,15 @@ using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types;
+using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
-using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Bare;
+using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 
 internal static partial class TypeDefinitionsAspect
 {
-    public static partial SelfType TypeDefinition_SelfType(ITypeDefinitionNode node)
-        => new SelfType(node.TypeConstructor);
-
     public static partial void ClassDefinition_Contribute_Diagnostics(IClassDefinitionNode node, DiagnosticCollectionBuilder diagnostics)
     {
         CheckBaseTypeMustBeAClass(node, diagnostics);
@@ -44,7 +41,7 @@ internal static partial class TypeDefinitionsAspect
         => new TypeConstructor.Parameter(node.Constraint.Constraint, node.Name, node.Independence, node.Variance);
 
     public static partial GenericParameterType GenericParameter_DeclaredType(IGenericParameterNode node)
-        => node.ContainingTypeConstructor.GenericParameterTypes().Single(t => t.Parameter.Equals(node.Parameter));
+        => node.ContainingTypeConstructor.ParameterTypes.Single(t => t.Parameter.Equals(node.Parameter));
 
     public static partial IFixedSet<TypeConstructor.Supertype> TypeDefinition_Supertypes(ITypeDefinitionNode node)
     {
@@ -73,7 +70,7 @@ internal static partial class TypeDefinitionsAspect
             // errors to. (Could possibly use type arguments in the future.)
             foreach (var supertypeName in node.AllSupertypeNames)
             {
-                if (supertypeName.NamedBareType is not BareNonVariableType { TypeConstructor.CanBeSupertype: true } bareSupertype)
+                if (supertypeName.NamedBareType is not ConstructedBareType { TypeConstructor.CanBeSupertype: true } bareSupertype)
                     // A diagnostic will be generated elsewhere for this case
                     continue;
 
@@ -91,7 +88,7 @@ internal static partial class TypeDefinitionsAspect
                 {
                     // Since this is our supertype's supertype, we need to replace any type
                     // parameters with those given to the supertype.
-                    yield return bareSupertype.ReplaceTypeParametersIn(supertype.ToType()).ToSupertype();
+                    yield return bareSupertype.TypeReplacements.ReplaceTypeParametersIn(supertype);
                 }
             }
         }

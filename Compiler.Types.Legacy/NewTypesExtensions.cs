@@ -75,7 +75,7 @@ public static class NewTypesExtensions
 
     public static BareNonVariableType ToType(this TypeConstructor.Supertype supertype)
     {
-        var args = supertype.TypeArguments.Select(arg => arg.ToType()).ToFixedList();
+        var args = supertype.Arguments.Select(arg => arg.ToType()).ToFixedList();
         return new(supertype.TypeConstructor, args);
     }
 
@@ -126,7 +126,7 @@ public static class NewTypesExtensions
                 throw new NotImplementedException();
             case ConstructedPlainType t:
             {
-                var bareType = new BareNonVariableType(t.TypeConstructor, type.TypeArguments.ToTypes());
+                var bareType = new BareNonVariableType(t.TypeConstructor, type.Arguments.ToTypes());
                 return new CapabilityType(type.Capability, bareType);
             }
             default:
