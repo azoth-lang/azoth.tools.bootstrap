@@ -50,7 +50,7 @@ public sealed class OrdinaryTypeConstructor : TypeConstructor
     public override StandardName Name { get; }
 
     /// <summary>
-    /// The parameters to this type constructor. Commonly referred to as "generic parameters".
+    /// The parameters of this type constructor. Commonly referred to as "generic parameters".
     /// </summary>
     public override IFixedList<Parameter> Parameters { get; }
     public override bool AllowsVariance { get; }
@@ -140,11 +140,11 @@ public sealed class OrdinaryTypeConstructor : TypeConstructor
             _ => true
         };
 
-    public override ConstructedPlainType Construct(IFixedList<IPlainType> typeArguments)
+    public override ConstructedPlainType Construct(IFixedList<IPlainType> arguments)
     {
-        if (typeArguments.Count != Parameters.Count)
+        if (arguments.Count != Parameters.Count)
             throw new ArgumentException("Incorrect number of type arguments.");
-        return new(this, typeArguments);
+        return new(this, arguments);
     }
 
     public override ConstructedPlainType? TryConstructNullaryPlainType()

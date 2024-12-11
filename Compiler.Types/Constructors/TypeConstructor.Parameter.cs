@@ -6,11 +6,10 @@ using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 
-// ReSharper disable once InconsistentNaming
 public partial class TypeConstructor
 {
     /// <summary>
-    /// A generic parameter definition for a type constructor.
+    /// A parameter definition for a type constructor.
     /// </summary>
     [DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
     public sealed class Parameter : IEquatable<Parameter>
@@ -57,9 +56,9 @@ public partial class TypeConstructor
             if (other is null) return false;
             if (ReferenceEquals(this, other)) return true;
             return Constraint.Equals(other.Constraint)
+                   && Name.Equals(other.Name)
                    && Independence == other.Independence
-                   && Variance == other.Variance
-                   && Name.Equals(other.Name);
+                   && Variance == other.Variance;
         }
 
         public override bool Equals(object? obj) => obj is Parameter other && Equals(other);
@@ -70,6 +69,7 @@ public partial class TypeConstructor
         public override string ToString()
         {
             var builder = new StringBuilder();
+            // Aliasable is the default and so isn't written
             if (Constraint != CapabilitySet.Aliasable) builder.Append(Constraint.ToSourceCodeString()).Append(' ');
             builder.Append(Name);
             var independence = Independence.ToSourceCodeString();

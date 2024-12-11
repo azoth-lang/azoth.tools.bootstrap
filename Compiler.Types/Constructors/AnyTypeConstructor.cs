@@ -43,6 +43,14 @@ public sealed class AnyTypeConstructor : TypeConstructor
     /// <remarks>Because `Any` is the base of the constructed type hierarchy, it has no supertypes.</remarks>
     public override IFixedSet<Supertype> Supertypes => [];
 
+    public override ConstructedPlainType Construct(IFixedList<IPlainType> arguments)
+    {
+        if (!arguments.IsEmpty) throw new ArgumentException("Incorrect number of type arguments.");
+        return PlainType;
+    }
+
+    public override IPlainType TryConstructNullaryPlainType() => PlainType;
+
     #region Equality
     public override bool Equals(TypeConstructor? other)
         // AnyTypeConstructor is a singleton, so we can use reference equality.
@@ -50,15 +58,6 @@ public sealed class AnyTypeConstructor : TypeConstructor
 
     public override int GetHashCode() => HashCode.Combine(typeof(AnyTypeConstructor));
     #endregion
-
-    public override ConstructedPlainType Construct(IFixedList<IPlainType> typeArguments)
-    {
-        if (typeArguments.Any())
-            throw new ArgumentException("Incorrect number of type arguments.");
-        return PlainType;
-    }
-
-    public override IPlainType TryConstructNullaryPlainType() => PlainType;
 
     public override string ToString() => Name.ToString();
 

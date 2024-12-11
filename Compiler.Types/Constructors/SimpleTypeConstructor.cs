@@ -39,10 +39,10 @@ public abstract class SimpleTypeConstructor : SimpleOrLiteralTypeConstructor
         PlainType = new(this, []);
     }
 
-    public sealed override ConstructedPlainType Construct(IFixedList<IPlainType> typeArguments)
+    public sealed override ConstructedPlainType Construct(IFixedList<IPlainType> arguments)
     {
-        if (typeArguments.Any())
-            throw new ArgumentException("Simple type cannot have type arguments", nameof(typeArguments));
+        if (arguments.Any())
+            throw new ArgumentException("Simple type cannot have type arguments", nameof(arguments));
         return PlainType;
     }
 
@@ -52,8 +52,6 @@ public abstract class SimpleTypeConstructor : SimpleOrLiteralTypeConstructor
     public sealed override bool Equals(TypeConstructor? other)
         // All simple type constructors are singletons, so we can use reference equality.
         => ReferenceEquals(this, other);
-
-
 
     public sealed override int GetHashCode()
         => RuntimeHelpers.GetHashCode(this);

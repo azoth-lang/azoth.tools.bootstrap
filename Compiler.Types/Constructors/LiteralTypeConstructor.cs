@@ -44,11 +44,11 @@ public abstract class LiteralTypeConstructor : SimpleOrLiteralTypeConstructor
 
     public abstract override TypeConstructor ToNonLiteral();
 
-    public sealed override ConstructedPlainType Construct(IFixedList<IPlainType> typeArguments)
+    public sealed override ConstructedPlainType Construct(IFixedList<IPlainType> arguments)
        => throw new NotImplementedException("Constructing literal types requires value type parameters.");
 
     /// <remarks>All literal types take a type parameter and cannot be nullary constructed.</remarks>
     public sealed override IPlainType? TryConstructNullaryPlainType() => null;
 
-    public override void ToString(StringBuilder builder) => builder.Append(ToString());
+    public sealed override void ToString(StringBuilder builder) => builder.Append(ToString());
 }

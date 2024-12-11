@@ -8,6 +8,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors.Contexts;
     typeof(PrimitiveContext),
     typeof(NamespaceContext),
     typeof(TypeConstructor))]
+// TODO convert to a class
 [SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "Using as a trait.")]
 // ReSharper disable once InconsistentNaming
 public interface TypeConstructorContext : IEquatable<TypeConstructorContext>

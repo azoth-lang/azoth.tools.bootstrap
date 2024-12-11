@@ -18,10 +18,11 @@ public sealed class BoolLiteralTypeConstructor : LiteralTypeConstructor
         PlainType = new(this, []);
     }
 
-    public override TypeConstructor ToNonLiteral() => TypeConstructor.Bool;
+    public override TypeConstructor ToNonLiteral() => Bool;
 
     public static implicit operator BoolLiteralTypeConstructor(bool value) => value ? True : False;
 
+    // TODO remove operations. Literal types should not be used for constant folding `true and false` doesn't have the type `bool[false]`
     #region Operations
     public BoolLiteralTypeConstructor Equals(BoolLiteralTypeConstructor other) => Value == other.Value;
 

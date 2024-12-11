@@ -163,12 +163,24 @@ public abstract partial class TypeConstructor : IEquatable<TypeConstructor>, Typ
     public bool HasParameters => !Parameters.IsEmpty;
     public abstract IFixedList<Parameter> Parameters { get; }
 
+    /// <summary>
+    /// Whether this type allows any variance in its parameters (e.g. it has `out` or `in` parameters).
+    /// </summary>
     public abstract bool AllowsVariance { get; }
 
+    /// <summary>
+    /// Whether any of the parameters are independent (i.e. `ind` or `sharable ind`).
+    /// </summary>
     public abstract bool HasIndependentParameters { get; }
 
+    /// <summary>
+    /// The plain types used to refer to the parameters to this type within the type definition.
+    /// </summary>
     public abstract IFixedList<GenericParameterPlainType> ParameterPlainTypes { get; }
 
+    /// <summary>
+    /// The types used to refer to the parameters to this type within the type definition.
+    /// </summary>
     public IFixedList<GenericParameterType> ParameterTypes
         => LazyInitializer.EnsureInitialized(ref parameterTypes,
             () => ParameterPlainTypes.Select(p => new GenericParameterType(p)).ToFixedList());
@@ -179,7 +191,7 @@ public abstract partial class TypeConstructor : IEquatable<TypeConstructor>, Typ
     private ConstructedPlainType? withParameterPlainTypes;
     private ConstructedBareType? withParameterTypes;
 
-    public abstract ConstructedPlainType Construct(IFixedList<IPlainType> typeArguments);
+    public abstract ConstructedPlainType Construct(IFixedList<IPlainType> arguments);
 
     public ConstructedPlainType ConstructWithParameterPlainTypes()
         => LazyInitializer.EnsureInitialized(ref withParameterPlainTypes, () => Construct(ParameterPlainTypes));
@@ -188,36 +200,54 @@ public abstract partial class TypeConstructor : IEquatable<TypeConstructor>, Typ
         => LazyInitializer.EnsureInitialized(ref withParameterTypes,
             () => new(ConstructWithParameterPlainTypes(), ParameterTypes));
 
-    public IMaybePlainType Construct(IFixedList<IMaybePlainType> typeArguments)
+    /// <summary>
+    /// Attempt to construct a type from this type constructor with possibly unknown arguments. If
+    /// any argument is unknown, the result is the unknown type.
+    /// </summary>
+    public IMaybePlainType Construct(IFixedList<IMaybePlainType> arguments)
     {
-        var properTypeArguments = typeArguments.As<IPlainType>();
-        if (properTypeArguments is null) return IPlainType.Unknown;
-        return Construct(properTypeArguments);
+        var properArguments = arguments.As<IPlainType>();
+        if (properArguments is null) return IPlainType.Unknown;
+        return Construct(properArguments);
     }
 
-    public ConstructedBareType Construct(IFixedList<IType> typeArguments)
+    public ConstructedBareType Construct(IFixedList<IType> arguments)
     {
-        var plainType = Construct(typeArguments.Select(a => a.PlainType).ToFixedList());
-        return new(plainType, typeArguments);
+        var plainType = Construct(arguments.Select(a => a.PlainType).ToFixedList());
+        return new(plainType, arguments);
     }
 
-    public ConstructedBareType? Construct(IFixedList<IMaybeType> typeArguments)
+    /// <summary>
+    /// Attempt to construct a type from this type constructor with possibly unknown arguments. If
+    /// any argument is unknown, the result is the unknown type.
+    /// </summary>
+    public ConstructedBareType? Construct(IFixedList<IMaybeType> arguments)
     {
-        var properTypeArguments = typeArguments.As<IType>();
+        var properTypeArguments = arguments.As<IType>();
         if (properTypeArguments is null) return null;
         return Construct(properTypeArguments);
     }
 
+    /// <summary>
+    /// Construct this type with no type arguments.
+    /// </summary>
+    /// <exception cref="InvalidOperationException">This type constructor takes one or more arguments.</exception>
     public ConstructedBareType ConstructNullaryType()
     {
+        if (!Parameters.IsEmpty)
+            throw new InvalidOperationException($"Cannot construct nullary type for type constructor `{this}` expecting arguments.");
         var plainType = Construct(FixedList.Empty<IPlainType>());
         return new(plainType, []);
     }
 
+    /// <summary>
+    /// Try to construct a plain type with type arguments. If the type constructor takes one or more
+    /// arguments, <see langword="null"/> is returned.
+    /// </summary>
     public abstract IPlainType? TryConstructNullaryPlainType();
 
     /// <summary>
-    /// The default non-constant type to place values of this type in.
+    /// The default non-literal type to place values of this type in.
     /// </summary>
     public virtual TypeConstructor ToNonLiteral() => this;
 
@@ -227,7 +257,7 @@ public abstract partial class TypeConstructor : IEquatable<TypeConstructor>, Typ
     public sealed override bool Equals(object? obj)
         => ReferenceEquals(this, obj) || obj is TypeConstructor other && Equals(other);
 
-    bool IEquatable<TypeConstructorContext>.Equals(TypeConstructorContext? other)
+    public bool Equals(TypeConstructorContext? other)
         => ReferenceEquals(this, other) || other is TypeConstructor that && Equals(that);
 
     public abstract override int GetHashCode();

@@ -15,7 +15,8 @@ public sealed class IntegerLiteralTypeConstructor : LiteralTypeConstructor
     public bool IsInt16
         => Value >= Int16.MinValue && Value <= Int16.MaxValue;
 
-    public override ConstructedPlainType PlainType => LazyInitializer.EnsureInitialized(ref plainType, ConstructPlainType);
+    public override ConstructedPlainType PlainType
+        => LazyInitializer.EnsureInitialized(ref plainType, ConstructPlainType);
     private ConstructedPlainType? plainType;
 
     public IntegerLiteralTypeConstructor(BigInteger value)
@@ -54,6 +55,7 @@ public sealed class IntegerLiteralTypeConstructor : LiteralTypeConstructor
         return Byte;
     }
 
+    // TODO remove operations except for negate. Literal types should not be used for constant folding `1 + 1` doesn't have the type `int[2]`
     #region Operations
     public IntegerLiteralTypeConstructor Add(IntegerLiteralTypeConstructor other)
         => new(Value + other.Value);

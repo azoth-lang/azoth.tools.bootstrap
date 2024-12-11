@@ -44,7 +44,7 @@ public sealed class FixedSizeIntegerTypeConstructor : IntegerTypeConstructor
         if (ReferenceEquals(this, Byte)) return Int16;
         if (ReferenceEquals(this, UInt16)) return Int32;
         if (ReferenceEquals(this, UInt32)) return Int64;
-        if (ReferenceEquals(this, UInt64)) return TypeConstructor.Int;
+        if (ReferenceEquals(this, UInt64)) return Int;
         throw new UnreachableException("All values should be covered.");
     }
 }

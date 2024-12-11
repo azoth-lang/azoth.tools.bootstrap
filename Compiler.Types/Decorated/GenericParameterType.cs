@@ -4,6 +4,7 @@ using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 
+// TODO maybe this should only be constructed from the GenericParameterPlainType to avoid duplicate instances?
 // e.g. T
 // NOTE: generic parameters are the only plain types that do not need a capability
 [DebuggerDisplay("{" + nameof(ToILString) + "(),nq}")]

@@ -7,23 +7,23 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 
-// ReSharper disable once InconsistentNaming
 public partial class TypeConstructor
 {
     // TODO this seems to be a duplicate of ConstructedBareType, merge them?
     [DebuggerDisplay("{" + nameof(ToILString) + "(),nq}")]
     public sealed class Supertype : IEquatable<Supertype>
     {
-        // Note: must use AnyTypeConstructor.PlainType instead of IPlainType.Any to avoid circular dependency when initializing statics
+        // Note: must use AnyTypeConstructor.PlainType instead of IPlainType.Any to avoid circular
+        // dependency when initializing statics.
         // ReSharper disable once MemberHidesStaticFromOuterClass
         public static readonly Supertype Any = new(AnyTypeConstructor.PlainType, []);
         public static readonly IFixedSet<Supertype> AnySet = Any.Yield().ToFixedSet();
 
         public ConstructedPlainType PlainType { get; }
 
-        public IFixedList<IType> Arguments { get; }
-
         public TypeConstructor TypeConstructor => PlainType.TypeConstructor;
+
+        public IFixedList<IType> Arguments { get; }
 
         public Supertype(ConstructedPlainType plainType, IFixedList<IType> arguments)
         {
@@ -35,6 +35,8 @@ public partial class TypeConstructor
 
         public static implicit operator ConstructedPlainType(Supertype supertype)
             => supertype.PlainType;
+
+        public ConstructedBareType ToBareType() => new(PlainType, Arguments);
 
         #region Equality
         public bool Equals(Supertype? other)
@@ -51,7 +53,7 @@ public partial class TypeConstructor
         public override int GetHashCode() => HashCode.Combine(PlainType, Arguments);
         #endregion
 
-        public override string ToString() => throw new NotSupportedException();
+        public override string ToString() => ToILString();
 
         public string ToSourceCodeString() => ToString(t => t.ToSourceCodeString());
 
@@ -70,8 +72,5 @@ public partial class TypeConstructor
 
             return builder.ToString();
         }
-
-        public ConstructedBareType ToBareType()
-            => new(PlainType, Arguments);
     }
 }
