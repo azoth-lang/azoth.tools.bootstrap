@@ -52,7 +52,7 @@ public abstract partial class TypeConstructor : TypeConstructorContext, IEquatab
         bool isConst,
         StandardName name,
         IFixedList<Parameter> genericParameters,
-        IFixedSet<Supertype> supertypes)
+        IFixedSet<ConstructedBareType> supertypes)
         => new(new NamespaceContext(containingPackage, containingNamespace),
             isAbstract: false, isConst, TypeKind.Struct, name, genericParameters, supertypes);
 
@@ -63,7 +63,7 @@ public abstract partial class TypeConstructor : TypeConstructorContext, IEquatab
         bool isConst,
         string name)
         => new(new NamespaceContext(containingPackage, containingNamespace),
-            isAbstract, isConst, TypeKind.Class, name, [], Supertype.AnySet);
+            isAbstract, isConst, TypeKind.Class, name, [], ConstructedBareType.AnySet);
 
     public static OrdinaryTypeConstructor CreateTrait(
         IdentifierName containingPackage,
@@ -71,7 +71,7 @@ public abstract partial class TypeConstructor : TypeConstructorContext, IEquatab
         bool isConst,
         string name)
         => new(new NamespaceContext(containingPackage, containingNamespace),
-            isAbstract: true, isConst, TypeKind.Trait, name, [], Supertype.AnySet);
+            isAbstract: true, isConst, TypeKind.Trait, name, [], ConstructedBareType.AnySet);
 
     public static OrdinaryTypeConstructor CreateClass(
         IdentifierName containingPackage,
@@ -80,7 +80,7 @@ public abstract partial class TypeConstructor : TypeConstructorContext, IEquatab
         bool isConst,
         string name,
         IFixedList<Parameter> genericParameters,
-        IFixedSet<Supertype> supertypes)
+        IFixedSet<ConstructedBareType> supertypes)
         => new(new NamespaceContext(containingPackage, containingNamespace),
             isAbstract, isConst, TypeKind.Class, StandardName.Create(name, genericParameters.Count),
             genericParameters, supertypes);
@@ -92,7 +92,7 @@ public abstract partial class TypeConstructor : TypeConstructorContext, IEquatab
         bool isConst,
         StandardName name,
         IFixedList<Parameter> genericParameters,
-        IFixedSet<Supertype> supertypes)
+        IFixedSet<ConstructedBareType> supertypes)
         => new(new NamespaceContext(containingPackage, containingNamespace),
             isAbstract, isConst, TypeKind.Class, name, genericParameters, supertypes);
 
@@ -102,7 +102,7 @@ public abstract partial class TypeConstructor : TypeConstructorContext, IEquatab
         bool isConst,
         StandardName name,
         IFixedList<Parameter> genericParameters,
-        IFixedSet<Supertype> supertypes)
+        IFixedSet<ConstructedBareType> supertypes)
         => new(new NamespaceContext(containingPackage, containingNamespace),
             isAbstract: true, isConst, TypeKind.Trait, name, genericParameters, supertypes);
 
@@ -115,7 +115,7 @@ public abstract partial class TypeConstructor : TypeConstructorContext, IEquatab
         params Parameter[] genericParameters)
         => new(new NamespaceContext(containingPackage, containingNamespace),
             isAbstract, isConst, TypeKind.Class, StandardName.Create(name, genericParameters.Length),
-            genericParameters.ToFixedList(), Supertype.AnySet);
+            genericParameters.ToFixedList(), ConstructedBareType.AnySet);
 
     public static OrdinaryTypeConstructor CreateTrait(
         IdentifierName containingPackage,
@@ -125,7 +125,7 @@ public abstract partial class TypeConstructor : TypeConstructorContext, IEquatab
         params Parameter[] genericParameters)
         => new(new NamespaceContext(containingPackage, containingNamespace),
             isAbstract: true, isConst, TypeKind.Trait, StandardName.Create(name, genericParameters.Length),
-             genericParameters.ToFixedList(), Supertype.AnySet);
+             genericParameters.ToFixedList(), ConstructedBareType.AnySet);
     #endregion
 
     public sealed override void AppendContextPrefix(StringBuilder builder)
@@ -191,7 +191,7 @@ public abstract partial class TypeConstructor : TypeConstructorContext, IEquatab
             () => ParameterPlainTypes.Select(p => new GenericParameterType(p)).ToFixedList());
     private IFixedList<GenericParameterType>? parameterTypes;
 
-    public abstract IFixedSet<Supertype> Supertypes { get; }
+    public abstract IFixedSet<ConstructedBareType> Supertypes { get; }
 
     private ConstructedPlainType? withParameterPlainTypes;
     private ConstructedBareType? withParameterTypes;

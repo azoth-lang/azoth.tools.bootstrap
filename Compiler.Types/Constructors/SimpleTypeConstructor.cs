@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 using System.Text;
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
@@ -29,7 +30,7 @@ public abstract class SimpleTypeConstructor : SimpleOrLiteralTypeConstructor
 
     public sealed override IFixedList<GenericParameterPlainType> ParameterPlainTypes => [];
 
-    public sealed override IFixedSet<Supertype> Supertypes => Supertype.AnySet;
+    public sealed override IFixedSet<ConstructedBareType> Supertypes => ConstructedBareType.AnySet;
 
     public sealed override ConstructedPlainType PlainType { get; }
 

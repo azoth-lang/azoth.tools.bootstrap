@@ -1,5 +1,6 @@
 using System.Text;
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
@@ -35,7 +36,7 @@ public abstract class LiteralTypeConstructor : SimpleOrLiteralTypeConstructor
     public sealed override IFixedList<GenericParameterPlainType> ParameterPlainTypes => [];
 
     // TODO should this instead include the non-literal type (e.g. `int` or `bool`)?
-    public sealed override IFixedSet<Supertype> Supertypes => Supertype.AnySet;
+    public sealed override IFixedSet<ConstructedBareType> Supertypes => ConstructedBareType.AnySet;
 
     private protected LiteralTypeConstructor(SpecialTypeName name)
     {

@@ -240,13 +240,4 @@ public sealed class TypeReplacements
         var plainType = plainTypeReplacements.ReplaceTypeParametersIn(bareType.PlainType);
         return new(plainType, replacementTypes);
     }
-
-    public TypeConstructor.Supertype ReplaceTypeParametersIn(TypeConstructor.Supertype supertype)
-    {
-        var replacementTypes = ReplaceTypeParametersIn(supertype.Arguments);
-        if (ReferenceEquals(supertype.Arguments, replacementTypes)) return supertype;
-
-        var plainType = plainTypeReplacements.ReplaceTypeParametersIn(supertype.PlainType);
-        return new(plainType, replacementTypes);
-    }
 }

@@ -1,5 +1,6 @@
 using System.Text;
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors.Contexts;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using Azoth.Tools.Bootstrap.Framework;
@@ -41,7 +42,7 @@ public sealed class AnyTypeConstructor : TypeConstructor
     public override IFixedList<GenericParameterPlainType> ParameterPlainTypes => [];
 
     /// <remarks>Because `Any` is the base of the constructed type hierarchy, it has no supertypes.</remarks>
-    public override IFixedSet<Supertype> Supertypes => [];
+    public override IFixedSet<ConstructedBareType> Supertypes => [];
 
     public override ConstructedPlainType Construct(IFixedList<IPlainType> arguments)
     {

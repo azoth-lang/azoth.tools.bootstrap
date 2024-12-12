@@ -9,10 +9,16 @@ using MoreLinq;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 
-// TODO consider eliminating by making BareType a class over ConstructedOrVariablePlainType
+// TODO consider eliminating by making BareType a class over ConstructedOrVariablePlainType or could
+// introduce a new ConstructedOrAssociatedPlainType
 [DebuggerDisplay("{" + nameof(ToILString) + "(),nq}")]
 public sealed class ConstructedBareType : BareType
 {
+    // Note: must use AnyTypeConstructor.PlainType instead of IPlainType.Any to avoid circular
+    // dependency when initializing statics.
+    public static readonly ConstructedBareType Any = new(AnyTypeConstructor.PlainType, []);
+    public static readonly IFixedSet<ConstructedBareType> AnySet = Any.Yield().ToFixedSet();
+
     public ConstructedPlainType PlainType { get; }
     ConstructedOrVariablePlainType BareType.PlainType => PlainType;
     public TypeConstructor TypeConstructor => PlainType.TypeConstructor;
@@ -29,7 +35,7 @@ public sealed class ConstructedBareType : BareType
 
     public IFixedSet<ConstructedBareType> Supertypes
         => LazyInitializer.EnsureInitialized(ref supertypes,
-            () => TypeConstructor.Supertypes.Select(t => TypeReplacements.ReplaceTypeParametersIn(t).ToBareType()).ToFixedSet());
+            () => TypeConstructor.Supertypes.Select(t => TypeReplacements.ReplaceTypeParametersIn(t)).ToFixedSet());
     private IFixedSet<ConstructedBareType>? supertypes;
 
     public ConstructedBareType(ConstructedPlainType plainType, IFixedList<IType> arguments)
@@ -50,8 +56,6 @@ public sealed class ConstructedBareType : BareType
     public CapabilityType WithMutate()
         => With(TypeConstructor.IsDeclaredConst ? Capability.Constant : Capability.Mutable);
 
-    public TypeConstructor.Supertype ToSupertype() => new(PlainType, Arguments);
-
     #region Equality
     public bool Equals(BareType? other)
     {
@@ -68,7 +72,6 @@ public sealed class ConstructedBareType : BareType
     public override int GetHashCode() => HashCode.Combine(PlainType, Arguments);
 
     #endregion
-
 
     public string ToSourceCodeString() => ToString(t => t.ToSourceCodeString());
 

@@ -1,6 +1,7 @@
 using System.Text;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors.Contexts;
 using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
@@ -61,7 +62,7 @@ public sealed class OrdinaryTypeConstructor : TypeConstructor
     /// variables. These are the types of those variables.
     /// </summary>
     public override IFixedList<GenericParameterPlainType> ParameterPlainTypes { get; }
-    public override IFixedSet<Supertype> Supertypes { get; }
+    public override IFixedSet<ConstructedBareType> Supertypes { get; }
     public override TypeSemantics Semantics
         => Kind == TypeKind.Struct ? TypeSemantics.Value : TypeSemantics.Reference;
 
@@ -72,7 +73,7 @@ public sealed class OrdinaryTypeConstructor : TypeConstructor
         TypeKind kind,
         StandardName name,
         IEnumerable<Parameter> genericParameters,
-        IFixedSet<Supertype> supertypes)
+        IFixedSet<ConstructedBareType> supertypes)
     {
         Requires.That((kind == TypeKind.Trait).Implies(isAbstract), nameof(isAbstract), "Traits must be abstract.");
         Requires.That((kind == TypeKind.Struct).Implies(!isAbstract), nameof(isAbstract), "Structs cannot be abstract.");
@@ -86,7 +87,7 @@ public sealed class OrdinaryTypeConstructor : TypeConstructor
         AllowsVariance = Parameters.Any(p => p.Variance != TypeParameterVariance.Invariant);
         HasIndependentParameters = Parameters.Any(p => p.HasIndependence);
 
-        Requires.That(supertypes.Contains(TypeConstructor.Supertype.Any), nameof(supertypes),
+        Requires.That(supertypes.Contains(ConstructedBareType.Any), nameof(supertypes),
             "All ordinary type constructors must have `Any` as a supertype.");
         Supertypes = supertypes;
         IsDeclaredConst = isDeclaredConst;
