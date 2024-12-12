@@ -68,13 +68,20 @@ internal sealed class PlainTypeReplacements
     public IPlainType ReplaceTypeParametersIn(NonVoidPlainType plainType)
         => plainType switch
         {
-            NeverPlainType a => a,
-            OrdinaryAssociatedPlainType a => a,
-            SelfPlainType a => a,
-            ConstructedPlainType a => ReplaceTypeParametersIn(a),
-            GenericParameterPlainType a => ReplaceTypeParametersIn(a),
-            FunctionPlainType a => ReplaceTypeParametersIn(a),
-            OptionalPlainType a => ReplaceTypeParametersIn(a),
+            NeverPlainType t => t,
+            AssociatedPlainType t => t,
+            ConstructedPlainType t => ReplaceTypeParametersIn(t),
+            GenericParameterPlainType t => ReplaceTypeParametersIn(t),
+            FunctionPlainType t => ReplaceTypeParametersIn(t),
+            OptionalPlainType t => ReplaceTypeParametersIn(t),
+            _ => throw ExhaustiveMatch.Failed(plainType)
+        };
+
+    public ConstructedOrAssociatedPlainType ReplaceTypeParametersIn(ConstructedOrAssociatedPlainType plainType)
+        => plainType switch
+        {
+            ConstructedPlainType t => ReplaceTypeParametersIn(t),
+            AssociatedPlainType t => t,
             _ => throw ExhaustiveMatch.Failed(plainType)
         };
 

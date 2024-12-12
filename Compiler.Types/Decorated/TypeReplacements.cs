@@ -56,33 +56,7 @@ public sealed class TypeReplacements
         //}
     }
 
-    //public IPseudotype ReplaceTypeParametersIn(IPseudotype pseudotype)
-    //{
-    //    return pseudotype switch
-    //    {
-    //        IType type => ReplaceTypeParametersIn(type),
-    //        CapabilityTypeConstraint type => ReplaceTypeParametersIn(type),
-    //        _ => throw ExhaustiveMatch.Failed(pseudotype)
-    //    };
-    //}
-
-    //public IMaybePseudotype ReplaceTypeParametersIn(IMaybePseudotype pseudotype)
-    //{
-    //    return pseudotype switch
-    //    {
-    //        IMaybeType type => ReplaceTypeParametersIn(type),
-    //        CapabilityTypeConstraint type => ReplaceTypeParametersIn(type),
-    //        _ => throw ExhaustiveMatch.Failed(pseudotype)
-    //    };
-    //}
-
-    //public CapabilityTypeConstraint ReplaceTypeParametersIn(CapabilityTypeConstraint pseudotype)
-    //{
-    //    var replacementType = ReplaceTypeParametersIn(pseudotype.BareType);
-    //    if (!ReferenceEquals(pseudotype.BareType, replacementType))
-    //        return new CapabilityTypeConstraint(pseudotype.Capability, replacementType);
-    //    return pseudotype;
-    //}
+    // TODO shorten method names now that it is accessed view TypeReplacements.ReplaceTypeParametersIn
 
     public IMaybeType ReplaceTypeParametersIn(IMaybeType type)
         => type switch
@@ -224,6 +198,14 @@ public sealed class TypeReplacements
 
         return typesReplaced ? replacementTypes.ToFixedList() : types;
     }
+
+    public BareType ReplaceTypeParametersIn(BareType bareType)
+        => bareType switch
+        {
+            ConstructedBareType t => ReplaceTypeParametersIn(t),
+            AssociatedPlainType t => t,
+            _ => throw ExhaustiveMatch.Failed(bareType),
+        };
 
     public ConstructedBareType ReplaceTypeParametersIn(ConstructedBareType bareType)
     {
