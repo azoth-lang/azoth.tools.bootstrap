@@ -38,6 +38,7 @@ public static partial class TypeOperations
             // TODO shouldn't these be recursive on referents and arguments?
             OptionalType t => t,
             GenericParameterType t => t,
+            CapabilityViewpointType t => t,
             SelfViewpointType t => t,
             FunctionType t => t,
             CapabilityType t => t,

@@ -387,6 +387,7 @@ public class InterpreterProcess
             case GenericParameterType _:
             case FunctionType _:
             case CapabilitySetSelfType _:
+            case CapabilityViewpointType _:
             case SelfViewpointType _:
                 var methodSignature = methodSignatures[methodSymbol];
                 throw new InvalidOperationException($"Can't call {methodSignature} on {selfType}");

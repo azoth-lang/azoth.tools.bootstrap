@@ -11,8 +11,8 @@ public static partial class TypeOperations
         {
             GenericParameterType t => t.SupertypeMaintainsIndependence(exact, context),
             CapabilityType t => t.SupertypeMaintainsIndependence(exact),
-            CapabilitySetSelfType t => true,
-            //ViewpointType t => t.Referent.SupertypeMaintainsIndependence(exact, context),
+            CapabilitySetSelfType _ => true,
+            CapabilityViewpointType t => t.Referent.SupertypeMaintainsIndependence(exact, context),
             SelfViewpointType t => t.Referent.SupertypeMaintainsIndependence(exact, context),
             VoidType _ => true,
             NeverType _ => true,

@@ -48,7 +48,7 @@ public sealed class CapabilityType : INonVoidType
     public static IMaybeType LaxCreate(Capability capability, IMaybeType referent)
         => referent switch
         {
-            GenericParameterType t => new CapabilityType(capability, t.PlainType, []),
+            GenericParameterType t => CapabilityViewpointType.Create(capability, t),
             CapabilityType t => t.AccessedVia(capability),
             VoidType t => t,
             NeverType t => t,
@@ -66,14 +66,6 @@ public sealed class CapabilityType : INonVoidType
             AssociatedPlainType t => Create(capability, t, arguments),
             _ => throw ExhaustiveMatch.Failed(plainType),
         };
-
-    /// <summary>
-    /// Create a type that represents a viewpoint on a generic parameter (e.g. `const |> T`).
-    /// </summary>
-    /// <remarks>While this can produce a <see cref="Capability"/>, it can also produce a
-    /// <see cref="GenericParameterType"/> when the capability would have no effect.</remarks>
-    public static INonVoidType LaxCreate(Capability capability, GenericParameterPlainType plainType)
-        => LaxCreate(capability, plainType, []);
 
     /// <summary>
     /// Create a type that represents a viewpoint on a generic parameter (e.g. `const |> T`).

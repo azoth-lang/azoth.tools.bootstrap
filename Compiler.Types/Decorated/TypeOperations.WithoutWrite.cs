@@ -18,6 +18,7 @@ public static partial class TypeOperations
         {
             CapabilityType t => t.WithoutWrite(),
             CapabilitySetSelfType t => t,
+            CapabilityViewpointType t => t,
             SelfViewpointType t => t,
             GenericParameterType t => t,
             OptionalType t => t,

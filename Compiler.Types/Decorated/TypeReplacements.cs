@@ -119,16 +119,16 @@ public sealed class TypeReplacements
                     return new FunctionType(replacementParameterTypes, replacementReturnType);
                 break;
             }
-            //case CapabilityViewpointType capabilityViewpointType:
-            //{
-            //    var replacementType = ReplaceTypeParametersIn(capabilityViewpointType.Referent);
-            //    if (!ReferenceEquals(capabilityViewpointType.Referent, replacementType))
-            //        if (replacementType is GenericParameterType genericParameterType)
-            //            return CapabilityViewpointType.Create(capabilityViewpointType.Capability, genericParameterType);
-            //        else
-            //            return replacementType.AccessedVia(capabilityViewpointType.Capability);
-            //    break;
-            //}
+            case CapabilityViewpointType capabilityViewpointType:
+            {
+                var replacementType = ReplaceTypeParametersIn(capabilityViewpointType.Referent);
+                if (!ReferenceEquals(capabilityViewpointType.Referent, replacementType))
+                    if (replacementType is GenericParameterType genericParameterType)
+                        return CapabilityViewpointType.Create(capabilityViewpointType.Capability, genericParameterType);
+                    else
+                        return replacementType.AccessedVia(capabilityViewpointType.Capability);
+                break;
+            }
             case SelfViewpointType selfViewpointType:
             {
                 var replacementType = ReplaceTypeParametersIn(selfViewpointType.Referent);

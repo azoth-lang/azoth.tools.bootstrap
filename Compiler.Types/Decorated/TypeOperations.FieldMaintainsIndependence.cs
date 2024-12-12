@@ -14,11 +14,11 @@ public static partial class TypeOperations
         => type.FieldMaintainsIndependence(Independence.BothAllowed);
 
     private static bool FieldMaintainsIndependence(this IMaybeType type, Independence context)
-    {
-        return type switch
+        => type switch
         {
             GenericParameterType t => t.FieldMaintainsIndependence(context),
             CapabilityType t => t.FieldMaintainsIndependence(context),
+            CapabilityViewpointType t => t.Referent.FieldMaintainsIndependence(context),
             SelfViewpointType t => t.Referent.FieldMaintainsIndependence(context),
             CapabilitySetSelfType _ => true,
             VoidType _ => true,
@@ -29,11 +29,9 @@ public static partial class TypeOperations
             FunctionType t => t.FieldMaintainsIndependence(),
             _ => throw ExhaustiveMatch.Failed(type),
         };
-    }
 
     private static bool FieldMaintainsIndependence(this GenericParameterType type, Independence context)
-    {
-        return type.Parameter.Independence switch
+        => type.Parameter.Independence switch
         {
             TypeParameterIndependence.None => true,
             TypeParameterIndependence.SharableIndependent
@@ -42,7 +40,6 @@ public static partial class TypeOperations
                 => context == Independence.BothAllowed,
             _ => throw ExhaustiveMatch.Failed(type.Parameter.Independence),
         };
-    }
 
     private static bool FieldMaintainsIndependence(this CapabilityType type, Independence context)
     {

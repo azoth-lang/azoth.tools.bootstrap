@@ -46,6 +46,9 @@ public static partial class TypeOperations
             // TODO shouldn't this combine with the capability set?
             CapabilitySetSelfType t => t,
             // TODO shouldn't this combine with the capability set?
+            //CapabilityViewpointType t => t.Referent.AccessedVia(t.Capability.AccessedVia(capability)),
+            CapabilityViewpointType t => t,
+            // TODO shouldn't this combine with the capability set?
             SelfViewpointType t => t,
             // TODO should it modify the referent
             OptionalType t => t,
@@ -92,7 +95,7 @@ public static partial class TypeOperations
         if (self.Parameter.HasIndependence) return self;
         return capability switch
         {
-            Capability c => CapabilityType.LaxCreate(c, self.PlainType),
+            Capability c => CapabilityViewpointType.Create(c, self),
             CapabilitySet c => new SelfViewpointType(c, self),
             _ => throw ExhaustiveMatch.Failed(capability),
         };

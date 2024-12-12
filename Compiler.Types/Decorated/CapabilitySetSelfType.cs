@@ -44,7 +44,7 @@ public sealed class CapabilitySetSelfType : INonVoidType
     public override int GetHashCode() => HashCode.Combine(Capability, PlainType);
     #endregion
 
-    public override string ToString() => throw new NotSupportedException();
+    public override string ToString() => ToILString();
 
     public string ToSourceCodeString() => $"{Capability.ToSourceCodeString()} {PlainType}";
 

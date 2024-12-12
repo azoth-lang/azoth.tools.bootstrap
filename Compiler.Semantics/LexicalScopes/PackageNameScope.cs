@@ -79,6 +79,7 @@ public sealed class PackageNameScope
             OptionalType _ => throw new NotImplementedException(),
             CapabilityType t => Lookup(t.PlainType.TypeConstructor),
             GenericParameterType t => Lookup(t),
+            CapabilityViewpointType t => Lookup(t.Referent),
             SelfViewpointType t => Lookup(t.Referent),
             CapabilitySetSelfType t => null,
             _ => throw ExhaustiveMatch.Failed(type),

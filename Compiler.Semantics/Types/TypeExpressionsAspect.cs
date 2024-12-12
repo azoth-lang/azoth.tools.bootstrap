@@ -40,6 +40,7 @@ internal static partial class TypeExpressionsAspect
         => ParameterType.Create(node.IsLent, node.Referent.NamedType.ToNonVoidType());
 
     public static partial IMaybeType CapabilityViewpointType_NamedType(ICapabilityViewpointTypeNode node)
+        // TODO seems like this should be AccessedVia instead of CapabilityType.LaxCreate
         => CapabilityType.LaxCreate(node.Capability.Capability, node.Referent.NamedType);
 
     public static partial void CapabilityViewpointType_Contribute_Diagnostics(
@@ -60,7 +61,7 @@ internal static partial class TypeExpressionsAspect
         var referentType = node.Referent.NamedType;
         if (selfType is CapabilityType { Capability: var capability }
             && referentType is GenericParameterType genericParameterType)
-            return CapabilityType.LaxCreate(capability, genericParameterType.PlainType);
+            return CapabilityViewpointType.Create(capability, genericParameterType);
 
         if (selfType is CapabilitySetSelfType { Capability: var capabilityConstraint1 })
             return SelfViewpointType.Create(capabilityConstraint1, referentType);

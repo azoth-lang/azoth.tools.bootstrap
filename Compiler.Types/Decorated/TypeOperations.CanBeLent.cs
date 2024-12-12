@@ -24,6 +24,7 @@ public static partial class TypeOperations
         {
             CapabilityType t => t.Capability.CanBeLent() || t.ArgumentsCanBeLent(),
             OptionalType t => t.Referent.CanBeLent(),
+            CapabilityViewpointType t => t.Capability.CanBeLent() && t.Referent.CanBeLent(),
             SelfViewpointType t => t.Capability.CanBeLent() && t.Referent.CanBeLent(),
             CapabilitySetSelfType t => t.Capability.CanBeLent(),
             GenericParameterType _ => true,
@@ -46,6 +47,7 @@ public static partial class TypeOperations
         {
             CapabilityType t => t.ArgumentsCanBeLent(),
             OptionalType t => t.Referent.ArgumentsCanBeLent(),
+            CapabilityViewpointType _ => false,
             // TODO is it right that the capability must be lendable? If so, explain why
             SelfViewpointType t => t.Capability.CanBeLent() && t.Referent.ArgumentsCanBeLent(),
             CapabilitySetSelfType t => false,

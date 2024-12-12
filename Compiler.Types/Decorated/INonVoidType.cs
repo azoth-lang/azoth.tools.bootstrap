@@ -10,6 +10,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
     typeof(GenericParameterType),
     typeof(OptionalType),
     typeof(SelfViewpointType),
+    typeof(CapabilityViewpointType),
     typeof(NeverType))]
 public interface INonVoidType : IType, IMaybeNonVoidType
 {

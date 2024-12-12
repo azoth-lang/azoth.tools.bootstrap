@@ -26,12 +26,12 @@ public static partial class TypeOperations
         => type.IsVarianceSafe(TypeVariance.Invariant, nonwriteableSelf);
 
     private static bool IsVarianceSafe(this IMaybeType type, TypeVariance context, bool? nonwritableSelf)
-    {
-        return type switch
+        => type switch
         {
             GenericParameterType t => context.CompatibleWith(t.Parameter.Variance, nonwritableSelf),
             // TODO does the viewpoint or constraint need to be checked?
             CapabilityType t => t.TypeParameterArguments.IsVarianceSafe(t.Capability, context, nonwritableSelf),
+            CapabilityViewpointType t => t.Referent.IsVarianceSafe(context, nonwritableSelf),
             SelfViewpointType t => t.Referent.IsVarianceSafe(context, nonwritableSelf),
             // TODO is this correct?
             CapabilitySetSelfType t => true,
@@ -44,7 +44,6 @@ public static partial class TypeOperations
             FunctionType t => t.IsVarianceSafe(context, nonwritableSelf),
             _ => throw ExhaustiveMatch.Failed(type),
         };
-    }
 
     private static bool IsVarianceSafe(this FunctionType type, TypeVariance context, bool? nonwritableSelf)
     {

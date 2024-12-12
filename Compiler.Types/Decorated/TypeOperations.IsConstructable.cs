@@ -25,11 +25,11 @@ public static partial class TypeOperations
                     if (!param.Constraint.IsAssignableFrom(genericParameterType.Parameter.Constraint))
                         return false;
                     break;
-                //case CapabilityViewpointType viewpointType:
-                //    // TODO handle capabilities on the generic parameter
-                //    if (!param.Constraint.IsAssignableFrom(viewpointType.Capability))
-                //        return false;
-                //    break;
+                case CapabilityViewpointType viewpointType:
+                    // TODO handle capabilities on the generic parameter
+                    if (!param.Constraint.IsAssignableFrom(viewpointType.Capability))
+                        return false;
+                    break;
                 case CapabilitySetSelfType capabilitySetSelfType:
                     if (!param.Constraint.IsAssignableFrom(capabilitySetSelfType.Capability))
                         return false;
