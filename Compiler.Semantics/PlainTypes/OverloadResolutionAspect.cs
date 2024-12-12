@@ -43,7 +43,7 @@ internal static partial class OverloadResolutionAspect
             case UnknownPlainType:
                 // Error should be reported elsewhere
                 return;
-            case EmptyPlainType:
+            case NeverPlainType:
             case ConstructedOrVariablePlainType { TypeConstructor.CanBeInstantiated: false }:
                 // TODO type variables, empty types and others also cannot be constructed. Report proper error message in that case
                 diagnostics.Add(

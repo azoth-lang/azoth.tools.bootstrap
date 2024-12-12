@@ -13,7 +13,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 /// precede the calculation of the regular types with reference capabilities.</para></remarks>
 [Closed(
     typeof(INonVoidPlainType),
-    typeof(EmptyPlainType))]
+    typeof(VoidPlainType))]
 // TODO consider converting to class
 public interface IPlainType : IMaybePlainType
 {

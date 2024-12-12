@@ -1,4 +1,6 @@
+using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
@@ -12,24 +14,35 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 /// `throw`, `return` and `break` which never produce a result. It is also
 /// used as the type of a `loop` statement with no breaks in it.
 /// </summary>
-public sealed class NeverPlainType : EmptyPlainType, INonVoidPlainType
+[DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
+public sealed class NeverPlainType : INonVoidPlainType
 {
     #region Singleton
     internal static readonly NeverPlainType Instance = new();
 
-    private NeverPlainType()
-        : base(SpecialTypeName.Never) { }
+    private NeverPlainType() { }
     #endregion
+
+    public TypeConstructor? TypeConstructor => null;
+    public TypeSemantics? Semantics => null;
+    public SpecialTypeName Name => SpecialTypeName.Never;
 
     /// <remarks>Even though <see cref="NeverPlainType"/> is a subtype of all types, this property
     /// returns an empty set because it is not declared with any supertypes.</remarks>
-    public override IFixedSet<ConstructedPlainType> Supertypes => [];
+    public IFixedSet<ConstructedPlainType> Supertypes => [];
+
+    public IMaybePlainType ReplaceTypeParametersIn(IMaybePlainType plainType) => plainType;
 
     #region Equality
-    public override bool Equals(IMaybePlainType? other)
+    public bool Equals(IMaybePlainType? other)
         // NeverPlainType is a singleton, so we can use reference equality.
         => ReferenceEquals(this, other);
 
+    public override bool Equals(object? obj)
+        => obj is IMaybePlainType other && Equals(other);
+
     public override int GetHashCode() => HashCode.Combine(typeof(NeverPlainType));
     #endregion
+
+    public override string ToString() => Name.ToString();
 }

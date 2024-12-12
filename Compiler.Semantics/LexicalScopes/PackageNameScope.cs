@@ -88,12 +88,13 @@ public sealed class PackageNameScope
         => throw new NotImplementedException();
     #endregion
 
-    #region Lookup(IMaybeExpressionPlainType)
+    #region Lookup(*PlainType)
     public ITypeDeclarationNode? Lookup(IMaybePlainType plainType)
         => plainType switch
         {
             UnknownPlainType _ => null,
-            EmptyPlainType _ => null,
+            VoidPlainType _ => null,
+            NeverPlainType _ => null,
             FunctionPlainType _ => null,
             OptionalPlainType _ => throw new NotImplementedException(),
             GenericParameterPlainType t => Lookup(t),
@@ -103,6 +104,11 @@ public sealed class PackageNameScope
             _ => throw ExhaustiveMatch.Failed(plainType),
         };
 
+    public ITypeDeclarationNode Lookup(GenericParameterPlainType plainType)
+    {
+        var declaringTypeNode = (IUserTypeDeclarationNode)Lookup(plainType.DeclaringTypeConstructor);
+        return declaringTypeNode.GenericParameters.Single(p => p.Name == plainType.Name);
+    }
     #endregion
 
     #region Lookup(*TypeConstructor)
@@ -136,11 +142,5 @@ public sealed class PackageNameScope
 
     public ITypeDeclarationNode Lookup(AnyTypeConstructor typeConstructor)
         => builtIns[typeConstructor.Name];
-
-    public ITypeDeclarationNode Lookup(GenericParameterPlainType plainType)
-    {
-        var declaringTypeNode = (IUserTypeDeclarationNode)Lookup(plainType.DeclaringTypeConstructor);
-        return declaringTypeNode.GenericParameters.Single(p => p.Name == plainType.Name);
-    }
     #endregion
 }
