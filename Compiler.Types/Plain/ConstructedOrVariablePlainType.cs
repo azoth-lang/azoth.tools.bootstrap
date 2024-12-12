@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Framework;
@@ -10,10 +9,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 /// An plainType that is defined by its name.
 /// </summary>
 [Closed(
-    typeof(ConstructedPlainType),
-    typeof(GenericParameterPlainType),
-    typeof(AssociatedPlainType))]
-[DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
+    typeof(ConstructedOrAssociatedPlainType),
+    typeof(GenericParameterPlainType))]
 public abstract class ConstructedOrVariablePlainType : NonVoidPlainType
 {
     public abstract TypeConstructor? TypeConstructor { get; }

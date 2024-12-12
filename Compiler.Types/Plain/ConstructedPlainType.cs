@@ -9,7 +9,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 /// A plain type constructed from a type constructor.
 /// </summary>
 /// <remarks>This includes all types defined in source code, all simple types, and the `Any` type.</remarks>
-public sealed class ConstructedPlainType : ConstructedOrVariablePlainType
+public sealed class ConstructedPlainType : ConstructedOrAssociatedPlainType
 {
     public override TypeConstructor TypeConstructor { get; }
     // TODO Nested Types: add ContainingType and enforce that it must match the context of the TypeConstructor

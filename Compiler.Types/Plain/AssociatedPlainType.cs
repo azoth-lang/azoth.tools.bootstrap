@@ -10,7 +10,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 [Closed(
     typeof(OrdinaryAssociatedPlainType),
     typeof(SelfPlainType))]
-public abstract class AssociatedPlainType : ConstructedOrVariablePlainType, BareType
+public abstract class AssociatedPlainType : ConstructedOrAssociatedPlainType, BareType
 {
     ConstructedOrVariablePlainType BareType.PlainType => this;
     public TypeConstructor ContainingType { get; }
