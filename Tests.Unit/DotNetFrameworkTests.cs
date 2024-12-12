@@ -45,7 +45,7 @@ public class DotNetFrameworkTests
     [Fact]
     public async Task TaskSelfReferenceDeadlocks()
     {
-        var task = Task.FromResult(1);
+        Task<int>? task = null;
         task = GetValueAsync(() => task);
 
         var delayTask = Task.Delay((int)TimeSpan.FromSeconds(2).TotalMilliseconds);
@@ -56,7 +56,7 @@ public class DotNetFrameworkTests
     [Fact]
     public async Task TaskCycleDeadlocks()
     {
-        var t2 = Task.FromResult(2);
+        Task<int>? t2 = null;
         var t1 = GetValueAsync(() => t2);
         t2 = GetValueAsync(() => t1);
 
@@ -65,10 +65,12 @@ public class DotNetFrameworkTests
         Assert.Equal(delayTask, completedTask);
     }
 
-    private static async Task<int> GetValueAsync(Func<Task<int>> task)
+    private static async Task<int> GetValueAsync(Func<Task<int>?> taskSource)
     {
-        await Task.Yield();
-        return await task().ConfigureAwait(false);
+        Task<int>? task;
+        while ((task = taskSource()) is null)
+            await Task.Yield();
+        return await task.ConfigureAwait(false);
     }
 
     private string testField = "old";
