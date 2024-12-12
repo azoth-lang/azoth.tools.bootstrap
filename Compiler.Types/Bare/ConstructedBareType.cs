@@ -20,7 +20,7 @@ public sealed class ConstructedBareType : BareType
     public static readonly IFixedSet<ConstructedBareType> AnySet = Any.Yield().ToFixedSet();
 
     public ConstructedPlainType PlainType { get; }
-    ConstructedOrVariablePlainType BareType.PlainType => PlainType;
+    ConstructedOrAssociatedPlainType BareType.PlainType => PlainType;
     public TypeConstructor TypeConstructor => PlainType.TypeConstructor;
     public IFixedList<IType> Arguments { get; }
 

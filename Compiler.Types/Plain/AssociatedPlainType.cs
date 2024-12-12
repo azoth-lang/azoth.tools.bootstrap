@@ -12,7 +12,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
     typeof(SelfPlainType))]
 public abstract class AssociatedPlainType : ConstructedOrAssociatedPlainType, BareType
 {
-    ConstructedOrVariablePlainType BareType.PlainType => this;
+    ConstructedOrAssociatedPlainType BareType.PlainType => this;
     public TypeConstructor ContainingType { get; }
     public sealed override TypeConstructor? TypeConstructor => null;
     public override TypeSemantics? Semantics => null;

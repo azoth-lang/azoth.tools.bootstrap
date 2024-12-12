@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
+using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 
@@ -38,6 +39,8 @@ public sealed class CapabilityViewpointType : INonVoidType
 
     private CapabilityViewpointType(Capability capability, GenericParameterType referent)
     {
+        Requires.That(referent is not { Parameter.HasIndependence: true }, nameof(referent),
+            "Must not be an independent generic parameter.");
         Capability = capability;
         Referent = referent;
     }
@@ -55,10 +58,7 @@ public sealed class CapabilityViewpointType : INonVoidType
     public override int GetHashCode() => HashCode.Combine(Capability, Referent);
     #endregion
 
-
     public override string ToString() => ToILString();
-
-
 
     public string ToSourceCodeString()
         => $"{Capability.ToSourceCodeString()} |> {Referent.ToSourceCodeString()}";

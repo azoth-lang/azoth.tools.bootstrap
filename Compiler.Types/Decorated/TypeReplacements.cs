@@ -164,13 +164,6 @@ public sealed class TypeReplacements
         {
             default:
                 throw ExhaustiveMatch.Failed(type.PlainType);
-            case GenericParameterPlainType plainType:
-            {
-                // TODO this is odd that we have to create the GenericParameterType
-                var replacementType = ReplaceTypeParametersIn(new GenericParameterType(plainType));
-                if (ReferenceEquals(plainType, replacementType.PlainType)) return type;
-                return replacementType.AccessedVia(type.Capability);
-            }
             case OrdinaryAssociatedPlainType _:
                 throw new NotImplementedException();
             case SelfPlainType _:

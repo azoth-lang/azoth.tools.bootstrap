@@ -57,34 +57,17 @@ public sealed class CapabilityType : INonVoidType
 
     public static INonVoidType LaxCreate(
         Capability capability,
-        ConstructedOrVariablePlainType plainType,
+        ConstructedOrAssociatedPlainType plainType,
         IFixedList<IType> arguments)
         => plainType switch
         {
             ConstructedPlainType t => Create(capability, t, arguments),
-            GenericParameterPlainType t => LaxCreate(capability, t, arguments),
             AssociatedPlainType t => Create(capability, t, arguments),
             _ => throw ExhaustiveMatch.Failed(plainType),
         };
 
-    /// <summary>
-    /// Create a type that represents a viewpoint on a generic parameter (e.g. `const |> T`).
-    /// </summary>
-    /// <remarks>While this can produce a <see cref="Capability"/>, it can also produce a
-    /// <see cref="GenericParameterType"/> when the capability would have no effect.</remarks>
-    public static INonVoidType LaxCreate(
-        Capability capability,
-        GenericParameterPlainType plainType,
-        IFixedList<IType> arguments)
-    {
-        // TODO should this be considered lax or just how it ought to work?
-        if (capability == Capability.Mutable || capability == Capability.InitMutable)
-            return new GenericParameterType(plainType);
-        return new CapabilityType(capability, plainType, arguments);
-    }
-
     public Capability Capability { get; }
-    public ConstructedOrVariablePlainType PlainType { get; }
+    public ConstructedOrAssociatedPlainType PlainType { get; }
     NonVoidPlainType INonVoidType.PlainType => PlainType;
     IMaybePlainType IMaybeType.PlainType => PlainType;
 
@@ -100,11 +83,9 @@ public sealed class CapabilityType : INonVoidType
 
     private CapabilityType(
         Capability capability,
-        ConstructedOrVariablePlainType plainType,
+        ConstructedOrAssociatedPlainType plainType,
         IFixedList<IType> arguments)
     {
-        Requires.That(plainType is not GenericParameterPlainType { Parameter.HasIndependence: true }, nameof(plainType),
-            "Most not be an independent generic parameter.");
         Requires.That(plainType.Arguments.SequenceEqual(arguments.Select(a => a.PlainType)), nameof(arguments),
             "Type arguments must match plain type.");
         Capability = capability;
@@ -181,13 +162,7 @@ public sealed class CapabilityType : INonVoidType
     {
         var builder = new StringBuilder();
         builder.Append(capability);
-
-        // When the referent is a generic parameter type, this becomes a viewpoint type
-        if (PlainType is GenericParameterPlainType)
-            builder.Append(" |> ");
-        else
-            builder.Append(' ');
-
+        builder.Append(' ');
         builder.Append(PlainType.ToBareString());
         if (!Arguments.IsEmpty)
         {

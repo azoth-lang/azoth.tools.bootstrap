@@ -16,7 +16,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 // ReSharper disable once InconsistentNaming
 public interface BareType : IEquatable<BareType>
 {
-    ConstructedOrVariablePlainType PlainType { get; }
+    ConstructedOrAssociatedPlainType PlainType { get; }
 
     TypeConstructor? TypeConstructor { get; }
 
