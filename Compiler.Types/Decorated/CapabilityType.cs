@@ -5,7 +5,6 @@ using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using Azoth.Tools.Bootstrap.Framework;
-using ExhaustiveMatching;
 using MoreLinq;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
@@ -27,24 +26,16 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 // TODO maybe this should be a wrapper around ConstructedBareType. It seems to share a lot of logic
 public sealed class CapabilityType : INonVoidType
 {
-    public static CapabilityType Create(Capability capability, ConstructedPlainType plainType)
+    public static CapabilityType Create(Capability capability, ConstructedOrAssociatedPlainType plainType)
         => new(capability, plainType, []);
 
     public static CapabilityType Create(
         Capability capability,
-        ConstructedPlainType plainType,
+        ConstructedOrAssociatedPlainType plainType,
         IFixedList<IType> arguments)
         => new(capability, plainType, arguments);
 
-    public static CapabilityType Create(Capability capability, AssociatedPlainType plainType)
-        => new(capability, plainType, []);
-
-    public static CapabilityType Create(
-        Capability capability,
-        AssociatedPlainType plainType,
-        IFixedList<IType> arguments)
-        => new(capability, plainType, arguments);
-
+    // TODO this seems like it should be removed
     public static IMaybeType LaxCreate(Capability capability, IMaybeType referent)
         => referent switch
         {
@@ -53,17 +44,6 @@ public sealed class CapabilityType : INonVoidType
             VoidType t => t,
             NeverType t => t,
             _ => IType.Unknown,
-        };
-
-    public static INonVoidType LaxCreate(
-        Capability capability,
-        ConstructedOrAssociatedPlainType plainType,
-        IFixedList<IType> arguments)
-        => plainType switch
-        {
-            ConstructedPlainType t => Create(capability, t, arguments),
-            AssociatedPlainType t => Create(capability, t, arguments),
-            _ => throw ExhaustiveMatch.Failed(plainType),
         };
 
     public Capability Capability { get; }

@@ -1,4 +1,3 @@
-using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
@@ -19,26 +18,18 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 /// was merged into <see cref="BareType"/>.</remarks>
 public sealed class AssociatedBareType : BareType
 {
-    public AssociatedPlainType PlainType { get; }
-    ConstructedOrAssociatedPlainType BareType.PlainType => PlainType;
-    public TypeConstructor? TypeConstructor => null;
-    public IFixedList<TypeParameterArgument> TypeParameterArguments => [];
+    public override AssociatedPlainType PlainType { get; }
+    public override TypeConstructor? TypeConstructor => null;
+    public override IFixedList<IType> Arguments => [];
+    public override IFixedList<TypeParameterArgument> TypeParameterArguments => [];
 
     public AssociatedBareType(AssociatedPlainType plainType)
     {
         PlainType = plainType;
     }
 
-    public CapabilityType With(Capability capability)
-        => CapabilityType.Create(capability, PlainType, []);
-
-    public CapabilityType WithRead() => With(Capability.Read);
-
-    public CapabilityType WithMutate()
-        => With(Capability.Mutable);
-
     #region Equality
-    public bool Equals(BareType? other)
+    public override bool Equals(BareType? other)
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
@@ -46,12 +37,10 @@ public sealed class AssociatedBareType : BareType
                && PlainType.Equals(otherType.PlainType);
     }
 
-    public override bool Equals(object? obj)
-        => ReferenceEquals(this, obj) || obj is BareType other && Equals(other);
-
     public override int GetHashCode() => HashCode.Combine(PlainType);
     #endregion
-    public string ToSourceCodeString() => PlainType.ToString();
 
-    public string ToILString() => PlainType.ToString();
+    public override string ToSourceCodeString() => PlainType.ToString();
+
+    public override string ToILString() => PlainType.ToString();
 }

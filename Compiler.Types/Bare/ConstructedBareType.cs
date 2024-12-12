@@ -1,6 +1,4 @@
-using System.Diagnostics;
 using System.Text;
-using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
@@ -9,19 +7,21 @@ using MoreLinq;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 
-// TODO consider eliminating by making BareType a class over ConstructedOrVariablePlainType or could
-// introduce a new ConstructedOrAssociatedPlainType
-[DebuggerDisplay("{" + nameof(ToILString) + "(),nq}")]
+/// <summary>
+/// A bare type that is a constructed type.
+/// </summary>
+/// <remarks>Keeping this separate from <see cref="BareType"/> enables it to be used as the type for
+/// supertypes. This encodes the fact that <see cref="AssociatedBareType"/>s are not allowed to be
+/// used as supertypes.</remarks>
 public sealed class ConstructedBareType : BareType
 {
-    public ConstructedPlainType PlainType { get; }
-    ConstructedOrAssociatedPlainType BareType.PlainType => PlainType;
-    public TypeConstructor TypeConstructor => PlainType.TypeConstructor;
-    public IFixedList<IType> Arguments { get; }
+    public override ConstructedPlainType PlainType { get; }
+    public override TypeConstructor TypeConstructor => PlainType.TypeConstructor;
+    public override IFixedList<IType> Arguments { get; }
 
     public TypeReplacements TypeReplacements { get; }
 
-    public IFixedList<TypeParameterArgument> TypeParameterArguments
+    public override IFixedList<TypeParameterArgument> TypeParameterArguments
         => LazyInitializer.EnsureInitialized(ref typeParameterArguments,
             () => PlainType.TypeConstructor.Parameters
                            .EquiZip(Arguments,
@@ -42,17 +42,8 @@ public sealed class ConstructedBareType : BareType
         TypeReplacements = new(plainType.TypeReplacements, plainType.TypeConstructor, Arguments);
     }
 
-    public CapabilityType With(Capability capability)
-        => CapabilityType.Create(capability, PlainType, Arguments);
-
-    public CapabilityType WithRead()
-        => With(TypeConstructor.IsDeclaredConst ? Capability.Constant : Capability.Read);
-
-    public CapabilityType WithMutate()
-        => With(TypeConstructor.IsDeclaredConst ? Capability.Constant : Capability.Mutable);
-
     #region Equality
-    public bool Equals(BareType? other)
+    public override bool Equals(BareType? other)
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
@@ -61,17 +52,12 @@ public sealed class ConstructedBareType : BareType
                && Arguments.Equals(otherType.Arguments);
     }
 
-    public override bool Equals(object? obj)
-        => ReferenceEquals(this, obj) || obj is BareType other && Equals(other);
-
     public override int GetHashCode() => HashCode.Combine(PlainType, Arguments);
     #endregion
 
-    public override string ToString() => ToILString();
+    public override string ToSourceCodeString() => ToString(t => t.ToSourceCodeString());
 
-    public string ToSourceCodeString() => ToString(t => t.ToSourceCodeString());
-
-    public string ToILString() => ToString(t => t.ToILString());
+    public override string ToILString() => ToString(t => t.ToILString());
 
     private string ToString(Func<IType, string> toString)
     {
