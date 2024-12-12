@@ -15,7 +15,7 @@ public sealed class FunctionPlainType : NonVoidPlainType, IMaybeFunctionPlainTyp
         return new FunctionPlainType(properParameters, returnType);
     }
 
-    public TypeSemantics? Semantics => TypeSemantics.Reference;
+    public override TypeSemantics? Semantics => TypeSemantics.Reference;
     public IFixedList<NonVoidPlainType> Parameters { get; }
     public IPlainType Return { get; }
     IMaybePlainType IMaybeFunctionPlainType.Return => Return;
@@ -26,11 +26,8 @@ public sealed class FunctionPlainType : NonVoidPlainType, IMaybeFunctionPlainTyp
         Return = returnPlainType;
     }
 
-    public IMaybePlainType ReplaceTypeParametersIn(IMaybePlainType plainType)
-        => plainType;
-
     #region Equality
-    public bool Equals(IMaybePlainType? other)
+    public override bool Equals(IMaybePlainType? other)
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
@@ -38,8 +35,6 @@ public sealed class FunctionPlainType : NonVoidPlainType, IMaybeFunctionPlainTyp
                && Parameters.Equals(that.Parameters)
                && Return.Equals(that.Return);
     }
-
-    public override bool Equals(object? obj) => obj is IMaybePlainType other && Equals(other);
 
     public override int GetHashCode() => HashCode.Combine(Parameters, Return);
     #endregion

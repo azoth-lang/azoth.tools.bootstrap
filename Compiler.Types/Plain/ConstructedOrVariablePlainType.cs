@@ -17,7 +17,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 public abstract class ConstructedOrVariablePlainType : NonVoidPlainType
 {
     public abstract TypeConstructor? TypeConstructor { get; }
-    public abstract TypeSemantics? Semantics { get; }
     public abstract TypeName Name { get; }
     public abstract bool AllowsVariance { get; }
     public virtual IFixedList<IPlainType> Arguments => FixedList.Empty<IPlainType>();
@@ -27,20 +26,9 @@ public abstract class ConstructedOrVariablePlainType : NonVoidPlainType
 
     private protected ConstructedOrVariablePlainType() { }
 
-    public abstract IMaybePlainType ReplaceTypeParametersIn(IMaybePlainType plainType);
-
     /// <remarks>Needed here to allow <see cref="ConstructedPlainType"/> to override it because the
     /// interface method will otherwise not get overridden.</remarks>
     public virtual IPlainType ToNonLiteral() => this;
-
-    #region Equality
-    public abstract bool Equals(IMaybePlainType? other);
-
-    public sealed override bool Equals(object? obj)
-        => obj is IMaybePlainType other && Equals(other);
-
-    public abstract override int GetHashCode();
-    #endregion
 
     public abstract string ToBareString();
 

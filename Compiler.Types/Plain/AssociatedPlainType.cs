@@ -34,8 +34,6 @@ public abstract class AssociatedPlainType : ConstructedOrVariablePlainType, Bare
     public CapabilityType WithMutate()
         => With(ContainingType.IsDeclaredConst ? Capability.Constant : Capability.Mutable);
 
-    public override IMaybePlainType ReplaceTypeParametersIn(IMaybePlainType plainType) => plainType;
-
     #region Equality
     public bool Equals(BareType? other)
         => ReferenceEquals(this, other)

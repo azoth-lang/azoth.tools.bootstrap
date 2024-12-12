@@ -24,22 +24,17 @@ public sealed class NeverPlainType : NonVoidPlainType
     #endregion
 
     public TypeConstructor? TypeConstructor => null;
-    public TypeSemantics? Semantics => null;
+    public override TypeSemantics? Semantics => null;
     public SpecialTypeName Name => SpecialTypeName.Never;
 
     /// <remarks>Even though <see cref="NeverPlainType"/> is a subtype of all types, this property
     /// returns an empty set because it is not declared with any supertypes.</remarks>
     public IFixedSet<ConstructedPlainType> Supertypes => [];
 
-    public IMaybePlainType ReplaceTypeParametersIn(IMaybePlainType plainType) => plainType;
-
     #region Equality
-    public bool Equals(IMaybePlainType? other)
+    public override bool Equals(IMaybePlainType? other)
         // NeverPlainType is a singleton, so we can use reference equality.
         => ReferenceEquals(this, other);
-
-    public override bool Equals(object? obj)
-        => obj is IMaybePlainType other && Equals(other);
 
     public override int GetHashCode() => HashCode.Combine(typeof(NeverPlainType));
     #endregion
