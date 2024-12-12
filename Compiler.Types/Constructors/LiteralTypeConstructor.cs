@@ -36,7 +36,7 @@ public abstract class LiteralTypeConstructor : SimpleOrLiteralTypeConstructor
     public sealed override IFixedList<GenericParameterPlainType> ParameterPlainTypes => [];
 
     // TODO should this instead include the non-literal type (e.g. `int` or `bool`)?
-    public sealed override IFixedSet<ConstructedBareType> Supertypes => ConstructedBareType.AnySet;
+    public sealed override IFixedSet<ConstructedBareType> Supertypes => BareType.AnySet;
 
     private protected LiteralTypeConstructor(SpecialTypeName name)
     {

@@ -5535,7 +5535,7 @@ file class ClassDefinitionNode : SemanticNode, IClassDefinitionNode
         => GrammarAttribute.IsCached(in supertypesCached) ? supertypes.UnsafeValue
             : this.Circular(ref supertypesCached, ref supertypes,
                 TypeDefinitionsAspect.TypeDefinition_Supertypes);
-    private Circular<IFixedSet<ConstructedBareType>> supertypes = new(ConstructedBareType.AnySet);
+    private Circular<IFixedSet<ConstructedBareType>> supertypes = new(BareType.AnySet);
     private bool supertypesCached;
     public LexicalScope SupertypesLexicalScope
         => GrammarAttribute.IsCached(in supertypesLexicalScopeCached) ? supertypesLexicalScope!
@@ -5703,7 +5703,7 @@ file class StructDefinitionNode : SemanticNode, IStructDefinitionNode
         => GrammarAttribute.IsCached(in supertypesCached) ? supertypes.UnsafeValue
             : this.Circular(ref supertypesCached, ref supertypes,
                 TypeDefinitionsAspect.TypeDefinition_Supertypes);
-    private Circular<IFixedSet<ConstructedBareType>> supertypes = new(ConstructedBareType.AnySet);
+    private Circular<IFixedSet<ConstructedBareType>> supertypes = new(BareType.AnySet);
     private bool supertypesCached;
     public LexicalScope SupertypesLexicalScope
         => GrammarAttribute.IsCached(in supertypesLexicalScopeCached) ? supertypesLexicalScope!
@@ -5856,7 +5856,7 @@ file class TraitDefinitionNode : SemanticNode, ITraitDefinitionNode
         => GrammarAttribute.IsCached(in supertypesCached) ? supertypes.UnsafeValue
             : this.Circular(ref supertypesCached, ref supertypes,
                 TypeDefinitionsAspect.TypeDefinition_Supertypes);
-    private Circular<IFixedSet<ConstructedBareType>> supertypes = new(ConstructedBareType.AnySet);
+    private Circular<IFixedSet<ConstructedBareType>> supertypes = new(BareType.AnySet);
     private bool supertypesCached;
     public LexicalScope SupertypesLexicalScope
         => GrammarAttribute.IsCached(in supertypesLexicalScopeCached) ? supertypesLexicalScope!

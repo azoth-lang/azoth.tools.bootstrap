@@ -61,7 +61,7 @@ internal static partial class TypeDefinitionsAspect
                    // But the real check is on the declared type
                    || !t.TypeConstructor.Equals(typeConstructor ??= node.TypeConstructor))
                // Everything has `Any` as a supertype (added after filter to avoid loading declared type)
-               .Append(ConstructedBareType.Any)
+               .Append(BareType.Any)
                .ToFixedSet();
 
         IEnumerable<ConstructedBareType> Build()

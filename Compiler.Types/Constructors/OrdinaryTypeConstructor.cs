@@ -87,7 +87,7 @@ public sealed class OrdinaryTypeConstructor : TypeConstructor
         AllowsVariance = Parameters.Any(p => p.Variance != TypeParameterVariance.Invariant);
         HasIndependentParameters = Parameters.Any(p => p.HasIndependence);
 
-        Requires.That(supertypes.Contains(ConstructedBareType.Any), nameof(supertypes),
+        Requires.That(supertypes.Contains(BareType.Any), nameof(supertypes),
             "All ordinary type constructors must have `Any` as a supertype.");
         Supertypes = supertypes;
         IsDeclaredConst = isDeclaredConst;

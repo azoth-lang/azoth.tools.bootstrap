@@ -16,6 +16,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 // ReSharper disable once InconsistentNaming
 public interface BareType : IEquatable<BareType>
 {
+    // Note: must use AnyTypeConstructor.PlainType instead of IPlainType.Any to avoid circular
+    // dependency when initializing statics.
+    public static readonly ConstructedBareType Any = new(AnyTypeConstructor.PlainType, []);
+    public static readonly IFixedSet<ConstructedBareType> AnySet = Any.Yield().ToFixedSet();
+
     ConstructedOrAssociatedPlainType PlainType { get; }
 
     TypeConstructor? TypeConstructor { get; }

@@ -14,11 +14,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 [DebuggerDisplay("{" + nameof(ToILString) + "(),nq}")]
 public sealed class ConstructedBareType : BareType
 {
-    // Note: must use AnyTypeConstructor.PlainType instead of IPlainType.Any to avoid circular
-    // dependency when initializing statics.
-    public static readonly ConstructedBareType Any = new(AnyTypeConstructor.PlainType, []);
-    public static readonly IFixedSet<ConstructedBareType> AnySet = Any.Yield().ToFixedSet();
-
     public ConstructedPlainType PlainType { get; }
     ConstructedOrAssociatedPlainType BareType.PlainType => PlainType;
     public TypeConstructor TypeConstructor => PlainType.TypeConstructor;

@@ -63,7 +63,7 @@ public abstract partial class TypeConstructor : TypeConstructorContext, IEquatab
         bool isConst,
         string name)
         => new(new NamespaceContext(containingPackage, containingNamespace),
-            isAbstract, isConst, TypeKind.Class, name, [], ConstructedBareType.AnySet);
+            isAbstract, isConst, TypeKind.Class, name, [], BareType.AnySet);
 
     public static OrdinaryTypeConstructor CreateTrait(
         IdentifierName containingPackage,
@@ -71,7 +71,7 @@ public abstract partial class TypeConstructor : TypeConstructorContext, IEquatab
         bool isConst,
         string name)
         => new(new NamespaceContext(containingPackage, containingNamespace),
-            isAbstract: true, isConst, TypeKind.Trait, name, [], ConstructedBareType.AnySet);
+            isAbstract: true, isConst, TypeKind.Trait, name, [], BareType.AnySet);
 
     public static OrdinaryTypeConstructor CreateClass(
         IdentifierName containingPackage,
@@ -115,7 +115,7 @@ public abstract partial class TypeConstructor : TypeConstructorContext, IEquatab
         params Parameter[] genericParameters)
         => new(new NamespaceContext(containingPackage, containingNamespace),
             isAbstract, isConst, TypeKind.Class, StandardName.Create(name, genericParameters.Length),
-            genericParameters.ToFixedList(), ConstructedBareType.AnySet);
+            genericParameters.ToFixedList(), BareType.AnySet);
 
     public static OrdinaryTypeConstructor CreateTrait(
         IdentifierName containingPackage,
@@ -125,7 +125,7 @@ public abstract partial class TypeConstructor : TypeConstructorContext, IEquatab
         params Parameter[] genericParameters)
         => new(new NamespaceContext(containingPackage, containingNamespace),
             isAbstract: true, isConst, TypeKind.Trait, StandardName.Create(name, genericParameters.Length),
-             genericParameters.ToFixedList(), ConstructedBareType.AnySet);
+             genericParameters.ToFixedList(), BareType.AnySet);
     #endregion
 
     public sealed override void AppendContextPrefix(StringBuilder builder)

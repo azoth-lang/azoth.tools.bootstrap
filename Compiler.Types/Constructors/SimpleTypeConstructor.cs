@@ -30,7 +30,7 @@ public abstract class SimpleTypeConstructor : SimpleOrLiteralTypeConstructor
 
     public sealed override IFixedList<GenericParameterPlainType> ParameterPlainTypes => [];
 
-    public sealed override IFixedSet<ConstructedBareType> Supertypes => ConstructedBareType.AnySet;
+    public sealed override IFixedSet<ConstructedBareType> Supertypes => BareType.AnySet;
 
     public sealed override ConstructedPlainType PlainType { get; }
 
