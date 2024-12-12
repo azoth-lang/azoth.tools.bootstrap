@@ -53,6 +53,6 @@ public interface IPlainType : IMaybePlainType
     public static readonly ConstructedPlainType False = TypeConstructor.False.PlainType;
     #endregion
 
-    new IPlainType ToNonLiteral() => this;
+    new IPlainType ToNonLiteral();
     IMaybePlainType IMaybePlainType.ToNonLiteral() => ToNonLiteral();
 }

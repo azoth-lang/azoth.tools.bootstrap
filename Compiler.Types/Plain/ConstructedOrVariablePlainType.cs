@@ -26,10 +26,6 @@ public abstract class ConstructedOrVariablePlainType : NonVoidPlainType
 
     private protected ConstructedOrVariablePlainType() { }
 
-    /// <remarks>Needed here to allow <see cref="ConstructedPlainType"/> to override it because the
-    /// interface method will otherwise not get overridden.</remarks>
-    public virtual IPlainType ToNonLiteral() => this;
-
     public abstract string ToBareString();
 
     public abstract override string ToString();

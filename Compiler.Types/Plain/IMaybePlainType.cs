@@ -18,7 +18,7 @@ public interface IMaybePlainType : IEquatable<IMaybePlainType>
     /// Convert types for literals (e.g. <c>bool[true]</c>, <c>int[42]</c> etc.) to their
     /// corresponding types.
     /// </summary>
-    IMaybePlainType ToNonLiteral() => this;
+    IMaybePlainType ToNonLiteral();
 
     IMaybePlainType ReplaceTypeParametersIn(IMaybePlainType plainType);
 

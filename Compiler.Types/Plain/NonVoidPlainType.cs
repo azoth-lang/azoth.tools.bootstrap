@@ -11,6 +11,8 @@ public abstract class NonVoidPlainType : IPlainType, IMaybeNonVoidPlainType
 {
     public abstract TypeSemantics? Semantics { get; }
 
+    public virtual IPlainType ToNonLiteral() => this;
+
     public virtual IMaybePlainType ReplaceTypeParametersIn(IMaybePlainType plainType) => this;
 
     #region Equality
