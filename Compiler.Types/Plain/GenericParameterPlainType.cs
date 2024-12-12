@@ -7,13 +7,19 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 /// <summary>
 /// The type introduced by a generic parameter.
 /// </summary>
-public sealed class GenericParameterPlainType : VariablePlainType
+public sealed class GenericParameterPlainType : ConstructedOrVariablePlainType
 {
     public OrdinaryTypeConstructor DeclaringTypeConstructor { get; }
+    public override TypeConstructor? TypeConstructor => null;
+    public override TypeSemantics? Semantics => null;
     public TypeConstructor.Parameter Parameter { get; }
     public override IdentifierName Name => Parameter.Name;
+
+    public override bool AllowsVariance => false;
     // TODO this should be based on generic constraints
     public override IFixedSet<ConstructedPlainType> Supertypes => IPlainType.AnySet;
+
+    internal override PlainTypeReplacements TypeReplacements => PlainTypeReplacements.None;
 
     public GenericParameterPlainType(
         OrdinaryTypeConstructor declaringTypeConstructor,
@@ -22,6 +28,8 @@ public sealed class GenericParameterPlainType : VariablePlainType
         DeclaringTypeConstructor = declaringTypeConstructor;
         Parameter = parameter;
     }
+
+    public override IMaybePlainType ReplaceTypeParametersIn(IMaybePlainType plainType) => plainType;
 
     #region Equality
     public override bool Equals(IMaybePlainType? other)
@@ -37,4 +45,6 @@ public sealed class GenericParameterPlainType : VariablePlainType
     #endregion
 
     public override string ToString() => $"{DeclaringTypeConstructor}.{Parameter.Name}";
+
+    public override string ToBareString() => ToString();
 }

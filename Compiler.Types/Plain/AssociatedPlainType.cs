@@ -10,13 +10,15 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 [Closed(
     typeof(OrdinaryAssociatedPlainType),
     typeof(SelfPlainType))]
-public abstract class AssociatedPlainType : VariablePlainType, BareType
+public abstract class AssociatedPlainType : ConstructedOrVariablePlainType, BareType
 {
     ConstructedOrVariablePlainType BareType.PlainType => this;
-
     public TypeConstructor ContainingType { get; }
-
+    public sealed override TypeConstructor? TypeConstructor => null;
+    public override TypeSemantics? Semantics => null;
+    public sealed override bool AllowsVariance => false;
     public IFixedList<TypeParameterArgument> TypeParameterArguments => [];
+    internal override PlainTypeReplacements TypeReplacements => PlainTypeReplacements.None;
 
     protected AssociatedPlainType(TypeConstructor containingType)
     {
@@ -32,6 +34,8 @@ public abstract class AssociatedPlainType : VariablePlainType, BareType
     public CapabilityType WithMutate()
         => With(ContainingType.IsDeclaredConst ? Capability.Constant : Capability.Mutable);
 
+    public override IMaybePlainType ReplaceTypeParametersIn(IMaybePlainType plainType) => plainType;
+
     #region Equality
     public bool Equals(BareType? other)
         => ReferenceEquals(this, other)
@@ -43,4 +47,6 @@ public abstract class AssociatedPlainType : VariablePlainType, BareType
     string BareType.ToSourceCodeString() => ToString();
 
     string BareType.ToILString() => ToString();
+
+    public sealed override string ToBareString() => ToString();
 }

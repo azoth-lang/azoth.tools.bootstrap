@@ -9,7 +9,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 /// <summary>
 /// An plainType that is defined by its name.
 /// </summary>
-[Closed(typeof(ConstructedPlainType), typeof(VariablePlainType))]
+[Closed(
+    typeof(ConstructedPlainType),
+    typeof(GenericParameterPlainType),
+    typeof(AssociatedPlainType))]
 [DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
 public abstract class ConstructedOrVariablePlainType : INonVoidPlainType
 {
