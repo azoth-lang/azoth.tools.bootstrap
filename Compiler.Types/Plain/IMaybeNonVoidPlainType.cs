@@ -3,7 +3,7 @@ using ExhaustiveMatching;
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 
 [Closed(
-    typeof(INonVoidPlainType),
+    typeof(NonVoidPlainType),
     typeof(IMaybeFunctionPlainType))]
 public interface IMaybeNonVoidPlainType : IMaybePlainType
 {

@@ -6,11 +6,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 
 public static partial class PlainTypeOperations
 {
-    public static IFixedList<INonVoidPlainType>? AsKnownFixedList(this IEnumerable<IMaybeNonVoidPlainType> parameters)
+    public static IFixedList<NonVoidPlainType>? AsKnownFixedList(this IEnumerable<IMaybeNonVoidPlainType> parameters)
     {
-        if (parameters is IFixedList<INonVoidPlainType> knownParameters) return knownParameters;
+        if (parameters is IFixedList<NonVoidPlainType> knownParameters) return knownParameters;
 
-        return parameters.ToFixedList().As<INonVoidPlainType>();
+        return parameters.ToFixedList().As<NonVoidPlainType>();
     }
 
     /// <summary>

@@ -36,7 +36,7 @@ public sealed class OptionalType : INonVoidType
     public static OptionalType Create(INonVoidType referent) => new OptionalType(referent);
 
     public OptionalPlainType PlainType { get; }
-    INonVoidPlainType INonVoidType.PlainType => PlainType;
+    NonVoidPlainType INonVoidType.PlainType => PlainType;
     IMaybePlainType IMaybeType.PlainType => PlainType;
 
     public INonVoidType Referent { get; }

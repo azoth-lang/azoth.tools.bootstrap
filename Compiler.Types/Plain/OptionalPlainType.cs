@@ -3,14 +3,14 @@ using System.Diagnostics;
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 
 [DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
-public sealed class OptionalPlainType : INonVoidPlainType
+public sealed class OptionalPlainType : NonVoidPlainType
 {
     /// <remarks>The optional type acts as a value type that may contain a reference and as such
     /// always has value semantics.</remarks>
     public TypeSemantics? Semantics => TypeSemantics.Value;
-    public INonVoidPlainType Referent { get; }
+    public NonVoidPlainType Referent { get; }
 
-    public OptionalPlainType(INonVoidPlainType referent)
+    public OptionalPlainType(NonVoidPlainType referent)
     {
         Referent = referent;
     }

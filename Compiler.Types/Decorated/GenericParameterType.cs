@@ -11,7 +11,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 public sealed class GenericParameterType : INonVoidType
 {
     public GenericParameterPlainType PlainType { get; }
-    INonVoidPlainType INonVoidType.PlainType => PlainType;
+    NonVoidPlainType INonVoidType.PlainType => PlainType;
     IMaybePlainType IMaybeType.PlainType => PlainType;
 
     public TypeConstructor.Parameter Parameter => PlainType.Parameter;

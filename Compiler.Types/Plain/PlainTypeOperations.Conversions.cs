@@ -12,7 +12,7 @@ public static partial class PlainTypeOperations
         => plainType switch
         {
             UnknownPlainType or NeverPlainType or VoidPlainType => plainType,
-            INonVoidPlainType t => new OptionalPlainType(t),
+            NonVoidPlainType t => new OptionalPlainType(t),
             _ => throw new UnreachableException(),
         };
 
@@ -24,7 +24,7 @@ public static partial class PlainTypeOperations
         => plainType switch
         {
             NeverPlainType or VoidPlainType => plainType,
-            INonVoidPlainType t => new OptionalPlainType(t),
+            NonVoidPlainType t => new OptionalPlainType(t),
             _ => throw new UnreachableException(),
         };
 }

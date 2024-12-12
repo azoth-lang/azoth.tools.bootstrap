@@ -61,11 +61,11 @@ internal sealed class PlainTypeReplacements
         => plainType switch
         {
             VoidPlainType a => a,
-            INonVoidPlainType a => ReplaceTypeParametersIn(a),
+            NonVoidPlainType a => ReplaceTypeParametersIn(a),
             _ => throw ExhaustiveMatch.Failed(plainType)
         };
 
-    public IPlainType ReplaceTypeParametersIn(INonVoidPlainType plainType)
+    public IPlainType ReplaceTypeParametersIn(NonVoidPlainType plainType)
         => plainType switch
         {
             NeverPlainType a => a,
@@ -119,16 +119,16 @@ internal sealed class PlainTypeReplacements
     /// Replace type parameters specifically in parameters to a function where `void` can cause
     /// a parameter to drop out.
     /// </summary>
-    private IFixedList<INonVoidPlainType> ReplaceTypeParametersInParameters(
-        IFixedList<INonVoidPlainType> plainTypes)
+    private IFixedList<NonVoidPlainType> ReplaceTypeParametersInParameters(
+        IFixedList<NonVoidPlainType> plainTypes)
     {
-        var replacementPlainTypes = new List<INonVoidPlainType>();
+        var replacementPlainTypes = new List<NonVoidPlainType>();
         var typesReplaced = false;
         foreach (var plainType in plainTypes)
         {
             var replacementType = ReplaceTypeParametersIn(plainType);
             typesReplaced |= !ReferenceEquals(plainType, replacementType);
-            if (replacementType is INonVoidPlainType nonVoidPlainType)
+            if (replacementType is NonVoidPlainType nonVoidPlainType)
                 replacementPlainTypes.Add(nonVoidPlainType);
         }
 

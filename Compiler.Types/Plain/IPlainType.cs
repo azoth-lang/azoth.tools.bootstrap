@@ -12,7 +12,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 /// had no reference capabilities. They are so named because they are the types that come before or
 /// precede the calculation of the regular types with reference capabilities.</para></remarks>
 [Closed(
-    typeof(INonVoidPlainType),
+    typeof(NonVoidPlainType),
     typeof(VoidPlainType))]
 // TODO consider converting to class
 public interface IPlainType : IMaybePlainType

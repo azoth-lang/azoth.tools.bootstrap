@@ -93,7 +93,7 @@ public sealed class CapabilityType : INonVoidType
 
     public Capability Capability { get; }
     public ConstructedOrVariablePlainType PlainType { get; }
-    INonVoidPlainType INonVoidType.PlainType => PlainType;
+    NonVoidPlainType INonVoidType.PlainType => PlainType;
     IMaybePlainType IMaybeType.PlainType => PlainType;
 
     public TypeConstructor? TypeConstructor => PlainType.TypeConstructor;

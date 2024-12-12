@@ -14,7 +14,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
     typeof(GenericParameterPlainType),
     typeof(AssociatedPlainType))]
 [DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
-public abstract class ConstructedOrVariablePlainType : INonVoidPlainType
+public abstract class ConstructedOrVariablePlainType : NonVoidPlainType
 {
     public abstract TypeConstructor? TypeConstructor { get; }
     public abstract TypeSemantics? Semantics { get; }

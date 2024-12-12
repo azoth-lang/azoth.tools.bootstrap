@@ -13,7 +13,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
     typeof(NeverType))]
 public interface INonVoidType : IType, IMaybeNonVoidType
 {
-    new INonVoidPlainType PlainType { get; }
+    new NonVoidPlainType PlainType { get; }
     IPlainType IType.PlainType => PlainType;
     IMaybeNonVoidPlainType IMaybeNonVoidType.PlainType => PlainType;
 

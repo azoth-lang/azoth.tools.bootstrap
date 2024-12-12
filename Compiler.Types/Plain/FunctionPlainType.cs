@@ -4,7 +4,7 @@ using Azoth.Tools.Bootstrap.Framework;
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 
 [DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
-public sealed class FunctionPlainType : INonVoidPlainType, IMaybeFunctionPlainType
+public sealed class FunctionPlainType : NonVoidPlainType, IMaybeFunctionPlainType
 {
     public static IMaybeFunctionPlainType Create(IEnumerable<IMaybeNonVoidPlainType> parameters, IMaybePlainType @return)
     {
@@ -16,11 +16,11 @@ public sealed class FunctionPlainType : INonVoidPlainType, IMaybeFunctionPlainTy
     }
 
     public TypeSemantics? Semantics => TypeSemantics.Reference;
-    public IFixedList<INonVoidPlainType> Parameters { get; }
+    public IFixedList<NonVoidPlainType> Parameters { get; }
     public IPlainType Return { get; }
     IMaybePlainType IMaybeFunctionPlainType.Return => Return;
 
-    public FunctionPlainType(IEnumerable<INonVoidPlainType> parameters, IPlainType returnPlainType)
+    public FunctionPlainType(IEnumerable<NonVoidPlainType> parameters, IPlainType returnPlainType)
     {
         Parameters = parameters.ToFixedList();
         Return = returnPlainType;

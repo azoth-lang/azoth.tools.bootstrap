@@ -22,7 +22,7 @@ public sealed class SelfViewpointType : INonVoidType
 
     public INonVoidType Referent { get; }
 
-    public INonVoidPlainType PlainType => Referent.PlainType;
+    public NonVoidPlainType PlainType => Referent.PlainType;
     IMaybePlainType IMaybeType.PlainType => PlainType;
 
     public TypeReplacements TypeReplacements => Referent.TypeReplacements;

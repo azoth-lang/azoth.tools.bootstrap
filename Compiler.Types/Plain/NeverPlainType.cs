@@ -15,7 +15,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 /// used as the type of a `loop` statement with no breaks in it.
 /// </summary>
 [DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
-public sealed class NeverPlainType : INonVoidPlainType
+public sealed class NeverPlainType : NonVoidPlainType
 {
     #region Singleton
     internal static readonly NeverPlainType Instance = new();

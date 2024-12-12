@@ -82,8 +82,8 @@ internal static partial class ExpressionPlainTypesAspect
                 or BinaryOperator.Or,
                 ConstructedPlainType { TypeConstructor: BoolLiteralTypeConstructor }) => null,
 
-            (INonVoidPlainType { Semantics: TypeSemantics.Reference }, BinaryOperator.ReferenceEquals, INonVoidPlainType { Semantics: TypeSemantics.Reference })
-                or (INonVoidPlainType { Semantics: TypeSemantics.Reference }, BinaryOperator.NotReferenceEqual, INonVoidPlainType { Semantics: TypeSemantics.Reference })
+            (NonVoidPlainType { Semantics: TypeSemantics.Reference }, BinaryOperator.ReferenceEquals, NonVoidPlainType { Semantics: TypeSemantics.Reference })
+                or (NonVoidPlainType { Semantics: TypeSemantics.Reference }, BinaryOperator.NotReferenceEqual, NonVoidPlainType { Semantics: TypeSemantics.Reference })
                 => null,
 
             (ConstructedPlainType { TypeConstructor: BoolTypeConstructor },
@@ -155,8 +155,8 @@ internal static partial class ExpressionPlainTypesAspect
             (ConstructedPlainType { TypeConstructor: BoolLiteralTypeConstructor left }, BinaryOperator.Or,
                 ConstructedPlainType { TypeConstructor: BoolLiteralTypeConstructor right }) => left.Or(right).PlainType,
 
-            (INonVoidPlainType { Semantics: TypeSemantics.Reference }, BinaryOperator.ReferenceEquals, INonVoidPlainType { Semantics: TypeSemantics.Reference })
-                or (INonVoidPlainType { Semantics: TypeSemantics.Reference }, BinaryOperator.NotReferenceEqual, INonVoidPlainType { Semantics: TypeSemantics.Reference })
+            (NonVoidPlainType { Semantics: TypeSemantics.Reference }, BinaryOperator.ReferenceEquals, NonVoidPlainType { Semantics: TypeSemantics.Reference })
+                or (NonVoidPlainType { Semantics: TypeSemantics.Reference }, BinaryOperator.NotReferenceEqual, NonVoidPlainType { Semantics: TypeSemantics.Reference })
                 => IPlainType.Bool,
 
             (ConstructedPlainType { TypeConstructor: BoolTypeConstructor },

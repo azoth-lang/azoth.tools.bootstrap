@@ -17,7 +17,7 @@ public sealed class FunctionType : INonVoidType, IMaybeFunctionType
     }
 
     public FunctionPlainType PlainType { get; }
-    INonVoidPlainType INonVoidType.PlainType => PlainType;
+    NonVoidPlainType INonVoidType.PlainType => PlainType;
     IMaybePlainType IMaybeType.PlainType => PlainType;
     IMaybeNonVoidPlainType IMaybeNonVoidType.PlainType => PlainType;
     IMaybeFunctionPlainType IMaybeFunctionType.PlainType => PlainType;

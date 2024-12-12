@@ -15,7 +15,7 @@ public sealed class CapabilitySetSelfType : INonVoidType
     public CapabilitySet Capability { get; }
     public SelfPlainType PlainType { get; }
 
-    INonVoidPlainType INonVoidType.PlainType => PlainType;
+    NonVoidPlainType INonVoidType.PlainType => PlainType;
     IMaybePlainType IMaybeType.PlainType => PlainType;
 
     public TypeReplacements TypeReplacements => TypeReplacements.None;

@@ -30,7 +30,7 @@ internal static partial class TypeExpressionsPlainTypesAspect
     public static partial IMaybePlainType FunctionType_NamedPlainType(IFunctionTypeNode node)
     {
         var parameters = node.Parameters.Select(p => p.Referent.NamedPlainType)
-                             .OfType<INonVoidPlainType>().ToFixedList();
+                             .OfType<NonVoidPlainType>().ToFixedList();
         if (parameters.Count != node.Parameters.Count)
             // Not all parameters are known and non-void
             return IPlainType.Unknown;

@@ -77,12 +77,12 @@ internal static partial class OverloadResolutionAspect
             NonVoidPlainTypeIfKnown(expectedReturnPlainType));
     }
 
-    private static INonVoidPlainType NonVoidPlainTypeIfKnown(IExpressionNode? node)
+    private static NonVoidPlainType NonVoidPlainTypeIfKnown(IExpressionNode? node)
         => NonVoidPlainTypeIfKnown(PlainTypeIfKnown(node));
 
-    private static INonVoidPlainType NonVoidPlainTypeIfKnown(IMaybePlainType maybeExpressionPlainType)
+    private static NonVoidPlainType NonVoidPlainTypeIfKnown(IMaybePlainType maybeExpressionPlainType)
     {
-        if (maybeExpressionPlainType is INonVoidPlainType plainType) return plainType;
+        if (maybeExpressionPlainType is NonVoidPlainType plainType) return plainType;
         // This is a little odd, but if the parameter type is not known, then using `never` will
         // cause nothing to match except for `never` itself.
         return IPlainType.Never;

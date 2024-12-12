@@ -13,7 +13,7 @@ public sealed class NeverType : INonVoidType
     #endregion
 
     public NeverPlainType PlainType => NeverPlainType.Instance;
-    INonVoidPlainType INonVoidType.PlainType => PlainType;
+    NonVoidPlainType INonVoidType.PlainType => PlainType;
     IMaybePlainType IMaybeType.PlainType => PlainType;
 
     public TypeReplacements TypeReplacements => TypeReplacements.None;

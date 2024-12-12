@@ -17,7 +17,7 @@ public record class ParameterType(bool IsLent, INonVoidType Type) : IMaybeParame
     }
     IMaybeNonVoidType IMaybeParameterType.Type => Type;
 
-    public INonVoidPlainType PlainType => Type.PlainType;
+    public NonVoidPlainType PlainType => Type.PlainType;
 
     public bool ReferenceEquals(ParameterType other)
         => IsLent == other.IsLent && ReferenceEquals(Type, other.Type);
