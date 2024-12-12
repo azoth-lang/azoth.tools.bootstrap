@@ -65,8 +65,9 @@ public sealed class ConstructedBareType : BareType
         => ReferenceEquals(this, obj) || obj is BareType other && Equals(other);
 
     public override int GetHashCode() => HashCode.Combine(PlainType, Arguments);
-
     #endregion
+
+    public override string ToString() => ToILString();
 
     public string ToSourceCodeString() => ToString(t => t.ToSourceCodeString());
 

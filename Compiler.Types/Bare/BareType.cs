@@ -10,7 +10,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 
 [Closed(
     typeof(ConstructedBareType),
-    typeof(AssociatedPlainType))]
+    typeof(AssociatedBareType))]
 // TODO rename to IBareType
 [SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "Using as a trait.")]
 // ReSharper disable once InconsistentNaming

@@ -20,6 +20,7 @@ public interface IMaybePlainType : IEquatable<IMaybePlainType>
     /// </summary>
     IMaybePlainType ToNonLiteral();
 
+    // TODO remove this by making PlainTypeReplacements public
     IMaybePlainType ReplaceTypeParametersIn(IMaybePlainType plainType);
 
     string ToString();
