@@ -29,14 +29,14 @@ public static partial class PlainTypeOperations
             (VoidPlainType, _) => false,
             (OptionalPlainType s, OptionalPlainType o) => s.Referent.IsSubtypeOf(o.Referent),
             (_, OptionalPlainType o) => self.IsSubtypeOf(o.Referent),
-            (ConstructedOrVariablePlainType s, ConstructedOrVariablePlainType t) => s.IsSubtypeOf(t),
+            (ConstructedPlainType s, ConstructedPlainType t) => s.IsSubtypeOf(t),
             (FunctionPlainType s, FunctionPlainType o) => s.IsSubtypeOf(o),
             _ => false
         };
 
     public static bool IsSubtypeOf(
-        this ConstructedOrVariablePlainType self,
-        ConstructedOrVariablePlainType other)
+        this ConstructedPlainType self,
+        ConstructedPlainType other)
     {
         if (self.Equals(other) || self.Supertypes.Contains(other))
             return true;
@@ -46,7 +46,7 @@ public static partial class PlainTypeOperations
             return true;
 
         var otherTypeConstructor = other.TypeConstructor;
-        if (otherTypeConstructor is not null && other.AllowsVariance)
+        if (other.AllowsVariance)
         {
             var selfPlainTypes = self.Supertypes.Prepend(self)
                                     .Where(t => otherTypeConstructor.Equals(t.TypeConstructor));

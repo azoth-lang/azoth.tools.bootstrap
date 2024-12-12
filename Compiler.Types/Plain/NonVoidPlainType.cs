@@ -5,7 +5,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 [Closed(
     typeof(OptionalPlainType),
     typeof(FunctionPlainType),
-    typeof(ConstructedOrVariablePlainType),
+    typeof(ConstructedOrAssociatedPlainType),
+    typeof(GenericParameterPlainType),
     typeof(NeverPlainType))]
 public abstract class NonVoidPlainType : IPlainType, IMaybeNonVoidPlainType
 {
