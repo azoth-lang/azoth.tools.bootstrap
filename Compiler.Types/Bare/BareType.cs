@@ -30,18 +30,26 @@ public abstract class BareType : IEquatable<BareType>
 
     public abstract IFixedList<IType> Arguments { get; }
 
+    public abstract bool HasIndependentTypeArguments { get; }
+
     public abstract IFixedList<TypeParameterArgument> TypeParameterArguments { get; }
+
+    public abstract TypeReplacements TypeReplacements { get; }
 
     public bool IsDeclaredConst => TypeConstructor?.IsDeclaredConst ?? false;
 
     public CapabilityType With(Capability capability)
-        => CapabilityType.Create(capability, PlainType, Arguments);
+        => CapabilityType.Create(capability, this);
 
     public CapabilityType WithRead()
         => With(IsDeclaredConst ? Capability.Constant : Capability.Read);
 
     public CapabilityType WithMutate()
         => With(IsDeclaredConst ? Capability.Constant : Capability.Mutable);
+
+    public abstract BareType With(IFixedList<IType> arguments);
+
+    public virtual ConstructedBareType? TryToNonLiteral() => null;
 
     #region Equality
     public abstract bool Equals(BareType? other);

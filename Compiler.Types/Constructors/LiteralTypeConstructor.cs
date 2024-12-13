@@ -43,7 +43,7 @@ public abstract class LiteralTypeConstructor : SimpleOrLiteralTypeConstructor
         Name = name;
     }
 
-    public abstract override TypeConstructor ToNonLiteral();
+    public abstract override SimpleTypeConstructor TryToNonLiteral();
 
     public sealed override ConstructedPlainType Construct(IFixedList<IPlainType> arguments)
        => throw new NotImplementedException("Constructing literal types requires value type parameters.");

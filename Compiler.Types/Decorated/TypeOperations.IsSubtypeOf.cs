@@ -116,7 +116,7 @@ public static partial class TypeOperations
                                     || to is not CapabilityType toCapabilityType)
                                     return false;
 
-                                if (!fromCapabilityType.BareTypeEquals(toCapabilityType)
+                                if (!fromCapabilityType.BareType.Equals(toCapabilityType.BareType)
                                     // TODO does this handle `iso` and `id` correctly?
                                     || !toCapabilityType.Capability.IsAssignableFrom(fromCapabilityType.Capability))
                                     return false;
@@ -128,7 +128,7 @@ public static partial class TypeOperations
                                     || to is not CapabilityType toCapabilityType)
                                     return false;
 
-                                if (!fromCapabilityType.BareTypeEquals(toCapabilityType)
+                                if (!fromCapabilityType.BareType.Equals(toCapabilityType.BareType)
                                     // TODO does this handle `iso` and `id` correctly?
                                     || !toCapabilityType.Capability.IsAssignableFrom(fromCapabilityType.Capability))
                                     return false;

@@ -30,7 +30,7 @@ public sealed class IntegerLiteralTypeConstructor : LiteralTypeConstructor
     /// integer type constructor that contains the value. However, that would lead to unexpected
     /// behavior in some cases because small integer constants might produce small fixed size
     /// integers leading to overflow.</remarks>
-    public override TypeConstructor ToNonLiteral() => Int;
+    public override BigIntegerTypeConstructor TryToNonLiteral() => Int;
 
     public IntegerTypeConstructor ToSmallestSignedIntegerType()
     {

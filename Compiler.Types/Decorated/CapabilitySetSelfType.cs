@@ -10,6 +10,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 // would introduce two ways of having types with capabilities on them.
 [DebuggerDisplay("{" + nameof(ToILString) + "(),nq}")]
 // TODO maybe this should merge with the SelfViewpointType the way CapabilityType can sometimes be a viewpoint
+// TODO maybe this should be based on a bare type for consistency with CapabilityType
 public sealed class CapabilitySetSelfType : INonVoidType
 {
     public CapabilitySet Capability { get; }

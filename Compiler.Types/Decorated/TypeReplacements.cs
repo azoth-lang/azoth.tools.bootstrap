@@ -134,24 +134,9 @@ public sealed class TypeReplacements
 
     public IType ReplaceTypeParametersIn(CapabilityType type)
     {
-        switch (type.PlainType)
-        {
-            default:
-                throw ExhaustiveMatch.Failed(type.PlainType);
-            case OrdinaryAssociatedPlainType _:
-                throw new NotImplementedException();
-            case SelfPlainType _:
-                // Nothing to replace
-                return type;
-            case ConstructedPlainType plainType:
-            {
-                var replacementArguments = ReplaceTypeParametersIn(type.Arguments);
-                if (ReferenceEquals(type.Arguments, replacementArguments)) return type;
-
-                var replacementPlainType = plainTypeReplacements.ReplaceTypeParametersIn(plainType);
-                return CapabilityType.Create(type.Capability, replacementPlainType, replacementArguments);
-            }
-        }
+        var replacementBareType = ReplaceTypeParametersIn(type.BareType);
+        if (ReferenceEquals(type.BareType, replacementBareType)) return type;
+        return replacementBareType.With(type.Capability);
     }
 
     public ParameterType? ReplaceTypeParametersIn(ParameterType type)

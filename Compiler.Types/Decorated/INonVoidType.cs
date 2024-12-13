@@ -12,6 +12,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
     typeof(SelfViewpointType),
     typeof(CapabilityViewpointType),
     typeof(NeverType))]
+// TODO consider making this a class
 public interface INonVoidType : IType, IMaybeNonVoidType
 {
     new NonVoidPlainType PlainType { get; }

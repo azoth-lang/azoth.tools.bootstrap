@@ -18,8 +18,9 @@ public sealed class ConstructedBareType : BareType
     public override ConstructedPlainType PlainType { get; }
     public override TypeConstructor TypeConstructor => PlainType.TypeConstructor;
     public override IFixedList<IType> Arguments { get; }
+    public override bool HasIndependentTypeArguments { get; }
 
-    public TypeReplacements TypeReplacements { get; }
+    public override TypeReplacements TypeReplacements { get; }
 
     public override IFixedList<TypeParameterArgument> TypeParameterArguments
         => LazyInitializer.EnsureInitialized(ref typeParameterArguments,
@@ -39,7 +40,20 @@ public sealed class ConstructedBareType : BareType
             nameof(arguments), "Type arguments must match plain type.");
         PlainType = plainType;
         Arguments = arguments;
+        HasIndependentTypeArguments = PlainType.TypeConstructor.HasIndependentParameters
+                                      || Arguments.Any(a => a.HasIndependentTypeArguments);
+        // TODO could pass TypeParameterArguments instead?
         TypeReplacements = new(plainType.TypeReplacements, plainType.TypeConstructor, Arguments);
+    }
+
+    public override BareType With(IFixedList<IType> arguments)
+        => new ConstructedBareType(PlainType, arguments);
+
+    public override ConstructedBareType? TryToNonLiteral()
+    {
+        var newPlainType = PlainType.TryToNonLiteral();
+        if (newPlainType is null) return null;
+        return new(newPlainType, Arguments);
     }
 
     #region Equality

@@ -1,11 +1,9 @@
 using System.Diagnostics;
-using System.Text;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using Azoth.Tools.Bootstrap.Framework;
-using MoreLinq;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 
@@ -23,64 +21,66 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 //   * AssociatedPlainType
 // * ConstructedPlainType
 [DebuggerDisplay("{" + nameof(ToILString) + "(),nq}")]
-// TODO maybe this should be a wrapper around ConstructedBareType. It seems to share a lot of logic
 public sealed class CapabilityType : INonVoidType
 {
-    public static CapabilityType Create(Capability capability, ConstructedOrAssociatedPlainType plainType)
-        => new(capability, plainType, []);
+    public static CapabilityType Create(Capability capability, ConstructedPlainType plainType)
+        => new(capability, new ConstructedBareType(plainType, []));
 
-    public static CapabilityType Create(
-        Capability capability,
-        ConstructedOrAssociatedPlainType plainType,
-        IFixedList<IType> arguments)
-        => new(capability, plainType, arguments);
+    public static CapabilityType Create(Capability capability, AssociatedPlainType plainType)
+        => new(capability, new AssociatedBareType(plainType));
+
+    public static CapabilityType Create(Capability capability, BareType bareType)
+        => new(capability, bareType);
 
     public Capability Capability { get; }
-    public ConstructedOrAssociatedPlainType PlainType { get; }
+
+    public BareType BareType { get; }
+    public ConstructedOrAssociatedPlainType PlainType => BareType.PlainType;
     NonVoidPlainType INonVoidType.PlainType => PlainType;
     IMaybePlainType IMaybeType.PlainType => PlainType;
 
-    public TypeConstructor? TypeConstructor => PlainType.TypeConstructor;
+    public TypeConstructor? TypeConstructor => BareType.TypeConstructor;
 
-    public IFixedList<IType> Arguments { get; }
+    public IFixedList<IType> Arguments => BareType.Arguments;
 
-    public bool HasIndependentTypeArguments { get; }
+    public bool HasIndependentTypeArguments => BareType.HasIndependentTypeArguments;
 
-    public IFixedList<TypeParameterArgument> TypeParameterArguments { get; }
+    public IFixedList<TypeParameterArgument> TypeParameterArguments => BareType.TypeParameterArguments;
 
-    public TypeReplacements TypeReplacements { get; }
+    public TypeReplacements TypeReplacements => BareType.TypeReplacements;
 
     private CapabilityType(
         Capability capability,
-        ConstructedOrAssociatedPlainType plainType,
-        IFixedList<IType> arguments)
+        BareType bareType)
     {
-        Requires.That(plainType.Arguments.SequenceEqual(arguments.Select(a => a.PlainType)), nameof(arguments),
-            "Type arguments must match plain type.");
         Capability = capability;
-        PlainType = plainType;
-        Arguments = arguments;
-        HasIndependentTypeArguments = (PlainType.TypeConstructor?.HasIndependentParameters ?? false)
-                                      || Arguments.Any(a => a.HasIndependentTypeArguments);
-        TypeParameterArguments = (PlainType.TypeConstructor?.Parameters ?? [])
-                                 .EquiZip(Arguments, (p, a) => new TypeParameterArgument(p, a)).ToFixedList();
-        // TODO could pass TypeParameterArguments instead?
-        TypeReplacements = plainType.TypeConstructor is null ? TypeReplacements.None
-            : new(plainType.TypeReplacements, plainType.TypeConstructor, Arguments);
+        BareType = bareType;
     }
 
-    public IType ToNonLiteral()
+    public CapabilityType ToNonLiteral()
     {
-        var newPlainType = PlainType.ToNonLiteral();
-        if (ReferenceEquals(PlainType, newPlainType)) return this;
-        // TODO eliminate this cast
-        return new CapabilityType(Capability, (ConstructedPlainType)newPlainType, Arguments);
+        var newBareType = BareType.TryToNonLiteral();
+        if (newBareType is null) return this;
+        return new(Capability, newBareType);
+    }
+    IType IType.ToNonLiteral() => ToNonLiteral();
+
+    public CapabilityType With(Capability capability)
+    {
+        // Avoid allocating a new CapabilityType when it isn't needed
+        if (Capability.Equals(capability)) return this;
+        return BareType.With(capability);
     }
 
-    public CapabilityType With(Capability capability) => new(capability, PlainType, Arguments);
+    public CapabilityType With(IFixedList<IType> arguments)
+    {
+        // Avoid allocating a new CapabilityType when it isn't needed
+        if (Arguments.Equals(arguments)) return this;
+        return BareType.With(arguments).With(Capability);
+    }
 
-    public CapabilityType With(IFixedList<IType> arguments) => new(Capability, PlainType, arguments);
-
+    // TODO this method represents an invalid operation and should be eliminated (the parameters do
+    // not provide enough information to properly determine what to upcast to).
     public CapabilityType UpcastTo(TypeConstructor target)
     {
         if (TypeConstructor?.Equals(target) ?? false) return this;
@@ -95,13 +95,6 @@ public sealed class CapabilityType : INonVoidType
         return bareType.With(Capability);
     }
 
-    public bool BareTypeEquals(CapabilityType other)
-    {
-        if (ReferenceEquals(this, other)) return true;
-        return PlainType.Equals(other.PlainType)
-               && Arguments.Equals(other.Arguments);
-    }
-
     #region Equality
     public bool Equals(IMaybeType? other)
     {
@@ -109,37 +102,20 @@ public sealed class CapabilityType : INonVoidType
         if (ReferenceEquals(this, other)) return true;
         return other is CapabilityType otherType
                && Capability.Equals(otherType.Capability)
-               && PlainType.Equals(otherType.PlainType)
-               && Arguments.Equals(otherType.Arguments);
+               && BareType.Equals(otherType.BareType);
     }
 
     public override bool Equals(object? obj)
         => ReferenceEquals(this, obj) || obj is CapabilityType other && Equals(other);
 
-    public override int GetHashCode() => HashCode.Combine(Capability, PlainType, Arguments);
+    public override int GetHashCode() => HashCode.Combine(Capability, BareType);
     #endregion
 
     public override string ToString() => ToILString();
 
     public string ToSourceCodeString()
-        => ToString(Capability.ToSourceCodeString(), t => t.ToSourceCodeString());
+        => $"{Capability.ToSourceCodeString()} {BareType.ToSourceCodeString()}";
 
     public string ToILString()
-        => ToString(Capability.ToILString(), t => t.ToILString());
-
-    private string ToString(string capability, Func<IType, string> toString)
-    {
-        var builder = new StringBuilder();
-        builder.Append(capability);
-        builder.Append(' ');
-        builder.Append(PlainType.ToBareString());
-        if (!Arguments.IsEmpty)
-        {
-            builder.Append('[');
-            builder.AppendJoin(", ", Arguments.Select(toString));
-            builder.Append(']');
-        }
-
-        return builder.ToString();
-    }
+        => $"{Capability.ToILString()} {BareType.ToILString()}";
 }

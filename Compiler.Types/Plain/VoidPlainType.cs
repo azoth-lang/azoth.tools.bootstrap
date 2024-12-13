@@ -27,7 +27,7 @@ public sealed class VoidPlainType : IPlainType
     /// <c>Any</c>. Thus, it has no supertypes.</remarks>
     public IFixedSet<ConstructedPlainType> Supertypes => [];
 
-    IPlainType IPlainType.ToNonLiteral() => this;
+    ConstructedPlainType? IPlainType.TryToNonLiteral() => null;
 
     public IMaybePlainType ReplaceTypeParametersIn(IMaybePlainType plainType) => plainType;
 

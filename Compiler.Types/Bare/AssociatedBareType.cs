@@ -21,11 +21,20 @@ public sealed class AssociatedBareType : BareType
     public override AssociatedPlainType PlainType { get; }
     public override TypeConstructor? TypeConstructor => null;
     public override IFixedList<IType> Arguments => [];
+    public override bool HasIndependentTypeArguments => false;
     public override IFixedList<TypeParameterArgument> TypeParameterArguments => [];
+    public override TypeReplacements TypeReplacements => TypeReplacements.None;
 
     public AssociatedBareType(AssociatedPlainType plainType)
     {
         PlainType = plainType;
+    }
+
+    public override BareType With(IFixedList<IType> arguments)
+    {
+        Requires.That(arguments.IsEmpty, nameof(arguments),
+            "Type arguments must match plain type.");
+        return this;
     }
 
     #region Equality

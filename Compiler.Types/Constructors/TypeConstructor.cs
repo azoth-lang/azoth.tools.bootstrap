@@ -262,9 +262,10 @@ public abstract partial class TypeConstructor : TypeConstructorContext, IEquatab
     public abstract IPlainType? TryConstructNullaryPlainType();
 
     /// <summary>
-    /// The default non-literal type to place values of this type in.
+    /// If this is a non-literal type, return the default non-literal type to place values of this
+    /// type in. Otherwise, returns <see langword="null"/>.
     /// </summary>
-    public virtual TypeConstructor ToNonLiteral() => this;
+    public virtual SimpleTypeConstructor? TryToNonLiteral() => null;
 
     #region Equality
     public abstract bool Equals(TypeConstructor? other);

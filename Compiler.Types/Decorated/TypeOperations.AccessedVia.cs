@@ -65,7 +65,7 @@ public static partial class TypeOperations
                 var newArguments = self.ArgumentsAccessedVia(c);
                 if (ReferenceEquals(newArguments, self.Arguments)
                     && ReferenceEquals(newCapability, self.Capability)) return self;
-                return CapabilityType.Create(newCapability, self.PlainType, newArguments);
+                return self.BareType.With(newArguments).With(newCapability);
             case CapabilitySet c:
                 return new SelfViewpointType(c, self);
             default:

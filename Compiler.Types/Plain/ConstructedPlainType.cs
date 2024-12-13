@@ -35,11 +35,10 @@ public sealed class ConstructedPlainType : ConstructedOrAssociatedPlainType
         Supertypes = typeConstructor.Supertypes.Select(s => ReplaceTypeParametersIn(s.PlainType)).ToFixedSet();
     }
 
-    public override IPlainType ToNonLiteral()
+    public override ConstructedPlainType? TryToNonLiteral()
     {
-        var newTypeConstructor = TypeConstructor.ToNonLiteral();
-        // Avoid constructing a new object when not needed.
-        if (TypeConstructor.Equals(newTypeConstructor)) return this;
+        var newTypeConstructor = TypeConstructor.TryToNonLiteral();
+        if (newTypeConstructor is null) return null;
         // Literal type constructors will have parameters, whereas their corresponding non-literal
         // types won't. Thus, do not pass any type arguments.
         return new ConstructedPlainType(newTypeConstructor, []);

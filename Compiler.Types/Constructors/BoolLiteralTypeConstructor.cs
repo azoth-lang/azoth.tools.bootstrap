@@ -18,7 +18,7 @@ public sealed class BoolLiteralTypeConstructor : LiteralTypeConstructor
         PlainType = new(this, []);
     }
 
-    public override TypeConstructor ToNonLiteral() => Bool;
+    public override BoolTypeConstructor TryToNonLiteral() => Bool;
 
     public static implicit operator BoolLiteralTypeConstructor(bool value) => value ? True : False;
 
