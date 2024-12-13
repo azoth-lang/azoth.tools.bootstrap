@@ -35,17 +35,6 @@ public sealed class CapabilityType : INonVoidType
         IFixedList<IType> arguments)
         => new(capability, plainType, arguments);
 
-    // TODO this seems like it should be removed
-    public static IMaybeType LaxCreate(Capability capability, IMaybeType referent)
-        => referent switch
-        {
-            GenericParameterType t => CapabilityViewpointType.Create(capability, t),
-            CapabilityType t => t.AccessedVia(capability),
-            VoidType t => t,
-            NeverType t => t,
-            _ => IType.Unknown,
-        };
-
     public Capability Capability { get; }
     public ConstructedOrAssociatedPlainType PlainType { get; }
     NonVoidPlainType INonVoidType.PlainType => PlainType;

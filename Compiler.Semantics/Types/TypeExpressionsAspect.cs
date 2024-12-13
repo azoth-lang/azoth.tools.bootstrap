@@ -40,8 +40,7 @@ internal static partial class TypeExpressionsAspect
         => ParameterType.Create(node.IsLent, node.Referent.NamedType.ToNonVoidType());
 
     public static partial IMaybeType CapabilityViewpointType_NamedType(ICapabilityViewpointTypeNode node)
-        // TODO seems like this should be AccessedVia instead of CapabilityType.LaxCreate
-        => CapabilityType.LaxCreate(node.Capability.Capability, node.Referent.NamedType);
+        => node.Referent.NamedType.AccessedVia(node.Capability.Capability);
 
     public static partial void CapabilityViewpointType_Contribute_Diagnostics(
         ICapabilityViewpointTypeNode node,
