@@ -30,7 +30,7 @@ public sealed class AssociatedBareType : BareType
         PlainType = plainType;
     }
 
-    public override BareType With(IFixedList<IType> arguments)
+    public override BareType WithReplacement(IFixedList<IType> arguments)
     {
         Requires.That(arguments.IsEmpty, nameof(arguments),
             "Type arguments must match plain type.");

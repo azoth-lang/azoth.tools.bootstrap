@@ -73,7 +73,7 @@ public sealed class CapabilitySet : ICapabilityConstraint
 
     public bool IsSubtypeOf(ICapabilityConstraint other) => other.IsAssignableFrom(this);
 
-    public override string ToString() => throw new NotSupportedException();
+    public override string ToString() => ToILString();
 
     public string ToILString() => name;
 

@@ -46,7 +46,7 @@ public sealed class ConstructedBareType : BareType
         TypeReplacements = new(plainType.TypeReplacements, plainType.TypeConstructor, Arguments);
     }
 
-    public override BareType With(IFixedList<IType> arguments)
+    public override BareType WithReplacement(IFixedList<IType> arguments)
         => new ConstructedBareType(PlainType, arguments);
 
     public override ConstructedBareType? TryToNonLiteral()

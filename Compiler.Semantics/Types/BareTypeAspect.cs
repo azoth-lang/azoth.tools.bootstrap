@@ -28,7 +28,7 @@ internal static partial class BareTypeAspect
 
     private static BareType? BuildBareType(TypeConstructor type, IFixedList<IMaybeType> typeArguments)
         // The number of arguments will match the type because name binding will only pick a matching type
-        => type.Construct(typeArguments);
+        => type.TryConstruct(typeArguments);
 
     public static partial BareType? GenericTypeName_NamedBareType(IGenericTypeNameNode node)
         => BuildBareType(node.ReferencedSymbol, node.TypeArguments.Select(t => t.NamedType).ToFixedList());
@@ -45,6 +45,6 @@ internal static partial class BareTypeAspect
         var typeArguments = node.TypeArguments.Select(a => a.NamedType).ToFixedList();
         if (typeArguments.Count != node.TypeArguments.Count)
             return null;
-        return declaredType.Construct(typeArguments);
+        return declaredType.TryConstruct(typeArguments);
     }
 }

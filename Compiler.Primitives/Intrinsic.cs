@@ -22,7 +22,7 @@ public static class Intrinsic
     public static readonly TypeConstructor PromiseTypeConstructor = Promise.TypeConstructor;
 
     public static IMaybeType PromiseOf(IMaybeType type)
-        => PromiseTypeConstructor.Construct(FixedList.Create(type))?.WithRead() ?? IMaybeType.Unknown;
+        => PromiseTypeConstructor.TryConstruct(FixedList.Create(type))?.WithDefaultRead() ?? IMaybeType.Unknown;
     public static IMaybePlainType PromiseOf(IMaybePlainType plainType)
         => PromiseTypeConstructor.Construct(FixedList.Create(plainType));
 
@@ -77,7 +77,7 @@ public static class Intrinsic
         _ = BuildPromiseSymbol(azothNamespace, tree);
 
         var rawHybridBoundedListType = BuildSpecializedCollectionSymbols(azothNamespace, tree);
-        var readBytesType = rawHybridBoundedListType.Construct([IType.Void, IType.Byte]).WithRead();
+        var readBytesType = rawHybridBoundedListType.Construct([IType.Void, IType.Byte]).WithDefaultRead();
 
         // fn print_raw_utf8_bytes(bytes: Raw_Hybrid_Bounded_List[byte], start: size, byte_count: size)
         var print = Function(intrinsicsNamespace, "print_raw_utf8_bytes",
@@ -135,8 +135,8 @@ public static class Intrinsic
             TypeConstructor.Parameter.Independent(CapabilitySet.Aliasable, "T"));
         var bareType = typeConstructor.ConstructWithParameterTypes();
         var fixedType = typeConstructor.ParameterTypes[0];
-        var readType = bareType.WithRead();
-        var mutType = bareType.WithMutate();
+        var readType = bareType.WithDefaultRead();
+        var mutType = bareType.WithDefaultMutate();
         var itemType = typeConstructor.ParameterTypes[1];
         var classSymbol = new OrdinaryTypeSymbol(@namespace, typeConstructor);
         tree.Add(classSymbol);

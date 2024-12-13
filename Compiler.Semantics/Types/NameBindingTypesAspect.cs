@@ -93,7 +93,7 @@ internal static partial class NameBindingTypesAspect
         {
             ICapabilityNode n => bareType.With(n.Capability),
             // TODO this is currently a hack to avoid `Self`. Instead, use `Self`.
-            ICapabilitySetNode n => new SelfViewpointType(n.Constraint, bareType.WithMutate()),
+            ICapabilitySetNode n => new SelfViewpointType(n.Constraint, bareType.WithDefaultMutate()),
             //node.ContainingTypeDefinition.SelfPlainType.With(n.Constraint),
             _ => throw ExhaustiveMatch.Failed(capability)
         };

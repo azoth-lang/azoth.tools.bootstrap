@@ -250,7 +250,7 @@ public sealed class Capability : ICapabilityConstraint
     public Capability Freeze() => this == Identity ? this : Constant;
 
     public override string ToString()
-        => throw new NotSupportedException();
+        => ToILString();
 
     public string ToILString() => ilName;
 

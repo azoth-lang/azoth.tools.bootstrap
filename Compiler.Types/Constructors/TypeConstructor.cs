@@ -236,7 +236,7 @@ public abstract partial class TypeConstructor : TypeConstructorContext, IEquatab
     /// Attempt to construct a type from this type constructor with possibly unknown arguments. If
     /// any argument is unknown, the result is the unknown type.
     /// </summary>
-    public ConstructedBareType? Construct(IFixedList<IMaybeType> arguments)
+    public ConstructedBareType? TryConstruct(IFixedList<IMaybeType> arguments)
     {
         var properTypeArguments = arguments.As<IType>();
         if (properTypeArguments is null) return null;

@@ -41,13 +41,21 @@ public abstract class BareType : IEquatable<BareType>
     public CapabilityType With(Capability capability)
         => CapabilityType.Create(capability, this);
 
-    public CapabilityType WithRead()
+    /// <summary>
+    /// This type with whatever the default read capability is for the type based on whether it is
+    /// declared `const`.
+    /// </summary>
+    public CapabilityType WithDefaultRead()
         => With(IsDeclaredConst ? Capability.Constant : Capability.Read);
 
-    public CapabilityType WithMutate()
+    /// <summary>
+    /// This type with whatever the default mutable capability is for the type based on whether it is
+    /// declared `const`.
+    /// </summary>
+    public CapabilityType WithDefaultMutate()
         => With(IsDeclaredConst ? Capability.Constant : Capability.Mutable);
 
-    public abstract BareType With(IFixedList<IType> arguments);
+    public abstract BareType WithReplacement(IFixedList<IType> arguments);
 
     public virtual ConstructedBareType? TryToNonLiteral() => null;
 

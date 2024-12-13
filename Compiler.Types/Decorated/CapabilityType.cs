@@ -76,7 +76,7 @@ public sealed class CapabilityType : INonVoidType
     {
         // Avoid allocating a new CapabilityType when it isn't needed
         if (Arguments.Equals(arguments)) return this;
-        return BareType.With(arguments).With(Capability);
+        return BareType.WithReplacement(arguments).With(Capability);
     }
 
     // TODO this method represents an invalid operation and should be eliminated (the parameters do
