@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using ExhaustiveMatching;
@@ -6,7 +5,6 @@ using ExhaustiveMatching;
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 
 // e.g. `self |> mut Foo` Applies to all non-void types
-[DebuggerDisplay("{" + nameof(ToILString) + "(),nq}")]
 public sealed class SelfViewpointType : INonVoidType
 {
     public static IMaybeType Create(CapabilitySet capability, IMaybeType referent)
@@ -22,12 +20,11 @@ public sealed class SelfViewpointType : INonVoidType
 
     public INonVoidType Referent { get; }
 
-    public NonVoidPlainType PlainType => Referent.PlainType;
-    IMaybePlainType IMaybeType.PlainType => PlainType;
+    public override NonVoidPlainType PlainType => Referent.PlainType;
 
-    public TypeReplacements TypeReplacements => Referent.TypeReplacements;
+    public override TypeReplacements TypeReplacements => Referent.TypeReplacements;
 
-    public bool HasIndependentTypeArguments => Referent.HasIndependentTypeArguments;
+    public override bool HasIndependentTypeArguments => Referent.HasIndependentTypeArguments;
 
     public SelfViewpointType(CapabilitySet capability, INonVoidType referent)
     {
@@ -36,7 +33,7 @@ public sealed class SelfViewpointType : INonVoidType
     }
 
     #region Equality
-    public bool Equals(IMaybeType? other)
+    public override bool Equals(IMaybeType? other)
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
@@ -45,15 +42,10 @@ public sealed class SelfViewpointType : INonVoidType
                && Referent.Equals(otherType.Referent);
     }
 
-    public override bool Equals(object? obj)
-        => ReferenceEquals(this, obj) || obj is SelfViewpointType other && Equals(other);
-
     public override int GetHashCode() => HashCode.Combine(Capability, Referent);
     #endregion
 
-    public override string ToString() => ToILString();
+    public override string ToSourceCodeString() => $"{Capability.ToSourceCodeString()} self |> {Referent}";
 
-    public string ToSourceCodeString() => $"{Capability.ToSourceCodeString()} self |> {Referent}";
-
-    public string ToILString() => $"{Capability.ToILString()} |> {Referent}";
+    public override string ToILString() => $"{Capability.ToILString()} |> {Referent}";
 }

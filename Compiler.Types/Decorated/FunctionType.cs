@@ -1,10 +1,8 @@
-using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 
-[DebuggerDisplay("{" + nameof(ToILString) + "(),nq}")]
 public sealed class FunctionType : INonVoidType, IMaybeFunctionType
 {
     public static IMaybeFunctionType Create(IEnumerable<IMaybeParameterType> parameters, IMaybeType @return)
@@ -16,18 +14,16 @@ public sealed class FunctionType : INonVoidType, IMaybeFunctionType
         return new FunctionType(properParameters.ToFixedList(), returnType);
     }
 
-    public FunctionPlainType PlainType { get; }
-    NonVoidPlainType INonVoidType.PlainType => PlainType;
-    IMaybePlainType IMaybeType.PlainType => PlainType;
-    IMaybeNonVoidPlainType IMaybeNonVoidType.PlainType => PlainType;
+    public override FunctionPlainType PlainType { get; }
     IMaybeFunctionPlainType IMaybeFunctionType.PlainType => PlainType;
+
     public IFixedList<ParameterType> Parameters { get; }
     public IType Return { get; }
     IMaybeType IMaybeFunctionType.Return => Return;
 
-    public TypeReplacements TypeReplacements => TypeReplacements.None;
+    public override TypeReplacements TypeReplacements => TypeReplacements.None;
 
-    public bool HasIndependentTypeArguments => false;
+    public override bool HasIndependentTypeArguments => false;
 
     /// <remarks>This constructor takes <paramref name="plainType"/> even though it is fully implied
     /// by the other parameters to avoid allocating duplicate <see cref="FunctionPlainType"/>s.</remarks>
@@ -48,7 +44,7 @@ public sealed class FunctionType : INonVoidType, IMaybeFunctionType
     }
 
     #region Equality
-    public bool Equals(IMaybeType? other)
+    public override bool Equals(IMaybeType? other)
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
@@ -57,17 +53,12 @@ public sealed class FunctionType : INonVoidType, IMaybeFunctionType
                && Return.Equals(otherType.Return);
     }
 
-    public override bool Equals(object? obj)
-        => ReferenceEquals(this, obj) || obj is FunctionType other && Equals(other);
-
     public override int GetHashCode() => HashCode.Combine(Parameters, Return);
     #endregion
 
-    public override string ToString() => throw new NotSupportedException();
-
-    public string ToSourceCodeString()
+    public override string ToSourceCodeString()
         => $"({string.Join(", ", Parameters.Select(p => p.ToSourceCodeString()))}) -> {Return.ToSourceCodeString()}";
 
-    public string ToILString()
+    public override string ToILString()
         => $"({string.Join(", ", Parameters.Select(p => p.ToILString()))}) -> {Return.ToILString()}";
 }

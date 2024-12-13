@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
@@ -7,20 +6,8 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 
-// TODO should this cover optional types since they are implicit const?
 // e.g. `mut Foo`, `const Self`, etc. when not applied to GenericParameterPlainType
 // e.g. `read |> T` when applied to GenericParameterPlainType
-// Cannot be applied to FunctionPlainType, NeverPlainType
-// Open Questions:
-// * Can it be applied to `void` in which case it must be implicit `const`?
-// * Can it be applied to optional types in which case it must be implicit `const`?
-// If answer to both is no, then can apply to:
-// * VariablePlainType
-//   * GenericParameterPlainType
-//   * SelfParameterPlainType
-//   * AssociatedPlainType
-// * ConstructedPlainType
-[DebuggerDisplay("{" + nameof(ToILString) + "(),nq}")]
 public sealed class CapabilityType : INonVoidType
 {
     public static CapabilityType Create(Capability capability, ConstructedPlainType plainType)
@@ -35,19 +22,17 @@ public sealed class CapabilityType : INonVoidType
     public Capability Capability { get; }
 
     public BareType BareType { get; }
-    public ConstructedOrAssociatedPlainType PlainType => BareType.PlainType;
-    NonVoidPlainType INonVoidType.PlainType => PlainType;
-    IMaybePlainType IMaybeType.PlainType => PlainType;
+    public override ConstructedOrAssociatedPlainType PlainType => BareType.PlainType;
 
     public TypeConstructor? TypeConstructor => BareType.TypeConstructor;
 
     public IFixedList<IType> Arguments => BareType.Arguments;
 
-    public bool HasIndependentTypeArguments => BareType.HasIndependentTypeArguments;
+    public override bool HasIndependentTypeArguments => BareType.HasIndependentTypeArguments;
 
     public IFixedList<TypeParameterArgument> TypeParameterArguments => BareType.TypeParameterArguments;
 
-    public TypeReplacements TypeReplacements => BareType.TypeReplacements;
+    public override TypeReplacements TypeReplacements => BareType.TypeReplacements;
 
     private CapabilityType(
         Capability capability,
@@ -57,13 +42,12 @@ public sealed class CapabilityType : INonVoidType
         BareType = bareType;
     }
 
-    public CapabilityType ToNonLiteral()
+    public override CapabilityType ToNonLiteral()
     {
         var newBareType = BareType.TryToNonLiteral();
         if (newBareType is null) return this;
         return new(Capability, newBareType);
     }
-    IType IType.ToNonLiteral() => ToNonLiteral();
 
     public CapabilityType With(Capability capability)
     {
@@ -96,7 +80,7 @@ public sealed class CapabilityType : INonVoidType
     }
 
     #region Equality
-    public bool Equals(IMaybeType? other)
+    public override bool Equals(IMaybeType? other)
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
@@ -105,17 +89,12 @@ public sealed class CapabilityType : INonVoidType
                && BareType.Equals(otherType.BareType);
     }
 
-    public override bool Equals(object? obj)
-        => ReferenceEquals(this, obj) || obj is CapabilityType other && Equals(other);
-
     public override int GetHashCode() => HashCode.Combine(Capability, BareType);
     #endregion
 
-    public override string ToString() => ToILString();
-
-    public string ToSourceCodeString()
+    public override string ToSourceCodeString()
         => $"{Capability.ToSourceCodeString()} {BareType.ToSourceCodeString()}";
 
-    public string ToILString()
+    public override string ToILString()
         => $"{Capability.ToILString()} {BareType.ToILString()}";
 }

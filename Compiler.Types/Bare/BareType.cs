@@ -24,6 +24,8 @@ public abstract class BareType : IEquatable<BareType>
     public static readonly ConstructedBareType Any = new(AnyTypeConstructor.PlainType, []);
     public static readonly IFixedSet<ConstructedBareType> AnySet = Any.Yield().ToFixedSet();
 
+    // TODO add containing type for capabilities on containing type arguments
+
     public abstract ConstructedOrAssociatedPlainType PlainType { get; }
 
     public abstract TypeConstructor? TypeConstructor { get; }

@@ -1,11 +1,11 @@
-using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 
-[DebuggerDisplay("{" + nameof(ToILString) + "(),nq}")]
+/// <remarks>Even though optional types act like a value type that is declared `const`, they have
+/// a unique subtype relationship so they aren't just a special value type (i.e. `T &lt;: T?`).</remarks>
 public sealed class OptionalType : INonVoidType
 {
     /// <summary>
@@ -35,15 +35,13 @@ public sealed class OptionalType : INonVoidType
 
     public static OptionalType Create(INonVoidType referent) => new OptionalType(referent);
 
-    public OptionalPlainType PlainType { get; }
-    NonVoidPlainType INonVoidType.PlainType => PlainType;
-    IMaybePlainType IMaybeType.PlainType => PlainType;
+    public override OptionalPlainType PlainType { get; }
 
     public INonVoidType Referent { get; }
 
-    public TypeReplacements TypeReplacements => Referent.TypeReplacements;
+    public override TypeReplacements TypeReplacements => Referent.TypeReplacements;
 
-    public bool HasIndependentTypeArguments => Referent.HasIndependentTypeArguments;
+    public override bool HasIndependentTypeArguments => Referent.HasIndependentTypeArguments;
 
     /// <remarks>This constructor takes <paramref name="plainType"/> even though it is fully implied
     /// by the other parameters to avoid allocating duplicate <see cref="OptionalPlainType"/>s.</remarks>
@@ -59,7 +57,7 @@ public sealed class OptionalType : INonVoidType
         : this(new(referent.PlainType), referent) { }
 
     #region Equality
-    public bool Equals(IMaybeType? other)
+    public override bool Equals(IMaybeType? other)
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
@@ -67,15 +65,10 @@ public sealed class OptionalType : INonVoidType
                && Referent.Equals(otherType.Referent);
     }
 
-    public override bool Equals(object? obj)
-        => ReferenceEquals(this, obj) || obj is OptionalType other && Equals(other);
-
     public override int GetHashCode() => HashCode.Combine(Referent);
     #endregion
 
-    public override string ToString() => throw new NotSupportedException();
+    public override string ToSourceCodeString() => $"{Referent.ToSourceCodeString()}?";
 
-    public string ToSourceCodeString() => $"{Referent.ToSourceCodeString()}?";
-
-    public string ToILString() => $"{Referent.ToILString()}?";
+    public override string ToILString() => $"{Referent.ToILString()}?";
 }

@@ -17,6 +17,8 @@ public sealed class VoidType : IType
 
     public bool HasIndependentTypeArguments => false;
 
+    public IType ToNonLiteral() => this;
+
     #region Equality
     public bool Equals(IMaybeType? other)
         // Singleton, so a reference equality suffices
@@ -29,7 +31,7 @@ public sealed class VoidType : IType
     public override int GetHashCode() => HashCode.Combine(typeof(VoidType));
     #endregion
 
-    public override string ToString() => throw new NotSupportedException();
+    public override string ToString() => ToILString();
 
     public string ToSourceCodeString() => PlainType.ToString();
 

@@ -49,6 +49,6 @@ public interface IType : IMaybeType
     /// corresponding types.
     /// </summary>
     // TODO this makes literal types special. Perhaps there should be a way to declare other literal types in code
-    new IType ToNonLiteral() => this;
-    IMaybeType IMaybeType.ToNonLiteral() => this;
+    new IType ToNonLiteral();
+    IMaybeType IMaybeType.ToNonLiteral() => ToNonLiteral();
 }

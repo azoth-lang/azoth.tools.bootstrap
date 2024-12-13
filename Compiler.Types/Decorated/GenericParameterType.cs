@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 
@@ -7,18 +6,15 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 // TODO maybe this should only be constructed from the GenericParameterPlainType to avoid duplicate instances?
 // e.g. T
 // NOTE: generic parameters are the only plain types that do not need a capability
-[DebuggerDisplay("{" + nameof(ToILString) + "(),nq}")]
 public sealed class GenericParameterType : INonVoidType
 {
-    public GenericParameterPlainType PlainType { get; }
-    NonVoidPlainType INonVoidType.PlainType => PlainType;
-    IMaybePlainType IMaybeType.PlainType => PlainType;
+    public override GenericParameterPlainType PlainType { get; }
 
     public TypeConstructor.Parameter Parameter => PlainType.Parameter;
 
-    public TypeReplacements TypeReplacements => TypeReplacements.None;
+    public override TypeReplacements TypeReplacements => TypeReplacements.None;
 
-    public bool HasIndependentTypeArguments => false;
+    public override bool HasIndependentTypeArguments => false;
 
     public GenericParameterType(GenericParameterPlainType plainType)
     {
@@ -26,7 +22,7 @@ public sealed class GenericParameterType : INonVoidType
     }
 
     #region Equality
-    public bool Equals(IMaybeType? other)
+    public override bool Equals(IMaybeType? other)
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
@@ -34,17 +30,10 @@ public sealed class GenericParameterType : INonVoidType
                && PlainType.Equals(otherType.PlainType);
     }
 
-    public override bool Equals(object? obj)
-        => ReferenceEquals(this, obj) || obj is GenericParameterType other && Equals(other);
-
     public override int GetHashCode() => HashCode.Combine(PlainType);
     #endregion
 
-    /// <remarks>There are cases where the framework calls <see cref="ToString"/> so it needs to map
-    /// to something reasonable.</remarks>
-    public override string ToString() => ToILString();
+    public override string ToSourceCodeString() => PlainType.ToString();
 
-    public string ToSourceCodeString() => PlainType.ToString();
-
-    public string ToILString() => PlainType.ToString();
+    public override string ToILString() => PlainType.ToString();
 }

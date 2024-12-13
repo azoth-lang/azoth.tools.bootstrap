@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using Azoth.Tools.Bootstrap.Framework;
@@ -6,7 +5,6 @@ using Azoth.Tools.Bootstrap.Framework;
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 
 // TODO should `iso|>T` be disallowed?
-[DebuggerDisplay("{" + nameof(ToILString) + "(),nq}")]
 public sealed class CapabilityViewpointType : INonVoidType
 {
     public static IMaybeType Create(Capability capability, IMaybeType referent)
@@ -29,13 +27,11 @@ public sealed class CapabilityViewpointType : INonVoidType
 
     public GenericParameterType Referent { get; }
 
-    public GenericParameterPlainType PlainType => Referent.PlainType;
-    NonVoidPlainType INonVoidType.PlainType => PlainType;
-    IMaybePlainType IMaybeType.PlainType => PlainType;
+    public override GenericParameterPlainType PlainType => Referent.PlainType;
 
-    public bool HasIndependentTypeArguments => false;
+    public override bool HasIndependentTypeArguments => false;
 
-    public TypeReplacements TypeReplacements => TypeReplacements.None;
+    public override TypeReplacements TypeReplacements => TypeReplacements.None;
 
     private CapabilityViewpointType(Capability capability, GenericParameterType referent)
     {
@@ -46,7 +42,7 @@ public sealed class CapabilityViewpointType : INonVoidType
     }
 
     #region Equals
-    public bool Equals(IMaybeType? other)
+    public override bool Equals(IMaybeType? other)
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
@@ -58,10 +54,8 @@ public sealed class CapabilityViewpointType : INonVoidType
     public override int GetHashCode() => HashCode.Combine(Capability, Referent);
     #endregion
 
-    public override string ToString() => ToILString();
-
-    public string ToSourceCodeString()
+    public override string ToSourceCodeString()
         => $"{Capability.ToSourceCodeString()} |> {Referent.ToSourceCodeString()}";
 
-    public string ToILString() => $"{Capability.ToILString()} |> {Referent.ToILString()}";
+    public override string ToILString() => $"{Capability.ToILString()} |> {Referent.ToILString()}";
 }

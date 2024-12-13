@@ -1,27 +1,28 @@
-using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 
-// e.g. `readable Self`
-// Applies to SelfPlainType
-// Could be CapabilitySelfType and operate on an ICapabilityConstraint but that
-// would introduce two ways of having types with capabilities on them.
-[DebuggerDisplay("{" + nameof(ToILString) + "(),nq}")]
-// TODO maybe this should merge with the SelfViewpointType the way CapabilityType can sometimes be a viewpoint
+/// <summary>
+/// A self type with a capability set (e.g. `readable Self`).
+/// </summary>
+/// <remarks><para>This is used as the type of the self parameter of methods that use capability
+/// sets on the self parameter.</para>
+///
+/// <para>This is distinct from <see cref="SelfViewpointType"/> even though that combines a
+/// capability set with a type because that combines with a full type whereas this combines with a
+/// plain type.</para></remarks>
 // TODO maybe this should be based on a bare type for consistency with CapabilityType
+// TODO this needs type argument capabilities for the containing type
 public sealed class CapabilitySetSelfType : INonVoidType
 {
     public CapabilitySet Capability { get; }
-    public SelfPlainType PlainType { get; }
 
-    NonVoidPlainType INonVoidType.PlainType => PlainType;
-    IMaybePlainType IMaybeType.PlainType => PlainType;
+    public override SelfPlainType PlainType { get; }
 
-    public TypeReplacements TypeReplacements => TypeReplacements.None;
+    public override TypeReplacements TypeReplacements => TypeReplacements.None;
 
-    public bool HasIndependentTypeArguments => false;
+    public override bool HasIndependentTypeArguments => false;
 
     public CapabilitySetSelfType(CapabilitySet capability, SelfPlainType plainType)
     {
@@ -30,7 +31,7 @@ public sealed class CapabilitySetSelfType : INonVoidType
     }
 
     #region Equality
-    public bool Equals(IMaybeType? other)
+    public override bool Equals(IMaybeType? other)
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
@@ -39,15 +40,10 @@ public sealed class CapabilitySetSelfType : INonVoidType
                && PlainType.Equals(otherType.PlainType);
     }
 
-    public override bool Equals(object? obj)
-        => ReferenceEquals(this, obj) || obj is CapabilitySetSelfType other && Equals(other);
-
     public override int GetHashCode() => HashCode.Combine(Capability, PlainType);
     #endregion
 
-    public override string ToString() => ToILString();
+    public override string ToSourceCodeString() => $"{Capability.ToSourceCodeString()} {PlainType}";
 
-    public string ToSourceCodeString() => $"{Capability.ToSourceCodeString()} {PlainType}";
-
-    public string ToILString() => $"{Capability.ToILString()} {PlainType}";
+    public override string ToILString() => $"{Capability.ToILString()} {PlainType}";
 }
