@@ -9,14 +9,14 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.MemoryLayout;
 internal class MethodSignature : IEquatable<MethodSignature>
 {
     public IdentifierName Name { get; }
-    public INonVoidType SelfType { get; }
+    public NonVoidType SelfType { get; }
     public IFixedList<ParameterType> ParameterTypes { get; }
     public IType ReturnType { get; }
     private readonly int hashCode;
 
     public MethodSignature(
         IdentifierName name,
-        INonVoidType selfType,
+        NonVoidType selfType,
         IFixedList<ParameterType> parameterTypes,
         IType returnType)
     {
@@ -37,7 +37,7 @@ internal class MethodSignature : IEquatable<MethodSignature>
                && ReturnType.ReturnCanOverride(selfType.TypeReplacements.ReplaceTypeParametersIn(other.ReturnType));
     }
 
-    private bool ParametersCompatible(INonVoidType selfType, MethodSignature other)
+    private bool ParametersCompatible(NonVoidType selfType, MethodSignature other)
     {
         if (ParameterTypes.Count != other.ParameterTypes.Count) return false;
         foreach (var (paramType, baseParamType) in ParameterTypes.EquiZip(other.ParameterTypes.Select(selfType.TypeReplacements.ReplaceTypeParametersIn)))

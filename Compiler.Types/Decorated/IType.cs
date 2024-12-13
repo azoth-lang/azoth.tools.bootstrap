@@ -5,7 +5,7 @@ using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 
-[Closed(typeof(INonVoidType), typeof(VoidType))]
+[Closed(typeof(NonVoidType), typeof(VoidType))]
 public interface IType : IMaybeType
 {
     #region Standard Types

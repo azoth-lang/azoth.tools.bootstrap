@@ -6,7 +6,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 
 /// <remarks>Even though optional types act like a value type that is declared `const`, they have
 /// a unique subtype relationship so they aren't just a special value type (i.e. `T &lt;: T?`).</remarks>
-public sealed class OptionalType : INonVoidType
+public sealed class OptionalType : NonVoidType
 {
     /// <summary>
     /// Create an optional type for the given type (i.e. `T?` given `T`).
@@ -15,7 +15,7 @@ public sealed class OptionalType : INonVoidType
     public static IMaybeType Create(IMaybeType referent)
         => referent switch
         {
-            INonVoidType t => new OptionalType(t),
+            NonVoidType t => new OptionalType(t),
             UnknownType _ => IType.Unknown,
             VoidType _ => IType.Void,
             _ => throw ExhaustiveMatch.Failed(referent),
@@ -28,16 +28,16 @@ public sealed class OptionalType : INonVoidType
     public static IMaybeNonVoidType Create(IMaybeNonVoidType referent)
         => referent switch
         {
-            INonVoidType t => new OptionalType(t),
+            NonVoidType t => new OptionalType(t),
             UnknownType _ => IType.Unknown,
             _ => throw ExhaustiveMatch.Failed(referent),
         };
 
-    public static OptionalType Create(INonVoidType referent) => new OptionalType(referent);
+    public static OptionalType Create(NonVoidType referent) => new OptionalType(referent);
 
     public override OptionalPlainType PlainType { get; }
 
-    public INonVoidType Referent { get; }
+    public NonVoidType Referent { get; }
 
     public override TypeReplacements TypeReplacements => Referent.TypeReplacements;
 
@@ -45,7 +45,7 @@ public sealed class OptionalType : INonVoidType
 
     /// <remarks>This constructor takes <paramref name="plainType"/> even though it is fully implied
     /// by the other parameters to avoid allocating duplicate <see cref="OptionalPlainType"/>s.</remarks>
-    public OptionalType(OptionalPlainType plainType, INonVoidType referent)
+    public OptionalType(OptionalPlainType plainType, NonVoidType referent)
     {
         Requires.That(plainType.Referent.Equals(referent.PlainType), nameof(referent),
             "Referent must match the plain type.");
@@ -53,7 +53,7 @@ public sealed class OptionalType : INonVoidType
         Referent = referent;
     }
 
-    public OptionalType(INonVoidType referent)
+    public OptionalType(NonVoidType referent)
         : this(new(referent.PlainType), referent) { }
 
     #region Equality

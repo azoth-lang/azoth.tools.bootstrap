@@ -14,7 +14,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 /// plain type.</para></remarks>
 // TODO maybe this should be based on a bare type for consistency with CapabilityType
 // TODO this needs type argument capabilities for the containing type
-public sealed class CapabilitySetSelfType : INonVoidType
+public sealed class CapabilitySetSelfType : NonVoidType
 {
     public CapabilitySet Capability { get; }
 

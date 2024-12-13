@@ -5,12 +5,12 @@ using ExhaustiveMatching;
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 
 // e.g. `self |> mut Foo` Applies to all non-void types
-public sealed class SelfViewpointType : INonVoidType
+public sealed class SelfViewpointType : NonVoidType
 {
     public static IMaybeType Create(CapabilitySet capability, IMaybeType referent)
         => referent switch
         {
-            INonVoidType t => new SelfViewpointType(capability, t),
+            NonVoidType t => new SelfViewpointType(capability, t),
             VoidType _ => IType.Void,
             UnknownType _ => IType.Unknown,
             _ => throw ExhaustiveMatch.Failed(referent),
@@ -18,7 +18,7 @@ public sealed class SelfViewpointType : INonVoidType
 
     public CapabilitySet Capability { get; }
 
-    public INonVoidType Referent { get; }
+    public NonVoidType Referent { get; }
 
     public override NonVoidPlainType PlainType => Referent.PlainType;
 
@@ -26,7 +26,7 @@ public sealed class SelfViewpointType : INonVoidType
 
     public override bool HasIndependentTypeArguments => Referent.HasIndependentTypeArguments;
 
-    public SelfViewpointType(CapabilitySet capability, INonVoidType referent)
+    public SelfViewpointType(CapabilitySet capability, NonVoidType referent)
     {
         Capability = capability;
         Referent = referent;

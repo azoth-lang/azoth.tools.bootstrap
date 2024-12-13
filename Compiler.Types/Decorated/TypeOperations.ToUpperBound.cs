@@ -18,7 +18,7 @@ public static partial class TypeOperations
     public static IMaybeNonVoidType ToUpperBound(this IMaybeNonVoidType self)
         => self switch
         {
-            INonVoidType t => t.ToUpperBound(),
+            NonVoidType t => t.ToUpperBound(),
             UnknownType _ => IType.Unknown,
             _ => throw ExhaustiveMatch.Failed(self),
         };
@@ -26,12 +26,12 @@ public static partial class TypeOperations
     public static IType ToUpperBound(this IType self)
         => self switch
         {
-            INonVoidType t => t.ToUpperBound(),
+            NonVoidType t => t.ToUpperBound(),
             VoidType _ => IType.Void,
             _ => throw ExhaustiveMatch.Failed(self),
         };
 
-    public static INonVoidType ToUpperBound(this INonVoidType self)
+    public static NonVoidType ToUpperBound(this NonVoidType self)
         => self switch
         {
             CapabilitySetSelfType t => CapabilityType.Create(t.Capability.UpperBound, t.PlainType),

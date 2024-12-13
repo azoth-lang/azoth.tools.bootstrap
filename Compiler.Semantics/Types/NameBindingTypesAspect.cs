@@ -20,7 +20,7 @@ internal static partial class NameBindingTypesAspect
         IVariableDeclarationStatementNode node,
         ICapabilityNode? capability)
     {
-        if (node.Initializer?.Type.ToNonLiteral() is not INonVoidType type)
+        if (node.Initializer?.Type.ToNonLiteral() is not NonVoidType type)
             return null;
 
         if (capability is null)

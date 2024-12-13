@@ -3,7 +3,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 
-public sealed class FunctionType : INonVoidType, IMaybeFunctionType
+public sealed class FunctionType : NonVoidType, IMaybeFunctionType
 {
     public static IMaybeFunctionType Create(IEnumerable<IMaybeParameterType> parameters, IMaybeType @return)
     {

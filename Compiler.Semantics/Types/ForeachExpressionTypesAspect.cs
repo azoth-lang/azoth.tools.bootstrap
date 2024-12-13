@@ -11,7 +11,7 @@ internal static partial class ForeachExpressionTypesAspect
     {
         var iterableType = node.InExpression?.Type.ToNonLiteral() ?? IType.Unknown;
         var iterateMethod = node.ReferencedIterateMethod;
-        var iteratorType = iterableType is INonVoidType nonVoidIterableType && iterateMethod is not null
+        var iteratorType = iterableType is NonVoidType nonVoidIterableType && iterateMethod is not null
             ? nonVoidIterableType.TypeReplacements.ReplaceTypeParametersIn(iterateMethod.MethodGroupType.Return)
             : iterableType;
         // TODO report an error for void type
@@ -24,7 +24,7 @@ internal static partial class ForeachExpressionTypesAspect
         if (nextMethodReturnType is not OptionalType { Referent: var iteratedType })
             return IType.Unknown;
 
-        if (node.IteratorType is not INonVoidType nonVoidIteratorType)
+        if (node.IteratorType is not NonVoidType nonVoidIteratorType)
             return iteratedType;
 
         // TODO report an error for void type

@@ -10,14 +10,14 @@ public sealed class FieldSymbol : Symbol
     public override OrdinaryTypeSymbol ContainingSymbol { get; }
     public override OrdinaryTypeSymbol ContextTypeSymbol => ContainingSymbol;
     public override IdentifierName Name { get; }
-    public INonVoidType Type { get; }
+    public NonVoidType Type { get; }
     public bool IsMutableBinding { get; }
 
     public FieldSymbol(
         OrdinaryTypeSymbol containingSymbol,
         bool isMutableBinding,
         IdentifierName name,
-        INonVoidType type)
+        NonVoidType type)
     {
         ContainingSymbol = containingSymbol;
         IsMutableBinding = isMutableBinding;

@@ -13,9 +13,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
     typeof(SelfViewpointType),
     typeof(CapabilityViewpointType),
     typeof(NeverType))]
-// TODO consider making this a class
 [DebuggerDisplay("{" + nameof(ToILString) + "(),nq}")]
-public abstract class INonVoidType : IType, IMaybeNonVoidType
+public abstract class NonVoidType : IType, IMaybeNonVoidType
 {
     public abstract NonVoidPlainType PlainType { get; }
     IPlainType IType.PlainType => PlainType;
@@ -26,14 +25,14 @@ public abstract class INonVoidType : IType, IMaybeNonVoidType
 
     public abstract TypeReplacements TypeReplacements { get; }
 
-    public virtual INonVoidType ToNonLiteral() => this;
+    public virtual NonVoidType ToNonLiteral() => this;
     IType IType.ToNonLiteral() => ToNonLiteral();
 
     #region Equality
     public abstract bool Equals(IMaybeType? other);
 
     public sealed override bool Equals(object? obj)
-        => ReferenceEquals(this, obj) || obj is INonVoidType other && Equals(other);
+        => ReferenceEquals(this, obj) || obj is NonVoidType other && Equals(other);
 
     public abstract override int GetHashCode();
 

@@ -21,7 +21,7 @@ internal static partial class ExpressionTypesAspect
 {
     public static partial void Expression_Contribute_Diagnostics(IExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
-        // TODO should ExpectedType be `IMaybeNonVoidType?` or even `INonVoidType?` ?
+        // TODO should ExpectedType be `IMaybeNonVoidType?` or even `NonVoidType?` ?
         if (node.ExpectedType is not { } expectedType)
             return;
 
@@ -299,7 +299,7 @@ internal static partial class ExpressionTypesAspect
         var parameterTypes = overload.ParameterTypes.AsEnumerable();
         if (selfArgument is not null)
         {
-            if (overload.SelfParameterType is not INonVoidType selfParameterType)
+            if (overload.SelfParameterType is not NonVoidType selfParameterType)
                 throw new InvalidOperationException("Self argument provided for overload without self parameter");
             parameterTypes = parameterTypes.Prepend(ParameterType.Create(false, selfParameterType.ToUpperBound()));
         }
@@ -315,7 +315,7 @@ internal static partial class ExpressionTypesAspect
         // Access must be applied first, so it can account for independent generic parameters.
         var type = fieldType.AccessedVia(contextType);
         // Then type parameters can be replaced now that they have the correct access
-        if (contextType is INonVoidType nonVoidContext)
+        if (contextType is NonVoidType nonVoidContext)
             // resolve generic type fields
             type = nonVoidContext.TypeReplacements.ReplaceTypeParametersIn(type);
 

@@ -13,7 +13,7 @@ public sealed class InitializerSymbol : FunctionOrInitializerSymbol
     public override OrdinaryTypeSymbol ContainingSymbol { get; }
     public override IdentifierName? Name { get; }
     public CapabilityType SelfParameterType { get; }
-    public override INonVoidType ReturnType { get; }
+    public override NonVoidType ReturnType { get; }
     public FunctionType InitializerGroupType { get; }
 
     public InitializerSymbol(

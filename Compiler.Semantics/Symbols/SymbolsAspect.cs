@@ -55,7 +55,7 @@ internal static partial class SymbolsAspect
     #region Member Definitions
     public static partial MethodSymbol? MethodDefinition_Symbol(IMethodDefinitionNode node)
     {
-        if (node.SelfParameterType is not INonVoidType selfParameterType)
+        if (node.SelfParameterType is not NonVoidType selfParameterType)
             return null;
         if (node.ReturnType is not IType returnType)
             return null;
@@ -84,7 +84,7 @@ internal static partial class SymbolsAspect
 
     public static partial FieldSymbol? FieldDefinition_Symbol(IFieldDefinitionNode node)
     {
-        if (node.BindingType is not INonVoidType bindingType) return null;
+        if (node.BindingType is not NonVoidType bindingType) return null;
         return new(node.ContainingSymbol, node.IsMutableBinding, node.Name, bindingType);
     }
 

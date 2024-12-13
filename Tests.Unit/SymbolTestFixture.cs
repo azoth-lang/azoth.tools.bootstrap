@@ -28,10 +28,10 @@ public abstract class SymbolTestFixture
     protected IFixedList<ParameterType> Params(int? count = null)
         => Enumerable.Range(1, count ?? ++unique).Select(_ => IntParameter).ToFixedList();
 
-    protected static IFixedList<ParameterType> Params(INonVoidType param, params INonVoidType[] @params)
+    protected static IFixedList<ParameterType> Params(NonVoidType param, params NonVoidType[] @params)
         => @params.Prepend(param).Select(t => new ParameterType(false, t)).ToFixedList();
 
-    protected static ParameterType Param(INonVoidType param) => new ParameterType(false, param);
+    protected static ParameterType Param(NonVoidType param) => new ParameterType(false, param);
 
     protected FunctionSymbol Func(
         string? name = null,
@@ -61,7 +61,7 @@ public abstract class SymbolTestFixture
     protected MethodSymbol Method(
         string? name = null,
         OrdinaryTypeSymbol? containing = null,
-        INonVoidType? self = null,
+        NonVoidType? self = null,
         IFixedList<ParameterType>? @params = null,
         IType? @return = null)
     {
@@ -79,7 +79,7 @@ public abstract class SymbolTestFixture
         MethodSymbol mother,
         string? name = null,
         OrdinaryTypeSymbol? containing = null,
-        INonVoidType? self = null,
+        NonVoidType? self = null,
         IFixedList<ParameterType>? @params = null,
         IType? @return = null)
     {

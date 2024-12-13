@@ -2,7 +2,7 @@ using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 
-public sealed class NeverType : INonVoidType
+public sealed class NeverType : NonVoidType
 {
     #region Singleton
     internal static readonly NeverType Instance = new NeverType();

@@ -5,7 +5,7 @@ using Azoth.Tools.Bootstrap.Framework;
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 
 // TODO should `iso|>T` be disallowed?
-public sealed class CapabilityViewpointType : INonVoidType
+public sealed class CapabilityViewpointType : NonVoidType
 {
     public static IMaybeType Create(Capability capability, IMaybeType referent)
         => referent switch
@@ -16,7 +16,7 @@ public sealed class CapabilityViewpointType : INonVoidType
             _ => referent,
         };
 
-    public static INonVoidType Create(Capability capability, GenericParameterType referent)
+    public static NonVoidType Create(Capability capability, GenericParameterType referent)
     {
         // TODO is this really a result of the implicit `aliasable` constraint on most type parameters?
         if (capability == Capability.Mutable || capability == Capability.InitMutable) return referent;

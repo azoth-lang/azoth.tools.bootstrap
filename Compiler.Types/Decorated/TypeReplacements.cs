@@ -76,7 +76,7 @@ public sealed class TypeReplacements
             {
                 var replacementType = ReplaceTypeParametersIn(optionalType.Referent);
                 if (!ReferenceEquals(optionalType.Referent, replacementType))
-                    return replacementType is INonVoidType nonVoidType
+                    return replacementType is NonVoidType nonVoidType
                         ? OptionalType.Create(nonVoidType)
                         // Optional of void is not allowed. Instead, just produce void.
                         : IType.Void;
@@ -108,7 +108,7 @@ public sealed class TypeReplacements
                 var replacementType = ReplaceTypeParametersIn(selfViewpointType.Referent);
                 if (!ReferenceEquals(selfViewpointType.Referent, replacementType))
                 {
-                    if (replacementType is INonVoidType nonVoidReplacementType)
+                    if (replacementType is NonVoidType nonVoidReplacementType)
                         return new SelfViewpointType(selfViewpointType.Capability, nonVoidReplacementType);
                     return IType.Void;
                 }
@@ -141,7 +141,7 @@ public sealed class TypeReplacements
 
     public ParameterType? ReplaceTypeParametersIn(ParameterType type)
     {
-        if (ReplaceTypeParametersIn(type.Type) is INonVoidType replacementType)
+        if (ReplaceTypeParametersIn(type.Type) is NonVoidType replacementType)
             return type with { Type = replacementType };
         return null;
     }

@@ -8,7 +8,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 
 // e.g. `mut Foo`, `const Self`, etc. when not applied to GenericParameterPlainType
 // e.g. `read |> T` when applied to GenericParameterPlainType
-public sealed class CapabilityType : INonVoidType
+public sealed class CapabilityType : NonVoidType
 {
     public static CapabilityType Create(Capability capability, ConstructedPlainType plainType)
         => new(capability, new ConstructedBareType(plainType, []));

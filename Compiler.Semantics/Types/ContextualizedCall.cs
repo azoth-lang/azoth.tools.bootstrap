@@ -39,7 +39,7 @@ public sealed class ContextualizedCall : IEquatable<ContextualizedCall>
         IInvocableDeclarationNode node,
         IMaybeNonVoidType selfParameterType)
     {
-        if (contextType is INonVoidType nonVoidContextType)
+        if (contextType is NonVoidType nonVoidContextType)
         {
             selfParameterType = CreateSelfParameterType(nonVoidContextType, selfParameterType);
             var parameterTypes = CreateParameterTypes(nonVoidContextType, node);
@@ -50,20 +50,20 @@ public sealed class ContextualizedCall : IEquatable<ContextualizedCall>
     }
 
     private static IMaybeNonVoidType CreateSelfParameterType(
-        INonVoidType contextType,
+        NonVoidType contextType,
         IMaybeNonVoidType symbolSelfParameterType)
         // TODO eliminate cast
         => (IMaybeNonVoidType)contextType.TypeReplacements.ReplaceTypeParametersIn(symbolSelfParameterType);
 
     private static IFixedList<IMaybeParameterType> CreateParameterTypes(
-        INonVoidType contextType,
+        NonVoidType contextType,
         IInvocableDeclarationNode node)
         => node.ParameterTypes.Select(p => CreateParameterType(contextType, p)).WhereNotNull().ToFixedList();
 
-    private static IMaybeParameterType? CreateParameterType(INonVoidType contextType, IMaybeParameterType parameter)
+    private static IMaybeParameterType? CreateParameterType(NonVoidType contextType, IMaybeParameterType parameter)
         => contextType.TypeReplacements.ReplaceTypeParametersIn(parameter);
 
-    private static IMaybeType CreateReturnType(INonVoidType contextType, IInvocableDeclarationNode node)
+    private static IMaybeType CreateReturnType(NonVoidType contextType, IInvocableDeclarationNode node)
         => contextType.TypeReplacements.ReplaceTypeParametersIn(node.ReturnType);
 
     public IMaybeType? ContextType { get; }

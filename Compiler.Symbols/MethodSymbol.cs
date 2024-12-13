@@ -13,7 +13,7 @@ public sealed class MethodSymbol : InvocableSymbol
     public override TypeSymbol ContextTypeSymbol => ContainingSymbol;
     public MethodKind Kind { get; }
     public override IdentifierName Name { get; }
-    public INonVoidType SelfParameterType { get; }
+    public NonVoidType SelfParameterType { get; }
     public override IType ReturnType { get; }
     public FunctionType MethodGroupType { get; }
 
@@ -22,7 +22,7 @@ public sealed class MethodSymbol : InvocableSymbol
         MethodKind kind,
         IdentifierName name,
         // TODO once `Self` is used, this can just be a capability constraint
-        INonVoidType selfParameterType,
+        NonVoidType selfParameterType,
         IFixedList<ParameterType> parameterTypes,
         IType returnType)
         : base(parameterTypes)

@@ -7,13 +7,13 @@ public static partial class TypeOperations
     public static IMaybeType WithoutWrite(this IMaybeType self)
         => self switch
         {
-            INonVoidType t => t.WithoutWrite(),
+            NonVoidType t => t.WithoutWrite(),
             VoidType t => t,
             UnknownType t => t,
             _ => throw ExhaustiveMatch.Failed(self),
         };
 
-    public static INonVoidType WithoutWrite(this INonVoidType self)
+    public static NonVoidType WithoutWrite(this NonVoidType self)
         => self switch
         {
             CapabilityType t => t.WithoutWrite(),
