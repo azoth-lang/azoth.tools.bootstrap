@@ -56,6 +56,7 @@ public static class GrammarAttribute
     /// <summary>
     /// Read the value of a non-circular attribute.
     /// </summary>
+    [DebuggerStepThrough]
     public static T NonCircular<TNode, T, TFunc, TOp, TLock>(
         this TNode node,
         ref bool cached,
@@ -330,6 +331,7 @@ public static class GrammarAttribute
         T Compute() => collect(actualContributors);
     }
 
+    [DebuggerStepThrough]
     // Not null inference is wrong here. This can be null because another thread could null it out.
     private static IFixedSet<T>? GetAggregateContributors<T>(
         ref IFixedSet<T>? contributors,
@@ -385,6 +387,7 @@ public static class GrammarAttribute
         T Compute(TNode t) => collect(t, actualContributors);
     }
 
+    [DebuggerStepThrough]
     // Not null inference is wrong here. This can be null because another thread could null it out.
     private static IFixedSet<T>? GetCollectionContributors<T>(
         T node,
@@ -526,7 +529,7 @@ public static class GrammarAttribute
     /// <summary>
     /// Read the value of a circular attribute.
     /// </summary>
-    //[DebuggerStepThrough]
+    [DebuggerStepThrough]
     internal static T Cyclic<TNode, T, TCyclic, TFunc, TCompare>(
         TNode node,
         ref bool cached,
