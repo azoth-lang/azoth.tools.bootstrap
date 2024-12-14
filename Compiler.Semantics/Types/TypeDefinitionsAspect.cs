@@ -21,7 +21,7 @@ internal static partial class TypeDefinitionsAspect
 
     private static void CheckBaseTypeMustBeAClass(IClassDefinitionNode node, DiagnosticCollectionBuilder diagnostics)
     {
-        if (node.BaseTypeName?.ReferencedDeclaration?.TypeConstructor is not null
+        if (node.BaseTypeName?.ReferencedDeclaration?.TypeFactory is not null
             and not OrdinaryTypeConstructor { Kind: TypeKind.Class })
             diagnostics.Add(OtherSemanticError.BaseTypeMustBeClass(node.File, node.Name, node.BaseTypeName.Syntax));
     }
@@ -59,7 +59,7 @@ internal static partial class TypeDefinitionsAspect
                    // Try to avoid loading the declared type by checking names first
                    t.TypeConstructor.Name != node.Name
                    // But the real check is on the declared type
-                   || !t.TypeConstructor.Equals(typeConstructor ??= node.TypeConstructor))
+                   || !t.TypeConstructor.Equals(typeConstructor ??= node.TypeFactory))
                // Everything has `Any` as a supertype (added after filter to avoid loading declared type)
                .Append(BareType.Any)
                .ToFixedSet();
@@ -110,7 +110,7 @@ internal static partial class TypeDefinitionsAspect
 
     private static void CheckSupertypesForCycle(ITypeDefinitionNode node, DiagnosticCollectionBuilder diagnostics)
     {
-        var typeConstructor = node.TypeConstructor;
+        var typeConstructor = node.TypeFactory;
         foreach (var supertypeName in node.AllSupertypeNames)
             if (supertypeName.InheritsFrom(typeConstructor))
                 diagnostics.Add(OtherSemanticError.CircularDefinitionInSupertype(node.File, supertypeName.Syntax));
@@ -129,7 +129,7 @@ internal static partial class TypeDefinitionsAspect
     {
         foreach (var node in typeNode.SupertypeNames)
             // Null symbol will report a separate name binding error
-            if (node.ReferencedDeclaration?.TypeConstructor is OrdinaryTypeConstructor { Kind: TypeKind.Struct })
+            if (node.ReferencedDeclaration?.TypeFactory is OrdinaryTypeConstructor { Kind: TypeKind.Struct })
                 diagnostics.Add(OtherSemanticError.SupertypeMustBeClassOrTrait(node.File, typeNode.Name, node.Syntax));
     }
 

@@ -22,9 +22,9 @@ internal static partial class DefinitionPlainTypesAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IMaybeNonVoidPlainType FieldDefinition_BindingPlainType(IFieldDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial OrdinaryTypeConstructor ClassDefinition_TypeConstructor(IClassDefinitionNode node);
+    public static partial OrdinaryTypeConstructor ClassDefinition_TypeFactory(IClassDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial OrdinaryTypeConstructor StructDefinition_TypeConstructor(IStructDefinitionNode node);
+    public static partial OrdinaryTypeConstructor StructDefinition_TypeFactory(IStructDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial OrdinaryTypeConstructor TraitDefinition_TypeConstructor(ITraitDefinitionNode node);
+    public static partial OrdinaryTypeConstructor TraitDefinition_TypeFactory(ITraitDefinitionNode node);
 }

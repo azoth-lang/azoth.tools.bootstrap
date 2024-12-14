@@ -69,7 +69,10 @@
 // ---------- Type Declarations
 = TypeDeclaration.*.**.ContainingDeclaration => this;
 
-// ---------- Type Member Definitions
+// ---------- Type Declaration Parts
+↓ computed GenericParameterDeclaration.ContainingDeclaration: UserTypeDeclaration;
+
+// ---------- Type Member Declarations
 = MethodDeclaration.*.**.ContainingDeclaration => this;
 = ConstructorDeclaration.*.**.ContainingDeclaration => this;
 = InitializerDeclaration.*.**.ContainingDeclaration => this;

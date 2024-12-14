@@ -1,4 +1,7 @@
+using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
+using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
+using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
@@ -6,7 +9,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 [Closed(
     typeof(OrdinaryAssociatedPlainType),
     typeof(SelfPlainType))]
-public abstract class AssociatedPlainType : ConstructedOrAssociatedPlainType
+public abstract class AssociatedPlainType : ConstructedOrAssociatedPlainType, ITypeFactory
 {
     public TypeConstructor ContainingType { get; }
     public sealed override TypeConstructor? TypeConstructor => null;
@@ -17,6 +20,12 @@ public abstract class AssociatedPlainType : ConstructedOrAssociatedPlainType
     protected AssociatedPlainType(TypeConstructor containingType)
     {
         ContainingType = containingType;
+    }
+
+    BareType ITypeFactory.TryConstruct(IFixedList<IMaybeType> arguments)
+    {
+        if (arguments.IsEmpty()) throw new ArgumentException("Associated type cannot have type arguments", nameof(arguments));
+        return new AssociatedBareType(this);
     }
 
     public sealed override string ToString() => $"{ContainingType}.{Name}";

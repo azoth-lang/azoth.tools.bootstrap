@@ -18,7 +18,7 @@
 = FunctionDefinition.Body.**.ExpectedReturnPlainType => Self.ReturnPlainType;
 
 // ---------- Type Definitions
-↑ TypeDefinition.TypeConstructor:`OrdinaryTypeConstructor`;
+↑ TypeDefinition.TypeFactory: `OrdinaryTypeConstructor`;
 ↑ TypeDefinition.SelfPlainType: `SelfPlainType`;
 = TypeDefinition.SelfPlainType;
 
@@ -35,15 +35,15 @@
 // TODO it would be good to refactor to not depend on Type
 = StandardMethodDefinition.MethodGroupPlainType => MethodGroupType.PlainType;
 = ConstructorDefinition.ReturnPlainType
-    => ContainingTypeDefinition.TypeConstructor.ConstructWithParameterPlainTypes();
+    => ContainingTypeDefinition.TypeFactory.ConstructWithParameterPlainTypes();
 = DefaultConstructorDefinition.SelfParameterPlainType
-    => ContainingTypeDefinition.TypeConstructor.ConstructWithParameterPlainTypes();
+    => ContainingTypeDefinition.TypeFactory.ConstructWithParameterPlainTypes();
 = SourceConstructorDefinition.SelfParameterPlainType => SelfParameter.BindingPlainType;
 = SourceConstructorDefinition.Body.**.ExpectedReturnPlainType => AzothPlainType.Void;
 = InitializerDefinition.ReturnPlainType
-    => ContainingTypeDefinition.TypeConstructor.ConstructWithParameterPlainTypes();
+    => ContainingTypeDefinition.TypeFactory.ConstructWithParameterPlainTypes();
 = DefaultInitializerDefinition.SelfParameterPlainType
-    => ContainingTypeDefinition.TypeConstructor.ConstructWithParameterPlainTypes();
+    => ContainingTypeDefinition.TypeFactory.ConstructWithParameterPlainTypes();
 = SourceInitializerDefinition.SelfParameterPlainType => SelfParameter.BindingPlainType;
 = SourceInitializerDefinition.Body.**.ExpectedReturnPlainType => AzothPlainType.Void;
 // Null is the signal that this is a field initializer and not a method body

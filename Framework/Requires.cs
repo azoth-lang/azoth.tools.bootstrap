@@ -51,6 +51,7 @@ public static class Requires
             throw new ArgumentException(message, paramName);
     }
 
+    [DebuggerHidden]
     public static void Zero<T>(T value, string paramName)
         where T : IAdditiveIdentity<T, T>, IEquatable<T>
     {

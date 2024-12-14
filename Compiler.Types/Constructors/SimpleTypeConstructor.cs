@@ -42,8 +42,7 @@ public abstract class SimpleTypeConstructor : SimpleOrLiteralTypeConstructor
 
     public sealed override ConstructedPlainType Construct(IFixedList<PlainType> arguments)
     {
-        if (arguments.Any())
-            throw new ArgumentException("Simple type cannot have type arguments", nameof(arguments));
+        TypeRequires.NoArgs(arguments, nameof(arguments));
         return PlainType;
     }
 

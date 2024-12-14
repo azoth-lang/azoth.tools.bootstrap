@@ -26,6 +26,7 @@ using Azoth.Tools.Bootstrap.Compiler.Semantics.Variables;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 using Azoth.Tools.Bootstrap.Compiler.Syntax;
+using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
@@ -515,8 +516,9 @@ public partial interface ITypeDefinitionNode : IFacetMemberDefinitionNode, IAsso
     new Symbol ContainingSymbol
         => ContainingDeclaration.Symbol!;
     Symbol? IDefinitionNode.ContainingSymbol => ContainingSymbol;
-    new OrdinaryTypeConstructor TypeConstructor { get; }
-    TypeConstructor? ITypeDeclarationNode.TypeConstructor => TypeConstructor;
+    new OrdinaryTypeConstructor TypeFactory { get; }
+    TypeConstructor IUserTypeDeclarationNode.TypeFactory => TypeFactory;
+    ITypeFactory ITypeDeclarationNode.TypeFactory => TypeFactory;
     SelfPlainType SelfPlainType { get; }
     new IFixedSet<ConstructedBareType> Supertypes { get; }
     IFixedSet<ConstructedBareType> ITypeDeclarationNode.Supertypes => Supertypes;
@@ -622,8 +624,6 @@ public partial interface IGenericParameterNode : ICodeNode, IGenericParameterDec
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     ICapabilityConstraintNode Constraint { get; }
-    new IUserTypeDeclarationNode ContainingDeclaration { get; }
-    ISymbolDeclarationNode IDeclarationNode.ContainingDeclaration => ContainingDeclaration;
     new IdentifierName Name
         => Syntax.Name;
     IdentifierName IGenericParameterDeclarationNode.Name => Name;
@@ -885,7 +885,7 @@ public partial interface IConstructorDefinitionNode : IInvocableDefinitionNode, 
     IMaybeType IInvocableDeclarationNode.ReturnType
         => Symbol?.ReturnType ?? IMaybeType.Unknown;
     IMaybePlainType IInvocableDeclarationNode.ReturnPlainType
-        => ContainingTypeDefinition.TypeConstructor.ConstructWithParameterPlainTypes();
+        => ContainingTypeDefinition.TypeFactory.ConstructWithParameterPlainTypes();
 }
 
 // [Closed(typeof(DefaultConstructorDefinitionNode))]
@@ -908,7 +908,7 @@ public partial interface IDefaultConstructorDefinitionNode : IConstructorDefinit
     IMaybeNonVoidType IConstructorDeclarationNode.SelfParameterType
         => Symbol!.SelfParameterType;
     IMaybeNonVoidPlainType IConstructorDeclarationNode.SelfParameterPlainType
-        => ContainingTypeDefinition.TypeConstructor.ConstructWithParameterPlainTypes();
+        => ContainingTypeDefinition.TypeFactory.ConstructWithParameterPlainTypes();
 
     public static IDefaultConstructorDefinitionNode Create()
         => new DefaultConstructorDefinitionNode();
@@ -959,7 +959,7 @@ public partial interface IInitializerDefinitionNode : IInvocableDefinitionNode, 
     IMaybeType IInvocableDeclarationNode.ReturnType
         => Symbol?.ReturnType ?? IMaybeType.Unknown;
     IMaybePlainType IInvocableDeclarationNode.ReturnPlainType
-        => ContainingTypeDefinition.TypeConstructor.ConstructWithParameterPlainTypes();
+        => ContainingTypeDefinition.TypeFactory.ConstructWithParameterPlainTypes();
 }
 
 // [Closed(typeof(DefaultInitializerDefinitionNode))]
@@ -982,7 +982,7 @@ public partial interface IDefaultInitializerDefinitionNode : IInitializerDefinit
     IMaybeNonVoidType IInitializerDeclarationNode.SelfParameterType
         => Symbol!.SelfParameterType;
     IMaybeNonVoidPlainType IInitializerDeclarationNode.SelfParameterPlainType
-        => ContainingTypeDefinition.TypeConstructor.ConstructWithParameterPlainTypes();
+        => ContainingTypeDefinition.TypeFactory.ConstructWithParameterPlainTypes();
 
     public static IDefaultInitializerDefinitionNode Create()
         => new DefaultInitializerDefinitionNode();
@@ -3790,7 +3790,7 @@ public partial interface ITypeDeclarationNode : INamedDeclarationNode, ISymbolDe
     IEnumerable<IInstanceMemberDeclarationNode> InclusiveInstanceMembersNamed(StandardName named);
     IEnumerable<IAssociatedMemberDeclarationNode> AssociatedMembersNamed(StandardName named);
     IFixedSet<ConstructedBareType> Supertypes { get; }
-    TypeConstructor? TypeConstructor { get; }
+    ITypeFactory TypeFactory { get; }
     new TypeSymbol Symbol { get; }
     Symbol? ISymbolDeclarationNode.Symbol => Symbol;
     IFixedSet<ITypeMemberDeclarationNode> Members { get; }
@@ -3828,6 +3828,8 @@ public partial interface IUserTypeDeclarationNode : INamespaceMemberDeclarationN
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
     FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>> InclusiveInstanceMembersByName { get; }
     FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>> AssociatedMembersByName { get; }
+    new TypeConstructor TypeFactory { get; }
+    ITypeFactory ITypeDeclarationNode.TypeFactory => TypeFactory;
     new OrdinaryTypeSymbol Symbol { get; }
     Symbol? ISymbolDeclarationNode.Symbol => Symbol;
     TypeSymbol ITypeDeclarationNode.Symbol => Symbol;
@@ -3887,6 +3889,8 @@ public partial interface IGenericParameterDeclarationNode : ITypeDeclarationNode
     StandardName? IPackageFacetChildDeclarationNode.Name => Name;
     new IFixedSet<ITypeMemberDeclarationNode> Members { get; }
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
+    new IUserTypeDeclarationNode ContainingDeclaration { get; }
+    ISymbolDeclarationNode IDeclarationNode.ContainingDeclaration => ContainingDeclaration;
     new GenericParameterTypeSymbol Symbol { get; }
     TypeSymbol ITypeDeclarationNode.Symbol => Symbol;
     Symbol? ISymbolDeclarationNode.Symbol => Symbol;
@@ -3894,8 +3898,6 @@ public partial interface IGenericParameterDeclarationNode : ITypeDeclarationNode
         => [];
     IEnumerable<IAssociatedMemberDeclarationNode> ITypeDeclarationNode.AssociatedMembersNamed(StandardName named)
         => [];
-    TypeConstructor? ITypeDeclarationNode.TypeConstructor
-        => null;
 }
 
 [Closed(
@@ -4254,8 +4256,8 @@ public partial interface IVoidTypeSymbolNode : IBuiltInTypeSymbolNode
     Symbol IChildSymbolNode.Symbol => Symbol;
     SpecialTypeName IBuiltInTypeSymbolNode.Name
         => Symbol.Name;
-    TypeConstructor? ITypeDeclarationNode.TypeConstructor
-        => null;
+    ITypeFactory ITypeDeclarationNode.TypeFactory
+        => ITypeFactory.Void;
 
     public static IVoidTypeSymbolNode Create(VoidTypeSymbol symbol)
         => new VoidTypeSymbolNode(symbol);
@@ -4272,8 +4274,8 @@ public partial interface INeverTypeSymbolNode : IBuiltInTypeSymbolNode
     Symbol IChildSymbolNode.Symbol => Symbol;
     SpecialTypeName IBuiltInTypeSymbolNode.Name
         => Symbol.Name;
-    TypeConstructor? ITypeDeclarationNode.TypeConstructor
-        => null;
+    ITypeFactory ITypeDeclarationNode.TypeFactory
+        => ITypeFactory.Never;
 
     public static INeverTypeSymbolNode Create(NeverTypeSymbol symbol)
         => new NeverTypeSymbolNode(symbol);
@@ -4290,7 +4292,7 @@ public partial interface IPrimitiveTypeSymbolNode : IBuiltInTypeSymbolNode
     Symbol IChildSymbolNode.Symbol => Symbol;
     SpecialTypeName IBuiltInTypeSymbolNode.Name
         => Symbol.Name;
-    TypeConstructor? ITypeDeclarationNode.TypeConstructor
+    ITypeFactory ITypeDeclarationNode.TypeFactory
         => Symbol.TypeConstructor;
 
     public static IPrimitiveTypeSymbolNode Create(BuiltInTypeSymbol symbol)
@@ -4323,7 +4325,7 @@ public partial interface IOrdinaryTypeSymbolNode : IUserTypeDeclarationNode, ITy
     IFixedSet<ITypeMemberSymbolNode> ITypeSymbolNode.Members => Members;
     IFixedSet<ConstructedBareType> ITypeDeclarationNode.Supertypes
         => Symbol.TryGetTypeConstructor().Supertypes;
-    TypeConstructor? ITypeDeclarationNode.TypeConstructor
+    TypeConstructor IUserTypeDeclarationNode.TypeFactory
         => Symbol.TypeConstructor;
 }
 
@@ -5566,12 +5568,12 @@ file class ClassDefinitionNode : SemanticNode, IClassDefinitionNode
                 SymbolsAspect.TypeDefinition_Symbol);
     private OrdinaryTypeSymbol? symbol;
     private bool symbolCached;
-    public OrdinaryTypeConstructor TypeConstructor
-        => GrammarAttribute.IsCached(in typeConstructorCached) ? typeConstructor!
-            : this.Synthetic(ref typeConstructorCached, ref typeConstructor,
-                DefinitionPlainTypesAspect.ClassDefinition_TypeConstructor);
-    private OrdinaryTypeConstructor? typeConstructor;
-    private bool typeConstructorCached;
+    public OrdinaryTypeConstructor TypeFactory
+        => GrammarAttribute.IsCached(in typeFactoryCached) ? typeFactory!
+            : this.Synthetic(ref typeFactoryCached, ref typeFactory,
+                DefinitionPlainTypesAspect.ClassDefinition_TypeFactory);
+    private OrdinaryTypeConstructor? typeFactory;
+    private bool typeFactoryCached;
 
     public ClassDefinitionNode(
         IClassDefinitionSyntax syntax,
@@ -5734,12 +5736,12 @@ file class StructDefinitionNode : SemanticNode, IStructDefinitionNode
                 SymbolsAspect.TypeDefinition_Symbol);
     private OrdinaryTypeSymbol? symbol;
     private bool symbolCached;
-    public OrdinaryTypeConstructor TypeConstructor
-        => GrammarAttribute.IsCached(in typeConstructorCached) ? typeConstructor!
-            : this.Synthetic(ref typeConstructorCached, ref typeConstructor,
-                DefinitionPlainTypesAspect.StructDefinition_TypeConstructor);
-    private OrdinaryTypeConstructor? typeConstructor;
-    private bool typeConstructorCached;
+    public OrdinaryTypeConstructor TypeFactory
+        => GrammarAttribute.IsCached(in typeFactoryCached) ? typeFactory!
+            : this.Synthetic(ref typeFactoryCached, ref typeFactory,
+                DefinitionPlainTypesAspect.StructDefinition_TypeFactory);
+    private OrdinaryTypeConstructor? typeFactory;
+    private bool typeFactoryCached;
 
     public StructDefinitionNode(
         IStructDefinitionSyntax syntax,
@@ -5887,12 +5889,12 @@ file class TraitDefinitionNode : SemanticNode, ITraitDefinitionNode
                 SymbolsAspect.TypeDefinition_Symbol);
     private OrdinaryTypeSymbol? symbol;
     private bool symbolCached;
-    public OrdinaryTypeConstructor TypeConstructor
-        => GrammarAttribute.IsCached(in typeConstructorCached) ? typeConstructor!
-            : this.Synthetic(ref typeConstructorCached, ref typeConstructor,
-                DefinitionPlainTypesAspect.TraitDefinition_TypeConstructor);
-    private OrdinaryTypeConstructor? typeConstructor;
-    private bool typeConstructorCached;
+    public OrdinaryTypeConstructor TypeFactory
+        => GrammarAttribute.IsCached(in typeFactoryCached) ? typeFactory!
+            : this.Synthetic(ref typeFactoryCached, ref typeFactory,
+                DefinitionPlainTypesAspect.TraitDefinition_TypeFactory);
+    private OrdinaryTypeConstructor? typeFactory;
+    private bool typeFactoryCached;
 
     public TraitDefinitionNode(
         ITraitDefinitionSyntax syntax,
@@ -5990,6 +5992,12 @@ file class GenericParameterNode : SemanticNode, IGenericParameterNode
                 SymbolsAspect.GenericParameter_Symbol);
     private GenericParameterTypeSymbol? symbol;
     private bool symbolCached;
+    public ITypeFactory TypeFactory
+        => GrammarAttribute.IsCached(in typeFactoryCached) ? typeFactory!
+            : this.Synthetic(ref typeFactoryCached, ref typeFactory,
+                DeclarationsAspect.GenericParameterDeclaration_TypeFactory);
+    private ITypeFactory? typeFactory;
+    private bool typeFactoryCached;
 
     public GenericParameterNode(
         IGenericParameterSyntax syntax,
@@ -18686,14 +18694,20 @@ file class GenericParameterSymbolNode : SemanticNode, IGenericParameterSymbolNod
     private IGenericParameterSymbolNode Self { [Inline] get => this; }
 
     public GenericParameterTypeSymbol Symbol { [DebuggerStepThrough] get; }
-    public ISymbolDeclarationNode ContainingDeclaration
-        => Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public IPackageFacetDeclarationNode Facet
         => Inherited_Facet(GrammarAttribute.CurrentInheritanceContext());
+    public IUserTypeDeclarationNode ContainingDeclaration
+        => (IUserTypeDeclarationNode)Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
     public ISymbolTree SymbolTree()
         => Inherited_SymbolTree(GrammarAttribute.CurrentInheritanceContext());
+    public ITypeFactory TypeFactory
+        => GrammarAttribute.IsCached(in typeFactoryCached) ? typeFactory!
+            : this.Synthetic(ref typeFactoryCached, ref typeFactory,
+                DeclarationsAspect.GenericParameterDeclaration_TypeFactory);
+    private ITypeFactory? typeFactory;
+    private bool typeFactoryCached;
 
     public GenericParameterSymbolNode(GenericParameterTypeSymbol symbol)
     {

@@ -1,6 +1,7 @@
 ◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Declarations;
 ◊name DeclarationsAspect;
 ◊using Azoth.Tools.Bootstrap.Framework;
+◊using Azoth.Tools.Bootstrap.Compiler.Types;
 
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
@@ -42,11 +43,12 @@
 
 // ---------- Type Declarations
 ↑ TypeDeclaration.Supertypes: {`ConstructedBareType`};
-↑ TypeDeclaration.TypeConstructor: `TypeConstructor`?;
+↑ TypeDeclaration.TypeFactory: `ITypeFactory`;
 ↑ TypeDeclaration.Symbol: `TypeSymbol`;
 ↑ TypeDeclaration.Members: {TypeMemberDeclaration};
 /// Members including ones inherited from supertypes
 ↑ TypeDeclaration.InclusiveMembers: {TypeMemberDeclaration};
+↑ UserTypeDeclaration.TypeFactory: `TypeConstructor`;
 ↑ UserTypeDeclaration.Symbol: `OrdinaryTypeSymbol`;
 ↑ UserTypeDeclaration.InclusiveMembers: {TypeMemberDeclaration};
 ↑ ClassDeclaration.InclusiveMembers: {ClassMemberDeclaration};
@@ -54,7 +56,7 @@
 ↑ TraitDeclaration.InclusiveMembers: {TraitMemberDeclaration};
 
 // ---------- Type Declaration Parts
-= GenericParameterDeclaration.TypeConstructor => null;
+= GenericParameterDeclaration.TypeFactory;
 ↑ GenericParameterDeclaration.Symbol: `GenericParameterTypeSymbol`;
 
 // ---------- Member Declarations

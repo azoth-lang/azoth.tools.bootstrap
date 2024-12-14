@@ -15,7 +15,7 @@ internal static partial class DefinitionPlainTypesAspect
     public static partial IMaybeFunctionPlainType ConcreteFunctionInvocableDefinition_PlainType(IConcreteFunctionInvocableDefinitionNode node)
         => FunctionPlainType.Create(node.ParameterPlainTypes, node.ReturnPlainType);
 
-    public static partial OrdinaryTypeConstructor ClassDefinition_TypeConstructor(IClassDefinitionNode node)
+    public static partial OrdinaryTypeConstructor ClassDefinition_TypeFactory(IClassDefinitionNode node)
     {
         // TODO use ContainingTypeConstructor in case this is a nested type
         NamespaceName containingNamespaceName = GetContainingNamespaceName(node);
@@ -23,7 +23,7 @@ internal static partial class DefinitionPlainTypesAspect
             node.IsAbstract, node.IsConst, node.Name, GetGenericParameters(node), node.Supertypes);
     }
 
-    public static partial OrdinaryTypeConstructor StructDefinition_TypeConstructor(IStructDefinitionNode node)
+    public static partial OrdinaryTypeConstructor StructDefinition_TypeFactory(IStructDefinitionNode node)
     {
         // TODO use ContainingTypeConstructor in case this is a nested type
         NamespaceName containingNamespaceName = GetContainingNamespaceName(node);
@@ -31,7 +31,7 @@ internal static partial class DefinitionPlainTypesAspect
             node.IsConst, node.Name, GetGenericParameters(node), node.Supertypes);
     }
 
-    public static partial OrdinaryTypeConstructor TraitDefinition_TypeConstructor(ITraitDefinitionNode node)
+    public static partial OrdinaryTypeConstructor TraitDefinition_TypeFactory(ITraitDefinitionNode node)
     {
         // TODO use ContainingTypeConstructor in case this is a nested type
         NamespaceName containingNamespaceName = GetContainingNamespaceName(node);
@@ -52,7 +52,7 @@ internal static partial class DefinitionPlainTypesAspect
         => node.GenericParameters.Select(p => p.Parameter).ToFixedList();
 
     public static partial SelfPlainType TypeDefinition_SelfPlainType(ITypeDefinitionNode node)
-        => new(node.TypeConstructor);
+        => new(node.TypeFactory);
 
     public static partial IMaybeNonVoidPlainType FieldDefinition_BindingPlainType(IFieldDefinitionNode node)
         => node.TypeNode.NamedPlainType.ToNonVoid();

@@ -20,7 +20,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
     typeof(AnyTypeConstructor),
     typeof(SimpleOrLiteralTypeConstructor))]
 [DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
-public abstract partial class TypeConstructor : TypeConstructorContext, IEquatable<TypeConstructor>
+public abstract partial class TypeConstructor : TypeConstructorContext, IEquatable<TypeConstructor>, ITypeFactory
 {
     #region Standard Type Constructors
     public static readonly AnyTypeConstructor Any = AnyTypeConstructor.Instance;
@@ -235,7 +235,7 @@ public abstract partial class TypeConstructor : TypeConstructorContext, IEquatab
 
     /// <summary>
     /// Attempt to construct a type from this type constructor with possibly unknown arguments. If
-    /// any argument is unknown, the result is the unknown type.
+    /// any argument is unknown, the result is <see langword="null"/>.
     /// </summary>
     public ConstructedBareType? TryConstruct(IFixedList<IMaybeType> arguments)
     {
@@ -243,6 +243,8 @@ public abstract partial class TypeConstructor : TypeConstructorContext, IEquatab
         if (properTypeArguments is null) return null;
         return Construct(properTypeArguments);
     }
+    BareType? ITypeFactory.TryConstruct(IFixedList<IMaybeType> arguments)
+        => TryConstruct(arguments);
 
     /// <summary>
     /// Construct this type with no type arguments.

@@ -12,7 +12,7 @@ internal static partial class NameBindingPlainTypesAspect
 
     public static partial IMaybeNonVoidPlainType SelfParameter_BindingPlainType(ISelfParameterNode node)
     {
-        var containingTypeConstructor = node.ContainingTypeDefinition.TypeConstructor;
+        var containingTypeConstructor = node.ContainingTypeDefinition.TypeFactory;
         return containingTypeConstructor.Construct(containingTypeConstructor.ParameterPlainTypes);
     }
 

@@ -90,17 +90,17 @@
 = BuiltInTypeSymbol.InclusiveMembers => Members;
 
 = VoidTypeSymbol.Name => Symbol.Name;
-= VoidTypeSymbol.TypeConstructor => null;
+= VoidTypeSymbol.TypeFactory => ITypeFactory.Void;
 = NeverTypeSymbol.Name => Symbol.Name;
-= NeverTypeSymbol.TypeConstructor => null;
+= NeverTypeSymbol.TypeFactory => ITypeFactory.Never;
 = PrimitiveTypeSymbol.Name => Symbol.Name;
-= PrimitiveTypeSymbol.TypeConstructor => Symbol.TypeConstructor;
+= PrimitiveTypeSymbol.TypeFactory => Symbol.TypeConstructor;
 
 ↑ OrdinaryTypeSymbol.Name: `StandardName` => Symbol.Name;
 ↑ child OrdinaryTypeSymbol.GenericParameters: GenericParameterSymbol*;
 = OrdinaryTypeSymbol.Supertypes => Symbol.TryGetTypeConstructor().Supertypes;
 = OrdinaryTypeSymbol.GenericParameters;
-= OrdinaryTypeSymbol.TypeConstructor => Symbol.TypeConstructor;
+= OrdinaryTypeSymbol.TypeFactory => Symbol.TypeConstructor;
 ↑ child OrdinaryTypeSymbol.Members: {TypeMemberSymbol};
 
 + ClassSymbol.new.Validate;
