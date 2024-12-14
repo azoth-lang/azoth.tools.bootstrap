@@ -1,8 +1,5 @@
-using System.Diagnostics;
-
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 
-[DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
 public sealed class OptionalPlainType : NonVoidPlainType
 {
     /// <remarks>The optional type acts as a value type that may contain a reference and as such

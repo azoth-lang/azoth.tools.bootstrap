@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Framework;
@@ -14,7 +13,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 /// `throw`, `return` and `break` which never produce a result. It is also
 /// used as the type of a `loop` statement with no breaks in it.
 /// </summary>
-[DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
 public sealed class NeverPlainType : NonVoidPlainType
 {
     #region Singleton

@@ -10,20 +10,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
     typeof(NeverPlainType))]
 public abstract class NonVoidPlainType : IPlainType, IMaybeNonVoidPlainType
 {
+    /// <summary>
+    /// The semantics of values of this type or <see langword="null"/> if it is a variable and the
+    /// semantics are not known.
+    /// </summary>
     public abstract TypeSemantics? Semantics { get; }
-
-    public virtual ConstructedPlainType? TryToNonLiteral() => null;
-
-    public virtual IMaybePlainType ReplaceTypeParametersIn(IMaybePlainType plainType) => this;
-
-    #region Equality
-    public abstract bool Equals(IMaybePlainType? other);
-
-    public sealed override bool Equals(object? obj)
-        => ReferenceEquals(this, obj) || obj is IMaybePlainType other && Equals(other);
-
-    public abstract override int GetHashCode();
-    #endregion
-
-    public abstract override string ToString();
 }

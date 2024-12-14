@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
@@ -14,14 +15,14 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 [Closed(
     typeof(NonVoidPlainType),
     typeof(VoidPlainType))]
-// TODO consider converting to class
-public interface IPlainType : IMaybePlainType
+[DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
+public abstract class IPlainType : IMaybePlainType
 {
     internal static readonly IFixedSet<ConstructedPlainType> AnySet
         = AnyTypeConstructor.PlainType.Yield().ToFixedSet();
 
     #region Standard Types
-    public new static readonly UnknownPlainType Unknown = UnknownPlainType.Instance;
+    public static readonly UnknownPlainType Unknown = UnknownPlainType.Instance;
     public static readonly VoidPlainType Void = VoidPlainType.Instance;
     public static readonly NeverPlainType Never = NeverPlainType.Instance;
     public static readonly ConstructedPlainType Any = AnyTypeConstructor.PlainType;
@@ -53,6 +54,19 @@ public interface IPlainType : IMaybePlainType
     public static readonly ConstructedPlainType False = TypeConstructor.False.PlainType;
     #endregion
 
-    ConstructedPlainType? TryToNonLiteral();
+    public virtual ConstructedPlainType? TryToNonLiteral() => null;
     IMaybePlainType IMaybePlainType.ToNonLiteral() => TryToNonLiteral() ?? this;
+
+    public virtual IMaybePlainType ReplaceTypeParametersIn(IMaybePlainType plainType) => this;
+
+    #region Equality
+    public abstract bool Equals(IMaybePlainType? other);
+
+    public sealed override bool Equals(object? obj)
+        => ReferenceEquals(this, obj) || obj is IMaybePlainType other && Equals(other);
+
+    public abstract override int GetHashCode();
+    #endregion
+
+    public abstract override string ToString();
 }
