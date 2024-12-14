@@ -515,7 +515,8 @@ public partial interface ITypeDefinitionNode : IFacetMemberDefinitionNode, IAsso
     new Symbol ContainingSymbol
         => ContainingDeclaration.Symbol!;
     Symbol? IDefinitionNode.ContainingSymbol => ContainingSymbol;
-    OrdinaryTypeConstructor TypeConstructor { get; }
+    new OrdinaryTypeConstructor TypeConstructor { get; }
+    TypeConstructor? ITypeDeclarationNode.TypeConstructor => TypeConstructor;
     SelfPlainType SelfPlainType { get; }
     new IFixedSet<ConstructedBareType> Supertypes { get; }
     IFixedSet<ConstructedBareType> ITypeDeclarationNode.Supertypes => Supertypes;
@@ -1476,6 +1477,7 @@ public partial interface ISpecialTypeNameNode : ISimpleTypeNameNode
     TypeName ITypeNameNode.Name => Name;
     new TypeSymbol ReferencedSymbol { get; }
     TypeSymbol? ITypeNameNode.ReferencedSymbol => ReferencedSymbol;
+    ITypeDeclarationNode? ReferencedDeclaration { get; }
 
     public static ISpecialTypeNameNode Create(ISpecialTypeNameSyntax syntax)
         => new SpecialTypeNameNode(syntax);
@@ -3209,11 +3211,14 @@ public partial interface ISpecialTypeNameExpressionNode : INameExpressionNode
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
+    new LexicalScope ContainingLexicalScope { get; }
+    LexicalScope IAmbiguousExpressionNode.ContainingLexicalScope() => ContainingLexicalScope;
     new UnknownType Type
         => AzothType.Unknown;
     IMaybeType IExpressionNode.Type => Type;
     SpecialTypeName Name
         => Syntax.Name;
+    ITypeDeclarationNode? ReferencedDeclaration { get; }
     IMaybePlainType IExpressionNode.PlainType
         => AzothPlainType.Unknown;
 
@@ -3785,6 +3790,7 @@ public partial interface ITypeDeclarationNode : INamedDeclarationNode, ISymbolDe
     IEnumerable<IInstanceMemberDeclarationNode> InclusiveInstanceMembersNamed(StandardName named);
     IEnumerable<IAssociatedMemberDeclarationNode> AssociatedMembersNamed(StandardName named);
     IFixedSet<ConstructedBareType> Supertypes { get; }
+    TypeConstructor? TypeConstructor { get; }
     new TypeSymbol Symbol { get; }
     Symbol? ISymbolDeclarationNode.Symbol => Symbol;
     IFixedSet<ITypeMemberDeclarationNode> Members { get; }
@@ -3888,6 +3894,8 @@ public partial interface IGenericParameterDeclarationNode : ITypeDeclarationNode
         => [];
     IEnumerable<IAssociatedMemberDeclarationNode> ITypeDeclarationNode.AssociatedMembersNamed(StandardName named)
         => [];
+    TypeConstructor? ITypeDeclarationNode.TypeConstructor
+        => null;
 }
 
 [Closed(
@@ -4246,6 +4254,8 @@ public partial interface IVoidTypeSymbolNode : IBuiltInTypeSymbolNode
     Symbol IChildSymbolNode.Symbol => Symbol;
     SpecialTypeName IBuiltInTypeSymbolNode.Name
         => Symbol.Name;
+    TypeConstructor? ITypeDeclarationNode.TypeConstructor
+        => null;
 
     public static IVoidTypeSymbolNode Create(VoidTypeSymbol symbol)
         => new VoidTypeSymbolNode(symbol);
@@ -4262,6 +4272,8 @@ public partial interface INeverTypeSymbolNode : IBuiltInTypeSymbolNode
     Symbol IChildSymbolNode.Symbol => Symbol;
     SpecialTypeName IBuiltInTypeSymbolNode.Name
         => Symbol.Name;
+    TypeConstructor? ITypeDeclarationNode.TypeConstructor
+        => null;
 
     public static INeverTypeSymbolNode Create(NeverTypeSymbol symbol)
         => new NeverTypeSymbolNode(symbol);
@@ -4278,6 +4290,8 @@ public partial interface IPrimitiveTypeSymbolNode : IBuiltInTypeSymbolNode
     Symbol IChildSymbolNode.Symbol => Symbol;
     SpecialTypeName IBuiltInTypeSymbolNode.Name
         => Symbol.Name;
+    TypeConstructor? ITypeDeclarationNode.TypeConstructor
+        => Symbol.TypeConstructor;
 
     public static IPrimitiveTypeSymbolNode Create(BuiltInTypeSymbol symbol)
         => new PrimitiveTypeSymbolNode(symbol);
@@ -4309,6 +4323,8 @@ public partial interface IOrdinaryTypeSymbolNode : IUserTypeDeclarationNode, ITy
     IFixedSet<ITypeMemberSymbolNode> ITypeSymbolNode.Members => Members;
     IFixedSet<ConstructedBareType> ITypeDeclarationNode.Supertypes
         => Symbol.TryGetTypeConstructor().Supertypes;
+    TypeConstructor? ITypeDeclarationNode.TypeConstructor
+        => Symbol.TypeConstructor;
 }
 
 // [Closed(typeof(ClassSymbolNode))]
@@ -8292,9 +8308,15 @@ file class SpecialTypeNameNode : SemanticNode, ISpecialTypeNameNode
     public IMaybeType NamedType
         => GrammarAttribute.IsCached(in namedTypeCached) ? namedType!
             : this.Synthetic(ref namedTypeCached, ref namedType,
-                TypeExpressionsAspect.TypeName_NamedType);
+                TypeExpressionsAspect.SpecialTypeName_NamedType);
     private IMaybeType? namedType;
     private bool namedTypeCached;
+    public ITypeDeclarationNode? ReferencedDeclaration
+        => GrammarAttribute.IsCached(in referencedDeclarationCached) ? referencedDeclaration
+            : this.Synthetic(ref referencedDeclarationCached, ref referencedDeclaration,
+                BindingNamesAspect.SpecialTypeName_ReferencedDeclaration);
+    private ITypeDeclarationNode? referencedDeclaration;
+    private bool referencedDeclarationCached;
     public TypeSymbol ReferencedSymbol
         => GrammarAttribute.IsCached(in referencedSymbolCached) ? referencedSymbol!
             : this.Synthetic(ref referencedSymbolCached, ref referencedSymbol,
@@ -16031,8 +16053,6 @@ file class SpecialTypeNameExpressionNode : SemanticNode, ISpecialTypeNameExpress
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
-    public LexicalScope ContainingLexicalScope()
-        => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
     public ValueIdScope ValueIdScope
         => Inherited_ValueIdScope(GrammarAttribute.CurrentInheritanceContext());
     public IEntryNode ControlFlowEntry()
@@ -16064,12 +16084,24 @@ file class SpecialTypeNameExpressionNode : SemanticNode, ISpecialTypeNameExpress
     private bool expectedPlainTypeCached;
     public IFlowState FlowStateBefore()
         => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
+    public LexicalScope ContainingLexicalScope
+        => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
+            : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
+                Inherited_ContainingLexicalScope);
+    private LexicalScope? containingLexicalScope;
+    private bool containingLexicalScopeCached;
     public ControlFlowSet ControlFlowNext
         => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
             : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
                 ControlFlowAspect.Expression_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
+    public ITypeDeclarationNode? ReferencedDeclaration
+        => GrammarAttribute.IsCached(in referencedDeclarationCached) ? referencedDeclaration
+            : this.Synthetic(ref referencedDeclarationCached, ref referencedDeclaration,
+                BindingNamesAspect.SpecialTypeNameExpression_ReferencedDeclaration);
+    private ITypeDeclarationNode? referencedDeclaration;
+    private bool referencedDeclarationCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,

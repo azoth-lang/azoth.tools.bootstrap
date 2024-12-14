@@ -1,6 +1,5 @@
 using System;
 using Azoth.Tools.Bootstrap.Compiler.Names;
-using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using Type = Azoth.Tools.Bootstrap.Compiler.Types.Decorated.Type;
 

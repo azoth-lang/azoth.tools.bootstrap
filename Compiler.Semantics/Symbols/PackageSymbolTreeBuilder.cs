@@ -114,7 +114,7 @@ internal sealed class PackageSymbolTreeBuilder
 
     private void AddInheritedSymbols(OrdinaryTypeSymbol typeSymbol, IStandardTypeNameNode supertypeName)
     {
-        var supertypeSymbol = supertypeName.ReferencedSymbol;
+        var supertypeSymbol = supertypeName.ReferencedDeclaration?.Symbol;
         if (supertypeSymbol is null) return;
         // Make sure super types in the same package have already had their symbols inherited
         if (typeDefinitions.TryGetValue(supertypeSymbol, out var supertypeDefinition))

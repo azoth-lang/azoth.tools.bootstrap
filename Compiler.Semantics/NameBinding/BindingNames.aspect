@@ -8,6 +8,9 @@
 // ---------- Attributes
 = Attribute.↑.Diagnostics;
 
+// ---------- Types
+↑ SpecialTypeName.ReferencedDeclaration: TypeDeclaration?;
+
 // ---------- Expressions
 ↑ NewObjectExpression.ReferencedConstructors: {ConstructorDeclaration};
 
@@ -16,5 +19,6 @@
 ↑ eager SetterInvocationExpression.ReferencedDeclaration: `ISetterMethodDeclarationNode`?;
 
 // ---------- Name Expressions
+↑ SpecialTypeNameExpression.ReferencedDeclaration: TypeDeclaration?;
 ↑ SelfExpression.ReferencedDefinition: SelfParameter?;
 = SelfExpression.↑.Diagnostics;

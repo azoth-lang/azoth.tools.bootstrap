@@ -290,7 +290,7 @@ public class InterpreterProcess
         foreach (var field in fields)
             self.ObjectValue[field.Symbol.Assigned().Name] = new AzothValue();
 
-        if (@class.BaseTypeName?.ReferencedSymbol is OrdinaryTypeSymbol baseClassSymbol)
+        if (@class.BaseTypeName?.ReferencedDeclaration!.Symbol is OrdinaryTypeSymbol baseClassSymbol)
         {
             var baseClass = (IClassDefinitionNode)userTypes[baseClassSymbol];
             var noArgConstructorSymbol = NoArgConstructorSymbol(baseClass);

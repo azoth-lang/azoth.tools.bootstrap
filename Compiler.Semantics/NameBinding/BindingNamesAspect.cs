@@ -9,6 +9,36 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.NameBinding;
 
 internal static partial class BindingNamesAspect
 {
+    #region Attributes
+    public static partial void Attribute_Contribute_Diagnostics(IAttributeNode node, DiagnosticCollectionBuilder diagnostics)
+    {
+        if (node.ReferencedSymbol is null)
+            diagnostics.Add(NameBindingError.CouldNotBindName(node.File, node.TypeName.Syntax.Span));
+    }
+    #endregion
+
+    #region Types
+    public static partial ITypeDeclarationNode? SpecialTypeName_ReferencedDeclaration(ISpecialTypeNameNode node)
+        // TODO report error for use of `Self` outside of a type
+        => node.ContainingLexicalScope.Lookup(node.Name);
+    #endregion
+
+    #region Expressions
+    public static partial IFixedSet<IConstructorDeclarationNode> NewObjectExpression_ReferencedConstructors(INewObjectExpressionNode node)
+    {
+        var typeDeclarationNode = node.PackageNameScope().Lookup(node.ConstructingPlainType);
+        if (typeDeclarationNode is null)
+            return FixedSet.Empty<IConstructorDeclarationNode>();
+
+        if (node.ConstructorName is null)
+            return typeDeclarationNode.Members.OfType<IConstructorDeclarationNode>()
+                                      .Where(c => c.Name is null).ToFixedSet();
+
+        return typeDeclarationNode.AssociatedMembersNamed(node.ConstructorName)
+                                  .OfType<IConstructorDeclarationNode>().ToFixedSet();
+    }
+    #endregion
+
     #region Invocation Expressions
     public static partial IGetterMethodDeclarationNode? GetterInvocationExpression_ReferencedDeclaration(IGetterInvocationExpressionNode node)
         => node.ReferencedPropertyAccessors.OfType<IGetterMethodDeclarationNode>().TrySingle();
@@ -18,6 +48,10 @@ internal static partial class BindingNamesAspect
     #endregion
 
     #region Name Expressions
+    public static partial ITypeDeclarationNode? SpecialTypeNameExpression_ReferencedDeclaration(ISpecialTypeNameExpressionNode node)
+        // TODO report error for use of `Self` outside of a type
+        => node.ContainingLexicalScope.Lookup(node.Name);
+
     public static partial ISelfParameterNode? SelfExpression_ReferencedDefinition(ISelfExpressionNode node)
         => node.ContainingDeclaration switch
         {
@@ -42,24 +76,4 @@ internal static partial class BindingNamesAspect
                 : OtherSemanticError.SelfOutsideMethod(node.File, node.Syntax.Span));
     }
     #endregion
-
-    public static partial IFixedSet<IConstructorDeclarationNode> NewObjectExpression_ReferencedConstructors(INewObjectExpressionNode node)
-    {
-        var typeDeclarationNode = node.PackageNameScope().Lookup(node.ConstructingPlainType);
-        if (typeDeclarationNode is null)
-            return FixedSet.Empty<IConstructorDeclarationNode>();
-
-        if (node.ConstructorName is null)
-            return typeDeclarationNode.Members.OfType<IConstructorDeclarationNode>()
-                                      .Where(c => c.Name is null).ToFixedSet();
-
-        return typeDeclarationNode.AssociatedMembersNamed(node.ConstructorName)
-                                  .OfType<IConstructorDeclarationNode>().ToFixedSet();
-    }
-
-    public static partial void Attribute_Contribute_Diagnostics(IAttributeNode node, DiagnosticCollectionBuilder diagnostics)
-    {
-        if (node.ReferencedSymbol is null)
-            diagnostics.Add(NameBindingError.CouldNotBindName(node.File, node.TypeName.Syntax.Span));
-    }
 }

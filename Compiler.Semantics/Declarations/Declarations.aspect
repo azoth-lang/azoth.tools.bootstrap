@@ -42,6 +42,7 @@
 
 // ---------- Type Declarations
 ↑ TypeDeclaration.Supertypes: {`ConstructedBareType`};
+↑ TypeDeclaration.TypeConstructor: `TypeConstructor`?;
 ↑ TypeDeclaration.Symbol: `TypeSymbol`;
 ↑ TypeDeclaration.Members: {TypeMemberDeclaration};
 /// Members including ones inherited from supertypes
@@ -53,6 +54,7 @@
 ↑ TraitDeclaration.InclusiveMembers: {TraitMemberDeclaration};
 
 // ---------- Type Declaration Parts
+= GenericParameterDeclaration.TypeConstructor => null;
 ↑ GenericParameterDeclaration.Symbol: `GenericParameterTypeSymbol`;
 
 // ---------- Member Declarations

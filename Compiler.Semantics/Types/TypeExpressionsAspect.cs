@@ -10,9 +10,21 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 /// </summary>
 internal static partial class TypeExpressionsAspect
 {
+    #region Member Definitions
+    public static partial IMaybeType? MethodDefinition_Children_Broadcast_MethodSelfType(IMethodDefinitionNode node)
+        => node.SelfParameter.BindingType;
+    #endregion
+
+    #region Types
     public static partial IMaybeType TypeName_NamedType(ITypeNameNode node)
         // TODO don't use ReferencedSymbol (use referenced definition instead)
-        => (node.NamedBareType?.WithDefaultRead() ?? node.ReferencedSymbol?.TryGetType()) ?? IMaybeType.Unknown;
+        // TODO why is node.ReferencedSymbol?.TryGetType() needed here?
+        => node.NamedBareType?.WithDefaultRead() ?? node.ReferencedSymbol?.TryGetType() ?? IMaybeType.Unknown;
+
+    public static partial IMaybeType SpecialTypeName_NamedType(ISpecialTypeNameNode node)
+        // Special type names don't have bare types
+        // TODO don't use ReferencedSymbol (use referenced definition instead)
+        => node.NamedBareType?.WithDefaultRead() ?? node.ReferencedSymbol.TryGetType() ?? IMaybeType.Unknown;
 
     public static partial IMaybeType CapabilityType_NamedType(ICapabilityTypeNode node)
         => (node.Referent as ITypeNameNode)?.NamedBareType?.With(node.Capability.Capability) ?? node.Referent.NamedType;
@@ -51,9 +63,6 @@ internal static partial class TypeExpressionsAspect
             diagnostics.Add(TypeError.CapabilityViewpointNotAppliedToTypeParameter(node.File, node.Syntax));
     }
 
-    public static partial IMaybeType? MethodDefinition_Children_Broadcast_MethodSelfType(IMethodDefinitionNode node)
-        => node.SelfParameter.BindingType;
-
     public static partial IMaybeType SelfViewpointType_NamedType(ISelfViewpointTypeNode node)
     {
         var selfType = node.MethodSelfType;
@@ -84,4 +93,5 @@ internal static partial class TypeExpressionsAspect
         if (node.Referent.NamedType is not GenericParameterType)
             diagnostics.Add(TypeError.SelfViewpointNotAppliedToTypeParameter(node.File, node.Syntax));
     }
+    #endregion
 }

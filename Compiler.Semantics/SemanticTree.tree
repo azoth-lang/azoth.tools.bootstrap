@@ -326,6 +326,7 @@ VariableNameExpression <: LocalBindingNameExpression, SimpleNameExpression
     = Syntax:`IIdentifierNameExpressionSyntax` ReferencedDefinition:`ILocalBindingNode`;
 TypeNameExpression <: NameExpression = Syntax:`INameExpressionSyntax`
     TypeArguments:Type* ReferencedDeclaration:`ITypeDeclarationNode`;
+// TODO rename to UnqualifiedTypeNameExpression
 StandardTypeNameExpression <: TypeNameExpression
     = Syntax:`IStandardNameExpressionSyntax` /TypeArguments/ /ReferencedDeclaration/;
 QualifiedTypeNameExpression <: TypeNameExpression = Syntax:`IMemberAccessExpressionSyntax`

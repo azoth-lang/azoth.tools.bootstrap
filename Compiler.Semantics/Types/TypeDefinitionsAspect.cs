@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
-using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
@@ -22,7 +21,8 @@ internal static partial class TypeDefinitionsAspect
 
     private static void CheckBaseTypeMustBeAClass(IClassDefinitionNode node, DiagnosticCollectionBuilder diagnostics)
     {
-        if (node.BaseTypeName?.ReferencedSymbol is not null and not OrdinaryTypeSymbol { Kind: TypeKind.Class })
+        if (node.BaseTypeName?.ReferencedDeclaration?.TypeConstructor is not null
+            and not OrdinaryTypeConstructor { Kind: TypeKind.Class })
             diagnostics.Add(OtherSemanticError.BaseTypeMustBeClass(node.File, node.Name, node.BaseTypeName.Syntax));
     }
 
@@ -129,7 +129,7 @@ internal static partial class TypeDefinitionsAspect
     {
         foreach (var node in typeNode.SupertypeNames)
             // Null symbol will report a separate name binding error
-            if (node.ReferencedSymbol is OrdinaryTypeSymbol { Kind: TypeKind.Struct })
+            if (node.ReferencedDeclaration?.TypeConstructor is OrdinaryTypeConstructor { Kind: TypeKind.Struct })
                 diagnostics.Add(OtherSemanticError.SupertypeMustBeClassOrTrait(node.File, typeNode.Name, node.Syntax));
     }
 

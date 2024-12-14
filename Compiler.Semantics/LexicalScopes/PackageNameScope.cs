@@ -68,6 +68,10 @@ public sealed class PackageNameScope
         throw new InvalidOperationException($"Package '{packageName}' is not referenced.");
     }
 
+    #region Loopkup(SpecialTypeName)
+    public ITypeDeclarationNode? Lookup(SpecialTypeName name) => builtIns.GetValueOrDefault(name);
+    #endregion
+
     #region Loopkup(Type)
     public ITypeDeclarationNode? Lookup(IMaybeType type)
         => type switch
