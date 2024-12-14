@@ -3,6 +3,7 @@
 ◊using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 ◊using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 ◊using Azoth.Tools.Bootstrap.Framework;
+◊using AzothType = Azoth.Tools.Bootstrap.Compiler.Types.Decorated.Type;
 
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
@@ -12,7 +13,8 @@
 
 // ---------- Definitions
 = InvocableDefinition.ParameterTypes;
-= ConcreteFunctionInvocableDefinition.ReturnType => Return?.NamedType ?? IType.Void;
+= ConcreteFunctionInvocableDefinition.ReturnType
+    => Return?.NamedType ?? AzothType.Void;
 
 // ---------- Function Definition
 = FunctionDefinition.Parameters[0].**.FlowStateBefore()

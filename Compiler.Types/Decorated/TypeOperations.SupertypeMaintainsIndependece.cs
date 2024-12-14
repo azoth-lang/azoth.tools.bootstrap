@@ -6,7 +6,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 
 public static partial class TypeOperations
 {
-    private static bool SupertypeMaintainsIndependence(this IType type, bool exact, TypeParameterIndependence context)
+    private static bool SupertypeMaintainsIndependence(this Type type, bool exact, TypeParameterIndependence context)
         => type switch
         {
             GenericParameterType t => t.SupertypeMaintainsIndependence(exact, context),

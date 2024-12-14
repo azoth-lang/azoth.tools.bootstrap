@@ -180,7 +180,7 @@ internal static partial class BindingAmbiguousNamesAspect
             diagnostics.Add(NameBindingError.CouldNotBindName(node.File, node.Syntax.Span));
         else if (node.CompatibleCallCandidates.Count > 1)
             // TODO provide the expected function type that didn't match
-            diagnostics.Add(TypeError.AmbiguousFunctionGroup(node.File, node.Syntax, IType.Unknown));
+            diagnostics.Add(TypeError.AmbiguousFunctionGroup(node.File, node.Syntax, Type.Unknown));
     }
 
     public static partial INameExpressionNode? MethodGroupName_Rewrite_ToMethodName(IMethodGroupNameNode node)
@@ -205,7 +205,7 @@ internal static partial class BindingAmbiguousNamesAspect
             diagnostics.Add(NameBindingError.CouldNotBindName(node.File, node.Syntax.Span));
         else if (node.CompatibleCallCandidates.Count > 1)
             // TODO provide the expected method type that didn't match
-            diagnostics.Add(TypeError.AmbiguousMethodGroup(node.File, node.Syntax, IType.Unknown));
+            diagnostics.Add(TypeError.AmbiguousMethodGroup(node.File, node.Syntax, Type.Unknown));
     }
 
     public static partial void UnresolvedMemberAccessExpression_Contribute_Diagnostics(

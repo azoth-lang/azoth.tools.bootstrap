@@ -3,6 +3,7 @@ using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 using Azoth.Tools.Bootstrap.Framework;
+using Type = Azoth.Tools.Bootstrap.Compiler.Types.Decorated.Type;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.MemoryLayout;
 
@@ -11,14 +12,14 @@ internal class MethodSignature : IEquatable<MethodSignature>
     public IdentifierName Name { get; }
     public NonVoidType SelfType { get; }
     public IFixedList<ParameterType> ParameterTypes { get; }
-    public IType ReturnType { get; }
+    public Type ReturnType { get; }
     private readonly int hashCode;
 
     public MethodSignature(
         IdentifierName name,
         NonVoidType selfType,
         IFixedList<ParameterType> parameterTypes,
-        IType returnType)
+        Type returnType)
     {
         Name = name;
         SelfType = selfType;

@@ -7,6 +7,7 @@ using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
+using Type = Azoth.Tools.Bootstrap.Compiler.Types.Decorated.Type;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 
@@ -226,7 +227,7 @@ public abstract partial class TypeConstructor : TypeConstructorContext, IEquatab
         return Construct(properArguments);
     }
 
-    public ConstructedBareType Construct(IFixedList<IType> arguments)
+    public ConstructedBareType Construct(IFixedList<Type> arguments)
     {
         var plainType = Construct(arguments.Select(a => a.PlainType).ToFixedList());
         return new(plainType, arguments);
@@ -238,7 +239,7 @@ public abstract partial class TypeConstructor : TypeConstructorContext, IEquatab
     /// </summary>
     public ConstructedBareType? TryConstruct(IFixedList<IMaybeType> arguments)
     {
-        var properTypeArguments = arguments.As<IType>();
+        var properTypeArguments = arguments.As<Type>();
         if (properTypeArguments is null) return null;
         return Construct(properTypeArguments);
     }

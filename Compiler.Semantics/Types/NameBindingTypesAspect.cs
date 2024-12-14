@@ -7,6 +7,7 @@ using Azoth.Tools.Bootstrap.Compiler.Syntax;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 using ExhaustiveMatching;
+using Type = Azoth.Tools.Bootstrap.Compiler.Types.Decorated.Type;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 
@@ -14,7 +15,7 @@ internal static partial class NameBindingTypesAspect
 {
     public static partial IMaybeNonVoidType VariableDeclarationStatement_BindingType(IVariableDeclarationStatementNode node)
         // TODO report an error for void type
-        => node.Type?.NamedType.ToNonVoidType() ?? InferDeclarationType(node, node.Capability) ?? IType.Unknown;
+        => node.Type?.NamedType.ToNonVoidType() ?? InferDeclarationType(node, node.Capability) ?? Type.Unknown;
 
     private static IMaybeNonVoidType? InferDeclarationType(
         IVariableDeclarationStatementNode node,
@@ -58,7 +59,7 @@ internal static partial class NameBindingTypesAspect
 
     public static partial IMaybeNonVoidType PatternMatchExpression_Pattern_ContextBindingType(IPatternMatchExpressionNode node)
         // TODO report an error for void type
-        => node.Referent?.Type.ToNonLiteral().ToNonVoidType() ?? IType.Unknown;
+        => node.Referent?.Type.ToNonLiteral().ToNonVoidType() ?? Type.Unknown;
 
     public static partial IMaybeNonVoidType OptionalPattern_Pattern_ContextBindingType(IOptionalPatternNode node)
     {
@@ -116,7 +117,7 @@ internal static partial class NameBindingTypesAspect
 
     // TODO this is strange because a FieldParameter isn't a binding
     public static partial IMaybeNonVoidType FieldParameter_BindingType(IFieldParameterNode node)
-        => node.ReferencedField?.BindingType ?? IType.Unknown;
+        => node.ReferencedField?.BindingType ?? Type.Unknown;
 
     public static partial CapabilityType InitializerSelfParameter_BindingType(IInitializerSelfParameterNode node)
     {

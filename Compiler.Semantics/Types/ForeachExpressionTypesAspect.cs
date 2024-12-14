@@ -9,7 +9,7 @@ internal static partial class ForeachExpressionTypesAspect
 {
     public static partial IMaybeNonVoidType ForeachExpression_IteratorType(IForeachExpressionNode node)
     {
-        var iterableType = node.InExpression?.Type.ToNonLiteral() ?? IType.Unknown;
+        var iterableType = node.InExpression?.Type.ToNonLiteral() ?? Type.Unknown;
         var iterateMethod = node.ReferencedIterateMethod;
         var iteratorType = iterableType is NonVoidType nonVoidIterableType && iterateMethod is not null
             ? nonVoidIterableType.TypeReplacements.ReplaceTypeParametersIn(iterateMethod.MethodGroupType.Return)
@@ -22,7 +22,7 @@ internal static partial class ForeachExpressionTypesAspect
     {
         var nextMethodReturnType = node.ReferencedNextMethod?.MethodGroupType.Return;
         if (nextMethodReturnType is not OptionalType { Referent: var iteratedType })
-            return IType.Unknown;
+            return Type.Unknown;
 
         if (node.IteratorType is not NonVoidType nonVoidIteratorType)
             return iteratedType;
@@ -40,7 +40,7 @@ internal static partial class ForeachExpressionTypesAspect
 
     public static partial IMaybeType ForeachExpression_Type(IForeachExpressionNode node)
         // TODO assign correct type to the expression
-        => IType.Void;
+        => Type.Void;
 
     public static partial IFlowState ForeachExpression_FlowStateAfter(IForeachExpressionNode node)
         // TODO loop flow state
@@ -50,7 +50,7 @@ internal static partial class ForeachExpressionTypesAspect
 
     public static partial void ForeachExpression_Contribute_Diagnostics(IForeachExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
-        var iterableType = node.InExpression?.Type ?? IType.Unknown;
+        var iterableType = node.InExpression?.Type ?? Type.Unknown;
         if (iterableType is UnknownType)
             // Don't know if there are any errors until the type is known
             return;

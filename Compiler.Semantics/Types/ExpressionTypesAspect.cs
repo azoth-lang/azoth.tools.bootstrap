@@ -14,6 +14,7 @@ using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
+using Type = Azoth.Tools.Bootstrap.Compiler.Types.Decorated.Type;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 
@@ -42,7 +43,7 @@ internal static partial class ExpressionTypesAspect
         => node.FlowStateBefore().Declare(node);
 
     public static partial IMaybeType UnsafeExpression_Type(IUnsafeExpressionNode node)
-        => node.Expression?.Type ?? IType.Unknown;
+        => node.Expression?.Type ?? Type.Unknown;
 
     public static partial IFlowState UnsafeExpression_FlowStateAfter(IUnsafeExpressionNode node)
         => node.Expression?.FlowStateAfter.Transform(node.Expression.ValueId, node.ValueId, node.Type)
@@ -111,13 +112,13 @@ internal static partial class ExpressionTypesAspect
     }
 
     public static partial CapabilityType BoolLiteralExpression_Type(IBoolLiteralExpressionNode node)
-        => node.Value ? IType.True : IType.False;
+        => node.Value ? Type.True : Type.False;
 
     public static partial CapabilityType IntegerLiteralExpression_Type(IIntegerLiteralExpressionNode node)
         => CapabilityType.Create(Capability.Constant, new IntegerLiteralTypeConstructor(node.Value).PlainType);
 
     public static partial OptionalType NoneLiteralExpression_Type(INoneLiteralExpressionNode node)
-        => IType.None;
+        => Type.None;
 
     public static partial IMaybeType StringLiteralExpression_Type(IStringLiteralExpressionNode node)
     {
@@ -211,7 +212,7 @@ internal static partial class ExpressionTypesAspect
         // TODO does this need to be modified by flow typing?
         var unboundType = node.ContextualizedCall?.ReturnType;
         var boundType = unboundType?.ReplaceSelfWith(selfType);
-        return boundType ?? IType.Unknown;
+        return boundType ?? Type.Unknown;
     }
 
     public static partial IFlowState MethodInvocationExpression_FlowStateAfter(IMethodInvocationExpressionNode node)
@@ -239,7 +240,7 @@ internal static partial class ExpressionTypesAspect
         var selfType = node.Context.Type.ToNonLiteral();
         var unboundType = node.ContextualizedCall?.ReturnType;
         var boundType = unboundType?.ReplaceSelfWith(selfType);
-        return boundType ?? IType.Unknown;
+        return boundType ?? Type.Unknown;
     }
 
     public static partial IFlowState GetterInvocationExpression_FlowStateAfter(IGetterInvocationExpressionNode node)
@@ -266,7 +267,7 @@ internal static partial class ExpressionTypesAspect
         var selfType = node.Context.Type.ToNonLiteral();
         var unboundType = node.ContextualizedCall?.ParameterTypes[0].Type;
         var boundType = unboundType?.ReplaceSelfWith(selfType);
-        return boundType ?? IType.Unknown;
+        return boundType ?? Type.Unknown;
     }
 
     public static partial IFlowState SetterInvocationExpression_FlowStateAfter(ISetterInvocationExpressionNode node)
@@ -346,7 +347,7 @@ internal static partial class ExpressionTypesAspect
         => node.FlowStateAfter.AliasType(node.ReferencedDefinition);
 
     public static partial IMaybeType SelfExpression_Pseudotype(ISelfExpressionNode node)
-        => node.ReferencedDefinition?.BindingType ?? IType.Unknown;
+        => node.ReferencedDefinition?.BindingType ?? Type.Unknown;
 
     public static partial IFlowState AmbiguousMemberAccessExpression_FlowStateAfter(IAmbiguousMemberAccessExpressionNode node)
         => node.Context.FlowStateAfter.Transform(node.Context.ValueId, node.ValueId, node.Type);
@@ -403,7 +404,7 @@ internal static partial class ExpressionTypesAspect
 
         foreach (TypeParameterArgument arg in bareType.TypeParameterArguments)
             if (!arg.IsConstructable())
-                diagnostics.Add(TypeError.CapabilityNotCompatibleWithConstraint(node.File, node.Syntax, arg.Parameter, (IType)arg.Argument));
+                diagnostics.Add(TypeError.CapabilityNotCompatibleWithConstraint(node.File, node.Syntax, arg.Parameter, (Type)arg.Argument));
     }
 
     public static partial ContextualizedCall? InitializerInvocationExpression_ContextualizedCall(IInitializerInvocationExpressionNode node)
@@ -433,7 +434,7 @@ internal static partial class ExpressionTypesAspect
     }
 
     public static partial IMaybeType AssignmentExpression_Type(IAssignmentExpressionNode node)
-        => node.LeftOperand?.Type ?? IType.Unknown;
+        => node.LeftOperand?.Type ?? Type.Unknown;
 
     public static partial IFlowState AssignmentExpression_FlowStateAfter(IAssignmentExpressionNode node)
     {
@@ -487,10 +488,10 @@ internal static partial class ExpressionTypesAspect
         if (node.PlainType is ConstructedPlainType { TypeConstructor: SimpleOrLiteralTypeConstructor simpleOrLiteralTypeConstructor })
             return simpleOrLiteralTypeConstructor.Type;
         if (node.PlainType is UnknownPlainType)
-            return IType.Unknown;
+            return Type.Unknown;
 
-        var leftType = node.LeftOperand?.Type ?? IType.Unknown;
-        var rightType = node.RightOperand?.Type ?? IType.Unknown;
+        var leftType = node.LeftOperand?.Type ?? Type.Unknown;
+        var rightType = node.RightOperand?.Type ?? Type.Unknown;
         return (leftType, node.Operator, rightType) switch
         {
             (_, BinaryOperator.DotDot, _)
@@ -502,7 +503,7 @@ internal static partial class ExpressionTypesAspect
             (OptionalType { Referent: var referentType }, BinaryOperator.QuestionQuestion, NeverType)
                 => referentType,
 
-            _ => IType.Unknown
+            _ => Type.Unknown
 
             // TODO optional types
         };
@@ -549,7 +550,7 @@ internal static partial class ExpressionTypesAspect
     }
 
     public static partial IMaybeType ResultStatement_Type(IResultStatementNode node)
-        => node.Expression?.Type.ToNonLiteral() ?? IType.Unknown;
+        => node.Expression?.Type.ToNonLiteral() ?? Type.Unknown;
 
     public static partial IFlowState IfExpression_FlowStateAfter(IIfExpressionNode node)
     {
@@ -583,7 +584,7 @@ internal static partial class ExpressionTypesAspect
                 return resultType;
 
         // If there was no result expression, then the block type is void
-        return IType.Void;
+        return Type.Void;
     }
 
     public static partial IFlowState BlockExpression_FlowStateAfter(IBlockExpressionNode node)
@@ -599,7 +600,7 @@ internal static partial class ExpressionTypesAspect
 
     public static partial IMaybeType WhileExpression_Type(IWhileExpressionNode node)
         // TODO assign correct type to the expression
-        => IType.Void;
+        => Type.Void;
 
     public static partial IFlowState WhileExpression_FlowStateAfter(IWhileExpressionNode node)
         // TODO loop flow state
@@ -610,7 +611,7 @@ internal static partial class ExpressionTypesAspect
 
     public static partial IMaybeType LoopExpression_Type(ILoopExpressionNode node)
         // TODO assign correct type to the expression
-        => IType.Void;
+        => Type.Void;
 
     public static partial IFlowState LoopExpression_FlowStateAfter(ILoopExpressionNode node)
         // Body is always executes at least once
@@ -653,7 +654,7 @@ internal static partial class ExpressionTypesAspect
         => node.Referent.FlowStateAfter.Transform(node.Referent.ValueId, node.ValueId, node.Type);
 
     public static partial IMaybeType AsyncStartExpression_Type(IAsyncStartExpressionNode node)
-        => Intrinsic.PromiseOf(node.Expression?.Type.ToNonLiteral() ?? IType.Unknown);
+        => Intrinsic.PromiseOf(node.Expression?.Type.ToNonLiteral() ?? Type.Unknown);
 
     public static partial IFlowState AsyncStartExpression_FlowStateAfter(IAsyncStartExpressionNode node)
         // TODO this isn't correct, async start can act like a delayed lambda. It is also a transform that wraps
@@ -665,7 +666,7 @@ internal static partial class ExpressionTypesAspect
             && Intrinsic.PromiseTypeConstructor.Equals(typeConstructor))
             return type.Arguments[0];
 
-        return IType.Unknown;
+        return Type.Unknown;
     }
 
     public static partial IFlowState AwaitExpression_FlowStateAfter(IAwaitExpressionNode node)
@@ -677,7 +678,7 @@ internal static partial class ExpressionTypesAspect
         {
             ConstructedPlainType { TypeConstructor: SimpleOrLiteralTypeConstructor t }
                 => t.Type,
-            UnknownPlainType => IType.Unknown,
+            UnknownPlainType => Type.Unknown,
             _ => throw new InvalidOperationException($"Unexpected plainType {node.PlainType}")
         };
 
@@ -700,7 +701,7 @@ internal static partial class ExpressionTypesAspect
     public static partial IMaybeType FreezeExpression_Type(IFreezeExpressionNode node)
     {
         if (node.Referent.Type is not CapabilityType capabilityType)
-            return IType.Unknown;
+            return Type.Unknown;
 
         // Even if the capability doesn't allow freeze, a freeze expression always results in a
         // constant reference. A diagnostic is generated if the capability doesn't allow freeze.
@@ -752,7 +753,7 @@ internal static partial class ExpressionTypesAspect
     public static partial IMaybeType MoveExpression_Type(IMoveExpressionNode node)
     {
         if (node.Referent.Type is not CapabilityType capabilityType)
-            return IType.Unknown;
+            return Type.Unknown;
 
         // Even if the capability doesn't allow move, a move expression always results in an
         // isolated reference. A diagnostic is generated if the capability doesn't allow move.
@@ -797,7 +798,7 @@ internal static partial class ExpressionTypesAspect
     public static partial IMaybeType ImplicitTempMoveExpression_Type(IImplicitTempMoveExpressionNode node)
     {
         if (node.Referent.Type is not CapabilityType capabilityType)
-            return IType.Unknown;
+            return Type.Unknown;
 
         // Even if the capability doesn't allow move, a temp move expression always results in a
         // temp isolated reference. A diagnostic is generated if the capability doesn't allow move.

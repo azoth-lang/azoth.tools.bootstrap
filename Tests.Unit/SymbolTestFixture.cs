@@ -37,7 +37,7 @@ public abstract class SymbolTestFixture
         string? name = null,
         NamespaceSymbol? ns = null,
         IFixedList<ParameterType>? @params = null,
-        IType? @return = null)
+        Type? @return = null)
     {
         return new FunctionSymbol(
             ns ?? Namespace(),
@@ -50,7 +50,7 @@ public abstract class SymbolTestFixture
         string? name = null,
         NamespaceSymbol? ns = null,
         IFixedList<ParameterType>? @params = null,
-        IType? @return = null)
+        Type? @return = null)
     {
         return new FunctionSymbol(
             ns ?? mother.ContainingSymbol,
@@ -63,7 +63,7 @@ public abstract class SymbolTestFixture
         OrdinaryTypeSymbol? containing = null,
         NonVoidType? self = null,
         IFixedList<ParameterType>? @params = null,
-        IType? @return = null)
+        Type? @return = null)
     {
         containing ??= Type();
         return new MethodSymbol(
@@ -81,7 +81,7 @@ public abstract class SymbolTestFixture
         OrdinaryTypeSymbol? containing = null,
         NonVoidType? self = null,
         IFixedList<ParameterType>? @params = null,
-        IType? @return = null)
+        Type? @return = null)
     {
         return new MethodSymbol(
             containing ?? mother.ContainingSymbol,
@@ -119,5 +119,5 @@ public abstract class SymbolTestFixture
             dataType ?? (OrdinaryTypeConstructor)DataType().PlainType.TypeConstructor!);
     }
 
-    public static readonly ParameterType IntParameter = new(false, IType.Int);
+    public static readonly ParameterType IntParameter = new(false, Compiler.Types.Decorated.Type.Int);
 }

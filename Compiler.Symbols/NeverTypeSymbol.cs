@@ -2,6 +2,7 @@ using System;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
+using Type = Azoth.Tools.Bootstrap.Compiler.Types.Decorated.Type;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 
@@ -20,7 +21,7 @@ public sealed class NeverTypeSymbol : TypeSymbol
     public NeverPlainType PlainType => IPlainType.Never;
 
     public override IPlainType TryGetPlainType() => PlainType;
-    public override IType? TryGetType() => IType.Never;
+    public override Type? TryGetType() => Type.Never;
 
     #region Equality
     public override bool Equals(Symbol? other)

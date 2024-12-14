@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
+using Type = Azoth.Tools.Bootstrap.Compiler.Types.Decorated.Type;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 
@@ -13,7 +14,7 @@ public sealed class FunctionSymbol : FunctionOrInitializerSymbol
     public override Symbol ContainingSymbol { get; }
     public override TypeSymbol? ContextTypeSymbol => null;
     public override IdentifierName Name { get; }
-    public override IType ReturnType { get; }
+    public override Type ReturnType { get; }
     public FunctionType Type { get; }
 
     public FunctionSymbol(

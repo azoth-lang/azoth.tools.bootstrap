@@ -8,7 +8,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 
 [Closed(typeof(NonVoidType), typeof(VoidType))]
 [DebuggerDisplay("{" + nameof(ToILString) + "(),nq}")]
-public abstract class IType : IMaybeType
+public abstract class Type : IMaybeType
 {
     #region Standard Types
     public static readonly UnknownType Unknown = UnknownType.Instance;
@@ -53,7 +53,7 @@ public abstract class IType : IMaybeType
     /// corresponding types.
     /// </summary>
     // TODO this makes literal types special. Perhaps there should be a way to declare other literal types in code
-    public virtual IType ToNonLiteral() => this;
+    public virtual Type ToNonLiteral() => this;
     IMaybeType IMaybeType.ToNonLiteral() => ToNonLiteral();
 
     #region Equality

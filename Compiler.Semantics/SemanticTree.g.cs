@@ -1,6 +1,5 @@
 using System;
 using System.CodeDom.Compiler;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -35,6 +34,7 @@ using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 using InlineMethod;
+using AzothType = Azoth.Tools.Bootstrap.Compiler.Types.Decorated.Type;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
 
@@ -378,7 +378,7 @@ public partial interface IConcreteFunctionInvocableDefinitionNode : IInvocableDe
     new IBodyNode Body { get; }
     IBodyNode? IInvocableDefinitionNode.Body => Body;
     IMaybeType IInvocableDeclarationNode.ReturnType
-        => Return?.NamedType ?? IType.Void;
+        => Return?.NamedType ?? AzothType.Void;
     IMaybePlainType IInvocableDeclarationNode.ReturnPlainType
         => Return?.NamedPlainType ?? IPlainType.Void;
 }
@@ -748,7 +748,7 @@ public partial interface IMethodDefinitionNode : IAlwaysTypeMemberDefinitionNode
     IMaybeNonVoidType IMethodDeclarationNode.SelfParameterType
         => SelfParameter.ParameterType;
     IMaybeType IInvocableDeclarationNode.ReturnType
-        => Return?.NamedType ?? IType.Void;
+        => Return?.NamedType ?? AzothType.Void;
     IMaybeNonVoidPlainType IMethodDeclarationNode.SelfParameterPlainType
         => SelfParameter.BindingPlainType;
     IMaybePlainType IInvocableDeclarationNode.ReturnPlainType
@@ -2084,7 +2084,7 @@ public partial interface IUnsafeExpressionNode : IExpressionNode
 public partial interface INeverTypedExpressionNode : IExpressionNode
 {
     new NeverType Type
-        => IType.Never;
+        => AzothType.Never;
     IMaybeType IExpressionNode.Type => Type;
     IMaybePlainType IExpressionNode.PlainType
         => IPlainType.Never;
@@ -2315,7 +2315,7 @@ public partial interface IPatternMatchExpressionNode : IExpressionNode
     ConditionalLexicalScope IAmbiguousExpressionNode.FlowLexicalScope()
         => Pattern.FlowLexicalScope();
     IMaybeType IExpressionNode.Type
-        => IType.Bool;
+        => AzothType.Bool;
     IMaybePlainType IExpressionNode.PlainType
         => IPlainType.Bool;
 
@@ -2525,7 +2525,7 @@ public partial interface IUnknownInvocationExpressionNode : IInvocationExpressio
     IFixedList<IAmbiguousExpressionNode> CurrentArguments { get; }
     IFlowState FlowStateBefore();
     IMaybeType IExpressionNode.Type
-        => IType.Unknown;
+        => AzothType.Unknown;
     IEnumerable<IAmbiguousExpressionNode> IInvocationExpressionNode.TempAllArguments
         => TempArguments;
     IEnumerable<IExpressionNode?> IInvocationExpressionNode.AllArguments
@@ -2836,7 +2836,7 @@ public partial interface INameExpressionNode : IExpressionNode, IAmbiguousNameEx
 public partial interface IUnknownNameExpressionNode : INameExpressionNode
 {
     new UnknownType Type
-        => IType.Unknown;
+        => AzothType.Unknown;
     IMaybeType IExpressionNode.Type => Type;
     IMaybePlainType IExpressionNode.PlainType
         => IPlainType.Unknown;
@@ -2896,7 +2896,7 @@ public partial interface INamespaceNameNode : INameExpressionNode
 {
     IFixedList<INamespaceDeclarationNode> ReferencedDeclarations { get; }
     new UnknownType Type
-        => IType.Unknown;
+        => AzothType.Unknown;
     IMaybeType IExpressionNode.Type => Type;
     IMaybePlainType IExpressionNode.PlainType
         => IPlainType.Unknown;
@@ -2952,7 +2952,7 @@ public partial interface IFunctionGroupNameNode : INameExpressionNode
     IFixedList<ITypeNode> TypeArguments { get; }
     IFixedSet<IFunctionInvocableDeclarationNode> ReferencedDeclarations { get; }
     new UnknownType Type
-        => IType.Unknown;
+        => AzothType.Unknown;
     IMaybeType IExpressionNode.Type => Type;
     IFixedSet<CallCandidate<IFunctionInvocableDeclarationNode>> CallCandidates { get; }
     IFixedSet<CallCandidate<IFunctionInvocableDeclarationNode>> CompatibleCallCandidates { get; }
@@ -3016,7 +3016,7 @@ public partial interface IMethodGroupNameNode : INameExpressionNode
     IFixedList<ITypeNode> TypeArguments { get; }
     IFixedSet<IStandardMethodDeclarationNode> ReferencedDeclarations { get; }
     new UnknownType Type
-        => IType.Unknown;
+        => AzothType.Unknown;
     IMaybeType IExpressionNode.Type => Type;
     IFixedSet<CallCandidate<IStandardMethodDeclarationNode>> CallCandidates { get; }
     IFixedSet<CallCandidate<IStandardMethodDeclarationNode>> CompatibleCallCandidates { get; }
@@ -3130,7 +3130,7 @@ public partial interface ITypeNameExpressionNode : INameExpressionNode
     IMaybePlainType NamedPlainType { get; }
     BareType? NamedBareType { get; }
     IMaybeType IExpressionNode.Type
-        => IType.Unknown;
+        => AzothType.Unknown;
     IMaybePlainType IExpressionNode.PlainType
         => IPlainType.Unknown;
 }
@@ -3209,7 +3209,7 @@ public partial interface ISpecialTypeNameExpressionNode : INameExpressionNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
     new UnknownType Type
-        => IType.Unknown;
+        => AzothType.Unknown;
     IMaybeType IExpressionNode.Type => Type;
     SpecialTypeName Name
         => Syntax.Name;
@@ -3268,7 +3268,7 @@ public partial interface IMissingNameExpressionNode : ISimpleNameExpressionNode
     INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
     ISimpleNameSyntax IUnresolvedSimpleNameNode.Syntax => Syntax;
     new UnknownType Type
-        => IType.Unknown;
+        => AzothType.Unknown;
     IMaybeType IExpressionNode.Type => Type;
     IMaybePlainType IExpressionNode.PlainType
         => IPlainType.Unknown;
@@ -6991,7 +6991,7 @@ file class SourceConstructorDefinitionNode : SemanticNode, ISourceConstructorDef
     internal override IMaybeType? Inherited_ExpectedReturnType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, Self.Body))
-            return IType.Void;
+            return AzothType.Void;
         return base.Inherited_ExpectedReturnType(child, descendant, ctx);
     }
 
@@ -7272,7 +7272,7 @@ file class SourceInitializerDefinitionNode : SemanticNode, ISourceInitializerDef
     internal override IMaybeType? Inherited_ExpectedReturnType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, Self.Body))
-            return IType.Void;
+            return AzothType.Void;
         return base.Inherited_ExpectedReturnType(child, descendant, ctx);
     }
 
@@ -11687,7 +11687,7 @@ file class IfExpressionNode : SemanticNode, IIfExpressionNode
     internal override IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.CurrentCondition))
-            return IType.OptionalBool;
+            return AzothType.OptionalBool;
         if (ReferenceEquals(child, descendant))
             return null;
         return base.Inherited_ExpectedType(child, descendant, ctx);
@@ -12027,7 +12027,7 @@ file class WhileExpressionNode : SemanticNode, IWhileExpressionNode
     internal override IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.CurrentCondition))
-            return IType.OptionalBool;
+            return AzothType.OptionalBool;
         if (ReferenceEquals(child, descendant))
             return null;
         return base.Inherited_ExpectedType(child, descendant, ctx);

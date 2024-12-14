@@ -13,11 +13,11 @@ public partial class TypeOperations
         return parameters.ToFixedList().As<ParameterType>();
     }
 
-    public static IType Known(this IMaybeType type)
+    public static Type Known(this IMaybeType type)
         => type switch
         {
             UnknownType _ => throw new InvalidOperationException("Type is not known"),
-            IType t => t,
+            Type t => t,
             _ => throw ExhaustiveMatch.Failed(type),
         };
 }

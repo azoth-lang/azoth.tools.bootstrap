@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Core;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen;
 
@@ -13,8 +14,14 @@ public class NamespaceComparer : IComparer<string>
 
     public int Compare(string? x, string? y)
     {
-        var xParts = x!.Split('.');
-        var yParts = y!.Split('.');
+        (var xAlias, x) = Parsing.OptionalSplitOffStart(x!, "=");
+        var xParts = x.Split('.');
+        (var yAlias, y) = Parsing.OptionalSplitOffStart(y!, "=");
+        var yParts = y.Split('.');
+
+        // Put aliases after regular using
+        if (xAlias is not null && yAlias is null) return 1;
+        if (xAlias is null && yAlias is not null) return -1;
 
         if (xParts[0] == "System" && yParts[0] != "System") return -1;
         if (xParts[0] != "System" && yParts[0] == "System") return 1;

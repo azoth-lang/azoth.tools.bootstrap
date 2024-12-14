@@ -16,7 +16,7 @@ public abstract class InvocableSymbol : Symbol
     public abstract override IdentifierName? Name { get; }
     public IFixedList<ParameterType> ParameterTypes { get; }
     public int Arity => ParameterTypes.Count;
-    public abstract IType ReturnType { get; }
+    public abstract Type ReturnType { get; }
 
     private protected InvocableSymbol(IFixedList<ParameterType> parameterTypes)
     {

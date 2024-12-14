@@ -249,7 +249,7 @@ internal sealed class FlowState : IFlowState
 
     private IMaybeType Type(IBindingNode? binding, Func<Capability, Capability> transform)
     {
-        if (binding is null) return IType.Unknown;
+        if (binding is null) return Compiler.Types.Decorated.Type.Unknown;
         if (!binding.SharingIsTracked())
             // Other types don't have capabilities and don't need to be tracked
             return binding.BindingType.ToUpperBound();

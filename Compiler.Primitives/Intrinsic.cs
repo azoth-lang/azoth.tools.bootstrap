@@ -77,21 +77,21 @@ public static class Intrinsic
         _ = BuildPromiseSymbol(azothNamespace, tree);
 
         var rawHybridBoundedListType = BuildSpecializedCollectionSymbols(azothNamespace, tree);
-        var readBytesType = rawHybridBoundedListType.Construct([IType.Void, IType.Byte]).WithDefaultRead();
+        var readBytesType = rawHybridBoundedListType.Construct([Type.Void, Type.Byte]).WithDefaultRead();
 
         // fn print_raw_utf8_bytes(bytes: Raw_Hybrid_Bounded_List[byte], start: size, byte_count: size)
         var print = Function(intrinsicsNamespace, "print_raw_utf8_bytes",
-            Params(readBytesType, IType.Size, IType.Size));
+            Params(readBytesType, Type.Size, Type.Size));
         tree.Add(print);
 
         // fn read_raw_utf8_bytes_line(bytes: mut Raw_Hybrid_Bounded_List[byte], start: size) -> size
         var readLine = Function(intrinsicsNamespace, "read_raw_utf8_bytes_line",
-            Params(IType.Size, IType.Size), IType.Size);
+            Params(Type.Size, Type.Size), Type.Size);
         tree.Add(readLine);
 
         // fn ABORT_RAW_UTF8_BYTES(bytes: Raw_Hybrid_Bounded_List[byte], start: size, byte_count: size) -> never
         var abort = Function(intrinsicsNamespace, "ABORT_RAW_UTF8_BYTES",
-            Params(readBytesType, IType.Size, IType.Size), IType.Never);
+            Params(readBytesType, Type.Size, Type.Size), Type.Never);
         tree.Add(abort);
 
         return tree.Build();
@@ -142,7 +142,7 @@ public static class Intrinsic
         tree.Add(classSymbol);
 
         // published new(.fixed, .capacity) {...}
-        var constructor = new ConstructorSymbol(classSymbol, null, mutType, Params(fixedType, IType.Size));
+        var constructor = new ConstructorSymbol(classSymbol, null, mutType, Params(fixedType, Type.Size));
         tree.Add(constructor);
 
         // published get fixed(self) -> F;
@@ -154,22 +154,22 @@ public static class Intrinsic
         tree.Add(setFixed);
 
         // published get capacity(self) -> size;
-        var capacity = Getter(classSymbol, "capacity", readType, IType.Size);
+        var capacity = Getter(classSymbol, "capacity", readType, Type.Size);
         tree.Add(capacity);
 
         // published get count(self) -> size
-        var count = Getter(classSymbol, "count", readType, IType.Size);
+        var count = Getter(classSymbol, "count", readType, Type.Size);
         tree.Add(count);
 
         // published /* unsafe */ fn at(self, index: size) -> T
         // TODO replace with at method returning a `ref var`
         var at = Method(classSymbol, "at", readType,
-            Params(IType.Size), itemType);
+            Params(Type.Size), itemType);
         tree.Add(at);
 
         // published /* unsafe */ fn set_at(mut self, index: size, T value)
         // TODO replace with at method returning a `ref var`
-        var setAt = Method(classSymbol, "set_at", mutType, Params(IType.Size, itemType));
+        var setAt = Method(classSymbol, "set_at", mutType, Params(Type.Size, itemType));
         tree.Add(setAt);
 
         // published fn add(mut self, value: T);
@@ -177,7 +177,7 @@ public static class Intrinsic
         tree.Add(add);
 
         // published fn shrink(mut self, count: size)
-        var shrink = Method(classSymbol, "shrink", mutType, Params(IType.Size));
+        var shrink = Method(classSymbol, "shrink", mutType, Params(Type.Size));
         tree.Add(shrink);
 
         return typeConstructor;

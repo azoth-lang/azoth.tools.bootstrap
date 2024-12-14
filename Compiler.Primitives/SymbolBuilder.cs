@@ -16,20 +16,20 @@ internal static class SymbolBuilder
         => types.Select(t => new ParameterType(false, t)).ToFixedList();
 
     public static FunctionSymbol Function(Symbol containingSymbol, IdentifierName name, IFixedList<ParameterType> @params)
-        => new(containingSymbol, name, new FunctionType(@params, IType.Void));
+        => new(containingSymbol, name, new FunctionType(@params, Type.Void));
 
-    public static FunctionSymbol Function(Symbol containingSymbol, IdentifierName name, IFixedList<ParameterType> @params, IType @return)
+    public static FunctionSymbol Function(Symbol containingSymbol, IdentifierName name, IFixedList<ParameterType> @params, Type @return)
         => new(containingSymbol, name, new FunctionType(@params, @return));
 
     public static MethodSymbol Method(TypeSymbol containingSymbol, IdentifierName name, NonVoidType selfParam, IFixedList<ParameterType> @params)
-        => new(containingSymbol, MethodKind.Standard, name, selfParam, @params, IType.Void);
+        => new(containingSymbol, MethodKind.Standard, name, selfParam, @params, Type.Void);
 
-    public static MethodSymbol Method(TypeSymbol containingSymbol, IdentifierName name, NonVoidType selfParam, IFixedList<ParameterType> @params, IType @return)
+    public static MethodSymbol Method(TypeSymbol containingSymbol, IdentifierName name, NonVoidType selfParam, IFixedList<ParameterType> @params, Type @return)
         => new(containingSymbol, MethodKind.Standard, name, selfParam, @params, @return);
 
-    public static MethodSymbol Getter(TypeSymbol containingSymbol, IdentifierName name, NonVoidType selfParam, IType @return)
+    public static MethodSymbol Getter(TypeSymbol containingSymbol, IdentifierName name, NonVoidType selfParam, Type @return)
         => new(containingSymbol, MethodKind.Getter, name, selfParam, FixedList.Empty<ParameterType>(), @return);
 
     public static MethodSymbol Setter(TypeSymbol containingSymbol, IdentifierName name, NonVoidType selfParam, ParameterType parameter)
-        => new(containingSymbol, MethodKind.Setter, name, selfParam, FixedList.Create(parameter), IType.Void);
+        => new(containingSymbol, MethodKind.Setter, name, selfParam, FixedList.Create(parameter), Type.Void);
 }

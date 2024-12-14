@@ -3,6 +3,7 @@
 ◊using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 ◊using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 ◊using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
+◊using AzothType = Azoth.Tools.Bootstrap.Compiler.Types.Decorated.Type;
 
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
@@ -97,7 +98,7 @@
 ↑ NewObjectExpression.ContextualizedCall:`ContextualizedCall`?;
 = NewObjectExpression.↑.Diagnostics;
 
-↑ NeverTypedExpression.Type: `NeverType` => IType.Never;
+↑ NeverTypedExpression.Type: `NeverType` => AzothType.Never;
 
 // ---------- Literal Expressions
 ↓ LiteralExpression.FlowStateBefore(): `IFlowState`;
@@ -120,19 +121,19 @@
 // No expected type for the referent. If one were given, it could cause another implicit conversion.
 = ImplicitConversionExpression.Referent.ExpectedType => null;
 = PatternMatchExpression.Pattern.**.FlowStateBefore => Referent?.FlowStateAfter ?? IFlowState.Empty;
-= PatternMatchExpression.Type => IType.Bool;
+= PatternMatchExpression.Type => AzothType.Bool;
 
 // ---------- Control Flow Expressions
 = IfExpression.ThenBlock.**.FlowStateBefore
     => Condition?.FlowStateAfter ?? IFlowState.Empty;
 = IfExpression.ElseClause.**.FlowStateBefore
     => Condition?.FlowStateAfter ?? IFlowState.Empty;
-= IfExpression.Condition.ExpectedType => IType.OptionalBool;
+= IfExpression.Condition.ExpectedType => AzothType.OptionalBool;
 ⟳ IfExpression.FlowStateAfter: `IFlowState` initial => IFlowState.Empty;
 = IfExpression.↑.Diagnostics;
 = WhileExpression.Block.**.FlowStateBefore
     => Condition?.FlowStateAfter ?? IFlowState.Empty;
-= WhileExpression.Condition.ExpectedType => IType.OptionalBool;
+= WhileExpression.Condition.ExpectedType => AzothType.OptionalBool;
 ↓ ReturnExpression.ExpectedReturnType: `IMaybeType`?;
 = ReturnExpression.Value.ExpectedType => ExpectedReturnType;
 = ReturnExpression.Value.ImplicitRecoveryAllowed() => true;
@@ -189,7 +190,7 @@
     => Expression?.FlowStateAfter ?? base.Inherited_FlowStateBefore(child, descendant, ctx);
 = UnknownInvocationExpression.Arguments[index].**.FlowStateBefore()
     => Arguments[index - 1]?.FlowStateAfter ?? IFlowState.Empty;
-= UnknownInvocationExpression.Type => IType.Unknown;
+= UnknownInvocationExpression.Type => AzothType.Unknown;
 
 // ---------- Name Expressions
 ↓ NameExpression.FlowStateBefore(): `IFlowState`;
@@ -197,12 +198,12 @@
 ↑ NameExpression.FlowStateAfter: `IFlowState`
     => throw new NotImplementedException($"{GetType().GetFriendlyName()}.{nameof(FlowStateAfter)} not implemented.");
 = UnresolvedMemberAccessExpression.FlowStateAfter;
-↑ NamespaceName.Type: `UnknownType` => IType.Unknown;
-↑ FunctionGroupName.Type: `UnknownType` => IType.Unknown;
+↑ NamespaceName.Type: `UnknownType` => AzothType.Unknown;
+↑ FunctionGroupName.Type: `UnknownType` => AzothType.Unknown;
 = FunctionGroupName.FlowStateAfter => FlowStateBefore();
 = FunctionName.FlowStateAfter;
 = FunctionName.*.ExpectedType => null;
-↑ MethodGroupName.Type: `UnknownType` => IType.Unknown;
+↑ MethodGroupName.Type: `UnknownType` => AzothType.Unknown;
 = MethodGroupName.FlowStateAfter => Context.FlowStateAfter;
 = MethodName.Context.ExpectedType;
 = MethodName.Context.ImplicitRecoveryAllowed() => true;
@@ -212,13 +213,13 @@
 = FieldAccessExpression.FlowStateAfter;
 = FieldAccessExpression.↑.Diagnostics;
 = VariableNameExpression.FlowStateAfter;
-= TypeNameExpression.Type => IType.Unknown;
+= TypeNameExpression.Type => AzothType.Unknown;
 = InitializerGroupName.Type => throw new NotImplementedException();
-↑ SpecialTypeNameExpression.Type:`UnknownType` => IType.Unknown;
+↑ SpecialTypeNameExpression.Type:`UnknownType` => AzothType.Unknown;
 ↑ SelfExpression.Pseudotype: `IMaybeType`;
 = SelfExpression.FlowStateAfter;
-↑ MissingNameExpression.Type: `UnknownType` => IType.Unknown;
-↑ UnknownNameExpression.Type: `UnknownType` => IType.Unknown;
+↑ MissingNameExpression.Type: `UnknownType` => AzothType.Unknown;
+↑ UnknownNameExpression.Type: `UnknownType` => AzothType.Unknown;
 = AmbiguousMemberAccessExpression.FlowStateAfter;
 
 // ---------- Capability Expressions

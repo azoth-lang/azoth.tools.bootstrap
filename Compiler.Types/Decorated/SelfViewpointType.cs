@@ -11,8 +11,8 @@ public sealed class SelfViewpointType : NonVoidType
         => referent switch
         {
             NonVoidType t => new SelfViewpointType(capability, t),
-            VoidType _ => IType.Void,
-            UnknownType _ => IType.Unknown,
+            VoidType _ => Type.Void,
+            UnknownType _ => Type.Unknown,
             _ => throw ExhaustiveMatch.Failed(referent),
         };
 

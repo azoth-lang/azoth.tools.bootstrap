@@ -6,5 +6,5 @@ public static partial class TypeOperations
     /// Convert to a non-void type by replacing void with unknown.
     /// </summary>
     public static IMaybeNonVoidType ToNonVoidType(this IMaybeType type)
-        => type as IMaybeNonVoidType ?? IType.Unknown;
+        => type as IMaybeNonVoidType ?? Type.Unknown;
 }

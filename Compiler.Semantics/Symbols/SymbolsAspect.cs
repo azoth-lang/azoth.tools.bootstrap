@@ -5,6 +5,7 @@ using Azoth.Tools.Bootstrap.Compiler.Primitives;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
+using Type = Azoth.Tools.Bootstrap.Compiler.Types.Decorated.Type;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 
@@ -57,7 +58,7 @@ internal static partial class SymbolsAspect
     {
         if (node.SelfParameterType is not NonVoidType selfParameterType)
             return null;
-        if (node.ReturnType is not IType returnType)
+        if (node.ReturnType is not Type returnType)
             return null;
         if (node.ParameterTypes.AsKnownFixedList() is not { } parameters)
             return null;

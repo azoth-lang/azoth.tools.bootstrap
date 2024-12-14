@@ -26,7 +26,7 @@ public sealed class CapabilityType : NonVoidType
 
     public TypeConstructor? TypeConstructor => BareType.TypeConstructor;
 
-    public IFixedList<IType> Arguments => BareType.Arguments;
+    public IFixedList<Type> Arguments => BareType.Arguments;
 
     public override bool HasIndependentTypeArguments => BareType.HasIndependentTypeArguments;
 
@@ -56,7 +56,7 @@ public sealed class CapabilityType : NonVoidType
         return BareType.With(capability);
     }
 
-    public CapabilityType With(IFixedList<IType> arguments)
+    public CapabilityType With(IFixedList<Type> arguments)
     {
         // Avoid allocating a new CapabilityType when it isn't needed
         if (Arguments.Equals(arguments)) return this;

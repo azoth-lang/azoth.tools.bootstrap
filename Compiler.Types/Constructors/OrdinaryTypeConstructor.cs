@@ -7,6 +7,7 @@ using Azoth.Tools.Bootstrap.Compiler.Types.Constructors.Contexts;
 using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using Azoth.Tools.Bootstrap.Framework;
+using Type = Azoth.Tools.Bootstrap.Compiler.Types.Decorated.Type;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 
@@ -131,7 +132,7 @@ public sealed class OrdinaryTypeConstructor : TypeConstructor
 
     private static bool BreaksIsolation(ParameterType parameterType)
         => BreaksIsolation(parameterType.IsLent, parameterType.Type);
-    private static bool BreaksIsolation(bool isLent, IType type)
+    private static bool BreaksIsolation(bool isLent, Type type)
         => type switch
         {
             CapabilityType when isLent => false,

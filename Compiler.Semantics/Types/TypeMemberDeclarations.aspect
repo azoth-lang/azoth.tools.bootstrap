@@ -3,6 +3,7 @@
 ◊using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 ◊using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 ◊using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
+◊using AzothType = Azoth.Tools.Bootstrap.Compiler.Types.Decorated.Type;
 
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
@@ -22,7 +23,7 @@
     => Parameters.LastOrDefault()?.FlowStateAfter ?? SelfParameter.FlowStateAfter;
 = MethodDefinition.Body.**.ExpectedReturnType => Self.ReturnType;
 = MethodDefinition.Body.ExpectedType => Self.ReturnType;
-= MethodDefinition.ReturnType => Return?.NamedType ?? IType.Void;
+= MethodDefinition.ReturnType => Return?.NamedType ?? AzothType.Void;
 = MethodDefinition.↑.Diagnostics;
 
 // TODO this shouldn't use Symbol
@@ -42,7 +43,7 @@
     => Parameters[index - 1].FlowStateAfter;
 = SourceConstructorDefinition.Body.**.FlowStateBefore()
     => Parameters.LastOrDefault()?.FlowStateAfter ?? SelfParameter.FlowStateAfter;
-= SourceConstructorDefinition.Body.**.ExpectedReturnType => IType.Void;
+= SourceConstructorDefinition.Body.**.ExpectedReturnType => AzothType.Void;
 
 // TODO this shouldn't use Symbol
 = InitializerDefinition.ReturnType => Symbol?.ReturnType ?? IMaybeType.Unknown;
@@ -55,7 +56,7 @@
     => Parameters[index - 1].FlowStateAfter;
 = SourceInitializerDefinition.Body.**.FlowStateBefore()
     => Parameters.LastOrDefault()?.FlowStateAfter ?? SelfParameter.FlowStateAfter;
-= SourceInitializerDefinition.Body.**.ExpectedReturnType => IType.Void;
+= SourceInitializerDefinition.Body.**.ExpectedReturnType => AzothType.Void;
 
 = FieldDefinition.↑.Diagnostics;
 // Null is the signal that this is a field initializer and not a method body

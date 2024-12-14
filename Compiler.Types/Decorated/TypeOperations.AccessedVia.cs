@@ -26,8 +26,8 @@ public static partial class TypeOperations
     public static IMaybeType AccessedVia(this IMaybeType type, ICapabilityConstraint capability)
         => type switch
         {
-            IType t => t.AccessedVia(capability),
-            UnknownType _ => IType.Unknown,
+            Type t => t.AccessedVia(capability),
+            UnknownType _ => Type.Unknown,
             _ => throw ExhaustiveMatch.Failed(type),
         };
 
@@ -35,7 +35,7 @@ public static partial class TypeOperations
     /// Return the type for when a value of this type is accessed via a reference with the given capability.
     /// </summary>
     /// <remarks>This can restrict the ability to write to the value.</remarks>
-    public static IType AccessedVia(this IType type, ICapabilityConstraint capability)
+    public static Type AccessedVia(this Type type, ICapabilityConstraint capability)
         => type switch
         {
             CapabilityType t => t.AccessedVia(capability),
@@ -55,7 +55,7 @@ public static partial class TypeOperations
             _ => throw ExhaustiveMatch.Failed(type),
         };
 
-    public static IType AccessedVia(this CapabilityType self, ICapabilityConstraint capability)
+    public static Type AccessedVia(this CapabilityType self, ICapabilityConstraint capability)
     {
         switch (capability)
         {
@@ -73,10 +73,10 @@ public static partial class TypeOperations
         }
     }
 
-    private static IFixedList<IType> ArgumentsAccessedVia(this CapabilityType self, Capability capability)
+    private static IFixedList<Type> ArgumentsAccessedVia(this CapabilityType self, Capability capability)
     {
         if (!self.HasIndependentTypeArguments) return self.Arguments;
-        var newTypeArguments = new List<IType>(self.Arguments.Count);
+        var newTypeArguments = new List<Type>(self.Arguments.Count);
         var typesReplaced = false;
         foreach (var arg in self.Arguments)
         {
@@ -89,7 +89,7 @@ public static partial class TypeOperations
     }
 
 
-    public static IType AccessedVia(this GenericParameterType self, ICapabilityConstraint capability)
+    public static Type AccessedVia(this GenericParameterType self, ICapabilityConstraint capability)
     {
         // Independent type parameters are not affected by the capability
         if (self.Parameter.HasIndependence) return self;

@@ -34,7 +34,7 @@ internal partial class InvalidStructureAspect
                 diagnostics.Add(TypeError.CannotReturnFromNeverFunction(node.File, node.Syntax.Span));
                 break;
             case VoidType when node.Value is not null:
-                diagnostics.Add(TypeError.MustReturnCorrectType(node.File, node.Syntax.Span, IType.Void));
+                diagnostics.Add(TypeError.MustReturnCorrectType(node.File, node.Syntax.Span, Type.Void));
                 break;
         }
     }

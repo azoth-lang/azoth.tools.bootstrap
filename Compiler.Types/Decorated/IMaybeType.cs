@@ -3,7 +3,7 @@ using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 
-[Closed(typeof(IType), typeof(IMaybeNonVoidType))]
+[Closed(typeof(Type), typeof(IMaybeNonVoidType))]
 public interface IMaybeType : IEquatable<IMaybeType>
 {
     #region Standard Types

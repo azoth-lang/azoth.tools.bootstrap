@@ -72,7 +72,7 @@ public static class Primitive
     private static void BuildIntegerTypeSymbol(
         SymbolTreeBuilder tree,
         IntegerTypeConstructor integerTypeConstructor,
-        IType stringType)
+        Type stringType)
     {
         var type = new BuiltInTypeSymbol(integerTypeConstructor);
         tree.Add(type);
@@ -94,7 +94,7 @@ public static class Primitive
         tree.Add(symbol);
 
         // published fn identity_hash(id self) -> nuint
-        var identityHash = Method(symbol, "identity_hash", IType.IdAny, Params(), IType.NUInt);
+        var identityHash = Method(symbol, "identity_hash", Type.IdAny, Params(), Type.NUInt);
         tree.Add(identityHash);
     }
 }

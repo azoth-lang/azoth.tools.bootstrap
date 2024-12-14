@@ -11,7 +11,7 @@ public sealed class TypeReplacements
     public static readonly TypeReplacements None = new();
 
     private readonly PlainTypeReplacements plainTypeReplacements;
-    private readonly Dictionary<GenericParameterType, IType> replacements;
+    private readonly Dictionary<GenericParameterType, Type> replacements;
 
     private TypeReplacements()
     {
@@ -26,7 +26,7 @@ public sealed class TypeReplacements
     internal TypeReplacements(
         PlainTypeReplacements plainTypeReplacements,
         TypeConstructor typeConstructor,
-        IFixedList<IType> typeArguments)
+        IFixedList<Type> typeArguments)
     {
         this.plainTypeReplacements = plainTypeReplacements;
         replacements = typeConstructor.ParameterTypes.EquiZip(typeArguments)
@@ -61,12 +61,12 @@ public sealed class TypeReplacements
     public IMaybeType ReplaceTypeParametersIn(IMaybeType type)
         => type switch
         {
-            IType t => ReplaceTypeParametersIn(t),
+            Type t => ReplaceTypeParametersIn(t),
             UnknownType _ => type,
             _ => throw ExhaustiveMatch.Failed(type)
         };
 
-    public IType ReplaceTypeParametersIn(IType type)
+    public Type ReplaceTypeParametersIn(Type type)
     {
         switch (type)
         {
@@ -79,7 +79,7 @@ public sealed class TypeReplacements
                     return replacementType is NonVoidType nonVoidType
                         ? OptionalType.Create(nonVoidType)
                         // Optional of void is not allowed. Instead, just produce void.
-                        : IType.Void;
+                        : Type.Void;
                 break;
             }
             case GenericParameterType genericParameterType:
@@ -110,7 +110,7 @@ public sealed class TypeReplacements
                 {
                     if (replacementType is NonVoidType nonVoidReplacementType)
                         return new SelfViewpointType(selfViewpointType.Capability, nonVoidReplacementType);
-                    return IType.Void;
+                    return Type.Void;
                 }
                 break;
             }
@@ -125,14 +125,14 @@ public sealed class TypeReplacements
         return type;
     }
 
-    public IType ReplaceTypeParametersIn(GenericParameterType type)
+    public Type ReplaceTypeParametersIn(GenericParameterType type)
     {
         if (replacements.TryGetValue(type, out var replacementType))
             return replacementType;
         return type;
     }
 
-    public IType ReplaceTypeParametersIn(CapabilityType type)
+    public Type ReplaceTypeParametersIn(CapabilityType type)
     {
         var replacementBareType = ReplaceTypeParametersIn(type.BareType);
         if (ReferenceEquals(type.BareType, replacementBareType)) return type;
@@ -150,13 +150,13 @@ public sealed class TypeReplacements
         => type switch
         {
             ParameterType t => ReplaceTypeParametersIn(t),
-            UnknownType _ => IType.Unknown,
+            UnknownType _ => Type.Unknown,
             _ => throw ExhaustiveMatch.Failed(type),
         };
 
-    private IFixedList<IType> ReplaceTypeParametersIn(IFixedList<IType> types)
+    private IFixedList<Type> ReplaceTypeParametersIn(IFixedList<Type> types)
     {
-        var replacementTypes = new List<IType>();
+        var replacementTypes = new List<Type>();
         var typesReplaced = false;
         foreach (var type in types)
         {

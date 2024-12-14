@@ -39,7 +39,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees
             
             #line 14 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
   foreach(var usingNamespace in Build.OrderedNamespaces(tree,
-    Build.Conditional(!tree.SimplifiedTree, "System", "System.Linq", "System.Threading", "System.Collections.Concurrent", "Azoth.Tools.Bootstrap.Compiler.Core.Attributes"),
+    Build.Conditional(!tree.SimplifiedTree, "System", "System.Linq", "System.Threading", "Azoth.Tools.Bootstrap.Compiler.Core.Attributes"),
     Build.Conditional(tree.GenerateClasses, "InlineMethod", "System.Collections.Generic"),
     ["ExhaustiveMatching", "System.CodeDom.Compiler", "System.Diagnostics"])) { 
             

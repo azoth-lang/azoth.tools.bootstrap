@@ -13,7 +13,7 @@ public record class ParameterType(bool IsLent, NonVoidType Type) : IMaybeParamet
     public static IMaybeParameterType Create(bool isLent, IMaybeNonVoidType type)
     {
         if (type is NonVoidType t) return new ParameterType(isLent, t);
-        return IType.Unknown;
+        return Decorated.Type.Unknown;
     }
     IMaybeNonVoidType IMaybeParameterType.Type => Type;
 

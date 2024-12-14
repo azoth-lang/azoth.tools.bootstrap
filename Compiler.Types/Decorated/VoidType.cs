@@ -2,7 +2,7 @@ using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 
-public sealed class VoidType : IType
+public sealed class VoidType : Type
 {
     #region Singleton
     internal static readonly VoidType Instance = new VoidType();

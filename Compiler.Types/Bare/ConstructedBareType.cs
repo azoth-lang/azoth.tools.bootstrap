@@ -4,6 +4,7 @@ using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using Azoth.Tools.Bootstrap.Framework;
 using MoreLinq;
+using Type = Azoth.Tools.Bootstrap.Compiler.Types.Decorated.Type;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 
@@ -17,7 +18,7 @@ public sealed class ConstructedBareType : BareType
 {
     public override ConstructedPlainType PlainType { get; }
     public override TypeConstructor TypeConstructor => PlainType.TypeConstructor;
-    public override IFixedList<IType> Arguments { get; }
+    public override IFixedList<Type> Arguments { get; }
     public override bool HasIndependentTypeArguments { get; }
 
     public override TypeReplacements TypeReplacements { get; }
@@ -34,7 +35,7 @@ public sealed class ConstructedBareType : BareType
             () => TypeConstructor.Supertypes.Select(t => TypeReplacements.ReplaceTypeParametersIn(t)).ToFixedSet());
     private IFixedSet<ConstructedBareType>? supertypes;
 
-    public ConstructedBareType(ConstructedPlainType plainType, IFixedList<IType> arguments)
+    public ConstructedBareType(ConstructedPlainType plainType, IFixedList<Type> arguments)
     {
         Requires.That(plainType.Arguments.SequenceEqual(arguments.Select(a => a.PlainType)),
             nameof(arguments), "Type arguments must match plain type.");
@@ -46,7 +47,7 @@ public sealed class ConstructedBareType : BareType
         TypeReplacements = new(plainType.TypeReplacements, plainType.TypeConstructor, Arguments);
     }
 
-    public override BareType WithReplacement(IFixedList<IType> arguments)
+    public override BareType WithReplacement(IFixedList<Type> arguments)
         => new ConstructedBareType(PlainType, arguments);
 
     public override ConstructedBareType? TryToNonLiteral()
@@ -73,7 +74,7 @@ public sealed class ConstructedBareType : BareType
 
     public override string ToILString() => ToString(t => t.ToILString());
 
-    private string ToString(Func<IType, string> toString)
+    private string ToString(Func<Type, string> toString)
     {
         var builder = new StringBuilder();
         builder.Append(PlainType.ToBareString());

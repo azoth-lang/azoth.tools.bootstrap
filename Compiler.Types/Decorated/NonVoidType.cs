@@ -12,7 +12,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
     typeof(SelfViewpointType),
     typeof(CapabilityViewpointType),
     typeof(NeverType))]
-public abstract class NonVoidType : IType, IMaybeNonVoidType
+public abstract class NonVoidType : Type, IMaybeNonVoidType
 {
     public abstract override NonVoidPlainType PlainType { get; }
     IMaybeNonVoidPlainType IMaybeNonVoidType.PlainType => PlainType;

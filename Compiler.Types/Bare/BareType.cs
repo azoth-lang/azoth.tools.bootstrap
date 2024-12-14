@@ -5,6 +5,7 @@ using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
+using Type = Azoth.Tools.Bootstrap.Compiler.Types.Decorated.Type;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 
@@ -30,7 +31,7 @@ public abstract class BareType : IEquatable<BareType>
 
     public abstract TypeConstructor? TypeConstructor { get; }
 
-    public abstract IFixedList<IType> Arguments { get; }
+    public abstract IFixedList<Type> Arguments { get; }
 
     public abstract bool HasIndependentTypeArguments { get; }
 
@@ -57,7 +58,7 @@ public abstract class BareType : IEquatable<BareType>
     public CapabilityType WithDefaultMutate()
         => With(IsDeclaredConst ? Capability.Constant : Capability.Mutable);
 
-    public abstract BareType WithReplacement(IFixedList<IType> arguments);
+    public abstract BareType WithReplacement(IFixedList<Type> arguments);
 
     public virtual ConstructedBareType? TryToNonLiteral() => null;
 

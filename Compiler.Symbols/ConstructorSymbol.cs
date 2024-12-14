@@ -3,6 +3,7 @@ using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 using Azoth.Tools.Bootstrap.Framework;
+using Type = Azoth.Tools.Bootstrap.Compiler.Types.Decorated.Type;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 
@@ -12,7 +13,7 @@ public sealed class ConstructorSymbol : InvocableSymbol
     public override OrdinaryTypeSymbol ContextTypeSymbol => ContainingSymbol;
     public override IdentifierName? Name { get; }
     public CapabilityType SelfParameterType { get; }
-    public override IType ReturnType { get; }
+    public override Type ReturnType { get; }
 
     public ConstructorSymbol(
         OrdinaryTypeSymbol containingSymbol,

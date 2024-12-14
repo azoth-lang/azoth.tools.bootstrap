@@ -2,6 +2,7 @@ using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using Azoth.Tools.Bootstrap.Framework;
+using Type = Azoth.Tools.Bootstrap.Compiler.Types.Decorated.Type;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 
@@ -20,7 +21,7 @@ public sealed class AssociatedBareType : BareType
 {
     public override AssociatedPlainType PlainType { get; }
     public override TypeConstructor? TypeConstructor => null;
-    public override IFixedList<IType> Arguments => [];
+    public override IFixedList<Type> Arguments => [];
     public override bool HasIndependentTypeArguments => false;
     public override IFixedList<TypeParameterArgument> TypeParameterArguments => [];
     public override TypeReplacements TypeReplacements => TypeReplacements.None;
@@ -30,7 +31,7 @@ public sealed class AssociatedBareType : BareType
         PlainType = plainType;
     }
 
-    public override BareType WithReplacement(IFixedList<IType> arguments)
+    public override BareType WithReplacement(IFixedList<Type> arguments)
     {
         Requires.That(arguments.IsEmpty, nameof(arguments),
             "Type arguments must match plain type.");

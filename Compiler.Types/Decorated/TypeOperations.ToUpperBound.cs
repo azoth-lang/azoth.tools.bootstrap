@@ -10,8 +10,8 @@ public static partial class TypeOperations
     public static IMaybeType ToUpperBound(this IMaybeType self)
         => self switch
         {
-            IType t => t.ToUpperBound(),
-            UnknownType _ => IType.Unknown,
+            Type t => t.ToUpperBound(),
+            UnknownType _ => Type.Unknown,
             _ => throw ExhaustiveMatch.Failed(self),
         };
 
@@ -19,15 +19,15 @@ public static partial class TypeOperations
         => self switch
         {
             NonVoidType t => t.ToUpperBound(),
-            UnknownType _ => IType.Unknown,
+            UnknownType _ => Type.Unknown,
             _ => throw ExhaustiveMatch.Failed(self),
         };
 
-    public static IType ToUpperBound(this IType self)
+    public static Type ToUpperBound(this Type self)
         => self switch
         {
             NonVoidType t => t.ToUpperBound(),
-            VoidType _ => IType.Void,
+            VoidType _ => Type.Void,
             _ => throw ExhaustiveMatch.Failed(self),
         };
 
@@ -43,7 +43,7 @@ public static partial class TypeOperations
             FunctionType t => t,
             CapabilityType t => t,
 
-            NeverType _ => IType.Never,
+            NeverType _ => Type.Never,
             _ => throw ExhaustiveMatch.Failed(self),
         };
 }

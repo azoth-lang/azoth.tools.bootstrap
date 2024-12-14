@@ -4,6 +4,7 @@ using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 using Azoth.Tools.Bootstrap.Framework;
+using Type = Azoth.Tools.Bootstrap.Compiler.Types.Decorated.Type;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 
@@ -14,7 +15,7 @@ public sealed class MethodSymbol : InvocableSymbol
     public MethodKind Kind { get; }
     public override IdentifierName Name { get; }
     public NonVoidType SelfParameterType { get; }
-    public override IType ReturnType { get; }
+    public override Type ReturnType { get; }
     public FunctionType MethodGroupType { get; }
 
     public MethodSymbol(
@@ -24,7 +25,7 @@ public sealed class MethodSymbol : InvocableSymbol
         // TODO once `Self` is used, this can just be a capability constraint
         NonVoidType selfParameterType,
         IFixedList<ParameterType> parameterTypes,
-        IType returnType)
+        Type returnType)
         : base(parameterTypes)
     {
         ContainingSymbol = containingSymbol;

@@ -7,9 +7,9 @@ public sealed class FunctionType : NonVoidType, IMaybeFunctionType
 {
     public static IMaybeFunctionType Create(IEnumerable<IMaybeParameterType> parameters, IMaybeType @return)
     {
-        if (@return is not IType returnType) return IType.Unknown;
+        if (@return is not Type returnType) return Type.Unknown;
 
-        if (parameters.AsKnownFixedList() is not { } properParameters) return IType.Unknown;
+        if (parameters.AsKnownFixedList() is not { } properParameters) return Type.Unknown;
 
         return new FunctionType(properParameters.ToFixedList(), returnType);
     }
@@ -18,7 +18,7 @@ public sealed class FunctionType : NonVoidType, IMaybeFunctionType
     IMaybeFunctionPlainType IMaybeFunctionType.PlainType => PlainType;
 
     public IFixedList<ParameterType> Parameters { get; }
-    public IType Return { get; }
+    public Type Return { get; }
     IMaybeType IMaybeFunctionType.Return => Return;
 
     public override TypeReplacements TypeReplacements => TypeReplacements.None;
@@ -27,7 +27,7 @@ public sealed class FunctionType : NonVoidType, IMaybeFunctionType
 
     /// <remarks>This constructor takes <paramref name="plainType"/> even though it is fully implied
     /// by the other parameters to avoid allocating duplicate <see cref="FunctionPlainType"/>s.</remarks>
-    public FunctionType(FunctionPlainType plainType, IFixedList<ParameterType> parameters, IType @return)
+    public FunctionType(FunctionPlainType plainType, IFixedList<ParameterType> parameters, Type @return)
     {
         Requires.That(plainType.Parameters.SequenceEqual(parameters.Select(p => p.PlainType)), nameof(parameters),
             "Parameters must match plain type.");
@@ -38,7 +38,7 @@ public sealed class FunctionType : NonVoidType, IMaybeFunctionType
         Return = @return;
     }
 
-    public FunctionType(IFixedList<ParameterType> parameters, IType @return)
+    public FunctionType(IFixedList<ParameterType> parameters, Type @return)
         : this(new(parameters.Select(p => p.PlainType), @return.PlainType), parameters, @return)
     {
     }

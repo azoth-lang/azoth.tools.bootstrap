@@ -135,6 +135,13 @@ internal static class Parsing
         return (value[..index].Trim(), value[(index + 1)..].Trim());
     }
 
+    public static (string?, string) OptionalSplitOffStart(string value, string separator)
+    {
+        var index = value.IndexOf(separator, StringComparison.InvariantCulture);
+        if (index == -1) return (null, value);
+        return (value[..index].Trim(), value[(index + 1)..].Trim());
+    }
+
     public static (string?, string) OptionalSplitOffStart(string value)
     {
         var maybeIndex = value.IndexOfWhitespace();

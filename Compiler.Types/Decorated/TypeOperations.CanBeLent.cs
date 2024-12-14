@@ -42,7 +42,7 @@ public static partial class TypeOperations
     public static bool ArgumentsCanBeLent(this CapabilityType type)
         => type.HasIndependentTypeArguments && type.TypeParameterArguments.Any(a => a.CanBeLent());
 
-    public static bool ArgumentsCanBeLent(this IType type)
+    public static bool ArgumentsCanBeLent(this Type type)
         => type switch
         {
             CapabilityType t => t.ArgumentsCanBeLent(),
