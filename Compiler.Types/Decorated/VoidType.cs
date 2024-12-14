@@ -1,9 +1,7 @@
-using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 
-[DebuggerDisplay("{" + nameof(ToILString) + "(),nq}")]
 public sealed class VoidType : IType
 {
     #region Singleton
@@ -12,28 +10,19 @@ public sealed class VoidType : IType
     private VoidType() { }
     #endregion
 
-    public VoidPlainType PlainType => VoidPlainType.Instance;
-    IPlainType IType.PlainType => PlainType;
+    public override VoidPlainType PlainType => VoidPlainType.Instance;
 
-    public bool HasIndependentTypeArguments => false;
-
-    public IType ToNonLiteral() => this;
+    public override bool HasIndependentTypeArguments => false;
 
     #region Equality
-    public bool Equals(IMaybeType? other)
+    public override bool Equals(IMaybeType? other)
         // Singleton, so a reference equality suffices
         => ReferenceEquals(this, other);
-
-    public override bool Equals(object? obj)
-        // Singleton, so a reference equality suffices
-        => ReferenceEquals(this, obj);
 
     public override int GetHashCode() => HashCode.Combine(typeof(VoidType));
     #endregion
 
-    public override string ToString() => ToILString();
+    public override string ToSourceCodeString() => PlainType.ToString();
 
-    public string ToSourceCodeString() => PlainType.ToString();
-
-    public string ToILString() => PlainType.ToString();
+    public override string ToILString() => PlainType.ToString();
 }

@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
@@ -6,10 +7,11 @@ using ExhaustiveMatching;
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 
 [Closed(typeof(NonVoidType), typeof(VoidType))]
-public interface IType : IMaybeType
+[DebuggerDisplay("{" + nameof(ToILString) + "(),nq}")]
+public abstract class IType : IMaybeType
 {
     #region Standard Types
-    public static new readonly UnknownType Unknown = UnknownType.Instance;
+    public static readonly UnknownType Unknown = UnknownType.Instance;
     public static readonly VoidType Void = VoidType.Instance;
     public static readonly NeverType Never = NeverType.Instance;
     public static readonly CapabilityType IdAny = CapabilityType.Create(Capability.Identity, IPlainType.Any);
@@ -41,14 +43,31 @@ public interface IType : IMaybeType
     public static readonly CapabilityType False = TypeConstructor.False.Type;
     #endregion
 
-    new IPlainType PlainType { get; }
+    public abstract IPlainType PlainType { get; }
     IMaybePlainType IMaybeType.PlainType => PlainType;
+
+    public abstract bool HasIndependentTypeArguments { get; }
 
     /// <summary>
     /// Convert types for literals (e.g. <c>bool[true]</c>, <c>int[42]</c> etc.) to their
     /// corresponding types.
     /// </summary>
     // TODO this makes literal types special. Perhaps there should be a way to declare other literal types in code
-    new IType ToNonLiteral();
+    public virtual IType ToNonLiteral() => this;
     IMaybeType IMaybeType.ToNonLiteral() => ToNonLiteral();
+
+    #region Equality
+    public abstract bool Equals(IMaybeType? other);
+
+    public sealed override bool Equals(object? obj)
+        => ReferenceEquals(this, obj) || obj is NonVoidType other && Equals(other);
+
+    public abstract override int GetHashCode();
+    #endregion
+
+    public sealed override string ToString() => ToILString();
+
+    public abstract string ToSourceCodeString();
+
+    public abstract string ToILString();
 }
