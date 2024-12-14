@@ -8,7 +8,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
     typeof(ConstructedOrAssociatedPlainType),
     typeof(GenericParameterPlainType),
     typeof(NeverPlainType))]
-public abstract class NonVoidPlainType : IPlainType, IMaybeNonVoidPlainType
+public abstract class NonVoidPlainType : PlainType, IMaybeNonVoidPlainType
 {
     /// <summary>
     /// The semantics of values of this type or <see langword="null"/> if it is a variable and the

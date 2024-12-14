@@ -16,7 +16,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
     typeof(NonVoidPlainType),
     typeof(VoidPlainType))]
 [DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
-public abstract class IPlainType : IMaybePlainType
+public abstract class PlainType : IMaybePlainType
 {
     internal static readonly IFixedSet<ConstructedPlainType> AnySet
         = AnyTypeConstructor.PlainType.Yield().ToFixedSet();

@@ -14,7 +14,7 @@ public sealed class GenericParameterTypeSymbol : TypeSymbol
     public GenericParameterPlainType PlainType { get; }
     public override IdentifierName Name => (IdentifierName)base.Name;
 
-    public override IPlainType TryGetPlainType() => PlainType;
+    public override PlainType TryGetPlainType() => PlainType;
     public override Type? TryGetType() => new GenericParameterType(PlainType);
 
     public GenericParameterTypeSymbol(

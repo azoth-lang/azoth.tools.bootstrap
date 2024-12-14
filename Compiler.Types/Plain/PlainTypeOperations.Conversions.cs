@@ -20,7 +20,7 @@ public static partial class PlainTypeOperations
     /// Create an optional type for the given type (i.e. `T?` given `T`).
     /// </summary>
     /// <remarks>`void` and `never` types are not changed.</remarks>
-    public static IPlainType MakeOptional(this IPlainType plainType)
+    public static PlainType MakeOptional(this PlainType plainType)
         => plainType switch
         {
             NeverPlainType or VoidPlainType => plainType,

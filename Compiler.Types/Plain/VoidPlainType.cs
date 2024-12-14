@@ -7,7 +7,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 /// lack of a value. For example, a function returning `void` doesn't return
 /// a value. A parameter of type `void` is dropped from the parameter list.
 /// </summary>
-public sealed class VoidPlainType : IPlainType
+public sealed class VoidPlainType : PlainType
 {
     #region Singleton
     internal static readonly VoidPlainType Instance = new VoidPlainType();

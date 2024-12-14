@@ -18,9 +18,9 @@ public sealed class NeverTypeSymbol : TypeSymbol
     public override Symbol? ContainingSymbol => null;
     public override TypeSymbol? ContextTypeSymbol => null;
     public override SpecialTypeName Name => PlainType.Name;
-    public NeverPlainType PlainType => IPlainType.Never;
+    public NeverPlainType PlainType => Types.Plain.PlainType.Never;
 
-    public override IPlainType TryGetPlainType() => PlainType;
+    public override PlainType TryGetPlainType() => PlainType;
     public override Type? TryGetType() => Type.Never;
 
     #region Equality

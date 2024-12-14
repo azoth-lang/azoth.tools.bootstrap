@@ -35,6 +35,7 @@ using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 using InlineMethod;
 using AzothType = Azoth.Tools.Bootstrap.Compiler.Types.Decorated.Type;
+using AzothPlainType = Azoth.Tools.Bootstrap.Compiler.Types.Plain.PlainType;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
 
@@ -380,7 +381,7 @@ public partial interface IConcreteFunctionInvocableDefinitionNode : IInvocableDe
     IMaybeType IInvocableDeclarationNode.ReturnType
         => Return?.NamedType ?? AzothType.Void;
     IMaybePlainType IInvocableDeclarationNode.ReturnPlainType
-        => Return?.NamedPlainType ?? IPlainType.Void;
+        => Return?.NamedPlainType ?? AzothPlainType.Void;
 }
 
 // [Closed(typeof(NamespaceBlockDefinitionNode))]
@@ -752,7 +753,7 @@ public partial interface IMethodDefinitionNode : IAlwaysTypeMemberDefinitionNode
     IMaybeNonVoidPlainType IMethodDeclarationNode.SelfParameterPlainType
         => SelfParameter.BindingPlainType;
     IMaybePlainType IInvocableDeclarationNode.ReturnPlainType
-        => Return?.NamedPlainType ?? IPlainType.Void;
+        => Return?.NamedPlainType ?? AzothPlainType.Void;
 }
 
 // [Closed(typeof(AbstractMethodDefinitionNode))]
@@ -2087,7 +2088,7 @@ public partial interface INeverTypedExpressionNode : IExpressionNode
         => AzothType.Never;
     IMaybeType IExpressionNode.Type => Type;
     IMaybePlainType IExpressionNode.PlainType
-        => IPlainType.Never;
+        => AzothPlainType.Never;
 }
 
 [Closed(
@@ -2219,7 +2220,7 @@ public partial interface IBinaryOperatorExpressionNode : IExpressionNode
     LexicalScope IAmbiguousExpressionNode.ContainingLexicalScope() => ContainingLexicalScope;
     BinaryOperator Operator
         => Syntax.Operator;
-    IPlainType? NumericOperatorCommonPlainType { get; }
+    PlainType? NumericOperatorCommonPlainType { get; }
     ConditionalLexicalScope IAmbiguousExpressionNode.FlowLexicalScope()
         => LexicalScopingAspect.BinaryOperatorExpression_FlowLexicalScope(this);
 
@@ -2317,7 +2318,7 @@ public partial interface IPatternMatchExpressionNode : IExpressionNode
     IMaybeType IExpressionNode.Type
         => AzothType.Bool;
     IMaybePlainType IExpressionNode.PlainType
-        => IPlainType.Bool;
+        => AzothPlainType.Bool;
 
     public static IPatternMatchExpressionNode Create(
         IPatternMatchExpressionSyntax syntax,
@@ -2531,7 +2532,7 @@ public partial interface IUnknownInvocationExpressionNode : IInvocationExpressio
     IEnumerable<IExpressionNode?> IInvocationExpressionNode.AllArguments
         => Arguments;
     IMaybePlainType IExpressionNode.PlainType
-        => IPlainType.Unknown;
+        => AzothPlainType.Unknown;
 
     public static IUnknownInvocationExpressionNode Create(
         IInvocationExpressionSyntax syntax,
@@ -2839,7 +2840,7 @@ public partial interface IUnknownNameExpressionNode : INameExpressionNode
         => AzothType.Unknown;
     IMaybeType IExpressionNode.Type => Type;
     IMaybePlainType IExpressionNode.PlainType
-        => IPlainType.Unknown;
+        => AzothPlainType.Unknown;
 }
 
 // [Closed(typeof(UnresolvedMemberAccessExpressionNode))]
@@ -2899,7 +2900,7 @@ public partial interface INamespaceNameNode : INameExpressionNode
         => AzothType.Unknown;
     IMaybeType IExpressionNode.Type => Type;
     IMaybePlainType IExpressionNode.PlainType
-        => IPlainType.Unknown;
+        => AzothPlainType.Unknown;
 }
 
 // [Closed(typeof(UnqualifiedNamespaceNameNode))]
@@ -2961,7 +2962,7 @@ public partial interface IFunctionGroupNameNode : INameExpressionNode
     IFlowState INameExpressionNode.FlowStateAfter
         => FlowStateBefore();
     IMaybePlainType IExpressionNode.PlainType
-        => IPlainType.Unknown;
+        => AzothPlainType.Unknown;
 
     public static IFunctionGroupNameNode Create(
         INameExpressionSyntax syntax,
@@ -3025,7 +3026,7 @@ public partial interface IMethodGroupNameNode : INameExpressionNode
     IFlowState INameExpressionNode.FlowStateAfter
         => Context.FlowStateAfter;
     IMaybePlainType IExpressionNode.PlainType
-        => IPlainType.Unknown;
+        => AzothPlainType.Unknown;
 
     public static IMethodGroupNameNode Create(
         IMemberAccessExpressionSyntax syntax,
@@ -3132,7 +3133,7 @@ public partial interface ITypeNameExpressionNode : INameExpressionNode
     IMaybeType IExpressionNode.Type
         => AzothType.Unknown;
     IMaybePlainType IExpressionNode.PlainType
-        => IPlainType.Unknown;
+        => AzothPlainType.Unknown;
 }
 
 // [Closed(typeof(StandardTypeNameExpressionNode))]
@@ -3189,7 +3190,7 @@ public partial interface IInitializerGroupNameNode : INameExpressionNode
     IMaybeType IExpressionNode.Type
         => throw new NotImplementedException();
     IMaybePlainType IExpressionNode.PlainType
-        => IPlainType.Unknown;
+        => AzothPlainType.Unknown;
 
     public static IInitializerGroupNameNode Create(
         INameExpressionSyntax syntax,
@@ -3214,7 +3215,7 @@ public partial interface ISpecialTypeNameExpressionNode : INameExpressionNode
     SpecialTypeName Name
         => Syntax.Name;
     IMaybePlainType IExpressionNode.PlainType
-        => IPlainType.Unknown;
+        => AzothPlainType.Unknown;
 
     public static ISpecialTypeNameExpressionNode Create(ISpecialTypeNameExpressionSyntax syntax)
         => new SpecialTypeNameExpressionNode(syntax);
@@ -3271,7 +3272,7 @@ public partial interface IMissingNameExpressionNode : ISimpleNameExpressionNode
         => AzothType.Unknown;
     IMaybeType IExpressionNode.Type => Type;
     IMaybePlainType IExpressionNode.PlainType
-        => IPlainType.Unknown;
+        => AzothPlainType.Unknown;
 
     public static IMissingNameExpressionNode Create(IMissingNameSyntax syntax)
         => new MissingNameExpressionNode(syntax);
@@ -6984,7 +6985,7 @@ file class SourceConstructorDefinitionNode : SemanticNode, ISourceConstructorDef
     internal override IMaybePlainType? Inherited_ExpectedReturnPlainType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, Self.Body))
-            return IPlainType.Void;
+            return AzothPlainType.Void;
         return base.Inherited_ExpectedReturnPlainType(child, descendant, ctx);
     }
 
@@ -7265,7 +7266,7 @@ file class SourceInitializerDefinitionNode : SemanticNode, ISourceInitializerDef
     internal override IMaybePlainType? Inherited_ExpectedReturnPlainType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, Self.Body))
-            return IPlainType.Void;
+            return AzothPlainType.Void;
         return base.Inherited_ExpectedReturnPlainType(child, descendant, ctx);
     }
 
@@ -10803,11 +10804,11 @@ file class BinaryOperatorExpressionNode : SemanticNode, IBinaryOperatorExpressio
                 ExpressionTypesAspect.BinaryOperatorExpression_FlowStateAfter);
     private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
-    public IPlainType? NumericOperatorCommonPlainType
+    public PlainType? NumericOperatorCommonPlainType
         => GrammarAttribute.IsCached(in numericOperatorCommonPlainTypeCached) ? numericOperatorCommonPlainType
             : this.Synthetic(ref numericOperatorCommonPlainTypeCached, ref numericOperatorCommonPlainType,
                 ExpressionPlainTypesAspect.BinaryOperatorExpression_NumericOperatorCommonPlainType);
-    private IPlainType? numericOperatorCommonPlainType;
+    private PlainType? numericOperatorCommonPlainType;
     private bool numericOperatorCommonPlainTypeCached;
     public IMaybePlainType PlainType
         => GrammarAttribute.IsCached(in plainTypeCached) ? plainType!
@@ -11678,7 +11679,7 @@ file class IfExpressionNode : SemanticNode, IIfExpressionNode
     internal override IMaybePlainType? Inherited_ExpectedPlainType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.CurrentCondition))
-            return IPlainType.OptionalBool;
+            return AzothPlainType.OptionalBool;
         if (ReferenceEquals(child, descendant))
             return null;
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
@@ -12018,7 +12019,7 @@ file class WhileExpressionNode : SemanticNode, IWhileExpressionNode
     internal override IMaybePlainType? Inherited_ExpectedPlainType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.CurrentCondition))
-            return IPlainType.OptionalBool;
+            return AzothPlainType.OptionalBool;
         if (ReferenceEquals(child, descendant))
             return null;
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);

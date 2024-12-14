@@ -18,7 +18,7 @@ public sealed class VoidTypeSymbol : TypeSymbol
     public override Symbol? ContainingSymbol => null;
     public override TypeSymbol? ContextTypeSymbol => null;
     public override SpecialTypeName Name => PlainType.Name;
-    public VoidPlainType PlainType => IPlainType.Void;
+    public VoidPlainType PlainType => Types.Plain.PlainType.Void;
 
     public override VoidPlainType TryGetPlainType() => PlainType;
     public override Type? TryGetType() => Type.Void;

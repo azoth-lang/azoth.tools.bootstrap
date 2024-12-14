@@ -26,7 +26,7 @@ public abstract class TypeSymbol : Symbol
 
     public virtual TypeConstructor? TryGetTypeConstructor() => null;
 
-    public virtual IPlainType? TryGetPlainType() => null;
+    public virtual PlainType? TryGetPlainType() => null;
 
     public virtual Type? TryGetType() => null;
 }

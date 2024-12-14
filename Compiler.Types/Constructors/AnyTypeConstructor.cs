@@ -44,13 +44,13 @@ public sealed class AnyTypeConstructor : TypeConstructor
     /// <remarks>Because `Any` is the base of the constructed type hierarchy, it has no supertypes.</remarks>
     public override IFixedSet<ConstructedBareType> Supertypes => [];
 
-    public override ConstructedPlainType Construct(IFixedList<IPlainType> arguments)
+    public override ConstructedPlainType Construct(IFixedList<PlainType> arguments)
     {
         if (!arguments.IsEmpty) throw new ArgumentException("Incorrect number of type arguments.");
         return PlainType;
     }
 
-    public override IPlainType TryConstructNullaryPlainType() => PlainType;
+    public override PlainType TryConstructNullaryPlainType() => PlainType;
 
     #region Equality
     public override bool Equals(TypeConstructor? other)

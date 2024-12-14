@@ -6,19 +6,19 @@ public sealed class FunctionPlainType : NonVoidPlainType, IMaybeFunctionPlainTyp
 {
     public static IMaybeFunctionPlainType Create(IEnumerable<IMaybeNonVoidPlainType> parameters, IMaybePlainType @return)
     {
-        if (@return is not IPlainType returnType) return IPlainType.Unknown;
+        if (@return is not PlainType returnType) return PlainType.Unknown;
 
-        if (parameters.AsKnownFixedList() is not { } properParameters) return IPlainType.Unknown;
+        if (parameters.AsKnownFixedList() is not { } properParameters) return PlainType.Unknown;
 
         return new FunctionPlainType(properParameters, returnType);
     }
 
     public override TypeSemantics? Semantics => TypeSemantics.Reference;
     public IFixedList<NonVoidPlainType> Parameters { get; }
-    public IPlainType Return { get; }
+    public PlainType Return { get; }
     IMaybePlainType IMaybeFunctionPlainType.Return => Return;
 
-    public FunctionPlainType(IEnumerable<NonVoidPlainType> parameters, IPlainType returnPlainType)
+    public FunctionPlainType(IEnumerable<NonVoidPlainType> parameters, PlainType returnPlainType)
     {
         Parameters = parameters.ToFixedList();
         Return = returnPlainType;

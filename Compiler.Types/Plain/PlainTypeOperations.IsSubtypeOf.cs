@@ -16,12 +16,12 @@ public static partial class PlainTypeOperations
         {
             (UnknownPlainType, _) or (_, UnknownPlainType)
                 => true,
-            (IPlainType s, IPlainType o)
+            (PlainType s, PlainType o)
                 => s.IsSubtypeOf(o),
             _ => throw new UnreachableException()
         };
 
-    public static bool IsSubtypeOf(this IPlainType self, IPlainType other)
+    public static bool IsSubtypeOf(this PlainType self, PlainType other)
         => (self, other) switch
         {
             (_, _) when self.Equals(other) => true,
@@ -60,8 +60,8 @@ public static partial class PlainTypeOperations
 
     private static bool IsSubtypeOf(
         TypeConstructor declaredPlainType,
-        IFixedList<IPlainType> selfTypeArguments,
-        IFixedList<IPlainType> otherTypeArguments)
+        IFixedList<PlainType> selfTypeArguments,
+        IFixedList<PlainType> otherTypeArguments)
     {
         Requires.That(selfTypeArguments.Count == declaredPlainType.Parameters.Count, nameof(selfTypeArguments), "count must match count of declaredPlainType generic parameters");
         Requires.That(otherTypeArguments.Count == declaredPlainType.Parameters.Count, nameof(otherTypeArguments), "count must match count of declaredPlainType generic parameters");

@@ -33,9 +33,9 @@ internal static partial class TypeExpressionsPlainTypesAspect
                              .OfType<NonVoidPlainType>().ToFixedList();
         if (parameters.Count != node.Parameters.Count)
             // Not all parameters are known and non-void
-            return IPlainType.Unknown;
-        if (node.Return.NamedPlainType is not IPlainType returnPlainType)
-            return IPlainType.Unknown;
+            return PlainType.Unknown;
+        if (node.Return.NamedPlainType is not PlainType returnPlainType)
+            return PlainType.Unknown;
         return new FunctionPlainType(parameters, returnPlainType);
     }
 
@@ -54,10 +54,10 @@ internal static partial class TypeExpressionsPlainTypesAspect
         var referencedSymbol = node.ReferencedDeclaration?.Symbol;
         var declaredPlainType = referencedSymbol?.TryGetTypeConstructor();
         if (declaredPlainType is null)
-            return IPlainType.Unknown;
-        var plainTypeArguments = node.TypeArguments.Select(a => a.NamedPlainType).OfType<IPlainType>().ToFixedList();
+            return PlainType.Unknown;
+        var plainTypeArguments = node.TypeArguments.Select(a => a.NamedPlainType).OfType<PlainType>().ToFixedList();
         if (plainTypeArguments.Count != node.TypeArguments.Count)
-            return IPlainType.Unknown;
+            return PlainType.Unknown;
         return declaredPlainType.Construct(plainTypeArguments);
     }
 
@@ -67,10 +67,10 @@ internal static partial class TypeExpressionsPlainTypesAspect
         var referencedSymbol = node.ReferencedDeclaration.Symbol;
         var declaredPlainType = referencedSymbol.TryGetTypeConstructor();
         if (declaredPlainType is null)
-            return IPlainType.Unknown;
-        var plainTypeArguments = node.TypeArguments.Select(a => a.NamedPlainType).OfType<IPlainType>().ToFixedList();
+            return PlainType.Unknown;
+        var plainTypeArguments = node.TypeArguments.Select(a => a.NamedPlainType).OfType<PlainType>().ToFixedList();
         if (plainTypeArguments.Count != node.TypeArguments.Count)
-            return IPlainType.Unknown;
+            return PlainType.Unknown;
         return declaredPlainType.Construct(plainTypeArguments);
     }
 }

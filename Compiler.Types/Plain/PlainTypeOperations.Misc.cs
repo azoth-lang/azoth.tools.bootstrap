@@ -17,7 +17,7 @@ public static partial class PlainTypeOperations
     /// Convert to a non-void type by replacing void with unknown.
     /// </summary>
     public static IMaybeNonVoidPlainType ToNonVoid(this IMaybePlainType type)
-        => type as IMaybeNonVoidPlainType ?? IPlainType.Unknown;
+        => type as IMaybeNonVoidPlainType ?? PlainType.Unknown;
 
     // TODO remove hack
     internal static bool IsStringType(this ConstructedPlainType self)

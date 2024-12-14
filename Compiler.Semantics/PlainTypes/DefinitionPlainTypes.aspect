@@ -3,12 +3,14 @@
 ◊using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 ◊using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 ◊using Azoth.Tools.Bootstrap.Framework;
+◊using AzothPlainType = Azoth.Tools.Bootstrap.Compiler.Types.Plain.PlainType;
 
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
 // ---------- Definitions
 = InvocableDefinition.ParameterPlainTypes;
-= ConcreteFunctionInvocableDefinition.ReturnPlainType => Return?.NamedPlainType ?? IPlainType.Void;
+= ConcreteFunctionInvocableDefinition.ReturnPlainType
+    => Return?.NamedPlainType ?? AzothPlainType.Void;
 = ConcreteFunctionInvocableDefinition.PlainType;
 
 // ---------- Function Definition
@@ -26,7 +28,7 @@
 = MethodDefinition.Body.ExpectedPlainType
     => Self.ReturnPlainType;
 
-= MethodDefinition.ReturnPlainType => Return?.NamedPlainType ?? IPlainType.Void;
+= MethodDefinition.ReturnPlainType => Return?.NamedPlainType ?? AzothPlainType.Void;
 = FieldDefinition.BindingPlainType;
 // TODO it would be good to refactor to not depend on Type
 = AbstractMethodDefinition.MethodGroupPlainType => MethodGroupType.PlainType;
@@ -37,13 +39,13 @@
 = DefaultConstructorDefinition.SelfParameterPlainType
     => ContainingTypeDefinition.TypeConstructor.ConstructWithParameterPlainTypes();
 = SourceConstructorDefinition.SelfParameterPlainType => SelfParameter.BindingPlainType;
-= SourceConstructorDefinition.Body.**.ExpectedReturnPlainType => IPlainType.Void;
+= SourceConstructorDefinition.Body.**.ExpectedReturnPlainType => AzothPlainType.Void;
 = InitializerDefinition.ReturnPlainType
     => ContainingTypeDefinition.TypeConstructor.ConstructWithParameterPlainTypes();
 = DefaultInitializerDefinition.SelfParameterPlainType
     => ContainingTypeDefinition.TypeConstructor.ConstructWithParameterPlainTypes();
 = SourceInitializerDefinition.SelfParameterPlainType => SelfParameter.BindingPlainType;
-= SourceInitializerDefinition.Body.**.ExpectedReturnPlainType => IPlainType.Void;
+= SourceInitializerDefinition.Body.**.ExpectedReturnPlainType => AzothPlainType.Void;
 // Null is the signal that this is a field initializer and not a method body
 = FieldDefinition.Initializer.**.ExpectedReturnPlainType => null;
 = AssociatedFunctionDefinition.Body.ExpectedPlainType => Self.ReturnPlainType;

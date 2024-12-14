@@ -14,9 +14,9 @@ public abstract class Type : IMaybeType
     public static readonly UnknownType Unknown = UnknownType.Instance;
     public static readonly VoidType Void = VoidType.Instance;
     public static readonly NeverType Never = NeverType.Instance;
-    public static readonly CapabilityType IdAny = CapabilityType.Create(Capability.Identity, IPlainType.Any);
+    public static readonly CapabilityType IdAny = CapabilityType.Create(Capability.Identity, Plain.PlainType.Any);
     public static readonly CapabilityType Bool = TypeConstructor.Bool.Type;
-    public static readonly OptionalType OptionalBool = new(IPlainType.OptionalBool, Bool);
+    public static readonly OptionalType OptionalBool = new(Plain.PlainType.OptionalBool, Bool);
     public static readonly CapabilityType Int = TypeConstructor.Int.Type;
     public static readonly CapabilityType UInt = TypeConstructor.UInt.Type;
     public static readonly CapabilityType Int8 = TypeConstructor.Int8.Type;
@@ -37,13 +37,13 @@ public abstract class Type : IMaybeType
     /// <summary>
     /// The value `none` has this type, which is `never?`.
     /// </summary>
-    public static readonly OptionalType None = new(IPlainType.None, Never);
+    public static readonly OptionalType None = new(Plain.PlainType.None, Never);
 
     public static readonly CapabilityType True = TypeConstructor.True.Type;
     public static readonly CapabilityType False = TypeConstructor.False.Type;
     #endregion
 
-    public abstract IPlainType PlainType { get; }
+    public abstract PlainType PlainType { get; }
     IMaybePlainType IMaybeType.PlainType => PlainType;
 
     public abstract bool HasIndependentTypeArguments { get; }

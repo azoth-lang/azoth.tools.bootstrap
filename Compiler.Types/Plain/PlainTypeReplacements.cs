@@ -8,7 +8,7 @@ internal sealed class PlainTypeReplacements
 {
     public static readonly PlainTypeReplacements None = new();
 
-    private readonly Dictionary<GenericParameterPlainType, IPlainType> replacements;
+    private readonly Dictionary<GenericParameterPlainType, PlainType> replacements;
 
     private PlainTypeReplacements()
     {
@@ -19,7 +19,7 @@ internal sealed class PlainTypeReplacements
     /// Build a dictionary of type replacements. Generic parameter types of both this type and the
     /// supertypes can be replaced with type arguments of this type.
     /// </summary>
-    public PlainTypeReplacements(TypeConstructor typeConstructor, IFixedList<IPlainType> typeArguments)
+    public PlainTypeReplacements(TypeConstructor typeConstructor, IFixedList<PlainType> typeArguments)
     {
         replacements = typeConstructor.ParameterPlainTypes.EquiZip(typeArguments)
                                    .ToDictionary(t => t.Item1, t => t.Item2);
@@ -52,12 +52,12 @@ internal sealed class PlainTypeReplacements
     public IMaybePlainType ReplaceTypeParametersIn(IMaybePlainType plainType)
         => plainType switch
         {
-            IPlainType a => ReplaceTypeParametersIn(a),
+            PlainType a => ReplaceTypeParametersIn(a),
             UnknownPlainType a => a,
             _ => throw ExhaustiveMatch.Failed(plainType)
         };
 
-    public IPlainType ReplaceTypeParametersIn(IPlainType plainType)
+    public PlainType ReplaceTypeParametersIn(PlainType plainType)
         => plainType switch
         {
             VoidPlainType a => a,
@@ -65,7 +65,7 @@ internal sealed class PlainTypeReplacements
             _ => throw ExhaustiveMatch.Failed(plainType)
         };
 
-    public IPlainType ReplaceTypeParametersIn(NonVoidPlainType plainType)
+    public PlainType ReplaceTypeParametersIn(NonVoidPlainType plainType)
         => plainType switch
         {
             NeverPlainType t => t,
@@ -94,9 +94,9 @@ internal sealed class PlainTypeReplacements
         return new(plainType.TypeConstructor, replacementTypeArguments);
     }
 
-    private IFixedList<IPlainType> ReplaceTypeParametersIn(IFixedList<IPlainType> plainTypes)
+    private IFixedList<PlainType> ReplaceTypeParametersIn(IFixedList<PlainType> plainTypes)
     {
-        var replacementPlainTypes = new List<IPlainType>();
+        var replacementPlainTypes = new List<PlainType>();
         var typesReplaced = false;
         foreach (var plainType in plainTypes)
         {
@@ -108,7 +108,7 @@ internal sealed class PlainTypeReplacements
         return typesReplaced ? replacementPlainTypes.ToFixedList() : plainTypes;
     }
 
-    public IPlainType ReplaceTypeParametersIn(GenericParameterPlainType plainType)
+    public PlainType ReplaceTypeParametersIn(GenericParameterPlainType plainType)
         => replacements.GetValueOrDefault(plainType, plainType);
 
     public FunctionPlainType ReplaceTypeParametersIn(FunctionPlainType plainType)
@@ -142,7 +142,7 @@ internal sealed class PlainTypeReplacements
         return typesReplaced ? replacementPlainTypes.ToFixedList() : plainTypes;
     }
 
-    public IPlainType ReplaceTypeParametersIn(OptionalPlainType plainType)
+    public PlainType ReplaceTypeParametersIn(OptionalPlainType plainType)
     {
         var replacementType = ReplaceTypeParametersIn(plainType.Referent);
         if (ReferenceEquals(plainType.Referent, replacementType))

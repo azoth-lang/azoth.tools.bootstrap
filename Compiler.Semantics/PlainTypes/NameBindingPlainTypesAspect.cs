@@ -8,7 +8,7 @@ internal static partial class NameBindingPlainTypesAspect
 {
     // TODO this is strange because a FieldParameter isn't a binding
     public static partial IMaybeNonVoidPlainType FieldParameter_BindingPlainType(IFieldParameterNode node)
-        => node.ReferencedField?.BindingPlainType ?? IPlainType.Unknown;
+        => node.ReferencedField?.BindingPlainType ?? PlainType.Unknown;
 
     public static partial IMaybeNonVoidPlainType SelfParameter_BindingPlainType(ISelfParameterNode node)
     {
@@ -17,7 +17,7 @@ internal static partial class NameBindingPlainTypesAspect
     }
 
     public static partial IMaybeNonVoidPlainType PatternMatchExpression_Pattern_ContextBindingPlainType(IPatternMatchExpressionNode node)
-        => node.Referent?.PlainType.ToNonLiteral().ToNonVoid() ?? IPlainType.Unknown;
+        => node.Referent?.PlainType.ToNonLiteral().ToNonVoid() ?? PlainType.Unknown;
 
     public static partial IMaybeNonVoidPlainType BindingContextPattern_Pattern_ContextBindingPlainType(IBindingContextPatternNode node)
         => node.Type?.NamedPlainType.ToNonVoid() ?? node.ContextBindingPlainType();
@@ -35,7 +35,7 @@ internal static partial class NameBindingPlainTypesAspect
         => node.ContextBindingPlainType();
 
     public static partial IMaybeNonVoidPlainType VariableDeclarationStatement_BindingPlainType(IVariableDeclarationStatementNode node)
-        => node.Type?.NamedPlainType.ToNonVoid() ?? node.Initializer?.PlainType.ToNonLiteral().ToNonVoid() ?? IPlainType.Unknown;
+        => node.Type?.NamedPlainType.ToNonVoid() ?? node.Initializer?.PlainType.ToNonLiteral().ToNonVoid() ?? PlainType.Unknown;
 
     public static partial void VariableDeclarationStatement_Contribute_Diagnostics(
         IVariableDeclarationStatementNode node,

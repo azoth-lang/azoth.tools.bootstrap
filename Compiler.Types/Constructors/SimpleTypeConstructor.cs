@@ -40,14 +40,14 @@ public abstract class SimpleTypeConstructor : SimpleOrLiteralTypeConstructor
         PlainType = new(this, []);
     }
 
-    public sealed override ConstructedPlainType Construct(IFixedList<IPlainType> arguments)
+    public sealed override ConstructedPlainType Construct(IFixedList<PlainType> arguments)
     {
         if (arguments.Any())
             throw new ArgumentException("Simple type cannot have type arguments", nameof(arguments));
         return PlainType;
     }
 
-    public sealed override IPlainType TryConstructNullaryPlainType() => PlainType;
+    public sealed override PlainType TryConstructNullaryPlainType() => PlainType;
 
     #region Equality
     public sealed override bool Equals(TypeConstructor? other)

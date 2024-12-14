@@ -2,6 +2,7 @@ using System.CodeDom.Compiler;
 using System.Runtime.CompilerServices;
 using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
+using AzothPlainType = Azoth.Tools.Bootstrap.Compiler.Types.Plain.PlainType;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.PlainTypes;
 
@@ -40,7 +41,7 @@ internal static partial class ExpressionPlainTypesAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IMaybePlainType BinaryOperatorExpression_PlainType(IBinaryOperatorExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IPlainType? BinaryOperatorExpression_NumericOperatorCommonPlainType(IBinaryOperatorExpressionNode node);
+    public static partial PlainType? BinaryOperatorExpression_NumericOperatorCommonPlainType(IBinaryOperatorExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IMaybePlainType UnaryOperatorExpression_PlainType(IUnaryOperatorExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

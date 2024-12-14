@@ -7,7 +7,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.PlainTypes;
 internal static partial class ForeachExpressionPlainTypesAspect
 {
     public static partial ITypeDeclarationNode? ForeachExpression_ReferencedIterableDeclaration(IForeachExpressionNode node)
-        => node.PackageNameScope().Lookup(node.InExpression?.PlainType ?? IPlainType.Unknown);
+        => node.PackageNameScope().Lookup(node.InExpression?.PlainType ?? PlainType.Unknown);
 
     public static partial IStandardMethodDeclarationNode? ForeachExpression_ReferencedIterateMethod(IForeachExpressionNode node)
         => node.ReferencedIterableDeclaration?.InclusiveInstanceMembersNamed("iterate").OfType<IStandardMethodDeclarationNode>()
@@ -16,7 +16,7 @@ internal static partial class ForeachExpressionPlainTypesAspect
 
     public static partial IMaybeNonVoidPlainType ForeachExpression_IteratorPlainType(IForeachExpressionNode node)
     {
-        var iterableType = node.InExpression?.PlainType.ToNonVoid() ?? IPlainType.Unknown;
+        var iterableType = node.InExpression?.PlainType.ToNonVoid() ?? PlainType.Unknown;
         var iterateMethod = node.ReferencedIterateMethod;
         var iteratorPlainType = iterateMethod is not null
             ? iterableType.ReplaceTypeParametersIn(iterateMethod.MethodGroupPlainType.Return).ToNonVoid()
@@ -37,6 +37,6 @@ internal static partial class ForeachExpressionPlainTypesAspect
         var nextMethodReturnType = node.ReferencedNextMethod?.ReturnPlainType;
         if (nextMethodReturnType is OptionalPlainType { Referent: var iteratedType })
             return node.IteratorPlainType.ReplaceTypeParametersIn(iteratedType).ToNonLiteral().ToNonVoid();
-        return IPlainType.Unknown;
+        return PlainType.Unknown;
     }
 }

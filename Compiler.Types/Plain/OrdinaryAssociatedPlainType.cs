@@ -10,7 +10,7 @@ public sealed class OrdinaryAssociatedPlainType : AssociatedPlainType
 {
     public override StandardName Name { get; }
 
-    public override IFixedSet<ConstructedPlainType> Supertypes => IPlainType.AnySet;
+    public override IFixedSet<ConstructedPlainType> Supertypes => PlainType.AnySet;
 
     public OrdinaryAssociatedPlainType(OrdinaryTypeConstructor containingType, StandardName name)
         : base(containingType)

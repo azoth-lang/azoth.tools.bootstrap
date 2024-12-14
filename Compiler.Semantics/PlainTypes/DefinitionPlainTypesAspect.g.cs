@@ -3,6 +3,7 @@ using System.Runtime.CompilerServices;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using Azoth.Tools.Bootstrap.Framework;
+using AzothPlainType = Azoth.Tools.Bootstrap.Compiler.Types.Plain.PlainType;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.PlainTypes;
 

@@ -11,7 +11,7 @@ public abstract class ConstructedOrAssociatedPlainType : NonVoidPlainType
     public abstract TypeConstructor? TypeConstructor { get; }
     public abstract TypeName Name { get; }
     public abstract bool AllowsVariance { get; }
-    public virtual IFixedList<IPlainType> Arguments => FixedList.Empty<IPlainType>();
+    public virtual IFixedList<PlainType> Arguments => FixedList.Empty<PlainType>();
     public abstract IFixedSet<ConstructedPlainType> Supertypes { get; }
 
     internal abstract PlainTypeReplacements TypeReplacements { get; }

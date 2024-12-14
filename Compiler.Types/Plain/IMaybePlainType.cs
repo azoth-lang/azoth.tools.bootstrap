@@ -2,7 +2,7 @@ using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 
-[Closed(typeof(IPlainType), typeof(IMaybeNonVoidPlainType))]
+[Closed(typeof(PlainType), typeof(IMaybeNonVoidPlainType))]
 public interface IMaybePlainType : IEquatable<IMaybePlainType>
 {
     #region Standard Types

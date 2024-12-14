@@ -15,7 +15,7 @@ internal static partial class OverloadResolutionAspect
     private static IMaybePlainType PlainTypeIfKnown(IExpressionNode? node)
     {
         if (node is not null && !node.ShouldNotBeExpression()) return node.PlainType;
-        return IPlainType.Unknown;
+        return PlainType.Unknown;
     }
 
     #region Expressions
@@ -73,7 +73,7 @@ internal static partial class OverloadResolutionAspect
     #region Invocation Expressions
     public static partial IMaybePlainType? UnknownInvocationExpression_Expression_ExpectedPlainType(IUnknownInvocationExpressionNode node)
     {
-        var expectedReturnPlainType = node.ExpectedPlainType ?? IPlainType.Unknown;
+        var expectedReturnPlainType = node.ExpectedPlainType ?? PlainType.Unknown;
         return new FunctionPlainType(node.Arguments.Select(NonVoidPlainTypeIfKnown),
             // TODO this is odd, but the return plainType will be ignored
             NonVoidPlainTypeIfKnown(expectedReturnPlainType));
@@ -87,7 +87,7 @@ internal static partial class OverloadResolutionAspect
         if (maybeExpressionPlainType is NonVoidPlainType plainType) return plainType;
         // This is a little odd, but if the parameter type is not known, then using `never` will
         // cause nothing to match except for `never` itself.
-        return IPlainType.Never;
+        return PlainType.Never;
     }
 
     public static partial IExpressionNode? UnknownInvocationExpression_Rewrite_FunctionNameExpression(IUnknownInvocationExpressionNode node)

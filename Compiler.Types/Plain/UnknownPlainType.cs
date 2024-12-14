@@ -11,9 +11,9 @@ public sealed class UnknownPlainType : IMaybeFunctionPlainType
     private UnknownPlainType() { }
     #endregion
 
-    IMaybePlainType IMaybeFunctionPlainType.Return => IPlainType.Unknown;
+    IMaybePlainType IMaybeFunctionPlainType.Return => PlainType.Unknown;
 
-    IMaybePlainType IMaybePlainType.ToNonLiteral() => IPlainType.Unknown;
+    IMaybePlainType IMaybePlainType.ToNonLiteral() => PlainType.Unknown;
 
     public IMaybePlainType ReplaceTypeParametersIn(IMaybePlainType plainType)
         => plainType;

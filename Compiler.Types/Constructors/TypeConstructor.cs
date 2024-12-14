@@ -197,7 +197,7 @@ public abstract partial class TypeConstructor : TypeConstructorContext, IEquatab
     private ConstructedPlainType? withParameterPlainTypes;
     private ConstructedBareType? withParameterTypes;
 
-    public abstract ConstructedPlainType Construct(IFixedList<IPlainType> arguments);
+    public abstract ConstructedPlainType Construct(IFixedList<PlainType> arguments);
 
     /// <summary>
     /// Construct a type using the <see cref="ParameterPlainTypes"/> to create a plain type as it
@@ -222,8 +222,8 @@ public abstract partial class TypeConstructor : TypeConstructorContext, IEquatab
     /// </summary>
     public IMaybePlainType Construct(IFixedList<IMaybePlainType> arguments)
     {
-        var properArguments = arguments.As<IPlainType>();
-        if (properArguments is null) return IPlainType.Unknown;
+        var properArguments = arguments.As<PlainType>();
+        if (properArguments is null) return PlainType.Unknown;
         return Construct(properArguments);
     }
 
@@ -252,7 +252,7 @@ public abstract partial class TypeConstructor : TypeConstructorContext, IEquatab
     {
         if (!Parameters.IsEmpty)
             throw new InvalidOperationException($"Cannot construct nullary type for type constructor `{this}` expecting arguments.");
-        var plainType = Construct(FixedList.Empty<IPlainType>());
+        var plainType = Construct(FixedList.Empty<PlainType>());
         return new(plainType, []);
     }
 
@@ -260,7 +260,7 @@ public abstract partial class TypeConstructor : TypeConstructorContext, IEquatab
     /// Try to construct a plain type with type arguments. If the type constructor takes one or more
     /// arguments, <see langword="null"/> is returned.
     /// </summary>
-    public abstract IPlainType? TryConstructNullaryPlainType();
+    public abstract PlainType? TryConstructNullaryPlainType();
 
     /// <summary>
     /// If this is a non-literal type, return the default non-literal type to place values of this

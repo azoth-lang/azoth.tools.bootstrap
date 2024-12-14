@@ -7,11 +7,11 @@ public static partial class PlainTypeOperations
     /// <summary>
     /// Determine what the common type for two numeric types for a numeric operator is.
     /// </summary>
-    public static IPlainType? NumericOperatorCommonType(this IPlainType leftType, IPlainType rightType)
+    public static PlainType? NumericOperatorCommonType(this PlainType leftType, PlainType rightType)
         => (leftType, rightType) switch
         {
-            (_, NeverPlainType) => IPlainType.Never,
-            (NeverPlainType, _) => IPlainType.Never,
+            (_, NeverPlainType) => PlainType.Never,
+            (NeverPlainType, _) => PlainType.Never,
             (OptionalPlainType { Referent: var left }, OptionalPlainType { Referent: var right })
                 => left.NumericOperatorCommonType(right)?.MakeOptional(),
             (OptionalPlainType { Referent: var left }, _) => left.NumericOperatorCommonType(rightType)?.MakeOptional(),
@@ -25,31 +25,31 @@ public static partial class PlainTypeOperations
     /// <summary>
     /// Determine what the common type for two numeric types for a numeric operator is.
     /// </summary>
-    internal static IPlainType? NumericOperatorCommonType(
+    internal static PlainType? NumericOperatorCommonType(
         this SimpleOrLiteralTypeConstructor leftTypeConstructor,
         SimpleOrLiteralTypeConstructor rightTypeConstructor)
         => (leftType: leftTypeConstructor, rightType: rightTypeConstructor) switch
         {
             (BigIntegerTypeConstructor left, IntegerTypeConstructor right)
-                => left.IsSigned || right.IsSigned ? IPlainType.Int : IPlainType.UInt,
+                => left.IsSigned || right.IsSigned ? PlainType.Int : PlainType.UInt,
             (IntegerTypeConstructor left, BigIntegerTypeConstructor right)
-                => left.IsSigned || right.IsSigned ? IPlainType.Int : IPlainType.UInt,
+                => left.IsSigned || right.IsSigned ? PlainType.Int : PlainType.UInt,
             (BigIntegerTypeConstructor left, IntegerLiteralTypeConstructor right)
-                => left.IsSigned || right.IsSigned ? IPlainType.Int : IPlainType.UInt,
+                => left.IsSigned || right.IsSigned ? PlainType.Int : PlainType.UInt,
             (IntegerLiteralTypeConstructor left, BigIntegerTypeConstructor right)
-                => left.IsSigned || right.IsSigned ? IPlainType.Int : IPlainType.UInt,
+                => left.IsSigned || right.IsSigned ? PlainType.Int : PlainType.UInt,
             (PointerSizedIntegerTypeConstructor left, PointerSizedIntegerTypeConstructor right)
-                => left.IsSigned || right.IsSigned ? IPlainType.Offset : IPlainType.Size,
+                => left.IsSigned || right.IsSigned ? PlainType.Offset : PlainType.Size,
             (PointerSizedIntegerTypeConstructor { IsSigned: true }, IntegerLiteralTypeConstructor { IsInt16: true })
                 or (PointerSizedIntegerTypeConstructor { IsSigned: false }, IntegerLiteralTypeConstructor { IsUInt16: true })
                 => leftTypeConstructor.PlainType,
             (PointerSizedIntegerTypeConstructor left, IntegerLiteralTypeConstructor right)
-                => left.IsSigned || right.IsSigned ? IPlainType.Int : IPlainType.UInt,
+                => left.IsSigned || right.IsSigned ? PlainType.Int : PlainType.UInt,
             (IntegerLiteralTypeConstructor { IsInt16: true }, PointerSizedIntegerTypeConstructor { IsSigned: true })
                 or (IntegerLiteralTypeConstructor { IsUInt16: true }, PointerSizedIntegerTypeConstructor { IsSigned: false })
                 => rightTypeConstructor.PlainType,
             (IntegerLiteralTypeConstructor left, PointerSizedIntegerTypeConstructor right)
-                => left.IsSigned || right.IsSigned ? IPlainType.Int : IPlainType.UInt,
+                => left.IsSigned || right.IsSigned ? PlainType.Int : PlainType.UInt,
             (FixedSizeIntegerTypeConstructor left, FixedSizeIntegerTypeConstructor right)
                 when left.IsSigned == right.IsSigned
                 => left.Bits >= right.Bits ? left.PlainType : right.PlainType,

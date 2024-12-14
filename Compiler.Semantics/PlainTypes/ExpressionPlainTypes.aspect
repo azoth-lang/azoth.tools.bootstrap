@@ -2,6 +2,7 @@
 ◊name ExpressionPlainTypesAspect;
 ◊using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 ◊using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
+◊using AzothPlainType = Azoth.Tools.Bootstrap.Compiler.Types.Plain.PlainType;
 
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
@@ -38,26 +39,26 @@
 // However, it needs to be contextualized with the generic arguments and currently there isn't another way to do that.
 = NewObjectExpression.Arguments[index].ExpectedPlainType
     => ContextualizedCall?.ParameterTypes[index].Type.PlainType;
-= NeverTypedExpression.PlainType => IPlainType.Never;
+= NeverTypedExpression.PlainType => AzothPlainType.Never;
 
 // ---------- Operator Expressions
 = AssignmentExpression.RightOperand.ExpectedPlainType => LeftOperand?.PlainType;
-↑ BinaryOperatorExpression.NumericOperatorCommonPlainType: `IPlainType`?;
+↑ BinaryOperatorExpression.NumericOperatorCommonPlainType: `PlainType`?;
 = BinaryOperatorExpression.LeftOperand.ExpectedPlainType => NumericOperatorCommonPlainType;
 = BinaryOperatorExpression.RightOperand.ExpectedPlainType => NumericOperatorCommonPlainType;
 = UnaryOperatorExpression.↑.Diagnostics;
 // No expected plain type for the referent. If one were given, it could cause another implicit conversion.
 = ImplicitConversionExpression.Referent.ExpectedPlainType => null;
-= PatternMatchExpression.PlainType => IPlainType.Bool;
+= PatternMatchExpression.PlainType => AzothPlainType.Bool;
 
 // ---------- Control Flow Expressions
-= IfExpression.Condition.ExpectedPlainType => IPlainType.OptionalBool;
-= WhileExpression.Condition.ExpectedPlainType => IPlainType.OptionalBool;
+= IfExpression.Condition.ExpectedPlainType => AzothPlainType.OptionalBool;
+= WhileExpression.Condition.ExpectedPlainType => AzothPlainType.OptionalBool;
 ↓ ReturnExpression.ExpectedReturnPlainType: `IMaybePlainType`?;
 = ReturnExpression.Value.ExpectedPlainType => ExpectedReturnPlainType;
 
 // ---------- Invocation Expressions
-= UnknownInvocationExpression.PlainType => IPlainType.Unknown;
+= UnknownInvocationExpression.PlainType => AzothPlainType.Unknown;
 = FunctionInvocationExpression.Arguments[index].ExpectedPlainType
     => Self.SelectedCallCandidate?.ParameterPlainTypes[index];
 = MethodInvocationExpression.Arguments[index].ExpectedPlainType
@@ -80,19 +81,19 @@
 
 // ---------- Name Expressions
 = UnresolvedMemberAccessExpression.*.ExpectedPlainType => null;
-= NamespaceName.PlainType => IPlainType.Unknown;
-= FunctionGroupName.PlainType => IPlainType.Unknown;
+= NamespaceName.PlainType => AzothPlainType.Unknown;
+= FunctionGroupName.PlainType => AzothPlainType.Unknown;
 = FunctionGroupName.*.ExpectedPlainType => null;
 = FunctionName.*.ExpectedPlainType => null;
-= MethodGroupName.PlainType => IPlainType.Unknown;
+= MethodGroupName.PlainType => AzothPlainType.Unknown;
 = MethodGroupName.*.ExpectedPlainType => null;
 = MethodName.Context.ExpectedPlainType;
-= TypeNameExpression.PlainType => IPlainType.Unknown;
-= InitializerGroupName.PlainType => IPlainType.Unknown;
+= TypeNameExpression.PlainType => AzothPlainType.Unknown;
+= InitializerGroupName.PlainType => AzothPlainType.Unknown;
 ↑ InitializerGroupName.InitializingPlainType: `IMaybePlainType` => Context.NamedPlainType;
-= SpecialTypeNameExpression.PlainType => IPlainType.Unknown;
-= MissingNameExpression.PlainType => IPlainType.Unknown;
-= UnknownNameExpression.PlainType => IPlainType.Unknown;
+= SpecialTypeNameExpression.PlainType => AzothPlainType.Unknown;
+= MissingNameExpression.PlainType => AzothPlainType.Unknown;
+= UnknownNameExpression.PlainType => AzothPlainType.Unknown;
 
 // ---------- Capability Expressions
 = MoveExpression.PlainType => Referent.PlainType;

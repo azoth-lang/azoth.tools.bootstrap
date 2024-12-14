@@ -16,11 +16,11 @@ public sealed class ConstructedPlainType : ConstructedOrAssociatedPlainType
     public override TypeSemantics? Semantics => TypeConstructor.Semantics;
     public override TypeName Name => TypeConstructor.Name;
     public override bool AllowsVariance => TypeConstructor.AllowsVariance;
-    public override IFixedList<IPlainType> Arguments { get; }
+    public override IFixedList<PlainType> Arguments { get; }
     public override IFixedSet<ConstructedPlainType> Supertypes { get; }
     internal override PlainTypeReplacements TypeReplacements { get; }
 
-    public ConstructedPlainType(TypeConstructor typeConstructor, IEnumerable<IPlainType> typeArguments)
+    public ConstructedPlainType(TypeConstructor typeConstructor, IEnumerable<PlainType> typeArguments)
     {
         TypeConstructor = typeConstructor;
         Arguments = typeArguments.ToFixedList();

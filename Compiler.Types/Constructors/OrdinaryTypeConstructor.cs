@@ -142,7 +142,7 @@ public sealed class OrdinaryTypeConstructor : TypeConstructor
             _ => true
         };
 
-    public override ConstructedPlainType Construct(IFixedList<IPlainType> arguments)
+    public override ConstructedPlainType Construct(IFixedList<PlainType> arguments)
     {
         if (arguments.Count != Parameters.Count)
             throw new ArgumentException("Incorrect number of type arguments.");
