@@ -14,7 +14,7 @@ public sealed class OrdinaryTypeSymbol : TypeSymbol
     public override Symbol ContainingSymbol { get; }
     public override TypeSymbol? ContextTypeSymbol => null;
     public TypeKind Kind => TypeConstructor.Kind;
-    public override StandardName Name { get; }
+    public override OrdinaryName Name { get; }
     public OrdinaryTypeConstructor TypeConstructor { get; }
 
     public OrdinaryTypeSymbol(

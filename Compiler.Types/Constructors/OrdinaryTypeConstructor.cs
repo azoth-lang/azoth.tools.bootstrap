@@ -49,7 +49,7 @@ public sealed class OrdinaryTypeConstructor : TypeConstructor
 
     public override bool CanBeSupertype => Kind != TypeKind.Struct;
 
-    public override StandardName Name { get; }
+    public override OrdinaryName Name { get; }
 
     /// <summary>
     /// The parameters of this type constructor. Commonly referred to as "generic parameters".
@@ -69,7 +69,7 @@ public sealed class OrdinaryTypeConstructor : TypeConstructor
         bool isAbstract,
         bool isDeclaredConst,
         TypeKind kind,
-        StandardName name,
+        OrdinaryName name,
         IEnumerable<Parameter> genericParameters,
         IFixedSet<ConstructedBareType> supertypes)
     {

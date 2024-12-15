@@ -6,13 +6,13 @@
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
 // ---------- Namespace Declarations
-↑ NamespaceDeclaration.MembersByName: `FixedDictionary<StandardName, IFixedSet<INamespaceMemberDeclarationNode>>`;
+↑ NamespaceDeclaration.MembersByName: `FixedDictionary<OrdinaryName, IFixedSet<INamespaceMemberDeclarationNode>>`;
 = NamespaceDeclaration.MembersByName;
-↑ NamespaceDeclaration.NestedMembersByName: `FixedDictionary<StandardName, IFixedSet<INamespaceMemberDeclarationNode>>`;
+↑ NamespaceDeclaration.NestedMembersByName: `FixedDictionary<OrdinaryName, IFixedSet<INamespaceMemberDeclarationNode>>`;
 = NamespaceDeclaration.NestedMembersByName;
-+ NamespaceDeclaration.MembersNamed(StandardName named): `IEnumerable<INamespaceMemberDeclarationNode>`
++ NamespaceDeclaration.MembersNamed(OrdinaryName named): `IEnumerable<INamespaceMemberDeclarationNode>`
     => MembersByName.GetValueOrDefault(named) ?? [];
-+ NamespaceDeclaration.NestedMembersNamed(StandardName named): `IEnumerable<INamespaceMemberDeclarationNode>`
++ NamespaceDeclaration.NestedMembersNamed(OrdinaryName named): `IEnumerable<INamespaceMemberDeclarationNode>`
     => NestedMembersByName.GetValueOrDefault(named) ?? [];
 
 // ---------- Type Declarations
@@ -20,27 +20,27 @@
 /// All members of the type with the given name along with inherited members with the given name
 /// if they are not hidden by a member in the type itself.
 /// </summary>
-+ TypeDeclaration.InclusiveInstanceMembersNamed(StandardName named): `IEnumerable<IInstanceMemberDeclarationNode>`;
-+ TypeDeclaration.AssociatedMembersNamed(StandardName named): `IEnumerable<IAssociatedMemberDeclarationNode>`;
-↑ BuiltInTypeDeclaration.InclusiveInstanceMembersByName: `FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>>`;
++ TypeDeclaration.InclusiveInstanceMembersNamed(OrdinaryName named): `IEnumerable<IInstanceMemberDeclarationNode>`;
++ TypeDeclaration.AssociatedMembersNamed(OrdinaryName named): `IEnumerable<IAssociatedMemberDeclarationNode>`;
+↑ BuiltInTypeDeclaration.InclusiveInstanceMembersByName: `FixedDictionary<OrdinaryName, IFixedSet<IInstanceMemberDeclarationNode>>`;
 = BuiltInTypeDeclaration.InclusiveInstanceMembersByName;
-↑ BuiltInTypeDeclaration.AssociatedMembersByName: `FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>>`;
+↑ BuiltInTypeDeclaration.AssociatedMembersByName: `FixedDictionary<OrdinaryName, IFixedSet<IAssociatedMemberDeclarationNode>>`;
 = BuiltInTypeDeclaration.AssociatedMembersByName;
-= BuiltInTypeDeclaration.InclusiveInstanceMembersNamed(StandardName named)
+= BuiltInTypeDeclaration.InclusiveInstanceMembersNamed(OrdinaryName named)
     => InclusiveInstanceMembersByName.GetValueOrDefault(named) ?? [];
-= BuiltInTypeDeclaration.AssociatedMembersNamed(StandardName named)
+= BuiltInTypeDeclaration.AssociatedMembersNamed(OrdinaryName named)
     => AssociatedMembersByName.GetValueOrDefault(named) ?? [];
-↑ UserTypeDeclaration.InclusiveInstanceMembersByName: `FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>>`;
+↑ UserTypeDeclaration.InclusiveInstanceMembersByName: `FixedDictionary<OrdinaryName, IFixedSet<IInstanceMemberDeclarationNode>>`;
 = UserTypeDeclaration.InclusiveInstanceMembersByName;
-↑ UserTypeDeclaration.AssociatedMembersByName: `FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>>`;
+↑ UserTypeDeclaration.AssociatedMembersByName: `FixedDictionary<OrdinaryName, IFixedSet<IAssociatedMemberDeclarationNode>>`;
 = UserTypeDeclaration.AssociatedMembersByName;
-= UserTypeDeclaration.InclusiveInstanceMembersNamed(StandardName named)
+= UserTypeDeclaration.InclusiveInstanceMembersNamed(OrdinaryName named)
     => InclusiveInstanceMembersByName.GetValueOrDefault(named) ?? [];
-= UserTypeDeclaration.AssociatedMembersNamed(StandardName named)
+= UserTypeDeclaration.AssociatedMembersNamed(OrdinaryName named)
     => AssociatedMembersByName.GetValueOrDefault(named) ?? [];
 
 // ---------- Type Declaration Parts
 // TODO should look up members based on generic constraints
-= GenericParameterDeclaration.InclusiveInstanceMembersNamed(StandardName named) => [];
+= GenericParameterDeclaration.InclusiveInstanceMembersNamed(OrdinaryName named) => [];
 // TODO should look up members based on generic constraints
-= GenericParameterDeclaration.AssociatedMembersNamed(StandardName named) => [];
+= GenericParameterDeclaration.AssociatedMembersNamed(OrdinaryName named) => [];

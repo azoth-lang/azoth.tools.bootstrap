@@ -8,11 +8,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 // those used from outside which need type arguments for the containing type
 public sealed class OrdinaryAssociatedPlainType : AssociatedPlainType
 {
-    public override StandardName Name { get; }
+    public override OrdinaryName Name { get; }
 
     public override IFixedSet<ConstructedPlainType> Supertypes => PlainType.AnySet;
 
-    public OrdinaryAssociatedPlainType(OrdinaryTypeConstructor containingType, StandardName name)
+    public OrdinaryAssociatedPlainType(OrdinaryTypeConstructor containingType, OrdinaryName name)
         : base(containingType)
     {
         Name = name;

@@ -149,7 +149,7 @@ internal static partial class BindingAmbiguousNamesAspect
     public static partial void Validate_FunctionGroupNameNode(
         INameExpressionSyntax syntax,
         INameExpressionNode? context,
-        StandardName functionName,
+        OrdinaryName functionName,
         IEnumerable<ITypeNode> typeArguments,
         IEnumerable<IFunctionInvocableDeclarationNode> referencedDeclarations)
     { }

@@ -47,7 +47,7 @@ public sealed class BuiltInTypeName : TypeName
     public override int GetHashCode() => HashCode.Combine(typeof(BuiltInTypeName), Text);
     #endregion
 
-    public override StandardName? WithAttributeSuffix() => null;
+    public override OrdinaryName? WithAttributeSuffix() => null;
 
     public override string ToBareString() => Text;
 

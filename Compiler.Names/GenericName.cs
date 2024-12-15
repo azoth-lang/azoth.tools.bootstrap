@@ -6,7 +6,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Names;
 /// <summary>
 /// A name that has generic parameters.
 /// </summary>
-public sealed class GenericName : StandardName
+public sealed class GenericName : OrdinaryName
 {
     public GenericName(string text, int genericParameterCount)
         : base(text, genericParameterCount)
@@ -19,7 +19,7 @@ public sealed class GenericName : StandardName
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
-        return other is StandardName otherName
+        return other is OrdinaryName otherName
                && Text == otherName.Text
                && GenericParameterCount == otherName.GenericParameterCount;
     }
@@ -27,7 +27,7 @@ public sealed class GenericName : StandardName
     public override int GetHashCode() => HashCode.Combine(Text, GenericParameterCount);
     #endregion
 
-    public override StandardName WithAttributeSuffix()
+    public override OrdinaryName WithAttributeSuffix()
         => new GenericName(Text + SpecialNames.AttributeSuffix, GenericParameterCount);
 
     public override string ToString() => $"{QuotedText}[{new string(',', GenericParameterCount - 1)}]";

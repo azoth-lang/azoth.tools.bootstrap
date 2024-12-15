@@ -78,7 +78,7 @@
 = PrimitiveTypeSymbol.Name => Symbol.Name;
 = PrimitiveTypeSymbol.TypeFactory => Symbol.TypeConstructor;
 
-↑ OrdinaryTypeSymbol.Name: `StandardName` => Symbol.Name;
+↑ OrdinaryTypeSymbol.Name: `OrdinaryName` => Symbol.Name;
 ↑ child OrdinaryTypeSymbol.GenericParameters: GenericParameterSymbol*;
 = OrdinaryTypeSymbol.Supertypes => Symbol.TryGetTypeConstructor().Supertypes;
 = OrdinaryTypeSymbol.GenericParameters;

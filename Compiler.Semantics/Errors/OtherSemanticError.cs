@@ -83,13 +83,13 @@ public static class OtherSemanticError
             6013, "Constructor or initializer `self` parameter cannot be `lent`");
     }
 
-    public static Diagnostic BaseTypeMustBeClass(CodeFile file, StandardName className, IStandardTypeNameSyntax baseTypeName)
+    public static Diagnostic BaseTypeMustBeClass(CodeFile file, OrdinaryName className, IStandardTypeNameSyntax baseTypeName)
     {
         return new(file, baseTypeName.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             6015, $"Class `{className}` cannot have base type `{baseTypeName}` because it is not a class");
     }
 
-    public static Diagnostic SupertypeMustBeClassOrTrait(CodeFile file, StandardName typeName, IStandardTypeNameSyntax superTypeName)
+    public static Diagnostic SupertypeMustBeClassOrTrait(CodeFile file, OrdinaryName typeName, IStandardTypeNameSyntax superTypeName)
     {
         return new(file, superTypeName.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             6016, $"Type `{typeName}` cannot have super type `{superTypeName}` because it is not a trait or class");

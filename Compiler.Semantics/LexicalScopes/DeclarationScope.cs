@@ -27,7 +27,7 @@ internal class DeclarationScope : LexicalScope
     {
     }
 
-    public override IEnumerable<IDeclarationNode> Lookup(StandardName name)
+    public override IEnumerable<IDeclarationNode> Lookup(OrdinaryName name)
     {
         if (declarations.TryGetValue(name, out var nodes))
             return nodes;

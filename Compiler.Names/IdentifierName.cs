@@ -5,7 +5,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Names;
 /// <summary>
 /// A simple name. That is, a name that is not qualified and does not have generic parameters.
 /// </summary>
-public sealed class IdentifierName : StandardName
+public sealed class IdentifierName : OrdinaryName
 {
     public IdentifierName(string text)
         : base(text, 0) { }
@@ -23,7 +23,7 @@ public sealed class IdentifierName : StandardName
         => HashCode.Combine(typeof(IdentifierName), Text);
     #endregion
 
-    public override StandardName WithAttributeSuffix() => Text + SpecialNames.AttributeSuffix;
+    public override OrdinaryName WithAttributeSuffix() => Text + SpecialNames.AttributeSuffix;
 
     public override string ToString() => QuotedText;
 

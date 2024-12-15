@@ -187,7 +187,7 @@ public partial class Parser
         var identifier = Tokens.RequiredToken<IIdentifierToken>();
         var generic = AcceptGenericParameters();
         var genericParameters = generic?.Parameters ?? FixedList.Empty<IGenericParameterSyntax>();
-        var name = StandardName.Create(identifier.Value, genericParameters.Count);
+        var name = OrdinaryName.Create(identifier.Value, genericParameters.Count);
         IStandardTypeNameSyntax? baseClass = null;
         if (Tokens.Accept<IColonToken>()) baseClass = ParseStandardTypeName();
         var supertypes = ParseSupertypes();
@@ -306,7 +306,7 @@ public partial class Parser
         var identifier = Tokens.RequiredToken<IIdentifierToken>();
         var generic = AcceptGenericParameters();
         var genericParameters = generic?.Parameters ?? FixedList.Empty<IGenericParameterSyntax>();
-        var name = StandardName.Create(identifier.Value, genericParameters.Count);
+        var name = OrdinaryName.Create(identifier.Value, genericParameters.Count);
         var superTypes = ParseSupertypes();
         var (members, bodySpan) = ParseStructBody();
         var span = TextSpan.Covering(structKeywordSpan, identifier.Span, generic?.Span,
@@ -365,7 +365,7 @@ public partial class Parser
         var identifier = Tokens.RequiredToken<IIdentifierToken>();
         var generic = AcceptGenericParameters();
         var genericParameters = generic?.Parameters ?? FixedList.Empty<IGenericParameterSyntax>();
-        var name = StandardName.Create(identifier.Value, genericParameters.Count);
+        var name = OrdinaryName.Create(identifier.Value, genericParameters.Count);
         var superTypes = ParseSupertypes();
         var (members, bodySpan) = ParseTraitBody();
         var span = TextSpan.Covering(traitKeywordSpan, identifier.Span, generic?.Span,

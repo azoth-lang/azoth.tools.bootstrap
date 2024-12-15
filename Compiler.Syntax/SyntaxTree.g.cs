@@ -264,7 +264,7 @@ public partial interface ITypeDefinitionSyntax : INamespaceBlockMemberDefinition
 {
     IConstKeywordToken? ConstModifier { get; }
     IMoveKeywordToken? MoveModifier { get; }
-    new StandardName Name { get; }
+    new OrdinaryName Name { get; }
     TypeName? IDefinitionSyntax.Name => Name;
     IFixedList<IGenericParameterSyntax> GenericParameters { get; }
     IFixedList<IStandardTypeNameSyntax> SupertypeNames { get; }
@@ -287,7 +287,7 @@ public partial interface IClassDefinitionSyntax : ITypeDefinitionSyntax
         IAccessModifierToken? accessModifier,
         IConstKeywordToken? constModifier,
         IMoveKeywordToken? moveModifier,
-        StandardName name,
+        OrdinaryName name,
         IAbstractKeywordToken? abstractModifier,
         IEnumerable<IGenericParameterSyntax> genericParameters,
         IStandardTypeNameSyntax? baseTypeName,
@@ -310,7 +310,7 @@ public partial interface IStructDefinitionSyntax : ITypeDefinitionSyntax
         IAccessModifierToken? accessModifier,
         IConstKeywordToken? constModifier,
         IMoveKeywordToken? moveModifier,
-        StandardName name,
+        OrdinaryName name,
         IEnumerable<IGenericParameterSyntax> genericParameters,
         IEnumerable<IStandardTypeNameSyntax> supertypeNames,
         IEnumerable<IStructMemberDefinitionSyntax> members)
@@ -331,7 +331,7 @@ public partial interface ITraitDefinitionSyntax : ITypeDefinitionSyntax
         IAccessModifierToken? accessModifier,
         IConstKeywordToken? constModifier,
         IMoveKeywordToken? moveModifier,
-        StandardName name,
+        OrdinaryName name,
         IEnumerable<IGenericParameterSyntax> genericParameters,
         IEnumerable<IStandardTypeNameSyntax> supertypeNames,
         IEnumerable<ITraitMemberDefinitionSyntax> members)
@@ -818,7 +818,7 @@ public partial interface ITypeNameSyntax : ITypeSyntax
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IStandardTypeNameSyntax : ITypeNameSyntax
 {
-    new StandardName Name { get; }
+    new OrdinaryName Name { get; }
     TypeName ITypeNameSyntax.Name => Name;
 }
 
@@ -835,7 +835,7 @@ public partial interface ISimpleTypeNameSyntax : ITypeNameSyntax
 public partial interface IIdentifierTypeNameSyntax : IStandardTypeNameSyntax, ISimpleTypeNameSyntax
 {
     new IdentifierName Name { get; }
-    StandardName IStandardTypeNameSyntax.Name => Name;
+    OrdinaryName IStandardTypeNameSyntax.Name => Name;
     TypeName ITypeNameSyntax.Name => Name;
 
     public static IIdentifierTypeNameSyntax Create(
@@ -862,7 +862,7 @@ public partial interface IBuiltInTypeNameSyntax : ISimpleTypeNameSyntax
 public partial interface IGenericTypeNameSyntax : IStandardTypeNameSyntax
 {
     new GenericName Name { get; }
-    StandardName IStandardTypeNameSyntax.Name => Name;
+    OrdinaryName IStandardTypeNameSyntax.Name => Name;
     TypeName ITypeNameSyntax.Name => Name;
     IFixedList<ITypeSyntax> TypeArguments { get; }
 
@@ -1484,7 +1484,7 @@ public partial interface ISimpleNameSyntax : INameExpressionSyntax
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IStandardNameExpressionSyntax : INameExpressionSyntax
 {
-    StandardName Name { get; }
+    OrdinaryName Name { get; }
 }
 
 // [Closed(typeof(IdentifierNameExpressionSyntax))]
@@ -1492,7 +1492,7 @@ public partial interface IStandardNameExpressionSyntax : INameExpressionSyntax
 public partial interface IIdentifierNameExpressionSyntax : IStandardNameExpressionSyntax, ISimpleNameSyntax
 {
     new IdentifierName Name { get; }
-    StandardName IStandardNameExpressionSyntax.Name => Name;
+    OrdinaryName IStandardNameExpressionSyntax.Name => Name;
 
     public static IIdentifierNameExpressionSyntax Create(
         TextSpan span,
@@ -1517,7 +1517,7 @@ public partial interface IBuiltInTypeNameExpressionSyntax : INameExpressionSynta
 public partial interface IGenericNameExpressionSyntax : IStandardNameExpressionSyntax
 {
     new GenericName Name { get; }
-    StandardName IStandardNameExpressionSyntax.Name => Name;
+    OrdinaryName IStandardNameExpressionSyntax.Name => Name;
     IFixedList<ITypeSyntax> TypeArguments { get; }
 
     public static IGenericNameExpressionSyntax Create(
@@ -1551,14 +1551,14 @@ public partial interface ISelfExpressionSyntax : INameExpressionSyntax, IInstanc
 public partial interface IMemberAccessExpressionSyntax : INameExpressionSyntax
 {
     IExpressionSyntax Context { get; }
-    StandardName MemberName { get; }
+    OrdinaryName MemberName { get; }
     IFixedList<ITypeSyntax> TypeArguments { get; }
     TextSpan MemberNameSpan { get; }
 
     public static IMemberAccessExpressionSyntax Create(
         TextSpan span,
         IExpressionSyntax context,
-        StandardName memberName,
+        OrdinaryName memberName,
         IEnumerable<ITypeSyntax> typeArguments,
         TextSpan memberNameSpan)
         => new MemberAccessExpressionSyntax(span, context, memberName, typeArguments, memberNameSpan);
@@ -1832,7 +1832,7 @@ file class ClassDefinitionSyntax : IClassDefinitionSyntax
     public IAccessModifierToken? AccessModifier { [DebuggerStepThrough] get; }
     public IConstKeywordToken? ConstModifier { [DebuggerStepThrough] get; }
     public IMoveKeywordToken? MoveModifier { [DebuggerStepThrough] get; }
-    public StandardName Name { [DebuggerStepThrough] get; }
+    public OrdinaryName Name { [DebuggerStepThrough] get; }
     public IAbstractKeywordToken? AbstractModifier { [DebuggerStepThrough] get; }
     public IFixedList<IGenericParameterSyntax> GenericParameters { [DebuggerStepThrough] get; }
     public IStandardTypeNameSyntax? BaseTypeName { [DebuggerStepThrough] get; }
@@ -1848,7 +1848,7 @@ file class ClassDefinitionSyntax : IClassDefinitionSyntax
         IAccessModifierToken? accessModifier,
         IConstKeywordToken? constModifier,
         IMoveKeywordToken? moveModifier,
-        StandardName name,
+        OrdinaryName name,
         IAbstractKeywordToken? abstractModifier,
         IEnumerable<IGenericParameterSyntax> genericParameters,
         IStandardTypeNameSyntax? baseTypeName,
@@ -1881,7 +1881,7 @@ file class StructDefinitionSyntax : IStructDefinitionSyntax
     public IAccessModifierToken? AccessModifier { [DebuggerStepThrough] get; }
     public IConstKeywordToken? ConstModifier { [DebuggerStepThrough] get; }
     public IMoveKeywordToken? MoveModifier { [DebuggerStepThrough] get; }
-    public StandardName Name { [DebuggerStepThrough] get; }
+    public OrdinaryName Name { [DebuggerStepThrough] get; }
     public IFixedList<IGenericParameterSyntax> GenericParameters { [DebuggerStepThrough] get; }
     public IFixedList<IStandardTypeNameSyntax> SupertypeNames { [DebuggerStepThrough] get; }
     public IFixedList<IStructMemberDefinitionSyntax> Members { [DebuggerStepThrough] get; }
@@ -1895,7 +1895,7 @@ file class StructDefinitionSyntax : IStructDefinitionSyntax
         IAccessModifierToken? accessModifier,
         IConstKeywordToken? constModifier,
         IMoveKeywordToken? moveModifier,
-        StandardName name,
+        OrdinaryName name,
         IEnumerable<IGenericParameterSyntax> genericParameters,
         IEnumerable<IStandardTypeNameSyntax> supertypeNames,
         IEnumerable<IStructMemberDefinitionSyntax> members)
@@ -1924,7 +1924,7 @@ file class TraitDefinitionSyntax : ITraitDefinitionSyntax
     public IAccessModifierToken? AccessModifier { [DebuggerStepThrough] get; }
     public IConstKeywordToken? ConstModifier { [DebuggerStepThrough] get; }
     public IMoveKeywordToken? MoveModifier { [DebuggerStepThrough] get; }
-    public StandardName Name { [DebuggerStepThrough] get; }
+    public OrdinaryName Name { [DebuggerStepThrough] get; }
     public IFixedList<IGenericParameterSyntax> GenericParameters { [DebuggerStepThrough] get; }
     public IFixedList<IStandardTypeNameSyntax> SupertypeNames { [DebuggerStepThrough] get; }
     public IFixedList<ITraitMemberDefinitionSyntax> Members { [DebuggerStepThrough] get; }
@@ -1938,7 +1938,7 @@ file class TraitDefinitionSyntax : ITraitDefinitionSyntax
         IAccessModifierToken? accessModifier,
         IConstKeywordToken? constModifier,
         IMoveKeywordToken? moveModifier,
-        StandardName name,
+        OrdinaryName name,
         IEnumerable<IGenericParameterSyntax> genericParameters,
         IEnumerable<IStandardTypeNameSyntax> supertypeNames,
         IEnumerable<ITraitMemberDefinitionSyntax> members)
@@ -3419,7 +3419,7 @@ file class MemberAccessExpressionSyntax : IMemberAccessExpressionSyntax
 
     public TextSpan Span { [DebuggerStepThrough] get; }
     public IExpressionSyntax Context { [DebuggerStepThrough] get; }
-    public StandardName MemberName { [DebuggerStepThrough] get; }
+    public OrdinaryName MemberName { [DebuggerStepThrough] get; }
     public IFixedList<ITypeSyntax> TypeArguments { [DebuggerStepThrough] get; }
     public TextSpan MemberNameSpan { [DebuggerStepThrough] get; }
     public override string ToString()
@@ -3428,7 +3428,7 @@ file class MemberAccessExpressionSyntax : IMemberAccessExpressionSyntax
     public MemberAccessExpressionSyntax(
         TextSpan span,
         IExpressionSyntax context,
-        StandardName memberName,
+        OrdinaryName memberName,
         IEnumerable<ITypeSyntax> typeArguments,
         TextSpan memberNameSpan)
     {

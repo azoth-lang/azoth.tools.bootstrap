@@ -65,7 +65,7 @@ FunctionDefinition <: InvocableDefinition, NamespaceBlockMemberDefinition
 
 // ---------- Type Definitions
 TypeDefinition <: NamespaceBlockMemberDefinition, ClassMemberDefinition, TraitMemberDefinition, StructMemberDefinition
-    = ConstModifier:`IConstKeywordToken`? MoveModifier:`IMoveKeywordToken`? Name:`StandardName` GenericParameters:GenericParameter* SupertypeNames:StandardTypeName* Members:TypeMemberDefinition*;
+    = ConstModifier:`IConstKeywordToken`? MoveModifier:`IMoveKeywordToken`? Name:`OrdinaryName` GenericParameters:GenericParameter* SupertypeNames:StandardTypeName* Members:TypeMemberDefinition*;
 ClassDefinition <: TypeDefinition
     = AbstractModifier:`IAbstractKeywordToken`? GenericParameters:GenericParameter* BaseTypeName:StandardTypeName? SupertypeNames:StandardTypeName* Members:ClassMemberDefinition*;
 StructDefinition <: TypeDefinition
@@ -128,7 +128,7 @@ ExpressionBody <: Body = ResultStatement;
 // ---------- Types
 Type <: Code;
 TypeName <: Type = Name:`TypeName`;
-StandardTypeName <: TypeName = Name:`StandardName`;
+StandardTypeName <: TypeName = Name:`OrdinaryName`;
 SimpleTypeName <: TypeName;
 IdentifierTypeName <: TypeName, StandardTypeName, SimpleTypeName = Name:`IdentifierName`;
 BuiltInTypeName <: SimpleTypeName = Name:`BuiltInTypeName`;
@@ -206,7 +206,7 @@ InvocationExpression <: Expression = Expression Arguments:Expression*;
 // ---------- Name Expressions
 NameExpression <: Expression;
 SimpleName <: NameExpression;
-StandardNameExpression <: NameExpression = Name:`StandardName`;
+StandardNameExpression <: NameExpression = Name:`OrdinaryName`;
 IdentifierNameExpression <: NameExpression, StandardNameExpression, SimpleName
     = Name:`IdentifierName`;
 BuiltInTypeNameExpression <: NameExpression, Expression = Name:`BuiltInTypeName`;
@@ -214,7 +214,7 @@ GenericNameExpression <: NameExpression, StandardNameExpression = Name:`GenericN
 InstanceExpression <: SimpleName; // i.e. `self` or `base`
 SelfExpression <: NameExpression, InstanceExpression = IsImplicit:`bool`;
 MemberAccessExpression <: NameExpression
-    = Context:Expression MemberName:`StandardName` TypeArguments:Type* MemberNameSpan:`TextSpan`;
+    = Context:Expression MemberName:`OrdinaryName` TypeArguments:Type* MemberNameSpan:`TextSpan`;
 MissingName <: NameExpression, SimpleName;
 
 // ---------- Capability Expressions

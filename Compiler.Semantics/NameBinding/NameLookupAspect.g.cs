@@ -12,15 +12,15 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.NameBinding;
 internal static partial class NameLookupAspect
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial FixedDictionary<StandardName, IFixedSet<INamespaceMemberDeclarationNode>> NamespaceDeclaration_MembersByName(INamespaceDeclarationNode node);
+    public static partial FixedDictionary<OrdinaryName, IFixedSet<INamespaceMemberDeclarationNode>> NamespaceDeclaration_MembersByName(INamespaceDeclarationNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial FixedDictionary<StandardName, IFixedSet<INamespaceMemberDeclarationNode>> NamespaceDeclaration_NestedMembersByName(INamespaceDeclarationNode node);
+    public static partial FixedDictionary<OrdinaryName, IFixedSet<INamespaceMemberDeclarationNode>> NamespaceDeclaration_NestedMembersByName(INamespaceDeclarationNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>> BuiltInTypeDeclaration_InclusiveInstanceMembersByName(IBuiltInTypeDeclarationNode node);
+    public static partial FixedDictionary<OrdinaryName, IFixedSet<IInstanceMemberDeclarationNode>> BuiltInTypeDeclaration_InclusiveInstanceMembersByName(IBuiltInTypeDeclarationNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>> BuiltInTypeDeclaration_AssociatedMembersByName(IBuiltInTypeDeclarationNode node);
+    public static partial FixedDictionary<OrdinaryName, IFixedSet<IAssociatedMemberDeclarationNode>> BuiltInTypeDeclaration_AssociatedMembersByName(IBuiltInTypeDeclarationNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>> UserTypeDeclaration_InclusiveInstanceMembersByName(IUserTypeDeclarationNode node);
+    public static partial FixedDictionary<OrdinaryName, IFixedSet<IInstanceMemberDeclarationNode>> UserTypeDeclaration_InclusiveInstanceMembersByName(IUserTypeDeclarationNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>> UserTypeDeclaration_AssociatedMembersByName(IUserTypeDeclarationNode node);
+    public static partial FixedDictionary<OrdinaryName, IFixedSet<IAssociatedMemberDeclarationNode>> UserTypeDeclaration_AssociatedMembersByName(IUserTypeDeclarationNode node);
 }

@@ -107,7 +107,7 @@ TraitMemberDefinition <: TypeMemberDefinition, TraitMemberDeclaration;
 StructMemberDefinition <: TypeMemberDefinition, StructMemberDeclaration;
 AlwaysTypeMemberDefinition <: TypeMemberDefinition, AlwaysTypeMemberDeclaration;
 AssociatedMemberDefinition <: ClassMemberDefinition, TraitMemberDefinition, StructMemberDefinition, NamedDeclaration
-    = Name:`StandardName`;
+    = Name:`OrdinaryName`;
 
 // ---------- Member Definitions
 MethodDefinition <: AlwaysTypeMemberDefinition, ClassMemberDefinition, TraitMemberDefinition, StructMemberDefinition, InvocableDefinition, MethodDeclaration
@@ -262,10 +262,10 @@ FunctionInvocationExpression <: InvocationExpression = Syntax:`IInvocationExpres
 MethodInvocationExpression <: InvocationExpression = Syntax:`IInvocationExpressionSyntax`
     Method:MethodName Arguments:AmbiguousExpression*;
 GetterInvocationExpression <: InvocationExpression, NameExpression = Syntax:`IMemberAccessExpressionSyntax`
-    Context:Expression PropertyName:`StandardName`
+    Context:Expression PropertyName:`OrdinaryName`
     ReferencedPropertyAccessors:{`IPropertyAccessorDeclarationNode`};
 SetterInvocationExpression <: InvocationExpression = Syntax:`IAssignmentExpressionSyntax`
-    Context:Expression PropertyName:`StandardName` Value:AmbiguousExpression
+    Context:Expression PropertyName:`OrdinaryName` Value:AmbiguousExpression
     ReferencedPropertyAccessors:{`IPropertyAccessorDeclarationNode`};
 FunctionReferenceInvocationExpression <: InvocationExpression = Syntax:`IInvocationExpressionSyntax`
     Expression:Expression Arguments:AmbiguousExpression*;
@@ -301,20 +301,20 @@ UnqualifiedNamespaceName <: NamespaceName, SimpleNameExpression
 QualifiedNamespaceName <: NamespaceName
     = Syntax:`IMemberAccessExpressionSyntax` Context:NamespaceName /ReferencedDeclarations/;
 FunctionGroupName <: NameExpression
-    = Syntax:`INameExpressionSyntax` Context:NameExpression? FunctionName:`StandardName` TypeArguments:Type*
+    = Syntax:`INameExpressionSyntax` Context:NameExpression? FunctionName:`OrdinaryName` TypeArguments:Type*
     ReferencedDeclarations:{`IFunctionInvocableDeclarationNode`};
 FunctionName <: NameExpression
-    = Syntax:`INameExpressionSyntax` Context:NameExpression?  FunctionName:`StandardName` TypeArguments:Type*
+    = Syntax:`INameExpressionSyntax` Context:NameExpression?  FunctionName:`OrdinaryName` TypeArguments:Type*
     ReferencedDeclarations:{`IFunctionInvocableDeclarationNode`}
     CallCandidates:{`CallCandidate<IFunctionInvocableDeclarationNode>`}
     CompatibleCallCandidates:{`CallCandidate<IFunctionInvocableDeclarationNode>`}
     SelectedCallCandidate:`CallCandidate<IFunctionInvocableDeclarationNode>`?
     ReferencedDeclaration:`IFunctionInvocableDeclarationNode`?;
 MethodGroupName <: NameExpression = Syntax:`IMemberAccessExpressionSyntax`
-    Context:Expression MethodName:`StandardName` TypeArguments:Type*
+    Context:Expression MethodName:`OrdinaryName` TypeArguments:Type*
     ReferencedDeclarations:{`IStandardMethodDeclarationNode`};
 MethodName <: NameExpression = Syntax:`IMemberAccessExpressionSyntax`
-    Context:Expression MethodName:`StandardName` TypeArguments:Type*
+    Context:Expression MethodName:`OrdinaryName` TypeArguments:Type*
     ReferencedDeclarations:{`IStandardMethodDeclarationNode`}
     CallCandidates:{`CallCandidate<IStandardMethodDeclarationNode>`}
     CompatibleCallCandidates:{`CallCandidate<IStandardMethodDeclarationNode>`}
@@ -332,7 +332,7 @@ StandardTypeNameExpression <: TypeNameExpression
 QualifiedTypeNameExpression <: TypeNameExpression = Syntax:`IMemberAccessExpressionSyntax`
     Context:NamespaceName /TypeArguments/ /ReferencedDeclaration/;
 InitializerGroupName <: NameExpression = Syntax:`INameExpressionSyntax`
-    Context:TypeNameExpression InitializerName:`StandardName`?
+    Context:TypeNameExpression InitializerName:`OrdinaryName`?
     ReferencedDeclarations:{`IInitializerDeclarationNode`};
 // TODO merge with BuiltInTypeName and keep the name "BuiltInTypeName" because it really isn't an expression
 BuiltInTypeNameExpression <: NameExpression
@@ -344,7 +344,7 @@ SelfExpression <: InstanceExpression, LocalBindingNameExpression
 MissingNameExpression <: NameExpression, SimpleNameExpression
     = Syntax:`IMissingNameSyntax`;
 UnknownStandardNameExpression <: UnknownNameExpression
-    = Syntax:`IStandardNameExpressionSyntax` Name:`StandardName` ReferencedDeclarations:{`IDeclarationNode`};
+    = Syntax:`IStandardNameExpressionSyntax` Name:`OrdinaryName` ReferencedDeclarations:{`IDeclarationNode`};
 UnknownIdentifierNameExpression <: UnknownStandardNameExpression, SimpleNameExpression
     = Syntax:`IIdentifierNameExpressionSyntax` /ReferencedDeclarations/;
 UnknownGenericNameExpression <: UnknownStandardNameExpression
@@ -409,7 +409,7 @@ FunctionInvocableDeclaration <: NamedDeclaration, InvocableDeclaration;
 // ---------- Namespace Declarations
 NamespaceDeclaration <: NamespaceMemberDeclaration;
 NamespaceMemberDeclaration <: PackageFacetChildDeclaration, NamedDeclaration, SymbolDeclaration
-    = Name:`StandardName`;
+    = Name:`OrdinaryName`;
 
 // ---------- Function Declaration
 FunctionDeclaration <: NamespaceMemberDeclaration, FunctionInvocableDeclaration;
@@ -418,7 +418,7 @@ FunctionDeclaration <: NamespaceMemberDeclaration, FunctionInvocableDeclaration;
 TypeDeclaration <: NamedDeclaration, SymbolDeclaration;
 BuiltInTypeDeclaration <: TypeDeclaration = Name:`BuiltInTypeName` Members:{TypeMemberDeclaration};
 UserTypeDeclaration <: NamespaceMemberDeclaration, ClassMemberDeclaration, TraitMemberDeclaration, StructMemberDeclaration, TypeDeclaration, NamedDeclaration
-    = Name:`StandardName` GenericParameters:GenericParameterDeclaration* Members:{TypeMemberDeclaration};
+    = Name:`OrdinaryName` GenericParameters:GenericParameterDeclaration* Members:{TypeMemberDeclaration};
 ClassDeclaration <: UserTypeDeclaration = Members:{ClassMemberDeclaration};
 StructDeclaration <: UserTypeDeclaration = Members:{StructMemberDeclaration};
 TraitDeclaration <: UserTypeDeclaration = Members:{TraitMemberDeclaration};
@@ -450,7 +450,7 @@ InitializerDeclaration <: StructMemberDeclaration, AssociatedMemberDeclaration, 
 FieldDeclaration <: NamedDeclaration, ClassMemberDeclaration, StructMemberDeclaration, InstanceMemberDeclaration, NamedBindingDeclaration, AlwaysTypeMemberDeclaration
     = Name:`IdentifierName`;
 AssociatedFunctionDeclaration <: AssociatedMemberDeclaration, FunctionInvocableDeclaration, InvocableDeclaration, AlwaysTypeMemberDeclaration
-    = Name:`StandardName`;
+    = Name:`OrdinaryName`;
 
 // -------------------------------------------------------------------------------------------------
 // Symbol Nodes

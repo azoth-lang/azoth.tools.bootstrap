@@ -51,7 +51,7 @@ public abstract partial class TypeConstructor : TypeConstructorContext, IEquatab
         IdentifierName containingPackage,
         NamespaceName containingNamespace,
         bool isConst,
-        StandardName name,
+        OrdinaryName name,
         IFixedList<Parameter> genericParameters,
         IFixedSet<ConstructedBareType> supertypes)
         => new(new NamespaceContext(containingPackage, containingNamespace),
@@ -83,7 +83,7 @@ public abstract partial class TypeConstructor : TypeConstructorContext, IEquatab
         IFixedList<Parameter> genericParameters,
         IFixedSet<ConstructedBareType> supertypes)
         => new(new NamespaceContext(containingPackage, containingNamespace),
-            isAbstract, isConst, TypeKind.Class, StandardName.Create(name, genericParameters.Count),
+            isAbstract, isConst, TypeKind.Class, OrdinaryName.Create(name, genericParameters.Count),
             genericParameters, supertypes);
 
     public static OrdinaryTypeConstructor CreateClass(
@@ -91,7 +91,7 @@ public abstract partial class TypeConstructor : TypeConstructorContext, IEquatab
         NamespaceName containingNamespace,
         bool isAbstract,
         bool isConst,
-        StandardName name,
+        OrdinaryName name,
         IFixedList<Parameter> genericParameters,
         IFixedSet<ConstructedBareType> supertypes)
         => new(new NamespaceContext(containingPackage, containingNamespace),
@@ -101,7 +101,7 @@ public abstract partial class TypeConstructor : TypeConstructorContext, IEquatab
         IdentifierName containingPackage,
         NamespaceName containingNamespace,
         bool isConst,
-        StandardName name,
+        OrdinaryName name,
         IFixedList<Parameter> genericParameters,
         IFixedSet<ConstructedBareType> supertypes)
         => new(new NamespaceContext(containingPackage, containingNamespace),
@@ -115,7 +115,7 @@ public abstract partial class TypeConstructor : TypeConstructorContext, IEquatab
         string name,
         params Parameter[] genericParameters)
         => new(new NamespaceContext(containingPackage, containingNamespace),
-            isAbstract, isConst, TypeKind.Class, StandardName.Create(name, genericParameters.Length),
+            isAbstract, isConst, TypeKind.Class, OrdinaryName.Create(name, genericParameters.Length),
             genericParameters.ToFixedList(), BareType.AnySet);
 
     public static OrdinaryTypeConstructor CreateTrait(
@@ -125,7 +125,7 @@ public abstract partial class TypeConstructor : TypeConstructorContext, IEquatab
         string name,
         params Parameter[] genericParameters)
         => new(new NamespaceContext(containingPackage, containingNamespace),
-            isAbstract: true, isConst, TypeKind.Trait, StandardName.Create(name, genericParameters.Length),
+            isAbstract: true, isConst, TypeKind.Trait, OrdinaryName.Create(name, genericParameters.Length),
              genericParameters.ToFixedList(), BareType.AnySet);
     #endregion
 

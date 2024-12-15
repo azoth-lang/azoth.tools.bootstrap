@@ -10,7 +10,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Names;
 /// <summary>
 /// A name that could be the name of a type.
 /// </summary>
-[Closed(typeof(StandardName), typeof(BuiltInTypeName))]
+[Closed(typeof(OrdinaryName), typeof(BuiltInTypeName))]
 public abstract partial class TypeName : IEquatable<TypeName>
 {
     public string Text { get; }
@@ -52,7 +52,7 @@ public abstract partial class TypeName : IEquatable<TypeName>
     public static bool operator !=(TypeName? left, TypeName? right) => !Equals(left, right);
     #endregion
 
-    public abstract StandardName? WithAttributeSuffix();
+    public abstract OrdinaryName? WithAttributeSuffix();
 
     /// <summary>
     /// The name without any generic parameters.

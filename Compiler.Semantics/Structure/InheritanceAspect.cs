@@ -36,7 +36,7 @@ internal static partial class InheritanceAspect
     }
 
     private static void AddInheritedMembers<TMemberDeclaration>(
-        MultiMapHashSet<StandardName, TMemberDeclaration> members,
+        MultiMapHashSet<OrdinaryName, TMemberDeclaration> members,
         ITypeDeclarationNode? fromDeclaration)
         where TMemberDeclaration : ITypeMemberDeclarationNode
     {

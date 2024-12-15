@@ -54,7 +54,7 @@ public sealed class NamespaceScope : NamespaceSearchScope
         return childScope;
     }
 
-    public override IEnumerable<IDeclarationNode> Lookup(StandardName name)
+    public override IEnumerable<IDeclarationNode> Lookup(OrdinaryName name)
     {
         var symbolNodes = namespaceDeclarations
             .SelectMany(ns => ns.MembersNamed(name)).SafeCast<IDeclarationNode>()
@@ -64,6 +64,6 @@ public sealed class NamespaceScope : NamespaceSearchScope
         return symbolNodes;
     }
 
-    public IEnumerable<IDeclarationNode> LookupInNamespaceOnly(StandardName name)
+    public IEnumerable<IDeclarationNode> LookupInNamespaceOnly(OrdinaryName name)
         => namespaceDeclarations.SelectMany(ns => ns.MembersNamed(name));
 }

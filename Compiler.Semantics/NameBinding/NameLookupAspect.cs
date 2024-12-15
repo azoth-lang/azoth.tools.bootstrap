@@ -7,31 +7,31 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.NameBinding;
 
 internal static partial class NameLookupAspect
 {
-    public static partial FixedDictionary<StandardName, IFixedSet<INamespaceMemberDeclarationNode>>
+    public static partial FixedDictionary<OrdinaryName, IFixedSet<INamespaceMemberDeclarationNode>>
         NamespaceDeclaration_MembersByName(INamespaceDeclarationNode node)
         => node.Members.ToNameLookup();
 
-    public static partial FixedDictionary<StandardName, IFixedSet<INamespaceMemberDeclarationNode>>
+    public static partial FixedDictionary<OrdinaryName, IFixedSet<INamespaceMemberDeclarationNode>>
         NamespaceDeclaration_NestedMembersByName(INamespaceDeclarationNode node)
         => node.NestedMembers.ToNameLookup();
 
-    public static partial FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>>
+    public static partial FixedDictionary<OrdinaryName, IFixedSet<IInstanceMemberDeclarationNode>>
         BuiltInTypeDeclaration_InclusiveInstanceMembersByName(IBuiltInTypeDeclarationNode node)
         => node.InclusiveMembers.OfType<IInstanceMemberDeclarationNode>().ToNameLookup();
 
-    public static partial FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>>
+    public static partial FixedDictionary<OrdinaryName, IFixedSet<IAssociatedMemberDeclarationNode>>
         BuiltInTypeDeclaration_AssociatedMembersByName(IBuiltInTypeDeclarationNode node)
         => node.Members.OfType<IAssociatedMemberDeclarationNode>().ToNameLookup();
 
-    public static partial FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>>
+    public static partial FixedDictionary<OrdinaryName, IFixedSet<IInstanceMemberDeclarationNode>>
         UserTypeDeclaration_InclusiveInstanceMembersByName(IUserTypeDeclarationNode node)
         => node.InclusiveMembers.OfType<IInstanceMemberDeclarationNode>().ToNameLookup();
 
-    public static partial FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>>
+    public static partial FixedDictionary<OrdinaryName, IFixedSet<IAssociatedMemberDeclarationNode>>
         UserTypeDeclaration_AssociatedMembersByName(IUserTypeDeclarationNode node)
         => node.Members.OfType<IAssociatedMemberDeclarationNode>().ToNameLookup();
 
-    private static FixedDictionary<StandardName, IFixedSet<T>> ToNameLookup<T>(this IEnumerable<T> members)
+    private static FixedDictionary<OrdinaryName, IFixedSet<T>> ToNameLookup<T>(this IEnumerable<T> members)
         where T : IPackageFacetChildDeclarationNode
         => members.GroupBy(m => m.Name).Where(g => g.Key is not null)
                   .ToFixedDictionary(g => g.Key!, g => g.ToFixedSet());

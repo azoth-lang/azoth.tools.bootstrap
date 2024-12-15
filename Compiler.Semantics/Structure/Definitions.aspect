@@ -48,7 +48,7 @@
 
 // ---------- Type Definitions
 ↑ TypeDefinition.IsConst: `bool` => Syntax.ConstModifier is not null;
-↑ TypeDefinition.Name:`StandardName` => Syntax.Name;
+↑ TypeDefinition.Name: `OrdinaryName` => Syntax.Name;
 ↑ ClassDefinition.IsAbstract: `bool` => Syntax.AbstractModifier is not null;
 
 // ---------- Type Definition Parts
@@ -119,7 +119,7 @@
 
 // ---------- Types
 ↑ TypeName.Name: `TypeName` => Syntax.Name;
-↑ StandardTypeName.Name: `StandardName` => Syntax.Name;
+↑ StandardTypeName.Name: `OrdinaryName` => Syntax.Name;
 ↑ IdentifierTypeName.Name: `IdentifierName` => Syntax.Name;
 ↑ BuiltInTypeName.Name: `BuiltInTypeName` => Syntax.Name;
 ↑ GenericTypeName.Name: `GenericName` => Syntax.Name;
@@ -168,22 +168,22 @@
 = InitializerInvocationExpression.AllArguments => Arguments;
 
 // ---------- Ambiguous Name Expressions
-↑ StandardNameExpression.Name: `StandardName` => Syntax.Name;
+↑ StandardNameExpression.Name: `OrdinaryName` => Syntax.Name;
 ↑ IdentifierNameExpression.Name: `IdentifierName` => Syntax.Name;
 ↑ GenericNameExpression.Name: `GenericName` => Syntax.Name;
 
 // ---------- Name Expressions
-↑ UnresolvedMemberAccessExpression.MemberName: `StandardName` => Syntax.MemberName;
+↑ UnresolvedMemberAccessExpression.MemberName: `OrdinaryName` => Syntax.MemberName;
 ↑ UnqualifiedNamespaceName.Name: `IdentifierName` => Syntax.Name;
 ↑ QualifiedNamespaceName.Name: `IdentifierName` => (IdentifierName)Syntax.MemberName;
 ↑ VariableNameExpression.Name: `IdentifierName` => Syntax.Name;
-↑ TypeNameExpression.Name: `StandardName`;
+↑ TypeNameExpression.Name: `OrdinaryName`;
 = StandardTypeNameExpression.Name => Syntax.Name;
 = QualifiedTypeNameExpression.Name => Syntax.MemberName;
 ↑ BuiltInTypeNameExpression.Name: `BuiltInTypeName` => Syntax.Name;
 ↑ SelfExpression.IsImplicit: `bool` => Syntax.IsImplicit;
 ↑ UnknownIdentifierNameExpression.Name :`IdentifierName`=> Syntax.Name;
-↑ AmbiguousMemberAccessExpression.MemberName: `StandardName` => Syntax.MemberName;
+↑ AmbiguousMemberAccessExpression.MemberName: `OrdinaryName` => Syntax.MemberName;
 
 // ---------- Capability Expressions
 ↑ PrepareToReturnExpression.Syntax: `IExpressionSyntax` => Value.Syntax;
@@ -196,4 +196,4 @@
 // -------------------------------------------------------------------------------------------------
 
 // ---------- Facets
-↑ PackageFacetChildDeclaration.Name: `StandardName`?;
+↑ PackageFacetChildDeclaration.Name: `OrdinaryName`?;

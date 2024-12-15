@@ -30,7 +30,7 @@ public sealed class ImportDirectivesScope : NamespaceSearchScope
         return new NamespaceScope(this, childScope);
     }
 
-    public override IEnumerable<IDeclarationNode> Lookup(StandardName name)
+    public override IEnumerable<IDeclarationNode> Lookup(OrdinaryName name)
         => importScopes.SelectMany(s => s.LookupInNamespaceOnly(name))
                       .FallbackIfEmpty(() => parent.Lookup(name));
 }
