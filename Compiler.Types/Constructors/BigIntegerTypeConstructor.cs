@@ -10,10 +10,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 /// <see cref="BigIntegerTypeConstructor"/> is the best short name available.</remarks>
 public sealed class BigIntegerTypeConstructor : IntegerTypeConstructor
 {
-    internal new static readonly BigIntegerTypeConstructor Int = new(SpecialTypeName.Int, true);
-    internal new static readonly BigIntegerTypeConstructor UInt = new(SpecialTypeName.UInt, false);
+    internal new static readonly BigIntegerTypeConstructor Int = new(BuiltInTypeName.Int, true);
+    internal new static readonly BigIntegerTypeConstructor UInt = new(BuiltInTypeName.UInt, false);
 
-    private BigIntegerTypeConstructor(SpecialTypeName name, bool isSigned)
+    private BigIntegerTypeConstructor(BuiltInTypeName name, bool isSigned)
         : base(name, isSigned)
     {
     }

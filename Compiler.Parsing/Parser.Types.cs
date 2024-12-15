@@ -156,30 +156,30 @@ public partial class Parser
     private IBuiltInTypeNameSyntax ParseBuiltInType()
     {
         var keyword = Tokens.ConsumeToken<IBuiltInTypeToken>();
-        SpecialTypeName name = keyword switch
+        BuiltInTypeName name = keyword switch
         {
-            IVoidKeywordToken _ => SpecialTypeName.Void,
-            INeverKeywordToken _ => SpecialTypeName.Never,
-            IBoolKeywordToken _ => SpecialTypeName.Bool,
-            IAnyTypeKeywordToken _ => SpecialTypeName.Any,
+            IVoidKeywordToken _ => BuiltInTypeName.Void,
+            INeverKeywordToken _ => BuiltInTypeName.Never,
+            IBoolKeywordToken _ => BuiltInTypeName.Bool,
+            IAnyTypeKeywordToken _ => BuiltInTypeName.Any,
 
-            IIntKeywordToken _ => SpecialTypeName.Int,
-            IUIntKeywordToken _ => SpecialTypeName.UInt,
+            IIntKeywordToken _ => BuiltInTypeName.Int,
+            IUIntKeywordToken _ => BuiltInTypeName.UInt,
 
-            IInt8KeywordToken _ => SpecialTypeName.Int8,
-            IByteKeywordToken _ => SpecialTypeName.Byte,
-            IInt16KeywordToken _ => SpecialTypeName.Int16,
-            IUInt16KeywordToken _ => SpecialTypeName.UInt16,
-            IInt32KeywordToken _ => SpecialTypeName.Int32,
-            IUInt32KeywordToken _ => SpecialTypeName.UInt32,
-            IInt64KeywordToken _ => SpecialTypeName.Int64,
-            IUInt64KeywordToken _ => SpecialTypeName.UInt64,
+            IInt8KeywordToken _ => BuiltInTypeName.Int8,
+            IByteKeywordToken _ => BuiltInTypeName.Byte,
+            IInt16KeywordToken _ => BuiltInTypeName.Int16,
+            IUInt16KeywordToken _ => BuiltInTypeName.UInt16,
+            IInt32KeywordToken _ => BuiltInTypeName.Int32,
+            IUInt32KeywordToken _ => BuiltInTypeName.UInt32,
+            IInt64KeywordToken _ => BuiltInTypeName.Int64,
+            IUInt64KeywordToken _ => BuiltInTypeName.UInt64,
 
-            ISizeKeywordToken _ => SpecialTypeName.Size,
-            IOffsetKeywordToken _ => SpecialTypeName.Offset,
+            ISizeKeywordToken _ => BuiltInTypeName.Size,
+            IOffsetKeywordToken _ => BuiltInTypeName.Offset,
 
-            INIntKeywordToken _ => SpecialTypeName.NInt,
-            INUIntKeywordToken _ => SpecialTypeName.NUInt,
+            INIntKeywordToken _ => BuiltInTypeName.NInt,
+            INUIntKeywordToken _ => BuiltInTypeName.NUInt,
             _ => throw ExhaustiveMatch.Failed(keyword)
         };
 
@@ -189,7 +189,7 @@ public partial class Parser
     private IBuiltInTypeNameSyntax ParseSelfType()
     {
         var keyword = Tokens.ConsumeToken<ISelfTypeKeywordToken>();
-        return IBuiltInTypeNameSyntax.Create(keyword.Span, SpecialTypeName.Self);
+        return IBuiltInTypeNameSyntax.Create(keyword.Span, BuiltInTypeName.Self);
     }
 
     private IFunctionTypeSyntax ParseFunctionType()

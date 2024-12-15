@@ -1470,7 +1470,7 @@ public partial interface ISpecialTypeNameNode : ISimpleTypeNameNode
     ITypeSyntax ITypeNode.Syntax => Syntax;
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    new SpecialTypeName Name
+    new BuiltInTypeName Name
         => Syntax.Name;
     TypeName ITypeNameNode.Name => Name;
 
@@ -3211,7 +3211,7 @@ public partial interface ISpecialTypeNameExpressionNode : INameExpressionNode
     new UnknownType Type
         => AzothType.Unknown;
     IMaybeType IExpressionNode.Type => Type;
-    SpecialTypeName Name
+    BuiltInTypeName Name
         => Syntax.Name;
     ITypeDeclarationNode? ReferencedDeclaration { get; }
     IMaybePlainType IExpressionNode.PlainType
@@ -3797,7 +3797,7 @@ public partial interface ITypeDeclarationNode : INamedDeclarationNode, ISymbolDe
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IBuiltInTypeDeclarationNode : ITypeDeclarationNode
 {
-    new SpecialTypeName Name { get; }
+    new BuiltInTypeName Name { get; }
     TypeName INamedDeclarationNode.Name => Name;
     new IFixedSet<ITypeMemberDeclarationNode> Members { get; }
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
@@ -4227,8 +4227,8 @@ public partial interface IBuiltInTypeSymbolNode : IBuiltInTypeDeclarationNode, I
     new PrimitiveSymbolTree SymbolTree()
         => Primitive.SymbolTree;
     ISymbolTree IChildSymbolNode.SymbolTree() => SymbolTree();
-    new SpecialTypeName Name { get; }
-    SpecialTypeName IBuiltInTypeDeclarationNode.Name => Name;
+    new BuiltInTypeName Name { get; }
+    BuiltInTypeName IBuiltInTypeDeclarationNode.Name => Name;
     TypeName INamedDeclarationNode.Name => Name;
     new IFixedSet<ITypeMemberSymbolNode> Members { get; }
     IFixedSet<ITypeMemberDeclarationNode> IBuiltInTypeDeclarationNode.Members => Members;
@@ -4249,7 +4249,7 @@ public partial interface IVoidTypeSymbolNode : IBuiltInTypeSymbolNode
     Symbol? ISymbolDeclarationNode.Symbol => Symbol;
     TypeSymbol ITypeSymbolNode.Symbol => Symbol;
     Symbol IChildSymbolNode.Symbol => Symbol;
-    SpecialTypeName IBuiltInTypeSymbolNode.Name
+    BuiltInTypeName IBuiltInTypeSymbolNode.Name
         => Symbol.Name;
     ITypeFactory ITypeDeclarationNode.TypeFactory
         => ITypeFactory.Void;
@@ -4267,7 +4267,7 @@ public partial interface INeverTypeSymbolNode : IBuiltInTypeSymbolNode
     Symbol? ISymbolDeclarationNode.Symbol => Symbol;
     TypeSymbol ITypeSymbolNode.Symbol => Symbol;
     Symbol IChildSymbolNode.Symbol => Symbol;
-    SpecialTypeName IBuiltInTypeSymbolNode.Name
+    BuiltInTypeName IBuiltInTypeSymbolNode.Name
         => Symbol.Name;
     ITypeFactory ITypeDeclarationNode.TypeFactory
         => ITypeFactory.Never;
@@ -4285,7 +4285,7 @@ public partial interface IPrimitiveTypeSymbolNode : IBuiltInTypeSymbolNode
     Symbol? ISymbolDeclarationNode.Symbol => Symbol;
     TypeSymbol ITypeSymbolNode.Symbol => Symbol;
     Symbol IChildSymbolNode.Symbol => Symbol;
-    SpecialTypeName IBuiltInTypeSymbolNode.Name
+    BuiltInTypeName IBuiltInTypeSymbolNode.Name
         => Symbol.Name;
     ITypeFactory ITypeDeclarationNode.TypeFactory
         => Symbol.TypeConstructor;

@@ -20,7 +20,7 @@ public abstract class SimpleTypeConstructor : SimpleOrLiteralTypeConstructor
 
     public sealed override TypeSemantics Semantics => TypeSemantics.Value;
 
-    public sealed override SpecialTypeName Name { get; }
+    public sealed override BuiltInTypeName Name { get; }
 
     public sealed override IFixedList<Parameter> Parameters => [];
 
@@ -34,7 +34,7 @@ public abstract class SimpleTypeConstructor : SimpleOrLiteralTypeConstructor
 
     public sealed override ConstructedPlainType PlainType { get; }
 
-    private protected SimpleTypeConstructor(SpecialTypeName name)
+    private protected SimpleTypeConstructor(BuiltInTypeName name)
     {
         Name = name;
         PlainType = new(this, []);

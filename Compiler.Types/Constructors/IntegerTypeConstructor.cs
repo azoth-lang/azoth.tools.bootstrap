@@ -11,7 +11,7 @@ public abstract class IntegerTypeConstructor : SimpleTypeConstructor
 {
     public bool IsSigned { get; }
 
-    protected IntegerTypeConstructor(SpecialTypeName name, bool isSigned)
+    protected IntegerTypeConstructor(BuiltInTypeName name, bool isSigned)
         : base(name)
     {
         IsSigned = isSigned;

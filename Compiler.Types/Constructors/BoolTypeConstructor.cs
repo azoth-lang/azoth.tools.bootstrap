@@ -11,7 +11,7 @@ public sealed class BoolTypeConstructor : SimpleTypeConstructor
     internal static readonly BoolTypeConstructor Instance = new();
 
     private BoolTypeConstructor()
-        : base(SpecialTypeName.Bool)
+        : base(BuiltInTypeName.Bool)
     {
     }
     #endregion

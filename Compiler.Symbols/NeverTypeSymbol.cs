@@ -9,13 +9,13 @@ public sealed class NeverTypeSymbol : TypeSymbol
     #region Singleton
     public static readonly NeverTypeSymbol Instance = new NeverTypeSymbol();
 
-    private NeverTypeSymbol() : base(SpecialTypeName.Never) { }
+    private NeverTypeSymbol() : base(BuiltInTypeName.Never) { }
     #endregion
 
     public override PackageSymbol? Package => null;
     public override Symbol? ContainingSymbol => null;
     public override TypeSymbol? ContextTypeSymbol => null;
-    public override SpecialTypeName Name => PlainType.Name;
+    public override BuiltInTypeName Name => PlainType.Name;
     public NeverPlainType PlainType => Types.Plain.PlainType.Never;
 
     public override PlainType TryGetPlainType() => PlainType;

@@ -9,13 +9,13 @@ public sealed class VoidTypeSymbol : TypeSymbol
     #region Singleton
     public static readonly VoidTypeSymbol Instance = new VoidTypeSymbol();
 
-    private VoidTypeSymbol() : base(SpecialTypeName.Void) { }
+    private VoidTypeSymbol() : base(BuiltInTypeName.Void) { }
     #endregion
 
     public override PackageSymbol? Package => null;
     public override Symbol? ContainingSymbol => null;
     public override TypeSymbol? ContextTypeSymbol => null;
-    public override SpecialTypeName Name => PlainType.Name;
+    public override BuiltInTypeName Name => PlainType.Name;
     public VoidPlainType PlainType => Types.Plain.PlainType.Void;
 
     public override VoidPlainType TryGetPlainType() => PlainType;

@@ -5,12 +5,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 
 public sealed class PointerSizedIntegerTypeConstructor : IntegerTypeConstructor
 {
-    internal new static readonly PointerSizedIntegerTypeConstructor Size = new(SpecialTypeName.Size, false);
-    internal new static readonly PointerSizedIntegerTypeConstructor Offset = new(SpecialTypeName.Offset, true);
-    internal new static readonly PointerSizedIntegerTypeConstructor NInt = new(SpecialTypeName.NInt, true);
-    internal new static readonly PointerSizedIntegerTypeConstructor NUInt = new(SpecialTypeName.NUInt, false);
+    internal new static readonly PointerSizedIntegerTypeConstructor Size = new(BuiltInTypeName.Size, false);
+    internal new static readonly PointerSizedIntegerTypeConstructor Offset = new(BuiltInTypeName.Offset, true);
+    internal new static readonly PointerSizedIntegerTypeConstructor NInt = new(BuiltInTypeName.NInt, true);
+    internal new static readonly PointerSizedIntegerTypeConstructor NUInt = new(BuiltInTypeName.NUInt, false);
 
-    private PointerSizedIntegerTypeConstructor(SpecialTypeName name, bool isSigned)
+    private PointerSizedIntegerTypeConstructor(BuiltInTypeName name, bool isSigned)
         : base(name, isSigned)
     {
     }

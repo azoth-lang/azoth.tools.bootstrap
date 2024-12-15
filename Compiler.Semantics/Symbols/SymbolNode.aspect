@@ -64,7 +64,7 @@
 ↑ child TypeSymbol.Members: {TypeMemberSymbol};
 
 ↑ BuiltInTypeSymbol.SymbolTree(): `PrimitiveSymbolTree` => Primitive.SymbolTree;
-↑ BuiltInTypeSymbol.Name: `SpecialTypeName`;
+↑ BuiltInTypeSymbol.Name: `BuiltInTypeName`;
 = BuiltInTypeSymbol.Supertypes => Symbol.TryGetTypeConstructor()?.Supertypes ?? [];
 ↑ child BuiltInTypeSymbol.Members: {TypeMemberSymbol};
 = BuiltInTypeSymbol.Members;

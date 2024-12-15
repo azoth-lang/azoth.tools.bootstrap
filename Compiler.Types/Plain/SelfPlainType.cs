@@ -11,7 +11,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 /// </summary>
 public sealed class SelfPlainType : AssociatedPlainType
 {
-    public override TypeName Name => SpecialTypeName.Self;
+    public override TypeName Name => BuiltInTypeName.Self;
     public override IFixedSet<ConstructedPlainType> Supertypes { get; }
 
     public SelfPlainType(TypeConstructor containingType)

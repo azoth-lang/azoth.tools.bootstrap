@@ -24,7 +24,7 @@ public abstract class LiteralTypeConstructor : SimpleOrLiteralTypeConstructor
 
     public sealed override TypeSemantics Semantics => TypeSemantics.Value;
 
-    public sealed override SpecialTypeName Name { get; }
+    public sealed override BuiltInTypeName Name { get; }
 
     // TODO these need type parameters that are values
     public sealed override IFixedList<Parameter> Parameters => [];
@@ -38,7 +38,7 @@ public abstract class LiteralTypeConstructor : SimpleOrLiteralTypeConstructor
     // TODO should this instead include the non-literal type (e.g. `int` or `bool`)?
     public sealed override IFixedSet<ConstructedBareType> Supertypes => BareType.AnySet;
 
-    private protected LiteralTypeConstructor(SpecialTypeName name)
+    private protected LiteralTypeConstructor(BuiltInTypeName name)
     {
         Name = name;
     }

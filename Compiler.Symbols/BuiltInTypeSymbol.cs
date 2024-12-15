@@ -10,7 +10,7 @@ public sealed class BuiltInTypeSymbol : TypeSymbol
     public override PackageSymbol? Package => null;
     public override Symbol? ContainingSymbol => null;
     public override TypeSymbol? ContextTypeSymbol => null;
-    public override SpecialTypeName Name { get; }
+    public override BuiltInTypeName Name { get; }
     public TypeConstructor TypeConstructor { get; }
 
     public BuiltInTypeSymbol(AnyTypeConstructor typeConstructor)

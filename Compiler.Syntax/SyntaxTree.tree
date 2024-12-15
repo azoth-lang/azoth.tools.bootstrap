@@ -131,7 +131,7 @@ TypeName <: Type = Name:`TypeName`;
 StandardTypeName <: TypeName = Name:`StandardName`;
 SimpleTypeName <: TypeName;
 IdentifierTypeName <: TypeName, StandardTypeName, SimpleTypeName = Name:`IdentifierName`;
-BuiltInTypeName <: SimpleTypeName = Name:`SpecialTypeName`;
+BuiltInTypeName <: SimpleTypeName = Name:`BuiltInTypeName`;
 GenericTypeName <: StandardTypeName = Name:`GenericName` TypeArguments:Type*;
 QualifiedTypeName <: TypeName = Context:TypeName QualifiedName:StandardTypeName;
 OptionalType <: Type = Referent:Type;
@@ -209,7 +209,7 @@ SimpleName <: NameExpression;
 StandardNameExpression <: NameExpression = Name:`StandardName`;
 IdentifierNameExpression <: NameExpression, StandardNameExpression, SimpleName
     = Name:`IdentifierName`;
-BuiltInTypeNameExpression <: NameExpression, Expression = Name:`SpecialTypeName`;
+BuiltInTypeNameExpression <: NameExpression, Expression = Name:`BuiltInTypeName`;
 GenericNameExpression <: NameExpression, StandardNameExpression = Name:`GenericName` TypeArguments:Type*;
 InstanceExpression <: SimpleName; // i.e. `self` or `base`
 SelfExpression <: NameExpression, InstanceExpression = IsImplicit:`bool`;

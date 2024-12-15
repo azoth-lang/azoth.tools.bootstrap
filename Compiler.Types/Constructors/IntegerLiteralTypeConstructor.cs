@@ -20,7 +20,7 @@ public sealed class IntegerLiteralTypeConstructor : LiteralTypeConstructor
     private ConstructedPlainType? plainType;
 
     public IntegerLiteralTypeConstructor(BigInteger value)
-        : base(SpecialTypeName.Int)
+        : base(BuiltInTypeName.Int)
     {
         Value = value;
     }

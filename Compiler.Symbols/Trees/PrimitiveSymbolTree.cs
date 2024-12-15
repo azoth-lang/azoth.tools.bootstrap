@@ -36,5 +36,5 @@ public sealed class PrimitiveSymbolTree : ISymbolTree
             ? children : FixedSet.Empty<Symbol>();
     }
 
-    public TypeSymbol LookupSymbol(SpecialTypeName name) => symbolNameLookup[name];
+    public TypeSymbol LookupSymbol(BuiltInTypeName name) => symbolNameLookup[name];
 }

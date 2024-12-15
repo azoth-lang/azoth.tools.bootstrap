@@ -416,7 +416,7 @@ FunctionDeclaration <: NamespaceMemberDeclaration, FunctionInvocableDeclaration;
 
 // ---------- Type Declarations
 TypeDeclaration <: NamedDeclaration, SymbolDeclaration;
-BuiltInTypeDeclaration <: TypeDeclaration = Name:`SpecialTypeName` Members:{TypeMemberDeclaration};
+BuiltInTypeDeclaration <: TypeDeclaration = Name:`BuiltInTypeName` Members:{TypeMemberDeclaration};
 UserTypeDeclaration <: NamespaceMemberDeclaration, ClassMemberDeclaration, TraitMemberDeclaration, StructMemberDeclaration, TypeDeclaration, NamedDeclaration
     = Name:`StandardName` GenericParameters:GenericParameterDeclaration* Members:{TypeMemberDeclaration};
 ClassDeclaration <: UserTypeDeclaration = Members:{ClassMemberDeclaration};

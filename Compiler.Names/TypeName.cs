@@ -10,7 +10,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Names;
 /// <summary>
 /// A name that could be the name of a type.
 /// </summary>
-[Closed(typeof(StandardName), typeof(SpecialTypeName))]
+[Closed(typeof(StandardName), typeof(BuiltInTypeName))]
 public abstract partial class TypeName : IEquatable<TypeName>
 {
     public string Text { get; }

@@ -34,7 +34,7 @@ public sealed class AnyTypeConstructor : TypeConstructor
     public override bool CanBeInstantiated => false;
 
     public override TypeSemantics Semantics => TypeSemantics.Reference;
-    public override SpecialTypeName Name => SpecialTypeName.Any;
+    public override BuiltInTypeName Name => BuiltInTypeName.Any;
 
     public override IFixedList<Parameter> Parameters => [];
     public override bool AllowsVariance => false;

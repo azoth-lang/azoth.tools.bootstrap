@@ -12,7 +12,7 @@ public sealed class BoolLiteralTypeConstructor : LiteralTypeConstructor
     public bool Value { get; }
     public override ConstructedPlainType PlainType { get; }
     private BoolLiteralTypeConstructor(bool value)
-        : base(SpecialTypeName.Bool)
+        : base(BuiltInTypeName.Bool)
     {
         Value = value;
         PlainType = new(this, []);

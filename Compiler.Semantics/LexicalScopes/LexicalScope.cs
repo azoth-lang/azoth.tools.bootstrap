@@ -14,6 +14,6 @@ public abstract class LexicalScope
 
     public abstract IEnumerable<IDeclarationNode> Lookup(StandardName name);
 
-    public virtual ITypeDeclarationNode? Lookup(SpecialTypeName name)
+    public virtual ITypeDeclarationNode? Lookup(BuiltInTypeName name)
         => PackageNames.Lookup(name);
 }

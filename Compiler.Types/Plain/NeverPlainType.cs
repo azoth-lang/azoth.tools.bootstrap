@@ -23,7 +23,7 @@ public sealed class NeverPlainType : NonVoidPlainType
 
     public TypeConstructor? TypeConstructor => null;
     public override TypeSemantics? Semantics => null;
-    public SpecialTypeName Name => SpecialTypeName.Never;
+    public BuiltInTypeName Name => BuiltInTypeName.Never;
 
     /// <remarks>Even though <see cref="NeverPlainType"/> is a subtype of all types, this property
     /// returns an empty set because it is not declared with any supertypes.</remarks>

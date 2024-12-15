@@ -848,12 +848,12 @@ public partial interface IIdentifierTypeNameSyntax : IStandardTypeNameSyntax, IS
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IBuiltInTypeNameSyntax : ISimpleTypeNameSyntax
 {
-    new SpecialTypeName Name { get; }
+    new BuiltInTypeName Name { get; }
     TypeName ITypeNameSyntax.Name => Name;
 
     public static IBuiltInTypeNameSyntax Create(
         TextSpan span,
-        SpecialTypeName name)
+        BuiltInTypeName name)
         => new BuiltInTypeNameSyntax(span, name);
 }
 
@@ -1504,11 +1504,11 @@ public partial interface IIdentifierNameExpressionSyntax : IStandardNameExpressi
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IBuiltInTypeNameExpressionSyntax : INameExpressionSyntax
 {
-    SpecialTypeName Name { get; }
+    BuiltInTypeName Name { get; }
 
     public static IBuiltInTypeNameExpressionSyntax Create(
         TextSpan span,
-        SpecialTypeName name)
+        BuiltInTypeName name)
         => new BuiltInTypeNameExpressionSyntax(span, name);
 }
 
@@ -2555,13 +2555,13 @@ file class BuiltInTypeNameSyntax : IBuiltInTypeNameSyntax
     private IBuiltInTypeNameSyntax Self { [Inline] get => this; }
 
     public TextSpan Span { [DebuggerStepThrough] get; }
-    public SpecialTypeName Name { [DebuggerStepThrough] get; }
+    public BuiltInTypeName Name { [DebuggerStepThrough] get; }
     public override string ToString()
         => FormattingAspect.BuiltInTypeName_ToString(this);
 
     public BuiltInTypeNameSyntax(
         TextSpan span,
-        SpecialTypeName name)
+        BuiltInTypeName name)
     {
         Span = span;
         Name = name;
@@ -3358,13 +3358,13 @@ file class BuiltInTypeNameExpressionSyntax : IBuiltInTypeNameExpressionSyntax
     private IBuiltInTypeNameExpressionSyntax Self { [Inline] get => this; }
 
     public TextSpan Span { [DebuggerStepThrough] get; }
-    public SpecialTypeName Name { [DebuggerStepThrough] get; }
+    public BuiltInTypeName Name { [DebuggerStepThrough] get; }
     public override string ToString()
         => FormattingAspect.BuiltInTypeNameExpression_ToString(this);
 
     public BuiltInTypeNameExpressionSyntax(
         TextSpan span,
-        SpecialTypeName name)
+        BuiltInTypeName name)
     {
         Span = span;
         Name = name;

@@ -15,7 +15,7 @@ public sealed class VoidPlainType : PlainType
     private VoidPlainType() { }
     #endregion
 
-    public SpecialTypeName Name => SpecialTypeName.Void;
+    public BuiltInTypeName Name => BuiltInTypeName.Void;
 
     #region Equality
     public override bool Equals(IMaybePlainType? other)
