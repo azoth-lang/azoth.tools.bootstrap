@@ -13,7 +13,7 @@ public partial class Parser
     {
         return Tokens.Current switch
         {
-            ICapabilityToken or IIdentifierToken or IPrimitiveTypeToken or IOpenParenToken
+            ICapabilityToken or IIdentifierToken or IBuiltInTypeToken or IOpenParenToken
                 or ISelfKeywordToken or ISelfTypeKeywordToken => ParseType(),
             _ => null
         };
@@ -121,7 +121,7 @@ public partial class Parser
     {
         return Tokens.Current switch
         {
-            IPrimitiveTypeToken _ => ParsePrimitiveType(),
+            IBuiltInTypeToken _ => ParsePrimitiveType(),
             IOpenParenToken _ => ParseFunctionType(),
             ISelfTypeKeywordToken => ParseSelfType(),
             // otherwise we want a type name
@@ -155,7 +155,7 @@ public partial class Parser
 
     private ISpecialTypeNameSyntax ParsePrimitiveType()
     {
-        var keyword = Tokens.ConsumeToken<IPrimitiveTypeToken>();
+        var keyword = Tokens.ConsumeToken<IBuiltInTypeToken>();
         SpecialTypeName name = keyword switch
         {
             IVoidKeywordToken _ => SpecialTypeName.Void,

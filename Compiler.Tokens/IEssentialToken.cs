@@ -11,7 +11,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Tokens;
     typeof(IIdentifierOrUnderscoreToken),
     typeof(IOperatorToken),
     typeof(ILiteralToken),
-    typeof(IPrimitiveTypeToken),
+    typeof(IBuiltInTypeToken),
     typeof(IBinaryOperatorToken),
     typeof(IPunctuationToken),
     typeof(IEndOfFileToken))]
