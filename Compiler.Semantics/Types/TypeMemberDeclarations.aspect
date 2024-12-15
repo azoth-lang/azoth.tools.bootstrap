@@ -30,7 +30,7 @@
 = AbstractMethodDefinition.MethodGroupType => Symbol?.MethodGroupType ?? IMaybeFunctionType.Unknown;
 
 // TODO this shouldn't use Symbol
-= StandardMethodDefinition.MethodGroupType => Symbol?.MethodGroupType ?? IMaybeFunctionType.Unknown;
+= OrdinaryMethodDefinition.MethodGroupType => Symbol?.MethodGroupType ?? IMaybeFunctionType.Unknown;
 
 // TODO this shouldn't use Symbol
 = ConstructorDefinition.ReturnType => Symbol?.ReturnType ?? IMaybeType.Unknown;

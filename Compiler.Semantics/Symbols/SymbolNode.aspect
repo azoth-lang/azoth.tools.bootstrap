@@ -114,10 +114,10 @@
 = MethodSymbol.ParameterTypes => Symbol.MethodGroupType.Parameters;
 = MethodSymbol.ReturnPlainType => Symbol.MethodGroupType.Return.PlainType;
 = MethodSymbol.ReturnType => Symbol.MethodGroupType.Return;
-+ StandardMethodSymbol.new.Validate;
-= StandardMethodSymbol.Arity => Symbol.Arity;
-= StandardMethodSymbol.MethodGroupPlainType => Symbol.MethodGroupType.PlainType;
-= StandardMethodSymbol.MethodGroupType => Symbol.MethodGroupType;
++ OrdinaryMethodSymbol.new.Validate;
+= OrdinaryMethodSymbol.Arity => Symbol.Arity;
+= OrdinaryMethodSymbol.MethodGroupPlainType => Symbol.MethodGroupType.PlainType;
+= OrdinaryMethodSymbol.MethodGroupType => Symbol.MethodGroupType;
 + GetterMethodSymbol.new.Validate;
 + SetterMethodSymbol.new.Validate;
 ↑ ConstructorSymbol.Name: `IdentifierName`? => Symbol.Name;

@@ -111,7 +111,7 @@ public static class ISemanticNodeExtensions
                 if (n.Return is not null)
                     yield return n.Return;
                 yield break;
-            case IStandardMethodDefinitionNode n:
+            case IOrdinaryMethodDefinitionNode n:
                 yield return n.SelfParameter;
                 foreach (var child in n.Parameters)
                     yield return child;
@@ -526,7 +526,7 @@ public static class ISemanticNodeExtensions
                 foreach (var child in n.Members)
                     yield return child;
                 yield break;
-            case IStandardMethodSymbolNode n:
+            case IOrdinaryMethodSymbolNode n:
                 yield break;
             case IGetterMethodSymbolNode n:
                 yield break;

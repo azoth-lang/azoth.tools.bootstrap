@@ -22,7 +22,7 @@ public sealed class ContextualizedCall : IEquatable<ContextualizedCall>
 
     public static ContextualizedCall Create(
         IMaybeType contextType,
-        IStandardMethodDeclarationNode method)
+        IOrdinaryMethodDeclarationNode method)
         => Create(contextType, method, method.SelfParameterType);
 
     public static ContextualizedCall Create<T>(

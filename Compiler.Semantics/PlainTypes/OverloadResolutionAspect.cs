@@ -265,10 +265,10 @@ internal static partial class OverloadResolutionAspect
     public static partial void FunctionName_Contribute_Diagnostics(IFunctionNameNode node, DiagnosticCollectionBuilder diagnostics)
         => ContributeFunctionNameBindingDiagnostics(node.ReferencedDeclaration, node.CompatibleCallCandidates, node, diagnostics);
 
-    public static partial IFixedSet<CallCandidate<IStandardMethodDeclarationNode>> MethodGroupName_CallCandidates(IMethodGroupNameNode node)
+    public static partial IFixedSet<CallCandidate<IOrdinaryMethodDeclarationNode>> MethodGroupName_CallCandidates(IMethodGroupNameNode node)
         => node.ReferencedDeclarations.Select(m => CallCandidate.Create(node.Context.PlainType, m)).ToFixedSet();
 
-    public static partial IFixedSet<CallCandidate<IStandardMethodDeclarationNode>> MethodGroupName_CompatibleCallCandidates(IMethodGroupNameNode node)
+    public static partial IFixedSet<CallCandidate<IOrdinaryMethodDeclarationNode>> MethodGroupName_CompatibleCallCandidates(IMethodGroupNameNode node)
     {
         if (node.ExpectedPlainType is not FunctionPlainType expectedPlainType) return [];
 
@@ -277,10 +277,10 @@ internal static partial class OverloadResolutionAspect
         return node.CallCandidates.Where(o => o.CompatibleWith(argumentPlainTypes)).ToFixedSet();
     }
 
-    public static partial CallCandidate<IStandardMethodDeclarationNode>? MethodGroupName_SelectedCallCandidate(IMethodGroupNameNode node)
+    public static partial CallCandidate<IOrdinaryMethodDeclarationNode>? MethodGroupName_SelectedCallCandidate(IMethodGroupNameNode node)
         => node.CompatibleCallCandidates.TrySingle();
 
-    public static partial IStandardMethodDeclarationNode? MethodGroupName_ReferencedDeclaration(IMethodGroupNameNode node)
+    public static partial IOrdinaryMethodDeclarationNode? MethodGroupName_ReferencedDeclaration(IMethodGroupNameNode node)
         => node.SelectedCallCandidate?.Declaration;
 
     public static partial void MethodGroupName_Contribute_Diagnostics(IMethodGroupNameNode node, DiagnosticCollectionBuilder diagnostics)

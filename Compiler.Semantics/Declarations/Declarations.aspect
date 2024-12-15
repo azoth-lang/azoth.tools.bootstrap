@@ -65,9 +65,9 @@
 ↑ MethodDeclaration.SelfParameterPlainType: `IMaybeNonVoidPlainType`;
 ↑ MethodDeclaration.SelfParameterType: `IMaybeNonVoidType`;
 ↑ MethodDeclaration.Symbol: `MethodSymbol`?;
-↑ StandardMethodDeclaration.Arity: `int`;
-↑ StandardMethodDeclaration.MethodGroupPlainType: `IMaybeFunctionPlainType`;
-↑ StandardMethodDeclaration.MethodGroupType: `IMaybeFunctionType`;
+↑ OrdinaryMethodDeclaration.Arity: `int`;
+↑ OrdinaryMethodDeclaration.MethodGroupPlainType: `IMaybeFunctionPlainType`;
+↑ OrdinaryMethodDeclaration.MethodGroupType: `IMaybeFunctionType`;
 ↑ ConstructorDeclaration.SelfParameterPlainType: `IMaybeNonVoidPlainType`;
 ↑ ConstructorDeclaration.SelfParameterType: `IMaybeNonVoidType`;
 ↑ ConstructorDeclaration.Symbol: `ConstructorSymbol`?;

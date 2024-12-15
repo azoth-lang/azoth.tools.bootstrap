@@ -6,8 +6,8 @@
 
 // ---------- Control Flow Expressions
 ↑ ForeachExpression.ReferencedIterableDeclaration: TypeDeclaration?;
-↑ ForeachExpression.ReferencedIterateMethod: StandardMethodDeclaration?;
+↑ ForeachExpression.ReferencedIterateMethod: OrdinaryMethodDeclaration?;
 ↑ ForeachExpression.IteratorPlainType:`IMaybeNonVoidPlainType`;
 ↑ ForeachExpression.ReferencedIteratorDeclaration: TypeDeclaration?;
-↑ ForeachExpression.ReferencedNextMethod: StandardMethodDeclaration?;
+↑ ForeachExpression.ReferencedNextMethod: OrdinaryMethodDeclaration?;
 ↑ ForeachExpression.IteratedPlainType: `IMaybeNonVoidPlainType`;

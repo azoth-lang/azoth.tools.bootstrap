@@ -725,7 +725,7 @@ public partial interface IAssociatedMemberDefinitionNode : IClassMemberDefinitio
 
 [Closed(
     typeof(IAbstractMethodDefinitionNode),
-    typeof(IStandardMethodDefinitionNode),
+    typeof(IOrdinaryMethodDefinitionNode),
     typeof(IGetterMethodDefinitionNode),
     typeof(ISetterMethodDefinitionNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -758,7 +758,7 @@ public partial interface IMethodDefinitionNode : IAlwaysTypeMemberDefinitionNode
 
 // [Closed(typeof(AbstractMethodDefinitionNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IAbstractMethodDefinitionNode : IMethodDefinitionNode, IStandardMethodDeclarationNode
+public partial interface IAbstractMethodDefinitionNode : IMethodDefinitionNode, IOrdinaryMethodDeclarationNode
 {
     new IAbstractMethodDefinitionSyntax Syntax { get; }
     IMethodDefinitionSyntax IMethodDefinitionNode.Syntax => Syntax;
@@ -770,13 +770,13 @@ public partial interface IAbstractMethodDefinitionNode : IMethodDefinitionNode, 
         => null;
     IBodyNode? IInvocableDefinitionNode.Body => Body;
     OrdinaryTypeConstructor ContainingTypeConstructor { get; }
-    IMaybeFunctionType IStandardMethodDeclarationNode.MethodGroupType
+    IMaybeFunctionType IOrdinaryMethodDeclarationNode.MethodGroupType
         => Symbol?.MethodGroupType ?? IMaybeFunctionType.Unknown;
     MethodKind IMethodDefinitionNode.Kind
         => MethodKind.Standard;
-    int IStandardMethodDeclarationNode.Arity
+    int IOrdinaryMethodDeclarationNode.Arity
         => Parameters.Count;
-    IMaybeFunctionPlainType IStandardMethodDeclarationNode.MethodGroupPlainType
+    IMaybeFunctionPlainType IOrdinaryMethodDeclarationNode.MethodGroupPlainType
         => MethodGroupType.PlainType;
 
     public static IAbstractMethodDefinitionNode Create(
@@ -787,11 +787,11 @@ public partial interface IAbstractMethodDefinitionNode : IMethodDefinitionNode, 
         => new AbstractMethodDefinitionNode(syntax, selfParameter, parameters, @return);
 }
 
-// [Closed(typeof(StandardMethodDefinitionNode))]
+// [Closed(typeof(OrdinaryMethodDefinitionNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IStandardMethodDefinitionNode : IMethodDefinitionNode, IStandardMethodDeclarationNode
+public partial interface IOrdinaryMethodDefinitionNode : IMethodDefinitionNode, IOrdinaryMethodDeclarationNode
 {
-    new IStandardMethodDefinitionSyntax Syntax { get; }
+    new IOrdinaryMethodDefinitionSyntax Syntax { get; }
     IMethodDefinitionSyntax IMethodDefinitionNode.Syntax => Syntax;
     ITypeMemberDefinitionSyntax? ITypeMemberDefinitionNode.Syntax => Syntax;
     IDefinitionSyntax? IDefinitionNode.Syntax => Syntax;
@@ -799,22 +799,22 @@ public partial interface IStandardMethodDefinitionNode : IMethodDefinitionNode, 
     ISyntax? ISemanticNode.Syntax => Syntax;
     new IBodyNode Body { get; }
     IBodyNode? IInvocableDefinitionNode.Body => Body;
-    IMaybeFunctionType IStandardMethodDeclarationNode.MethodGroupType
+    IMaybeFunctionType IOrdinaryMethodDeclarationNode.MethodGroupType
         => Symbol?.MethodGroupType ?? IMaybeFunctionType.Unknown;
     MethodKind IMethodDefinitionNode.Kind
         => MethodKind.Standard;
-    int IStandardMethodDeclarationNode.Arity
+    int IOrdinaryMethodDeclarationNode.Arity
         => Parameters.Count;
-    IMaybeFunctionPlainType IStandardMethodDeclarationNode.MethodGroupPlainType
+    IMaybeFunctionPlainType IOrdinaryMethodDeclarationNode.MethodGroupPlainType
         => MethodGroupType.PlainType;
 
-    public static IStandardMethodDefinitionNode Create(
-        IStandardMethodDefinitionSyntax syntax,
+    public static IOrdinaryMethodDefinitionNode Create(
+        IOrdinaryMethodDefinitionSyntax syntax,
         IMethodSelfParameterNode selfParameter,
         IEnumerable<INamedParameterNode> parameters,
         ITypeNode? @return,
         IBodyNode body)
-        => new StandardMethodDefinitionNode(syntax, selfParameter, parameters, @return, body);
+        => new OrdinaryMethodDefinitionNode(syntax, selfParameter, parameters, @return, body);
 }
 
 // [Closed(typeof(GetterMethodDefinitionNode))]
@@ -2419,10 +2419,10 @@ public partial interface IForeachExpressionNode : IExpressionNode, IVariableBind
     IMaybeNonVoidType IteratedType { get; }
     IFlowState FlowStateBeforeBlock { get; }
     ITypeDeclarationNode? ReferencedIterableDeclaration { get; }
-    IStandardMethodDeclarationNode? ReferencedIterateMethod { get; }
+    IOrdinaryMethodDeclarationNode? ReferencedIterateMethod { get; }
     IMaybeNonVoidPlainType IteratorPlainType { get; }
     ITypeDeclarationNode? ReferencedIteratorDeclaration { get; }
-    IStandardMethodDeclarationNode? ReferencedNextMethod { get; }
+    IOrdinaryMethodDeclarationNode? ReferencedNextMethod { get; }
     IMaybeNonVoidPlainType IteratedPlainType { get; }
     bool IBindingNode.IsLentBinding
         => false;
@@ -2581,7 +2581,7 @@ public partial interface IMethodInvocationExpressionNode : IInvocationExpression
     IFixedList<IExpressionNode?> Arguments { get; }
     IFixedList<IAmbiguousExpressionNode> CurrentArguments { get; }
     ContextualizedCall? ContextualizedCall { get; }
-    CallCandidate<IStandardMethodDeclarationNode>? SelectedCallCandidate
+    CallCandidate<IOrdinaryMethodDeclarationNode>? SelectedCallCandidate
         => Method.SelectedCallCandidate;
     IEnumerable<IAmbiguousExpressionNode> IInvocationExpressionNode.TempAllArguments
         => TempArguments.Prepend(Method.Context);
@@ -3012,14 +3012,14 @@ public partial interface IMethodGroupNameNode : INameExpressionNode
     IExpressionNode CurrentContext { get; }
     OrdinaryName MethodName { get; }
     IFixedList<ITypeNode> TypeArguments { get; }
-    IFixedSet<IStandardMethodDeclarationNode> ReferencedDeclarations { get; }
+    IFixedSet<IOrdinaryMethodDeclarationNode> ReferencedDeclarations { get; }
     new UnknownType Type
         => AzothType.Unknown;
     IMaybeType IExpressionNode.Type => Type;
-    IFixedSet<CallCandidate<IStandardMethodDeclarationNode>> CallCandidates { get; }
-    IFixedSet<CallCandidate<IStandardMethodDeclarationNode>> CompatibleCallCandidates { get; }
-    CallCandidate<IStandardMethodDeclarationNode>? SelectedCallCandidate { get; }
-    IStandardMethodDeclarationNode? ReferencedDeclaration { get; }
+    IFixedSet<CallCandidate<IOrdinaryMethodDeclarationNode>> CallCandidates { get; }
+    IFixedSet<CallCandidate<IOrdinaryMethodDeclarationNode>> CompatibleCallCandidates { get; }
+    CallCandidate<IOrdinaryMethodDeclarationNode>? SelectedCallCandidate { get; }
+    IOrdinaryMethodDeclarationNode? ReferencedDeclaration { get; }
     IFlowState INameExpressionNode.FlowStateAfter
         => Context.FlowStateAfter;
     IMaybePlainType IExpressionNode.PlainType
@@ -3030,7 +3030,7 @@ public partial interface IMethodGroupNameNode : INameExpressionNode
         IExpressionNode context,
         OrdinaryName methodName,
         IEnumerable<ITypeNode> typeArguments,
-        IEnumerable<IStandardMethodDeclarationNode> referencedDeclarations)
+        IEnumerable<IOrdinaryMethodDeclarationNode> referencedDeclarations)
         => new MethodGroupNameNode(syntax, context, methodName, typeArguments, referencedDeclarations);
 }
 
@@ -3047,11 +3047,11 @@ public partial interface IMethodNameNode : INameExpressionNode
     IExpressionNode CurrentContext { get; }
     OrdinaryName MethodName { get; }
     IFixedList<ITypeNode> TypeArguments { get; }
-    IFixedSet<IStandardMethodDeclarationNode> ReferencedDeclarations { get; }
-    IFixedSet<CallCandidate<IStandardMethodDeclarationNode>> CallCandidates { get; }
-    IFixedSet<CallCandidate<IStandardMethodDeclarationNode>> CompatibleCallCandidates { get; }
-    CallCandidate<IStandardMethodDeclarationNode>? SelectedCallCandidate { get; }
-    IStandardMethodDeclarationNode? ReferencedDeclaration { get; }
+    IFixedSet<IOrdinaryMethodDeclarationNode> ReferencedDeclarations { get; }
+    IFixedSet<CallCandidate<IOrdinaryMethodDeclarationNode>> CallCandidates { get; }
+    IFixedSet<CallCandidate<IOrdinaryMethodDeclarationNode>> CompatibleCallCandidates { get; }
+    CallCandidate<IOrdinaryMethodDeclarationNode>? SelectedCallCandidate { get; }
+    IOrdinaryMethodDeclarationNode? ReferencedDeclaration { get; }
     IFlowState INameExpressionNode.FlowStateAfter
         => Context.FlowStateAfter;
 
@@ -3060,11 +3060,11 @@ public partial interface IMethodNameNode : INameExpressionNode
         IExpressionNode context,
         OrdinaryName methodName,
         IEnumerable<ITypeNode> typeArguments,
-        IEnumerable<IStandardMethodDeclarationNode> referencedDeclarations,
-        IEnumerable<CallCandidate<IStandardMethodDeclarationNode>> callCandidates,
-        IEnumerable<CallCandidate<IStandardMethodDeclarationNode>> compatibleCallCandidates,
-        CallCandidate<IStandardMethodDeclarationNode>? selectedCallCandidate,
-        IStandardMethodDeclarationNode? referencedDeclaration)
+        IEnumerable<IOrdinaryMethodDeclarationNode> referencedDeclarations,
+        IEnumerable<CallCandidate<IOrdinaryMethodDeclarationNode>> callCandidates,
+        IEnumerable<CallCandidate<IOrdinaryMethodDeclarationNode>> compatibleCallCandidates,
+        CallCandidate<IOrdinaryMethodDeclarationNode>? selectedCallCandidate,
+        IOrdinaryMethodDeclarationNode? referencedDeclaration)
         => new MethodNameNode(syntax, context, methodName, typeArguments, referencedDeclarations, callCandidates, compatibleCallCandidates, selectedCallCandidate, referencedDeclaration);
 }
 
@@ -3978,7 +3978,7 @@ public partial interface IInstanceMemberDeclarationNode : ITypeMemberDeclaration
 
 [Closed(
     typeof(IMethodDefinitionNode),
-    typeof(IStandardMethodDeclarationNode),
+    typeof(IOrdinaryMethodDeclarationNode),
     typeof(IPropertyAccessorDeclarationNode),
     typeof(IMethodSymbolNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -3996,10 +3996,10 @@ public partial interface IMethodDeclarationNode : IClassMemberDeclarationNode, I
 
 [Closed(
     typeof(IAbstractMethodDefinitionNode),
-    typeof(IStandardMethodDefinitionNode),
-    typeof(IStandardMethodSymbolNode))]
+    typeof(IOrdinaryMethodDefinitionNode),
+    typeof(IOrdinaryMethodSymbolNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IStandardMethodDeclarationNode : IMethodDeclarationNode
+public partial interface IOrdinaryMethodDeclarationNode : IMethodDeclarationNode
 {
     int Arity { get; }
     IMaybeFunctionPlainType MethodGroupPlainType { get; }
@@ -4447,7 +4447,7 @@ public partial interface IAssociatedMemberSymbolNode : IAssociatedMemberDeclarat
 }
 
 [Closed(
-    typeof(IStandardMethodSymbolNode),
+    typeof(IOrdinaryMethodSymbolNode),
     typeof(IGetterMethodSymbolNode),
     typeof(ISetterMethodSymbolNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -4477,19 +4477,19 @@ public partial interface IMethodSymbolNode : IMethodDeclarationNode, IClassMembe
         => Symbol.MethodGroupType.Return;
 }
 
-// [Closed(typeof(StandardMethodSymbolNode))]
+// [Closed(typeof(OrdinaryMethodSymbolNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IStandardMethodSymbolNode : IStandardMethodDeclarationNode, IMethodSymbolNode
+public partial interface IOrdinaryMethodSymbolNode : IOrdinaryMethodDeclarationNode, IMethodSymbolNode
 {
-    int IStandardMethodDeclarationNode.Arity
+    int IOrdinaryMethodDeclarationNode.Arity
         => Symbol.Arity;
-    IMaybeFunctionPlainType IStandardMethodDeclarationNode.MethodGroupPlainType
+    IMaybeFunctionPlainType IOrdinaryMethodDeclarationNode.MethodGroupPlainType
         => Symbol.MethodGroupType.PlainType;
-    IMaybeFunctionType IStandardMethodDeclarationNode.MethodGroupType
+    IMaybeFunctionType IOrdinaryMethodDeclarationNode.MethodGroupType
         => Symbol.MethodGroupType;
 
-    public static IStandardMethodSymbolNode Create(MethodSymbol symbol)
-        => new StandardMethodSymbolNode(symbol);
+    public static IOrdinaryMethodSymbolNode Create(MethodSymbol symbol)
+        => new OrdinaryMethodSymbolNode(symbol);
 }
 
 // [Closed(typeof(GetterMethodSymbolNode))]
@@ -6194,12 +6194,12 @@ file class AbstractMethodDefinitionNode : SemanticNode, IAbstractMethodDefinitio
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class StandardMethodDefinitionNode : SemanticNode, IStandardMethodDefinitionNode
+file class OrdinaryMethodDefinitionNode : SemanticNode, IOrdinaryMethodDefinitionNode
 {
-    private IStandardMethodDefinitionNode Self { [Inline] get => this; }
+    private IOrdinaryMethodDefinitionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
-    public IStandardMethodDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
+    public IOrdinaryMethodDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
     public IMethodSelfParameterNode SelfParameter { [DebuggerStepThrough] get; }
     public IFixedList<INamedParameterNode> Parameters { [DebuggerStepThrough] get; }
     public ITypeNode? Return { [DebuggerStepThrough] get; }
@@ -6262,8 +6262,8 @@ file class StandardMethodDefinitionNode : SemanticNode, IStandardMethodDefinitio
     private FixedDictionary<IVariableBindingNode, int>? variableBindingsMap;
     private bool variableBindingsMapCached;
 
-    public StandardMethodDefinitionNode(
-        IStandardMethodDefinitionSyntax syntax,
+    public OrdinaryMethodDefinitionNode(
+        IOrdinaryMethodDefinitionSyntax syntax,
         IMethodSelfParameterNode selfParameter,
         IEnumerable<INamedParameterNode> parameters,
         ITypeNode? @return,
@@ -12250,11 +12250,11 @@ file class ForeachExpressionNode : SemanticNode, IForeachExpressionNode
                 ForeachExpressionPlainTypesAspect.ForeachExpression_ReferencedIterableDeclaration);
     private ITypeDeclarationNode? referencedIterableDeclaration;
     private bool referencedIterableDeclarationCached;
-    public IStandardMethodDeclarationNode? ReferencedIterateMethod
+    public IOrdinaryMethodDeclarationNode? ReferencedIterateMethod
         => GrammarAttribute.IsCached(in referencedIterateMethodCached) ? referencedIterateMethod
             : this.Synthetic(ref referencedIterateMethodCached, ref referencedIterateMethod,
                 ForeachExpressionPlainTypesAspect.ForeachExpression_ReferencedIterateMethod);
-    private IStandardMethodDeclarationNode? referencedIterateMethod;
+    private IOrdinaryMethodDeclarationNode? referencedIterateMethod;
     private bool referencedIterateMethodCached;
     public ITypeDeclarationNode? ReferencedIteratorDeclaration
         => GrammarAttribute.IsCached(in referencedIteratorDeclarationCached) ? referencedIteratorDeclaration
@@ -12262,11 +12262,11 @@ file class ForeachExpressionNode : SemanticNode, IForeachExpressionNode
                 ForeachExpressionPlainTypesAspect.ForeachExpression_ReferencedIteratorDeclaration);
     private ITypeDeclarationNode? referencedIteratorDeclaration;
     private bool referencedIteratorDeclarationCached;
-    public IStandardMethodDeclarationNode? ReferencedNextMethod
+    public IOrdinaryMethodDeclarationNode? ReferencedNextMethod
         => GrammarAttribute.IsCached(in referencedNextMethodCached) ? referencedNextMethod
             : this.Synthetic(ref referencedNextMethodCached, ref referencedNextMethod,
                 ForeachExpressionPlainTypesAspect.ForeachExpression_ReferencedNextMethod);
-    private IStandardMethodDeclarationNode? referencedNextMethod;
+    private IOrdinaryMethodDeclarationNode? referencedNextMethod;
     private bool referencedNextMethodCached;
     public IMaybeType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
@@ -14975,7 +14975,7 @@ file class MethodGroupNameNode : SemanticNode, IMethodGroupNameNode
     public IExpressionNode CurrentContext => context.UnsafeValue;
     public OrdinaryName MethodName { [DebuggerStepThrough] get; }
     public IFixedList<ITypeNode> TypeArguments { [DebuggerStepThrough] get; }
-    public IFixedSet<IStandardMethodDeclarationNode> ReferencedDeclarations { [DebuggerStepThrough] get; }
+    public IFixedSet<IOrdinaryMethodDeclarationNode> ReferencedDeclarations { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -15013,17 +15013,17 @@ file class MethodGroupNameNode : SemanticNode, IMethodGroupNameNode
     private bool expectedPlainTypeCached;
     public IFlowState FlowStateBefore()
         => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
-    public IFixedSet<CallCandidate<IStandardMethodDeclarationNode>> CallCandidates
+    public IFixedSet<CallCandidate<IOrdinaryMethodDeclarationNode>> CallCandidates
         => GrammarAttribute.IsCached(in callCandidatesCached) ? callCandidates!
             : this.Synthetic(ref callCandidatesCached, ref callCandidates,
                 OverloadResolutionAspect.MethodGroupName_CallCandidates);
-    private IFixedSet<CallCandidate<IStandardMethodDeclarationNode>>? callCandidates;
+    private IFixedSet<CallCandidate<IOrdinaryMethodDeclarationNode>>? callCandidates;
     private bool callCandidatesCached;
-    public IFixedSet<CallCandidate<IStandardMethodDeclarationNode>> CompatibleCallCandidates
+    public IFixedSet<CallCandidate<IOrdinaryMethodDeclarationNode>> CompatibleCallCandidates
         => GrammarAttribute.IsCached(in compatibleCallCandidatesCached) ? compatibleCallCandidates!
             : this.Synthetic(ref compatibleCallCandidatesCached, ref compatibleCallCandidates,
                 OverloadResolutionAspect.MethodGroupName_CompatibleCallCandidates);
-    private IFixedSet<CallCandidate<IStandardMethodDeclarationNode>>? compatibleCallCandidates;
+    private IFixedSet<CallCandidate<IOrdinaryMethodDeclarationNode>>? compatibleCallCandidates;
     private bool compatibleCallCandidatesCached;
     public ControlFlowSet ControlFlowNext
         => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
@@ -15031,17 +15031,17 @@ file class MethodGroupNameNode : SemanticNode, IMethodGroupNameNode
                 ControlFlowAspect.MethodGroupName_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
-    public IStandardMethodDeclarationNode? ReferencedDeclaration
+    public IOrdinaryMethodDeclarationNode? ReferencedDeclaration
         => GrammarAttribute.IsCached(in referencedDeclarationCached) ? referencedDeclaration
             : this.Synthetic(ref referencedDeclarationCached, ref referencedDeclaration,
                 OverloadResolutionAspect.MethodGroupName_ReferencedDeclaration);
-    private IStandardMethodDeclarationNode? referencedDeclaration;
+    private IOrdinaryMethodDeclarationNode? referencedDeclaration;
     private bool referencedDeclarationCached;
-    public CallCandidate<IStandardMethodDeclarationNode>? SelectedCallCandidate
+    public CallCandidate<IOrdinaryMethodDeclarationNode>? SelectedCallCandidate
         => GrammarAttribute.IsCached(in selectedCallCandidateCached) ? selectedCallCandidate
             : this.Synthetic(ref selectedCallCandidateCached, ref selectedCallCandidate,
                 OverloadResolutionAspect.MethodGroupName_SelectedCallCandidate);
-    private CallCandidate<IStandardMethodDeclarationNode>? selectedCallCandidate;
+    private CallCandidate<IOrdinaryMethodDeclarationNode>? selectedCallCandidate;
     private bool selectedCallCandidateCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
@@ -15055,7 +15055,7 @@ file class MethodGroupNameNode : SemanticNode, IMethodGroupNameNode
         IExpressionNode context,
         OrdinaryName methodName,
         IEnumerable<ITypeNode> typeArguments,
-        IEnumerable<IStandardMethodDeclarationNode> referencedDeclarations)
+        IEnumerable<IOrdinaryMethodDeclarationNode> referencedDeclarations)
     {
         Syntax = syntax;
         this.context = Child.Create(this, context);
@@ -15142,11 +15142,11 @@ file class MethodNameNode : SemanticNode, IMethodNameNode
     public IExpressionNode CurrentContext => context.UnsafeValue;
     public OrdinaryName MethodName { [DebuggerStepThrough] get; }
     public IFixedList<ITypeNode> TypeArguments { [DebuggerStepThrough] get; }
-    public IFixedSet<IStandardMethodDeclarationNode> ReferencedDeclarations { [DebuggerStepThrough] get; }
-    public IFixedSet<CallCandidate<IStandardMethodDeclarationNode>> CallCandidates { [DebuggerStepThrough] get; }
-    public IFixedSet<CallCandidate<IStandardMethodDeclarationNode>> CompatibleCallCandidates { [DebuggerStepThrough] get; }
-    public CallCandidate<IStandardMethodDeclarationNode>? SelectedCallCandidate { [DebuggerStepThrough] get; }
-    public IStandardMethodDeclarationNode? ReferencedDeclaration { [DebuggerStepThrough] get; }
+    public IFixedSet<IOrdinaryMethodDeclarationNode> ReferencedDeclarations { [DebuggerStepThrough] get; }
+    public IFixedSet<CallCandidate<IOrdinaryMethodDeclarationNode>> CallCandidates { [DebuggerStepThrough] get; }
+    public IFixedSet<CallCandidate<IOrdinaryMethodDeclarationNode>> CompatibleCallCandidates { [DebuggerStepThrough] get; }
+    public CallCandidate<IOrdinaryMethodDeclarationNode>? SelectedCallCandidate { [DebuggerStepThrough] get; }
+    public IOrdinaryMethodDeclarationNode? ReferencedDeclaration { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -15214,11 +15214,11 @@ file class MethodNameNode : SemanticNode, IMethodNameNode
         IExpressionNode context,
         OrdinaryName methodName,
         IEnumerable<ITypeNode> typeArguments,
-        IEnumerable<IStandardMethodDeclarationNode> referencedDeclarations,
-        IEnumerable<CallCandidate<IStandardMethodDeclarationNode>> callCandidates,
-        IEnumerable<CallCandidate<IStandardMethodDeclarationNode>> compatibleCallCandidates,
-        CallCandidate<IStandardMethodDeclarationNode>? selectedCallCandidate,
-        IStandardMethodDeclarationNode? referencedDeclaration)
+        IEnumerable<IOrdinaryMethodDeclarationNode> referencedDeclarations,
+        IEnumerable<CallCandidate<IOrdinaryMethodDeclarationNode>> callCandidates,
+        IEnumerable<CallCandidate<IOrdinaryMethodDeclarationNode>> compatibleCallCandidates,
+        CallCandidate<IOrdinaryMethodDeclarationNode>? selectedCallCandidate,
+        IOrdinaryMethodDeclarationNode? referencedDeclaration)
     {
         Syntax = syntax;
         this.context = Child.Create(this, context);
@@ -18692,9 +18692,9 @@ file class GenericParameterSymbolNode : SemanticNode, IGenericParameterSymbolNod
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class StandardMethodSymbolNode : SemanticNode, IStandardMethodSymbolNode
+file class OrdinaryMethodSymbolNode : SemanticNode, IOrdinaryMethodSymbolNode
 {
-    private IStandardMethodSymbolNode Self { [Inline] get => this; }
+    private IOrdinaryMethodSymbolNode Self { [Inline] get => this; }
 
     public MethodSymbol Symbol { [DebuggerStepThrough] get; }
     public ITypeDeclarationNode ContainingDeclaration
@@ -18706,9 +18706,9 @@ file class StandardMethodSymbolNode : SemanticNode, IStandardMethodSymbolNode
     public ISymbolTree SymbolTree()
         => Inherited_SymbolTree(GrammarAttribute.CurrentInheritanceContext());
 
-    public StandardMethodSymbolNode(MethodSymbol symbol)
+    public OrdinaryMethodSymbolNode(MethodSymbol symbol)
     {
-        SymbolNodeAspect.Validate_StandardMethodSymbolNode(symbol);
+        SymbolNodeAspect.Validate_OrdinaryMethodSymbolNode(symbol);
         Symbol = symbol;
     }
 

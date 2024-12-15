@@ -23,7 +23,7 @@
 ↑ FunctionInvocationExpression.SelectedCallCandidate: `CallCandidate<IFunctionInvocableDeclarationNode>`?
     => Function.SelectedCallCandidate;
 
-↑ MethodInvocationExpression.SelectedCallCandidate: `CallCandidate<IStandardMethodDeclarationNode>`?
+↑ MethodInvocationExpression.SelectedCallCandidate: `CallCandidate<IOrdinaryMethodDeclarationNode>`?
     => Method.SelectedCallCandidate;
 = MethodInvocationExpression.↑.Diagnostics;
 
@@ -37,8 +37,8 @@
 ↑ FunctionGroupName.ReferencedDeclaration: FunctionInvocableDeclaration?;
 = FunctionGroupName.↑.Diagnostics;
 = FunctionName.↑.Diagnostics;
-↑ MethodGroupName.CallCandidates: {`CallCandidate<IStandardMethodDeclarationNode>`};
-↑ MethodGroupName.CompatibleCallCandidates: {`CallCandidate<IStandardMethodDeclarationNode>`};
-↑ MethodGroupName.SelectedCallCandidate: `CallCandidate<IStandardMethodDeclarationNode>`?;
-↑ MethodGroupName.ReferencedDeclaration: StandardMethodDeclaration?;
+↑ MethodGroupName.CallCandidates: {`CallCandidate<IOrdinaryMethodDeclarationNode>`};
+↑ MethodGroupName.CompatibleCallCandidates: {`CallCandidate<IOrdinaryMethodDeclarationNode>`};
+↑ MethodGroupName.SelectedCallCandidate: `CallCandidate<IOrdinaryMethodDeclarationNode>`?;
+↑ MethodGroupName.ReferencedDeclaration: OrdinaryMethodDeclaration?;
 = MethodGroupName.↑.Diagnostics;

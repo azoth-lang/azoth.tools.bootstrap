@@ -9,8 +9,8 @@ internal static partial class ForeachExpressionPlainTypesAspect
     public static partial ITypeDeclarationNode? ForeachExpression_ReferencedIterableDeclaration(IForeachExpressionNode node)
         => node.PackageNameScope().Lookup(node.InExpression?.PlainType ?? PlainType.Unknown);
 
-    public static partial IStandardMethodDeclarationNode? ForeachExpression_ReferencedIterateMethod(IForeachExpressionNode node)
-        => node.ReferencedIterableDeclaration?.InclusiveInstanceMembersNamed("iterate").OfType<IStandardMethodDeclarationNode>()
+    public static partial IOrdinaryMethodDeclarationNode? ForeachExpression_ReferencedIterateMethod(IForeachExpressionNode node)
+        => node.ReferencedIterableDeclaration?.InclusiveInstanceMembersNamed("iterate").OfType<IOrdinaryMethodDeclarationNode>()
                .Where(m => m.Arity == 0 && m.ReturnPlainType is NonVoidPlainType)
                .TrySingle();
 
@@ -27,8 +27,8 @@ internal static partial class ForeachExpressionPlainTypesAspect
     public static partial ITypeDeclarationNode? ForeachExpression_ReferencedIteratorDeclaration(IForeachExpressionNode node)
         => node.PackageNameScope().Lookup(node.IteratorPlainType);
 
-    public static partial IStandardMethodDeclarationNode? ForeachExpression_ReferencedNextMethod(IForeachExpressionNode node)
-        => node.ReferencedIteratorDeclaration?.InclusiveInstanceMembersNamed("next").OfType<IStandardMethodDeclarationNode>()
+    public static partial IOrdinaryMethodDeclarationNode? ForeachExpression_ReferencedNextMethod(IForeachExpressionNode node)
+        => node.ReferencedIteratorDeclaration?.InclusiveInstanceMembersNamed("next").OfType<IOrdinaryMethodDeclarationNode>()
                .Where(m => m.Arity == 0 && m.ReturnPlainType is OptionalPlainType)
                .TrySingle();
 

@@ -114,11 +114,10 @@ MethodDefinition <: AlwaysTypeMemberDefinition, ClassMemberDefinition, TraitMemb
     = Syntax:`IMethodDefinitionSyntax`
     SelfParameter:MethodSelfParameter Parameters:NamedParameter* Body? Return:Type?;
 // TODO getters and setters can be abstract too
-AbstractMethodDefinition <: MethodDefinition, StandardMethodDeclaration
+AbstractMethodDefinition <: MethodDefinition, OrdinaryMethodDeclaration
     = Syntax:`IAbstractMethodDefinitionSyntax` /SelfParameter/ /Parameters/ /Return/;
-// TODO rename to OrdinaryMethodDefinition
-StandardMethodDefinition <: MethodDefinition, StandardMethodDeclaration
-    = Syntax:`IStandardMethodDefinitionSyntax` /SelfParameter/ /Parameters/ /Return/ /Entry/ Body /Exit/;
+OrdinaryMethodDefinition <: MethodDefinition, OrdinaryMethodDeclaration
+    = Syntax:`IOrdinaryMethodDefinitionSyntax` /SelfParameter/ /Parameters/ /Return/ /Entry/ Body /Exit/;
 GetterMethodDefinition <: MethodDefinition, GetterMethodDeclaration
     = Syntax:`IGetterMethodDefinitionSyntax` /SelfParameter/ /Parameters/ Return:Type /Entry/ Body? /Exit/;
 SetterMethodDefinition <: MethodDefinition, SetterMethodDeclaration
@@ -312,14 +311,14 @@ FunctionName <: NameExpression
     ReferencedDeclaration:`IFunctionInvocableDeclarationNode`?;
 MethodGroupName <: NameExpression = Syntax:`IMemberAccessExpressionSyntax`
     Context:Expression MethodName:`OrdinaryName` TypeArguments:Type*
-    ReferencedDeclarations:{`IStandardMethodDeclarationNode`};
+    ReferencedDeclarations:{`IOrdinaryMethodDeclarationNode`};
 MethodName <: NameExpression = Syntax:`IMemberAccessExpressionSyntax`
     Context:Expression MethodName:`OrdinaryName` TypeArguments:Type*
-    ReferencedDeclarations:{`IStandardMethodDeclarationNode`}
-    CallCandidates:{`CallCandidate<IStandardMethodDeclarationNode>`}
-    CompatibleCallCandidates:{`CallCandidate<IStandardMethodDeclarationNode>`}
-    SelectedCallCandidate:`CallCandidate<IStandardMethodDeclarationNode>`?
-    ReferencedDeclaration:`IStandardMethodDeclarationNode`?;
+    ReferencedDeclarations:{`IOrdinaryMethodDeclarationNode`}
+    CallCandidates:{`CallCandidate<IOrdinaryMethodDeclarationNode>`}
+    CompatibleCallCandidates:{`CallCandidate<IOrdinaryMethodDeclarationNode>`}
+    SelectedCallCandidate:`CallCandidate<IOrdinaryMethodDeclarationNode>`?
+    ReferencedDeclaration:`IOrdinaryMethodDeclarationNode`?;
 FieldAccessExpression <: NameExpression = Syntax:`IMemberAccessExpressionSyntax`
     Context:Expression FieldName:`IdentifierName` ReferencedDeclaration:`IFieldDeclarationNode`;
 VariableNameExpression <: LocalBindingNameExpression, SimpleNameExpression
@@ -439,7 +438,7 @@ InstanceMemberDeclaration <: TypeMemberDeclaration;
 // ---------- Member Declarations
 MethodDeclaration <: ClassMemberDeclaration, TraitMemberDeclaration, StructMemberDeclaration, NamedDeclaration, InstanceMemberDeclaration, InvocableDeclaration, AlwaysTypeMemberDeclaration
     = Name:`IdentifierName`;
-StandardMethodDeclaration <: MethodDeclaration;
+OrdinaryMethodDeclaration <: MethodDeclaration;
 PropertyAccessorDeclaration <: MethodDeclaration;
 GetterMethodDeclaration <: PropertyAccessorDeclaration;
 SetterMethodDeclaration <: PropertyAccessorDeclaration;
@@ -501,7 +500,7 @@ AssociatedMemberSymbol <: AssociatedMemberDeclaration, ClassMemberSymbol, TraitM
 // ---------- Member Symbol Nodes
 MethodSymbol <: MethodDeclaration, ClassMemberSymbol, TraitMemberSymbol, StructMemberSymbol
     = Symbol:`MethodSymbol`;
-StandardMethodSymbol <: StandardMethodDeclaration, MethodSymbol;
+OrdinaryMethodSymbol <: OrdinaryMethodDeclaration, MethodSymbol;
 GetterMethodSymbol <: GetterMethodDeclaration, MethodSymbol;
 SetterMethodSymbol <: SetterMethodDeclaration, MethodSymbol;
 ConstructorSymbol <: ConstructorDeclaration, ClassMemberSymbol = Symbol:`ConstructorSymbol`;

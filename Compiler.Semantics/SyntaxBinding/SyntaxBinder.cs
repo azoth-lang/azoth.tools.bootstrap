@@ -168,7 +168,7 @@ internal static class SyntaxBinder
         => syntax switch
         {
             IAbstractMethodDefinitionSyntax syn => AbstractMethodDefinition(syn),
-            IStandardMethodDefinitionSyntax syn => StandardMethodDefinition(syn),
+            IOrdinaryMethodDefinitionSyntax syn => StandardMethodDefinition(syn),
             IGetterMethodDefinitionSyntax syn => GetterMethodDefinition(syn),
             ISetterMethodDefinitionSyntax syn => SetterMethodDefinition(syn),
             _ => throw ExhaustiveMatch.Failed(syntax)
@@ -178,8 +178,8 @@ internal static class SyntaxBinder
         => IAbstractMethodDefinitionNode.Create(syntax, MethodSelfParameter(syntax.SelfParameter),
             NamedParameters(syntax.Parameters), Type(syntax.Return?.Type));
 
-    private static IStandardMethodDefinitionNode StandardMethodDefinition(IStandardMethodDefinitionSyntax syntax)
-        => IStandardMethodDefinitionNode.Create(syntax, MethodSelfParameter(syntax.SelfParameter),
+    private static IOrdinaryMethodDefinitionNode StandardMethodDefinition(IOrdinaryMethodDefinitionSyntax syntax)
+        => IOrdinaryMethodDefinitionNode.Create(syntax, MethodSelfParameter(syntax.SelfParameter),
             NamedParameters(syntax.Parameters), Type(syntax.Return?.Type), Body(syntax.Body));
 
     private static IGetterMethodDefinitionNode GetterMethodDefinition(IGetterMethodDefinitionSyntax syntax)

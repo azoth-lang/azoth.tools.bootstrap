@@ -34,7 +34,7 @@ internal static partial class FormattingAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial string AbstractMethodDefinition_ToString(IAbstractMethodDefinitionSyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial string StandardMethodDefinition_ToString(IStandardMethodDefinitionSyntax node);
+    public static partial string OrdinaryMethodDefinition_ToString(IOrdinaryMethodDefinitionSyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial string GetterMethodDefinition_ToString(IGetterMethodDefinitionSyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -62,8 +62,8 @@
 = AbstractMethodDefinition.Kind => MethodKind.Standard;
 = AbstractMethodDefinition.Arity => Parameters.Count;
 ↑ AbstractMethodDefinition.Body: Body? => null;
-= StandardMethodDefinition.Kind => MethodKind.Standard;
-= StandardMethodDefinition.Arity => Parameters.Count;
+= OrdinaryMethodDefinition.Kind => MethodKind.Standard;
+= OrdinaryMethodDefinition.Arity => Parameters.Count;
 = GetterMethodDefinition.Kind => MethodKind.Getter;
 = SetterMethodDefinition.Kind => MethodKind.Setter;
 ↑ ConstructorDefinition.Name: `IdentifierName`? => Syntax?.Name;

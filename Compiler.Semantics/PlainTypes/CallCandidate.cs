@@ -63,9 +63,9 @@ internal static class CallCandidate
         IInitializerDeclarationNode initializer)
         => Create(initializingPlainType, initializer, initializer.SelfParameterPlainType);
 
-    public static CallCandidate<IStandardMethodDeclarationNode> Create(
+    public static CallCandidate<IOrdinaryMethodDeclarationNode> Create(
         IMaybePlainType contextPlainType,
-        IStandardMethodDeclarationNode method)
+        IOrdinaryMethodDeclarationNode method)
         => Create(contextPlainType, method, method.SelfParameterPlainType);
 
     private static CallCandidate<TDeclaration> Create<TDeclaration>(

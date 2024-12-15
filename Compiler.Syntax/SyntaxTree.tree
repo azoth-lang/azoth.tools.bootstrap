@@ -86,8 +86,7 @@ StructMemberDefinition <: TypeMemberDefinition;
 MethodDefinition <: TypeMemberDefinition, ClassMemberDefinition, TraitMemberDefinition, StructMemberDefinition, InvocableDefinition
     = Name:`IdentifierName` SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return? Body?;
 AbstractMethodDefinition <: MethodDefinition = /SelfParameter/ /Parameters/ Return?;
-// TODO rename to OrdinaryMethodDefinition
-StandardMethodDefinition <: MethodDefinition = SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return? Body;
+OrdinaryMethodDefinition <: MethodDefinition = SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return? Body;
 GetterMethodDefinition <: MethodDefinition = SelfParameter:MethodSelfParameter Return Body?;
 SetterMethodDefinition <: MethodDefinition = SelfParameter:MethodSelfParameter Parameters:NamedParameter* Body;
 ConstructorDefinition <: InvocableDefinition, ClassMemberDefinition

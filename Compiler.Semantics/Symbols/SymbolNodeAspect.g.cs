@@ -21,7 +21,7 @@ internal static partial class SymbolNodeAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial void Validate_TraitSymbolNode(OrdinaryTypeSymbol symbol);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial void Validate_StandardMethodSymbolNode(MethodSymbol symbol);
+    public static partial void Validate_OrdinaryMethodSymbolNode(MethodSymbol symbol);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial void Validate_GetterMethodSymbolNode(MethodSymbol symbol);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

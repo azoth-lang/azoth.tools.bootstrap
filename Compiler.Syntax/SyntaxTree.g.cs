@@ -398,7 +398,7 @@ public partial interface IStructMemberDefinitionSyntax : ITypeMemberDefinitionSy
 
 [Closed(
     typeof(IAbstractMethodDefinitionSyntax),
-    typeof(IStandardMethodDefinitionSyntax),
+    typeof(IOrdinaryMethodDefinitionSyntax),
     typeof(IGetterMethodDefinitionSyntax),
     typeof(ISetterMethodDefinitionSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -432,14 +432,14 @@ public partial interface IAbstractMethodDefinitionSyntax : IMethodDefinitionSynt
         => new AbstractMethodDefinitionSyntax(span, file, nameSpan, accessModifier, name, selfParameter, parameters, @return);
 }
 
-// [Closed(typeof(StandardMethodDefinitionSyntax))]
+// [Closed(typeof(OrdinaryMethodDefinitionSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IStandardMethodDefinitionSyntax : IMethodDefinitionSyntax
+public partial interface IOrdinaryMethodDefinitionSyntax : IMethodDefinitionSyntax
 {
     new IBodySyntax Body { get; }
     IBodySyntax? IInvocableDefinitionSyntax.Body => Body;
 
-    public static IStandardMethodDefinitionSyntax Create(
+    public static IOrdinaryMethodDefinitionSyntax Create(
         TextSpan span,
         CodeFile file,
         TextSpan nameSpan,
@@ -449,7 +449,7 @@ public partial interface IStandardMethodDefinitionSyntax : IMethodDefinitionSynt
         IEnumerable<INamedParameterSyntax> parameters,
         IReturnSyntax? @return,
         IBodySyntax body)
-        => new StandardMethodDefinitionSyntax(span, file, nameSpan, accessModifier, name, selfParameter, parameters, @return, body);
+        => new OrdinaryMethodDefinitionSyntax(span, file, nameSpan, accessModifier, name, selfParameter, parameters, @return, body);
 }
 
 // [Closed(typeof(GetterMethodDefinitionSyntax))]
@@ -2022,9 +2022,9 @@ file class AbstractMethodDefinitionSyntax : IAbstractMethodDefinitionSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class StandardMethodDefinitionSyntax : IStandardMethodDefinitionSyntax
+file class OrdinaryMethodDefinitionSyntax : IOrdinaryMethodDefinitionSyntax
 {
-    private IStandardMethodDefinitionSyntax Self { [Inline] get => this; }
+    private IOrdinaryMethodDefinitionSyntax Self { [Inline] get => this; }
 
     public TextSpan Span { [DebuggerStepThrough] get; }
     public CodeFile File { [DebuggerStepThrough] get; }
@@ -2036,9 +2036,9 @@ file class StandardMethodDefinitionSyntax : IStandardMethodDefinitionSyntax
     public IReturnSyntax? Return { [DebuggerStepThrough] get; }
     public IBodySyntax Body { [DebuggerStepThrough] get; }
     public override string ToString()
-        => FormattingAspect.StandardMethodDefinition_ToString(this);
+        => FormattingAspect.OrdinaryMethodDefinition_ToString(this);
 
-    public StandardMethodDefinitionSyntax(
+    public OrdinaryMethodDefinitionSyntax(
         TextSpan span,
         CodeFile file,
         TextSpan nameSpan,

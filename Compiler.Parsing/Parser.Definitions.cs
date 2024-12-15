@@ -452,7 +452,7 @@ public partial class Parser
         {
             var body = ParseBody();
             var span = TextSpan.Covering(fn, body.Span);
-            return IStandardMethodDefinitionSyntax.Create(span, File, identifier.Span, accessModifer,
+            return IOrdinaryMethodDefinitionSyntax.Create(span, File, identifier.Span, accessModifer,
                 name, selfParameter, namedParameters, @return, body);
         }
         else
@@ -539,7 +539,7 @@ public partial class Parser
                 Add(ParseError.ConcreteMethodDeclaredAbstract(File, abstractModifier.Span));
             var body = ParseBody();
             var span = TextSpan.Covering(fn, body.Span);
-            return IStandardMethodDefinitionSyntax.Create(span, File, identifier.Span, accessModifer,
+            return IOrdinaryMethodDefinitionSyntax.Create(span, File, identifier.Span, accessModifer,
                 name, selfParameter, namedParameters, @return, body);
         }
         else
@@ -784,7 +784,7 @@ public partial class Parser
             Add(ParseError.StructMethodMissingBody(File, span, name));
         }
 
-        return IStandardMethodDefinitionSyntax.Create(span, File, identifier.Span, accessModifer,
+        return IOrdinaryMethodDefinitionSyntax.Create(span, File, identifier.Span, accessModifer,
             name, selfParameter, namedParameters, @return, body);
     }
     #endregion

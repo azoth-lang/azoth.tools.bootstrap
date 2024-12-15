@@ -120,7 +120,7 @@ internal static partial class BindingAmbiguousNamesAspect
         if (members.Count == 0)
             return null;
 
-        if (members.TryAllOfType<IStandardMethodDeclarationNode>(out var referencedMethods))
+        if (members.TryAllOfType<IOrdinaryMethodDeclarationNode>(out var referencedMethods))
             return IMethodGroupNameNode.Create(node.Syntax, context, node.MemberName, node.TypeArguments, referencedMethods);
 
         if (members.TryAllOfType<IPropertyAccessorDeclarationNode>(out var referencedProperties)

@@ -33,7 +33,7 @@
 // TODO it would be good to refactor to not depend on Type
 = AbstractMethodDefinition.MethodGroupPlainType => MethodGroupType.PlainType;
 // TODO it would be good to refactor to not depend on Type
-= StandardMethodDefinition.MethodGroupPlainType => MethodGroupType.PlainType;
+= OrdinaryMethodDefinition.MethodGroupPlainType => MethodGroupType.PlainType;
 = ConstructorDefinition.ReturnPlainType
     => ContainingTypeDefinition.TypeFactory.ConstructWithParameterPlainTypes();
 = DefaultConstructorDefinition.SelfParameterPlainType

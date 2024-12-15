@@ -93,7 +93,7 @@ internal static partial class FormattingAspect
         return $"abstract fn {node.Name}({string.Join(", ", node.Parameters.Prepend<IParameterSyntax>(node.SelfParameter))}){@return};";
     }
 
-    public static partial string StandardMethodDefinition_ToString(IStandardMethodDefinitionSyntax node)
+    public static partial string OrdinaryMethodDefinition_ToString(IOrdinaryMethodDefinitionSyntax node)
     {
         var @return = node.Return?.ToString() ?? "";
         return $"fn {node.Name}({string.Join(", ", node.Parameters.Prepend<IParameterSyntax>(node.SelfParameter))}){@return} {node.Body}";

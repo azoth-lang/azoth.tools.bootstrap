@@ -84,7 +84,7 @@ public static class ISyntaxExtensions
                 if (n.Return is not null)
                     yield return n.Return;
                 yield break;
-            case IStandardMethodDefinitionSyntax n:
+            case IOrdinaryMethodDefinitionSyntax n:
                 yield return n.SelfParameter;
                 foreach (var child in n.Parameters)
                     yield return child;
