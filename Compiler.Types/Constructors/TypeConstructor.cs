@@ -258,6 +258,15 @@ public abstract partial class TypeConstructor : TypeConstructorContext, IEquatab
         return new(plainType, []);
     }
 
+    Type? ITypeFactory.TryConstructNullaryType()
+    {
+        if (!Parameters.IsEmpty)
+            throw new InvalidOperationException($"Cannot construct nullary type for type constructor `{this}` expecting arguments.");
+        // Type constructors require a capability, not just type parameters, to construct a full type.
+        return null;
+    }
+
+
     /// <summary>
     /// Try to construct a plain type with type arguments. If the type constructor takes one or more
     /// arguments, <see langword="null"/> is returned.

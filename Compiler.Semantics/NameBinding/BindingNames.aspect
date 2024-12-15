@@ -9,7 +9,13 @@
 = Attribute.↑.Diagnostics;
 
 // ---------- Types
+↑ TypeName.ReferencedDeclaration: TypeDeclaration?;
+= StandardTypeName.ReferencedDeclaration;
+= StandardTypeName.↑.Diagnostics;
 ↑ SpecialTypeName.ReferencedDeclaration: TypeDeclaration?;
+
+// ---------- Parameters
+↑ FieldParameter.ReferencedField: FieldDefinition?;
 
 // ---------- Expressions
 ↑ NewObjectExpression.ReferencedConstructors: {ConstructorDeclaration};

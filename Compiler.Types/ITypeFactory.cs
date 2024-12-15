@@ -1,7 +1,9 @@
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
+using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using Azoth.Tools.Bootstrap.Framework;
+using Type = Azoth.Tools.Bootstrap.Compiler.Types.Decorated.Type;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types;
 
@@ -17,9 +19,13 @@ public interface ITypeFactory
     public static readonly ITypeFactory Never = NeverTypeFactory.Instance;
     #endregion
 
+    PlainType? TryConstructNullaryPlainType();
+
     /// <summary>
     /// Attempt to construct a type from this type constructor with possibly unknown arguments. If
     /// any argument is unknown, the result is <see langword="null"/>.
     /// </summary>
     BareType? TryConstruct(IFixedList<IMaybeType> arguments);
+
+    Type? TryConstructNullaryType();
 }

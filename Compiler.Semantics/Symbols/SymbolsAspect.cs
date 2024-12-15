@@ -1,6 +1,4 @@
-using System;
 using System.Linq;
-using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Primitives;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
@@ -32,22 +30,6 @@ internal static partial class SymbolsAspect
 
     public static partial GenericParameterTypeSymbol GenericParameter_Symbol(IGenericParameterNode node)
         => new(node.ContainingSymbol, node.DeclaredType.PlainType);
-
-    // TODO eliminate ReferencedSymbol because ReferencedDeclaration should be used instead
-    public static partial TypeSymbol? StandardTypeName_ReferencedSymbol(IStandardTypeNameNode node)
-        => node.ReferencedDeclaration?.Symbol;
-
-    // TODO eliminate ReferencedSymbol because ReferencedDeclaration should be used instead
-    public static partial TypeSymbol? QualifiedTypeName_ReferencedSymbol(IQualifiedTypeNameNode node)
-        => throw new NotImplementedException();
-
-    // TODO eliminate ReferencedSymbol because ReferencedDeclaration should be used instead
-    public static partial TypeSymbol SpecialTypeName_ReferencedSymbol(ISpecialTypeNameNode node)
-    {
-        if (node.Name == SpecialTypeName.Self)
-            throw new NotImplementedException();
-        return Primitive.SymbolTree.LookupSymbol(node.Name);
-    }
 
     public static partial FunctionSymbol? FunctionDefinition_Symbol(IFunctionDefinitionNode node)
     {

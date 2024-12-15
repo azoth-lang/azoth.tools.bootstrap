@@ -44,8 +44,3 @@
 
 // ---------- Attributes
 ↑ Attribute.ReferencedSymbol: `ConstructorSymbol`?;
-
-// ---------- Types
-↑ TypeName.ReferencedSymbol: `TypeSymbol`?;
-= StandardTypeName.ReferencedSymbol;
-↑ SpecialTypeName.ReferencedSymbol: `TypeSymbol`;

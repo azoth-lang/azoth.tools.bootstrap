@@ -20,7 +20,6 @@ internal class SemanticTreeValidator
         if (node is ITypeNameNode typeName)
         {
             _ = typeName.ContainingLexicalScope;
-            _ = typeName.ReferencedSymbol;
             _ = typeName.NamedBareType;
             _ = typeName.NamedType;
         }
@@ -108,9 +107,6 @@ internal class SemanticTreeValidator
                 _ = n.File;
                 _ = n.Type;
                 _ = n.Symbol;
-                break;
-            case IAttributeNode n:
-                _ = n.TypeName.ReferencedSymbol;
                 break;
             case IIdentifierNameExpressionNode n:
                 if (n.Name is null)

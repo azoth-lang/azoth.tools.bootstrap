@@ -20,12 +20,7 @@ internal static partial class TypeExpressionsPlainTypesAspect
         => node.Referent.NamedPlainType;
 
     public static partial IMaybePlainType SpecialTypeName_NamedPlainType(ISpecialTypeNameNode node)
-    {
-        // TODO do not use symbols at this stage of the compiler
-        return node.ReferencedSymbol.TryGetPlainType()
-               ?? node.ReferencedSymbol.TryGetTypeConstructor()?.TryConstructNullaryPlainType()
-               ?? IMaybePlainType.Unknown;
-    }
+        => node.ReferencedDeclaration?.TypeFactory.TryConstructNullaryPlainType() ?? IMaybePlainType.Unknown;
 
     public static partial IMaybePlainType FunctionType_NamedPlainType(IFunctionTypeNode node)
     {

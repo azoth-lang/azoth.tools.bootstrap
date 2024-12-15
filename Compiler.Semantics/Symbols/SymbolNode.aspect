@@ -35,14 +35,8 @@
 // ---------- Attributes
 = Attribute.TypeName.IsAttributeType => true;
 
-// ---------- Parameters
-↑ FieldParameter.ReferencedField: FieldDefinition?;
-
 // ---------- Types
-↑ StandardTypeName.ReferencedDeclaration: TypeDeclaration?;
-= StandardTypeName.ReferencedDeclaration;
 ↓ StandardTypeName.IsAttributeType:`bool`;
-= StandardTypeName.↑.Diagnostics;
 
 // -------------------------------------------------------------------------------------------------
 // Symbol Nodes

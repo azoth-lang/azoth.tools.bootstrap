@@ -29,10 +29,6 @@ internal static partial class SymbolNodeAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IPackageSymbolNode PackageReference_SymbolNode(IPackageReferenceNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial ITypeDeclarationNode? StandardTypeName_ReferencedDeclaration(IStandardTypeNameNode node);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial void StandardTypeName_Contribute_Diagnostics(IStandardTypeNameNode node, DiagnosticCollectionBuilder diagnostics);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial INamespaceSymbolNode PackageFacetSymbol_GlobalNamespace(IPackageFacetSymbolNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFixedSet<ITypeMemberSymbolNode> BuiltInTypeSymbol_Members(IBuiltInTypeSymbolNode node);
@@ -48,8 +44,6 @@ internal static partial class SymbolNodeAspect
     public static partial INamespaceDefinitionNode NamespaceBlockDefinition_ContainingNamespace(INamespaceBlockDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial INamespaceDefinitionNode NamespaceBlockDefinition_Definition(INamespaceBlockDefinitionNode node);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IFieldDefinitionNode? FieldParameter_ReferencedField(IFieldParameterNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IPackageFacetSymbolNode PackageSymbol_MainFacet(IPackageSymbolNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

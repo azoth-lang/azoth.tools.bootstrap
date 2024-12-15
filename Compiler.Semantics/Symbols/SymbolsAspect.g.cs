@@ -33,13 +33,7 @@ internal static partial class SymbolsAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial FunctionSymbol? AssociatedFunctionDefinition_Symbol(IAssociatedFunctionDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial TypeSymbol? StandardTypeName_ReferencedSymbol(IStandardTypeNameNode node);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IPackageSymbols Package_PackageSymbols(IPackageNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial ConstructorSymbol? Attribute_ReferencedSymbol(IAttributeNode node);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial TypeSymbol SpecialTypeName_ReferencedSymbol(ISpecialTypeNameNode node);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial TypeSymbol? QualifiedTypeName_ReferencedSymbol(IQualifiedTypeNameNode node);
 }

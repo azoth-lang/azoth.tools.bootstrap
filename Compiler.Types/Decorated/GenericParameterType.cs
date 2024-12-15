@@ -9,6 +9,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 // TODO maybe this should only be constructed from the GenericParameterPlainType to avoid duplicate instances?
 // e.g. T
 // NOTE: generic parameters are the only plain types that do not need a capability
+// TODO make TypeConstructor.Parameter the factory!
 public sealed class GenericParameterType : NonVoidType, ITypeFactory
 {
     public override GenericParameterPlainType PlainType { get; }
@@ -26,12 +27,18 @@ public sealed class GenericParameterType : NonVoidType, ITypeFactory
         PlainType = plainType;
     }
 
+    #region ITypeFactory methods
+    PlainType ITypeFactory.TryConstructNullaryPlainType() => PlainType;
+
     BareType? ITypeFactory.TryConstruct(IFixedList<IMaybeType> arguments)
     {
         TypeRequires.NoArgs(arguments, nameof(arguments));
         // There is no bare type for a generic parameter
         return null;
     }
+
+    Type ITypeFactory.TryConstructNullaryType() => this;
+    #endregion
 
     #region Equality
     public override bool Equals(IMaybeType? other)

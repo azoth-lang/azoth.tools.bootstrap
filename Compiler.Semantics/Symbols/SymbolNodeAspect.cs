@@ -1,11 +1,8 @@
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
-using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Names;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Framework;
@@ -75,47 +72,6 @@ internal static partial class SymbolNodeAspect
 
     public static partial INamespaceDefinitionNode NamespaceBlockDefinition_Definition(INamespaceBlockDefinitionNode node)
         => FindNamespace(node.ContainingNamespace, node.DeclaredNames);
-
-    public static partial ITypeDeclarationNode? StandardTypeName_ReferencedDeclaration(IStandardTypeNameNode node)
-    {
-        var symbolNode = LookupDeclarations(node).TrySingle();
-        if (node.IsAttributeType)
-            symbolNode ??= LookupDeclarations(node, withAttributeSuffix: true).TrySingle();
-        return symbolNode;
-    }
-
-    public static partial void StandardTypeName_Contribute_Diagnostics(
-        IStandardTypeNameNode node,
-        DiagnosticCollectionBuilder diagnostics)
-    {
-        if (node.ReferencedDeclaration is not null) return;
-        var symbolNodes = LookupDeclarations(node);
-        switch (symbolNodes.Count)
-        {
-            case 0:
-                diagnostics.Add(NameBindingError.CouldNotBindName(node.File, node.Syntax.Span));
-                break;
-            case 1:
-                // If there is only one match, then ReferencedSymbol is not null
-                throw new UnreachableException();
-            default:
-                diagnostics.Add(NameBindingError.AmbiguousName(node.File, node.Syntax.Span));
-                break;
-        }
-    }
-
-    private static IFixedSet<ITypeDeclarationNode> LookupDeclarations(
-        IStandardTypeNameNode node,
-        bool withAttributeSuffix = false)
-    {
-        var name = withAttributeSuffix ? node.Name + SpecialNames.AttributeSuffix : node.Name;
-        return node.ContainingLexicalScope.Lookup(name).OfType<ITypeDeclarationNode>().ToFixedSet();
-    }
-
-    public static partial IFieldDefinitionNode? FieldParameter_ReferencedField(IFieldParameterNode node)
-        // TODO report error for field parameter without referenced field
-        => node.ContainingTypeDefinition.Members.OfType<IFieldDefinitionNode>()
-               .FirstOrDefault(f => f.Name == node.Name);
 
     private static IEnumerable<Symbol> GetMembers(IChildSymbolNode node)
         => node.SymbolTree().GetChildrenOf(node.Symbol);

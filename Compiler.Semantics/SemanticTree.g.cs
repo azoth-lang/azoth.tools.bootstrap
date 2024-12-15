@@ -1407,7 +1407,7 @@ public partial interface ITypeNameNode : ITypeNode
     LexicalScope ContainingLexicalScope { get; }
     TypeName Name
         => Syntax.Name;
-    TypeSymbol? ReferencedSymbol { get; }
+    ITypeDeclarationNode? ReferencedDeclaration { get; }
     BareType? NamedBareType { get; }
 }
 
@@ -1422,7 +1422,6 @@ public partial interface IStandardTypeNameNode : ITypeNameNode
     ITypeSyntax ITypeNode.Syntax => Syntax;
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    ITypeDeclarationNode? ReferencedDeclaration { get; }
     bool IsAttributeType { get; }
     new StandardName Name
         => Syntax.Name;
@@ -1475,9 +1474,6 @@ public partial interface ISpecialTypeNameNode : ISimpleTypeNameNode
     new SpecialTypeName Name
         => Syntax.Name;
     TypeName ITypeNameNode.Name => Name;
-    new TypeSymbol ReferencedSymbol { get; }
-    TypeSymbol? ITypeNameNode.ReferencedSymbol => ReferencedSymbol;
-    ITypeDeclarationNode? ReferencedDeclaration { get; }
 
     public static ISpecialTypeNameNode Create(ISpecialTypeNameSyntax syntax)
         => new SpecialTypeNameNode(syntax);
@@ -8088,7 +8084,7 @@ file class FieldParameterNode : SemanticNode, IFieldParameterNode
     public IFieldDefinitionNode? ReferencedField
         => GrammarAttribute.IsCached(in referencedFieldCached) ? referencedField
             : this.Synthetic(ref referencedFieldCached, ref referencedField,
-                SymbolNodeAspect.FieldParameter_ReferencedField);
+                BindingNamesAspect.FieldParameter_ReferencedField);
     private IFieldDefinitionNode? referencedField;
     private bool referencedFieldCached;
 
@@ -8258,15 +8254,9 @@ file class IdentifierTypeNameNode : SemanticNode, IIdentifierTypeNameNode
     public ITypeDeclarationNode? ReferencedDeclaration
         => GrammarAttribute.IsCached(in referencedDeclarationCached) ? referencedDeclaration
             : this.Synthetic(ref referencedDeclarationCached, ref referencedDeclaration,
-                SymbolNodeAspect.StandardTypeName_ReferencedDeclaration);
+                BindingNamesAspect.StandardTypeName_ReferencedDeclaration);
     private ITypeDeclarationNode? referencedDeclaration;
     private bool referencedDeclarationCached;
-    public TypeSymbol? ReferencedSymbol
-        => GrammarAttribute.IsCached(in referencedSymbolCached) ? referencedSymbol
-            : this.Synthetic(ref referencedSymbolCached, ref referencedSymbol,
-                SymbolsAspect.StandardTypeName_ReferencedSymbol);
-    private TypeSymbol? referencedSymbol;
-    private bool referencedSymbolCached;
 
     public IdentifierTypeNameNode(IIdentifierTypeNameSyntax syntax)
     {
@@ -8281,7 +8271,7 @@ file class IdentifierTypeNameNode : SemanticNode, IIdentifierTypeNameNode
 
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
     {
-        SymbolNodeAspect.StandardTypeName_Contribute_Diagnostics(this, builder);
+        BindingNamesAspect.StandardTypeName_Contribute_Diagnostics(this, builder);
     }
 }
 
@@ -8325,12 +8315,6 @@ file class SpecialTypeNameNode : SemanticNode, ISpecialTypeNameNode
                 BindingNamesAspect.SpecialTypeName_ReferencedDeclaration);
     private ITypeDeclarationNode? referencedDeclaration;
     private bool referencedDeclarationCached;
-    public TypeSymbol ReferencedSymbol
-        => GrammarAttribute.IsCached(in referencedSymbolCached) ? referencedSymbol!
-            : this.Synthetic(ref referencedSymbolCached, ref referencedSymbol,
-                SymbolsAspect.SpecialTypeName_ReferencedSymbol);
-    private TypeSymbol? referencedSymbol;
-    private bool referencedSymbolCached;
 
     public SpecialTypeNameNode(ISpecialTypeNameSyntax syntax)
     {
@@ -8383,15 +8367,9 @@ file class GenericTypeNameNode : SemanticNode, IGenericTypeNameNode
     public ITypeDeclarationNode? ReferencedDeclaration
         => GrammarAttribute.IsCached(in referencedDeclarationCached) ? referencedDeclaration
             : this.Synthetic(ref referencedDeclarationCached, ref referencedDeclaration,
-                SymbolNodeAspect.StandardTypeName_ReferencedDeclaration);
+                BindingNamesAspect.StandardTypeName_ReferencedDeclaration);
     private ITypeDeclarationNode? referencedDeclaration;
     private bool referencedDeclarationCached;
-    public TypeSymbol? ReferencedSymbol
-        => GrammarAttribute.IsCached(in referencedSymbolCached) ? referencedSymbol
-            : this.Synthetic(ref referencedSymbolCached, ref referencedSymbol,
-                SymbolsAspect.StandardTypeName_ReferencedSymbol);
-    private TypeSymbol? referencedSymbol;
-    private bool referencedSymbolCached;
 
     public GenericTypeNameNode(
         IGenericTypeNameSyntax syntax,
@@ -8409,7 +8387,7 @@ file class GenericTypeNameNode : SemanticNode, IGenericTypeNameNode
 
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
     {
-        SymbolNodeAspect.StandardTypeName_Contribute_Diagnostics(this, builder);
+        BindingNamesAspect.StandardTypeName_Contribute_Diagnostics(this, builder);
     }
 }
 
@@ -8437,12 +8415,12 @@ file class QualifiedTypeNameNode : SemanticNode, IQualifiedTypeNameNode
                 TypeExpressionsAspect.TypeName_NamedType);
     private IMaybeType? namedType;
     private bool namedTypeCached;
-    public TypeSymbol? ReferencedSymbol
-        => GrammarAttribute.IsCached(in referencedSymbolCached) ? referencedSymbol
-            : this.Synthetic(ref referencedSymbolCached, ref referencedSymbol,
-                SymbolsAspect.QualifiedTypeName_ReferencedSymbol);
-    private TypeSymbol? referencedSymbol;
-    private bool referencedSymbolCached;
+    public ITypeDeclarationNode? ReferencedDeclaration
+        => GrammarAttribute.IsCached(in referencedDeclarationCached) ? referencedDeclaration
+            : this.Synthetic(ref referencedDeclarationCached, ref referencedDeclaration,
+                BindingNamesAspect.QualifiedTypeName_ReferencedDeclaration);
+    private ITypeDeclarationNode? referencedDeclaration;
+    private bool referencedDeclarationCached;
 
     public QualifiedTypeNameNode(
         IQualifiedTypeNameSyntax syntax,
