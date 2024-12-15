@@ -71,6 +71,7 @@
 
 // ---------- Type Declaration Parts
 ↓ computed GenericParameterDeclaration.ContainingDeclaration: UserTypeDeclaration;
+↓ computed ImplicitSelfDeclaration.ContainingDeclaration: NonVariableTypeDeclaration;
 
 // ---------- Type Member Declarations
 = MethodDeclaration.*.**.ContainingDeclaration => this;

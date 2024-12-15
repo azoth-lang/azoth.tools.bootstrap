@@ -6,6 +6,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Structure;
 
 internal static partial class DefaultMembersAspect
 {
+    #region Type Definitions
+    public static partial IImplicitSelfDefinitionNode TypeDefinition_ImplicitSelf(ITypeDefinitionNode node)
+        => IImplicitSelfDefinitionNode.Create();
+
     public static partial IDefaultConstructorDefinitionNode? ClassDefinition_DefaultConstructor(IClassDefinitionNode node)
     {
         if (node.SourceMembers.Any(m => m is IConstructorDefinitionNode))
@@ -45,4 +49,5 @@ internal static partial class DefaultMembersAspect
 
         return members.ToFixedSet();
     }
+    #endregion
 }

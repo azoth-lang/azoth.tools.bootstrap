@@ -39,6 +39,7 @@
 // ---------- Type Definition Parts
 ↑ GenericParameter.ContainingSymbol: `OrdinaryTypeSymbol` => ContainingDeclaration.Symbol;
 = GenericParameter.Symbol;
+↑ SelfSymbol.ContainingSymbol: `TypeSymbol` => ContainingDeclaration.Symbol;
 
 // ---------- Member Definitions
 = MethodDefinition.Symbol;

@@ -61,7 +61,9 @@
 = FunctionSymbol.Type => Symbol.Type;
 
 // ---------- Type Symbol Nodes
-↑ child TypeSymbol.Members: {TypeMemberSymbol};
+↑ TypeSymbol.Members: {TypeMemberSymbol};
+↑ child NonVariableTypeSymbol.ImplicitSelf: SelfSymbol;
+= NonVariableTypeSymbol.ImplicitSelf;
 
 ↑ BuiltInTypeSymbol.SymbolTree(): `PrimitiveSymbolTree` => Primitive.SymbolTree;
 ↑ BuiltInTypeSymbol.Name: `BuiltInTypeName`;
@@ -103,8 +105,11 @@
 // ---------- Type Declaration Parts
 ↑ GenericParameterSymbol.Name: `IdentifierName` => Symbol.Name;
 = GenericParameterSymbol.Supertypes => Symbol.TryGetTypeConstructor()?.Supertypes ?? [];
-↑ child GenericParameterSymbol.Members: {TypeMemberSymbol} => [];
+↑ GenericParameterSymbol.Members: {TypeMemberSymbol} => [];
 = GenericParameterSymbol.InclusiveMembers => [];
+= SelfSymbol.TypeFactory => Symbol.TypeFactory;
+↑ SelfSymbol.Members: {TypeMemberSymbol} => [];
+= SelfSymbol.InclusiveMembers => [];
 
 // ---------- Member Symbol Nodes
 ↑ MethodSymbol.Name: `IdentifierName` => Symbol.Name;

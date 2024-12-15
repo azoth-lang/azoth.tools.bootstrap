@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
+using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Framework;
@@ -34,6 +35,9 @@ internal static partial class SymbolNodeAspect
     #endregion
 
     #region Type Symbol Nodes
+    public static partial ISelfSymbolNode NonVariableTypeSymbol_ImplicitSelf(INonVariableTypeSymbolNode node)
+        => ISelfSymbolNode.Create(node.SymbolTree().GetChildrenOf(node.Symbol).OfType<AssociatedTypeSymbol>().Where(t => t.PlainType.Name == BuiltInTypeName.Self).TrySingle()!);
+
     public static partial IFixedList<IGenericParameterSymbolNode> OrdinaryTypeSymbol_GenericParameters(IOrdinaryTypeSymbolNode node)
         => GetMembers(node).OfType<GenericParameterTypeSymbol>()
                            .Select(SymbolBinder.Symbol).WhereNotNull()

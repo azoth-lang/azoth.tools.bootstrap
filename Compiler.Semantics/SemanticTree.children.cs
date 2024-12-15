@@ -495,38 +495,44 @@ public static class ISemanticNodeExtensions
             case IFunctionSymbolNode n:
                 yield break;
             case IVoidTypeSymbolNode n:
+                yield return n.ImplicitSelf;
                 foreach (var child in n.Members)
                     yield return child;
                 yield break;
             case INeverTypeSymbolNode n:
+                yield return n.ImplicitSelf;
                 foreach (var child in n.Members)
                     yield return child;
                 yield break;
             case IPrimitiveTypeSymbolNode n:
+                yield return n.ImplicitSelf;
                 foreach (var child in n.Members)
                     yield return child;
                 yield break;
             case IClassSymbolNode n:
+                yield return n.ImplicitSelf;
                 foreach (var child in n.GenericParameters)
                     yield return child;
                 foreach (var child in n.Members)
                     yield return child;
                 yield break;
             case IStructSymbolNode n:
+                yield return n.ImplicitSelf;
                 foreach (var child in n.GenericParameters)
                     yield return child;
                 foreach (var child in n.Members)
                     yield return child;
                 yield break;
             case ITraitSymbolNode n:
+                yield return n.ImplicitSelf;
                 foreach (var child in n.GenericParameters)
                     yield return child;
                 foreach (var child in n.Members)
                     yield return child;
                 yield break;
             case IGenericParameterSymbolNode n:
-                foreach (var child in n.Members)
-                    yield return child;
+                yield break;
+            case ISelfSymbolNode n:
                 yield break;
             case IOrdinaryMethodSymbolNode n:
                 yield break;

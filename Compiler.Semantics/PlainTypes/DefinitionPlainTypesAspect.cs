@@ -58,7 +58,7 @@ internal static partial class DefinitionPlainTypesAspect
     #endregion
 
     #region Type Definition Parts
-    public static partial SelfTypeFactory ImplicitSelfDefinition_TypeFactory(IImplicitSelfDefinitionNode node)
+    public static partial AssociatedTypeFactory ImplicitSelfDefinition_TypeFactory(IImplicitSelfDefinitionNode node)
         => throw new NotImplementedException();
     #endregion
 

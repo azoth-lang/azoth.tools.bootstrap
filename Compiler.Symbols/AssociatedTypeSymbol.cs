@@ -1,4 +1,5 @@
 using System;
+using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
@@ -8,13 +9,14 @@ public sealed class AssociatedTypeSymbol : TypeSymbol
     public override PackageSymbol Package => ContainingSymbol.Package;
     public override OrdinaryTypeSymbol ContainingSymbol { get; }
     public override OrdinaryTypeSymbol ContextTypeSymbol => ContainingSymbol;
-    public AssociatedPlainType Type { get; }
+    public AssociatedTypeFactory TypeFactory { get; }
+    public AssociatedPlainType PlainType => TypeFactory.PlainType;
 
-    public AssociatedTypeSymbol(OrdinaryTypeSymbol containingSymbol, AssociatedPlainType type)
-        : base(type.Name)
+    public AssociatedTypeSymbol(OrdinaryTypeSymbol containingSymbol, AssociatedTypeFactory typeFactory)
+        : base(typeFactory.PlainType.Name)
     {
         ContainingSymbol = containingSymbol;
-        Type = type;
+        TypeFactory = typeFactory;
     }
 
     #region Equals
@@ -24,7 +26,8 @@ public sealed class AssociatedTypeSymbol : TypeSymbol
         if (ReferenceEquals(this, other)) return true;
         return other is AssociatedTypeSymbol otherType
                && ContainingSymbol == otherType.ContainingSymbol
-               && Type.Equals(otherType.Type);
+               // TODO use TypeFactory for this?
+               && PlainType.Equals(otherType.PlainType);
     }
 
     public override int GetHashCode() => HashCode.Combine(ContainingSymbol, Name);

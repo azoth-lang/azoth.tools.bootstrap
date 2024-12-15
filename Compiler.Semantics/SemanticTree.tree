@@ -27,7 +27,7 @@ Child <: `IChildTreeNode<ISemanticNode>`;
 
 // ---------- Special Parts
 BodyOrBlock <: Code;
-ElseClause <: ControlFlow = Syntax:`ICodeSyntax`;
+ElseClause <: Code, ControlFlow = Syntax:`ICodeSyntax`;
 BlockOrResult <: ElseClause;
 
 // ---------- Bindings
@@ -51,7 +51,7 @@ FacetMemberDefinition <: NamespaceBlockMemberDefinition, NamespaceMemberDefiniti
     = Attributes:Attribute*;
 
 // ---------- Code Files
-Code <: Child = Syntax:`ICodeSyntax`?;
+Code <: Child = Syntax:`ICodeSyntax`;
 
 CompilationUnit <: Code = Syntax:`ICompilationUnitSyntax`
     ImportDirectives:ImportDirective* Definitions:NamespaceBlockMemberDefinition*;
@@ -59,12 +59,12 @@ CompilationUnit <: Code = Syntax:`ICompilationUnitSyntax`
 ImportDirective <: Code = Syntax:`IImportDirectiveSyntax`;
 
 // ---------- Definitions
-Definition <: Code, PackageFacetChildDeclaration = Syntax:`IDefinitionSyntax`?;
+Definition <: PackageFacetChildDeclaration = Syntax:`IDefinitionSyntax`?;
 ExecutableDefinition <: Definition, SymbolDeclaration = /Entry/ /Exit/;
 InvocableDefinition <: ExecutableDefinition, InvocableDeclaration
     = Parameters:ConstructorOrInitializerParameter* /Entry/ Body? /Exit/;
-ConcreteFunctionInvocableDefinition <: InvocableDefinition, FunctionInvocableDeclaration
-    = Name:`IdentifierName` Parameters:NamedParameter* Return:Type? Body;
+ConcreteFunctionInvocableDefinition <: Code, InvocableDefinition, FunctionInvocableDeclaration
+    = Syntax:`IInvocableDefinitionSyntax` Name:`IdentifierName` Parameters:NamedParameter* Return:Type? Body;
 
 // ---------- Namespace Definitions
 NamespaceBlockDefinition <: NamespaceBlockMemberDefinition = Syntax:`INamespaceBlockDefinitionSyntax`
@@ -79,19 +79,19 @@ FunctionDefinition <: FacetMemberDefinition, FunctionDeclaration, ConcreteFuncti
     = Syntax:`IFunctionDefinitionSyntax` Attributes:Attribute* /Parameters/ /Return/ /Entry/ Body /Exit/;
 
 // ---------- Type Definitions
-TypeDefinition <: FacetMemberDefinition, AssociatedMemberDefinition, UserTypeDeclaration
+TypeDefinition <: Code, FacetMemberDefinition, AssociatedMemberDefinition, UserTypeDeclaration
     = Syntax:`ITypeDefinitionSyntax`
     GenericParameters:GenericParameter*
     SupertypeNames:StandardTypeName*;
-ClassDefinition <: TypeDefinition, ClassDeclaration = Syntax:`IClassDefinitionSyntax`
+ClassDefinition <: Code, TypeDefinition, ClassDeclaration = Syntax:`IClassDefinitionSyntax`
     Attributes:Attribute* GenericParameters:GenericParameter*
     BaseTypeName:StandardTypeName? SupertypeNames:StandardTypeName*
     SourceMembers:ClassMemberDefinition*;
-StructDefinition <: TypeDefinition, StructDeclaration = Syntax:`IStructDefinitionSyntax`
+StructDefinition <: Code, TypeDefinition, StructDeclaration = Syntax:`IStructDefinitionSyntax`
     Attributes:Attribute* GenericParameters:GenericParameter*
     SupertypeNames:StandardTypeName*
     SourceMembers:StructMemberDefinition*;
-TraitDefinition <: TypeDefinition, TraitDeclaration = Syntax:`ITraitDefinitionSyntax`
+TraitDefinition <: Code, TypeDefinition, TraitDeclaration = Syntax:`ITraitDefinitionSyntax`
     Attributes:Attribute* GenericParameters:GenericParameter*
     SupertypeNames:StandardTypeName*
     Members:{TraitMemberDefinition};
@@ -99,7 +99,7 @@ TraitDefinition <: TypeDefinition, TraitDeclaration = Syntax:`ITraitDefinitionSy
 // ---------- Type Definition Parts
 GenericParameter <: Code, GenericParameterDeclaration
     = Syntax:`IGenericParameterSyntax` Constraint:CapabilityConstraint;
-ImplicitSelfDefinition <: Code, ImplicitSelfDeclaration;
+ImplicitSelfDefinition <: ImplicitSelfDeclaration;
 
 // ---------- Type Member Definitions (i.e. definitions that can be contained in a type)
 TypeMemberDefinition <: Definition, TypeMemberDeclaration = Syntax:`ITypeMemberDefinitionSyntax`?;
@@ -111,7 +111,7 @@ AssociatedMemberDefinition <: ClassMemberDefinition, TraitMemberDefinition, Stru
     = Name:`OrdinaryName`;
 
 // ---------- Member Definitions
-MethodDefinition <: AlwaysTypeMemberDefinition, ClassMemberDefinition, TraitMemberDefinition, StructMemberDefinition, InvocableDefinition, MethodDeclaration
+MethodDefinition <: Code, AlwaysTypeMemberDefinition, ClassMemberDefinition, TraitMemberDefinition, StructMemberDefinition, InvocableDefinition, MethodDeclaration
     = Syntax:`IMethodDefinitionSyntax`
     SelfParameter:MethodSelfParameter Parameters:NamedParameter* Body? Return:Type?;
 // TODO getters and setters can be abstract too
@@ -127,16 +127,16 @@ ConstructorDefinition <: InvocableDefinition, AlwaysTypeMemberDefinition, ClassM
     = Syntax:`IConstructorDefinitionSyntax`? Parameters:ConstructorOrInitializerParameter*;
 // TODO the term "default" can mean both generated and no-arg. Perhaps another term should be used?
 DefaultConstructorDefinition <: ConstructorDefinition;
-OrdinaryConstructorDefinition <: ConstructorDefinition
+OrdinaryConstructorDefinition <: Code, ConstructorDefinition
     = Syntax:`IConstructorDefinitionSyntax`
     SelfParameter:ConstructorSelfParameter /Parameters/ /Entry/ Body:BlockBody /Exit/;
 InitializerDefinition <: InvocableDefinition, AlwaysTypeMemberDefinition, StructMemberDefinition, InitializerDeclaration
     = Syntax:`IInitializerDefinitionSyntax`? Name:`IdentifierName`? Parameters:ConstructorOrInitializerParameter*;
 DefaultInitializerDefinition <: InitializerDefinition;
-OrdinaryInitializerDefinition <: InitializerDefinition
+OrdinaryInitializerDefinition <: Code, InitializerDefinition
     = Syntax:`IInitializerDefinitionSyntax`
     SelfParameter:InitializerSelfParameter /Parameters/ /Entry/ Body:BlockBody /Exit/;
-FieldDefinition <: AlwaysTypeMemberDefinition, ClassMemberDefinition, StructMemberDefinition, NamedBinding, FieldDeclaration, ExecutableDefinition
+FieldDefinition <: Code, AlwaysTypeMemberDefinition, ClassMemberDefinition, StructMemberDefinition, NamedBinding, FieldDeclaration, ExecutableDefinition
     = Syntax:`IFieldDefinitionSyntax` TypeNode:Type /Entry/ Initializer:AmbiguousExpression? /Exit/;
 AssociatedFunctionDefinition <: ConcreteFunctionInvocableDefinition, AlwaysTypeMemberDefinition, AssociatedMemberDefinition, AssociatedFunctionDeclaration
     = Syntax:`IAssociatedFunctionDefinitionSyntax` /Parameters/ /Return/ /Entry/ /Body/ /Exit/;
@@ -185,7 +185,7 @@ CapabilityViewpointType <: ViewpointType = Syntax:`ICapabilityViewpointTypeSynta
 SelfViewpointType <: ViewpointType = Syntax:`ISelfViewpointTypeSyntax` Referent:Type;
 
 // ---------- Control Flow
-ControlFlow <: Code;
+ControlFlow <: Child;
 Entry <: DataFlow;
 Exit <: DataFlow;
 
@@ -193,7 +193,7 @@ Exit <: DataFlow;
 DataFlow <: ControlFlow;
 
 // ---------- Statements
-Statement <: ControlFlow = Syntax:`IStatementSyntax`;
+Statement <: Code, ControlFlow = Syntax:`IStatementSyntax`;
 ResultStatement <: Statement, BlockOrResult
     = Syntax:`IResultStatementSyntax` Expression:AmbiguousExpression;
 BodyStatement <: Statement = Syntax:`IBodyStatementSyntax`;
@@ -203,7 +203,7 @@ ExpressionStatement <: BodyStatement
     = Syntax:`IExpressionStatementSyntax` Expression:AmbiguousExpression;
 
 // ---------- Patterns
-Pattern <: ControlFlow = Syntax:`IPatternSyntax`;
+Pattern <: Code, ControlFlow = Syntax:`IPatternSyntax`;
 BindingContextPattern <: Pattern = Syntax:`IBindingContextPatternSyntax` Pattern Type?;
 OptionalOrBindingPattern <: Pattern = Syntax:`IOptionalOrBindingPatternSyntax`;
 BindingPattern <: OptionalOrBindingPattern, VariableBinding = Syntax:`IBindingPatternSyntax`;
@@ -417,8 +417,11 @@ FunctionDeclaration <: NamespaceMemberDeclaration, FunctionInvocableDeclaration;
 
 // ---------- Type Declarations
 TypeDeclaration <: NamedDeclaration, SymbolDeclaration;
-BuiltInTypeDeclaration <: TypeDeclaration = Name:`BuiltInTypeName` Members:{TypeMemberDeclaration};
-UserTypeDeclaration <: NamespaceMemberDeclaration, ClassMemberDeclaration, TraitMemberDeclaration, StructMemberDeclaration, TypeDeclaration, NamedDeclaration
+// TODO this needs a better name
+NonVariableTypeDeclaration <: TypeDeclaration;
+BuiltInTypeDeclaration <: NonVariableTypeDeclaration = Name:`BuiltInTypeName` Members:{TypeMemberDeclaration};
+// TODO should this be renamed Ordinary?
+UserTypeDeclaration <: NamespaceMemberDeclaration, ClassMemberDeclaration, TraitMemberDeclaration, StructMemberDeclaration, NonVariableTypeDeclaration
     = Name:`OrdinaryName` GenericParameters:GenericParameterDeclaration* Members:{TypeMemberDeclaration};
 ClassDeclaration <: UserTypeDeclaration = Members:{ClassMemberDeclaration};
 StructDeclaration <: UserTypeDeclaration = Members:{StructMemberDeclaration};
@@ -481,17 +484,20 @@ FunctionSymbol <: FunctionDeclaration, NamespaceMemberSymbol = Symbol:`FunctionS
 
 // ---------- Type Symbol Nodes
 TypeSymbol <: TypeDeclaration, ChildSymbol = Symbol:`TypeSymbol`;
-BuiltInTypeSymbol <: BuiltInTypeDeclaration, TypeSymbol;
+NonVariableTypeSymbol <: NonVariableTypeDeclaration, TypeSymbol;
+BuiltInTypeSymbol <: BuiltInTypeDeclaration, NonVariableTypeSymbol;
 VoidTypeSymbol <: BuiltInTypeSymbol = Symbol:`VoidTypeSymbol`;
 NeverTypeSymbol <: BuiltInTypeSymbol = Symbol:`NeverTypeSymbol`;
+// TODO rename to SimpleTypeSymbol?
 PrimitiveTypeSymbol <: BuiltInTypeSymbol = Symbol:`BuiltInTypeSymbol`;
-OrdinaryTypeSymbol <: UserTypeDeclaration, TypeSymbol, NamespaceMemberSymbol = Symbol:`OrdinaryTypeSymbol`;
+OrdinaryTypeSymbol <: UserTypeDeclaration, NonVariableTypeSymbol, NamespaceMemberSymbol = Symbol:`OrdinaryTypeSymbol`;
 ClassSymbol <: ClassDeclaration, OrdinaryTypeSymbol = /GenericParameters/ /Members/;
 StructSymbol <: StructDeclaration, OrdinaryTypeSymbol = /GenericParameters/ /Members/;
 TraitSymbol <: TraitDeclaration, OrdinaryTypeSymbol = /GenericParameters/ /Members/;
 
 // ---------- Type Declaration Parts
-GenericParameterSymbol <: GenericParameterDeclaration, ChildSymbol = Symbol:`GenericParameterTypeSymbol`;
+GenericParameterSymbol <: GenericParameterDeclaration, TypeSymbol = Symbol:`GenericParameterTypeSymbol`;
+SelfSymbol <: ImplicitSelfDeclaration = Symbol:`AssociatedTypeSymbol`;
 
 // ---------- Type Member Declarations (i.e. declarations that can be contained in a type)
 TypeMemberSymbol <: TypeMemberDeclaration, ChildSymbol;

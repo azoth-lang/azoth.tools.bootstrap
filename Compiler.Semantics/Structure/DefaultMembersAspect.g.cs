@@ -11,6 +11,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Structure;
 internal static partial class DefaultMembersAspect
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial IImplicitSelfDefinitionNode TypeDefinition_ImplicitSelf(ITypeDefinitionNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFixedSet<IClassMemberDefinitionNode> ClassDefinition_Members(IClassDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IDefaultConstructorDefinitionNode? ClassDefinition_DefaultConstructor(IClassDefinitionNode node);
