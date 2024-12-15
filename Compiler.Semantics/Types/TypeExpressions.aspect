@@ -11,7 +11,7 @@
 // ---------- Types
 ↑ Type.NamedType: `IMaybeType`;
 = TypeName.NamedType;
-= SpecialTypeName.NamedType;
+= BuiltInTypeName.NamedType;
 ↑ ParameterType.Parameter: `IMaybeParameterType`;
 = CapabilityType.↑.Diagnostics;
 = CapabilityViewpointType.↑.Diagnostics;

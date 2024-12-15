@@ -22,7 +22,7 @@ internal static partial class BindingNamesAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFieldDefinitionNode? FieldParameter_ReferencedField(IFieldParameterNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial ITypeDeclarationNode? SpecialTypeName_ReferencedDeclaration(ISpecialTypeNameNode node);
+    public static partial ITypeDeclarationNode? BuiltInTypeName_ReferencedDeclaration(IBuiltInTypeNameNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial ITypeDeclarationNode? QualifiedTypeName_ReferencedDeclaration(IQualifiedTypeNameNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -32,7 +32,7 @@ internal static partial class BindingNamesAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial ISetterMethodDeclarationNode? SetterInvocationExpression_ReferencedDeclaration(ISetterInvocationExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial ITypeDeclarationNode? SpecialTypeNameExpression_ReferencedDeclaration(ISpecialTypeNameExpressionNode node);
+    public static partial ITypeDeclarationNode? BuiltInTypeNameExpression_ReferencedDeclaration(IBuiltInTypeNameExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial ISelfParameterNode? SelfExpression_ReferencedDefinition(ISelfExpressionNode node);
 }

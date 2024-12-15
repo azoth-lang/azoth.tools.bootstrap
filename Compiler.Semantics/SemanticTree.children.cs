@@ -211,7 +211,7 @@ public static class ISemanticNodeExtensions
                 yield break;
             case IIdentifierTypeNameNode n:
                 yield break;
-            case ISpecialTypeNameNode n:
+            case IBuiltInTypeNameNode n:
                 yield break;
             case IGenericTypeNameNode n:
                 foreach (var child in n.TypeArguments)
@@ -429,7 +429,7 @@ public static class ISemanticNodeExtensions
             case IInitializerGroupNameNode n:
                 yield return n.Context;
                 yield break;
-            case ISpecialTypeNameExpressionNode n:
+            case IBuiltInTypeNameExpressionNode n:
                 yield break;
             case ISelfExpressionNode n:
                 yield break;

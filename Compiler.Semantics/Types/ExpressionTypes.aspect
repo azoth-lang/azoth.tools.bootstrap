@@ -215,7 +215,7 @@
 = VariableNameExpression.FlowStateAfter;
 = TypeNameExpression.Type => AzothType.Unknown;
 = InitializerGroupName.Type => throw new NotImplementedException();
-↑ SpecialTypeNameExpression.Type:`UnknownType` => AzothType.Unknown;
+↑ BuiltInTypeNameExpression.Type:`UnknownType` => AzothType.Unknown;
 ↑ SelfExpression.Pseudotype: `IMaybeType`;
 = SelfExpression.FlowStateAfter;
 ↑ MissingNameExpression.Type: `UnknownType` => AzothType.Unknown;

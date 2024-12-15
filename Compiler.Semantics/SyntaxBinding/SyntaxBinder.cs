@@ -331,8 +331,8 @@ internal static class SyntaxBinder
             _ => throw ExhaustiveMatch.Failed(syntax)
         };
 
-    private static ISpecialTypeNameNode BuiltInTypeName(IBuiltInTypeNameSyntax syntax)
-        => ISpecialTypeNameNode.Create(syntax);
+    private static IBuiltInTypeNameNode BuiltInTypeName(IBuiltInTypeNameSyntax syntax)
+        => IBuiltInTypeNameNode.Create(syntax);
 
     private static IQualifiedTypeNameNode QualifiedTypeName(IQualifiedTypeNameSyntax syntax)
         => IQualifiedTypeNameNode.Create(syntax, TypeName(syntax.Context), StandardTypeName(syntax.QualifiedName));
@@ -563,8 +563,8 @@ internal static class SyntaxBinder
     private static IIdentifierNameExpressionNode IdentifierNameExpression(IIdentifierNameExpressionSyntax syntax)
         => IIdentifierNameExpressionNode.Create(syntax);
 
-    private static ISpecialTypeNameExpressionNode SpecialTypeNameExpression(IBuiltInTypeNameExpressionSyntax syntax)
-        => ISpecialTypeNameExpressionNode.Create(syntax);
+    private static IBuiltInTypeNameExpressionNode SpecialTypeNameExpression(IBuiltInTypeNameExpressionSyntax syntax)
+        => IBuiltInTypeNameExpressionNode.Create(syntax);
 
     private static IGenericNameExpressionNode GenericNameExpression(IGenericNameExpressionSyntax syntax)
         => IGenericNameExpressionNode.Create(syntax, Types(syntax.TypeArguments));

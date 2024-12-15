@@ -172,7 +172,7 @@ TypeName <: Type = Syntax:`ITypeNameSyntax`;
 StandardTypeName <: TypeName = Syntax:`IStandardTypeNameSyntax`;
 SimpleTypeName <: TypeName = Syntax:`ISimpleTypeNameSyntax`;
 IdentifierTypeName <: StandardTypeName, SimpleTypeName = Syntax:`IIdentifierTypeNameSyntax`;
-SpecialTypeName <: SimpleTypeName = Syntax:`IBuiltInTypeNameSyntax`;
+BuiltInTypeName <: SimpleTypeName = Syntax:`IBuiltInTypeNameSyntax`;
 GenericTypeName <: StandardTypeName = Syntax:`IGenericTypeNameSyntax` TypeArguments:Type*;
 QualifiedTypeName <: TypeName = Syntax:`IQualifiedTypeNameSyntax` Context:TypeName QualifiedName:StandardTypeName;
 OptionalType <: Type = Syntax:`IOptionalTypeSyntax` Referent:Type;
@@ -334,8 +334,8 @@ QualifiedTypeNameExpression <: TypeNameExpression = Syntax:`IMemberAccessExpress
 InitializerGroupName <: NameExpression = Syntax:`INameExpressionSyntax`
     Context:TypeNameExpression InitializerName:`StandardName`?
     ReferencedDeclarations:{`IInitializerDeclarationNode`};
-// TODO merge with SpecialTypeName and keep the name "SpecialTypeName" because it really isn't an expression
-SpecialTypeNameExpression <: NameExpression
+// TODO merge with BuiltInTypeName and keep the name "BuiltInTypeName" because it really isn't an expression
+BuiltInTypeNameExpression <: NameExpression
     = Syntax:`IBuiltInTypeNameExpressionSyntax`;
 InstanceExpression <: NameExpression, SimpleNameExpression = Syntax:`IInstanceExpressionSyntax`; // i.e. `self` or `base`
 // TODO BaseExpression <: InstanceExpression

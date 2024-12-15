@@ -91,7 +91,7 @@
 = TypeNameExpression.PlainType => AzothPlainType.Unknown;
 = InitializerGroupName.PlainType => AzothPlainType.Unknown;
 ↑ InitializerGroupName.InitializingPlainType: `IMaybePlainType` => Context.NamedPlainType;
-= SpecialTypeNameExpression.PlainType => AzothPlainType.Unknown;
+= BuiltInTypeNameExpression.PlainType => AzothPlainType.Unknown;
 = MissingNameExpression.PlainType => AzothPlainType.Unknown;
 = UnknownNameExpression.PlainType => AzothPlainType.Unknown;
 

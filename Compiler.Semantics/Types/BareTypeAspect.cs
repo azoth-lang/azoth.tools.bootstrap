@@ -20,7 +20,7 @@ internal static partial class BareTypeAspect
     public static partial BareType? GenericTypeName_NamedBareType(IGenericTypeNameNode node)
         => BuildBareType(node.ReferencedDeclaration?.TypeFactory, node.TypeArguments.Select(t => t.NamedType).ToFixedList());
 
-    public static partial BareType? SpecialTypeName_NamedBareType(ISpecialTypeNameNode node)
+    public static partial BareType? BuiltInTypeName_NamedBareType(IBuiltInTypeNameNode node)
         => BuildBareType(node.ReferencedDeclaration?.TypeFactory, []);
 
     private static BareType? BuildBareType(ITypeFactory? typeConstructor, IFixedList<IMaybeType> typeArguments)

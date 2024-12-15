@@ -12,7 +12,7 @@
 ↑ TypeName.ReferencedDeclaration: TypeDeclaration?;
 = StandardTypeName.ReferencedDeclaration;
 = StandardTypeName.↑.Diagnostics;
-↑ SpecialTypeName.ReferencedDeclaration: TypeDeclaration?;
+↑ BuiltInTypeName.ReferencedDeclaration: TypeDeclaration?;
 
 // ---------- Parameters
 ↑ FieldParameter.ReferencedField: FieldDefinition?;
@@ -25,6 +25,6 @@
 ↑ eager SetterInvocationExpression.ReferencedDeclaration: `ISetterMethodDeclarationNode`?;
 
 // ---------- Name Expressions
-↑ SpecialTypeNameExpression.ReferencedDeclaration: TypeDeclaration?;
+↑ BuiltInTypeNameExpression.ReferencedDeclaration: TypeDeclaration?;
 ↑ SelfExpression.ReferencedDefinition: SelfParameter?;
 = SelfExpression.↑.Diagnostics;

@@ -16,7 +16,7 @@ internal static partial class TypeExpressionsAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IMaybeType TypeName_NamedType(ITypeNameNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IMaybeType SpecialTypeName_NamedType(ISpecialTypeNameNode node);
+    public static partial IMaybeType BuiltInTypeName_NamedType(IBuiltInTypeNameNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial void CapabilityType_Contribute_Diagnostics(ICapabilityTypeNode node, DiagnosticCollectionBuilder diagnostics);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -19,7 +19,7 @@ internal static partial class TypeExpressionsPlainTypesAspect
         // Capability has no effect on the plain type
         => node.Referent.NamedPlainType;
 
-    public static partial IMaybePlainType SpecialTypeName_NamedPlainType(ISpecialTypeNameNode node)
+    public static partial IMaybePlainType BuiltInTypeName_NamedPlainType(IBuiltInTypeNameNode node)
         => node.ReferencedDeclaration?.TypeFactory.TryConstructNullaryPlainType() ?? IMaybePlainType.Unknown;
 
     public static partial IMaybePlainType FunctionType_NamedPlainType(IFunctionTypeNode node)

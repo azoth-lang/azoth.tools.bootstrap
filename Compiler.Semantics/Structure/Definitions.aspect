@@ -121,7 +121,7 @@
 ↑ TypeName.Name: `TypeName` => Syntax.Name;
 ↑ StandardTypeName.Name: `StandardName` => Syntax.Name;
 ↑ IdentifierTypeName.Name: `IdentifierName` => Syntax.Name;
-↑ SpecialTypeName.Name: `BuiltInTypeName` => Syntax.Name;
+↑ BuiltInTypeName.Name: `BuiltInTypeName` => Syntax.Name;
 ↑ GenericTypeName.Name: `GenericName` => Syntax.Name;
 ↑ ParameterType.IsLent: `bool` => Syntax.IsLent;
 
@@ -180,7 +180,7 @@
 ↑ TypeNameExpression.Name: `StandardName`;
 = StandardTypeNameExpression.Name => Syntax.Name;
 = QualifiedTypeNameExpression.Name => Syntax.MemberName;
-↑ SpecialTypeNameExpression.Name: `BuiltInTypeName` => Syntax.Name;
+↑ BuiltInTypeNameExpression.Name: `BuiltInTypeName` => Syntax.Name;
 ↑ SelfExpression.IsImplicit: `bool` => Syntax.IsImplicit;
 ↑ UnknownIdentifierNameExpression.Name :`IdentifierName`=> Syntax.Name;
 ↑ AmbiguousMemberAccessExpression.MemberName: `StandardName` => Syntax.MemberName;

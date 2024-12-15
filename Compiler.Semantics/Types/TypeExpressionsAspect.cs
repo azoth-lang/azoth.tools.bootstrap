@@ -23,7 +23,7 @@ internal static partial class TypeExpressionsAspect
            ?? node.ReferencedDeclaration?.TypeFactory.TryConstructNullaryType() ?? IMaybeType.Unknown;
 
     // TODO remove if this remains a duplicate of TypeName_NamedType
-    public static partial IMaybeType SpecialTypeName_NamedType(ISpecialTypeNameNode node)
+    public static partial IMaybeType BuiltInTypeName_NamedType(IBuiltInTypeNameNode node)
         // Special type names don't have bare types
         // TODO don't use ReferencedSymbol (use referenced definition instead)
         => node.NamedBareType?.WithDefaultRead()

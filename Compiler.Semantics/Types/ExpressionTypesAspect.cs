@@ -388,7 +388,7 @@ internal static partial class ExpressionTypesAspect
             case IStandardTypeNameNode n:
                 CheckTypeArgumentsAreConstructable(n, diagnostics);
                 break;
-            case ISpecialTypeNameNode n:
+            case IBuiltInTypeNameNode n:
                 diagnostics.Add(TypeError.SpecialTypeCannotBeUsedHere(node.File, n.Syntax));
                 break;
             case IQualifiedTypeNameNode n:

@@ -1429,7 +1429,7 @@ public partial interface IStandardTypeNameNode : ITypeNameNode
 
 [Closed(
     typeof(IIdentifierTypeNameNode),
-    typeof(ISpecialTypeNameNode))]
+    typeof(IBuiltInTypeNameNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface ISimpleTypeNameNode : ITypeNameNode
 {
@@ -1460,9 +1460,9 @@ public partial interface IIdentifierTypeNameNode : IStandardTypeNameNode, ISimpl
         => new IdentifierTypeNameNode(syntax);
 }
 
-// [Closed(typeof(SpecialTypeNameNode))]
+// [Closed(typeof(BuiltInTypeNameNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface ISpecialTypeNameNode : ISimpleTypeNameNode
+public partial interface IBuiltInTypeNameNode : ISimpleTypeNameNode
 {
     new IBuiltInTypeNameSyntax Syntax { get; }
     ISimpleTypeNameSyntax ISimpleTypeNameNode.Syntax => Syntax;
@@ -1474,8 +1474,8 @@ public partial interface ISpecialTypeNameNode : ISimpleTypeNameNode
         => Syntax.Name;
     TypeName ITypeNameNode.Name => Name;
 
-    public static ISpecialTypeNameNode Create(IBuiltInTypeNameSyntax syntax)
-        => new SpecialTypeNameNode(syntax);
+    public static IBuiltInTypeNameNode Create(IBuiltInTypeNameSyntax syntax)
+        => new BuiltInTypeNameNode(syntax);
 }
 
 // [Closed(typeof(GenericTypeNameNode))]
@@ -2816,7 +2816,7 @@ public partial interface IGenericNameExpressionNode : IStandardNameExpressionNod
     typeof(IFieldAccessExpressionNode),
     typeof(ITypeNameExpressionNode),
     typeof(IInitializerGroupNameNode),
-    typeof(ISpecialTypeNameExpressionNode))]
+    typeof(IBuiltInTypeNameExpressionNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface INameExpressionNode : IExpressionNode, IAmbiguousNameExpressionNode
 {
@@ -3197,9 +3197,9 @@ public partial interface IInitializerGroupNameNode : INameExpressionNode
         => new InitializerGroupNameNode(syntax, context, initializerName, referencedDeclarations);
 }
 
-// [Closed(typeof(SpecialTypeNameExpressionNode))]
+// [Closed(typeof(BuiltInTypeNameExpressionNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface ISpecialTypeNameExpressionNode : INameExpressionNode
+public partial interface IBuiltInTypeNameExpressionNode : INameExpressionNode
 {
     new IBuiltInTypeNameExpressionSyntax Syntax { get; }
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
@@ -3217,8 +3217,8 @@ public partial interface ISpecialTypeNameExpressionNode : INameExpressionNode
     IMaybePlainType IExpressionNode.PlainType
         => AzothPlainType.Unknown;
 
-    public static ISpecialTypeNameExpressionNode Create(IBuiltInTypeNameExpressionSyntax syntax)
-        => new SpecialTypeNameExpressionNode(syntax);
+    public static IBuiltInTypeNameExpressionNode Create(IBuiltInTypeNameExpressionSyntax syntax)
+        => new BuiltInTypeNameExpressionNode(syntax);
 }
 
 [Closed(
@@ -8269,9 +8269,9 @@ file class IdentifierTypeNameNode : SemanticNode, IIdentifierTypeNameNode
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class SpecialTypeNameNode : SemanticNode, ISpecialTypeNameNode
+file class BuiltInTypeNameNode : SemanticNode, IBuiltInTypeNameNode
 {
-    private ISpecialTypeNameNode Self { [Inline] get => this; }
+    private IBuiltInTypeNameNode Self { [Inline] get => this; }
 
     public IBuiltInTypeNameSyntax Syntax { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
@@ -8287,29 +8287,29 @@ file class SpecialTypeNameNode : SemanticNode, ISpecialTypeNameNode
     public BareType? NamedBareType
         => GrammarAttribute.IsCached(in namedBareTypeCached) ? namedBareType
             : this.Synthetic(ref namedBareTypeCached, ref namedBareType,
-                BareTypeAspect.SpecialTypeName_NamedBareType);
+                BareTypeAspect.BuiltInTypeName_NamedBareType);
     private BareType? namedBareType;
     private bool namedBareTypeCached;
     public IMaybePlainType NamedPlainType
         => GrammarAttribute.IsCached(in namedPlainTypeCached) ? namedPlainType!
             : this.Synthetic(ref namedPlainTypeCached, ref namedPlainType,
-                TypeExpressionsPlainTypesAspect.SpecialTypeName_NamedPlainType);
+                TypeExpressionsPlainTypesAspect.BuiltInTypeName_NamedPlainType);
     private IMaybePlainType? namedPlainType;
     private bool namedPlainTypeCached;
     public IMaybeType NamedType
         => GrammarAttribute.IsCached(in namedTypeCached) ? namedType!
             : this.Synthetic(ref namedTypeCached, ref namedType,
-                TypeExpressionsAspect.SpecialTypeName_NamedType);
+                TypeExpressionsAspect.BuiltInTypeName_NamedType);
     private IMaybeType? namedType;
     private bool namedTypeCached;
     public ITypeDeclarationNode? ReferencedDeclaration
         => GrammarAttribute.IsCached(in referencedDeclarationCached) ? referencedDeclaration
             : this.Synthetic(ref referencedDeclarationCached, ref referencedDeclaration,
-                BindingNamesAspect.SpecialTypeName_ReferencedDeclaration);
+                BindingNamesAspect.BuiltInTypeName_ReferencedDeclaration);
     private ITypeDeclarationNode? referencedDeclaration;
     private bool referencedDeclarationCached;
 
-    public SpecialTypeNameNode(IBuiltInTypeNameSyntax syntax)
+    public BuiltInTypeNameNode(IBuiltInTypeNameSyntax syntax)
     {
         Syntax = syntax;
     }
@@ -16021,9 +16021,9 @@ file class InitializerGroupNameNode : SemanticNode, IInitializerGroupNameNode
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class SpecialTypeNameExpressionNode : SemanticNode, ISpecialTypeNameExpressionNode
+file class BuiltInTypeNameExpressionNode : SemanticNode, IBuiltInTypeNameExpressionNode
 {
-    private ISpecialTypeNameExpressionNode Self { [Inline] get => this; }
+    private IBuiltInTypeNameExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
     protected override bool MayHaveRewrite => true;
 
@@ -16078,7 +16078,7 @@ file class SpecialTypeNameExpressionNode : SemanticNode, ISpecialTypeNameExpress
     public ITypeDeclarationNode? ReferencedDeclaration
         => GrammarAttribute.IsCached(in referencedDeclarationCached) ? referencedDeclaration
             : this.Synthetic(ref referencedDeclarationCached, ref referencedDeclaration,
-                BindingNamesAspect.SpecialTypeNameExpression_ReferencedDeclaration);
+                BindingNamesAspect.BuiltInTypeNameExpression_ReferencedDeclaration);
     private ITypeDeclarationNode? referencedDeclaration;
     private bool referencedDeclarationCached;
     public ValueId ValueId
@@ -16088,7 +16088,7 @@ file class SpecialTypeNameExpressionNode : SemanticNode, ISpecialTypeNameExpress
     private ValueId valueId;
     private bool valueIdCached;
 
-    public SpecialTypeNameExpressionNode(IBuiltInTypeNameExpressionSyntax syntax)
+    public BuiltInTypeNameExpressionNode(IBuiltInTypeNameExpressionSyntax syntax)
     {
         Syntax = syntax;
     }

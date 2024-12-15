@@ -66,7 +66,7 @@ internal static partial class BindingNamesAspect
     public static partial ITypeDeclarationNode? QualifiedTypeName_ReferencedDeclaration(IQualifiedTypeNameNode node)
         => throw new NotImplementedException();
 
-    public static partial ITypeDeclarationNode? SpecialTypeName_ReferencedDeclaration(ISpecialTypeNameNode node)
+    public static partial ITypeDeclarationNode? BuiltInTypeName_ReferencedDeclaration(IBuiltInTypeNameNode node)
         // TODO report error for use of `Self` outside of a type
         => node.ContainingLexicalScope.Lookup(node.Name);
     #endregion
@@ -96,7 +96,7 @@ internal static partial class BindingNamesAspect
     #endregion
 
     #region Name Expressions
-    public static partial ITypeDeclarationNode? SpecialTypeNameExpression_ReferencedDeclaration(ISpecialTypeNameExpressionNode node)
+    public static partial ITypeDeclarationNode? BuiltInTypeNameExpression_ReferencedDeclaration(IBuiltInTypeNameExpressionNode node)
         // TODO report error for use of `Self` outside of a type
         => node.ContainingLexicalScope.Lookup(node.Name);
 
