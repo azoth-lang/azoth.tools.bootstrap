@@ -99,6 +99,7 @@ TraitDefinition <: TypeDefinition, TraitDeclaration = Syntax:`ITraitDefinitionSy
 // ---------- Type Definition Parts
 GenericParameter <: Code, GenericParameterDeclaration
     = Syntax:`IGenericParameterSyntax` Constraint:CapabilityConstraint;
+ImplicitSelfDefinition <: Code, ImplicitSelfDeclaration;
 
 // ---------- Type Member Definitions (i.e. definitions that can be contained in a type)
 TypeMemberDefinition <: Definition, TypeMemberDeclaration = Syntax:`ITypeMemberDefinitionSyntax`?;
@@ -124,6 +125,7 @@ SetterMethodDefinition <: MethodDefinition, SetterMethodDeclaration
     = Syntax:`ISetterMethodDefinitionSyntax` /SelfParameter/ /Parameters/ /Return/ /Entry/ Body /Exit/;
 ConstructorDefinition <: InvocableDefinition, AlwaysTypeMemberDefinition, ClassMemberDefinition, ConstructorDeclaration
     = Syntax:`IConstructorDefinitionSyntax`? Parameters:ConstructorOrInitializerParameter*;
+// TODO the term "default" can mean both generated and no-arg. Perhaps another term should be used?
 DefaultConstructorDefinition <: ConstructorDefinition;
 OrdinaryConstructorDefinition <: ConstructorDefinition
     = Syntax:`IConstructorDefinitionSyntax`
@@ -425,6 +427,7 @@ TraitDeclaration <: UserTypeDeclaration = Members:{TraitMemberDeclaration};
 // ---------- Type Declaration Parts
 GenericParameterDeclaration <: TypeDeclaration, AssociatedMemberDeclaration
     = Name:`IdentifierName` Members:{TypeMemberDeclaration};
+ImplicitSelfDeclaration <: TypeDeclaration;
 
 // ---------- Type Member Declarations (i.e. declarations that can be contained in a type)
 TypeMemberDeclaration <: PackageFacetChildDeclaration, SymbolDeclaration;

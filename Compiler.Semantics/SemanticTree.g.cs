@@ -260,6 +260,7 @@ public partial interface IFacetMemberDefinitionNode : INamespaceBlockMemberDefin
     typeof(IImportDirectiveNode),
     typeof(IDefinitionNode),
     typeof(IGenericParameterNode),
+    typeof(IImplicitSelfDefinitionNode),
     typeof(IAttributeNode),
     typeof(ICapabilityConstraintNode),
     typeof(IParameterNode),
@@ -650,6 +651,15 @@ public partial interface IGenericParameterNode : ICodeNode, IGenericParameterDec
         IGenericParameterSyntax syntax,
         ICapabilityConstraintNode constraint)
         => new GenericParameterNode(syntax, constraint);
+}
+
+// [Closed(typeof(ImplicitSelfDefinitionNode))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
+public partial interface IImplicitSelfDefinitionNode : ICodeNode, IImplicitSelfDeclarationNode
+{
+
+    public static IImplicitSelfDefinitionNode Create(ICodeSyntax? syntax)
+        => new ImplicitSelfDefinitionNode(syntax);
 }
 
 [Closed(
@@ -3778,6 +3788,7 @@ public partial interface IFunctionDeclarationNode : INamespaceMemberDeclarationN
     typeof(IBuiltInTypeDeclarationNode),
     typeof(IUserTypeDeclarationNode),
     typeof(IGenericParameterDeclarationNode),
+    typeof(IImplicitSelfDeclarationNode),
     typeof(ITypeSymbolNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface ITypeDeclarationNode : INamedDeclarationNode, ISymbolDeclarationNode
@@ -3892,6 +3903,31 @@ public partial interface IGenericParameterDeclarationNode : ITypeDeclarationNode
     IEnumerable<IInstanceMemberDeclarationNode> ITypeDeclarationNode.InclusiveInstanceMembersNamed(OrdinaryName named)
         => [];
     IEnumerable<IAssociatedMemberDeclarationNode> ITypeDeclarationNode.AssociatedMembersNamed(OrdinaryName named)
+        => [];
+}
+
+[Closed(
+    typeof(IImplicitSelfDefinitionNode))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
+public partial interface IImplicitSelfDeclarationNode : ITypeDeclarationNode
+{
+    new BuiltInTypeName Name
+        => BuiltInTypeName.Self;
+    TypeName INamedDeclarationNode.Name => Name;
+    new SelfTypeFactory TypeFactory { get; }
+    ITypeFactory ITypeDeclarationNode.TypeFactory => TypeFactory;
+    new AssociatedTypeSymbol Symbol { get; }
+    TypeSymbol ITypeDeclarationNode.Symbol => Symbol;
+    Symbol? ISymbolDeclarationNode.Symbol => Symbol;
+    IEnumerable<IInstanceMemberDeclarationNode> ITypeDeclarationNode.InclusiveInstanceMembersNamed(OrdinaryName named)
+        => [];
+    IEnumerable<IAssociatedMemberDeclarationNode> ITypeDeclarationNode.AssociatedMembersNamed(OrdinaryName named)
+        => [];
+    IFixedSet<ConstructedBareType> ITypeDeclarationNode.Supertypes
+        => [];
+    IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members
+        => [];
+    IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.InclusiveMembers
         => [];
 }
 
@@ -5994,6 +6030,42 @@ file class GenericParameterNode : SemanticNode, IGenericParameterNode
     {
         Syntax = syntax;
         Constraint = Child.Attach(this, constraint);
+    }
+
+    internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return this;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class ImplicitSelfDefinitionNode : SemanticNode, IImplicitSelfDefinitionNode
+{
+    private IImplicitSelfDefinitionNode Self { [Inline] get => this; }
+
+    public ICodeSyntax? Syntax { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package
+        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public CodeFile File
+        => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
+    public ISymbolDeclarationNode ContainingDeclaration
+        => Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
+    public AssociatedTypeSymbol Symbol
+        => GrammarAttribute.IsCached(in symbolCached) ? symbol!
+            : this.Synthetic(ref symbolCached, ref symbol,
+                SymbolsAspect.ImplicitSelfDefinition_Symbol);
+    private AssociatedTypeSymbol? symbol;
+    private bool symbolCached;
+    public SelfTypeFactory TypeFactory
+        => GrammarAttribute.IsCached(in typeFactoryCached) ? typeFactory!
+            : this.Synthetic(ref typeFactoryCached, ref typeFactory,
+                DefinitionPlainTypesAspect.ImplicitSelfDefinition_TypeFactory);
+    private SelfTypeFactory? typeFactory;
+    private bool typeFactoryCached;
+
+    public ImplicitSelfDefinitionNode(ICodeSyntax? syntax)
+    {
+        Syntax = syntax;
     }
 
     internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)

@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Primitives;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
@@ -43,6 +44,10 @@ internal static partial class SymbolsAspect
     #region Type Definition Parts
     public static partial GenericParameterTypeSymbol GenericParameter_Symbol(IGenericParameterNode node)
         => new(node.ContainingSymbol, node.DeclaredType.PlainType);
+
+    public static partial AssociatedTypeSymbol ImplicitSelfDefinition_Symbol(IImplicitSelfDefinitionNode node)
+        => throw new NotImplementedException();
+    //=> new(node.ContainingSymbol, node.PlainType);
     #endregion
 
     #region Member Definitions

@@ -30,6 +30,9 @@
 ↑ TypeDefinition.ContainingSymbol: `Symbol` => ContainingDeclaration.Symbol!; // Never null because not a function/method
 = TypeDefinition.Symbol;
 
+// ---------- Type Definition Parts
+= ImplicitSelfDefinition.Symbol;
+
 // ---------- Type Member Definitions
 ↑ AlwaysTypeMemberDefinition.ContainingSymbol: `OrdinaryTypeSymbol` => ContainingDeclaration.Symbol;
 

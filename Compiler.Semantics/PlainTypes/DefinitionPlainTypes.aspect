@@ -1,9 +1,9 @@
 ◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.PlainTypes;
 ◊name DefinitionPlainTypesAspect;
+◊using Azoth.Tools.Bootstrap.Compiler.Types;
 ◊using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 ◊using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 ◊using Azoth.Tools.Bootstrap.Framework;
-◊using AzothPlainType = Azoth.Tools.Bootstrap.Compiler.Types.Plain.PlainType;
 
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
@@ -18,9 +18,13 @@
 = FunctionDefinition.Body.**.ExpectedReturnPlainType => Self.ReturnPlainType;
 
 // ---------- Type Definitions
+// TODO move the definition of type factories to their own aspect
 ↑ TypeDefinition.TypeFactory: `OrdinaryTypeConstructor`;
 ↑ TypeDefinition.SelfPlainType: `SelfPlainType`;
 = TypeDefinition.SelfPlainType;
+
+// ---------- Type Definition Parts
+= ImplicitSelfDefinition.TypeFactory;
 
 // ---------- Member Definitions
 = MethodDefinition.SelfParameterPlainType => SelfParameter.BindingPlainType;

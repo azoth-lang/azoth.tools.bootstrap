@@ -102,6 +102,8 @@ public static class ISemanticNodeExtensions
             case IGenericParameterNode n:
                 yield return n.Constraint;
                 yield break;
+            case IImplicitSelfDefinitionNode n:
+                yield break;
             case IAbstractMethodDefinitionNode n:
                 yield return n.Entry;
                 yield return n.Exit;

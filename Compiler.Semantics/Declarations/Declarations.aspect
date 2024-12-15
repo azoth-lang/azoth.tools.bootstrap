@@ -60,6 +60,12 @@
 // ---------- Type Declaration Parts
 = GenericParameterDeclaration.TypeFactory;
 ↑ GenericParameterDeclaration.Symbol: `GenericParameterTypeSymbol`;
+↑ ImplicitSelfDeclaration.Name: `BuiltInTypeName` => BuiltInTypeName.Self;
+= ImplicitSelfDeclaration.Supertypes => [];
+↑ ImplicitSelfDeclaration.TypeFactory: `SelfTypeFactory`;
+↑ ImplicitSelfDeclaration.Symbol: `AssociatedTypeSymbol`;
+= ImplicitSelfDeclaration.Members => [];
+= ImplicitSelfDeclaration.InclusiveMembers => [];
 
 // ---------- Member Declarations
 ↑ MethodDeclaration.SelfParameterPlainType: `IMaybeNonVoidPlainType`;

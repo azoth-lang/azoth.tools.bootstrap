@@ -44,3 +44,6 @@
 = GenericParameterDeclaration.InclusiveInstanceMembersNamed(OrdinaryName named) => [];
 // TODO should look up members based on generic constraints
 = GenericParameterDeclaration.AssociatedMembersNamed(OrdinaryName named) => [];
+// TODO do these need to lookup members based on supertypes?
+= ImplicitSelfDeclaration.InclusiveInstanceMembersNamed(OrdinaryName named) => [];
+= ImplicitSelfDeclaration.AssociatedMembersNamed(OrdinaryName named) => [];

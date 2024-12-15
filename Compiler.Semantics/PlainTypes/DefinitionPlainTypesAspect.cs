@@ -1,6 +1,8 @@
+using System;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
+using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using Azoth.Tools.Bootstrap.Framework;
@@ -9,12 +11,15 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.PlainTypes;
 
 internal static partial class DefinitionPlainTypesAspect
 {
+    #region Definitions
     public static partial IFixedList<IMaybeNonVoidPlainType> InvocableDefinition_ParameterPlainTypes(IInvocableDefinitionNode node)
         => node.Parameters.Select(p => p.BindingPlainType).ToFixedList();
 
     public static partial IMaybeFunctionPlainType ConcreteFunctionInvocableDefinition_PlainType(IConcreteFunctionInvocableDefinitionNode node)
         => FunctionPlainType.Create(node.ParameterPlainTypes, node.ReturnPlainType);
+    #endregion
 
+    #region Type Definitions
     public static partial OrdinaryTypeConstructor ClassDefinition_TypeFactory(IClassDefinitionNode node)
     {
         // TODO use ContainingTypeConstructor in case this is a nested type
@@ -50,6 +55,12 @@ internal static partial class DefinitionPlainTypesAspect
 
     private static IFixedList<TypeConstructor.Parameter> GetGenericParameters(ITypeDefinitionNode node)
         => node.GenericParameters.Select(p => p.Parameter).ToFixedList();
+    #endregion
+
+    #region Type Definition Parts
+    public static partial SelfTypeFactory ImplicitSelfDefinition_TypeFactory(IImplicitSelfDefinitionNode node)
+        => throw new NotImplementedException();
+    #endregion
 
     public static partial SelfPlainType TypeDefinition_SelfPlainType(ITypeDefinitionNode node)
         => new(node.TypeFactory);
