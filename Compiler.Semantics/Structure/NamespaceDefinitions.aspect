@@ -1,0 +1,15 @@
+◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Structure;
+◊name NamespaceDefinitions;
+◊using Azoth.Tools.Bootstrap.Framework;
+
+// ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
+
+// ---------- Facets
+↑ PackageFacet.GlobalNamespace: NamespaceDefinition;
+
+// ---------- Code Files
+↑ CompilationUnit.ImplicitNamespace: NamespaceDefinition;
+
+// ---------- Namespace Definitions
+↑ NamespaceBlockDefinition.ContainingNamespace: NamespaceDefinition;
+↑ NamespaceBlockDefinition.Definition: NamespaceDefinition;

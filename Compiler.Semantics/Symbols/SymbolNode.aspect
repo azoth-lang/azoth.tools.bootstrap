@@ -9,22 +9,9 @@
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
 // ---------- Packages
-↑ Package.PackageDeclarations: `FixedDictionary<IdentifierName, IPackageDeclarationNode>`;
 ↑ child PackageReference.SymbolNode: PackageSymbol;
 = eager PackageReference.SymbolNode;
-↑ PackageReference.PackageSymbols:`IPackageSymbols`;
-= StandardPackageReference.PackageSymbols => Syntax.Package;
-= IntrinsicsPackageReference.PackageSymbols => IntrinsicPackageSymbol.Instance;
 
-// ---------- Facets
-↑ PackageFacet.GlobalNamespace: NamespaceDefinition;
-
-// ---------- Code Files
-↑ CompilationUnit.ImplicitNamespace: NamespaceDefinition;
-
-// ---------- Namespace Definitions
-↑ NamespaceBlockDefinition.ContainingNamespace: NamespaceDefinition;
-↑ NamespaceBlockDefinition.Definition: NamespaceDefinition;
 
 // ---------- Function Definition
 = FunctionDefinition.*.**.IsAttributeType => false;
@@ -36,6 +23,7 @@
 = Attribute.TypeName.IsAttributeType => true;
 
 // ---------- Types
+// TODO move IsAttributeType to another aspect
 ↓ StandardTypeName.IsAttributeType:`bool`;
 
 // -------------------------------------------------------------------------------------------------

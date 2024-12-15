@@ -64,7 +64,6 @@ internal class SemanticTreeValidator
         switch (node)
         {
             case IPackageNode n:
-                _ = n.PackageDeclarations;
                 _ = n.PackageSymbols;
                 _ = n.Diagnostics;
                 break;

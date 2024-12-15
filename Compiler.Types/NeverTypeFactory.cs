@@ -6,7 +6,6 @@ using Type = Azoth.Tools.Bootstrap.Compiler.Types.Decorated.Type;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types;
 
-// TODO replace with NeverType?
 internal class NeverTypeFactory : ITypeFactory
 {
     #region Singleton

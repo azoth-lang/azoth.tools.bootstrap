@@ -8,6 +8,10 @@
 = Package.Symbol;
 ↑ Package.PackageSymbols: `IPackageSymbols`;
 
+↑ PackageReference.PackageSymbols:`IPackageSymbols`;
+= StandardPackageReference.PackageSymbols => Syntax.Package;
+= IntrinsicsPackageReference.PackageSymbols => IntrinsicPackageSymbol.Instance;
+
 // ---------- Code Files
 ↑ CompilationUnit.ContainingSymbol: `PackageSymbol` => ContainingDeclaration.PackageSymbol;
 

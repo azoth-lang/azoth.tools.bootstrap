@@ -6,7 +6,6 @@ using Type = Azoth.Tools.Bootstrap.Compiler.Types.Decorated.Type;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types;
 
-// TODO replace with VoidType?
 internal sealed class VoidTypeFactory : ITypeFactory
 {
     #region Singleton

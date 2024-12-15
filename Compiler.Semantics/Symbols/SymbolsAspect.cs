@@ -9,6 +9,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 
 internal static partial class SymbolsAspect
 {
+    #region Packages
     public static partial PackageSymbol Package_Symbol(IPackageNode node) => new(node.Name);
 
     /// <summary>
@@ -24,19 +25,25 @@ internal static partial class SymbolsAspect
         var testingTree = new PackageSymbolTreeBuilder(testingTreeBuilder, node.MainFacet, testingForest).Build();
         return new PackageSymbols(node.Symbol, mainTree, testingTree);
     }
+    #endregion
 
-    public static partial OrdinaryTypeSymbol TypeDefinition_Symbol(ITypeDefinitionNode node)
-        => new(node.ContainingSymbol, node.TypeFactory);
-
-    public static partial GenericParameterTypeSymbol GenericParameter_Symbol(IGenericParameterNode node)
-        => new(node.ContainingSymbol, node.DeclaredType.PlainType);
-
+    #region Function Definition
     public static partial FunctionSymbol? FunctionDefinition_Symbol(IFunctionDefinitionNode node)
     {
-        if (node.Type is not FunctionType type)
-            return null;
+        if (node.Type is not FunctionType type) return null;
         return new(node.ContainingSymbol, node.Name, type);
     }
+    #endregion
+
+    #region Type Definitions
+    public static partial OrdinaryTypeSymbol TypeDefinition_Symbol(ITypeDefinitionNode node)
+        => new(node.ContainingSymbol, node.TypeFactory);
+    #endregion
+
+    #region Type Definition Parts
+    public static partial GenericParameterTypeSymbol GenericParameter_Symbol(IGenericParameterNode node)
+        => new(node.ContainingSymbol, node.DeclaredType.PlainType);
+    #endregion
 
     #region Member Definitions
     public static partial MethodSymbol? MethodDefinition_Symbol(IMethodDefinitionNode node)

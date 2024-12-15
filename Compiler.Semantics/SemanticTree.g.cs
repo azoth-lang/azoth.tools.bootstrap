@@ -154,7 +154,6 @@ public partial interface IPackageNode : IPackageDeclarationNode
     IPackageFacetDeclarationNode IPackageDeclarationNode.MainFacet => MainFacet;
     new IPackageFacetNode TestingFacet { get; }
     IPackageFacetDeclarationNode IPackageDeclarationNode.TestingFacet => TestingFacet;
-    FixedDictionary<IdentifierName, IPackageDeclarationNode> PackageDeclarations { get; }
     new IdentifierName? AliasOrName
         => null;
     IdentifierName? IPackageDeclarationNode.AliasOrName => AliasOrName;
@@ -184,9 +183,9 @@ public partial interface IPackageReferenceNode : IChildNode
     new IPackageReferenceSyntax? Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
     IPackageSymbolNode SymbolNode { get; }
-    IPackageSymbols PackageSymbols { get; }
     IdentifierName AliasOrName { get; }
     bool IsTrusted { get; }
+    IPackageSymbols PackageSymbols { get; }
 }
 
 // [Closed(typeof(StandardPackageReferenceNode))]
@@ -196,12 +195,12 @@ public partial interface IStandardPackageReferenceNode : IPackageReferenceNode
     new IPackageReferenceSyntax Syntax { get; }
     IPackageReferenceSyntax? IPackageReferenceNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    IPackageSymbols IPackageReferenceNode.PackageSymbols
-        => Syntax.Package;
     IdentifierName IPackageReferenceNode.AliasOrName
         => Syntax.AliasOrName;
     bool IPackageReferenceNode.IsTrusted
         => Syntax.IsTrusted;
+    IPackageSymbols IPackageReferenceNode.PackageSymbols
+        => Syntax.Package;
 
     public static IStandardPackageReferenceNode Create(IPackageReferenceSyntax syntax)
         => new StandardPackageReferenceNode(syntax);
@@ -215,12 +214,12 @@ public partial interface IIntrinsicsPackageReferenceNode : IPackageReferenceNode
         => null;
     IPackageReferenceSyntax? IPackageReferenceNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    IPackageSymbols IPackageReferenceNode.PackageSymbols
-        => IntrinsicPackageSymbol.Instance;
     IdentifierName IPackageReferenceNode.AliasOrName
         => PackageSymbols.PackageSymbol.Name;
     bool IPackageReferenceNode.IsTrusted
         => true;
+    IPackageSymbols IPackageReferenceNode.PackageSymbols
+        => IntrinsicPackageSymbol.Instance;
 
     public static IIntrinsicsPackageReferenceNode Create()
         => new IntrinsicsPackageReferenceNode();
@@ -234,9 +233,9 @@ public partial interface IPackageFacetNode : IPackageFacetDeclarationNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     IFixedSet<ICompilationUnitNode> CompilationUnits { get; }
     PackageNameScope PackageNameScope { get; }
+    IFixedSet<IFacetMemberDefinitionNode> Definitions { get; }
     new INamespaceDefinitionNode GlobalNamespace { get; }
     INamespaceDeclarationNode IPackageFacetDeclarationNode.GlobalNamespace => GlobalNamespace;
-    IFixedSet<IFacetMemberDefinitionNode> Definitions { get; }
 
     public static IPackageFacetNode Create(
         IPackageSyntax syntax,
@@ -291,7 +290,6 @@ public partial interface ICompilationUnitNode : ICodeNode
         => Syntax.File;
     CodeFile ICodeNode.File => File;
     IPackageFacetNode ContainingDeclaration { get; }
-    INamespaceDefinitionNode ImplicitNamespace { get; }
     DiagnosticCollection Diagnostics { get; }
     NamespaceName ImplicitNamespaceName
         => Syntax.ImplicitNamespaceName;
@@ -299,6 +297,7 @@ public partial interface ICompilationUnitNode : ICodeNode
         => ImplicitNamespace.Symbol;
     PackageSymbol ContainingSymbol
         => ContainingDeclaration.PackageSymbol;
+    INamespaceDefinitionNode ImplicitNamespace { get; }
 
     public static ICompilationUnitNode Create(
         ICompilationUnitSyntax syntax,
@@ -401,8 +400,6 @@ public partial interface INamespaceBlockDefinitionNode : INamespaceBlockMemberDe
     LexicalScope IDefinitionNode.LexicalScope => LexicalScope;
     new INamespaceDefinitionNode ContainingDeclaration { get; }
     ISymbolDeclarationNode IDeclarationNode.ContainingDeclaration => ContainingDeclaration;
-    INamespaceDefinitionNode ContainingNamespace { get; }
-    INamespaceDefinitionNode Definition { get; }
     NamespaceName DeclaredNames
         => Syntax.DeclaredNames;
     bool IsGlobalQualified
@@ -412,6 +409,8 @@ public partial interface INamespaceBlockDefinitionNode : INamespaceBlockMemberDe
     Symbol? IDefinitionNode.ContainingSymbol => ContainingSymbol;
     NamespaceSymbol Symbol
         => Definition.Symbol;
+    INamespaceDefinitionNode ContainingNamespace { get; }
+    INamespaceDefinitionNode Definition { get; }
     StandardName? IPackageFacetChildDeclarationNode.Name
         => DeclaredNames.Segments.LastOrDefault();
 
@@ -4919,12 +4918,6 @@ file class PackageNode : SemanticNode, IPackageNode
                 n => Child.Attach(this, BuiltInsAspect.Package_IntrinsicsReference(n)));
     private IPackageReferenceNode? intrinsicsReference;
     private bool intrinsicsReferenceCached;
-    public FixedDictionary<IdentifierName, IPackageDeclarationNode> PackageDeclarations
-        => GrammarAttribute.IsCached(in packageDeclarationsCached) ? packageDeclarations!
-            : this.Synthetic(ref packageDeclarationsCached, ref packageDeclarations,
-                SymbolNodeAspect.Package_PackageDeclarations);
-    private FixedDictionary<IdentifierName, IPackageDeclarationNode>? packageDeclarations;
-    private bool packageDeclarationsCached;
     public IPackageSymbols PackageSymbols
         => GrammarAttribute.IsCached(in packageSymbolsCached) ? packageSymbols!
             : this.Synthetic(ref packageSymbolsCached, ref packageSymbols,
@@ -5036,7 +5029,7 @@ file class PackageFacetNode : SemanticNode, IPackageFacetNode
     public INamespaceDefinitionNode GlobalNamespace
         => GrammarAttribute.IsCached(in globalNamespaceCached) ? globalNamespace!
             : this.Synthetic(ref globalNamespaceCached, ref globalNamespace,
-                SymbolNodeAspect.PackageFacet_GlobalNamespace);
+                NamespaceDefinitions.PackageFacet_GlobalNamespace);
     private INamespaceDefinitionNode? globalNamespace;
     private bool globalNamespaceCached;
 
@@ -5101,7 +5094,7 @@ file class CompilationUnitNode : SemanticNode, ICompilationUnitNode
     public INamespaceDefinitionNode ImplicitNamespace
         => GrammarAttribute.IsCached(in implicitNamespaceCached) ? implicitNamespace!
             : this.Synthetic(ref implicitNamespaceCached, ref implicitNamespace,
-                SymbolNodeAspect.CompilationUnit_ImplicitNamespace);
+                NamespaceDefinitions.CompilationUnit_ImplicitNamespace);
     private INamespaceDefinitionNode? implicitNamespace;
     private bool implicitNamespaceCached;
     public NamespaceSearchScope LexicalScope
@@ -5196,13 +5189,13 @@ file class NamespaceBlockDefinitionNode : SemanticNode, INamespaceBlockDefinitio
     public INamespaceDefinitionNode ContainingNamespace
         => GrammarAttribute.IsCached(in containingNamespaceCached) ? containingNamespace!
             : this.Synthetic(ref containingNamespaceCached, ref containingNamespace,
-                SymbolNodeAspect.NamespaceBlockDefinition_ContainingNamespace);
+                NamespaceDefinitions.NamespaceBlockDefinition_ContainingNamespace);
     private INamespaceDefinitionNode? containingNamespace;
     private bool containingNamespaceCached;
     public INamespaceDefinitionNode Definition
         => GrammarAttribute.IsCached(in definitionCached) ? definition!
             : this.Synthetic(ref definitionCached, ref definition,
-                SymbolNodeAspect.NamespaceBlockDefinition_Definition);
+                NamespaceDefinitions.NamespaceBlockDefinition_Definition);
     private INamespaceDefinitionNode? definition;
     private bool definitionCached;
     public NamespaceSearchScope LexicalScope

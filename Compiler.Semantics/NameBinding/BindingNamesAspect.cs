@@ -14,6 +14,7 @@ internal static partial class BindingNamesAspect
     #region Attributes
     public static partial void Attribute_Contribute_Diagnostics(IAttributeNode node, DiagnosticCollectionBuilder diagnostics)
     {
+        // TODO don't do this on symbols. Do proper constructor resolution
         if (node.ReferencedSymbol is null)
             diagnostics.Add(NameBindingError.CouldNotBindName(node.File, node.TypeName.Syntax.Span));
     }

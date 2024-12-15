@@ -35,16 +35,6 @@ internal static partial class SymbolNodeAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFixedList<IGenericParameterSymbolNode> OrdinaryTypeSymbol_GenericParameters(IOrdinaryTypeSymbolNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial FixedDictionary<IdentifierName, IPackageDeclarationNode> Package_PackageDeclarations(IPackageNode node);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial INamespaceDefinitionNode PackageFacet_GlobalNamespace(IPackageFacetNode node);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial INamespaceDefinitionNode CompilationUnit_ImplicitNamespace(ICompilationUnitNode node);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial INamespaceDefinitionNode NamespaceBlockDefinition_ContainingNamespace(INamespaceBlockDefinitionNode node);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial INamespaceDefinitionNode NamespaceBlockDefinition_Definition(INamespaceBlockDefinitionNode node);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IPackageFacetSymbolNode PackageSymbol_MainFacet(IPackageSymbolNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IPackageFacetSymbolNode PackageSymbol_TestingFacet(IPackageSymbolNode node);
