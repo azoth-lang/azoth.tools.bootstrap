@@ -1,8 +1,6 @@
 using System;
 using Azoth.Tools.Bootstrap.Compiler.Names;
-using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
-using Type = Azoth.Tools.Bootstrap.Compiler.Types.Decorated.Type;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 
@@ -15,7 +13,6 @@ public sealed class GenericParameterTypeSymbol : TypeSymbol
     public override IdentifierName Name => (IdentifierName)base.Name;
 
     public override PlainType TryGetPlainType() => PlainType;
-    public override Type? TryGetType() => new GenericParameterType(PlainType);
 
     public GenericParameterTypeSymbol(
         OrdinaryTypeSymbol containingSymbol,

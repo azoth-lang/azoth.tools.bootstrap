@@ -1,6 +1,5 @@
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
-using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using ExhaustiveMatching;
 
@@ -27,6 +26,4 @@ public abstract class TypeSymbol : Symbol
     public virtual TypeConstructor? TryGetTypeConstructor() => null;
 
     public virtual PlainType? TryGetPlainType() => null;
-
-    public virtual Type? TryGetType() => null;
 }

@@ -1,7 +1,6 @@
 using System;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
-using Type = Azoth.Tools.Bootstrap.Compiler.Types.Decorated.Type;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 
@@ -20,7 +19,6 @@ public sealed class VoidTypeSymbol : TypeSymbol
     public VoidPlainType PlainType => Types.Plain.PlainType.Void;
 
     public override VoidPlainType TryGetPlainType() => PlainType;
-    public override Type? TryGetType() => Type.Void;
 
     #region Equality
     public override bool Equals(Symbol? other)

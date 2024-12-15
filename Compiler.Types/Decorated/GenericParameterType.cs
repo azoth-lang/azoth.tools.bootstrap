@@ -1,8 +1,6 @@
 using Azoth.Tools.Bootstrap.Compiler.Names;
-using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
-using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 
@@ -10,7 +8,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 // e.g. T
 // NOTE: generic parameters are the only plain types that do not need a capability
 // TODO make TypeConstructor.Parameter the factory!
-public sealed class GenericParameterType : NonVoidType, ITypeFactory
+public sealed class GenericParameterType : NonVoidType
 {
     public override GenericParameterPlainType PlainType { get; }
 
@@ -22,23 +20,11 @@ public sealed class GenericParameterType : NonVoidType, ITypeFactory
 
     public override bool HasIndependentTypeArguments => false;
 
-    public GenericParameterType(GenericParameterPlainType plainType)
+    /// <remarks>Use <see cref="GenericParameterTypeFactory.Type"/> instead of directly using this.</remarks>
+    internal GenericParameterType(GenericParameterPlainType plainType)
     {
         PlainType = plainType;
     }
-
-    #region ITypeFactory methods
-    PlainType ITypeFactory.TryConstructNullaryPlainType() => PlainType;
-
-    BareType? ITypeFactory.TryConstruct(IFixedList<IMaybeType> arguments)
-    {
-        TypeRequires.NoArgs(arguments, nameof(arguments));
-        // There is no bare type for a generic parameter
-        return null;
-    }
-
-    Type ITypeFactory.TryConstructNullaryType() => this;
-    #endregion
 
     #region Equality
     public override bool Equals(IMaybeType? other)

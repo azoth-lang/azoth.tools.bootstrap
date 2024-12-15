@@ -179,17 +179,22 @@ public abstract partial class TypeConstructor : TypeConstructorContext, IEquatab
     /// </summary>
     public abstract bool HasIndependentParameters { get; }
 
+    public abstract IFixedList<GenericParameterTypeFactory> ParameterTypeFactories { get; }
+
     /// <summary>
     /// The plain types used to refer to the parameters to this type within the type definition.
     /// </summary>
-    public abstract IFixedList<GenericParameterPlainType> ParameterPlainTypes { get; }
+    public IFixedList<GenericParameterPlainType> ParameterPlainTypes
+        => LazyInitializer.EnsureInitialized(ref parameterPlainTypes,
+            () => ParameterTypeFactories.Select(p => p.PlainType).ToFixedList());
+    private IFixedList<GenericParameterPlainType>? parameterPlainTypes;
 
     /// <summary>
     /// The types used to refer to the parameters to this type within the type definition.
     /// </summary>
     public IFixedList<GenericParameterType> ParameterTypes
         => LazyInitializer.EnsureInitialized(ref parameterTypes,
-            () => ParameterPlainTypes.Select(p => new GenericParameterType(p)).ToFixedList());
+            () => ParameterTypeFactories.Select(p => p.Type).ToFixedList());
     private IFixedList<GenericParameterType>? parameterTypes;
 
     public abstract IFixedSet<ConstructedBareType> Supertypes { get; }

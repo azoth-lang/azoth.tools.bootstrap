@@ -39,7 +39,7 @@ public sealed class AnyTypeConstructor : TypeConstructor
     public override IFixedList<Parameter> Parameters => [];
     public override bool AllowsVariance => false;
     public override bool HasIndependentParameters => false;
-    public override IFixedList<GenericParameterPlainType> ParameterPlainTypes => [];
+    public override IFixedList<GenericParameterTypeFactory> ParameterTypeFactories => [];
 
     /// <remarks>Because `Any` is the base of the constructed type hierarchy, it has no supertypes.</remarks>
     public override IFixedSet<ConstructedBareType> Supertypes => [];

@@ -15,7 +15,8 @@ public sealed class GenericParameterPlainType : NonVoidPlainType
 
     // TODO generic parameters can have supertypes based on generic constraints
 
-    public GenericParameterPlainType(
+    /// <remarks>Use <see cref="GenericParameterTypeFactory.PlainType"/> instead of directly using this.</remarks>
+    internal GenericParameterPlainType(
         OrdinaryTypeConstructor declaringTypeConstructor,
         TypeConstructor.Parameter parameter)
     {

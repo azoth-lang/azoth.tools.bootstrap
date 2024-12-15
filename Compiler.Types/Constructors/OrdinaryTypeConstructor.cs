@@ -58,11 +58,8 @@ public sealed class OrdinaryTypeConstructor : TypeConstructor
     public override bool AllowsVariance { get; }
     public override bool HasIndependentParameters { get; }
 
-    /// <summary>
-    /// Within the type constructor declaration, any generic parameters will appear as type
-    /// variables. These are the types of those variables.
-    /// </summary>
-    public override IFixedList<GenericParameterPlainType> ParameterPlainTypes { get; }
+    public override IFixedList<GenericParameterTypeFactory> ParameterTypeFactories { get; }
+
     public override IFixedSet<ConstructedBareType> Supertypes { get; }
     public override TypeSemantics Semantics
         => Kind == TypeKind.Struct ? TypeSemantics.Value : TypeSemantics.Reference;
@@ -92,8 +89,7 @@ public sealed class OrdinaryTypeConstructor : TypeConstructor
             "All ordinary type constructors must have `Any` as a supertype.");
         Supertypes = supertypes;
         IsDeclaredConst = isDeclaredConst;
-        ParameterPlainTypes = Parameters.Select(p => new GenericParameterPlainType(this, p))
-                                        .ToFixedList();
+        ParameterTypeFactories = Parameters.Select(p => new GenericParameterTypeFactory(this, p)).ToFixedList();
     }
 
     /// <summary>
