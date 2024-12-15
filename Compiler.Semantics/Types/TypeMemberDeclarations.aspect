@@ -35,28 +35,28 @@
 // TODO this shouldn't use Symbol
 = ConstructorDefinition.ReturnType => Symbol?.ReturnType ?? IMaybeType.Unknown;
 = DefaultConstructorDefinition.SelfParameterType => Symbol!.SelfParameterType;
-= SourceConstructorDefinition.SelfParameterType => SelfParameter.ParameterType;
-= SourceConstructorDefinition.SelfParameter.**.FlowStateBefore() => Self.FlowStateBefore();
-= SourceConstructorDefinition.Parameters[0].**.FlowStateBefore()
+= OrdinaryConstructorDefinition.SelfParameterType => SelfParameter.ParameterType;
+= OrdinaryConstructorDefinition.SelfParameter.**.FlowStateBefore() => Self.FlowStateBefore();
+= OrdinaryConstructorDefinition.Parameters[0].**.FlowStateBefore()
     => SelfParameter.FlowStateAfter;
-= SourceConstructorDefinition.Parameters[index].**.FlowStateBefore()
+= OrdinaryConstructorDefinition.Parameters[index].**.FlowStateBefore()
     => Parameters[index - 1].FlowStateAfter;
-= SourceConstructorDefinition.Body.**.FlowStateBefore()
+= OrdinaryConstructorDefinition.Body.**.FlowStateBefore()
     => Parameters.LastOrDefault()?.FlowStateAfter ?? SelfParameter.FlowStateAfter;
-= SourceConstructorDefinition.Body.**.ExpectedReturnType => AzothType.Void;
+= OrdinaryConstructorDefinition.Body.**.ExpectedReturnType => AzothType.Void;
 
 // TODO this shouldn't use Symbol
 = InitializerDefinition.ReturnType => Symbol?.ReturnType ?? IMaybeType.Unknown;
 = DefaultInitializerDefinition.SelfParameterType => Symbol!.SelfParameterType;
-= SourceInitializerDefinition.SelfParameterType => SelfParameter.ParameterType;
-= SourceInitializerDefinition.SelfParameter.**.FlowStateBefore() => Self.FlowStateBefore();
-= SourceInitializerDefinition.Parameters[0].**.FlowStateBefore()
+= OrdinaryInitializerDefinition.SelfParameterType => SelfParameter.ParameterType;
+= OrdinaryInitializerDefinition.SelfParameter.**.FlowStateBefore() => Self.FlowStateBefore();
+= OrdinaryInitializerDefinition.Parameters[0].**.FlowStateBefore()
     => SelfParameter.FlowStateAfter;
-= SourceInitializerDefinition.Parameters[index].**.FlowStateBefore()
+= OrdinaryInitializerDefinition.Parameters[index].**.FlowStateBefore()
     => Parameters[index - 1].FlowStateAfter;
-= SourceInitializerDefinition.Body.**.FlowStateBefore()
+= OrdinaryInitializerDefinition.Body.**.FlowStateBefore()
     => Parameters.LastOrDefault()?.FlowStateAfter ?? SelfParameter.FlowStateAfter;
-= SourceInitializerDefinition.Body.**.ExpectedReturnType => AzothType.Void;
+= OrdinaryInitializerDefinition.Body.**.ExpectedReturnType => AzothType.Void;
 
 = FieldDefinition.↑.Diagnostics;
 // Null is the signal that this is a field initializer and not a method body

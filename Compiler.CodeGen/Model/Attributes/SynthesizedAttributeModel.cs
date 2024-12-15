@@ -69,7 +69,7 @@ public sealed class SynthesizedAttributeModel : LocalAttributeModel
 
     public override string ToString()
     {
-        var strategy = Strategy.ToSourceString();
+        var strategy = Strategy.ToSourceCodeString();
         var parameters = IsMethod ? "()" : "";
         var defaultExpression = DefaultExpression is not null ? $" => {DefaultExpression}" : "";
         return $"↑ {strategy} {NodeSymbol}.{Name}{parameters}: {Type}{defaultExpression};";

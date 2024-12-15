@@ -20,10 +20,10 @@ public enum EvaluationStrategy
 
 public static class EvaluationStrategyExtensions
 {
-    public static string ToSourceString(this EvaluationStrategy? strategy)
-        => strategy is { } s ? s.ToSourceString() : "";
+    public static string ToSourceCodeString(this EvaluationStrategy? strategy)
+        => strategy is { } s ? s.ToSourceCodeString() : "";
 
-    public static string ToSourceString(this EvaluationStrategy strategy)
+    public static string ToSourceCodeString(this EvaluationStrategy strategy)
         => strategy switch
         {
             EvaluationStrategy.Eager => "eager",

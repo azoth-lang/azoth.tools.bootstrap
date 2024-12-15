@@ -867,7 +867,7 @@ public partial interface ISetterMethodDefinitionNode : IMethodDefinitionNode, IS
 
 [Closed(
     typeof(IDefaultConstructorDefinitionNode),
-    typeof(ISourceConstructorDefinitionNode))]
+    typeof(IOrdinaryConstructorDefinitionNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IConstructorDefinitionNode : IInvocableDefinitionNode, IAlwaysTypeMemberDefinitionNode, IClassMemberDefinitionNode, IConstructorDeclarationNode
 {
@@ -913,9 +913,9 @@ public partial interface IDefaultConstructorDefinitionNode : IConstructorDefinit
         => new DefaultConstructorDefinitionNode();
 }
 
-// [Closed(typeof(SourceConstructorDefinitionNode))]
+// [Closed(typeof(OrdinaryConstructorDefinitionNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface ISourceConstructorDefinitionNode : IConstructorDefinitionNode
+public partial interface IOrdinaryConstructorDefinitionNode : IConstructorDefinitionNode
 {
     new IConstructorDefinitionSyntax Syntax { get; }
     IConstructorDefinitionSyntax? IConstructorDefinitionNode.Syntax => Syntax;
@@ -931,17 +931,17 @@ public partial interface ISourceConstructorDefinitionNode : IConstructorDefiniti
     IMaybeNonVoidPlainType IConstructorDeclarationNode.SelfParameterPlainType
         => SelfParameter.BindingPlainType;
 
-    public static ISourceConstructorDefinitionNode Create(
+    public static IOrdinaryConstructorDefinitionNode Create(
         IConstructorDefinitionSyntax syntax,
         IConstructorSelfParameterNode selfParameter,
         IEnumerable<IConstructorOrInitializerParameterNode> parameters,
         IBlockBodyNode body)
-        => new SourceConstructorDefinitionNode(syntax, selfParameter, parameters, body);
+        => new OrdinaryConstructorDefinitionNode(syntax, selfParameter, parameters, body);
 }
 
 [Closed(
     typeof(IDefaultInitializerDefinitionNode),
-    typeof(ISourceInitializerDefinitionNode))]
+    typeof(IOrdinaryInitializerDefinitionNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IInitializerDefinitionNode : IInvocableDefinitionNode, IAlwaysTypeMemberDefinitionNode, IStructMemberDefinitionNode, IInitializerDeclarationNode
 {
@@ -987,9 +987,9 @@ public partial interface IDefaultInitializerDefinitionNode : IInitializerDefinit
         => new DefaultInitializerDefinitionNode();
 }
 
-// [Closed(typeof(SourceInitializerDefinitionNode))]
+// [Closed(typeof(OrdinaryInitializerDefinitionNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface ISourceInitializerDefinitionNode : IInitializerDefinitionNode
+public partial interface IOrdinaryInitializerDefinitionNode : IInitializerDefinitionNode
 {
     new IInitializerDefinitionSyntax Syntax { get; }
     IInitializerDefinitionSyntax? IInitializerDefinitionNode.Syntax => Syntax;
@@ -1005,12 +1005,12 @@ public partial interface ISourceInitializerDefinitionNode : IInitializerDefiniti
     IMaybeNonVoidPlainType IInitializerDeclarationNode.SelfParameterPlainType
         => SelfParameter.BindingPlainType;
 
-    public static ISourceInitializerDefinitionNode Create(
+    public static IOrdinaryInitializerDefinitionNode Create(
         IInitializerDefinitionSyntax syntax,
         IInitializerSelfParameterNode selfParameter,
         IEnumerable<IConstructorOrInitializerParameterNode> parameters,
         IBlockBodyNode body)
-        => new SourceInitializerDefinitionNode(syntax, selfParameter, parameters, body);
+        => new OrdinaryInitializerDefinitionNode(syntax, selfParameter, parameters, body);
 }
 
 // [Closed(typeof(FieldDefinitionNode))]
@@ -6876,9 +6876,9 @@ file class DefaultConstructorDefinitionNode : SemanticNode, IDefaultConstructorD
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class SourceConstructorDefinitionNode : SemanticNode, ISourceConstructorDefinitionNode
+file class OrdinaryConstructorDefinitionNode : SemanticNode, IOrdinaryConstructorDefinitionNode
 {
-    private ISourceConstructorDefinitionNode Self { [Inline] get => this; }
+    private IOrdinaryConstructorDefinitionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
     public IConstructorDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
@@ -6938,7 +6938,7 @@ file class SourceConstructorDefinitionNode : SemanticNode, ISourceConstructorDef
     public ConstructorSymbol? Symbol
         => GrammarAttribute.IsCached(in symbolCached) ? symbol
             : this.Synthetic(ref symbolCached, ref symbol,
-                SymbolsAspect.SourceConstructorDefinition_Symbol);
+                SymbolsAspect.OrdinaryConstructorDefinition_Symbol);
     private ConstructorSymbol? symbol;
     private bool symbolCached;
     public ValueIdScope ValueIdScope { [DebuggerStepThrough] get; }
@@ -6949,7 +6949,7 @@ file class SourceConstructorDefinitionNode : SemanticNode, ISourceConstructorDef
     private FixedDictionary<IVariableBindingNode, int>? variableBindingsMap;
     private bool variableBindingsMapCached;
 
-    public SourceConstructorDefinitionNode(
+    public OrdinaryConstructorDefinitionNode(
         IConstructorDefinitionSyntax syntax,
         IConstructorSelfParameterNode selfParameter,
         IEnumerable<IConstructorOrInitializerParameterNode> parameters,
@@ -7157,9 +7157,9 @@ file class DefaultInitializerDefinitionNode : SemanticNode, IDefaultInitializerD
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class SourceInitializerDefinitionNode : SemanticNode, ISourceInitializerDefinitionNode
+file class OrdinaryInitializerDefinitionNode : SemanticNode, IOrdinaryInitializerDefinitionNode
 {
-    private ISourceInitializerDefinitionNode Self { [Inline] get => this; }
+    private IOrdinaryInitializerDefinitionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
     public IInitializerDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
@@ -7219,7 +7219,7 @@ file class SourceInitializerDefinitionNode : SemanticNode, ISourceInitializerDef
     public InitializerSymbol? Symbol
         => GrammarAttribute.IsCached(in symbolCached) ? symbol
             : this.Synthetic(ref symbolCached, ref symbol,
-                SymbolsAspect.SourceInitializerDefinition_Symbol);
+                SymbolsAspect.OrdinaryInitializerDefinition_Symbol);
     private InitializerSymbol? symbol;
     private bool symbolCached;
     public ValueIdScope ValueIdScope { [DebuggerStepThrough] get; }
@@ -7230,7 +7230,7 @@ file class SourceInitializerDefinitionNode : SemanticNode, ISourceInitializerDef
     private FixedDictionary<IVariableBindingNode, int>? variableBindingsMap;
     private bool variableBindingsMapCached;
 
-    public SourceInitializerDefinitionNode(
+    public OrdinaryInitializerDefinitionNode(
         IInitializerDefinitionSyntax syntax,
         IInitializerSelfParameterNode selfParameter,
         IEnumerable<IConstructorOrInitializerParameterNode> parameters,

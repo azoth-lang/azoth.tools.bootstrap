@@ -39,11 +39,11 @@ public class InterpreterProcess
     private readonly Task executionTask;
     private readonly FixedDictionary<FunctionSymbol, IConcreteFunctionInvocableDefinitionNode> functions;
     private readonly FixedDictionary<MethodSymbol, IMethodDefinitionNode> structMethods;
-    private readonly FixedDictionary<ConstructorSymbol, ISourceConstructorDefinitionNode?> constructors;
-    private readonly FixedDictionary<InitializerSymbol, ISourceInitializerDefinitionNode?> initializers;
+    private readonly FixedDictionary<ConstructorSymbol, IOrdinaryConstructorDefinitionNode?> constructors;
+    private readonly FixedDictionary<InitializerSymbol, IOrdinaryInitializerDefinitionNode?> initializers;
     private readonly FixedDictionary<OrdinaryTypeSymbol, ITypeDefinitionNode> userTypes;
     private readonly IClassDefinitionNode stringClass;
-    private readonly ISourceConstructorDefinitionNode stringConstructor;
+    private readonly IOrdinaryConstructorDefinitionNode stringConstructor;
     private readonly IStructDefinitionNode? rangeStruct;
     private readonly InitializerSymbol? rangeInitializer;
     private byte? exitCode;
@@ -69,27 +69,27 @@ public class InterpreterProcess
         userTypes = allDefinitions.OfType<ITypeDefinitionNode>()
                                  .ToFixedDictionary(c => c.Symbol);
         stringClass = userTypes.Values.OfType<IClassDefinitionNode>().Single(c => c.Symbol.Name == "String");
-        stringConstructor = stringClass.Members.OfType<ISourceConstructorDefinitionNode>().Single(c => c.Parameters.Count == 3);
+        stringConstructor = stringClass.Members.OfType<IOrdinaryConstructorDefinitionNode>().Single(c => c.Parameters.Count == 3);
         rangeStruct = userTypes.Values.OfType<IStructDefinitionNode>().SingleOrDefault(c => c.Symbol.Name == "range");
         rangeInitializer = rangeStruct?.Members.OfType<IInitializerDefinitionNode>().SingleOrDefault(c => c.Parameters.Count == 2)?.Symbol;
         var defaultConstructorSymbols = allDefinitions
                                         .OfType<IClassDefinitionNode>()
                                         .Select(c => c.DefaultConstructor?.Symbol).WhereNotNull();
         constructors = defaultConstructorSymbols
-                       .Select(c => (c, default(ISourceConstructorDefinitionNode)))
+                       .Select(c => (c, default(IOrdinaryConstructorDefinitionNode)))
                        .Concat(allDefinitions
-                               .OfType<ISourceConstructorDefinitionNode>()
-                               .Select(c => (c.Symbol.Assigned(), (ISourceConstructorDefinitionNode?)c)))
+                               .OfType<IOrdinaryConstructorDefinitionNode>()
+                               .Select(c => (c.Symbol.Assigned(), (IOrdinaryConstructorDefinitionNode?)c)))
                        .ToFixedDictionary();
 
         var defaultInitializerSymbols = allDefinitions
                                        .OfType<IStructDefinitionNode>()
                                        .Select(c => c.DefaultInitializer?.Symbol).WhereNotNull();
         initializers = defaultInitializerSymbols
-                       .Select(c => (c, default(ISourceInitializerDefinitionNode)))
+                       .Select(c => (c, default(IOrdinaryInitializerDefinitionNode)))
                        .Concat(allDefinitions
-                               .OfType<ISourceInitializerDefinitionNode>()
-                               .Select(c => (c.Symbol.Assigned(), (ISourceInitializerDefinitionNode?)c)))
+                               .OfType<IOrdinaryInitializerDefinitionNode>()
+                               .Select(c => (c.Symbol.Assigned(), (IOrdinaryInitializerDefinitionNode?)c)))
                        .ToFixedDictionary();
 
         // TODO pointing both of these to a memory stream is probably wrong. Need something that acts like a pipe.
@@ -249,7 +249,7 @@ public class InterpreterProcess
     }
 
     private async ValueTask<AzothValue> CallConstructorAsync(
-        ISourceConstructorDefinitionNode constructor,
+        IOrdinaryConstructorDefinitionNode constructor,
         AzothValue self,
         IEnumerable<AzothValue> arguments)
     {
@@ -303,7 +303,7 @@ public class InterpreterProcess
     private static ConstructorSymbol NoArgConstructorSymbol(IClassDefinitionNode baseClass)
     {
         return baseClass.DefaultConstructor?.Symbol
-               ?? baseClass.Members.OfType<ISourceConstructorDefinitionNode>().Select(c => c.Symbol.Assigned())
+               ?? baseClass.Members.OfType<IOrdinaryConstructorDefinitionNode>().Select(c => c.Symbol.Assigned())
                            .Single(c => c.Arity == 0);
     }
 
@@ -330,7 +330,7 @@ public class InterpreterProcess
     }
 
     private async ValueTask<AzothValue> CallInitializerAsync(
-        ISourceInitializerDefinitionNode initializer,
+        IOrdinaryInitializerDefinitionNode initializer,
         AzothValue self,
         IEnumerable<AzothValue> arguments)
     {

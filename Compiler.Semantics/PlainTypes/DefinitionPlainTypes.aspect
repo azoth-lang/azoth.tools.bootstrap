@@ -38,14 +38,14 @@
     => ContainingTypeDefinition.TypeFactory.ConstructWithParameterPlainTypes();
 = DefaultConstructorDefinition.SelfParameterPlainType
     => ContainingTypeDefinition.TypeFactory.ConstructWithParameterPlainTypes();
-= SourceConstructorDefinition.SelfParameterPlainType => SelfParameter.BindingPlainType;
-= SourceConstructorDefinition.Body.**.ExpectedReturnPlainType => AzothPlainType.Void;
+= OrdinaryConstructorDefinition.SelfParameterPlainType => SelfParameter.BindingPlainType;
+= OrdinaryConstructorDefinition.Body.**.ExpectedReturnPlainType => AzothPlainType.Void;
 = InitializerDefinition.ReturnPlainType
     => ContainingTypeDefinition.TypeFactory.ConstructWithParameterPlainTypes();
 = DefaultInitializerDefinition.SelfParameterPlainType
     => ContainingTypeDefinition.TypeFactory.ConstructWithParameterPlainTypes();
-= SourceInitializerDefinition.SelfParameterPlainType => SelfParameter.BindingPlainType;
-= SourceInitializerDefinition.Body.**.ExpectedReturnPlainType => AzothPlainType.Void;
+= OrdinaryInitializerDefinition.SelfParameterPlainType => SelfParameter.BindingPlainType;
+= OrdinaryInitializerDefinition.Body.**.ExpectedReturnPlainType => AzothPlainType.Void;
 // Null is the signal that this is a field initializer and not a method body
 = FieldDefinition.Initializer.**.ExpectedReturnPlainType => null;
 = AssociatedFunctionDefinition.Body.ExpectedPlainType => Self.ReturnPlainType;

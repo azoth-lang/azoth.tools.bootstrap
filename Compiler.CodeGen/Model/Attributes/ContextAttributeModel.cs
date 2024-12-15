@@ -54,7 +54,7 @@ public abstract class ContextAttributeModel : AspectAttributeModel
 
     public sealed override string ToString()
     {
-        var strategy = Strategy.ToSourceString();
+        var strategy = Strategy.ToSourceCodeString();
         var parameters = IsMethod ? "()" : "";
         return $"{Prefix} {strategy} {Node.Defines}.{Name}{parameters}: {Type};";
     }

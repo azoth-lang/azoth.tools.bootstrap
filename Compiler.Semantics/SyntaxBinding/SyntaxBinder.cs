@@ -191,11 +191,11 @@ internal static class SyntaxBinder
             NamedParameters(syntax.Parameters), Type(syntax.Return?.Type), Body(syntax.Body));
 
     private static IConstructorDefinitionNode ConstructorDefinition(IConstructorDefinitionSyntax syntax)
-        => ISourceConstructorDefinitionNode.Create(syntax, ConstructorSelfParameter(syntax.SelfParameter),
+        => IOrdinaryConstructorDefinitionNode.Create(syntax, ConstructorSelfParameter(syntax.SelfParameter),
             ConstructorOrInitializerParameters(syntax.Parameters), BlockBody(syntax.Body));
 
     private static IInitializerDefinitionNode InitializerDefinition(IInitializerDefinitionSyntax syntax)
-        => ISourceInitializerDefinitionNode.Create(syntax, InitializerSelfParameter(syntax.SelfParameter),
+        => IOrdinaryInitializerDefinitionNode.Create(syntax, InitializerSelfParameter(syntax.SelfParameter),
             ConstructorOrInitializerParameters(syntax.Parameters), BlockBody(syntax.Body));
 
     private static IFieldDefinitionNode FieldDefinition(IFieldDefinitionSyntax syntax)

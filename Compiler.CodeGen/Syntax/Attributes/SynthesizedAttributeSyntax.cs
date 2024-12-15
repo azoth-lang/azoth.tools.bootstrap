@@ -24,7 +24,7 @@ public sealed class SynthesizedAttributeSyntax : AspectAttributeSyntax
 
     public override string ToString()
     {
-        var strategy = Strategy.ToSourceString();
+        var strategy = Strategy.ToSourceCodeString();
         if (strategy.Length > 0)
             strategy += " ";
         var parameters = IsMethod ? "()" : "";

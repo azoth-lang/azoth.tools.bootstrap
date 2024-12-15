@@ -57,7 +57,7 @@ internal static partial class SymbolsAspect
         return new(node.ContainingSymbol, node.Kind, node.Name, selfParameterType, parameters, returnType);
     }
 
-    public static partial ConstructorSymbol? SourceConstructorDefinition_Symbol(ISourceConstructorDefinitionNode node)
+    public static partial ConstructorSymbol? OrdinaryConstructorDefinition_Symbol(IOrdinaryConstructorDefinitionNode node)
     {
         if (node.ParameterTypes.AsKnownFixedList() is not { } parameters) return null;
         return new(node.ContainingSymbol, node.Name, node.SelfParameter.BindingType, parameters);
@@ -66,7 +66,7 @@ internal static partial class SymbolsAspect
     public static partial ConstructorSymbol? DefaultConstructorDefinition_Symbol(IDefaultConstructorDefinitionNode node)
         => ConstructorSymbol.CreateDefault(node.ContainingSymbol);
 
-    public static partial InitializerSymbol? SourceInitializerDefinition_Symbol(ISourceInitializerDefinitionNode node)
+    public static partial InitializerSymbol? OrdinaryInitializerDefinition_Symbol(IOrdinaryInitializerDefinitionNode node)
     {
         if (node.ParameterTypes.AsKnownFixedList() is not { } parameters) return null;
         return new(node.ContainingSymbol, node.Name, node.SelfParameter.BindingType, parameters);
