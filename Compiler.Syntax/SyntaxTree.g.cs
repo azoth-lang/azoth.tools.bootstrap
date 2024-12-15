@@ -824,7 +824,7 @@ public partial interface IStandardTypeNameSyntax : ITypeNameSyntax
 
 [Closed(
     typeof(IIdentifierTypeNameSyntax),
-    typeof(ISpecialTypeNameSyntax))]
+    typeof(IBuiltInTypeNameSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface ISimpleTypeNameSyntax : ITypeNameSyntax
 {
@@ -844,17 +844,17 @@ public partial interface IIdentifierTypeNameSyntax : IStandardTypeNameSyntax, IS
         => new IdentifierTypeNameSyntax(span, name);
 }
 
-// [Closed(typeof(SpecialTypeNameSyntax))]
+// [Closed(typeof(BuiltInTypeNameSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface ISpecialTypeNameSyntax : ISimpleTypeNameSyntax
+public partial interface IBuiltInTypeNameSyntax : ISimpleTypeNameSyntax
 {
     new SpecialTypeName Name { get; }
     TypeName ITypeNameSyntax.Name => Name;
 
-    public static ISpecialTypeNameSyntax Create(
+    public static IBuiltInTypeNameSyntax Create(
         TextSpan span,
         SpecialTypeName name)
-        => new SpecialTypeNameSyntax(span, name);
+        => new BuiltInTypeNameSyntax(span, name);
 }
 
 // [Closed(typeof(GenericTypeNameSyntax))]
@@ -1459,7 +1459,7 @@ public partial interface IInvocationExpressionSyntax : IExpressionSyntax
 [Closed(
     typeof(ISimpleNameSyntax),
     typeof(IStandardNameExpressionSyntax),
-    typeof(ISpecialTypeNameExpressionSyntax),
+    typeof(IBuiltInTypeNameExpressionSyntax),
     typeof(ISelfExpressionSyntax),
     typeof(IMemberAccessExpressionSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -1500,16 +1500,16 @@ public partial interface IIdentifierNameExpressionSyntax : IStandardNameExpressi
         => new IdentifierNameExpressionSyntax(span, name);
 }
 
-// [Closed(typeof(SpecialTypeNameExpressionSyntax))]
+// [Closed(typeof(BuiltInTypeNameExpressionSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface ISpecialTypeNameExpressionSyntax : INameExpressionSyntax
+public partial interface IBuiltInTypeNameExpressionSyntax : INameExpressionSyntax
 {
     SpecialTypeName Name { get; }
 
-    public static ISpecialTypeNameExpressionSyntax Create(
+    public static IBuiltInTypeNameExpressionSyntax Create(
         TextSpan span,
         SpecialTypeName name)
-        => new SpecialTypeNameExpressionSyntax(span, name);
+        => new BuiltInTypeNameExpressionSyntax(span, name);
 }
 
 // [Closed(typeof(GenericNameExpressionSyntax))]
@@ -2550,16 +2550,16 @@ file class IdentifierTypeNameSyntax : IIdentifierTypeNameSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class SpecialTypeNameSyntax : ISpecialTypeNameSyntax
+file class BuiltInTypeNameSyntax : IBuiltInTypeNameSyntax
 {
-    private ISpecialTypeNameSyntax Self { [Inline] get => this; }
+    private IBuiltInTypeNameSyntax Self { [Inline] get => this; }
 
     public TextSpan Span { [DebuggerStepThrough] get; }
     public SpecialTypeName Name { [DebuggerStepThrough] get; }
     public override string ToString()
-        => FormattingAspect.SpecialTypeName_ToString(this);
+        => FormattingAspect.BuiltInTypeName_ToString(this);
 
-    public SpecialTypeNameSyntax(
+    public BuiltInTypeNameSyntax(
         TextSpan span,
         SpecialTypeName name)
     {
@@ -3353,16 +3353,16 @@ file class IdentifierNameExpressionSyntax : IIdentifierNameExpressionSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class SpecialTypeNameExpressionSyntax : ISpecialTypeNameExpressionSyntax
+file class BuiltInTypeNameExpressionSyntax : IBuiltInTypeNameExpressionSyntax
 {
-    private ISpecialTypeNameExpressionSyntax Self { [Inline] get => this; }
+    private IBuiltInTypeNameExpressionSyntax Self { [Inline] get => this; }
 
     public TextSpan Span { [DebuggerStepThrough] get; }
     public SpecialTypeName Name { [DebuggerStepThrough] get; }
     public override string ToString()
-        => FormattingAspect.SpecialTypeNameExpression_ToString(this);
+        => FormattingAspect.BuiltInTypeNameExpression_ToString(this);
 
-    public SpecialTypeNameExpressionSyntax(
+    public BuiltInTypeNameExpressionSyntax(
         TextSpan span,
         SpecialTypeName name)
     {

@@ -327,11 +327,11 @@ internal static class SyntaxBinder
         => syntax switch
         {
             IIdentifierTypeNameSyntax syn => IdentifierTypeName(syn),
-            ISpecialTypeNameSyntax syn => SpecialTypeName(syn),
+            IBuiltInTypeNameSyntax syn => BuiltInTypeName(syn),
             _ => throw ExhaustiveMatch.Failed(syntax)
         };
 
-    private static ISpecialTypeNameNode SpecialTypeName(ISpecialTypeNameSyntax syntax)
+    private static ISpecialTypeNameNode BuiltInTypeName(IBuiltInTypeNameSyntax syntax)
         => ISpecialTypeNameNode.Create(syntax);
 
     private static IQualifiedTypeNameNode QualifiedTypeName(IQualifiedTypeNameSyntax syntax)
@@ -464,7 +464,7 @@ internal static class SyntaxBinder
             IAsyncBlockExpressionSyntax syn => AsyncBlockExpression(syn),
             IAsyncStartExpressionSyntax syn => AsyncStartExpression(syn),
             IAwaitExpressionSyntax syn => AwaitExpression(syn),
-            ISpecialTypeNameExpressionSyntax syn => SpecialTypeNameExpression(syn),
+            IBuiltInTypeNameExpressionSyntax syn => SpecialTypeNameExpression(syn),
             IGenericNameExpressionSyntax syn => GenericNameExpression(syn),
             _ => throw ExhaustiveMatch.Failed(syntax)
         };
@@ -563,7 +563,7 @@ internal static class SyntaxBinder
     private static IIdentifierNameExpressionNode IdentifierNameExpression(IIdentifierNameExpressionSyntax syntax)
         => IIdentifierNameExpressionNode.Create(syntax);
 
-    private static ISpecialTypeNameExpressionNode SpecialTypeNameExpression(ISpecialTypeNameExpressionSyntax syntax)
+    private static ISpecialTypeNameExpressionNode SpecialTypeNameExpression(IBuiltInTypeNameExpressionSyntax syntax)
         => ISpecialTypeNameExpressionNode.Create(syntax);
 
     private static IGenericNameExpressionNode GenericNameExpression(IGenericNameExpressionSyntax syntax)

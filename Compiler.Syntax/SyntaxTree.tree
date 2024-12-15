@@ -18,8 +18,8 @@
 // TODO:
 //     The syntax tree ought to be independent of semantics. It should not try to enforce rules
 //     such as that certian kinds of expressions are expected in certian places. It should collapse
-//     node types even if they appear in different contexts. For example, a `SpecialTypeName` and a
-//     `SpecialTypeNameExpression` should be the same node type.
+//     node types even if they appear in different contexts. For example, a `BuiltInTypeName` and a
+//     `BuiltInTypeNameExpression` should be the same node type.
 
 <default>;
 
@@ -131,7 +131,7 @@ TypeName <: Type = Name:`TypeName`;
 StandardTypeName <: TypeName = Name:`StandardName`;
 SimpleTypeName <: TypeName;
 IdentifierTypeName <: TypeName, StandardTypeName, SimpleTypeName = Name:`IdentifierName`;
-SpecialTypeName <: SimpleTypeName = Name:`SpecialTypeName`;
+BuiltInTypeName <: SimpleTypeName = Name:`SpecialTypeName`;
 GenericTypeName <: StandardTypeName = Name:`GenericName` TypeArguments:Type*;
 QualifiedTypeName <: TypeName = Context:TypeName QualifiedName:StandardTypeName;
 OptionalType <: Type = Referent:Type;
@@ -209,7 +209,7 @@ SimpleName <: NameExpression;
 StandardNameExpression <: NameExpression = Name:`StandardName`;
 IdentifierNameExpression <: NameExpression, StandardNameExpression, SimpleName
     = Name:`IdentifierName`;
-SpecialTypeNameExpression <: NameExpression, Expression = Name:`SpecialTypeName`;
+BuiltInTypeNameExpression <: NameExpression, Expression = Name:`SpecialTypeName`;
 GenericNameExpression <: NameExpression, StandardNameExpression = Name:`GenericName` TypeArguments:Type*;
 InstanceExpression <: SimpleName; // i.e. `self` or `base`
 SelfExpression <: NameExpression, InstanceExpression = IsImplicit:`bool`;

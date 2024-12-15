@@ -179,7 +179,7 @@ internal static partial class FormattingAspect
     public static partial string IdentifierTypeName_ToString(IIdentifierTypeNameSyntax node)
         => node.Name.ToString();
 
-    public static partial string SpecialTypeName_ToString(ISpecialTypeNameSyntax node)
+    public static partial string BuiltInTypeName_ToString(IBuiltInTypeNameSyntax node)
         => node.Name.ToString();
 
     public static partial string GenericTypeName_ToString(IGenericTypeNameSyntax node)
@@ -341,7 +341,7 @@ internal static partial class FormattingAspect
     public static partial string IdentifierNameExpression_ToString(IIdentifierNameExpressionSyntax node)
         => node.Name.ToString();
 
-    public static partial string SpecialTypeNameExpression_ToString(ISpecialTypeNameExpressionSyntax node)
+    public static partial string BuiltInTypeNameExpression_ToString(IBuiltInTypeNameExpressionSyntax node)
         => node.Name.ToString();
 
     public static partial string GenericNameExpression_ToString(IGenericNameExpressionSyntax node)

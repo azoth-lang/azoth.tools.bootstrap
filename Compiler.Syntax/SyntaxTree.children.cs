@@ -165,7 +165,7 @@ public static class ISyntaxExtensions
                 yield break;
             case IIdentifierTypeNameSyntax n:
                 yield break;
-            case ISpecialTypeNameSyntax n:
+            case IBuiltInTypeNameSyntax n:
                 yield break;
             case IGenericTypeNameSyntax n:
                 foreach (var child in n.TypeArguments)
@@ -299,7 +299,7 @@ public static class ISyntaxExtensions
                 yield break;
             case IIdentifierNameExpressionSyntax n:
                 yield break;
-            case ISpecialTypeNameExpressionSyntax n:
+            case IBuiltInTypeNameExpressionSyntax n:
                 yield break;
             case IGenericNameExpressionSyntax n:
                 foreach (var child in n.TypeArguments)

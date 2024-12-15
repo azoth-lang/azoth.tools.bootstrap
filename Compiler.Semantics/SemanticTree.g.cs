@@ -1464,7 +1464,7 @@ public partial interface IIdentifierTypeNameNode : IStandardTypeNameNode, ISimpl
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface ISpecialTypeNameNode : ISimpleTypeNameNode
 {
-    new ISpecialTypeNameSyntax Syntax { get; }
+    new IBuiltInTypeNameSyntax Syntax { get; }
     ISimpleTypeNameSyntax ISimpleTypeNameNode.Syntax => Syntax;
     ITypeNameSyntax ITypeNameNode.Syntax => Syntax;
     ITypeSyntax ITypeNode.Syntax => Syntax;
@@ -1474,7 +1474,7 @@ public partial interface ISpecialTypeNameNode : ISimpleTypeNameNode
         => Syntax.Name;
     TypeName ITypeNameNode.Name => Name;
 
-    public static ISpecialTypeNameNode Create(ISpecialTypeNameSyntax syntax)
+    public static ISpecialTypeNameNode Create(IBuiltInTypeNameSyntax syntax)
         => new SpecialTypeNameNode(syntax);
 }
 
@@ -3201,7 +3201,7 @@ public partial interface IInitializerGroupNameNode : INameExpressionNode
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface ISpecialTypeNameExpressionNode : INameExpressionNode
 {
-    new ISpecialTypeNameExpressionSyntax Syntax { get; }
+    new IBuiltInTypeNameExpressionSyntax Syntax { get; }
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
@@ -3217,7 +3217,7 @@ public partial interface ISpecialTypeNameExpressionNode : INameExpressionNode
     IMaybePlainType IExpressionNode.PlainType
         => AzothPlainType.Unknown;
 
-    public static ISpecialTypeNameExpressionNode Create(ISpecialTypeNameExpressionSyntax syntax)
+    public static ISpecialTypeNameExpressionNode Create(IBuiltInTypeNameExpressionSyntax syntax)
         => new SpecialTypeNameExpressionNode(syntax);
 }
 
@@ -8273,7 +8273,7 @@ file class SpecialTypeNameNode : SemanticNode, ISpecialTypeNameNode
 {
     private ISpecialTypeNameNode Self { [Inline] get => this; }
 
-    public ISpecialTypeNameSyntax Syntax { [DebuggerStepThrough] get; }
+    public IBuiltInTypeNameSyntax Syntax { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -8309,7 +8309,7 @@ file class SpecialTypeNameNode : SemanticNode, ISpecialTypeNameNode
     private ITypeDeclarationNode? referencedDeclaration;
     private bool referencedDeclarationCached;
 
-    public SpecialTypeNameNode(ISpecialTypeNameSyntax syntax)
+    public SpecialTypeNameNode(IBuiltInTypeNameSyntax syntax)
     {
         Syntax = syntax;
     }
@@ -16027,7 +16027,7 @@ file class SpecialTypeNameExpressionNode : SemanticNode, ISpecialTypeNameExpress
     private AttributeLock syncLock;
     protected override bool MayHaveRewrite => true;
 
-    public ISpecialTypeNameExpressionSyntax Syntax { [DebuggerStepThrough] get; }
+    public IBuiltInTypeNameExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -16088,7 +16088,7 @@ file class SpecialTypeNameExpressionNode : SemanticNode, ISpecialTypeNameExpress
     private ValueId valueId;
     private bool valueIdCached;
 
-    public SpecialTypeNameExpressionNode(ISpecialTypeNameExpressionSyntax syntax)
+    public SpecialTypeNameExpressionNode(IBuiltInTypeNameExpressionSyntax syntax)
     {
         Syntax = syntax;
     }

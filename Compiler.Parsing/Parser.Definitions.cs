@@ -589,7 +589,7 @@ public partial class Parser
         if (@return is null)
         {
             Add(ParseError.MissingReturn(File, expectedSelfParameterLocation));
-            @return = IReturnSyntax.Create(expectedReturnLocation, ISpecialTypeNameSyntax.Create(expectedReturnLocation, SpecialTypeName.Void));
+            @return = IReturnSyntax.Create(expectedReturnLocation, IBuiltInTypeNameSyntax.Create(expectedReturnLocation, SpecialTypeName.Void));
         }
 
         // It may or may not have a body

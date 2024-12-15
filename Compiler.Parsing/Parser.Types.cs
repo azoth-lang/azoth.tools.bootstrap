@@ -121,7 +121,7 @@ public partial class Parser
     {
         return Tokens.Current switch
         {
-            IBuiltInTypeToken _ => ParsePrimitiveType(),
+            IBuiltInTypeToken _ => ParseBuiltInType(),
             IOpenParenToken _ => ParseFunctionType(),
             ISelfTypeKeywordToken => ParseSelfType(),
             // otherwise we want a type name
@@ -153,7 +153,7 @@ public partial class Parser
         return (arguments, TextSpan.Covering(openBracket.Span, closeBracketSpan));
     }
 
-    private ISpecialTypeNameSyntax ParsePrimitiveType()
+    private IBuiltInTypeNameSyntax ParseBuiltInType()
     {
         var keyword = Tokens.ConsumeToken<IBuiltInTypeToken>();
         SpecialTypeName name = keyword switch
@@ -183,13 +183,13 @@ public partial class Parser
             _ => throw ExhaustiveMatch.Failed(keyword)
         };
 
-        return ISpecialTypeNameSyntax.Create(keyword.Span, name);
+        return IBuiltInTypeNameSyntax.Create(keyword.Span, name);
     }
 
-    private ISpecialTypeNameSyntax ParseSelfType()
+    private IBuiltInTypeNameSyntax ParseSelfType()
     {
         var keyword = Tokens.ConsumeToken<ISelfTypeKeywordToken>();
-        return ISpecialTypeNameSyntax.Create(keyword.Span, SpecialTypeName.Self);
+        return IBuiltInTypeNameSyntax.Create(keyword.Span, SpecialTypeName.Self);
     }
 
     private IFunctionTypeSyntax ParseFunctionType()
