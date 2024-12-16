@@ -9,16 +9,16 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 /// A plain type constructed from a type constructor.
 /// </summary>
 /// <remarks>This includes all types defined in source code, all simple types, and the `Any` type.</remarks>
-public sealed class ConstructedPlainType : ConstructedOrAssociatedPlainType
+public sealed class ConstructedPlainType : NonVoidPlainType
 {
-    public override TypeConstructor TypeConstructor { get; }
+    public TypeConstructor TypeConstructor { get; }
     // TODO Nested Types: add ContainingType and enforce that it must match the context of the TypeConstructor
     public override TypeSemantics? Semantics => TypeConstructor.Semantics;
-    public override TypeName Name => TypeConstructor.Name;
-    public override bool AllowsVariance => TypeConstructor.AllowsVariance;
-    public override IFixedList<PlainType> Arguments { get; }
-    public override IFixedSet<ConstructedPlainType> Supertypes { get; }
-    internal override PlainTypeReplacements TypeReplacements { get; }
+    public TypeName Name => TypeConstructor.Name;
+    public bool AllowsVariance => TypeConstructor.AllowsVariance;
+    public IFixedList<PlainType> Arguments { get; }
+    public IFixedSet<ConstructedPlainType> Supertypes { get; }
+    internal PlainTypeReplacements TypeReplacements { get; }
 
     public ConstructedPlainType(TypeConstructor typeConstructor, IEnumerable<PlainType> typeArguments)
     {
@@ -63,7 +63,7 @@ public sealed class ConstructedPlainType : ConstructedOrAssociatedPlainType
     public override int GetHashCode() => HashCode.Combine(TypeConstructor, Arguments);
     #endregion
 
-    public override string ToBareString()
+    public string ToBareString()
     {
         var builder = new StringBuilder();
         TypeConstructor.Context.AppendContextPrefix(builder);
@@ -74,18 +74,14 @@ public sealed class ConstructedPlainType : ConstructedOrAssociatedPlainType
     public override string ToString()
     {
         var builder = new StringBuilder();
-        ToString(builder);
-        return builder.ToString();
-    }
-
-    public void ToString(StringBuilder builder)
-    {
         TypeConstructor.Context.AppendContextPrefix(builder);
         builder.Append(TypeConstructor.Name.ToBareString());
-        if (Arguments.IsEmpty)
-            return;
-        builder.Append('[');
-        builder.AppendJoin(", ", Arguments);
-        builder.Append(']');
+        if (!Arguments.IsEmpty)
+        {
+            builder.Append('[');
+            builder.AppendJoin(", ", Arguments);
+            builder.Append(']');
+        }
+        return builder.ToString();
     }
 }

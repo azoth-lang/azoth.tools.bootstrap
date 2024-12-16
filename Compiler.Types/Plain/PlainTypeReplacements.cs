@@ -76,13 +76,6 @@ internal sealed class PlainTypeReplacements
             _ => throw ExhaustiveMatch.Failed(plainType)
         };
 
-    public ConstructedOrAssociatedPlainType ReplaceTypeParametersIn(ConstructedOrAssociatedPlainType plainType)
-        => plainType switch
-        {
-            ConstructedPlainType t => ReplaceTypeParametersIn(t),
-            _ => throw ExhaustiveMatch.Failed(plainType)
-        };
-
     public ConstructedPlainType ReplaceTypeParametersIn(ConstructedPlainType plainType)
     {
         var replacementTypeArguments = ReplaceTypeParametersIn(plainType.Arguments);

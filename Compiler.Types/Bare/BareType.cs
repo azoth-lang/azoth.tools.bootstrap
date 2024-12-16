@@ -26,7 +26,7 @@ public abstract class BareType : IEquatable<BareType>
 
     // TODO add containing type for capabilities on containing type arguments
 
-    public abstract ConstructedOrAssociatedPlainType PlainType { get; }
+    public abstract ConstructedPlainType PlainType { get; }
 
     public abstract TypeConstructor? TypeConstructor { get; }
 

@@ -19,7 +19,7 @@ public sealed class CapabilityType : NonVoidType
     public Capability Capability { get; }
 
     public BareType BareType { get; }
-    public override ConstructedOrAssociatedPlainType PlainType => BareType.PlainType;
+    public override ConstructedPlainType PlainType => BareType.PlainType;
 
     public TypeConstructor? TypeConstructor => BareType.TypeConstructor;
 
