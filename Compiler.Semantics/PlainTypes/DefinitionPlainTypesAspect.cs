@@ -61,9 +61,6 @@ internal static partial class DefinitionPlainTypesAspect
         => throw new NotImplementedException();
     #endregion
 
-    public static partial ConstructedPlainType TypeDefinition_SelfPlainType(ITypeDefinitionNode node)
-        => new(node.TypeFactory, []);
-
     public static partial IMaybeNonVoidPlainType FieldDefinition_BindingPlainType(IFieldDefinitionNode node)
         => node.TypeNode.NamedPlainType.ToNonVoid();
 }

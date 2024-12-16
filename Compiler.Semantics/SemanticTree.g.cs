@@ -526,7 +526,6 @@ public partial interface ITypeDefinitionNode : ICodeNode, IFacetMemberDefinition
     new OrdinaryTypeConstructor TypeFactory { get; }
     TypeConstructor IUserTypeDeclarationNode.TypeFactory => TypeFactory;
     ITypeFactory ITypeDeclarationNode.TypeFactory => TypeFactory;
-    ConstructedPlainType SelfPlainType { get; }
     new IFixedSet<ConstructedBareType> Supertypes { get; }
     IFixedSet<ConstructedBareType> ITypeDeclarationNode.Supertypes => Supertypes;
     new IFixedSet<ITypeMemberDefinitionNode> Members { get; }
@@ -5621,12 +5620,6 @@ file class ClassDefinitionNode : SemanticNode, IClassDefinitionNode
                 DefaultMembersAspect.ClassDefinition_Members);
     private IFixedSet<IClassMemberDefinitionNode>? members;
     private bool membersCached;
-    public ConstructedPlainType SelfPlainType
-        => GrammarAttribute.IsCached(in selfPlainTypeCached) ? selfPlainType!
-            : this.Synthetic(ref selfPlainTypeCached, ref selfPlainType,
-                DefinitionPlainTypesAspect.TypeDefinition_SelfPlainType);
-    private ConstructedPlainType? selfPlainType;
-    private bool selfPlainTypeCached;
     public IFixedSet<ConstructedBareType> Supertypes
         => GrammarAttribute.IsCached(in supertypesCached) ? supertypes.UnsafeValue
             : this.Circular(ref supertypesCached, ref supertypes,
@@ -5795,12 +5788,6 @@ file class StructDefinitionNode : SemanticNode, IStructDefinitionNode
                 DefaultMembersAspect.StructDefinition_Members);
     private IFixedSet<IStructMemberDefinitionNode>? members;
     private bool membersCached;
-    public ConstructedPlainType SelfPlainType
-        => GrammarAttribute.IsCached(in selfPlainTypeCached) ? selfPlainType!
-            : this.Synthetic(ref selfPlainTypeCached, ref selfPlainType,
-                DefinitionPlainTypesAspect.TypeDefinition_SelfPlainType);
-    private ConstructedPlainType? selfPlainType;
-    private bool selfPlainTypeCached;
     public IFixedSet<ConstructedBareType> Supertypes
         => GrammarAttribute.IsCached(in supertypesCached) ? supertypes.UnsafeValue
             : this.Circular(ref supertypesCached, ref supertypes,
@@ -5954,12 +5941,6 @@ file class TraitDefinitionNode : SemanticNode, ITraitDefinitionNode
                 LexicalScopingAspect.TypeDefinition_LexicalScope);
     private LexicalScope? lexicalScope;
     private bool lexicalScopeCached;
-    public ConstructedPlainType SelfPlainType
-        => GrammarAttribute.IsCached(in selfPlainTypeCached) ? selfPlainType!
-            : this.Synthetic(ref selfPlainTypeCached, ref selfPlainType,
-                DefinitionPlainTypesAspect.TypeDefinition_SelfPlainType);
-    private ConstructedPlainType? selfPlainType;
-    private bool selfPlainTypeCached;
     public IFixedSet<ConstructedBareType> Supertypes
         => GrammarAttribute.IsCached(in supertypesCached) ? supertypes.UnsafeValue
             : this.Circular(ref supertypesCached, ref supertypes,
