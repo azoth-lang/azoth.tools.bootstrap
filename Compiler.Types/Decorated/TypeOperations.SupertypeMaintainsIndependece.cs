@@ -50,7 +50,7 @@ public static partial class TypeOperations
     /// <param name="exact">Whether the independence must match exactly. For base classes it must.</param>
     public static bool SupertypeMaintainsIndependence(this BareType bareType, bool exact)
     {
-        if (bareType is not BareType { TypeConstructor: var typeConstructor }) return true;
+        if (bareType is not { TypeConstructor: var typeConstructor }) return true;
 
         // Once the supertype is a trait exact independence is not required
         exact &= typeConstructor.CanHaveFields;
