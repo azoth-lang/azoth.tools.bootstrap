@@ -2,18 +2,12 @@ using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
-using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 
 internal static partial class BareTypeAspect
 {
-    // TODO should this be removed? Does it duplicate SelfPlainType?
-    // No, but a bare self type should not be a plain type, it needs to have arguments for the containing type
-    public static partial ConstructedPlainType TypeDefinition_BareSelfType(ITypeDefinitionNode node)
-        => new(node.TypeFactory, []);
-
     public static partial BareType? IdentifierTypeName_NamedBareType(IIdentifierTypeNameNode node)
         => BuildBareType(node.ReferencedDeclaration?.TypeFactory, []);
 

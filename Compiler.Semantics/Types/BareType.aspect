@@ -5,10 +5,6 @@
 
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
-// ---------- Type Definitions
-↑ TypeDefinition.BareSelfType:`ConstructedPlainType`;
-= TypeDefinition.BareSelfType;
-
 // ---------- Types
 ↑ TypeName.NamedBareType: `BareType`?;
 = QualifiedTypeName.NamedBareType => throw new NotImplementedException();

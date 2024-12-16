@@ -533,7 +533,6 @@ public partial interface ITypeDefinitionNode : ICodeNode, IFacetMemberDefinition
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
     new IImplicitSelfDefinitionNode ImplicitSelf { get; }
     IImplicitSelfDeclarationNode INonVariableTypeDeclarationNode.ImplicitSelf => ImplicitSelf;
-    ConstructedPlainType BareSelfType { get; }
     new AccessModifier AccessModifier { get; }
     AccessModifier IFacetMemberDefinitionNode.AccessModifier => AccessModifier;
     AccessModifier ITypeMemberDefinitionNode.AccessModifier => AccessModifier;
@@ -5578,12 +5577,6 @@ file class ClassDefinitionNode : SemanticNode, IClassDefinitionNode
                 NameLookupAspect.UserTypeDeclaration_AssociatedMembersByName);
     private FixedDictionary<OrdinaryName, IFixedSet<IAssociatedMemberDeclarationNode>>? associatedMembersByName;
     private bool associatedMembersByNameCached;
-    public ConstructedPlainType BareSelfType
-        => GrammarAttribute.IsCached(in bareSelfTypeCached) ? bareSelfType!
-            : this.Synthetic(ref bareSelfTypeCached, ref bareSelfType,
-                BareTypeAspect.TypeDefinition_BareSelfType);
-    private ConstructedPlainType? bareSelfType;
-    private bool bareSelfTypeCached;
     public IDefaultConstructorDefinitionNode? DefaultConstructor
         => GrammarAttribute.IsCached(in defaultConstructorCached) ? defaultConstructor
             : this.Synthetic(ref defaultConstructorCached, ref defaultConstructor,
@@ -5746,12 +5739,6 @@ file class StructDefinitionNode : SemanticNode, IStructDefinitionNode
                 NameLookupAspect.UserTypeDeclaration_AssociatedMembersByName);
     private FixedDictionary<OrdinaryName, IFixedSet<IAssociatedMemberDeclarationNode>>? associatedMembersByName;
     private bool associatedMembersByNameCached;
-    public ConstructedPlainType BareSelfType
-        => GrammarAttribute.IsCached(in bareSelfTypeCached) ? bareSelfType!
-            : this.Synthetic(ref bareSelfTypeCached, ref bareSelfType,
-                BareTypeAspect.TypeDefinition_BareSelfType);
-    private ConstructedPlainType? bareSelfType;
-    private bool bareSelfTypeCached;
     public IDefaultInitializerDefinitionNode? DefaultInitializer
         => GrammarAttribute.IsCached(in defaultInitializerCached) ? defaultInitializer
             : this.Synthetic(ref defaultInitializerCached, ref defaultInitializer,
@@ -5911,12 +5898,6 @@ file class TraitDefinitionNode : SemanticNode, ITraitDefinitionNode
                 NameLookupAspect.UserTypeDeclaration_AssociatedMembersByName);
     private FixedDictionary<OrdinaryName, IFixedSet<IAssociatedMemberDeclarationNode>>? associatedMembersByName;
     private bool associatedMembersByNameCached;
-    public ConstructedPlainType BareSelfType
-        => GrammarAttribute.IsCached(in bareSelfTypeCached) ? bareSelfType!
-            : this.Synthetic(ref bareSelfTypeCached, ref bareSelfType,
-                BareTypeAspect.TypeDefinition_BareSelfType);
-    private ConstructedPlainType? bareSelfType;
-    private bool bareSelfTypeCached;
     public IImplicitSelfDefinitionNode ImplicitSelf
         => GrammarAttribute.IsCached(in implicitSelfCached) ? implicitSelf!
             : this.Synthetic(ref implicitSelfCached, ref implicitSelf,
