@@ -6,7 +6,7 @@
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
 // ---------- Type Definitions
-↑ TypeDefinition.BareSelfType:`SelfPlainType`;
+↑ TypeDefinition.BareSelfType:`ConstructedPlainType`;
 = TypeDefinition.BareSelfType;
 
 // ---------- Types

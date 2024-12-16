@@ -15,8 +15,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 /// <remarks>While bare types do not have a capability prefix, they do have capabilities on their
 /// type arguments. That is how they are distinct from plain types.</remarks>
 [Closed(
-    typeof(ConstructedBareType),
-    typeof(AssociatedBareType))]
+    typeof(ConstructedBareType))]
 [DebuggerDisplay("{" + nameof(ToILString) + "(),nq}")]
 public abstract class BareType : IEquatable<BareType>
 {

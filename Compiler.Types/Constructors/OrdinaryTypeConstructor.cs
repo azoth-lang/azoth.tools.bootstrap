@@ -61,7 +61,7 @@ public sealed class OrdinaryTypeConstructor : TypeConstructor
     public override IFixedList<GenericParameterTypeFactory> ParameterTypeFactories { get; }
 
     public override IFixedSet<ConstructedBareType> Supertypes { get; }
-    public override TypeSemantics Semantics
+    public override TypeSemantics? Semantics
         => Kind == TypeKind.Struct ? TypeSemantics.Value : TypeSemantics.Reference;
 
     public OrdinaryTypeConstructor(

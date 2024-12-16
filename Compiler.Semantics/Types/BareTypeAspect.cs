@@ -11,8 +11,8 @@ internal static partial class BareTypeAspect
 {
     // TODO should this be removed? Does it duplicate SelfPlainType?
     // No, but a bare self type should not be a plain type, it needs to have arguments for the containing type
-    public static partial SelfPlainType TypeDefinition_BareSelfType(ITypeDefinitionNode node)
-        => new(node.TypeFactory);
+    public static partial ConstructedPlainType TypeDefinition_BareSelfType(ITypeDefinitionNode node)
+        => new(node.TypeFactory, []);
 
     public static partial BareType? IdentifierTypeName_NamedBareType(IIdentifierTypeNameNode node)
         => BuildBareType(node.ReferencedDeclaration?.TypeFactory, []);

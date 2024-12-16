@@ -188,7 +188,6 @@ public sealed class TypeReplacements
         => bareType switch
         {
             ConstructedBareType t => ReplaceTypeParametersIn(t),
-            AssociatedBareType t => t,
             _ => throw ExhaustiveMatch.Failed(bareType),
         };
 

@@ -1,5 +1,5 @@
 using System;
-using Azoth.Tools.Bootstrap.Compiler.Types;
+using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
@@ -9,10 +9,10 @@ public sealed class AssociatedTypeSymbol : TypeSymbol
     public override PackageSymbol Package => ContainingSymbol.Package;
     public override OrdinaryTypeSymbol ContainingSymbol { get; }
     public override OrdinaryTypeSymbol ContextTypeSymbol => ContainingSymbol;
-    public AssociatedTypeFactory TypeFactory { get; }
-    public AssociatedPlainType PlainType => TypeFactory.PlainType;
+    public AssociatedTypeConstructor TypeFactory { get; }
+    public ConstructedPlainType PlainType => TypeFactory.PlainType;
 
-    public AssociatedTypeSymbol(OrdinaryTypeSymbol containingSymbol, AssociatedTypeFactory typeFactory)
+    public AssociatedTypeSymbol(OrdinaryTypeSymbol containingSymbol, AssociatedTypeConstructor typeFactory)
         : base(typeFactory.PlainType.Name)
     {
         ContainingSymbol = containingSymbol;

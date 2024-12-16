@@ -5,7 +5,8 @@ using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 
-[Closed(typeof(ConstructedPlainType), typeof(AssociatedPlainType))]
+// TODO eliminate class
+[Closed(typeof(ConstructedPlainType))]
 public abstract class ConstructedOrAssociatedPlainType : NonVoidPlainType
 {
     public abstract TypeConstructor? TypeConstructor { get; }

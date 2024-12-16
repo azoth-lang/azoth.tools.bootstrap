@@ -1,4 +1,5 @@
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
+using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
@@ -18,16 +19,18 @@ public sealed class CapabilitySetSelfType : NonVoidType
 {
     public CapabilitySet Capability { get; }
 
-    public override SelfPlainType PlainType { get; }
+    public SelfTypeConstructor TypeConstructor { get; }
+
+    public override ConstructedPlainType PlainType => TypeConstructor.PlainType;
 
     public override TypeReplacements TypeReplacements => TypeReplacements.None;
 
     public override bool HasIndependentTypeArguments => false;
 
-    public CapabilitySetSelfType(CapabilitySet capability, SelfPlainType plainType)
+    public CapabilitySetSelfType(CapabilitySet capability, SelfTypeConstructor typeConstructor)
     {
         Capability = capability;
-        PlainType = plainType;
+        TypeConstructor = typeConstructor;
     }
 
     #region Equality
@@ -37,10 +40,10 @@ public sealed class CapabilitySetSelfType : NonVoidType
         if (ReferenceEquals(this, other)) return true;
         return other is CapabilitySetSelfType otherType
                && Capability.Equals(otherType.Capability)
-               && PlainType.Equals(otherType.PlainType);
+               && TypeConstructor.Equals(otherType.TypeConstructor);
     }
 
-    public override int GetHashCode() => HashCode.Combine(Capability, PlainType);
+    public override int GetHashCode() => HashCode.Combine(Capability, TypeConstructor);
     #endregion
 
     public override string ToSourceCodeString() => $"{Capability.ToSourceCodeString()} {PlainType}";

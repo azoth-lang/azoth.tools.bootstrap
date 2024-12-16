@@ -526,7 +526,7 @@ public partial interface ITypeDefinitionNode : ICodeNode, IFacetMemberDefinition
     new OrdinaryTypeConstructor TypeFactory { get; }
     TypeConstructor IUserTypeDeclarationNode.TypeFactory => TypeFactory;
     ITypeFactory ITypeDeclarationNode.TypeFactory => TypeFactory;
-    SelfPlainType SelfPlainType { get; }
+    ConstructedPlainType SelfPlainType { get; }
     new IFixedSet<ConstructedBareType> Supertypes { get; }
     IFixedSet<ConstructedBareType> ITypeDeclarationNode.Supertypes => Supertypes;
     new IFixedSet<ITypeMemberDefinitionNode> Members { get; }
@@ -534,7 +534,7 @@ public partial interface ITypeDefinitionNode : ICodeNode, IFacetMemberDefinition
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
     new IImplicitSelfDefinitionNode ImplicitSelf { get; }
     IImplicitSelfDeclarationNode INonVariableTypeDeclarationNode.ImplicitSelf => ImplicitSelf;
-    SelfPlainType BareSelfType { get; }
+    ConstructedPlainType BareSelfType { get; }
     new AccessModifier AccessModifier { get; }
     AccessModifier IFacetMemberDefinitionNode.AccessModifier => AccessModifier;
     AccessModifier ITypeMemberDefinitionNode.AccessModifier => AccessModifier;
@@ -3929,7 +3929,7 @@ public partial interface IImplicitSelfDeclarationNode : ITypeDeclarationNode
     new BuiltInTypeName Name
         => BuiltInTypeName.Self;
     TypeName INamedDeclarationNode.Name => Name;
-    new AssociatedTypeFactory TypeFactory { get; }
+    new AssociatedTypeConstructor TypeFactory { get; }
     ITypeFactory ITypeDeclarationNode.TypeFactory => TypeFactory;
     new AssociatedTypeSymbol Symbol { get; }
     TypeSymbol ITypeDeclarationNode.Symbol => Symbol;
@@ -4477,7 +4477,7 @@ public partial interface ISelfSymbolNode : IImplicitSelfDeclarationNode
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
     TypeSymbol ContainingSymbol
         => ContainingDeclaration.Symbol;
-    AssociatedTypeFactory IImplicitSelfDeclarationNode.TypeFactory
+    AssociatedTypeConstructor IImplicitSelfDeclarationNode.TypeFactory
         => Symbol.TypeFactory;
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.InclusiveMembers
         => [];
@@ -5579,11 +5579,11 @@ file class ClassDefinitionNode : SemanticNode, IClassDefinitionNode
                 NameLookupAspect.UserTypeDeclaration_AssociatedMembersByName);
     private FixedDictionary<OrdinaryName, IFixedSet<IAssociatedMemberDeclarationNode>>? associatedMembersByName;
     private bool associatedMembersByNameCached;
-    public SelfPlainType BareSelfType
+    public ConstructedPlainType BareSelfType
         => GrammarAttribute.IsCached(in bareSelfTypeCached) ? bareSelfType!
             : this.Synthetic(ref bareSelfTypeCached, ref bareSelfType,
                 BareTypeAspect.TypeDefinition_BareSelfType);
-    private SelfPlainType? bareSelfType;
+    private ConstructedPlainType? bareSelfType;
     private bool bareSelfTypeCached;
     public IDefaultConstructorDefinitionNode? DefaultConstructor
         => GrammarAttribute.IsCached(in defaultConstructorCached) ? defaultConstructor
@@ -5621,11 +5621,11 @@ file class ClassDefinitionNode : SemanticNode, IClassDefinitionNode
                 DefaultMembersAspect.ClassDefinition_Members);
     private IFixedSet<IClassMemberDefinitionNode>? members;
     private bool membersCached;
-    public SelfPlainType SelfPlainType
+    public ConstructedPlainType SelfPlainType
         => GrammarAttribute.IsCached(in selfPlainTypeCached) ? selfPlainType!
             : this.Synthetic(ref selfPlainTypeCached, ref selfPlainType,
                 DefinitionPlainTypesAspect.TypeDefinition_SelfPlainType);
-    private SelfPlainType? selfPlainType;
+    private ConstructedPlainType? selfPlainType;
     private bool selfPlainTypeCached;
     public IFixedSet<ConstructedBareType> Supertypes
         => GrammarAttribute.IsCached(in supertypesCached) ? supertypes.UnsafeValue
@@ -5753,11 +5753,11 @@ file class StructDefinitionNode : SemanticNode, IStructDefinitionNode
                 NameLookupAspect.UserTypeDeclaration_AssociatedMembersByName);
     private FixedDictionary<OrdinaryName, IFixedSet<IAssociatedMemberDeclarationNode>>? associatedMembersByName;
     private bool associatedMembersByNameCached;
-    public SelfPlainType BareSelfType
+    public ConstructedPlainType BareSelfType
         => GrammarAttribute.IsCached(in bareSelfTypeCached) ? bareSelfType!
             : this.Synthetic(ref bareSelfTypeCached, ref bareSelfType,
                 BareTypeAspect.TypeDefinition_BareSelfType);
-    private SelfPlainType? bareSelfType;
+    private ConstructedPlainType? bareSelfType;
     private bool bareSelfTypeCached;
     public IDefaultInitializerDefinitionNode? DefaultInitializer
         => GrammarAttribute.IsCached(in defaultInitializerCached) ? defaultInitializer
@@ -5795,11 +5795,11 @@ file class StructDefinitionNode : SemanticNode, IStructDefinitionNode
                 DefaultMembersAspect.StructDefinition_Members);
     private IFixedSet<IStructMemberDefinitionNode>? members;
     private bool membersCached;
-    public SelfPlainType SelfPlainType
+    public ConstructedPlainType SelfPlainType
         => GrammarAttribute.IsCached(in selfPlainTypeCached) ? selfPlainType!
             : this.Synthetic(ref selfPlainTypeCached, ref selfPlainType,
                 DefinitionPlainTypesAspect.TypeDefinition_SelfPlainType);
-    private SelfPlainType? selfPlainType;
+    private ConstructedPlainType? selfPlainType;
     private bool selfPlainTypeCached;
     public IFixedSet<ConstructedBareType> Supertypes
         => GrammarAttribute.IsCached(in supertypesCached) ? supertypes.UnsafeValue
@@ -5924,11 +5924,11 @@ file class TraitDefinitionNode : SemanticNode, ITraitDefinitionNode
                 NameLookupAspect.UserTypeDeclaration_AssociatedMembersByName);
     private FixedDictionary<OrdinaryName, IFixedSet<IAssociatedMemberDeclarationNode>>? associatedMembersByName;
     private bool associatedMembersByNameCached;
-    public SelfPlainType BareSelfType
+    public ConstructedPlainType BareSelfType
         => GrammarAttribute.IsCached(in bareSelfTypeCached) ? bareSelfType!
             : this.Synthetic(ref bareSelfTypeCached, ref bareSelfType,
                 BareTypeAspect.TypeDefinition_BareSelfType);
-    private SelfPlainType? bareSelfType;
+    private ConstructedPlainType? bareSelfType;
     private bool bareSelfTypeCached;
     public IImplicitSelfDefinitionNode ImplicitSelf
         => GrammarAttribute.IsCached(in implicitSelfCached) ? implicitSelf!
@@ -5954,11 +5954,11 @@ file class TraitDefinitionNode : SemanticNode, ITraitDefinitionNode
                 LexicalScopingAspect.TypeDefinition_LexicalScope);
     private LexicalScope? lexicalScope;
     private bool lexicalScopeCached;
-    public SelfPlainType SelfPlainType
+    public ConstructedPlainType SelfPlainType
         => GrammarAttribute.IsCached(in selfPlainTypeCached) ? selfPlainType!
             : this.Synthetic(ref selfPlainTypeCached, ref selfPlainType,
                 DefinitionPlainTypesAspect.TypeDefinition_SelfPlainType);
-    private SelfPlainType? selfPlainType;
+    private ConstructedPlainType? selfPlainType;
     private bool selfPlainTypeCached;
     public IFixedSet<ConstructedBareType> Supertypes
         => GrammarAttribute.IsCached(in supertypesCached) ? supertypes.UnsafeValue
@@ -6117,11 +6117,11 @@ file class ImplicitSelfDefinitionNode : SemanticNode, IImplicitSelfDefinitionNod
                 SymbolsAspect.ImplicitSelfDefinition_Symbol);
     private AssociatedTypeSymbol? symbol;
     private bool symbolCached;
-    public AssociatedTypeFactory TypeFactory
+    public AssociatedTypeConstructor TypeFactory
         => GrammarAttribute.IsCached(in typeFactoryCached) ? typeFactory!
             : this.Synthetic(ref typeFactoryCached, ref typeFactory,
                 DefinitionPlainTypesAspect.ImplicitSelfDefinition_TypeFactory);
-    private AssociatedTypeFactory? typeFactory;
+    private AssociatedTypeConstructor? typeFactory;
     private bool typeFactoryCached;
 
     public ImplicitSelfDefinitionNode()

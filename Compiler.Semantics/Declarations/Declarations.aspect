@@ -64,7 +64,7 @@
 ↑ ImplicitSelfDeclaration.Syntax: `ISyntax`? => null;
 ↑ ImplicitSelfDeclaration.Name: `BuiltInTypeName` => BuiltInTypeName.Self;
 = ImplicitSelfDeclaration.Supertypes => [];
-↑ ImplicitSelfDeclaration.TypeFactory: `AssociatedTypeFactory`;
+↑ ImplicitSelfDeclaration.TypeFactory: `AssociatedTypeConstructor`;
 ↑ ImplicitSelfDeclaration.Symbol: `AssociatedTypeSymbol`;
 = ImplicitSelfDeclaration.Members => [];
 = ImplicitSelfDeclaration.InclusiveMembers => [];

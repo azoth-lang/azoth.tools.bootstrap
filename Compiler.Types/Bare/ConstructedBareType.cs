@@ -14,6 +14,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 /// <remarks>Keeping this separate from <see cref="BareType"/> enables it to be used as the type for
 /// supertypes. This encodes the fact that <see cref="AssociatedBareType"/>s are not allowed to be
 /// used as supertypes.</remarks>
+// TODO merge up into BareType
 public sealed class ConstructedBareType : BareType
 {
     public override ConstructedPlainType PlainType { get; }

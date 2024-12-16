@@ -103,8 +103,6 @@ public sealed class PackageNameScope
             FunctionPlainType _ => null,
             OptionalPlainType _ => throw new NotImplementedException(),
             GenericParameterPlainType t => Lookup(t),
-            OrdinaryAssociatedPlainType _ => null,
-            SelfPlainType _ => null,
             ConstructedPlainType t => Lookup(t.TypeConstructor),
             _ => throw ExhaustiveMatch.Failed(plainType),
         };
@@ -126,6 +124,7 @@ public sealed class PackageNameScope
             LiteralTypeConstructor _ => null,
             AnyTypeConstructor t => Lookup(t),
             OrdinaryTypeConstructor t => Lookup(t),
+            AssociatedTypeConstructor t => Lookup(t),
             _ => throw ExhaustiveMatch.Failed(typeConstructor),
         };
 
@@ -140,6 +139,28 @@ public sealed class PackageNameScope
             ns = ns.GetChildNamespaceScope(name) ?? throw new UnreachableException("Type namespace must exist");
 
         return ns.Lookup(typeConstructor.Name).OfType<ITypeDeclarationNode>().Single();
+    }
+
+    public ITypeDeclarationNode Lookup(AssociatedTypeConstructor typeConstructor)
+        => typeConstructor switch
+        {
+            OrdinaryAssociatedTypeConstructor t => Lookup(t),
+            SelfTypeConstructor t => Lookup(t),
+            _ => throw ExhaustiveMatch.Failed(typeConstructor),
+        };
+
+    public ITypeDeclarationNode Lookup(OrdinaryAssociatedTypeConstructor typeConstructor)
+    {
+        // TODO remove need for `!`
+        var context = Lookup(typeConstructor.Context)!;
+        return context.AssociatedMembersNamed(typeConstructor.Name).OfType<ITypeDeclarationNode>().Single();
+    }
+
+    public ITypeDeclarationNode Lookup(SelfTypeConstructor typeConstructor)
+    {
+        // TODO remove need for cast
+        var context = (INonVariableTypeDeclarationNode)Lookup(typeConstructor.Context)!;
+        return context.ImplicitSelf;
     }
 
     public ITypeDeclarationNode Lookup(SimpleTypeConstructor typeConstructor)

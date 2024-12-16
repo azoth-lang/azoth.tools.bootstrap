@@ -18,7 +18,7 @@ public abstract class SimpleTypeConstructor : SimpleOrLiteralTypeConstructor
 
     public sealed override bool CanBeInstantiated => true;
 
-    public sealed override TypeSemantics Semantics => TypeSemantics.Value;
+    public sealed override TypeSemantics? Semantics => TypeSemantics.Value;
 
     public sealed override BuiltInTypeName Name { get; }
 

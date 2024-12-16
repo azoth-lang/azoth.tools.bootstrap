@@ -20,7 +20,7 @@
 // ---------- Type Definitions
 // TODO move the definition of type factories to their own aspect
 ↑ TypeDefinition.TypeFactory: `OrdinaryTypeConstructor`;
-↑ TypeDefinition.SelfPlainType: `SelfPlainType`;
+↑ TypeDefinition.SelfPlainType: `ConstructedPlainType`;
 = TypeDefinition.SelfPlainType;
 
 // ---------- Type Definition Parts

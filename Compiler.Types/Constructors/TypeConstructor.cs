@@ -18,7 +18,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 [Closed(
     typeof(OrdinaryTypeConstructor),
     typeof(AnyTypeConstructor),
-    typeof(SimpleOrLiteralTypeConstructor))]
+    typeof(SimpleOrLiteralTypeConstructor),
+    typeof(AssociatedTypeConstructor))]
 [DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
 public abstract partial class TypeConstructor : TypeConstructorContext, IEquatable<TypeConstructor>, ITypeFactory
 {
@@ -162,7 +163,7 @@ public abstract partial class TypeConstructor : TypeConstructorContext, IEquatab
     /// </summary>
     public abstract bool CanBeSupertype { get; }
 
-    public abstract TypeSemantics Semantics { get; }
+    public abstract TypeSemantics? Semantics { get; }
 
     public abstract TypeName Name { get; }
 
@@ -270,7 +271,6 @@ public abstract partial class TypeConstructor : TypeConstructorContext, IEquatab
         // Type constructors require a capability, not just type parameters, to construct a full type.
         return null;
     }
-
 
     /// <summary>
     /// Try to construct a plain type with type arguments. If the type constructor takes one or more

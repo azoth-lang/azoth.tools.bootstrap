@@ -12,7 +12,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 internal static partial class BareTypeAspect
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial SelfPlainType TypeDefinition_BareSelfType(ITypeDefinitionNode node);
+    public static partial ConstructedPlainType TypeDefinition_BareSelfType(ITypeDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial BareType? TypeNameExpression_NamedBareType(ITypeNameExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

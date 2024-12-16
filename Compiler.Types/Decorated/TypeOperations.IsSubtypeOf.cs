@@ -37,8 +37,6 @@ public static partial class TypeOperations
 
         switch ((self.PlainType, other.PlainType))
         {
-            case (AssociatedPlainType s, AssociatedPlainType o):
-                return s.Equals(o);
             case (ConstructedPlainType s, ConstructedPlainType o):
                 var selfBareType = new ConstructedBareType(s, self.Arguments);
                 var otherBareType = new ConstructedBareType(o, other.Arguments);

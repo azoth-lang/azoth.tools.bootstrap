@@ -69,7 +69,6 @@ internal sealed class PlainTypeReplacements
         => plainType switch
         {
             NeverPlainType t => t,
-            AssociatedPlainType t => t,
             ConstructedPlainType t => ReplaceTypeParametersIn(t),
             GenericParameterPlainType t => ReplaceTypeParametersIn(t),
             FunctionPlainType t => ReplaceTypeParametersIn(t),
@@ -81,7 +80,6 @@ internal sealed class PlainTypeReplacements
         => plainType switch
         {
             ConstructedPlainType t => ReplaceTypeParametersIn(t),
-            AssociatedPlainType t => t,
             _ => throw ExhaustiveMatch.Failed(plainType)
         };
 

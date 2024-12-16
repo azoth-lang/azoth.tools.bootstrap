@@ -13,9 +13,6 @@ public sealed class CapabilityType : NonVoidType
     public static CapabilityType Create(Capability capability, ConstructedPlainType plainType)
         => new(capability, new ConstructedBareType(plainType, []));
 
-    public static CapabilityType Create(Capability capability, AssociatedPlainType plainType)
-        => new(capability, new AssociatedBareType(plainType));
-
     public static CapabilityType Create(Capability capability, BareType bareType)
         => new(capability, bareType);
 

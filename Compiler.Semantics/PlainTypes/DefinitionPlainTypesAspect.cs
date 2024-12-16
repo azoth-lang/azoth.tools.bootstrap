@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
-using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using Azoth.Tools.Bootstrap.Framework;
@@ -58,12 +57,12 @@ internal static partial class DefinitionPlainTypesAspect
     #endregion
 
     #region Type Definition Parts
-    public static partial AssociatedTypeFactory ImplicitSelfDefinition_TypeFactory(IImplicitSelfDefinitionNode node)
+    public static partial AssociatedTypeConstructor ImplicitSelfDefinition_TypeFactory(IImplicitSelfDefinitionNode node)
         => throw new NotImplementedException();
     #endregion
 
-    public static partial SelfPlainType TypeDefinition_SelfPlainType(ITypeDefinitionNode node)
-        => new(node.TypeFactory);
+    public static partial ConstructedPlainType TypeDefinition_SelfPlainType(ITypeDefinitionNode node)
+        => new(node.TypeFactory, []);
 
     public static partial IMaybeNonVoidPlainType FieldDefinition_BindingPlainType(IFieldDefinitionNode node)
         => node.TypeNode.NamedPlainType.ToNonVoid();
