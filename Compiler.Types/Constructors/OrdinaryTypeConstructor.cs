@@ -60,7 +60,7 @@ public sealed class OrdinaryTypeConstructor : TypeConstructor
 
     public override IFixedList<GenericParameterTypeFactory> ParameterTypeFactories { get; }
 
-    public override IFixedSet<ConstructedBareType> Supertypes { get; }
+    public override IFixedSet<BareType> Supertypes { get; }
     public override TypeSemantics? Semantics
         => Kind == TypeKind.Struct ? TypeSemantics.Value : TypeSemantics.Reference;
 
@@ -71,7 +71,7 @@ public sealed class OrdinaryTypeConstructor : TypeConstructor
         TypeKind kind,
         OrdinaryName name,
         IEnumerable<Parameter> genericParameters,
-        IFixedSet<ConstructedBareType> supertypes)
+        IFixedSet<BareType> supertypes)
     {
         Requires.That((kind == TypeKind.Trait).Implies(isAbstract), nameof(isAbstract), "Traits must be abstract.");
         Requires.That((kind == TypeKind.Struct).Implies(!isAbstract), nameof(isAbstract), "Structs cannot be abstract.");

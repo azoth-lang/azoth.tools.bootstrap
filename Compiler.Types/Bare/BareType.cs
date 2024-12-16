@@ -1,10 +1,11 @@
 using System.Diagnostics;
+using System.Text;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using Azoth.Tools.Bootstrap.Framework;
-using ExhaustiveMatching;
+using MoreLinq;
 using Type = Azoth.Tools.Bootstrap.Compiler.Types.Decorated.Type;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Bare;
@@ -14,31 +15,45 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 /// </summary>
 /// <remarks>While bare types do not have a capability prefix, they do have capabilities on their
 /// type arguments. That is how they are distinct from plain types.</remarks>
-[Closed(
-    typeof(ConstructedBareType))]
 [DebuggerDisplay("{" + nameof(ToILString) + "(),nq}")]
-public abstract class BareType : IEquatable<BareType>
+public sealed class BareType : IEquatable<BareType>
 {
     // Note: must use AnyTypeConstructor.PlainType instead of PlainType.Any to avoid circular
     // dependency when initializing statics.
-    public static readonly ConstructedBareType Any = new(AnyTypeConstructor.PlainType, []);
-    public static readonly IFixedSet<ConstructedBareType> AnySet = Any.Yield().ToFixedSet();
+    public static readonly BareType Any = new(AnyTypeConstructor.PlainType, []);
+    public static readonly IFixedSet<BareType> AnySet = Any.Yield().ToFixedSet();
 
     // TODO add containing type for capabilities on containing type arguments
 
-    public abstract ConstructedPlainType PlainType { get; }
+    public ConstructedPlainType PlainType { get; }
+    public TypeConstructor TypeConstructor => PlainType.TypeConstructor;
+    public IFixedList<Type> Arguments { get; }
+    public bool HasIndependentTypeArguments { get; }
+    public TypeReplacements TypeReplacements { get; }
 
-    public abstract TypeConstructor? TypeConstructor { get; }
+    public IFixedList<TypeParameterArgument> TypeParameterArguments
+        => LazyInitializer.EnsureInitialized(ref typeParameterArguments,
+            () => PlainType.TypeConstructor.Parameters
+                           .EquiZip(Arguments,
+                               (p, a) => new TypeParameterArgument(p, a)).ToFixedList());
+    private IFixedList<TypeParameterArgument>? typeParameterArguments;
 
-    public abstract IFixedList<Type> Arguments { get; }
+    public IFixedSet<BareType> Supertypes
+        => LazyInitializer.EnsureInitialized(ref supertypes,
+            () => TypeConstructor.Supertypes.Select(t => TypeReplacements.ReplaceTypeParametersIn(t)).ToFixedSet());
+    private IFixedSet<BareType>? supertypes;
 
-    public abstract bool HasIndependentTypeArguments { get; }
-
-    public abstract IFixedList<TypeParameterArgument> TypeParameterArguments { get; }
-
-    public abstract TypeReplacements TypeReplacements { get; }
-
-    public bool IsDeclaredConst => TypeConstructor?.IsDeclaredConst ?? false;
+    public BareType(ConstructedPlainType plainType, IFixedList<Type> arguments)
+    {
+        Requires.That(plainType.Arguments.SequenceEqual(arguments.Select(a => a.PlainType)), nameof(arguments),
+            "Type arguments must match plain type.");
+        PlainType = plainType;
+        Arguments = arguments;
+        HasIndependentTypeArguments = PlainType.TypeConstructor.HasIndependentParameters
+                                      || Arguments.Any(a => a.HasIndependentTypeArguments);
+        // TODO could pass TypeParameterArguments instead?
+        TypeReplacements = new(plainType.TypeReplacements, plainType.TypeConstructor, Arguments);
+    }
 
     public CapabilityType With(Capability capability)
         => CapabilityType.Create(capability, this);
@@ -48,31 +63,57 @@ public abstract class BareType : IEquatable<BareType>
     /// declared `const`.
     /// </summary>
     public CapabilityType WithDefaultRead()
-        => With(IsDeclaredConst ? Capability.Constant : Capability.Read);
+        => With(TypeConstructor.IsDeclaredConst ? Capability.Constant : Capability.Read);
 
     /// <summary>
     /// This type with whatever the default mutable capability is for the type based on whether it is
     /// declared `const`.
     /// </summary>
     public CapabilityType WithDefaultMutate()
-        => With(IsDeclaredConst ? Capability.Constant : Capability.Mutable);
+        => With(TypeConstructor.IsDeclaredConst ? Capability.Constant : Capability.Mutable);
 
-    public abstract BareType WithReplacement(IFixedList<Type> arguments);
+    public BareType WithReplacement(IFixedList<Type> arguments)
+        => new BareType(PlainType, arguments);
 
-    public virtual ConstructedBareType? TryToNonLiteral() => null;
+    public BareType? TryToNonLiteral()
+    {
+        var newPlainType = PlainType.TryToNonLiteral();
+        if (newPlainType is null) return null;
+        return new(newPlainType, Arguments);
+    }
 
     #region Equality
-    public abstract bool Equals(BareType? other);
+    public bool Equals(BareType? other)
+    {
+        if (other is null) return false;
+        if (ReferenceEquals(this, other)) return true;
+        return other is BareType otherType
+               && PlainType.Equals(otherType.PlainType)
+               && Arguments.Equals(otherType.Arguments);
+    }
 
-    public sealed override bool Equals(object? obj)
+    public override bool Equals(object? obj)
         => ReferenceEquals(this, obj) || obj is BareType other && Equals(other);
 
-    public abstract override int GetHashCode();
+    public override int GetHashCode() => HashCode.Combine(PlainType, Arguments);
     #endregion
 
-    public sealed override string ToString() => ToILString();
+    public override string ToString() => ToILString();
 
-    public abstract string ToSourceCodeString();
+    public string ToSourceCodeString() => ToString(t => t.ToSourceCodeString());
+    public string ToILString() => ToString(t => t.ToILString());
 
-    public abstract string ToILString();
+    private string ToString(Func<Type, string> toString)
+    {
+        var builder = new StringBuilder();
+        builder.Append(PlainType.ToBareString());
+        if (!Arguments.IsEmpty)
+        {
+            builder.Append('[');
+            builder.AppendJoin(", ", Arguments.Select(toString));
+            builder.Append(']');
+        }
+
+        return builder.ToString();
+    }
 }

@@ -11,7 +11,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 public sealed class CapabilityType : NonVoidType
 {
     public static CapabilityType Create(Capability capability, ConstructedPlainType plainType)
-        => new(capability, new ConstructedBareType(plainType, []));
+        => new(capability, new BareType(plainType, []));
 
     public static CapabilityType Create(Capability capability, BareType bareType)
         => new(capability, bareType);
@@ -70,7 +70,7 @@ public sealed class CapabilityType : NonVoidType
         var supertype = TypeConstructor?.Supertypes.Where(s => s.TypeConstructor.Equals(target)).TrySingle();
         if (supertype is null) throw new ArgumentException($"The type {target} is not a supertype of {ToILString()}.");
 
-        var bareType = new ConstructedBareType(supertype.PlainType, supertype.Arguments);
+        var bareType = new BareType(supertype.PlainType, supertype.Arguments);
         bareType = TypeReplacements.ReplaceTypeParametersIn(bareType);
 
         return bareType.With(Capability);

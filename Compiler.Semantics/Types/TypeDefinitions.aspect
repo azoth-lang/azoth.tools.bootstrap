@@ -9,7 +9,7 @@
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
 // ---------- Type Definitions
-⟳ TypeDefinition.Supertypes: {`ConstructedBareType`} initial
+⟳ TypeDefinition.Supertypes: {`BareType`} initial
     => BareType.AnySet;
 = TypeDefinition.Supertypes;
 = TypeDefinition.↑.Diagnostics;

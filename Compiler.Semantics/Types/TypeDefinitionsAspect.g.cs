@@ -15,7 +15,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 internal static partial class TypeDefinitionsAspect
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IFixedSet<ConstructedBareType> TypeDefinition_Supertypes(ITypeDefinitionNode node);
+    public static partial IFixedSet<BareType> TypeDefinition_Supertypes(ITypeDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial void TypeDefinition_Contribute_Diagnostics(ITypeDefinitionNode node, DiagnosticCollectionBuilder diagnostics);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

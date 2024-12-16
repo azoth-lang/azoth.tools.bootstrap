@@ -43,7 +43,7 @@ internal static partial class TypeDefinitionsAspect
     public static partial GenericParameterType GenericParameter_DeclaredType(IGenericParameterNode node)
         => node.ContainingTypeConstructor.ParameterTypes.Single(t => t.Parameter.Equals(node.Parameter));
 
-    public static partial IFixedSet<ConstructedBareType> TypeDefinition_Supertypes(ITypeDefinitionNode node)
+    public static partial IFixedSet<BareType> TypeDefinition_Supertypes(ITypeDefinitionNode node)
     {
         // Note: Supertypes is a circular attribute that both declared types and symbols depend on.
         // While there are many ways to write this that will give the correct answer, care should be
@@ -64,13 +64,13 @@ internal static partial class TypeDefinitionsAspect
                .Append(BareType.Any)
                .ToFixedSet();
 
-        IEnumerable<ConstructedBareType> Build()
+        IEnumerable<BareType> Build()
         {
             // Handled by supertype because that is the only syntax we have to apply the compiler
             // errors to. (Could possibly use type arguments in the future.)
             foreach (var supertypeName in node.AllSupertypeNames)
             {
-                if (supertypeName.NamedBareType is not ConstructedBareType { TypeConstructor.CanBeSupertype: true } bareSupertype)
+                if (supertypeName.NamedBareType is not { TypeConstructor.CanBeSupertype: true } bareSupertype)
                     // A diagnostic will be generated elsewhere for this case
                     continue;
 

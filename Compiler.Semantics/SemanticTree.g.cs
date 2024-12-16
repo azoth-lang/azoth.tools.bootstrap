@@ -526,8 +526,8 @@ public partial interface ITypeDefinitionNode : ICodeNode, IFacetMemberDefinition
     new OrdinaryTypeConstructor TypeFactory { get; }
     TypeConstructor IUserTypeDeclarationNode.TypeFactory => TypeFactory;
     ITypeFactory ITypeDeclarationNode.TypeFactory => TypeFactory;
-    new IFixedSet<ConstructedBareType> Supertypes { get; }
-    IFixedSet<ConstructedBareType> ITypeDeclarationNode.Supertypes => Supertypes;
+    new IFixedSet<BareType> Supertypes { get; }
+    IFixedSet<BareType> ITypeDeclarationNode.Supertypes => Supertypes;
     new IFixedSet<ITypeMemberDefinitionNode> Members { get; }
     IFixedSet<ITypeMemberDeclarationNode> IUserTypeDeclarationNode.Members => Members;
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
@@ -651,7 +651,7 @@ public partial interface IGenericParameterNode : ICodeNode, IGenericParameterDec
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.InclusiveMembers
         => [];
-    IFixedSet<ConstructedBareType> ITypeDeclarationNode.Supertypes
+    IFixedSet<BareType> ITypeDeclarationNode.Supertypes
         => [];
 
     public static IGenericParameterNode Create(
@@ -3792,7 +3792,7 @@ public partial interface ITypeDeclarationNode : INamedDeclarationNode, ISymbolDe
 {
     IEnumerable<IInstanceMemberDeclarationNode> InclusiveInstanceMembersNamed(OrdinaryName named);
     IEnumerable<IAssociatedMemberDeclarationNode> AssociatedMembersNamed(OrdinaryName named);
-    IFixedSet<ConstructedBareType> Supertypes { get; }
+    IFixedSet<BareType> Supertypes { get; }
     ITypeFactory TypeFactory { get; }
     new TypeSymbol Symbol { get; }
     Symbol? ISymbolDeclarationNode.Symbol => Symbol;
@@ -3936,7 +3936,7 @@ public partial interface IImplicitSelfDeclarationNode : ITypeDeclarationNode
         => [];
     IEnumerable<IAssociatedMemberDeclarationNode> ITypeDeclarationNode.AssociatedMembersNamed(OrdinaryName named)
         => [];
-    IFixedSet<ConstructedBareType> ITypeDeclarationNode.Supertypes
+    IFixedSet<BareType> ITypeDeclarationNode.Supertypes
         => [];
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members
         => [];
@@ -4292,7 +4292,7 @@ public partial interface IBuiltInTypeSymbolNode : IBuiltInTypeDeclarationNode, I
     IFixedSet<ITypeMemberDeclarationNode> IBuiltInTypeDeclarationNode.Members => Members;
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
     IFixedSet<ITypeMemberSymbolNode> ITypeSymbolNode.Members => Members;
-    IFixedSet<ConstructedBareType> ITypeDeclarationNode.Supertypes
+    IFixedSet<BareType> ITypeDeclarationNode.Supertypes
         => Symbol.TryGetTypeConstructor()?.Supertypes ?? [];
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.InclusiveMembers
         => Members;
@@ -4376,7 +4376,7 @@ public partial interface IOrdinaryTypeSymbolNode : IUserTypeDeclarationNode, INo
     IFixedSet<ITypeMemberDeclarationNode> IUserTypeDeclarationNode.Members => Members;
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
     IFixedSet<ITypeMemberSymbolNode> ITypeSymbolNode.Members => Members;
-    IFixedSet<ConstructedBareType> ITypeDeclarationNode.Supertypes
+    IFixedSet<BareType> ITypeDeclarationNode.Supertypes
         => Symbol.TryGetTypeConstructor().Supertypes;
     TypeConstructor IUserTypeDeclarationNode.TypeFactory
         => Symbol.TypeConstructor;
@@ -4453,7 +4453,7 @@ public partial interface IGenericParameterSymbolNode : IGenericParameterDeclarat
     IFixedSet<ITypeMemberDeclarationNode> IGenericParameterDeclarationNode.Members => Members;
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
     IFixedSet<ITypeMemberSymbolNode> ITypeSymbolNode.Members => Members;
-    IFixedSet<ConstructedBareType> ITypeDeclarationNode.Supertypes
+    IFixedSet<BareType> ITypeDeclarationNode.Supertypes
         => Symbol.TryGetTypeConstructor()?.Supertypes ?? [];
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.InclusiveMembers
         => [];
@@ -5613,11 +5613,11 @@ file class ClassDefinitionNode : SemanticNode, IClassDefinitionNode
                 DefaultMembersAspect.ClassDefinition_Members);
     private IFixedSet<IClassMemberDefinitionNode>? members;
     private bool membersCached;
-    public IFixedSet<ConstructedBareType> Supertypes
+    public IFixedSet<BareType> Supertypes
         => GrammarAttribute.IsCached(in supertypesCached) ? supertypes.UnsafeValue
             : this.Circular(ref supertypesCached, ref supertypes,
                 TypeDefinitionsAspect.TypeDefinition_Supertypes);
-    private Circular<IFixedSet<ConstructedBareType>> supertypes = new(BareType.AnySet);
+    private Circular<IFixedSet<BareType>> supertypes = new(BareType.AnySet);
     private bool supertypesCached;
     public LexicalScope SupertypesLexicalScope
         => GrammarAttribute.IsCached(in supertypesLexicalScopeCached) ? supertypesLexicalScope!
@@ -5775,11 +5775,11 @@ file class StructDefinitionNode : SemanticNode, IStructDefinitionNode
                 DefaultMembersAspect.StructDefinition_Members);
     private IFixedSet<IStructMemberDefinitionNode>? members;
     private bool membersCached;
-    public IFixedSet<ConstructedBareType> Supertypes
+    public IFixedSet<BareType> Supertypes
         => GrammarAttribute.IsCached(in supertypesCached) ? supertypes.UnsafeValue
             : this.Circular(ref supertypesCached, ref supertypes,
                 TypeDefinitionsAspect.TypeDefinition_Supertypes);
-    private Circular<IFixedSet<ConstructedBareType>> supertypes = new(BareType.AnySet);
+    private Circular<IFixedSet<BareType>> supertypes = new(BareType.AnySet);
     private bool supertypesCached;
     public LexicalScope SupertypesLexicalScope
         => GrammarAttribute.IsCached(in supertypesLexicalScopeCached) ? supertypesLexicalScope!
@@ -5922,11 +5922,11 @@ file class TraitDefinitionNode : SemanticNode, ITraitDefinitionNode
                 LexicalScopingAspect.TypeDefinition_LexicalScope);
     private LexicalScope? lexicalScope;
     private bool lexicalScopeCached;
-    public IFixedSet<ConstructedBareType> Supertypes
+    public IFixedSet<BareType> Supertypes
         => GrammarAttribute.IsCached(in supertypesCached) ? supertypes.UnsafeValue
             : this.Circular(ref supertypesCached, ref supertypes,
                 TypeDefinitionsAspect.TypeDefinition_Supertypes);
-    private Circular<IFixedSet<ConstructedBareType>> supertypes = new(BareType.AnySet);
+    private Circular<IFixedSet<BareType>> supertypes = new(BareType.AnySet);
     private bool supertypesCached;
     public LexicalScope SupertypesLexicalScope
         => GrammarAttribute.IsCached(in supertypesLexicalScopeCached) ? supertypesLexicalScope!

@@ -44,7 +44,7 @@
 ↑ FunctionDeclaration.Symbol: `FunctionSymbol`?;
 
 // ---------- Type Declarations
-↑ TypeDeclaration.Supertypes: {`ConstructedBareType`};
+↑ TypeDeclaration.Supertypes: {`BareType`};
 ↑ TypeDeclaration.TypeFactory: `ITypeFactory`;
 ↑ TypeDeclaration.Symbol: `TypeSymbol`;
 ↑ TypeDeclaration.Members: {TypeMemberDeclaration};

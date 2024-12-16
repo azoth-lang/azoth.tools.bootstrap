@@ -185,13 +185,6 @@ public sealed class TypeReplacements
     }
 
     public BareType ReplaceTypeParametersIn(BareType bareType)
-        => bareType switch
-        {
-            ConstructedBareType t => ReplaceTypeParametersIn(t),
-            _ => throw ExhaustiveMatch.Failed(bareType),
-        };
-
-    public ConstructedBareType ReplaceTypeParametersIn(ConstructedBareType bareType)
     {
         var replacementTypes = ReplaceTypeParametersIn(bareType.Arguments);
         if (ReferenceEquals(bareType.Arguments, replacementTypes)) return bareType;

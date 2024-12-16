@@ -8,7 +8,7 @@ public sealed class SelfTypeConstructor : AssociatedTypeConstructor
 {
     public override BuiltInTypeName Name => BuiltInTypeName.Self;
 
-    public override IFixedSet<ConstructedBareType> Supertypes { get; }
+    public override IFixedSet<BareType> Supertypes { get; }
 
     public SelfTypeConstructor(TypeConstructor containingTypeConstructor)
         : base(containingTypeConstructor)

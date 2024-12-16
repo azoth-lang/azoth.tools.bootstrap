@@ -54,7 +54,7 @@ public abstract partial class TypeConstructor : TypeConstructorContext, IEquatab
         bool isConst,
         OrdinaryName name,
         IFixedList<Parameter> genericParameters,
-        IFixedSet<ConstructedBareType> supertypes)
+        IFixedSet<BareType> supertypes)
         => new(new NamespaceContext(containingPackage, containingNamespace),
             isAbstract: false, isConst, TypeKind.Struct, name, genericParameters, supertypes);
 
@@ -82,7 +82,7 @@ public abstract partial class TypeConstructor : TypeConstructorContext, IEquatab
         bool isConst,
         string name,
         IFixedList<Parameter> genericParameters,
-        IFixedSet<ConstructedBareType> supertypes)
+        IFixedSet<BareType> supertypes)
         => new(new NamespaceContext(containingPackage, containingNamespace),
             isAbstract, isConst, TypeKind.Class, OrdinaryName.Create(name, genericParameters.Count),
             genericParameters, supertypes);
@@ -94,7 +94,7 @@ public abstract partial class TypeConstructor : TypeConstructorContext, IEquatab
         bool isConst,
         OrdinaryName name,
         IFixedList<Parameter> genericParameters,
-        IFixedSet<ConstructedBareType> supertypes)
+        IFixedSet<BareType> supertypes)
         => new(new NamespaceContext(containingPackage, containingNamespace),
             isAbstract, isConst, TypeKind.Class, name, genericParameters, supertypes);
 
@@ -104,7 +104,7 @@ public abstract partial class TypeConstructor : TypeConstructorContext, IEquatab
         bool isConst,
         OrdinaryName name,
         IFixedList<Parameter> genericParameters,
-        IFixedSet<ConstructedBareType> supertypes)
+        IFixedSet<BareType> supertypes)
         => new(new NamespaceContext(containingPackage, containingNamespace),
             isAbstract: true, isConst, TypeKind.Trait, name, genericParameters, supertypes);
 
@@ -198,10 +198,10 @@ public abstract partial class TypeConstructor : TypeConstructorContext, IEquatab
             () => ParameterTypeFactories.Select(p => p.Type).ToFixedList());
     private IFixedList<GenericParameterType>? parameterTypes;
 
-    public abstract IFixedSet<ConstructedBareType> Supertypes { get; }
+    public abstract IFixedSet<BareType> Supertypes { get; }
 
     private ConstructedPlainType? withParameterPlainTypes;
-    private ConstructedBareType? withParameterTypes;
+    private BareType? withParameterTypes;
 
     public abstract ConstructedPlainType Construct(IFixedList<PlainType> arguments);
 
@@ -218,7 +218,7 @@ public abstract partial class TypeConstructor : TypeConstructorContext, IEquatab
     /// used inside the type definition.
     /// </summary>
     // TODO will this be needed once `Self` is properly used?
-    public ConstructedBareType ConstructWithParameterTypes()
+    public BareType ConstructWithParameterTypes()
         => LazyInitializer.EnsureInitialized(ref withParameterTypes,
             () => new(ConstructWithParameterPlainTypes(), ParameterTypes));
 
@@ -233,7 +233,7 @@ public abstract partial class TypeConstructor : TypeConstructorContext, IEquatab
         return Construct(properArguments);
     }
 
-    public ConstructedBareType Construct(IFixedList<Type> arguments)
+    public BareType Construct(IFixedList<Type> arguments)
     {
         var plainType = Construct(arguments.Select(a => a.PlainType).ToFixedList());
         return new(plainType, arguments);
@@ -243,7 +243,7 @@ public abstract partial class TypeConstructor : TypeConstructorContext, IEquatab
     /// Attempt to construct a type from this type constructor with possibly unknown arguments. If
     /// any argument is unknown, the result is <see langword="null"/>.
     /// </summary>
-    public ConstructedBareType? TryConstruct(IFixedList<IMaybeType> arguments)
+    public BareType? TryConstruct(IFixedList<IMaybeType> arguments)
     {
         var properTypeArguments = arguments.As<Type>();
         if (properTypeArguments is null) return null;
@@ -256,7 +256,7 @@ public abstract partial class TypeConstructor : TypeConstructorContext, IEquatab
     /// Construct this type with no type arguments.
     /// </summary>
     /// <exception cref="InvalidOperationException">This type constructor takes one or more arguments.</exception>
-    public ConstructedBareType ConstructNullaryType()
+    public BareType ConstructNullaryType()
     {
         if (!Parameters.IsEmpty)
             throw new InvalidOperationException($"Cannot construct nullary type for type constructor `{this}` expecting arguments.");

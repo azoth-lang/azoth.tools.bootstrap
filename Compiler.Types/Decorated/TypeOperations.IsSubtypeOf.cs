@@ -38,8 +38,8 @@ public static partial class TypeOperations
         switch ((self.PlainType, other.PlainType))
         {
             case (ConstructedPlainType s, ConstructedPlainType o):
-                var selfBareType = new ConstructedBareType(s, self.Arguments);
-                var otherBareType = new ConstructedBareType(o, other.Arguments);
+                var selfBareType = new BareType(s, self.Arguments);
+                var otherBareType = new BareType(o, other.Arguments);
                 return selfBareType.IsSubtypeOf(otherBareType, other.Capability.AllowsWrite);
             default:
                 return false;
@@ -58,7 +58,7 @@ public static partial class TypeOperations
         => self.Capability.IsSubtypeOf(other.Capability)
            && self.Referent.IsSubtypeOf(other.Referent);
 
-    private static bool IsSubtypeOf(this ConstructedBareType self, ConstructedBareType other, bool otherAllowsWrite)
+    private static bool IsSubtypeOf(this BareType self, BareType other, bool otherAllowsWrite)
     {
         if (self.Equals(other) || self.Supertypes.Contains(other))
             return true;
