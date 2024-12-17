@@ -486,8 +486,8 @@ FunctionSymbol <: FunctionDeclaration, NamespaceMemberSymbol = Symbol:`FunctionS
 TypeSymbol <: TypeDeclaration, ChildSymbol = Symbol:`TypeSymbol`;
 NonVariableTypeSymbol <: NonVariableTypeDeclaration, TypeSymbol;
 BuiltInTypeSymbol <: BuiltInTypeDeclaration, NonVariableTypeSymbol;
-VoidTypeSymbol <: BuiltInTypeSymbol = Symbol:`VoidTypeSymbol`;
-NeverTypeSymbol <: BuiltInTypeSymbol = Symbol:`NeverTypeSymbol`;
+VoidTypeSymbol <: TypeSymbol = Symbol:`VoidTypeSymbol`;
+NeverTypeSymbol <: TypeSymbol = Symbol:`NeverTypeSymbol`;
 // TODO rename to SimpleTypeSymbol?
 PrimitiveTypeSymbol <: BuiltInTypeSymbol = Symbol:`BuiltInTypeSymbol`;
 OrdinaryTypeSymbol <: UserTypeDeclaration, NonVariableTypeSymbol, NamespaceMemberSymbol = Symbol:`OrdinaryTypeSymbol`;

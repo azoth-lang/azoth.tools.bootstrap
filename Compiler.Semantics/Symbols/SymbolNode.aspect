@@ -75,8 +75,18 @@
 
 = VoidTypeSymbol.Name => Symbol.Name;
 = VoidTypeSymbol.TypeFactory => ITypeFactory.Void;
+= VoidTypeSymbol.Supertypes => [];
+= VoidTypeSymbol.Members => [];
+= VoidTypeSymbol.InclusiveMembers => Members;
+= VoidTypeSymbol.InclusiveInstanceMembersNamed(OrdinaryName named) => [];
+= VoidTypeSymbol.AssociatedMembersNamed(OrdinaryName named) => [];
 = NeverTypeSymbol.Name => Symbol.Name;
 = NeverTypeSymbol.TypeFactory => ITypeFactory.Never;
+= NeverTypeSymbol.Supertypes => [];
+= NeverTypeSymbol.Members => [];
+= NeverTypeSymbol.InclusiveMembers => Members;
+= NeverTypeSymbol.InclusiveInstanceMembersNamed(OrdinaryName named) => [];
+= NeverTypeSymbol.AssociatedMembersNamed(OrdinaryName named) => [];
 = PrimitiveTypeSymbol.Name => Symbol.Name;
 = PrimitiveTypeSymbol.TypeFactory => Symbol.TypeConstructor;
 

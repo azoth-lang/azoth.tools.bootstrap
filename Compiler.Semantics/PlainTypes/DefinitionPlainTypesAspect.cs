@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
@@ -58,7 +57,7 @@ internal static partial class DefinitionPlainTypesAspect
 
     #region Type Definition Parts
     public static partial AssociatedTypeConstructor ImplicitSelfDefinition_TypeFactory(IImplicitSelfDefinitionNode node)
-        => throw new NotImplementedException();
+        => new SelfTypeConstructor(node.ContainingDeclaration.TypeFactory);
     #endregion
 
     public static partial IMaybeNonVoidPlainType FieldDefinition_BindingPlainType(IFieldDefinitionNode node)
