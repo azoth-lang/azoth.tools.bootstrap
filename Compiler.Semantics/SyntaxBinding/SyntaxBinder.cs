@@ -251,13 +251,13 @@ internal static class SyntaxBinder
         => INamedParameterNode.Create(syntax, Type(syntax.Type));
 
     private static IConstructorSelfParameterNode ConstructorSelfParameter(IConstructorSelfParameterSyntax syntax)
-        => IConstructorSelfParameterNode.Create(syntax, Capability(syntax.Capability));
+        => IConstructorSelfParameterNode.Create(syntax, Capability(syntax.Constraint));
 
     private static IInitializerSelfParameterNode InitializerSelfParameter(IInitializerSelfParameterSyntax syntax)
-        => IInitializerSelfParameterNode.Create(syntax, Capability(syntax.Capability));
+        => IInitializerSelfParameterNode.Create(syntax, Capability(syntax.Constraint));
 
     private static IMethodSelfParameterNode MethodSelfParameter(IMethodSelfParameterSyntax syntax)
-        => IMethodSelfParameterNode.Create(syntax, CapabilityConstraint(syntax.Capability));
+        => IMethodSelfParameterNode.Create(syntax, CapabilityConstraint(syntax.Constraint));
 
     private static IFieldParameterNode FieldParameter(IFieldParameterSyntax syntax)
         => IFieldParameterNode.Create(syntax);

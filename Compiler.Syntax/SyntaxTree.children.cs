@@ -141,13 +141,13 @@ public static class ISyntaxExtensions
                     yield return n.DefaultValue;
                 yield break;
             case IConstructorSelfParameterSyntax n:
-                yield return n.Capability;
+                yield return n.Constraint;
                 yield break;
             case IInitializerSelfParameterSyntax n:
-                yield return n.Capability;
+                yield return n.Constraint;
                 yield break;
             case IMethodSelfParameterSyntax n:
-                yield return n.Capability;
+                yield return n.Constraint;
                 yield break;
             case IFieldParameterSyntax n:
                 if (n.DefaultValue is not null)

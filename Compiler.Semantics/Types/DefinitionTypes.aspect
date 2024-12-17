@@ -28,6 +28,7 @@
 
 // ---------- Type Definitions
 = TypeDefinition.*.**.ContainingTypeConstructor;
+= TypeDefinition.*.**.ContainingSelfTypeConstructor;
 
 // ---------- Type Definition Parts
 ↓ GenericParameter.ContainingTypeConstructor: `OrdinaryTypeConstructor`;
@@ -37,6 +38,7 @@
 
 // ---------- Parameters
 ↓ SelfParameter.ContainingTypeConstructor: `OrdinaryTypeConstructor`;
+↓ SelfParameter.ContainingSelfTypeConstructor: `SelfTypeConstructor`;
 
 // ---------- Function Parts
 ⟳ Body.FlowStateAfter: `IFlowState` initial => IFlowState.Empty;

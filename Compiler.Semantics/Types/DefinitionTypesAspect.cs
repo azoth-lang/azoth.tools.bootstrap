@@ -12,4 +12,7 @@ internal static partial class DefinitionTypesAspect
 
     public static partial OrdinaryTypeConstructor TypeDefinition_Children_Broadcast_ContainingTypeConstructor(ITypeDefinitionNode node)
         => node.TypeFactory;
+
+    public static partial SelfTypeConstructor TypeDefinition_Children_Broadcast_ContainingSelfTypeConstructor(ITypeDefinitionNode node)
+        => node.ImplicitSelf.TypeFactory;
 }

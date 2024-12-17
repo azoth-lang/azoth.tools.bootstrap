@@ -683,7 +683,7 @@ public partial interface INamedParameterSyntax : IConstructorOrInitializerParame
 public partial interface ISelfParameterSyntax : IParameterSyntax
 {
     bool IsLentBinding { get; }
-    ICapabilityConstraintSyntax Capability { get; }
+    ICapabilityConstraintSyntax Constraint { get; }
     new IdentifierName? Name
         => null;
     IdentifierName? IParameterSyntax.Name => Name;
@@ -693,28 +693,28 @@ public partial interface ISelfParameterSyntax : IParameterSyntax
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IConstructorSelfParameterSyntax : ISelfParameterSyntax
 {
-    new ICapabilitySyntax Capability { get; }
-    ICapabilityConstraintSyntax ISelfParameterSyntax.Capability => Capability;
+    new ICapabilitySyntax Constraint { get; }
+    ICapabilityConstraintSyntax ISelfParameterSyntax.Constraint => Constraint;
 
     public static IConstructorSelfParameterSyntax Create(
         TextSpan span,
         bool isLentBinding,
-        ICapabilitySyntax capability)
-        => new ConstructorSelfParameterSyntax(span, isLentBinding, capability);
+        ICapabilitySyntax constraint)
+        => new ConstructorSelfParameterSyntax(span, isLentBinding, constraint);
 }
 
 // [Closed(typeof(InitializerSelfParameterSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IInitializerSelfParameterSyntax : ISelfParameterSyntax
 {
-    new ICapabilitySyntax Capability { get; }
-    ICapabilityConstraintSyntax ISelfParameterSyntax.Capability => Capability;
+    new ICapabilitySyntax Constraint { get; }
+    ICapabilityConstraintSyntax ISelfParameterSyntax.Constraint => Constraint;
 
     public static IInitializerSelfParameterSyntax Create(
         TextSpan span,
         bool isLentBinding,
-        ICapabilitySyntax capability)
-        => new InitializerSelfParameterSyntax(span, isLentBinding, capability);
+        ICapabilitySyntax constraint)
+        => new InitializerSelfParameterSyntax(span, isLentBinding, constraint);
 }
 
 // [Closed(typeof(MethodSelfParameterSyntax))]
@@ -725,8 +725,8 @@ public partial interface IMethodSelfParameterSyntax : ISelfParameterSyntax
     public static IMethodSelfParameterSyntax Create(
         TextSpan span,
         bool isLentBinding,
-        ICapabilityConstraintSyntax capability)
-        => new MethodSelfParameterSyntax(span, isLentBinding, capability);
+        ICapabilityConstraintSyntax constraint)
+        => new MethodSelfParameterSyntax(span, isLentBinding, constraint);
 }
 
 // [Closed(typeof(FieldParameterSyntax))]
@@ -2390,18 +2390,18 @@ file class ConstructorSelfParameterSyntax : IConstructorSelfParameterSyntax
 
     public TextSpan Span { [DebuggerStepThrough] get; }
     public bool IsLentBinding { [DebuggerStepThrough] get; }
-    public ICapabilitySyntax Capability { [DebuggerStepThrough] get; }
+    public ICapabilitySyntax Constraint { [DebuggerStepThrough] get; }
     public override string ToString()
         => FormattingAspect.SelfParameter_ToString(this);
 
     public ConstructorSelfParameterSyntax(
         TextSpan span,
         bool isLentBinding,
-        ICapabilitySyntax capability)
+        ICapabilitySyntax constraint)
     {
         Span = span;
         IsLentBinding = isLentBinding;
-        Capability = capability;
+        Constraint = constraint;
     }
 }
 
@@ -2412,18 +2412,18 @@ file class InitializerSelfParameterSyntax : IInitializerSelfParameterSyntax
 
     public TextSpan Span { [DebuggerStepThrough] get; }
     public bool IsLentBinding { [DebuggerStepThrough] get; }
-    public ICapabilitySyntax Capability { [DebuggerStepThrough] get; }
+    public ICapabilitySyntax Constraint { [DebuggerStepThrough] get; }
     public override string ToString()
         => FormattingAspect.SelfParameter_ToString(this);
 
     public InitializerSelfParameterSyntax(
         TextSpan span,
         bool isLentBinding,
-        ICapabilitySyntax capability)
+        ICapabilitySyntax constraint)
     {
         Span = span;
         IsLentBinding = isLentBinding;
-        Capability = capability;
+        Constraint = constraint;
     }
 }
 
@@ -2434,18 +2434,18 @@ file class MethodSelfParameterSyntax : IMethodSelfParameterSyntax
 
     public TextSpan Span { [DebuggerStepThrough] get; }
     public bool IsLentBinding { [DebuggerStepThrough] get; }
-    public ICapabilityConstraintSyntax Capability { [DebuggerStepThrough] get; }
+    public ICapabilityConstraintSyntax Constraint { [DebuggerStepThrough] get; }
     public override string ToString()
         => FormattingAspect.SelfParameter_ToString(this);
 
     public MethodSelfParameterSyntax(
         TextSpan span,
         bool isLentBinding,
-        ICapabilityConstraintSyntax capability)
+        ICapabilityConstraintSyntax constraint)
     {
         Span = span;
         IsLentBinding = isLentBinding;
-        Capability = capability;
+        Constraint = constraint;
     }
 }
 

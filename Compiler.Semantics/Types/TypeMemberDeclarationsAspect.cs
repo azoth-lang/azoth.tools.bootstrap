@@ -23,7 +23,7 @@ internal static partial class TypeMemberDeclarationsAspect
         // TODO what about nesting inside of a generic type?
         if (!node.ContainingDeclaration.GenericParameters.Any()) return;
 
-        var nonwritableSelf = !node.SelfParameter.Capability.Constraint.AnyCapabilityAllowsWrite;
+        var nonwritableSelf = !node.SelfParameter.Constraint.Constraint.AnyCapabilityAllowsWrite;
 
         // The `self` parameter does not get checked for variance safety. It will always operate on
         // the original type so it is safe.

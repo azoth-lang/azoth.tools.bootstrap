@@ -112,10 +112,11 @@ Parameter <: Code = Name:`IdentifierName`?;
 ConstructorOrInitializerParameter <: Parameter;
 NamedParameter <: ConstructorOrInitializerParameter, LocalBinding
     = IsMutableBinding:`bool` IsLentBinding:`bool` Name:`IdentifierName` Type DefaultValue:Expression?;
-SelfParameter <: Parameter = IsLentBinding:`bool` Capability:CapabilityConstraint;
-ConstructorSelfParameter <: SelfParameter = Capability;
-InitializerSelfParameter <: SelfParameter = Capability;
-MethodSelfParameter <: SelfParameter = Capability:CapabilityConstraint;
+SelfParameter <: Parameter = IsLentBinding:`bool` Constraint:CapabilityConstraint;
+// TODO support renaming base Constraint property to Capability
+ConstructorSelfParameter <: SelfParameter = Constraint:Capability;
+InitializerSelfParameter <: SelfParameter = Constraint:Capability;
+MethodSelfParameter <: SelfParameter;
 FieldParameter <: ConstructorOrInitializerParameter = Name:`IdentifierName` DefaultValue:Expression?;
 Return <: Code = Type; // Return syntax of a function or method (i.e. ``)
 

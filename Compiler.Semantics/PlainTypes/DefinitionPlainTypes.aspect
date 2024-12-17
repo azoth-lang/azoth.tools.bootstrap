@@ -22,6 +22,7 @@
 ↑ TypeDefinition.TypeFactory: `OrdinaryTypeConstructor`;
 
 // ---------- Type Definition Parts
+↑ ImplicitSelfDefinition.TypeFactory: `SelfTypeConstructor`;
 = ImplicitSelfDefinition.TypeFactory;
 
 // ---------- Member Definitions

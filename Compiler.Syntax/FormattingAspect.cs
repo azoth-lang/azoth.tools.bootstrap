@@ -157,7 +157,7 @@ internal static partial class FormattingAspect
     public static partial string SelfParameter_ToString(ISelfParameterSyntax node)
     {
         var lent = node.IsLentBinding ? "lent " : "";
-        return $"{lent}{node.Capability} self";
+        return $"{lent}{node.Constraint} self";
     }
 
     public static partial string FieldParameter_ToString(IFieldParameterSyntax node)

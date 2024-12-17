@@ -70,7 +70,7 @@ public abstract class SymbolTestFixture
             containing,
             MethodKind.Standard,
             Name(name) ?? DefaultName("method"),
-            self ?? containing.TypeConstructor.ConstructNullaryType().WithDefaultRead(),
+            self ?? containing.TypeConstructor.ConstructNullaryType().WithDefaultCapability(),
             @params ?? Params(),
             @return ?? DataType());
     }

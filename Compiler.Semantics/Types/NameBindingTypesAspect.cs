@@ -86,20 +86,34 @@ internal static partial class NameBindingTypesAspect
     public static partial IMaybeType MethodSelfParameter_BindingType(IMethodSelfParameterNode node)
     {
         // TODO this whole method needs cleaned up
+        // TODO remove ContainingTypeConstructor?
         var typeConstructor = node.ContainingTypeConstructor;
         var bareType = typeConstructor.ConstructWithParameterTypes();
-        var capability = node.Capability;
-        if (capability is ICapabilityNode { Capability: var c } && c == Capability.Read)
-            return bareType.WithDefaultRead();
+        var constraintNode = node.Constraint;
+        if (constraintNode is ICapabilityNode { Capability: var c } && c == Capability.Read)
+            return bareType.WithDefaultCapability();
         // TODO shouldn't their be an overload of .With() that takes an ICapabilityConstraint (e.g. `capability.Constraint`)
-        return capability switch
+        return constraintNode switch
         {
             ICapabilityNode n => bareType.With(n.Capability),
             // TODO this is currently a hack to avoid `Self`. Instead, use `Self`.
             ICapabilitySetNode n => new SelfViewpointType(n.Constraint, bareType.WithDefaultMutate()),
-            //node.ContainingTypeDefinition.SelfPlainType.With(n.Constraint),
-            _ => throw ExhaustiveMatch.Failed(capability)
+            _ => throw ExhaustiveMatch.Failed(constraintNode)
         };
+
+        //var selfTypeConstructor = node.ContainingSelfTypeConstructor;
+        //var selfType = selfTypeConstructor.ConstructWithParameterTypes();
+        //var constraintNode = node.Constraint;
+        // TODO shouldn't their be an overload of .With() that takes an ICapabilityConstraint (e.g. `capability.Constraint`)
+        //return constraintNode switch
+        //{
+        //    ICapabilityNode n
+        //        => n.Capability == Capability.Read
+        //            ? selfType.WithDefaultCapability()
+        //            : selfType.With(n.Capability),
+        //    ICapabilitySetNode n => new CapabilitySetSelfType(n.Constraint, selfTypeConstructor),
+        //    _ => throw ExhaustiveMatch.Failed(constraintNode)
+        //};
     }
 
     private static void CheckTypeCannotBeLent(IMethodSelfParameterNode node, DiagnosticCollectionBuilder diagnostics)
@@ -113,7 +127,7 @@ internal static partial class NameBindingTypesAspect
     public static partial CapabilityType ConstructorSelfParameter_BindingType(IConstructorSelfParameterNode node)
     {
         var bareType = node.ContainingTypeConstructor.ConstructWithParameterTypes();
-        var capability = node.Syntax.Capability.Declared.ToSelfParameterCapability();
+        var capability = node.Syntax.Constraint.Declared.ToSelfParameterCapability();
         return bareType.With(capability);
     }
 
@@ -124,7 +138,7 @@ internal static partial class NameBindingTypesAspect
     public static partial CapabilityType InitializerSelfParameter_BindingType(IInitializerSelfParameterNode node)
     {
         var bareType = node.ContainingTypeConstructor.ConstructWithParameterTypes();
-        var capability = node.Syntax.Capability.Declared.ToSelfParameterCapability();
+        var capability = node.Syntax.Constraint.Declared.ToSelfParameterCapability();
         return bareType.With(capability);
     }
 

@@ -666,6 +666,9 @@ public partial interface IImplicitSelfDefinitionNode : IImplicitSelfDeclarationN
 {
     TypeSymbol ContainingSymbol
         => ContainingDeclaration.Symbol!;
+    new SelfTypeConstructor TypeFactory { get; }
+    AssociatedTypeConstructor IImplicitSelfDeclarationNode.TypeFactory => TypeFactory;
+    ITypeFactory ITypeDeclarationNode.TypeFactory => TypeFactory;
 
     public static IImplicitSelfDefinitionNode Create()
         => new ImplicitSelfDefinitionNode();
@@ -1246,6 +1249,7 @@ public partial interface ISelfParameterNode : IParameterNode, IBindingNode
     IMaybeNonVoidType ParameterType { get; }
     ITypeDefinitionNode ContainingTypeDefinition { get; }
     OrdinaryTypeConstructor ContainingTypeConstructor { get; }
+    SelfTypeConstructor ContainingSelfTypeConstructor { get; }
     new ValueId BindingValueId { get; }
     ValueId IParameterNode.BindingValueId => BindingValueId;
     ValueId IBindingNode.BindingValueId => BindingValueId;
@@ -1312,12 +1316,12 @@ public partial interface IMethodSelfParameterNode : ISelfParameterNode
     IParameterSyntax IParameterNode.Syntax => Syntax;
     ICodeSyntax ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    ICapabilityConstraintNode Capability { get; }
+    ICapabilityConstraintNode Constraint { get; }
 
     public static IMethodSelfParameterNode Create(
         IMethodSelfParameterSyntax syntax,
-        ICapabilityConstraintNode capability)
-        => new MethodSelfParameterNode(syntax, capability);
+        ICapabilityConstraintNode constraint)
+        => new MethodSelfParameterNode(syntax, constraint);
 }
 
 // [Closed(typeof(FieldParameterNode))]
@@ -4881,6 +4885,11 @@ internal abstract partial class SemanticNode : TreeNode, IChildTreeNode<ISemanti
     protected IFlowState Inherited_FlowStateBefore(IInheritanceContext ctx)
         => GetParent(ctx)!.Inherited_FlowStateBefore(this, this, ctx);
 
+    internal virtual SelfTypeConstructor Inherited_ContainingSelfTypeConstructor(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+        => (GetParent(ctx) ?? throw Child.InheritFailed("ContainingSelfTypeConstructor", child, descendant)).Inherited_ContainingSelfTypeConstructor(this, descendant, ctx);
+    protected SelfTypeConstructor Inherited_ContainingSelfTypeConstructor(IInheritanceContext ctx)
+        => GetParent(ctx)!.Inherited_ContainingSelfTypeConstructor(this, this, ctx);
+
     internal virtual IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
         => (GetParent(ctx) ?? throw Child.InheritFailed("ExpectedType", child, descendant)).Inherited_ExpectedType(this, descendant, ctx);
     protected IMaybeType? Inherited_ExpectedType(IInheritanceContext ctx)
@@ -5693,6 +5702,11 @@ file class ClassDefinitionNode : SemanticNode, IClassDefinitionNode
         return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
     }
 
+    internal override SelfTypeConstructor Inherited_ContainingSelfTypeConstructor(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return DefinitionTypesAspect.TypeDefinition_Children_Broadcast_ContainingSelfTypeConstructor(this);
+    }
+
     internal override OrdinaryTypeConstructor Inherited_ContainingTypeConstructor(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         return DefinitionTypesAspect.TypeDefinition_Children_Broadcast_ContainingTypeConstructor(this);
@@ -5853,6 +5867,11 @@ file class StructDefinitionNode : SemanticNode, IStructDefinitionNode
         return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
     }
 
+    internal override SelfTypeConstructor Inherited_ContainingSelfTypeConstructor(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return DefinitionTypesAspect.TypeDefinition_Children_Broadcast_ContainingSelfTypeConstructor(this);
+    }
+
     internal override OrdinaryTypeConstructor Inherited_ContainingTypeConstructor(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         return DefinitionTypesAspect.TypeDefinition_Children_Broadcast_ContainingTypeConstructor(this);
@@ -6000,6 +6019,11 @@ file class TraitDefinitionNode : SemanticNode, ITraitDefinitionNode
         return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
     }
 
+    internal override SelfTypeConstructor Inherited_ContainingSelfTypeConstructor(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return DefinitionTypesAspect.TypeDefinition_Children_Broadcast_ContainingSelfTypeConstructor(this);
+    }
+
     internal override OrdinaryTypeConstructor Inherited_ContainingTypeConstructor(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         return DefinitionTypesAspect.TypeDefinition_Children_Broadcast_ContainingTypeConstructor(this);
@@ -6102,11 +6126,11 @@ file class ImplicitSelfDefinitionNode : SemanticNode, IImplicitSelfDefinitionNod
                 SymbolsAspect.ImplicitSelfDefinition_Symbol);
     private AssociatedTypeSymbol? symbol;
     private bool symbolCached;
-    public AssociatedTypeConstructor TypeFactory
+    public SelfTypeConstructor TypeFactory
         => GrammarAttribute.IsCached(in typeFactoryCached) ? typeFactory!
             : this.Synthetic(ref typeFactoryCached, ref typeFactory,
                 DefinitionPlainTypesAspect.ImplicitSelfDefinition_TypeFactory);
-    private AssociatedTypeConstructor? typeFactory;
+    private SelfTypeConstructor? typeFactory;
     private bool typeFactoryCached;
 
     public ImplicitSelfDefinitionNode()
@@ -7929,6 +7953,12 @@ file class ConstructorSelfParameterNode : SemanticNode, IConstructorSelfParamete
                 Inherited_ContainingTypeConstructor);
     private OrdinaryTypeConstructor? containingTypeConstructor;
     private bool containingTypeConstructorCached;
+    public SelfTypeConstructor ContainingSelfTypeConstructor
+        => GrammarAttribute.IsCached(in containingSelfTypeConstructorCached) ? containingSelfTypeConstructor!
+            : this.Inherited(ref containingSelfTypeConstructorCached, ref containingSelfTypeConstructor,
+                Inherited_ContainingSelfTypeConstructor);
+    private SelfTypeConstructor? containingSelfTypeConstructor;
+    private bool containingSelfTypeConstructorCached;
     public IMaybeNonVoidPlainType BindingPlainType
         => GrammarAttribute.IsCached(in bindingPlainTypeCached) ? bindingPlainType!
             : this.Synthetic(ref bindingPlainTypeCached, ref bindingPlainType,
@@ -8010,6 +8040,12 @@ file class InitializerSelfParameterNode : SemanticNode, IInitializerSelfParamete
                 Inherited_ContainingTypeConstructor);
     private OrdinaryTypeConstructor? containingTypeConstructor;
     private bool containingTypeConstructorCached;
+    public SelfTypeConstructor ContainingSelfTypeConstructor
+        => GrammarAttribute.IsCached(in containingSelfTypeConstructorCached) ? containingSelfTypeConstructor!
+            : this.Inherited(ref containingSelfTypeConstructorCached, ref containingSelfTypeConstructor,
+                Inherited_ContainingSelfTypeConstructor);
+    private SelfTypeConstructor? containingSelfTypeConstructor;
+    private bool containingSelfTypeConstructorCached;
     public IMaybeNonVoidPlainType BindingPlainType
         => GrammarAttribute.IsCached(in bindingPlainTypeCached) ? bindingPlainType!
             : this.Synthetic(ref bindingPlainTypeCached, ref bindingPlainType,
@@ -8068,7 +8104,7 @@ file class MethodSelfParameterNode : SemanticNode, IMethodSelfParameterNode
     private AttributeLock syncLock;
 
     public IMethodSelfParameterSyntax Syntax { [DebuggerStepThrough] get; }
-    public ICapabilityConstraintNode Capability { [DebuggerStepThrough] get; }
+    public ICapabilityConstraintNode Constraint { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -8091,6 +8127,12 @@ file class MethodSelfParameterNode : SemanticNode, IMethodSelfParameterNode
                 Inherited_ContainingTypeConstructor);
     private OrdinaryTypeConstructor? containingTypeConstructor;
     private bool containingTypeConstructorCached;
+    public SelfTypeConstructor ContainingSelfTypeConstructor
+        => GrammarAttribute.IsCached(in containingSelfTypeConstructorCached) ? containingSelfTypeConstructor!
+            : this.Inherited(ref containingSelfTypeConstructorCached, ref containingSelfTypeConstructor,
+                Inherited_ContainingSelfTypeConstructor);
+    private SelfTypeConstructor? containingSelfTypeConstructor;
+    private bool containingSelfTypeConstructorCached;
     public IMaybeNonVoidPlainType BindingPlainType
         => GrammarAttribute.IsCached(in bindingPlainTypeCached) ? bindingPlainType!
             : this.Synthetic(ref bindingPlainTypeCached, ref bindingPlainType,
@@ -8124,10 +8166,10 @@ file class MethodSelfParameterNode : SemanticNode, IMethodSelfParameterNode
 
     public MethodSelfParameterNode(
         IMethodSelfParameterSyntax syntax,
-        ICapabilityConstraintNode capability)
+        ICapabilityConstraintNode constraint)
     {
         Syntax = syntax;
-        Capability = Child.Attach(this, capability);
+        Constraint = Child.Attach(this, constraint);
     }
 
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)

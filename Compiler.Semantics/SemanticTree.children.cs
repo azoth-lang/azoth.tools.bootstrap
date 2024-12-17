@@ -203,7 +203,7 @@ public static class ISemanticNodeExtensions
                 yield return n.Capability;
                 yield break;
             case IMethodSelfParameterNode n:
-                yield return n.Capability;
+                yield return n.Constraint;
                 yield break;
             case IFieldParameterNode n:
                 yield break;

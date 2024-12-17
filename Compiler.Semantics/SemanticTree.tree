@@ -158,7 +158,7 @@ NamedParameter <: ConstructorOrInitializerParameter, LocalBinding
 SelfParameter <: Parameter, Binding = Syntax:`ISelfParameterSyntax`;
 ConstructorSelfParameter <: SelfParameter = Syntax:`IConstructorSelfParameterSyntax` Capability;
 InitializerSelfParameter <: SelfParameter = Syntax:`IInitializerSelfParameterSyntax` Capability;
-MethodSelfParameter <: SelfParameter = Syntax:`IMethodSelfParameterSyntax` Capability:CapabilityConstraint;
+MethodSelfParameter <: SelfParameter = Syntax:`IMethodSelfParameterSyntax` Constraint:CapabilityConstraint;
 FieldParameter <: ConstructorOrInitializerParameter = Syntax:`IFieldParameterSyntax`;
 
 // ---------- Function Parts

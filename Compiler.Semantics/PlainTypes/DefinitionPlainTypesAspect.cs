@@ -56,8 +56,8 @@ internal static partial class DefinitionPlainTypesAspect
     #endregion
 
     #region Type Definition Parts
-    public static partial AssociatedTypeConstructor ImplicitSelfDefinition_TypeFactory(IImplicitSelfDefinitionNode node)
-        => new SelfTypeConstructor(node.ContainingDeclaration.TypeFactory);
+    public static partial SelfTypeConstructor ImplicitSelfDefinition_TypeFactory(IImplicitSelfDefinitionNode node)
+        => new(node.ContainingDeclaration.TypeFactory);
     #endregion
 
     public static partial IMaybeNonVoidPlainType FieldDefinition_BindingPlainType(IFieldDefinitionNode node)
