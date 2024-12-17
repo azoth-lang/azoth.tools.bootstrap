@@ -24,7 +24,7 @@ public abstract class AssociatedTypeConstructor : TypeConstructor
 
     public ConstructedPlainType PlainType
         // Lazy initialize to avoid issues with type constructor not fully constructed
-        => LazyInitializer.EnsureInitialized(ref plainType, () => new(this, []));
+        => Lazy.Initialize(ref plainType, this, static typeConstructor => new(typeConstructor, []));
     private ConstructedPlainType? plainType;
 
     protected AssociatedTypeConstructor(TypeConstructor context)

@@ -4973,7 +4973,8 @@ internal abstract partial class SemanticNode : TreeNode, IChildTreeNode<ISemanti
     private ContributorCollection<SemanticNode>? contributors_ControlFlowPrevious;
     private IFixedSet<SemanticNode> CollectContributors_ControlFlowPrevious(SemanticNode target)
     {
-        var contributors = LazyInitializer.EnsureInitialized(ref contributors_ControlFlowPrevious);
+        var contributors = Lazy.Initialize(ref contributors_ControlFlowPrevious,
+            static () => new ContributorCollection<SemanticNode>());
         contributors.EnsurePopulated(CollectContributors_ControlFlowPrevious);
         return contributors.Remove(target).ToFixedSet();
     }

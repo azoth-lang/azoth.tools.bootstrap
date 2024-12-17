@@ -2,6 +2,7 @@ using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors.Contexts;
 using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
+using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
@@ -21,8 +22,8 @@ public abstract class SimpleOrLiteralTypeConstructor : TypeConstructor
     public abstract ConstructedPlainType PlainType { get; }
 
     public CapabilityType Type
-        => LazyInitializer.EnsureInitialized(ref type,
-            () => CapabilityType.Create(Capability.Constant, PlainType));
+        => Lazy.Initialize(ref type, PlainType,
+            static plainType => CapabilityType.Create(Capability.Constant, plainType));
 
     private CapabilityType? type;
 }

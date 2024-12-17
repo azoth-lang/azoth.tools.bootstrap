@@ -203,7 +203,8 @@ internal abstract partial class <#= Emit.BaseClassName(tree) #> : TreeNode, IChi
     private ContributorCollection<<#= Emit.BaseClassName(tree) #>>? contributors_<#= family.Name #>;
     private IFixedSet<<#= Emit.BaseClassName(tree) #>> CollectContributors_<#= family.Name #>(<#= Emit.BaseClassName(tree) #> target)
     {
-        var contributors = LazyInitializer.EnsureInitialized(ref contributors_<#= family.Name #>);
+        var contributors = Lazy.Initialize(ref contributors_<#= family.Name #>,
+            static () => new ContributorCollection<<#= Emit.BaseClassName(tree) #>>());
         contributors.EnsurePopulated(CollectContributors_<#= family.Name #>);
         return contributors.Remove(target).ToFixedSet();
     }

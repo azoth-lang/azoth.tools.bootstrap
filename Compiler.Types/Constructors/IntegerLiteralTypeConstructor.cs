@@ -1,6 +1,7 @@
 using System.Numerics;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
+using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 
@@ -16,7 +17,7 @@ public sealed class IntegerLiteralTypeConstructor : LiteralTypeConstructor
         => Value >= Int16.MinValue && Value <= Int16.MaxValue;
 
     public override ConstructedPlainType PlainType
-        => LazyInitializer.EnsureInitialized(ref plainType, ConstructPlainType);
+        => Lazy.Initialize(ref plainType, this, static typeConstructor => new(typeConstructor, []));
     private ConstructedPlainType? plainType;
 
     public IntegerLiteralTypeConstructor(BigInteger value)
@@ -101,8 +102,6 @@ public sealed class IntegerLiteralTypeConstructor : LiteralTypeConstructor
 
     public override int GetHashCode() => HashCode.Combine(Value);
     #endregion
-
-    private ConstructedPlainType ConstructPlainType() => new(this, []);
 
     public override string ToString() => $"int[{Value}]";
 }

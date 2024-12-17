@@ -32,15 +32,16 @@ public sealed class BareType : IEquatable<BareType>
     public TypeReplacements TypeReplacements { get; }
 
     public IFixedList<TypeParameterArgument> TypeParameterArguments
-        => LazyInitializer.EnsureInitialized(ref typeParameterArguments,
-            () => PlainType.TypeConstructor.Parameters
-                           .EquiZip(Arguments,
+        => Lazy.Initialize(ref typeParameterArguments, PlainType, Arguments,
+            static (t, args) => t.TypeConstructor.Parameters
+                           .EquiZip(args,
                                (p, a) => new TypeParameterArgument(p, a)).ToFixedList());
     private IFixedList<TypeParameterArgument>? typeParameterArguments;
 
     public IFixedSet<BareType> Supertypes
-        => LazyInitializer.EnsureInitialized(ref supertypes,
-            () => TypeConstructor.Supertypes.Select(t => TypeReplacements.ReplaceTypeParametersIn(t)).ToFixedSet());
+        => Lazy.Initialize(ref supertypes, TypeConstructor, TypeReplacements,
+            static (constructor, replacements)
+                => constructor.Supertypes.Select(replacements.ReplaceTypeParametersIn).ToFixedSet());
     private IFixedSet<BareType>? supertypes;
 
     public BareType(ConstructedPlainType plainType, IFixedList<Type> arguments)

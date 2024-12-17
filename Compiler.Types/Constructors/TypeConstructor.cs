@@ -186,16 +186,16 @@ public abstract partial class TypeConstructor : TypeConstructorContext, IEquatab
     /// The plain types used to refer to the parameters to this type within the type definition.
     /// </summary>
     public IFixedList<GenericParameterPlainType> ParameterPlainTypes
-        => LazyInitializer.EnsureInitialized(ref parameterPlainTypes,
-            () => ParameterTypeFactories.Select(p => p.PlainType).ToFixedList());
+        => Lazy.Initialize(ref parameterPlainTypes, ParameterTypeFactories,
+            static factories => factories.Select(p => p.PlainType).ToFixedList());
     private IFixedList<GenericParameterPlainType>? parameterPlainTypes;
 
     /// <summary>
     /// The types used to refer to the parameters to this type within the type definition.
     /// </summary>
     public IFixedList<GenericParameterType> ParameterTypes
-        => LazyInitializer.EnsureInitialized(ref parameterTypes,
-            () => ParameterTypeFactories.Select(p => p.Type).ToFixedList());
+        => Lazy.Initialize(ref parameterTypes, ParameterTypeFactories,
+            static factories => factories.Select(p => p.Type).ToFixedList());
     private IFixedList<GenericParameterType>? parameterTypes;
 
     public abstract IFixedSet<BareType> Supertypes { get; }
@@ -211,7 +211,8 @@ public abstract partial class TypeConstructor : TypeConstructorContext, IEquatab
     /// </summary>
     // TODO will this be needed once `Self` is properly used?
     public ConstructedPlainType ConstructWithParameterPlainTypes()
-        => LazyInitializer.EnsureInitialized(ref withParameterPlainTypes, () => Construct(ParameterPlainTypes));
+        => Lazy.Initialize(ref withParameterPlainTypes, this, ParameterPlainTypes,
+            static (typeConstructor, arguments) => typeConstructor.Construct(arguments));
 
     /// <summary>
     /// Construct a type using the <see cref="ParameterTypes"/> to create a type as it would be
@@ -219,8 +220,8 @@ public abstract partial class TypeConstructor : TypeConstructorContext, IEquatab
     /// </summary>
     // TODO will this be needed once `Self` is properly used?
     public BareType ConstructWithParameterTypes()
-        => LazyInitializer.EnsureInitialized(ref withParameterTypes,
-            () => new(ConstructWithParameterPlainTypes(), ParameterTypes));
+        => Lazy.Initialize(ref withParameterTypes, this, ParameterTypes,
+            static (typeConstructor, arguments) => typeConstructor.Construct(arguments));
 
     /// <summary>
     /// Attempt to construct a plain type from this type constructor with possibly unknown arguments.
