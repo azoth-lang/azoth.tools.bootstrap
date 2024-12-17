@@ -89,6 +89,8 @@ internal static partial class NameBindingTypesAspect
         var typeConstructor = node.ContainingTypeConstructor;
         var bareType = typeConstructor.ConstructWithParameterTypes();
         var capability = node.Capability;
+        if (capability is ICapabilityNode { Capability: var c } && c == Capability.Read)
+            return bareType.WithDefaultRead();
         // TODO shouldn't their be an overload of .With() that takes an ICapabilityConstraint (e.g. `capability.Constraint`)
         return capability switch
         {
