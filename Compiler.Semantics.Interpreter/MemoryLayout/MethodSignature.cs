@@ -33,15 +33,15 @@ internal class MethodSignature : IEquatable<MethodSignature>
         if (ReferenceEquals(this, other)) return true;
         var selfType = SelfType;
         return Name.Equals(other.Name)
-               && SelfType.CanOverride(selfType.TypeReplacements.ReplaceTypeParametersIn(other.SelfType))
+               && SelfType.CanOverride(selfType.TypeReplacements.Apply(other.SelfType))
                && ParametersCompatible(selfType, other)
-               && ReturnType.ReturnCanOverride(selfType.TypeReplacements.ReplaceTypeParametersIn(other.ReturnType));
+               && ReturnType.ReturnCanOverride(selfType.TypeReplacements.Apply(other.ReturnType));
     }
 
     private bool ParametersCompatible(NonVoidType selfType, MethodSignature other)
     {
         if (ParameterTypes.Count != other.ParameterTypes.Count) return false;
-        foreach (var (paramType, baseParamType) in ParameterTypes.EquiZip(other.ParameterTypes.Select(selfType.TypeReplacements.ReplaceTypeParametersIn)))
+        foreach (var (paramType, baseParamType) in ParameterTypes.EquiZip(other.ParameterTypes.Select(selfType.TypeReplacements.Apply)))
             // A null baseParamType means that the parameter was replaced to `void` and dropped out
             // of the parameter list.
             if (baseParamType is null || !paramType.CanOverride(baseParamType))

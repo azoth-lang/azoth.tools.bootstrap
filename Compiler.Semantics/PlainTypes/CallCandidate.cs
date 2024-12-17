@@ -83,7 +83,7 @@ internal static class CallCandidate
     private static IMaybeNonVoidPlainType SelfParameterPlainType(
         IMaybePlainType contextPlainType,
         IMaybeNonVoidPlainType selfParameterPlainType)
-        => contextPlainType.TypeReplacements.ReplaceTypeParametersIn(selfParameterPlainType).ToNonVoid();
+        => contextPlainType.TypeReplacements.Apply(selfParameterPlainType).ToNonVoid();
 
     private static IFixedList<IMaybeNonVoidPlainType> ParameterPlainTypes(
         IMaybePlainType contextPlainType,
@@ -92,8 +92,8 @@ internal static class CallCandidate
                       .OfType<IMaybeNonVoidPlainType>().ToFixedList();
 
     private static IMaybePlainType ParameterPlainType(IMaybePlainType contextPlainType, IMaybeNonVoidPlainType parameterPlainType)
-        => contextPlainType.TypeReplacements.ReplaceTypeParametersIn(parameterPlainType);
+        => contextPlainType.TypeReplacements.Apply(parameterPlainType);
 
     private static IMaybePlainType ReturnPlainType(IMaybePlainType contextPlainType, IInvocableDeclarationNode declaration)
-        => contextPlainType.TypeReplacements.ReplaceTypeParametersIn(declaration.ReturnPlainType);
+        => contextPlainType.TypeReplacements.Apply(declaration.ReturnPlainType);
 }

@@ -51,30 +51,28 @@ public sealed class TypeReplacements
         //                    $"Could not find replacement for `{typeArg.ToILString()}` in type `{typeConstructor}` with arguments `{typeArguments.ToILString()}`.");
         //        }
         //        else
-        //            replacements.Add(genericParameterType, ReplaceTypeParametersIn(typeArg));
+        //            replacements.Add(genericParameterType, Apply(typeArg));
         //    }
         //}
     }
 
-    // TODO shorten method names now that it is accessed view TypeReplacements.ReplaceTypeParametersIn
-
-    public IMaybeType ReplaceTypeParametersIn(IMaybeType type)
+    public IMaybeType Apply(IMaybeType type)
         => type switch
         {
-            Type t => ReplaceTypeParametersIn(t),
+            Type t => Apply(t),
             UnknownType _ => type,
             _ => throw ExhaustiveMatch.Failed(type)
         };
 
-    public Type ReplaceTypeParametersIn(Type type)
+    public Type Apply(Type type)
     {
         switch (type)
         {
             case CapabilityType t:
-                return ReplaceTypeParametersIn(t);
+                return Apply(t);
             case OptionalType optionalType:
             {
-                var replacementType = ReplaceTypeParametersIn(optionalType.Referent);
+                var replacementType = Apply(optionalType.Referent);
                 if (!ReferenceEquals(optionalType.Referent, replacementType))
                     return replacementType is NonVoidType nonVoidType
                         ? OptionalType.Create(nonVoidType)
@@ -83,11 +81,11 @@ public sealed class TypeReplacements
                 break;
             }
             case GenericParameterType genericParameterType:
-                return ReplaceTypeParametersIn(genericParameterType);
+                return Apply(genericParameterType);
             case FunctionType functionType:
             {
-                var replacementParameterTypes = ReplaceTypeParametersIn(functionType.Parameters);
-                var replacementReturnType = ReplaceTypeParametersIn(functionType.Return);
+                var replacementParameterTypes = Apply(functionType.Parameters);
+                var replacementReturnType = Apply(functionType.Return);
                 if (!ReferenceEquals(functionType.Parameters, replacementParameterTypes)
                     || !ReferenceEquals(functionType.Return, replacementReturnType))
                     return new FunctionType(replacementParameterTypes, replacementReturnType);
@@ -95,7 +93,7 @@ public sealed class TypeReplacements
             }
             case CapabilityViewpointType capabilityViewpointType:
             {
-                var replacementType = ReplaceTypeParametersIn(capabilityViewpointType.Referent);
+                var replacementType = Apply(capabilityViewpointType.Referent);
                 if (!ReferenceEquals(capabilityViewpointType.Referent, replacementType))
                     if (replacementType is GenericParameterType genericParameterType)
                         return CapabilityViewpointType.Create(capabilityViewpointType.Capability, genericParameterType);
@@ -105,7 +103,7 @@ public sealed class TypeReplacements
             }
             case SelfViewpointType selfViewpointType:
             {
-                var replacementType = ReplaceTypeParametersIn(selfViewpointType.Referent);
+                var replacementType = Apply(selfViewpointType.Referent);
                 if (!ReferenceEquals(selfViewpointType.Referent, replacementType))
                 {
                     if (replacementType is NonVoidType nonVoidReplacementType)
@@ -125,42 +123,42 @@ public sealed class TypeReplacements
         return type;
     }
 
-    public Type ReplaceTypeParametersIn(GenericParameterType type)
+    public Type Apply(GenericParameterType type)
     {
         if (replacements.TryGetValue(type, out var replacementType))
             return replacementType;
         return type;
     }
 
-    public Type ReplaceTypeParametersIn(CapabilityType type)
+    public Type Apply(CapabilityType type)
     {
-        var replacementBareType = ReplaceTypeParametersIn(type.BareType);
+        var replacementBareType = Apply(type.BareType);
         if (ReferenceEquals(type.BareType, replacementBareType)) return type;
         return replacementBareType.With(type.Capability);
     }
 
-    public ParameterType? ReplaceTypeParametersIn(ParameterType type)
+    public ParameterType? Apply(ParameterType type)
     {
-        if (ReplaceTypeParametersIn(type.Type) is NonVoidType replacementType)
+        if (Apply(type.Type) is NonVoidType replacementType)
             return type with { Type = replacementType };
         return null;
     }
 
-    public IMaybeParameterType? ReplaceTypeParametersIn(IMaybeParameterType type)
+    public IMaybeParameterType? Apply(IMaybeParameterType type)
         => type switch
         {
-            ParameterType t => ReplaceTypeParametersIn(t),
+            ParameterType t => Apply(t),
             UnknownType _ => Type.Unknown,
             _ => throw ExhaustiveMatch.Failed(type),
         };
 
-    private IFixedList<Type> ReplaceTypeParametersIn(IFixedList<Type> types)
+    private IFixedList<Type> Apply(IFixedList<Type> types)
     {
         var replacementTypes = new List<Type>();
         var typesReplaced = false;
         foreach (var type in types)
         {
-            var replacementType = ReplaceTypeParametersIn(type);
+            var replacementType = Apply(type);
             typesReplaced |= !ReferenceEquals(type, replacementType);
             replacementTypes.Add(replacementType);
         }
@@ -168,13 +166,13 @@ public sealed class TypeReplacements
         return typesReplaced ? replacementTypes.ToFixedList() : types;
     }
 
-    private IFixedList<ParameterType> ReplaceTypeParametersIn(IFixedList<ParameterType> types)
+    private IFixedList<ParameterType> Apply(IFixedList<ParameterType> types)
     {
         var replacementTypes = new List<ParameterType>();
         var typesReplaced = false;
         foreach (var type in types)
         {
-            var replacementType = ReplaceTypeParametersIn(type);
+            var replacementType = Apply(type);
             if (replacementType is null)
                 continue;
             typesReplaced |= !type.ReferenceEquals(replacementType);
@@ -184,12 +182,12 @@ public sealed class TypeReplacements
         return typesReplaced ? replacementTypes.ToFixedList() : types;
     }
 
-    public BareType ReplaceTypeParametersIn(BareType bareType)
+    public BareType Apply(BareType bareType)
     {
-        var replacementTypes = ReplaceTypeParametersIn(bareType.Arguments);
+        var replacementTypes = Apply(bareType.Arguments);
         if (ReferenceEquals(bareType.Arguments, replacementTypes)) return bareType;
 
-        var plainType = plainTypeReplacements.ReplaceTypeParametersIn(bareType.PlainType);
+        var plainType = plainTypeReplacements.Apply(bareType.PlainType);
         return new(plainType, replacementTypes);
     }
 }

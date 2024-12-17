@@ -70,7 +70,7 @@ public sealed class CapabilityType : NonVoidType
         if (supertype is null) throw new ArgumentException($"The type {target} is not a supertype of {ToILString()}.");
 
         var bareType = new BareType(supertype.PlainType, supertype.Arguments);
-        bareType = TypeReplacements.ReplaceTypeParametersIn(bareType);
+        bareType = TypeReplacements.Apply(bareType);
 
         return bareType.With(Capability);
     }

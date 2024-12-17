@@ -45,53 +45,53 @@ public sealed class PlainTypeReplacements
         //                    $"Could not find replacement for `{supertypeArgument}` in type constructor `{typeConstructor}` with arguments `{typeArguments}`.");
         //        }
         //        else
-        //            replacements.Add(genericParameterPlainType, ReplaceTypeParametersIn(supertypeArgument.PlainType));
+        //            replacements.Add(genericParameterPlainType, Apply(supertypeArgument.PlainType));
         //    }
     }
 
-    public IMaybePlainType ReplaceTypeParametersIn(IMaybePlainType plainType)
+    public IMaybePlainType Apply(IMaybePlainType plainType)
         => plainType switch
         {
-            PlainType a => ReplaceTypeParametersIn(a),
+            PlainType a => Apply(a),
             UnknownPlainType a => a,
             _ => throw ExhaustiveMatch.Failed(plainType)
         };
 
-    public PlainType ReplaceTypeParametersIn(PlainType plainType)
+    public PlainType Apply(PlainType plainType)
         => plainType switch
         {
             VoidPlainType a => a,
-            NonVoidPlainType a => ReplaceTypeParametersIn(a),
+            NonVoidPlainType a => Apply(a),
             _ => throw ExhaustiveMatch.Failed(plainType)
         };
 
-    public PlainType ReplaceTypeParametersIn(NonVoidPlainType plainType)
+    public PlainType Apply(NonVoidPlainType plainType)
         => plainType switch
         {
             NeverPlainType t => t,
-            ConstructedPlainType t => ReplaceTypeParametersIn(t),
-            GenericParameterPlainType t => ReplaceTypeParametersIn(t),
-            FunctionPlainType t => ReplaceTypeParametersIn(t),
-            OptionalPlainType t => ReplaceTypeParametersIn(t),
+            ConstructedPlainType t => Apply(t),
+            GenericParameterPlainType t => Apply(t),
+            FunctionPlainType t => Apply(t),
+            OptionalPlainType t => Apply(t),
             _ => throw ExhaustiveMatch.Failed(plainType)
         };
 
-    public ConstructedPlainType ReplaceTypeParametersIn(ConstructedPlainType plainType)
+    public ConstructedPlainType Apply(ConstructedPlainType plainType)
     {
-        var replacementTypeArguments = ReplaceTypeParametersIn(plainType.Arguments);
+        var replacementTypeArguments = Apply(plainType.Arguments);
         if (ReferenceEquals(plainType.Arguments, replacementTypeArguments))
             return plainType;
 
         return new(plainType.TypeConstructor, replacementTypeArguments);
     }
 
-    private IFixedList<PlainType> ReplaceTypeParametersIn(IFixedList<PlainType> plainTypes)
+    private IFixedList<PlainType> Apply(IFixedList<PlainType> plainTypes)
     {
         var replacementPlainTypes = new List<PlainType>();
         var typesReplaced = false;
         foreach (var plainType in plainTypes)
         {
-            var replacementType = ReplaceTypeParametersIn(plainType);
+            var replacementType = Apply(plainType);
             typesReplaced |= !ReferenceEquals(plainType, replacementType);
             replacementPlainTypes.Add(replacementType);
         }
@@ -99,13 +99,13 @@ public sealed class PlainTypeReplacements
         return typesReplaced ? replacementPlainTypes.ToFixedList() : plainTypes;
     }
 
-    public PlainType ReplaceTypeParametersIn(GenericParameterPlainType plainType)
+    public PlainType Apply(GenericParameterPlainType plainType)
         => replacements.GetValueOrDefault(plainType, plainType);
 
-    public FunctionPlainType ReplaceTypeParametersIn(FunctionPlainType plainType)
+    public FunctionPlainType Apply(FunctionPlainType plainType)
     {
-        var replacementParameterTypes = ReplaceTypeParametersInParameters(plainType.Parameters);
-        var replacementReturnType = ReplaceTypeParametersIn(plainType.Return);
+        var replacementParameterTypes = ApplyToParameters(plainType.Parameters);
+        var replacementReturnType = Apply(plainType.Return);
         if (ReferenceEquals(plainType.Parameters, replacementParameterTypes)
             && ReferenceEquals(plainType.Return, replacementReturnType))
             return plainType;
@@ -117,14 +117,14 @@ public sealed class PlainTypeReplacements
     /// Replace type parameters specifically in parameters to a function where `void` can cause
     /// a parameter to drop out.
     /// </summary>
-    private IFixedList<NonVoidPlainType> ReplaceTypeParametersInParameters(
+    private IFixedList<NonVoidPlainType> ApplyToParameters(
         IFixedList<NonVoidPlainType> plainTypes)
     {
         var replacementPlainTypes = new List<NonVoidPlainType>();
         var typesReplaced = false;
         foreach (var plainType in plainTypes)
         {
-            var replacementType = ReplaceTypeParametersIn(plainType);
+            var replacementType = Apply(plainType);
             typesReplaced |= !ReferenceEquals(plainType, replacementType);
             if (replacementType is NonVoidPlainType nonVoidPlainType)
                 replacementPlainTypes.Add(nonVoidPlainType);
@@ -133,9 +133,9 @@ public sealed class PlainTypeReplacements
         return typesReplaced ? replacementPlainTypes.ToFixedList() : plainTypes;
     }
 
-    public PlainType ReplaceTypeParametersIn(OptionalPlainType plainType)
+    public PlainType Apply(OptionalPlainType plainType)
     {
-        var replacementType = ReplaceTypeParametersIn(plainType.Referent);
+        var replacementType = Apply(plainType.Referent);
         if (ReferenceEquals(plainType.Referent, replacementType))
             return plainType;
 

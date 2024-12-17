@@ -53,7 +53,7 @@ public sealed class ContextualizedCall : IEquatable<ContextualizedCall>
         NonVoidType contextType,
         IMaybeNonVoidType symbolSelfParameterType)
         // TODO eliminate cast
-        => (IMaybeNonVoidType)contextType.TypeReplacements.ReplaceTypeParametersIn(symbolSelfParameterType);
+        => (IMaybeNonVoidType)contextType.TypeReplacements.Apply(symbolSelfParameterType);
 
     private static IFixedList<IMaybeParameterType> CreateParameterTypes(
         NonVoidType contextType,
@@ -61,10 +61,10 @@ public sealed class ContextualizedCall : IEquatable<ContextualizedCall>
         => node.ParameterTypes.Select(p => CreateParameterType(contextType, p)).WhereNotNull().ToFixedList();
 
     private static IMaybeParameterType? CreateParameterType(NonVoidType contextType, IMaybeParameterType parameter)
-        => contextType.TypeReplacements.ReplaceTypeParametersIn(parameter);
+        => contextType.TypeReplacements.Apply(parameter);
 
     private static IMaybeType CreateReturnType(NonVoidType contextType, IInvocableDeclarationNode node)
-        => contextType.TypeReplacements.ReplaceTypeParametersIn(node.ReturnType);
+        => contextType.TypeReplacements.Apply(node.ReturnType);
 
     public IMaybeType? ContextType { get; }
     public IMaybeNonVoidType? SelfParameterType { get; }

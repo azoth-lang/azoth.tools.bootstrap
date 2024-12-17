@@ -32,7 +32,7 @@ public sealed class ConstructedPlainType : NonVoidPlainType
 
         TypeReplacements = new(TypeConstructor, Arguments);
 
-        Supertypes = typeConstructor.Supertypes.Select(s => TypeReplacements.ReplaceTypeParametersIn(s.PlainType)).ToFixedSet();
+        Supertypes = typeConstructor.Supertypes.Select(s => TypeReplacements.Apply(s.PlainType)).ToFixedSet();
     }
 
     public override ConstructedPlainType? TryToNonLiteral()

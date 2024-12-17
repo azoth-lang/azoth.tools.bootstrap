@@ -19,7 +19,7 @@ internal static partial class ForeachExpressionPlainTypesAspect
         var iterableType = node.InExpression?.PlainType.ToNonVoid() ?? PlainType.Unknown;
         var iterateMethod = node.ReferencedIterateMethod;
         var iteratorPlainType = iterateMethod is not null
-            ? iterableType.TypeReplacements.ReplaceTypeParametersIn(iterateMethod.MethodGroupPlainType.Return).ToNonVoid()
+            ? iterableType.TypeReplacements.Apply(iterateMethod.MethodGroupPlainType.Return).ToNonVoid()
             : iterableType;
         return iteratorPlainType;
     }
@@ -36,7 +36,7 @@ internal static partial class ForeachExpressionPlainTypesAspect
     {
         var nextMethodReturnType = node.ReferencedNextMethod?.ReturnPlainType;
         if (nextMethodReturnType is OptionalPlainType { Referent: var iteratedType })
-            return node.IteratorPlainType.TypeReplacements.ReplaceTypeParametersIn(iteratedType).ToNonLiteral().ToNonVoid();
+            return node.IteratorPlainType.TypeReplacements.Apply(iteratedType).ToNonLiteral().ToNonVoid();
         return PlainType.Unknown;
     }
 }
