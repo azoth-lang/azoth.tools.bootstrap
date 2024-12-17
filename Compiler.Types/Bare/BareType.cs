@@ -29,7 +29,7 @@ public sealed class BareType : IEquatable<BareType>
     public TypeConstructor TypeConstructor => PlainType.TypeConstructor;
     public IFixedList<Type> Arguments { get; }
     public bool HasIndependentTypeArguments { get; }
-    public TypeReplacements TypeReplacements { get; }
+    public BareTypeReplacements TypeReplacements { get; }
 
     public IFixedList<TypeParameterArgument> TypeParameterArguments
         => Lazy.Initialize(ref typeParameterArguments, PlainType, Arguments,

@@ -41,7 +41,7 @@ public sealed class ConstructedPlainType : NonVoidPlainType
         if (newTypeConstructor is null) return null;
         // Literal type constructors will have parameters, whereas their corresponding non-literal
         // types won't. Thus, do not pass any type arguments.
-        return new ConstructedPlainType(newTypeConstructor, []);
+        return new(newTypeConstructor, []);
     }
 
     #region Equality

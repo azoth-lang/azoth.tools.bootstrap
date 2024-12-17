@@ -22,7 +22,7 @@ public sealed class SelfViewpointType : NonVoidType
 
     public override NonVoidPlainType PlainType => Referent.PlainType;
 
-    public override TypeReplacements TypeReplacements => Referent.TypeReplacements;
+    public override BareTypeReplacements TypeReplacements => Referent.TypeReplacements;
 
     public override bool HasIndependentTypeArguments => Referent.HasIndependentTypeArguments;
 

@@ -39,7 +39,7 @@ public sealed class OptionalType : NonVoidType
 
     public NonVoidType Referent { get; }
 
-    public override TypeReplacements TypeReplacements => Referent.TypeReplacements;
+    public override BareTypeReplacements TypeReplacements => Referent.TypeReplacements;
 
     public override bool HasIndependentTypeArguments => Referent.HasIndependentTypeArguments;
 

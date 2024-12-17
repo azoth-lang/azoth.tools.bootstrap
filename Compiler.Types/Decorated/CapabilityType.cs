@@ -28,7 +28,7 @@ public sealed class CapabilityType : NonVoidType
 
     public IFixedList<TypeParameterArgument> TypeParameterArguments => BareType.TypeParameterArguments;
 
-    public override TypeReplacements TypeReplacements => BareType.TypeReplacements;
+    public override BareTypeReplacements TypeReplacements => BareType.TypeReplacements;
 
     private CapabilityType(
         Capability capability,

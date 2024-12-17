@@ -6,14 +6,14 @@ using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 
-public sealed class TypeReplacements
+public sealed class BareTypeReplacements
 {
-    public static readonly TypeReplacements None = new();
+    public static readonly BareTypeReplacements None = new();
 
     private readonly PlainTypeReplacements plainTypeReplacements;
     private readonly Dictionary<GenericParameterType, Type> replacements;
 
-    private TypeReplacements()
+    private BareTypeReplacements()
     {
         plainTypeReplacements = PlainTypeReplacements.None;
         replacements = new();
@@ -23,7 +23,7 @@ public sealed class TypeReplacements
     /// Build a dictionary of type replacements. Generic parameter types of both this type and the
     /// supertypes can be replaced with type arguments of this type.
     /// </summary>
-    internal TypeReplacements(
+    internal BareTypeReplacements(
         PlainTypeReplacements plainTypeReplacements,
         TypeConstructor typeConstructor,
         IFixedList<Type> typeArguments)

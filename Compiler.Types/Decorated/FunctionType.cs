@@ -21,7 +21,7 @@ public sealed class FunctionType : NonVoidType, IMaybeFunctionType
     public Type Return { get; }
     IMaybeType IMaybeFunctionType.Return => Return;
 
-    public override TypeReplacements TypeReplacements => TypeReplacements.None;
+    public override BareTypeReplacements TypeReplacements => BareTypeReplacements.None;
 
     public override bool HasIndependentTypeArguments => false;
 
