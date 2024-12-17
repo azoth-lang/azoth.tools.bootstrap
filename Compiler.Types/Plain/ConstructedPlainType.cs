@@ -13,7 +13,6 @@ public sealed class ConstructedPlainType : NonVoidPlainType
 {
     public TypeConstructor TypeConstructor { get; }
     public ConstructedPlainType? ContainingType { get; }
-    // TODO Nested Types: add ContainingType and enforce that it must match the context of the TypeConstructor
     public override TypeSemantics? Semantics => TypeConstructor.Semantics;
     public TypeName Name => TypeConstructor.Name;
     public bool AllowsVariance => TypeConstructor.AllowsVariance;

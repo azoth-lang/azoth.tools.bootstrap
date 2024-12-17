@@ -253,10 +253,10 @@ public abstract partial class TypeConstructor : TypeConstructorContext, IEquatab
         return Construct(properContainingType, properArguments);
     }
 
-    public BareType Construct(BareType? containingType, IFixedList<Type> arguments)
+    public virtual BareType Construct(BareType? containingType, IFixedList<Type> arguments)
     {
         var plainType = Construct(containingType?.PlainType, arguments.Select(a => a.PlainType).ToFixedList());
-        return new(plainType, arguments);
+        return new(plainType, containingType, arguments);
     }
 
     /// <summary>
@@ -274,16 +274,12 @@ public abstract partial class TypeConstructor : TypeConstructorContext, IEquatab
     /// Construct this type with no type arguments.
     /// </summary>
     /// <exception cref="InvalidOperationException">This type constructor takes one or more arguments.</exception>
-    public BareType ConstructNullaryType(BareType? containingType)
-    {
-        if (!Parameters.IsEmpty)
-            throw new InvalidOperationException($"Cannot construct nullary type for type constructor `{this}` expecting arguments.");
-        var plainType = Construct(containingType?.PlainType, FixedList.Empty<PlainType>());
-        return new(plainType, []);
-    }
+    public BareType ConstructNullaryType(BareType? containingType) => Construct(containingType, []);
 
     Type? ITypeFactory.TryConstructNullaryType(BareType? containingType)
     {
+        Requires.That(Equals(Context as TypeConstructor, containingType?.TypeConstructor), nameof(containingType),
+            "Must match the context.");
         if (!Parameters.IsEmpty)
             throw new InvalidOperationException($"Cannot construct nullary type for type constructor `{this}` expecting arguments.");
         // Type constructors require a capability, not just type parameters, to construct a full type.
@@ -294,7 +290,6 @@ public abstract partial class TypeConstructor : TypeConstructorContext, IEquatab
     /// Try to construct a plain type with type arguments. If the type constructor takes one or more
     /// arguments, <see langword="null"/> is returned.
     /// </summary>
-    /// <param name="containingType"></param>
     public abstract PlainType? TryConstructNullaryPlainType(ConstructedPlainType? containingType);
 
     /// <summary>

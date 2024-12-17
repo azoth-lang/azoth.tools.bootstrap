@@ -1,7 +1,9 @@
 using System.Text;
+using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
+using Type = Azoth.Tools.Bootstrap.Compiler.Types.Decorated.Type;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 
@@ -39,11 +41,19 @@ public abstract class AssociatedTypeConstructor : TypeConstructor
     }
 
     /// <remarks>Unlike other type constructors, associated types will default to a containing type
+    /// that is constructed with the parameter types. This is because when referenced from
+    /// within a type definition they are referenced without a containing type and the containing
+    /// type is implied.</remarks>
+    public override BareType Construct(BareType? containingType, IFixedList<Type> arguments)
+        => base.Construct(containingType ?? Context.ConstructWithParameterTypes(), arguments);
+
+    /// <remarks>Unlike other type constructors, associated types will default to a containing type
     /// that is constructed with the parameter plain types. This is because when referenced from
     /// within a type definition they are referenced without a containing type and the containing
     /// type is implied.</remarks>
     public sealed override ConstructedPlainType TryConstructNullaryPlainType(ConstructedPlainType? containingType)
         => new(this, containingType ?? Context.ConstructWithParameterPlainTypes(), []);
+
     #region Equality
     public sealed override bool Equals(TypeConstructor? other)
     {

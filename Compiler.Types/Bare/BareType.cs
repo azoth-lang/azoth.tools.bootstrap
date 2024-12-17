@@ -20,13 +20,12 @@ public sealed class BareType : IEquatable<BareType>
 {
     // Note: must use AnyTypeConstructor.PlainType instead of PlainType.Any to avoid circular
     // dependency when initializing statics.
-    public static readonly BareType Any = new(AnyTypeConstructor.PlainType, []);
+    public static readonly BareType Any = new(AnyTypeConstructor.PlainType, containingType: null, []);
     public static readonly IFixedSet<BareType> AnySet = Any.Yield().ToFixedSet();
-
-    // TODO add containing type for capabilities on containing type arguments
 
     public ConstructedPlainType PlainType { get; }
     public TypeConstructor TypeConstructor => PlainType.TypeConstructor;
+    public BareType? ContainingType { get; }
     public IFixedList<Type> Arguments { get; }
     public bool HasIndependentTypeArguments { get; }
     public BareTypeReplacements TypeReplacements { get; }
@@ -41,14 +40,17 @@ public sealed class BareType : IEquatable<BareType>
     public IFixedSet<BareType> Supertypes
         => Lazy.Initialize(ref supertypes, TypeConstructor, TypeReplacements,
             static (constructor, replacements)
-                => constructor.Supertypes.Select(replacements.Apply).ToFixedSet());
+                => constructor.Supertypes.Select(t => replacements.Apply(t)).ToFixedSet());
     private IFixedSet<BareType>? supertypes;
 
-    public BareType(ConstructedPlainType plainType, IFixedList<Type> arguments)
+    public BareType(ConstructedPlainType plainType, BareType? containingType, IFixedList<Type> arguments)
     {
+        Requires.That(Equals(plainType.ContainingType, containingType?.PlainType), nameof(containingType),
+            "Must match the plain type.");
         Requires.That(plainType.Arguments.SequenceEqual(arguments.Select(a => a.PlainType)), nameof(arguments),
             "Type arguments must match plain type.");
         PlainType = plainType;
+        ContainingType = containingType;
         Arguments = arguments;
         HasIndependentTypeArguments = PlainType.TypeConstructor.HasIndependentParameters
                                       || Arguments.Any(a => a.HasIndependentTypeArguments);
@@ -74,13 +76,13 @@ public sealed class BareType : IEquatable<BareType>
         => With(TypeConstructor.IsDeclaredConst ? Capability.Constant : Capability.Mutable);
 
     public BareType WithReplacement(IFixedList<Type> arguments)
-        => new BareType(PlainType, arguments);
+        => new BareType(PlainType, ContainingType, arguments);
 
     public BareType? TryToNonLiteral()
     {
         var newPlainType = PlainType.TryToNonLiteral();
         if (newPlainType is null) return null;
-        return new(newPlainType, Arguments);
+        return new(newPlainType, containingType: null, Arguments);
     }
 
     #region Equality

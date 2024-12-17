@@ -32,19 +32,8 @@ public static partial class TypeOperations
         };
 
     public static bool IsSubtypeOf(this CapabilityType self, CapabilityType other)
-    {
-        if (!self.Capability.IsSubtypeOf(other.Capability)) return false;
-
-        switch ((self.PlainType, other.PlainType))
-        {
-            case (ConstructedPlainType s, ConstructedPlainType o):
-                var selfBareType = new BareType(s, self.Arguments);
-                var otherBareType = new BareType(o, other.Arguments);
-                return selfBareType.IsSubtypeOf(otherBareType, other.Capability.AllowsWrite);
-            default:
-                return false;
-        }
-    }
+        => self.Capability.IsSubtypeOf(other.Capability)
+           && self.BareType.IsSubtypeOf(other.BareType, other.Capability.AllowsWrite);
 
     public static bool IsSubtypeOf(this CapabilityType self, SelfViewpointType other)
     {

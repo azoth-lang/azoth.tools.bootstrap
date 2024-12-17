@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using Azoth.Tools.Bootstrap.Framework;
@@ -155,12 +156,16 @@ public sealed class BareTypeReplacements
         return typesReplaced ? replacementTypes.ToFixedList() : types;
     }
 
-    public BareType Apply(BareType bareType)
+    [return: NotNullIfNotNull(nameof(bareType))]
+    public BareType? Apply(BareType? bareType)
     {
+        if (bareType is null) return null;
+        var replacementContainingType = Apply(bareType.ContainingType);
         var replacementTypes = Apply(bareType.Arguments);
-        if (ReferenceEquals(bareType.Arguments, replacementTypes)) return bareType;
+        if (ReferenceEquals(bareType.ContainingType, replacementContainingType)
+            && ReferenceEquals(bareType.Arguments, replacementTypes)) return bareType;
 
         var plainType = plainTypeReplacements.Apply(bareType.PlainType);
-        return new(plainType, replacementTypes);
+        return new(plainType, replacementContainingType, replacementTypes);
     }
 }
