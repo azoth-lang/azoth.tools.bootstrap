@@ -22,12 +22,14 @@ public abstract class AssociatedTypeConstructor : TypeConstructor
     public sealed override bool HasIndependentParameters => false;
     public sealed override IFixedList<GenericParameterTypeFactory> ParameterTypeFactories => [];
 
-    public ConstructedPlainType PlainType { get; }
+    public ConstructedPlainType PlainType
+        // Lazy initialize to avoid issues with type constructor not fully constructed
+        => LazyInitializer.EnsureInitialized(ref plainType, () => new(this, []));
+    private ConstructedPlainType? plainType;
 
     protected AssociatedTypeConstructor(TypeConstructor context)
     {
         Context = context;
-        PlainType = new(this, []);
     }
 
     public override ConstructedPlainType Construct(IFixedList<PlainType> arguments)
