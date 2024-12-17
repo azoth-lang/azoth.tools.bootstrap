@@ -1,5 +1,4 @@
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
-using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
@@ -21,39 +20,13 @@ public sealed class BareTypeReplacements
 
     /// <summary>
     /// Build a dictionary of type replacements. Generic parameter types of both this type and the
-    /// supertypes can be replaced with type arguments of this type.
+    /// containing type can be replaced with type arguments of this type.
     /// </summary>
-    internal BareTypeReplacements(
-        PlainTypeReplacements plainTypeReplacements,
-        TypeConstructor typeConstructor,
-        IFixedList<Type> typeArguments)
+    internal BareTypeReplacements(BareType bareSelfType)
     {
-        this.plainTypeReplacements = plainTypeReplacements;
-        replacements = typeConstructor.ParameterTypes.EquiZip(typeArguments)
+        plainTypeReplacements = bareSelfType.PlainType.TypeReplacements;
+        replacements = bareSelfType.TypeConstructor.ParameterTypes.EquiZip(bareSelfType.Arguments)
                                    .ToDictionary(t => t.Item1, t => t.Item2);
-        // Set up replacements for supertype generic parameters
-        // TODO this might have been needed when inheritance was implemented by treating methods as
-        //      if they were copied down the hierarchy, but I don't think it should be needed when
-        //      they are properly handled.
-        // TODO this also can't work because you can implement a trait multiple times with different type arguments
-        //foreach (var supertype in typeConstructor.Supertypes)
-        //{
-        //    var genericParameterTypes = supertype.TypeConstructor.ParameterTypes;
-        //    foreach (var (typeArg, i) in supertype.Arguments.Enumerate())
-        //    {
-        //        var genericParameterType = genericParameterTypes[i];
-        //        if (typeArg is GenericParameterType genericTypeArg)
-        //        {
-        //            if (replacements.TryGetValue(genericTypeArg, out var replacement))
-        //                replacements.Add(genericParameterType, replacement);
-        //            else
-        //                throw new InvalidOperationException(
-        //                    $"Could not find replacement for `{typeArg.ToILString()}` in type `{typeConstructor}` with arguments `{typeArguments.ToILString()}`.");
-        //        }
-        //        else
-        //            replacements.Add(genericParameterType, Apply(typeArg));
-        //    }
-        //}
     }
 
     public IMaybeType Apply(IMaybeType type)

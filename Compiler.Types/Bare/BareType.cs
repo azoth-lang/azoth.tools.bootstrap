@@ -52,8 +52,7 @@ public sealed class BareType : IEquatable<BareType>
         Arguments = arguments;
         HasIndependentTypeArguments = PlainType.TypeConstructor.HasIndependentParameters
                                       || Arguments.Any(a => a.HasIndependentTypeArguments);
-        // TODO could pass TypeParameterArguments instead?
-        TypeReplacements = new(plainType.TypeReplacements, plainType.TypeConstructor, Arguments);
+        TypeReplacements = new(this);
     }
 
     public CapabilityType With(Capability capability)
