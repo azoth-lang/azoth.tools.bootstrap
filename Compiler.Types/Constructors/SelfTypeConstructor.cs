@@ -6,6 +6,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 
 public sealed class SelfTypeConstructor : AssociatedTypeConstructor
 {
+    public override bool IsDeclaredConst => Context.IsDeclaredConst;
+
     public override BuiltInTypeName Name => BuiltInTypeName.Self;
 
     public override IFixedSet<BareType> Supertypes { get; }

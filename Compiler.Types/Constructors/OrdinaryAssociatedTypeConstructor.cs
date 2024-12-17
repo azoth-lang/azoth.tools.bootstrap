@@ -6,6 +6,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 
 public sealed class OrdinaryAssociatedTypeConstructor : AssociatedTypeConstructor
 {
+    public override bool IsDeclaredConst => false;
+
     public override IdentifierName Name { get; }
 
     public override IFixedSet<BareType> Supertypes => BareType.AnySet;

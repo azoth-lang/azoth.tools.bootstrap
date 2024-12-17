@@ -9,7 +9,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 public abstract class AssociatedTypeConstructor : TypeConstructor
 {
     public sealed override TypeConstructor Context { get; }
-    public sealed override bool IsDeclaredConst => false;
     public sealed override bool CanBeInstantiated => false;
     /// <remarks>While the associated type itself won't have fields, the type it is instantiated to
     /// might. However, it probably doesn't matter since I believe this is used for supertypes and
