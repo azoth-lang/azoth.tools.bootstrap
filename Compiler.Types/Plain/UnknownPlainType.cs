@@ -13,10 +13,8 @@ public sealed class UnknownPlainType : IMaybeFunctionPlainType
 
     IMaybePlainType IMaybeFunctionPlainType.Return => PlainType.Unknown;
 
+    PlainTypeReplacements IMaybePlainType.TypeReplacements => PlainTypeReplacements.None;
     IMaybePlainType IMaybePlainType.ToNonLiteral() => PlainType.Unknown;
-
-    public IMaybePlainType ReplaceTypeParametersIn(IMaybePlainType plainType)
-        => plainType;
 
     #region Equality
     public bool Equals(IMaybePlainType? other) => ReferenceEquals(this, other);

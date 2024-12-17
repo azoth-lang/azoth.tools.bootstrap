@@ -18,7 +18,7 @@ public sealed class ConstructedPlainType : NonVoidPlainType
     public bool AllowsVariance => TypeConstructor.AllowsVariance;
     public IFixedList<PlainType> Arguments { get; }
     public IFixedSet<ConstructedPlainType> Supertypes { get; }
-    internal PlainTypeReplacements TypeReplacements { get; }
+    public override PlainTypeReplacements TypeReplacements { get; }
 
     public ConstructedPlainType(TypeConstructor typeConstructor, IEnumerable<PlainType> typeArguments)
     {
@@ -32,7 +32,7 @@ public sealed class ConstructedPlainType : NonVoidPlainType
 
         TypeReplacements = new(TypeConstructor, Arguments);
 
-        Supertypes = typeConstructor.Supertypes.Select(s => ReplaceTypeParametersIn(s.PlainType)).ToFixedSet();
+        Supertypes = typeConstructor.Supertypes.Select(s => TypeReplacements.ReplaceTypeParametersIn(s.PlainType)).ToFixedSet();
     }
 
     public override ConstructedPlainType? TryToNonLiteral()
@@ -43,12 +43,6 @@ public sealed class ConstructedPlainType : NonVoidPlainType
         // types won't. Thus, do not pass any type arguments.
         return new ConstructedPlainType(newTypeConstructor, []);
     }
-
-    public override IMaybePlainType ReplaceTypeParametersIn(IMaybePlainType plainType)
-        => TypeReplacements.ReplaceTypeParametersIn(plainType);
-
-    public ConstructedPlainType ReplaceTypeParametersIn(ConstructedPlainType plainType)
-        => TypeReplacements.ReplaceTypeParametersIn(plainType);
 
     #region Equality
     public override bool Equals(IMaybePlainType? other)

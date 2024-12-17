@@ -14,14 +14,13 @@ public interface IMaybePlainType : IEquatable<IMaybePlainType>
     public static readonly IMaybePlainType Unknown = UnknownPlainType.Instance;
     #endregion
 
+    PlainTypeReplacements TypeReplacements { get; }
+
     /// <summary>
     /// Convert types for literals (e.g. <c>bool[true]</c>, <c>int[42]</c> etc.) to their
     /// corresponding types.
     /// </summary>
     IMaybePlainType ToNonLiteral();
-
-    // TODO remove this by making PlainTypeReplacements public
-    IMaybePlainType ReplaceTypeParametersIn(IMaybePlainType plainType);
 
     string ToString();
 }

@@ -54,10 +54,11 @@ public abstract class PlainType : IMaybePlainType
     public static readonly ConstructedPlainType False = TypeConstructor.False.PlainType;
     #endregion
 
-    public virtual ConstructedPlainType? TryToNonLiteral() => null;
-    IMaybePlainType IMaybePlainType.ToNonLiteral() => TryToNonLiteral() ?? this;
+    public virtual PlainTypeReplacements TypeReplacements => PlainTypeReplacements.None;
 
-    public virtual IMaybePlainType ReplaceTypeParametersIn(IMaybePlainType plainType) => this;
+    public virtual ConstructedPlainType? TryToNonLiteral() => null;
+    public PlainType ToNonLiteral() => TryToNonLiteral() ?? this;
+    IMaybePlainType IMaybePlainType.ToNonLiteral() => ToNonLiteral();
 
     #region Equality
     public abstract bool Equals(IMaybePlainType? other);

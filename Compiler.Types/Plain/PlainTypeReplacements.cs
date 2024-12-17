@@ -4,7 +4,7 @@ using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 
-internal sealed class PlainTypeReplacements
+public sealed class PlainTypeReplacements
 {
     public static readonly PlainTypeReplacements None = new();
 

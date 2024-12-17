@@ -25,7 +25,7 @@ internal static partial class ExpressionPlainTypesAspect
     public static partial IMaybePlainType MethodInvocationExpression_PlainType(IMethodInvocationExpressionNode node)
     {
         var unboundPlainType = node.Method.SelectedCallCandidate?.ReturnPlainType ?? PlainType.Unknown;
-        var boundPlainType = node.Method.Context.PlainType.ReplaceTypeParametersIn(unboundPlainType);
+        var boundPlainType = node.Method.Context.PlainType.TypeReplacements.ReplaceTypeParametersIn(unboundPlainType);
         return boundPlainType;
     }
 
@@ -39,14 +39,14 @@ internal static partial class ExpressionPlainTypesAspect
     {
         // TODO should probably use PlainType on the declaration
         var unboundPlainType = node.ReferencedDeclaration.BindingType.PlainType;
-        var boundPlainType = node.Context.PlainType.ReplaceTypeParametersIn(unboundPlainType);
+        var boundPlainType = node.Context.PlainType.TypeReplacements.ReplaceTypeParametersIn(unboundPlainType);
         return boundPlainType;
     }
 
     public static partial IMaybePlainType NewObjectExpression_PlainType(INewObjectExpressionNode node)
     {
         var unboundPlainType = node.ReferencedConstructor?.ReturnPlainType ?? PlainType.Unknown;
-        var boundPlainType = node.ConstructingPlainType.ReplaceTypeParametersIn(unboundPlainType);
+        var boundPlainType = node.ConstructingPlainType.TypeReplacements.ReplaceTypeParametersIn(unboundPlainType);
         return boundPlainType;
     }
 
@@ -349,14 +349,14 @@ internal static partial class ExpressionPlainTypesAspect
     public static partial IMaybePlainType GetterInvocationExpression_PlainType(IGetterInvocationExpressionNode node)
     {
         var unboundPlainType = node.ReferencedDeclaration?.ReturnPlainType ?? PlainType.Unknown;
-        var boundPlainType = node.Context.PlainType.ReplaceTypeParametersIn(unboundPlainType);
+        var boundPlainType = node.Context.PlainType.TypeReplacements.ReplaceTypeParametersIn(unboundPlainType);
         return boundPlainType;
     }
 
     public static partial IMaybePlainType SetterInvocationExpression_PlainType(ISetterInvocationExpressionNode node)
     {
         var unboundPlainType = node.ReferencedDeclaration?.ParameterPlainTypes[0] ?? PlainType.Unknown;
-        var boundPlainType = node.Context.PlainType.ReplaceTypeParametersIn(unboundPlainType);
+        var boundPlainType = node.Context.PlainType.TypeReplacements.ReplaceTypeParametersIn(unboundPlainType);
         return boundPlainType;
     }
 
@@ -371,7 +371,7 @@ internal static partial class ExpressionPlainTypesAspect
     public static partial IMaybePlainType InitializerInvocationExpression_PlainType(IInitializerInvocationExpressionNode node)
     {
         var unboundPlainType = node.ReferencedDeclaration?.ReturnPlainType ?? PlainType.Unknown;
-        var boundPlainType = node.InitializerGroup.InitializingPlainType.ReplaceTypeParametersIn(unboundPlainType);
+        var boundPlainType = node.InitializerGroup.InitializingPlainType.TypeReplacements.ReplaceTypeParametersIn(unboundPlainType);
         return boundPlainType;
     }
 

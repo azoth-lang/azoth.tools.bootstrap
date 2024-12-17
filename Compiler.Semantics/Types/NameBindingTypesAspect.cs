@@ -104,7 +104,7 @@ internal static partial class NameBindingTypesAspect
         //var selfTypeConstructor = node.ContainingSelfTypeConstructor;
         //var selfType = selfTypeConstructor.ConstructWithParameterTypes();
         //var constraintNode = node.Constraint;
-        // TODO shouldn't their be an overload of .With() that takes an ICapabilityConstraint (e.g. `capability.Constraint`)
+        //// TODO shouldn't their be an overload of .With() that takes an ICapabilityConstraint (e.g. `capability.Constraint`)
         //return constraintNode switch
         //{
         //    ICapabilityNode n

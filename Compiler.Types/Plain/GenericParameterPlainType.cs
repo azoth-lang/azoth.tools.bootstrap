@@ -24,8 +24,6 @@ public sealed class GenericParameterPlainType : NonVoidPlainType
         Parameter = parameter;
     }
 
-    public override IMaybePlainType ReplaceTypeParametersIn(IMaybePlainType plainType) => plainType;
-
     #region Equality
     public override bool Equals(IMaybePlainType? other)
     {

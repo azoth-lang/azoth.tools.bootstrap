@@ -17,7 +17,7 @@ public static partial class TypeOperations
     /// <summary>
     /// Replace self viewpoint types using the given type as self.
     /// </summary>
-    public static IMaybeType ReplaceSelfWith(this IMaybeType type, Capability capability)
+    private static IMaybeType ReplaceSelfWith(this IMaybeType type, Capability capability)
         => type switch
         {
             SelfViewpointType t => t.Referent.ReplaceSelfWith(capability).AccessedVia(capability),
