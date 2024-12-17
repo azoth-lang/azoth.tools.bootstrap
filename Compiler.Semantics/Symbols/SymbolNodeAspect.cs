@@ -36,7 +36,7 @@ internal static partial class SymbolNodeAspect
 
     #region Type Symbol Nodes
     public static partial ISelfSymbolNode NonVariableTypeSymbol_ImplicitSelf(INonVariableTypeSymbolNode node)
-        => ISelfSymbolNode.Create(node.SymbolTree().GetChildrenOf(node.Symbol).OfType<AssociatedTypeSymbol>().Where(t => t.PlainType.Name == BuiltInTypeName.Self).TrySingle()!);
+        => ISelfSymbolNode.Create(node.SymbolTree().GetChildrenOf(node.Symbol).OfType<AssociatedTypeSymbol>().Where(t => t.Name == BuiltInTypeName.Self).TrySingle()!);
 
     public static partial IFixedList<IGenericParameterSymbolNode> OrdinaryTypeSymbol_GenericParameters(IOrdinaryTypeSymbolNode node)
         => GetMembers(node).OfType<GenericParameterTypeSymbol>()

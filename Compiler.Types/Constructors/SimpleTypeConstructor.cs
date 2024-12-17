@@ -37,16 +37,22 @@ public abstract class SimpleTypeConstructor : SimpleOrLiteralTypeConstructor
     private protected SimpleTypeConstructor(BuiltInTypeName name)
     {
         Name = name;
-        PlainType = new(this, []);
+        PlainType = new(this, containingType: null, []);
     }
 
-    public sealed override ConstructedPlainType Construct(IFixedList<PlainType> arguments)
+    public sealed override ConstructedPlainType Construct(
+        ConstructedPlainType? containingType,
+        IFixedList<PlainType> arguments)
     {
         TypeRequires.NoArgs(arguments, nameof(arguments));
         return PlainType;
     }
 
-    public sealed override PlainType TryConstructNullaryPlainType() => PlainType;
+    public sealed override PlainType TryConstructNullaryPlainType(ConstructedPlainType? containingType)
+    {
+        Requires.Null(containingType, nameof(containingType), "Simple types do not have a containing type.");
+        return PlainType;
+    }
 
     #region Equality
     public sealed override bool Equals(TypeConstructor? other)

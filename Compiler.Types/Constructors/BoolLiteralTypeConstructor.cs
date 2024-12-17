@@ -15,7 +15,7 @@ public sealed class BoolLiteralTypeConstructor : LiteralTypeConstructor
         : base(BuiltInTypeName.Bool)
     {
         Value = value;
-        PlainType = new(this, []);
+        PlainType = new(this, containingType: null, []);
     }
 
     public override BoolTypeConstructor TryToNonLiteral() => Bool;

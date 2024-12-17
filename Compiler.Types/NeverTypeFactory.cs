@@ -14,13 +14,22 @@ internal class NeverTypeFactory : ITypeFactory
     private NeverTypeFactory() { }
     #endregion
 
-    public PlainType TryConstructNullaryPlainType() => PlainType.Never;
-
-    public BareType? TryConstruct(IFixedList<IMaybeType> arguments)
+    public PlainType TryConstructNullaryPlainType(ConstructedPlainType? containingType)
     {
+        Requires.Null(containingType, nameof(containingType), "Never does not have a containing type.");
+        return PlainType.Never;
+    }
+
+    public BareType? TryConstruct(BareType? containingType, IFixedList<IMaybeType> arguments)
+    {
+        Requires.Null(containingType, nameof(containingType), "Never does not have a containing type.");
         TypeRequires.NoArgs(arguments, nameof(arguments));
         return null;
     }
 
-    public Type TryConstructNullaryType() => Type.Never;
+    public Type? TryConstructNullaryType(BareType? containingType)
+    {
+        Requires.Null(containingType, nameof(containingType), "Never does not have a containing type.");
+        return Type.Never;
+    }
 }

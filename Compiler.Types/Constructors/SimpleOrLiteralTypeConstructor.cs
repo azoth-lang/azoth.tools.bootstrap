@@ -13,7 +13,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
     typeof(LiteralTypeConstructor))]
 public abstract class SimpleOrLiteralTypeConstructor : TypeConstructor
 {
-    public override PrimitiveContext Context => PrimitiveContext.Instance;
+    public override BuiltInContext Context => BuiltInContext.Instance;
 
     public override bool IsDeclaredConst => true;
 

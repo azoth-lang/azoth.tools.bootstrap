@@ -138,15 +138,17 @@ public sealed class OrdinaryTypeConstructor : TypeConstructor
             _ => true
         };
 
-    public override ConstructedPlainType Construct(IFixedList<PlainType> arguments)
+    public override ConstructedPlainType Construct(
+        ConstructedPlainType? containingType,
+        IFixedList<PlainType> arguments)
     {
         if (arguments.Count != Parameters.Count)
             throw new ArgumentException("Incorrect number of type arguments.");
-        return new(this, arguments);
+        return new(this, containingType, arguments);
     }
 
-    public override ConstructedPlainType? TryConstructNullaryPlainType()
-        => Parameters.IsEmpty ? new ConstructedPlainType(this, []) : null;
+    public override PlainType? TryConstructNullaryPlainType(ConstructedPlainType? containingType)
+        => Parameters.IsEmpty ? new ConstructedPlainType(this, containingType, []) : null;
 
     #region Equality
     public override bool Equals(TypeConstructor? other)
@@ -166,7 +168,7 @@ public sealed class OrdinaryTypeConstructor : TypeConstructor
 
     public override void ToString(StringBuilder builder)
     {
-        Context.AppendContextPrefix(builder);
+        Context.AppendContextPrefix(builder, containingType: null);
         builder.Append(Name.ToBareString());
         if (Parameters.IsEmpty) return;
 

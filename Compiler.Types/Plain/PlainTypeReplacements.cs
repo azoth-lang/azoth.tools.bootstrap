@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
@@ -23,30 +24,6 @@ public sealed class PlainTypeReplacements
     {
         replacements = typeConstructor.ParameterPlainTypes.EquiZip(typeArguments)
                                    .ToDictionary(t => t.Item1, t => t.Item2);
-        if (typeConstructor.Parameters.IsEmpty)
-            return;
-        // Set up replacements for supertype generic parameters
-        // TODO this might have been needed when inheritance was implemented by treating methods as
-        //      if they were copied down the hierarchy, but I don't think it should be needed when
-        //      they are properly handled.
-        // TODO this also can't work because you can implement a trait multiple times with different type arguments
-        //foreach (var supertype in typeConstructor.Supertypes)
-        //    foreach (var (supertypeArgument, i) in supertype.Arguments.Enumerate())
-        //    {
-        //        var genericParameterPlainType = supertype.TypeConstructor?.ParameterPlainTypes[i];
-        //        if (genericParameterPlainType is null)
-        //            continue;
-        //        if (supertypeArgument.PlainType is GenericParameterPlainType genericPlainTypeArg)
-        //        {
-        //            if (replacements.TryGetValue(genericPlainTypeArg, out var replacement))
-        //                replacements.Add(genericParameterPlainType, replacement);
-        //            else
-        //                throw new InvalidOperationException(
-        //                    $"Could not find replacement for `{supertypeArgument}` in type constructor `{typeConstructor}` with arguments `{typeArguments}`.");
-        //        }
-        //        else
-        //            replacements.Add(genericParameterPlainType, Apply(supertypeArgument.PlainType));
-        //    }
     }
 
     public IMaybePlainType Apply(IMaybePlainType plainType)
@@ -76,13 +53,17 @@ public sealed class PlainTypeReplacements
             _ => throw ExhaustiveMatch.Failed(plainType)
         };
 
-    public ConstructedPlainType Apply(ConstructedPlainType plainType)
+    [return: NotNullIfNotNull(nameof(plainType))]
+    public ConstructedPlainType? Apply(ConstructedPlainType? plainType)
     {
+        if (plainType is null) return null;
+        var replacementContainingType = Apply(plainType.ContainingType);
         var replacementTypeArguments = Apply(plainType.Arguments);
-        if (ReferenceEquals(plainType.Arguments, replacementTypeArguments))
+        if (ReferenceEquals(plainType.ContainingType, replacementContainingType)
+            && ReferenceEquals(plainType.Arguments, replacementTypeArguments))
             return plainType;
 
-        return new(plainType.TypeConstructor, replacementTypeArguments);
+        return new(plainType.TypeConstructor, replacementContainingType, replacementTypeArguments);
     }
 
     private IFixedList<PlainType> Apply(IFixedList<PlainType> plainTypes)

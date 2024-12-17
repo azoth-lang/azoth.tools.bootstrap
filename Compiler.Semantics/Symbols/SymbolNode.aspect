@@ -117,7 +117,7 @@
 = GenericParameterSymbol.Supertypes => Symbol.TryGetTypeConstructor()?.Supertypes ?? [];
 ↑ GenericParameterSymbol.Members: {TypeMemberSymbol} => [];
 = GenericParameterSymbol.InclusiveMembers => [];
-= SelfSymbol.TypeFactory => Symbol.TypeFactory;
+= SelfSymbol.TypeFactory => Symbol.TypeConstructor;
 ↑ SelfSymbol.Members: {TypeMemberSymbol} => [];
 = SelfSymbol.InclusiveMembers => [];
 

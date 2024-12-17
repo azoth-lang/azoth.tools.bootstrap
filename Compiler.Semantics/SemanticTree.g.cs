@@ -4502,7 +4502,7 @@ public partial interface ISelfSymbolNode : IImplicitSelfDeclarationNode
     TypeSymbol ContainingSymbol
         => ContainingDeclaration.Symbol;
     AssociatedTypeConstructor IImplicitSelfDeclarationNode.TypeFactory
-        => Symbol.TypeFactory;
+        => Symbol.TypeConstructor;
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.InclusiveMembers
         => [];
 

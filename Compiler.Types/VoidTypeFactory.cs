@@ -14,13 +14,22 @@ internal sealed class VoidTypeFactory : ITypeFactory
     private VoidTypeFactory() { }
     #endregion
 
-    public PlainType TryConstructNullaryPlainType() => PlainType.Void;
-
-    public BareType? TryConstruct(IFixedList<IMaybeType> arguments)
+    public PlainType TryConstructNullaryPlainType(ConstructedPlainType? containingType)
     {
+        Requires.Null(containingType, nameof(containingType), "Void does not have a containing type.");
+        return PlainType.Void;
+    }
+
+    public BareType? TryConstruct(BareType? containingType, IFixedList<IMaybeType> arguments)
+    {
+        Requires.Null(containingType, nameof(containingType), "Void does not have a containing type.");
         TypeRequires.NoArgs(arguments, nameof(arguments));
         return null;
     }
 
-    public Type? TryConstructNullaryType() => Type.Void;
+    public Type? TryConstructNullaryType(BareType? containingType)
+    {
+        Requires.Null(containingType, nameof(containingType), "Void does not have a containing type.");
+        return Type.Void;
+    }
 }

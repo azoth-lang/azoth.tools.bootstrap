@@ -20,14 +20,14 @@ internal static partial class TypeExpressionsAspect
         // TODO don't use ReferencedSymbol (use referenced definition instead)
         // TODO why is node.ReferencedSymbol?.TryGetType() needed here?
         => node.NamedBareType?.WithDefaultCapability()
-           ?? node.ReferencedDeclaration?.TypeFactory.TryConstructNullaryType() ?? IMaybeType.Unknown;
+           ?? node.ReferencedDeclaration?.TypeFactory.TryConstructNullaryType(containingType: null) ?? IMaybeType.Unknown;
 
     // TODO remove if this remains a duplicate of TypeName_NamedType
     public static partial IMaybeType BuiltInTypeName_NamedType(IBuiltInTypeNameNode node)
         // Special type names don't have bare types
         // TODO don't use ReferencedSymbol (use referenced definition instead)
         => node.NamedBareType?.WithDefaultCapability()
-           ?? node.ReferencedDeclaration?.TypeFactory.TryConstructNullaryType() ?? IMaybeType.Unknown;
+           ?? node.ReferencedDeclaration?.TypeFactory.TryConstructNullaryType(containingType: null) ?? IMaybeType.Unknown;
 
     public static partial IMaybeType CapabilityType_NamedType(ICapabilityTypeNode node)
         => (node.Referent as ITypeNameNode)?.NamedBareType?.With(node.Capability.Capability) ?? node.Referent.NamedType;

@@ -20,7 +20,7 @@ internal static partial class TypeExpressionsPlainTypesAspect
         => node.Referent.NamedPlainType;
 
     public static partial IMaybePlainType BuiltInTypeName_NamedPlainType(IBuiltInTypeNameNode node)
-        => node.ReferencedDeclaration?.TypeFactory.TryConstructNullaryPlainType() ?? IMaybePlainType.Unknown;
+        => node.ReferencedDeclaration?.TypeFactory.TryConstructNullaryPlainType(containingType: null) ?? IMaybePlainType.Unknown;
 
     public static partial IMaybePlainType FunctionType_NamedPlainType(IFunctionTypeNode node)
     {
@@ -39,7 +39,7 @@ internal static partial class TypeExpressionsPlainTypesAspect
         // TODO do not use symbols at this stage of the compiler
         var referencedSymbol = node.ReferencedDeclaration?.Symbol;
         return referencedSymbol?.TryGetPlainType()
-               ?? referencedSymbol?.TryGetTypeConstructor()?.TryConstructNullaryPlainType()
+               ?? referencedSymbol?.TryGetTypeConstructor()?.TryConstructNullaryPlainType(containingType: null)
                ?? IMaybePlainType.Unknown;
     }
 
@@ -53,7 +53,7 @@ internal static partial class TypeExpressionsPlainTypesAspect
         var plainTypeArguments = node.TypeArguments.Select(a => a.NamedPlainType).OfType<PlainType>().ToFixedList();
         if (plainTypeArguments.Count != node.TypeArguments.Count)
             return PlainType.Unknown;
-        return declaredPlainType.Construct(plainTypeArguments);
+        return declaredPlainType.Construct(containingType: null, plainTypeArguments);
     }
 
     public static partial IMaybePlainType TypeNameExpression_NamedPlainType(ITypeNameExpressionNode node)
@@ -66,6 +66,6 @@ internal static partial class TypeExpressionsPlainTypesAspect
         var plainTypeArguments = node.TypeArguments.Select(a => a.NamedPlainType).OfType<PlainType>().ToFixedList();
         if (plainTypeArguments.Count != node.TypeArguments.Count)
             return PlainType.Unknown;
-        return declaredPlainType.Construct(plainTypeArguments);
+        return declaredPlainType.Construct(containingType: null, plainTypeArguments);
     }
 }

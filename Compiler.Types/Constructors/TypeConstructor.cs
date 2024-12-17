@@ -130,9 +130,16 @@ public abstract partial class TypeConstructor : TypeConstructorContext, IEquatab
              genericParameters.ToFixedList(), BareType.AnySet);
     #endregion
 
-    public sealed override void AppendContextPrefix(StringBuilder builder)
+    public sealed override void AppendContextPrefix(StringBuilder builder, ConstructedPlainType? containingType)
     {
-        ToString(builder);
+        if (containingType is not null)
+        {
+            Requires.That(Equals(containingType?.TypeConstructor), nameof(containingType), "Must match the context.");
+            containingType.ToString(builder);
+        }
+        else
+            ToString(builder);
+
         builder.Append('.');
     }
 
@@ -203,7 +210,9 @@ public abstract partial class TypeConstructor : TypeConstructorContext, IEquatab
     private ConstructedPlainType? withParameterPlainTypes;
     private BareType? withParameterTypes;
 
-    public abstract ConstructedPlainType Construct(IFixedList<PlainType> arguments);
+    public abstract ConstructedPlainType Construct(
+        ConstructedPlainType? containingType,
+        IFixedList<PlainType> arguments);
 
     /// <summary>
     /// Construct a type using the <see cref="ParameterPlainTypes"/> to create a plain type as it
@@ -212,7 +221,11 @@ public abstract partial class TypeConstructor : TypeConstructorContext, IEquatab
     // TODO will this be needed once `Self` is properly used?
     public ConstructedPlainType ConstructWithParameterPlainTypes()
         => Lazy.Initialize(ref withParameterPlainTypes, this, ParameterPlainTypes,
-            static (typeConstructor, arguments) => typeConstructor.Construct(arguments));
+            static (typeConstructor, arguments) =>
+            {
+                var containingType = (typeConstructor.Context as TypeConstructor)?.ConstructWithParameterPlainTypes();
+                return typeConstructor.Construct(containingType, arguments);
+            });
 
     /// <summary>
     /// Construct a type using the <see cref="ParameterTypes"/> to create a type as it would be
@@ -221,22 +234,28 @@ public abstract partial class TypeConstructor : TypeConstructorContext, IEquatab
     // TODO will this be needed once `Self` is properly used?
     public BareType ConstructWithParameterTypes()
         => Lazy.Initialize(ref withParameterTypes, this, ParameterTypes,
-            static (typeConstructor, arguments) => typeConstructor.Construct(arguments));
+            static (typeConstructor, arguments) =>
+            {
+                var containingType = (typeConstructor.Context as TypeConstructor)?.ConstructWithParameterTypes();
+                return typeConstructor.Construct(containingType, arguments);
+            });
 
     /// <summary>
     /// Attempt to construct a plain type from this type constructor with possibly unknown arguments.
     /// If any argument is unknown, the result is the unknown plain type.
     /// </summary>
-    public IMaybePlainType Construct(IFixedList<IMaybePlainType> arguments)
+    public IMaybePlainType Construct(IMaybePlainType? containingType, IFixedList<IMaybePlainType> arguments)
     {
+        var properContainingType = containingType as ConstructedPlainType;
+        if (containingType is not null && properContainingType is null) return PlainType.Unknown;
         var properArguments = arguments.As<PlainType>();
         if (properArguments is null) return PlainType.Unknown;
-        return Construct(properArguments);
+        return Construct(properContainingType, properArguments);
     }
 
-    public BareType Construct(IFixedList<Type> arguments)
+    public BareType Construct(BareType? containingType, IFixedList<Type> arguments)
     {
-        var plainType = Construct(arguments.Select(a => a.PlainType).ToFixedList());
+        var plainType = Construct(containingType?.PlainType, arguments.Select(a => a.PlainType).ToFixedList());
         return new(plainType, arguments);
     }
 
@@ -244,28 +263,26 @@ public abstract partial class TypeConstructor : TypeConstructorContext, IEquatab
     /// Attempt to construct a type from this type constructor with possibly unknown arguments. If
     /// any argument is unknown, the result is <see langword="null"/>.
     /// </summary>
-    public BareType? TryConstruct(IFixedList<IMaybeType> arguments)
+    public BareType? TryConstruct(BareType? containingType, IFixedList<IMaybeType> arguments)
     {
         var properTypeArguments = arguments.As<Type>();
         if (properTypeArguments is null) return null;
-        return Construct(properTypeArguments);
+        return Construct(containingType, properTypeArguments);
     }
-    BareType? ITypeFactory.TryConstruct(IFixedList<IMaybeType> arguments)
-        => TryConstruct(arguments);
 
     /// <summary>
     /// Construct this type with no type arguments.
     /// </summary>
     /// <exception cref="InvalidOperationException">This type constructor takes one or more arguments.</exception>
-    public BareType ConstructNullaryType()
+    public BareType ConstructNullaryType(BareType? containingType)
     {
         if (!Parameters.IsEmpty)
             throw new InvalidOperationException($"Cannot construct nullary type for type constructor `{this}` expecting arguments.");
-        var plainType = Construct(FixedList.Empty<PlainType>());
+        var plainType = Construct(containingType?.PlainType, FixedList.Empty<PlainType>());
         return new(plainType, []);
     }
 
-    Type? ITypeFactory.TryConstructNullaryType()
+    Type? ITypeFactory.TryConstructNullaryType(BareType? containingType)
     {
         if (!Parameters.IsEmpty)
             throw new InvalidOperationException($"Cannot construct nullary type for type constructor `{this}` expecting arguments.");
@@ -277,7 +294,8 @@ public abstract partial class TypeConstructor : TypeConstructorContext, IEquatab
     /// Try to construct a plain type with type arguments. If the type constructor takes one or more
     /// arguments, <see langword="null"/> is returned.
     /// </summary>
-    public abstract PlainType? TryConstructNullaryPlainType();
+    /// <param name="containingType"></param>
+    public abstract PlainType? TryConstructNullaryPlainType(ConstructedPlainType? containingType);
 
     /// <summary>
     /// If this is a non-literal type, return the default non-literal type to place values of this

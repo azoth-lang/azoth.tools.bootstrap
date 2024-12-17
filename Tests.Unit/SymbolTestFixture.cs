@@ -70,7 +70,7 @@ public abstract class SymbolTestFixture
             containing,
             MethodKind.Standard,
             Name(name) ?? DefaultName("method"),
-            self ?? containing.TypeConstructor.ConstructNullaryType().WithDefaultCapability(),
+            self ?? containing.TypeConstructor.ConstructNullaryType(containingType: null).WithDefaultCapability(),
             @params ?? Params(),
             @return ?? DataType());
     }
@@ -106,7 +106,7 @@ public abstract class SymbolTestFixture
             isAbstract: false,
             isConst ?? false,
             finalName.Text)
-                              .ConstructNullaryType()
+                              .ConstructNullaryType(containingType: null)
                               .With(referenceCapability ?? Capability.Constant);
     }
 

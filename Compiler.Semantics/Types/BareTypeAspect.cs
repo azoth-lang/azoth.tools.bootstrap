@@ -19,7 +19,7 @@ internal static partial class BareTypeAspect
 
     private static BareType? BuildBareType(ITypeFactory? typeConstructor, IFixedList<IMaybeType> typeArguments)
         // The number of arguments will match the type because name binding will only pick a matching type
-        => typeConstructor?.TryConstruct(typeArguments);
+        => typeConstructor?.TryConstruct(containingType: null, typeArguments);
 
     public static partial BareType? TypeNameExpression_NamedBareType(ITypeNameExpressionNode node)
     {
@@ -27,6 +27,6 @@ internal static partial class BareTypeAspect
         var typeArguments = node.TypeArguments.Select(a => a.NamedType).ToFixedList();
         if (typeArguments.Count != node.TypeArguments.Count)
             return null;
-        return typeFactory.TryConstruct(typeArguments);
+        return typeFactory.TryConstruct(containingType: null, typeArguments);
     }
 }

@@ -12,6 +12,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 public sealed class ConstructedPlainType : NonVoidPlainType
 {
     public TypeConstructor TypeConstructor { get; }
+    public ConstructedPlainType? ContainingType { get; }
     // TODO Nested Types: add ContainingType and enforce that it must match the context of the TypeConstructor
     public override TypeSemantics? Semantics => TypeConstructor.Semantics;
     public TypeName Name => TypeConstructor.Name;
@@ -20,15 +21,20 @@ public sealed class ConstructedPlainType : NonVoidPlainType
     public IFixedSet<ConstructedPlainType> Supertypes { get; }
     public override PlainTypeReplacements TypeReplacements { get; }
 
-    public ConstructedPlainType(TypeConstructor typeConstructor, IEnumerable<PlainType> typeArguments)
+    public ConstructedPlainType(
+        TypeConstructor typeConstructor,
+        ConstructedPlainType? containingType,
+        IEnumerable<PlainType> typeArguments)
     {
+        Requires.That(Equals(typeConstructor.Context as TypeConstructor, containingType?.TypeConstructor),
+            nameof(containingType),
+            "Does not match type constructor.");
         TypeConstructor = typeConstructor;
+        ContainingType = containingType;
         Arguments = typeArguments.ToFixedList();
-        if (TypeConstructor.Parameters.Count != Arguments.Count)
-            throw new ArgumentException(
-                $"Number of type arguments must match the type constructor. "
-                + $"Given `[{string.Join(", ", Arguments)}]` for `{typeConstructor}`.",
-                nameof(typeArguments));
+        Requires.That(TypeConstructor.Parameters.Count == Arguments.Count, nameof(typeArguments),
+            $"Number of type arguments must match the type constructor. "
+            + $"Given `[{string.Join(", ", Arguments)}]` for `{typeConstructor}`.");
 
         TypeReplacements = new(TypeConstructor, Arguments);
 
@@ -37,11 +43,12 @@ public sealed class ConstructedPlainType : NonVoidPlainType
 
     public override ConstructedPlainType? TryToNonLiteral()
     {
+        // TODO handle containing type is the literal type?
         var newTypeConstructor = TypeConstructor.TryToNonLiteral();
         if (newTypeConstructor is null) return null;
         // Literal type constructors will have parameters, whereas their corresponding non-literal
         // types won't. Thus, do not pass any type arguments.
-        return new(newTypeConstructor, []);
+        return new(newTypeConstructor, containingType: null, []);
     }
 
     #region Equality
@@ -60,7 +67,7 @@ public sealed class ConstructedPlainType : NonVoidPlainType
     public string ToBareString()
     {
         var builder = new StringBuilder();
-        TypeConstructor.Context.AppendContextPrefix(builder);
+        TypeConstructor.Context.AppendContextPrefix(builder, ContainingType);
         builder.Append(TypeConstructor.Name.ToBareString());
         return builder.ToString();
     }
@@ -68,7 +75,13 @@ public sealed class ConstructedPlainType : NonVoidPlainType
     public override string ToString()
     {
         var builder = new StringBuilder();
-        TypeConstructor.Context.AppendContextPrefix(builder);
+        ToString(builder);
+        return builder.ToString();
+    }
+
+    public void ToString(StringBuilder builder)
+    {
+        TypeConstructor.Context.AppendContextPrefix(builder, ContainingType);
         builder.Append(TypeConstructor.Name.ToBareString());
         if (!Arguments.IsEmpty)
         {
@@ -76,6 +89,5 @@ public sealed class ConstructedPlainType : NonVoidPlainType
             builder.AppendJoin(", ", Arguments);
             builder.Append(']');
         }
-        return builder.ToString();
     }
 }

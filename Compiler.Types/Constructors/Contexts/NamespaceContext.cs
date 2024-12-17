@@ -1,5 +1,7 @@
 using System.Text;
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
+using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors.Contexts;
 
@@ -13,8 +15,9 @@ public sealed class NamespaceContext : TypeConstructorContext
 
     /// <remarks>The prefix includes a trailing dot so that the type constructor doesn't need to
     /// check the context type to determine if a dot separator is needed.</remarks>
-    public override void AppendContextPrefix(StringBuilder builder)
+    public override void AppendContextPrefix(StringBuilder builder, ConstructedPlainType? containingType)
     {
+        Requires.Null(containingType, nameof(containingType), "No containing type for namespace context.");
         builder.Append(Package);
         builder.Append("::");
         if (Namespace != NamespaceName.Global)

@@ -34,7 +34,7 @@ public static class Primitive
 
         // TODO: This is a hack to "have" a string type from here. Replace by extending primitive types with string related methods.
         var stringType = TypeConstructor.CreateClass("fake", NamespaceName.Global, false, false, "String")
-                                        .ConstructNullaryType().With(Capability.Constant);
+                                        .ConstructNullaryType(containingType: null).With(Capability.Constant);
 
         // Simple Types
         BuildBoolSymbol(tree);

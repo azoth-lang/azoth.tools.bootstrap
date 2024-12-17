@@ -22,9 +22,9 @@ public static class Intrinsic
     public static readonly TypeConstructor PromiseTypeConstructor = Promise.TypeConstructor;
 
     public static IMaybeType PromiseOf(IMaybeType type)
-        => PromiseTypeConstructor.TryConstruct(FixedList.Create(type))?.WithDefaultCapability() ?? IMaybeType.Unknown;
+        => PromiseTypeConstructor.TryConstruct(containingType: null, FixedList.Create(type))?.WithDefaultCapability() ?? IMaybeType.Unknown;
     public static IMaybePlainType PromiseOf(IMaybePlainType plainType)
-        => PromiseTypeConstructor.Construct(FixedList.Create(plainType));
+        => PromiseTypeConstructor.Construct(containingType: null, FixedList.Create(plainType));
 
     public static readonly OrdinaryTypeSymbol RawHybridBoundedList
         = Find<OrdinaryTypeSymbol>("Raw_Hybrid_Bounded_List");
@@ -77,7 +77,7 @@ public static class Intrinsic
         _ = BuildPromiseSymbol(azothNamespace, tree);
 
         var rawHybridBoundedListType = BuildSpecializedCollectionSymbols(azothNamespace, tree);
-        var readBytesType = rawHybridBoundedListType.Construct([Type.Void, Type.Byte]).WithDefaultCapability();
+        var readBytesType = rawHybridBoundedListType.Construct(containingType: null, [Type.Void, Type.Byte]).WithDefaultCapability();
 
         // fn print_raw_utf8_bytes(bytes: Raw_Hybrid_Bounded_List[byte], start: size, byte_count: size)
         var print = Function(intrinsicsNamespace, "print_raw_utf8_bytes",

@@ -9,7 +9,7 @@ namespace Azoth.Tools.Bootstrap.Framework;
 
 /// <summary>
 /// Note: The parameters for the parameter names are intentionally named
-/// `parameter` rather than `name` so that VS autocomplete won't try to
+/// `paramName` rather than `name` so that VS autocomplete won't try to
 /// complete to `name:` when you type `nameof...`
 /// </summary>
 public static class Requires
@@ -38,10 +38,26 @@ public static class Requires
     }
 
     [DebuggerHidden]
-    public static void NotNullOrEmpty(string value, string paramName)
+    public static void Null<T>(T? value, string paramName, string? message)
+        where T : class
+    {
+        if (value is not null)
+            throw new ArgumentException(message, paramName);
+    }
+
+    [DebuggerHidden]
+    public static void NotNull<T>([NotNull] T? value, string paramName)
+        where T : class
+    {
+        if (value is null)
+            throw new ArgumentException("Value cannot be null.", paramName);
+    }
+
+    [DebuggerHidden]
+    public static void NotNullOrEmpty([NotNull] string? value, string paramName)
     {
         if (string.IsNullOrEmpty(value))
-            throw new ArgumentException("Value cannot be null or empty", paramName);
+            throw new ArgumentException("Value cannot be null or empty.", paramName);
     }
 
     [DebuggerHidden]
