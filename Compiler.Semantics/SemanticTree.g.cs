@@ -5608,7 +5608,7 @@ file class ClassDefinitionNode : SemanticNode, IClassDefinitionNode
     public IImplicitSelfDefinitionNode ImplicitSelf
         => GrammarAttribute.IsCached(in implicitSelfCached) ? implicitSelf!
             : this.Synthetic(ref implicitSelfCached, ref implicitSelf,
-                DefaultMembersAspect.TypeDefinition_ImplicitSelf);
+                n => Child.Attach(this, DefaultMembersAspect.TypeDefinition_ImplicitSelf(n)));
     private IImplicitSelfDefinitionNode? implicitSelf;
     private bool implicitSelfCached;
     public FixedDictionary<OrdinaryName, IFixedSet<IInstanceMemberDeclarationNode>> InclusiveInstanceMembersByName
@@ -5770,7 +5770,7 @@ file class StructDefinitionNode : SemanticNode, IStructDefinitionNode
     public IImplicitSelfDefinitionNode ImplicitSelf
         => GrammarAttribute.IsCached(in implicitSelfCached) ? implicitSelf!
             : this.Synthetic(ref implicitSelfCached, ref implicitSelf,
-                DefaultMembersAspect.TypeDefinition_ImplicitSelf);
+                n => Child.Attach(this, DefaultMembersAspect.TypeDefinition_ImplicitSelf(n)));
     private IImplicitSelfDefinitionNode? implicitSelf;
     private bool implicitSelfCached;
     public FixedDictionary<OrdinaryName, IFixedSet<IInstanceMemberDeclarationNode>> InclusiveInstanceMembersByName
@@ -5923,7 +5923,7 @@ file class TraitDefinitionNode : SemanticNode, ITraitDefinitionNode
     public IImplicitSelfDefinitionNode ImplicitSelf
         => GrammarAttribute.IsCached(in implicitSelfCached) ? implicitSelf!
             : this.Synthetic(ref implicitSelfCached, ref implicitSelf,
-                DefaultMembersAspect.TypeDefinition_ImplicitSelf);
+                n => Child.Attach(this, DefaultMembersAspect.TypeDefinition_ImplicitSelf(n)));
     private IImplicitSelfDefinitionNode? implicitSelf;
     private bool implicitSelfCached;
     public FixedDictionary<OrdinaryName, IFixedSet<IInstanceMemberDeclarationNode>> InclusiveInstanceMembersByName

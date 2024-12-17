@@ -67,16 +67,14 @@ internal static partial class LexicalScopingAspect
     }
 
     public static partial LexicalScope TypeDefinition_SupertypesLexicalScope(ITypeDefinitionNode node)
-    {
-        if (node.GenericParameters.Any())
-            return new DeclarationScope(node.ContainingLexicalScope, node.GenericParameters);
-
-        return node.ContainingLexicalScope;
-    }
+        // The `Self` type is always available even if there are no generic parameters
+        => new DeclarationScope(node.ContainingLexicalScope,
+            node.GenericParameters.Append<INamedDeclarationNode>(node.ImplicitSelf));
 
     public static partial LexicalScope TypeDefinition_LexicalScope(ITypeDefinitionNode node)
         // Only associated (i.e. "static") names are in scope. Other names must use `self.`
-        => new DeclarationScope(node.SupertypesLexicalScope, node.Members.OfType<IAssociatedMemberDefinitionNode>());
+        => new DeclarationScope(node.SupertypesLexicalScope,
+            node.Members.OfType<IAssociatedMemberDefinitionNode>());
 
     public static partial LexicalScope TypeDefinition_AllSupertypeNames_Broadcast_ContainingLexicalScope(ITypeDefinitionNode node)
         => node.SupertypesLexicalScope;

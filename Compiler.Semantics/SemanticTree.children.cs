@@ -64,6 +64,7 @@ public static class ISemanticNodeExtensions
                 yield return n.Exit;
                 yield break;
             case IClassDefinitionNode n:
+                yield return n.ImplicitSelf;
                 foreach (var child in n.Attributes)
                     yield return child;
                 foreach (var child in n.GenericParameters)
@@ -78,6 +79,7 @@ public static class ISemanticNodeExtensions
                     yield return n.DefaultConstructor;
                 yield break;
             case IStructDefinitionNode n:
+                yield return n.ImplicitSelf;
                 foreach (var child in n.Attributes)
                     yield return child;
                 foreach (var child in n.GenericParameters)
@@ -90,6 +92,7 @@ public static class ISemanticNodeExtensions
                     yield return n.DefaultInitializer;
                 yield break;
             case ITraitDefinitionNode n:
+                yield return n.ImplicitSelf;
                 foreach (var child in n.Attributes)
                     yield return child;
                 foreach (var child in n.GenericParameters)
