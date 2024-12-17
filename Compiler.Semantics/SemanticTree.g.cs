@@ -664,6 +664,8 @@ public partial interface IGenericParameterNode : ICodeNode, IGenericParameterDec
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IImplicitSelfDefinitionNode : IImplicitSelfDeclarationNode
 {
+    TypeSymbol ContainingSymbol
+        => ContainingDeclaration.Symbol!;
 
     public static IImplicitSelfDefinitionNode Create()
         => new ImplicitSelfDefinitionNode();

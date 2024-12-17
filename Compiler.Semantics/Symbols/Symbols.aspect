@@ -31,6 +31,7 @@
 = TypeDefinition.Symbol;
 
 // ---------- Type Definition Parts
+↑ ImplicitSelfDefinition.ContainingSymbol: `TypeSymbol` => ContainingDeclaration.Symbol!; // Never null because not a function/method
 = ImplicitSelfDefinition.Symbol;
 
 // ---------- Type Member Definitions

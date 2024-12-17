@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Primitives;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
@@ -46,8 +45,7 @@ internal static partial class SymbolsAspect
         => new(node.ContainingSymbol, node.DeclaredType.PlainType);
 
     public static partial AssociatedTypeSymbol ImplicitSelfDefinition_Symbol(IImplicitSelfDefinitionNode node)
-        => throw new NotImplementedException();
-    //=> new(node.ContainingSymbol, node.PlainType);
+        => new AssociatedTypeSymbol(node.ContainingSymbol, node.TypeFactory);
     #endregion
 
     #region Member Definitions
