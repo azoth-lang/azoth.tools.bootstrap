@@ -34,7 +34,8 @@ public static partial class TypeOperations
     public static NonVoidType ToUpperBound(this NonVoidType self)
         => self switch
         {
-            CapabilitySetSelfType t => CapabilityType.Create(t.CapabilitySet.UpperBound, t.PlainType),
+            CapabilitySetSelfType t
+                => CapabilityType.Create(t.CapabilitySet.UpperBound, t.BareType.ContainingType, t.PlainType),
             // TODO shouldn't these be recursive on referents and arguments?
             OptionalType t => t,
             GenericParameterType t => t,
