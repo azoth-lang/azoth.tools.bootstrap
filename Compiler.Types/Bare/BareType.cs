@@ -68,14 +68,6 @@ public sealed class BareType : IEquatable<BareType>
     public CapabilityType WithDefaultCapability()
         => With(TypeConstructor.IsDeclaredConst ? Capability.Constant : Capability.Read);
 
-    /// <summary>
-    /// This type with whatever the default mutable capability is for the type based on whether it is
-    /// declared `const`.
-    /// </summary>
-    // TODO remove method
-    public CapabilityType WithDefaultMutate()
-        => With(TypeConstructor.IsDeclaredConst ? Capability.Constant : Capability.Mutable);
-
     public BareType WithReplacement(IFixedList<Type> arguments)
         => new BareType(PlainType, ContainingType, arguments);
 

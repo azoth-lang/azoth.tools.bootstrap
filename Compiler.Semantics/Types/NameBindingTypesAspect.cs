@@ -5,7 +5,6 @@ using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 using Azoth.Tools.Bootstrap.Compiler.Syntax;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
-using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 using ExhaustiveMatching;
 using Type = Azoth.Tools.Bootstrap.Compiler.Types.Decorated.Type;
@@ -86,34 +85,18 @@ internal static partial class NameBindingTypesAspect
 
     public static partial IMaybeType MethodSelfParameter_BindingType(IMethodSelfParameterNode node)
     {
-        // TODO this whole method needs cleaned up
-        // TODO remove ContainingTypeConstructor?
-        var typeConstructor = node.ContainingTypeConstructor;
-        var bareType = typeConstructor.ConstructWithParameterTypes();
+        var selfType = node.ContainingSelfTypeConstructor.ConstructWithParameterTypes();
         var constraintNode = node.Constraint;
-        if (constraintNode is ICapabilityNode { Capability: var c } && c == Capability.Read)
-            return bareType.WithDefaultCapability();
-        // TODO shouldn't their be an overload of .With() that takes an ICapabilityConstraint (e.g. `capability.Constraint`)
+        // TODO simplify this. It ought to be possible to do something like selfType.With(constraintNode.ConstraintFor(selfType))
         return constraintNode switch
         {
-            ICapabilityNode n => bareType.With(n.Capability),
-            // TODO this is currently a hack to avoid `Self`. Instead, use `Self`.
-            ICapabilitySetNode n => new SelfViewpointType(n.Constraint, bareType.WithDefaultMutate()),
+            ICapabilityNode n
+                => n.Capability == Capability.Read
+                    ? selfType.WithDefaultCapability()
+                    : selfType.With(n.Capability),
+            ICapabilitySetNode n => new CapabilitySetSelfType(n.Constraint, selfType),
             _ => throw ExhaustiveMatch.Failed(constraintNode)
         };
-
-        //var selfType = node.ContainingSelfTypeConstructor.ConstructWithParameterTypes();
-        //var constraintNode = node.Constraint;
-        //// TODO shouldn't their be an overload of .With() that takes an ICapabilityConstraint (e.g. `capability.Constraint`)
-        //return constraintNode switch
-        //{
-        //    ICapabilityNode n
-        //        => n.Capability == Capability.Read
-        //            ? selfType.WithDefaultCapability()
-        //            : selfType.With(n.Capability),
-        //    ICapabilitySetNode n => new CapabilitySetSelfType(n.Constraint, selfType),
-        //    _ => throw ExhaustiveMatch.Failed(constraintNode)
-        //};
     }
 
     private static void CheckTypeCannotBeLent(IMethodSelfParameterNode node, DiagnosticCollectionBuilder diagnostics)
