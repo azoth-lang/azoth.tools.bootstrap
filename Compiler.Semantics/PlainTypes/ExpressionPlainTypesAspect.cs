@@ -33,7 +33,7 @@ internal static partial class ExpressionPlainTypesAspect
         => node.ReferencedDefinition.BindingPlainType;
 
     public static partial IMaybePlainType SelfExpression_PlainType(ISelfExpressionNode node)
-        => node.ReferencedDefinition?.BindingPlainType ?? PlainType.Unknown;
+        => node.ReferencedDefinition?.BindingPlainType ?? IMaybePlainType.Unknown;
 
     public static partial IMaybePlainType FieldAccessExpression_PlainType(IFieldAccessExpressionNode node)
     {

@@ -133,7 +133,8 @@ public static class Intrinsic
             isAbstract: false, isConst: false, "Raw_Hybrid_Bounded_List",
             TypeConstructor.Parameter.Independent(CapabilitySet.Aliasable, "F"),
             TypeConstructor.Parameter.Independent(CapabilitySet.Aliasable, "T"));
-        var bareType = typeConstructor.ConstructWithParameterTypes();
+        var plainType = typeConstructor.ConstructWithParameterPlainTypes();
+        var bareType = typeConstructor.ConstructWithParameterTypes(plainType);
         var fixedType = typeConstructor.ParameterTypes[0];
         var readType = bareType.WithDefaultCapability();
         var mutType = bareType.With(Capability.Mutable);

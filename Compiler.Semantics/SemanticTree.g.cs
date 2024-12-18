@@ -1243,6 +1243,9 @@ public partial interface ISelfParameterNode : IParameterNode, IBindingNode
     IParameterSyntax IParameterNode.Syntax => Syntax;
     ICodeSyntax ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
+    new ConstructedPlainType BindingPlainType { get; }
+    IMaybeNonVoidPlainType IParameterNode.BindingPlainType => BindingPlainType;
+    IMaybeNonVoidPlainType IBindingNode.BindingPlainType => BindingPlainType;
     IMaybeNonVoidType ParameterType { get; }
     ITypeDefinitionNode ContainingTypeDefinition { get; }
     OrdinaryTypeConstructor ContainingTypeConstructor { get; }
@@ -1250,9 +1253,6 @@ public partial interface ISelfParameterNode : IParameterNode, IBindingNode
     new ValueId BindingValueId { get; }
     ValueId IParameterNode.BindingValueId => BindingValueId;
     ValueId IBindingNode.BindingValueId => BindingValueId;
-    new IMaybeNonVoidPlainType BindingPlainType { get; }
-    IMaybeNonVoidPlainType IParameterNode.BindingPlainType => BindingPlainType;
-    IMaybeNonVoidPlainType IBindingNode.BindingPlainType => BindingPlainType;
     new IMaybeType BindingType { get; }
     IMaybeType IParameterNode.BindingType => BindingType;
     IMaybeType IBindingNode.BindingType => BindingType;
@@ -7956,11 +7956,11 @@ file class ConstructorSelfParameterNode : SemanticNode, IConstructorSelfParamete
                 Inherited_ContainingSelfTypeConstructor);
     private SelfTypeConstructor? containingSelfTypeConstructor;
     private bool containingSelfTypeConstructorCached;
-    public IMaybeNonVoidPlainType BindingPlainType
+    public ConstructedPlainType BindingPlainType
         => GrammarAttribute.IsCached(in bindingPlainTypeCached) ? bindingPlainType!
             : this.Synthetic(ref bindingPlainTypeCached, ref bindingPlainType,
                 NameBindingPlainTypesAspect.SelfParameter_BindingPlainType);
-    private IMaybeNonVoidPlainType? bindingPlainType;
+    private ConstructedPlainType? bindingPlainType;
     private bool bindingPlainTypeCached;
     public CapabilityType BindingType
         => GrammarAttribute.IsCached(in bindingTypeCached) ? bindingType!
@@ -8043,11 +8043,11 @@ file class InitializerSelfParameterNode : SemanticNode, IInitializerSelfParamete
                 Inherited_ContainingSelfTypeConstructor);
     private SelfTypeConstructor? containingSelfTypeConstructor;
     private bool containingSelfTypeConstructorCached;
-    public IMaybeNonVoidPlainType BindingPlainType
+    public ConstructedPlainType BindingPlainType
         => GrammarAttribute.IsCached(in bindingPlainTypeCached) ? bindingPlainType!
             : this.Synthetic(ref bindingPlainTypeCached, ref bindingPlainType,
                 NameBindingPlainTypesAspect.SelfParameter_BindingPlainType);
-    private IMaybeNonVoidPlainType? bindingPlainType;
+    private ConstructedPlainType? bindingPlainType;
     private bool bindingPlainTypeCached;
     public CapabilityType BindingType
         => GrammarAttribute.IsCached(in bindingTypeCached) ? bindingType!
@@ -8130,11 +8130,11 @@ file class MethodSelfParameterNode : SemanticNode, IMethodSelfParameterNode
                 Inherited_ContainingSelfTypeConstructor);
     private SelfTypeConstructor? containingSelfTypeConstructor;
     private bool containingSelfTypeConstructorCached;
-    public IMaybeNonVoidPlainType BindingPlainType
+    public ConstructedPlainType BindingPlainType
         => GrammarAttribute.IsCached(in bindingPlainTypeCached) ? bindingPlainType!
             : this.Synthetic(ref bindingPlainTypeCached, ref bindingPlainType,
                 NameBindingPlainTypesAspect.SelfParameter_BindingPlainType);
-    private IMaybeNonVoidPlainType? bindingPlainType;
+    private ConstructedPlainType? bindingPlainType;
     private bool bindingPlainTypeCached;
     public IMaybeType BindingType
         => GrammarAttribute.IsCached(in bindingTypeCached) ? bindingType!

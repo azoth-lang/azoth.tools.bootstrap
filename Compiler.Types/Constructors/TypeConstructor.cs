@@ -239,8 +239,19 @@ public abstract partial class TypeConstructor : TypeConstructorContext, IEquatab
     /// Construct a type using the <see cref="ParameterTypes"/> to create a type as it would be
     /// used inside the type definition.
     /// </summary>
-    // TODO will this be needed once `Self` is properly used?
-    public BareType ConstructWithParameterTypes()
+    /// <remarks>This takes the <paramref name="plainType"/> to check for a match to help enforce
+    /// consistency between plain types and types.</remarks>
+    public BareType ConstructWithParameterTypes(ConstructedPlainType plainType)
+    {
+        Requires.That(ConstructWithParameterPlainTypes().Equals(plainType), nameof(plainType),
+            "Plain type must match.");
+        return ConstructWithParameterTypes();
+    }
+
+    /// <remarks>This is internal because it allows for creating a type without verifying consistency
+    /// with the matching plain type.</remarks>
+    // TODO are all the uses of this proper or should more require a plain type?
+    internal BareType ConstructWithParameterTypes()
         => Lazy.Initialize(ref withParameterTypes, this, ParameterTypes,
             static (typeConstructor, arguments) =>
             {

@@ -44,7 +44,9 @@ public abstract class AssociatedTypeConstructor : TypeConstructor
     /// within a type definition they are referenced without a containing type and the containing
     /// type is implied.</remarks>
     public override BareType Construct(BareType? containingType, IFixedList<Type> arguments)
-        => base.Construct(containingType ?? Context.ConstructWithParameterTypes(), arguments);
+        => base.Construct(containingType
+                          // TODO is it right to hide the requirement to match the plain type?
+                          ?? Context.ConstructWithParameterTypes(), arguments);
 
     /// <remarks>Unlike other type constructors, associated types will default to a containing type
     /// that is constructed with the parameter plain types. This is because when referenced from

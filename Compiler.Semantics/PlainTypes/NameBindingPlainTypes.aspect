@@ -10,6 +10,7 @@
 
 // ---------- Parameters
 ↑ Parameter.BindingPlainType: `IMaybeNonVoidPlainType`;
+↑ SelfParameter.BindingPlainType: `ConstructedPlainType`;
 = SelfParameter.BindingPlainType;
 
 // ---------- Statements

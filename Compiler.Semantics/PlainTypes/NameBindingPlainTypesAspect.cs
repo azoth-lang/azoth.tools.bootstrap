@@ -10,7 +10,7 @@ internal static partial class NameBindingPlainTypesAspect
     public static partial IMaybeNonVoidPlainType FieldParameter_BindingPlainType(IFieldParameterNode node)
         => node.ReferencedField?.BindingPlainType ?? PlainType.Unknown;
 
-    public static partial IMaybeNonVoidPlainType SelfParameter_BindingPlainType(ISelfParameterNode node)
+    public static partial ConstructedPlainType SelfParameter_BindingPlainType(ISelfParameterNode node)
         => node.ContainingSelfTypeConstructor.ConstructWithParameterPlainTypes();
 
     public static partial IMaybeNonVoidPlainType PatternMatchExpression_Pattern_ContextBindingPlainType(IPatternMatchExpressionNode node)
