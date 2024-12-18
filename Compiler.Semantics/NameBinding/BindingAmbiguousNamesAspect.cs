@@ -190,7 +190,7 @@ internal static partial class BindingAmbiguousNamesAspect
             //if (node.ReferencedDeclaration is not null)
             return null;
 
-        // if there is only one declaration, then it isn't ambiguous
+        // if there is aren't multiple declarations, then it isn't ambiguous (it may fail to reference if there are zero).
         return IMethodNameNode.Create(node.Syntax, node.Context, node.MethodName, node.TypeArguments,
             node.ReferencedDeclarations, node.CallCandidates, node.CompatibleCallCandidates,
             node.SelectedCallCandidate, node.ReferencedDeclaration);

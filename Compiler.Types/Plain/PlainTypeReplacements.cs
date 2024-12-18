@@ -28,8 +28,27 @@ public sealed class PlainTypeReplacements
     {
         if (plainType.ContainingType is { } containingType)
             AddReplacements(containingType);
-        foreach (var (parameter, arg) in plainType.TypeConstructor.ParameterPlainTypes.EquiZip(plainType.Arguments))
-            replacements.Add(parameter, arg);
+        var typeConstructor = plainType.TypeConstructor;
+        foreach (var (parameter, arg) in typeConstructor.ParameterPlainTypes
+                                                        .EquiZip(plainType.Arguments))
+            if (!parameter.Equals(arg)) // No point in replacing with the same (happens for type constructed with their type parameters)
+                replacements.Add(parameter, arg);
+
+        // Set up replacements for supertype generic parameters
+        // TODO this is needed because of the naive way that members are inherited without change. Instead,
+        // they should be inherited with proper replacement and context. Then this can be removed.
+        // Can't access plainType.Supertypes because that depends on the type replacements, use
+        // `typeConstructor.Supertypes` instead.
+        foreach (var supertype in typeConstructor.Supertypes)
+            foreach (var (parameter, arg) in supertype.TypeConstructor.ParameterPlainTypes
+                                                      .EquiZip(supertype.Arguments.Select(a => a.PlainType)))
+            {
+                var replacement = Apply(arg);
+                if (!replacements.TryAdd(parameter, replacement) && !replacements[parameter].Equals(replacement))
+                    throw new NotImplementedException(
+                        $"Conflicting type replacements. Replace `{parameter}` with "
+                        + $"`{replacements[parameter]}` or `{replacement}`");
+            }
     }
 
     public IMaybePlainType Apply(IMaybePlainType plainType)

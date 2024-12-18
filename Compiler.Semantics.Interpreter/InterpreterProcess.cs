@@ -404,13 +404,20 @@ public class InterpreterProcess
         CapabilityType selfType,
         AzothValue self,
         IEnumerable<AzothValue> arguments)
-        => selfType.TypeConstructor?.Semantics switch
+    {
+        var referenceCall = selfType.TypeConstructor.Semantics switch
         {
-            null => throw new UnreachableException("Shouldn't be attempting to call method on type without type constructor"),
-            TypeSemantics.Value => await CallStructMethod(methodSymbol, selfType, self, arguments),
-            TypeSemantics.Reference => await CallClassMethodAsync(methodSymbol, self, arguments),
+            // TODO this is an odd case, generic instantiation should avoid it but this works for now
+            null => self.IsObject,
+            TypeSemantics.Value => false,
+            TypeSemantics.Reference => true,
             _ => throw ExhaustiveMatch.Failed(selfType.TypeConstructor.Semantics),
         };
+
+        return referenceCall
+            ? await CallClassMethodAsync(methodSymbol, self, arguments)
+            : await CallStructMethod(methodSymbol, selfType, self, arguments);
+    }
 
     private async ValueTask<AzothValue> CallClassMethodAsync(
         MethodSymbol methodSymbol,

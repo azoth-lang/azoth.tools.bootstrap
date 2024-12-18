@@ -31,6 +31,7 @@ internal readonly struct AzothValue
     [FieldOffset(0)] private readonly SimpleValueType value;
 
     public bool IsNone => ReferenceEquals(value.Reference, NoneFlag);
+    public bool IsObject => value.Reference is AzothObject;
     public bool BoolValue => value.Simple.BoolValue;
     public sbyte I8Value => value.Simple.I8Value;
     public byte ByteValue => value.Simple.ByteValue;

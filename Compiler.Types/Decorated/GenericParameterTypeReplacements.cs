@@ -33,8 +33,28 @@ public sealed class GenericParameterTypeReplacements
     {
         if (bareType.ContainingType is { } containingType)
             AddReplacements(containingType);
-        foreach (var (parameter, arg) in bareType.TypeConstructor.ParameterTypes.EquiZip(bareType.Arguments))
+        var typeConstructor = bareType.TypeConstructor;
+        foreach (var (parameter, arg) in typeConstructor.ParameterTypes.EquiZip(bareType.Arguments))
             replacements.Add(parameter, arg);
+
+        // Set up replacements for supertype generic parameters
+        // TODO this is needed because of the naive way that members are inherited without change. Instead,
+        // they should be inherited with proper replacement and context. Then this can be removed.
+        // Can't access bareType.Supertypes because that depends on the type replacements, use
+        // `typeConstructor.Supertypes` instead.
+        foreach (var supertype in typeConstructor.Supertypes)
+        {
+            foreach (var (parameter, arg) in supertype.TypeConstructor.ParameterTypes
+                                                      .EquiZip(supertype.Arguments))
+            {
+                var replacement = Apply(arg, null);
+                if (!replacements.TryAdd(parameter, replacement)
+                    && !replacements[parameter].Equals(replacement))
+                    throw new NotImplementedException(
+                        $"Conflicting type replacements. Replace `{parameter}` with "
+                        + $"`{replacements[parameter]}` or `{replacement}`");
+            }
+        }
     }
 
     internal IMaybeType Apply(IMaybeType type, NonVoidType? selfReplacement)
