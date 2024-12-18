@@ -14,8 +14,8 @@ public static partial class TypeOperations
         => contextType switch
         {
             CapabilityType t => type.AccessedVia(t.Capability),
-            CapabilitySetSelfType t => type.AccessedVia(t.Capability),
-            SelfViewpointType t => type.AccessedVia(t.Referent).AccessedVia(t.Capability),
+            CapabilitySetSelfType t => type.AccessedVia(t.CapabilitySet),
+            SelfViewpointType t => type.AccessedVia(t.Referent).AccessedVia(t.CapabilitySet),
             _ => type
         };
 

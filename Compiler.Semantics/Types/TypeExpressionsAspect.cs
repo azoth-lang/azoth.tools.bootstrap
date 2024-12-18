@@ -74,11 +74,11 @@ internal static partial class TypeExpressionsAspect
             && referentType is GenericParameterType genericParameterType)
             return CapabilityViewpointType.Create(capability, genericParameterType);
 
-        if (selfType is CapabilitySetSelfType { Capability: var capabilityConstraint1 })
+        if (selfType is CapabilitySetSelfType { CapabilitySet: var capabilityConstraint1 })
             return SelfViewpointType.Create(capabilityConstraint1, referentType);
 
         // TODO this is a hack because we do not yet use `Self`
-        if (selfType is SelfViewpointType { Capability: var capabilityConstraint2 })
+        if (selfType is SelfViewpointType { CapabilitySet: var capabilityConstraint2 })
             return SelfViewpointType.Create(capabilityConstraint2, referentType);
 
         // TODO report error if self type is not applicable to referent

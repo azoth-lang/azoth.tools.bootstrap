@@ -12,7 +12,7 @@ public sealed class NeverType : NonVoidType
 
     public override NeverPlainType PlainType => NeverPlainType.Instance;
 
-    public override BareTypeReplacements TypeReplacements => BareTypeReplacements.None;
+    internal override GenericParameterTypeReplacements BareTypeReplacements => GenericParameterTypeReplacements.None;
 
     public override bool HasIndependentTypeArguments => false;
 

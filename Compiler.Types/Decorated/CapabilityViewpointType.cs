@@ -31,7 +31,7 @@ public sealed class CapabilityViewpointType : NonVoidType
 
     public override bool HasIndependentTypeArguments => false;
 
-    public override BareTypeReplacements TypeReplacements => Referent.TypeReplacements;
+    internal override GenericParameterTypeReplacements BareTypeReplacements => Referent.BareTypeReplacements;
 
     private CapabilityViewpointType(Capability capability, GenericParameterType referent)
     {

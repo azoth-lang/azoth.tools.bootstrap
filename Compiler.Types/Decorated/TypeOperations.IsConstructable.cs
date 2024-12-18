@@ -31,12 +31,12 @@ public static partial class TypeOperations
                         return false;
                     break;
                 case CapabilitySetSelfType capabilitySetSelfType:
-                    if (!param.Constraint.IsAssignableFrom(capabilitySetSelfType.Capability))
+                    if (!param.Constraint.IsAssignableFrom(capabilitySetSelfType.CapabilitySet))
                         return false;
                     break;
                 case SelfViewpointType selfViewpointType:
                     // TODO handle capabilities on the referent
-                    if (!param.Constraint.IsAssignableFrom(selfViewpointType.Capability))
+                    if (!param.Constraint.IsAssignableFrom(selfViewpointType.CapabilitySet))
                         return false;
                     break;
                 case NeverType _:

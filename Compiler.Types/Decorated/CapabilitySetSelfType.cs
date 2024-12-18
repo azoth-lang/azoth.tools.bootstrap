@@ -18,7 +18,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 // TODO this needs type argument capabilities for the containing type
 public sealed class CapabilitySetSelfType : NonVoidType
 {
-    public CapabilitySet Capability { get; }
+    public CapabilitySet CapabilitySet { get; }
 
     public BareType BareType { get; }
 
@@ -26,13 +26,13 @@ public sealed class CapabilitySetSelfType : NonVoidType
 
     public override ConstructedPlainType PlainType => BareType.PlainType;
 
-    public override BareTypeReplacements TypeReplacements => BareType.TypeReplacements;
+    internal override GenericParameterTypeReplacements BareTypeReplacements => BareType.TypeReplacements;
 
     public override bool HasIndependentTypeArguments => false;
 
-    public CapabilitySetSelfType(CapabilitySet capability, BareType bareType)
+    public CapabilitySetSelfType(CapabilitySet capabilitySet, BareType bareType)
     {
-        Capability = capability;
+        CapabilitySet = capabilitySet;
         BareType = bareType;
         if (bareType.TypeConstructor is not SelfTypeConstructor typeConstructor)
             throw new ArgumentException("Must be on a self type.", nameof(bareType));
@@ -45,15 +45,15 @@ public sealed class CapabilitySetSelfType : NonVoidType
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
         return other is CapabilitySetSelfType otherType
-               && Capability.Equals(otherType.Capability)
+               && CapabilitySet.Equals(otherType.CapabilitySet)
                && BareType.Equals(otherType.BareType);
     }
 
-    public override int GetHashCode() => HashCode.Combine(Capability, BareType);
+    public override int GetHashCode() => HashCode.Combine(CapabilitySet, BareType);
     #endregion
 
     public override string ToSourceCodeString()
-        => $"{Capability.ToSourceCodeString()} {BareType.ToSourceCodeString()}";
+        => $"{CapabilitySet.ToSourceCodeString()} {BareType.ToSourceCodeString()}";
 
-    public override string ToILString() => $"{Capability.ToILString()} {BareType.ToILString()}";
+    public override string ToILString() => $"{CapabilitySet.ToILString()} {BareType.ToILString()}";
 }

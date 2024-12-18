@@ -11,24 +11,32 @@ public sealed class SelfViewpointType : NonVoidType
         => referent switch
         {
             NonVoidType t => new SelfViewpointType(capability, t),
-            VoidType _ => Type.Void,
-            UnknownType _ => Type.Unknown,
+            VoidType _ => Void,
+            UnknownType _ => Unknown,
             _ => throw ExhaustiveMatch.Failed(referent),
         };
 
-    public CapabilitySet Capability { get; }
+    public static Type Create(CapabilitySet capability, Type referent)
+        => referent switch
+        {
+            NonVoidType t => new SelfViewpointType(capability, t),
+            VoidType _ => Void,
+            _ => throw ExhaustiveMatch.Failed(referent),
+        };
+
+    public CapabilitySet CapabilitySet { get; }
 
     public NonVoidType Referent { get; }
 
     public override NonVoidPlainType PlainType => Referent.PlainType;
 
-    public override BareTypeReplacements TypeReplacements => Referent.TypeReplacements;
+    internal override GenericParameterTypeReplacements BareTypeReplacements => Referent.BareTypeReplacements;
 
     public override bool HasIndependentTypeArguments => Referent.HasIndependentTypeArguments;
 
-    public SelfViewpointType(CapabilitySet capability, NonVoidType referent)
+    public SelfViewpointType(CapabilitySet capabilitySet, NonVoidType referent)
     {
-        Capability = capability;
+        CapabilitySet = capabilitySet;
         Referent = referent;
     }
 
@@ -38,14 +46,14 @@ public sealed class SelfViewpointType : NonVoidType
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
         return other is SelfViewpointType otherType
-               && Capability.Equals(otherType.Capability)
+               && CapabilitySet.Equals(otherType.CapabilitySet)
                && Referent.Equals(otherType.Referent);
     }
 
-    public override int GetHashCode() => HashCode.Combine(Capability, Referent);
+    public override int GetHashCode() => HashCode.Combine(CapabilitySet, Referent);
     #endregion
 
-    public override string ToSourceCodeString() => $"{Capability.ToSourceCodeString()} self |> {Referent}";
+    public override string ToSourceCodeString() => $"{CapabilitySet.ToSourceCodeString()} self |> {Referent}";
 
-    public override string ToILString() => $"{Capability.ToILString()} |> {Referent}";
+    public override string ToILString() => $"{CapabilitySet.ToILString()} |> {Referent}";
 }

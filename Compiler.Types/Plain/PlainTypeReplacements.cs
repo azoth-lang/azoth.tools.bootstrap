@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 
@@ -8,6 +9,7 @@ public sealed class PlainTypeReplacements
 {
     public static readonly PlainTypeReplacements None = new();
 
+    private readonly ConstructedPlainType? selfReplacement;
     private readonly Dictionary<GenericParameterPlainType, PlainType> replacements = new();
 
     private PlainTypeReplacements() { }
@@ -16,9 +18,10 @@ public sealed class PlainTypeReplacements
     /// Build a dictionary of type replacements. Generic parameter types of both this type and the
     /// supertypes can be replaced with type arguments of this type.
     /// </summary>
-    public PlainTypeReplacements(ConstructedPlainType selfPlainType)
+    public PlainTypeReplacements(ConstructedPlainType plainType)
     {
-        AddReplacements(selfPlainType);
+        selfReplacement = plainType;
+        AddReplacements(plainType);
     }
 
     private void AddReplacements(ConstructedPlainType plainType)
@@ -60,6 +63,9 @@ public sealed class PlainTypeReplacements
     public ConstructedPlainType? Apply(ConstructedPlainType? plainType)
     {
         if (plainType is null) return null;
+        if (selfReplacement is not null && plainType is { TypeConstructor: SelfTypeConstructor })
+            return selfReplacement;
+
         var replacementContainingType = Apply(plainType.ContainingType);
         var replacementTypeArguments = Apply(plainType.Arguments);
         if (ReferenceEquals(plainType.ContainingType, replacementContainingType)

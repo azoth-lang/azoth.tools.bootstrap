@@ -16,7 +16,7 @@ public sealed class GenericParameterType : NonVoidType
 
     public TypeConstructor.Parameter Parameter => PlainType.Parameter;
 
-    public override BareTypeReplacements TypeReplacements => BareTypeReplacements.None;
+    internal override GenericParameterTypeReplacements BareTypeReplacements => GenericParameterTypeReplacements.None;
 
     public override bool HasIndependentTypeArguments => false;
 

@@ -37,14 +37,14 @@ public static partial class TypeOperations
 
     public static bool IsSubtypeOf(this CapabilityType self, SelfViewpointType other)
     {
-        if (!self.Capability.IsSubtypeOf(other.Capability)) return false;
+        if (!self.Capability.IsSubtypeOf(other.CapabilitySet)) return false;
 
         // TODO this is incorrect, it doesn't account for capabilities in the referent
         return self.PlainType.IsSubtypeOf(other.PlainType);
     }
 
     public static bool IsSubtypeOf(this SelfViewpointType self, SelfViewpointType other)
-        => self.Capability.IsSubtypeOf(other.Capability)
+        => self.CapabilitySet.IsSubtypeOf(other.CapabilitySet)
            && self.Referent.IsSubtypeOf(other.Referent);
 
     private static bool IsSubtypeOf(this BareType self, BareType other, bool otherAllowsWrite)

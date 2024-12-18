@@ -207,13 +207,8 @@ internal static partial class ExpressionTypesAspect
     }
 
     public static partial IMaybeType MethodInvocationExpression_Type(IMethodInvocationExpressionNode node)
-    {
-        var selfType = node.Method.Context.Type.ToNonLiteral();
         // TODO does this need to be modified by flow typing?
-        var unboundType = node.ContextualizedCall?.ReturnType;
-        var boundType = unboundType?.ReplaceSelfWith(selfType);
-        return boundType ?? Type.Unknown;
-    }
+        => node.ContextualizedCall?.ReturnType ?? Type.Unknown;
 
     public static partial IFlowState MethodInvocationExpression_FlowStateAfter(IMethodInvocationExpressionNode node)
     {
@@ -236,12 +231,7 @@ internal static partial class ExpressionTypesAspect
             : null;
 
     public static partial IMaybeType GetterInvocationExpression_Type(IGetterInvocationExpressionNode node)
-    {
-        var selfType = node.Context.Type.ToNonLiteral();
-        var unboundType = node.ContextualizedCall?.ReturnType;
-        var boundType = unboundType?.ReplaceSelfWith(selfType);
-        return boundType ?? Type.Unknown;
-    }
+        => node.ContextualizedCall?.ReturnType ?? Type.Unknown;
 
     public static partial IFlowState GetterInvocationExpression_FlowStateAfter(IGetterInvocationExpressionNode node)
     {
@@ -263,12 +253,7 @@ internal static partial class ExpressionTypesAspect
             : null;
 
     public static partial IMaybeType SetterInvocationExpression_Type(ISetterInvocationExpressionNode node)
-    {
-        var selfType = node.Context.Type.ToNonLiteral();
-        var unboundType = node.ContextualizedCall?.ParameterTypes[0].Type;
-        var boundType = unboundType?.ReplaceSelfWith(selfType);
-        return boundType ?? Type.Unknown;
-    }
+        => node.ContextualizedCall?.ParameterTypes[0].Type ?? Type.Unknown;
 
     public static partial IFlowState SetterInvocationExpression_FlowStateAfter(ISetterInvocationExpressionNode node)
     {

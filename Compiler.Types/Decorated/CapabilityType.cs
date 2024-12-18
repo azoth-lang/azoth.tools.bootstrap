@@ -28,7 +28,7 @@ public sealed class CapabilityType : NonVoidType
 
     public IFixedList<TypeParameterArgument> TypeParameterArguments => BareType.TypeParameterArguments;
 
-    public override BareTypeReplacements TypeReplacements => BareType.TypeReplacements;
+    internal override GenericParameterTypeReplacements BareTypeReplacements => BareType.TypeReplacements;
 
     private CapabilityType(
         Capability capability,
@@ -71,7 +71,7 @@ public sealed class CapabilityType : NonVoidType
 
         // TODO determine the correct containing type
         var bareType = new BareType(supertype.PlainType, containingType: null, supertype.Arguments);
-        bareType = TypeReplacements.Apply(bareType);
+        bareType = BareTypeReplacements.Apply(bareType);
 
         return bareType.With(Capability);
     }

@@ -16,8 +16,20 @@ public sealed class OptionalType : NonVoidType
         => referent switch
         {
             NonVoidType t => new OptionalType(t),
-            UnknownType _ => Type.Unknown,
-            VoidType _ => Type.Void,
+            UnknownType _ => Unknown,
+            VoidType _ => Void,
+            _ => throw ExhaustiveMatch.Failed(referent),
+        };
+
+    /// <summary>
+    /// Create an optional type for the given type (i.e. `T?` given `T`).
+    /// </summary>
+    /// <remarks>Void types are not changed.</remarks>
+    public static Type Create(Type referent)
+        => referent switch
+        {
+            NonVoidType t => new OptionalType(t),
+            VoidType _ => Void,
             _ => throw ExhaustiveMatch.Failed(referent),
         };
 
@@ -39,7 +51,7 @@ public sealed class OptionalType : NonVoidType
 
     public NonVoidType Referent { get; }
 
-    public override BareTypeReplacements TypeReplacements => Referent.TypeReplacements;
+    internal override GenericParameterTypeReplacements BareTypeReplacements => Referent.BareTypeReplacements;
 
     public override bool HasIndependentTypeArguments => Referent.HasIndependentTypeArguments;
 

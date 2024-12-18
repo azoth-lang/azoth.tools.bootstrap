@@ -28,9 +28,9 @@ public sealed class BareType : IEquatable<BareType>
     public BareType? ContainingType { get; }
     public IFixedList<Type> Arguments { get; }
     public bool HasIndependentTypeArguments { get; }
-    public BareTypeReplacements TypeReplacements
+    public GenericParameterTypeReplacements TypeReplacements
         => Lazy.Initialize(ref bareTypeReplacements, this, static bareType => new(bareType));
-    private BareTypeReplacements? bareTypeReplacements;
+    private GenericParameterTypeReplacements? bareTypeReplacements;
 
     public IFixedList<TypeParameterArgument> TypeParameterArguments
         => Lazy.Initialize(ref typeParameterArguments, PlainType, Arguments,
