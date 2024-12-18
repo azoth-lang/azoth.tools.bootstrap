@@ -3746,10 +3746,10 @@ public partial interface INamespaceDeclarationNode : INamespaceMemberDeclaration
 {
     FixedDictionary<OrdinaryName, IFixedSet<INamespaceMemberDeclarationNode>> MembersByName { get; }
     FixedDictionary<OrdinaryName, IFixedSet<INamespaceMemberDeclarationNode>> NestedMembersByName { get; }
-    IEnumerable<INamespaceMemberDeclarationNode> MembersNamed(OrdinaryName named)
-        => MembersByName.GetValueOrDefault(named) ?? [];
-    IEnumerable<INamespaceMemberDeclarationNode> NestedMembersNamed(OrdinaryName named)
-        => NestedMembersByName.GetValueOrDefault(named) ?? [];
+    IEnumerable<INamespaceMemberDeclarationNode> MembersNamed(OrdinaryName name)
+        => MembersByName.GetValueOrDefault(name) ?? [];
+    IEnumerable<INamespaceMemberDeclarationNode> NestedMembersNamed(OrdinaryName name)
+        => NestedMembersByName.GetValueOrDefault(name) ?? [];
     new IdentifierName Name
         => Symbol.Name;
     OrdinaryName INamespaceMemberDeclarationNode.Name => Name;
@@ -3793,8 +3793,8 @@ public partial interface IFunctionDeclarationNode : INamespaceMemberDeclarationN
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface ITypeDeclarationNode : INamedDeclarationNode, ISymbolDeclarationNode
 {
-    IEnumerable<IInstanceMemberDeclarationNode> InclusiveInstanceMembersNamed(OrdinaryName named);
-    IEnumerable<IAssociatedMemberDeclarationNode> AssociatedMembersNamed(OrdinaryName named);
+    IEnumerable<IInstanceMemberDeclarationNode> InclusiveInstanceMembersNamed(OrdinaryName name);
+    IEnumerable<IAssociatedMemberDeclarationNode> AssociatedMembersNamed(OrdinaryName name);
     IFixedSet<BareType> Supertypes { get; }
     ITypeFactory TypeFactory { get; }
     new TypeSymbol Symbol { get; }
@@ -3826,10 +3826,10 @@ public partial interface IBuiltInTypeDeclarationNode : INonVariableTypeDeclarati
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
     FixedDictionary<OrdinaryName, IFixedSet<IInstanceMemberDeclarationNode>> InclusiveInstanceMembersByName { get; }
     FixedDictionary<OrdinaryName, IFixedSet<IAssociatedMemberDeclarationNode>> AssociatedMembersByName { get; }
-    IEnumerable<IInstanceMemberDeclarationNode> ITypeDeclarationNode.InclusiveInstanceMembersNamed(OrdinaryName named)
-        => InclusiveInstanceMembersByName.GetValueOrDefault(named) ?? [];
-    IEnumerable<IAssociatedMemberDeclarationNode> ITypeDeclarationNode.AssociatedMembersNamed(OrdinaryName named)
-        => AssociatedMembersByName.GetValueOrDefault(named) ?? [];
+    IEnumerable<IInstanceMemberDeclarationNode> ITypeDeclarationNode.InclusiveInstanceMembersNamed(OrdinaryName name)
+        => InclusiveInstanceMembersByName.GetValueOrDefault(name) ?? [];
+    IEnumerable<IAssociatedMemberDeclarationNode> ITypeDeclarationNode.AssociatedMembersNamed(OrdinaryName name)
+        => AssociatedMembersByName.GetValueOrDefault(name) ?? [];
 }
 
 [Closed(
@@ -3849,10 +3849,10 @@ public partial interface IUserTypeDeclarationNode : INamespaceMemberDeclarationN
     new OrdinaryTypeSymbol Symbol { get; }
     Symbol? ISymbolDeclarationNode.Symbol => Symbol;
     TypeSymbol ITypeDeclarationNode.Symbol => Symbol;
-    IEnumerable<IInstanceMemberDeclarationNode> ITypeDeclarationNode.InclusiveInstanceMembersNamed(OrdinaryName named)
-        => InclusiveInstanceMembersByName.GetValueOrDefault(named) ?? [];
-    IEnumerable<IAssociatedMemberDeclarationNode> ITypeDeclarationNode.AssociatedMembersNamed(OrdinaryName named)
-        => AssociatedMembersByName.GetValueOrDefault(named) ?? [];
+    IEnumerable<IInstanceMemberDeclarationNode> ITypeDeclarationNode.InclusiveInstanceMembersNamed(OrdinaryName name)
+        => InclusiveInstanceMembersByName.GetValueOrDefault(name) ?? [];
+    IEnumerable<IAssociatedMemberDeclarationNode> ITypeDeclarationNode.AssociatedMembersNamed(OrdinaryName name)
+        => AssociatedMembersByName.GetValueOrDefault(name) ?? [];
 }
 
 [Closed(
@@ -3910,9 +3910,9 @@ public partial interface IGenericParameterDeclarationNode : ITypeDeclarationNode
     new GenericParameterTypeSymbol Symbol { get; }
     TypeSymbol ITypeDeclarationNode.Symbol => Symbol;
     Symbol? ISymbolDeclarationNode.Symbol => Symbol;
-    IEnumerable<IInstanceMemberDeclarationNode> ITypeDeclarationNode.InclusiveInstanceMembersNamed(OrdinaryName named)
+    IEnumerable<IInstanceMemberDeclarationNode> ITypeDeclarationNode.InclusiveInstanceMembersNamed(OrdinaryName name)
         => [];
-    IEnumerable<IAssociatedMemberDeclarationNode> ITypeDeclarationNode.AssociatedMembersNamed(OrdinaryName named)
+    IEnumerable<IAssociatedMemberDeclarationNode> ITypeDeclarationNode.AssociatedMembersNamed(OrdinaryName name)
         => [];
 }
 
@@ -3935,10 +3935,10 @@ public partial interface IImplicitSelfDeclarationNode : ITypeDeclarationNode
     new AssociatedTypeSymbol Symbol { get; }
     TypeSymbol ITypeDeclarationNode.Symbol => Symbol;
     Symbol? ISymbolDeclarationNode.Symbol => Symbol;
-    IEnumerable<IInstanceMemberDeclarationNode> ITypeDeclarationNode.InclusiveInstanceMembersNamed(OrdinaryName named)
-        => [];
-    IEnumerable<IAssociatedMemberDeclarationNode> ITypeDeclarationNode.AssociatedMembersNamed(OrdinaryName named)
-        => [];
+    IEnumerable<IInstanceMemberDeclarationNode> ITypeDeclarationNode.InclusiveInstanceMembersNamed(OrdinaryName name)
+        => ContainingDeclaration.InclusiveInstanceMembersNamed(name);
+    IEnumerable<IAssociatedMemberDeclarationNode> ITypeDeclarationNode.AssociatedMembersNamed(OrdinaryName name)
+        => ContainingDeclaration.AssociatedMembersNamed(name);
     IFixedSet<BareType> ITypeDeclarationNode.Supertypes
         => [];
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members

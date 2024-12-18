@@ -11,10 +11,7 @@ internal static partial class NameBindingPlainTypesAspect
         => node.ReferencedField?.BindingPlainType ?? PlainType.Unknown;
 
     public static partial IMaybeNonVoidPlainType SelfParameter_BindingPlainType(ISelfParameterNode node)
-    {
-        var containingTypeConstructor = node.ContainingTypeDefinition.TypeFactory;
-        return containingTypeConstructor.ConstructWithParameterPlainTypes();
-    }
+        => node.ContainingSelfTypeConstructor.ConstructWithParameterPlainTypes();
 
     public static partial IMaybeNonVoidPlainType PatternMatchExpression_Pattern_ContextBindingPlainType(IPatternMatchExpressionNode node)
         => node.Referent?.PlainType.ToNonLiteral().ToNonVoid() ?? PlainType.Unknown;

@@ -103,7 +103,7 @@ internal static partial class BindingAmbiguousNamesAspect
         if (node.Context is not { } context)
             return null;
 
-        // TODO a better way to expression the condition for this rewrite. Introduce a new node type?
+        // TODO a better way to express the condition for this rewrite. Introduce a new node type?
         // Ignore contexts that have special handling for member access (i.e. separate rewrite rules)
         if (node.Context is INamespaceNameNode or ITypeNameExpressionNode)
             return null;

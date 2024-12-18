@@ -87,7 +87,11 @@ internal static partial class NameBindingTypesAspect
 
     public static partial IMaybeType MethodSelfParameter_BindingType(IMethodSelfParameterNode node)
     {
+        // TODO make ConstructWithParameterTypes take the plain type to verify it
         var selfType = node.ContainingSelfTypeConstructor.ConstructWithParameterTypes();
+        if (!selfType.PlainType.Equals(node.BindingPlainType))
+            throw new InvalidOperationException(
+                $"BindingType `{selfType}` does not match BindingPlainType {node.BindingPlainType}.");
         var constraintNode = node.Constraint;
         return constraintNode switch
         {

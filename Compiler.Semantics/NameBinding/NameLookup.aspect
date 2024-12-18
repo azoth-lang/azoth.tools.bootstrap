@@ -10,40 +10,41 @@
 = NamespaceDeclaration.MembersByName;
 ↑ NamespaceDeclaration.NestedMembersByName: `FixedDictionary<OrdinaryName, IFixedSet<INamespaceMemberDeclarationNode>>`;
 = NamespaceDeclaration.NestedMembersByName;
-+ NamespaceDeclaration.MembersNamed(OrdinaryName named): `IEnumerable<INamespaceMemberDeclarationNode>`
-    => MembersByName.GetValueOrDefault(named) ?? [];
-+ NamespaceDeclaration.NestedMembersNamed(OrdinaryName named): `IEnumerable<INamespaceMemberDeclarationNode>`
-    => NestedMembersByName.GetValueOrDefault(named) ?? [];
++ NamespaceDeclaration.MembersNamed(OrdinaryName name): `IEnumerable<INamespaceMemberDeclarationNode>`
+    => MembersByName.GetValueOrDefault(name) ?? [];
++ NamespaceDeclaration.NestedMembersNamed(OrdinaryName name): `IEnumerable<INamespaceMemberDeclarationNode>`
+    => NestedMembersByName.GetValueOrDefault(name) ?? [];
 
 // ---------- Type Declarations
 /// <summary>
 /// All members of the type with the given name along with inherited members with the given name
 /// if they are not hidden by a member in the type itself.
 /// </summary>
-+ TypeDeclaration.InclusiveInstanceMembersNamed(OrdinaryName named): `IEnumerable<IInstanceMemberDeclarationNode>`;
-+ TypeDeclaration.AssociatedMembersNamed(OrdinaryName named): `IEnumerable<IAssociatedMemberDeclarationNode>`;
++ TypeDeclaration.InclusiveInstanceMembersNamed(OrdinaryName name): `IEnumerable<IInstanceMemberDeclarationNode>`;
++ TypeDeclaration.AssociatedMembersNamed(OrdinaryName name): `IEnumerable<IAssociatedMemberDeclarationNode>`;
 ↑ BuiltInTypeDeclaration.InclusiveInstanceMembersByName: `FixedDictionary<OrdinaryName, IFixedSet<IInstanceMemberDeclarationNode>>`;
 = BuiltInTypeDeclaration.InclusiveInstanceMembersByName;
 ↑ BuiltInTypeDeclaration.AssociatedMembersByName: `FixedDictionary<OrdinaryName, IFixedSet<IAssociatedMemberDeclarationNode>>`;
 = BuiltInTypeDeclaration.AssociatedMembersByName;
-= BuiltInTypeDeclaration.InclusiveInstanceMembersNamed(OrdinaryName named)
-    => InclusiveInstanceMembersByName.GetValueOrDefault(named) ?? [];
-= BuiltInTypeDeclaration.AssociatedMembersNamed(OrdinaryName named)
-    => AssociatedMembersByName.GetValueOrDefault(named) ?? [];
+= BuiltInTypeDeclaration.InclusiveInstanceMembersNamed(OrdinaryName name)
+    => InclusiveInstanceMembersByName.GetValueOrDefault(name) ?? [];
+= BuiltInTypeDeclaration.AssociatedMembersNamed(OrdinaryName name)
+    => AssociatedMembersByName.GetValueOrDefault(name) ?? [];
 ↑ UserTypeDeclaration.InclusiveInstanceMembersByName: `FixedDictionary<OrdinaryName, IFixedSet<IInstanceMemberDeclarationNode>>`;
 = UserTypeDeclaration.InclusiveInstanceMembersByName;
 ↑ UserTypeDeclaration.AssociatedMembersByName: `FixedDictionary<OrdinaryName, IFixedSet<IAssociatedMemberDeclarationNode>>`;
 = UserTypeDeclaration.AssociatedMembersByName;
-= UserTypeDeclaration.InclusiveInstanceMembersNamed(OrdinaryName named)
-    => InclusiveInstanceMembersByName.GetValueOrDefault(named) ?? [];
-= UserTypeDeclaration.AssociatedMembersNamed(OrdinaryName named)
-    => AssociatedMembersByName.GetValueOrDefault(named) ?? [];
+= UserTypeDeclaration.InclusiveInstanceMembersNamed(OrdinaryName name)
+    => InclusiveInstanceMembersByName.GetValueOrDefault(name) ?? [];
+= UserTypeDeclaration.AssociatedMembersNamed(OrdinaryName name)
+    => AssociatedMembersByName.GetValueOrDefault(name) ?? [];
 
 // ---------- Type Declaration Parts
 // TODO should look up members based on generic constraints
-= GenericParameterDeclaration.InclusiveInstanceMembersNamed(OrdinaryName named) => [];
+= GenericParameterDeclaration.InclusiveInstanceMembersNamed(OrdinaryName name) => [];
 // TODO should look up members based on generic constraints
-= GenericParameterDeclaration.AssociatedMembersNamed(OrdinaryName named) => [];
-// TODO do these need to lookup members based on supertypes?
-= ImplicitSelfDeclaration.InclusiveInstanceMembersNamed(OrdinaryName named) => [];
-= ImplicitSelfDeclaration.AssociatedMembersNamed(OrdinaryName named) => [];
+= GenericParameterDeclaration.AssociatedMembersNamed(OrdinaryName name) => [];
+= ImplicitSelfDeclaration.InclusiveInstanceMembersNamed(OrdinaryName name)
+    => ContainingDeclaration.InclusiveInstanceMembersNamed(name);
+= ImplicitSelfDeclaration.AssociatedMembersNamed(OrdinaryName name)
+    => ContainingDeclaration.AssociatedMembersNamed(name);
