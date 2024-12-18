@@ -221,7 +221,7 @@ public sealed class Capability : ICapabilityConstraint
         if (capability == TemporarilyConstant) return TemporarilyConstant;
 
         if (capability == Isolated || capability == TemporarilyIsolated)
-            throw new NotImplementedException("prevent breaking isolation");
+            throw new InvalidOperationException("Cannot access via isolated, must alias first.");
 
         if (!capability.AllowsWrite)
             return WithoutWrite();

@@ -128,8 +128,6 @@ public sealed class GenericParameterTypeReplacements
 
     internal Type Apply(CapabilityType type, NonVoidType? selfReplacement)
     {
-        if (selfReplacement is not null && type is { TypeConstructor: SelfTypeConstructor })
-            return selfReplacement.AccessedVia(type.Capability);
         // TODO what about CapabilitySetTypes and other types?
         var bareSelfReplacement = (selfReplacement as CapabilityType)?.BareType;
         var replacementBareType = Apply(type.BareType, selfReplacement, bareSelfReplacement);
