@@ -1,6 +1,6 @@
 using ExhaustiveMatching;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Core;
+namespace Azoth.Tools.Bootstrap.Compiler.Core.Types;
 
 /// <summary>
 /// The variance that can be declared on a type parameter.
@@ -30,7 +30,7 @@ public static class TypeParameterVarianceExtensions
     public static TypeVariance? ToTypeVariance(this TypeParameterVariance variance, bool? nonwritableSelf)
     {
         if (nonwritableSelf is bool knownNonwritableSelf)
-            return ToTypeVariance(variance, knownNonwritableSelf);
+            return variance.ToTypeVariance(knownNonwritableSelf);
         return variance switch
         {
             TypeParameterVariance.Contravariant => TypeVariance.Contravariant,

@@ -5,10 +5,10 @@
 ◊class-suffix Syntax;
 ◊simplified-tree true;
 ◊using System.Numerics;
-◊using Azoth.Tools.Bootstrap.Compiler.Core;
 ◊using Azoth.Tools.Bootstrap.Compiler.Core.Code;
 ◊using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 ◊using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
+◊using Azoth.Tools.Bootstrap.Compiler.Core.Types;
 ◊using Azoth.Tools.Bootstrap.Compiler.Names;
 ◊using Azoth.Tools.Bootstrap.Compiler.Symbols;
 ◊using Azoth.Tools.Bootstrap.Compiler.Tokens;
@@ -102,9 +102,9 @@ AssociatedFunctionDefinition <: TypeMemberDefinition, ClassMemberDefinition, Tra
 Attribute <: Code = TypeName:StandardTypeName;
 
 // ---------- Capabilities
-CapabilityConstraint <: Code = Constraint:`ICapabilityConstraint`;
-CapabilitySet <: CapabilityConstraint = Constraint:`CapabilitySet`;
-Capability <: CapabilityConstraint = Tokens:`ICapabilityToken`* Declared:`DeclaredCapability` Capability:`Capability`;
+CapabilityConstraint <: Code;
+CapabilitySet <: CapabilityConstraint = CapabilitySet:`CapabilitySet`;
+Capability <: CapabilityConstraint = Tokens:`ICapabilityToken`* Capability:`DeclaredCapability`;
 
 // ---------- Parameters and Return
 Parameter <: Code = Name:`IdentifierName`?;

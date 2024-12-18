@@ -1,6 +1,7 @@
 ◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Structure;
 ◊name DefinitionsAspect;
 ◊using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
+◊using Azoth.Tools.Bootstrap.Compiler.Core.Types;
 ◊using Azoth.Tools.Bootstrap.Framework;
 
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
@@ -82,10 +83,8 @@
 ↑ AssociatedFunctionDefinition.Name:`IdentifierName` => Syntax.Name;
 
 // ---------- Capabilities
-↑ CapabilityConstraint.Constraint: `ICapabilityConstraint`;
-↑ CapabilitySet.Constraint: `CapabilitySet` => Syntax.Constraint;
-↑ Capability.Capability: `Capability` => Syntax.Capability;
-= Capability.Constraint => Syntax.Capability;
+↑ CapabilitySet.CapabilitySet: `CapabilitySet` => Syntax.CapabilitySet;
+↑ Capability.DeclaredCapability: `DeclaredCapability` => Syntax.Capability;
 
 // ---------- Parameters
 ↑ Parameter.Name: `IdentifierName`?;

@@ -1,6 +1,6 @@
 using ExhaustiveMatching;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Core;
+namespace Azoth.Tools.Bootstrap.Compiler.Core.Types;
 
 /// <summary>
 /// The variance of a type as defined by type theory.

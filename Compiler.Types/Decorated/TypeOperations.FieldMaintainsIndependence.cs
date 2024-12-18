@@ -1,4 +1,4 @@
-using Azoth.Tools.Bootstrap.Compiler.Core;
+using Azoth.Tools.Bootstrap.Compiler.Core.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using ExhaustiveMatching;
 

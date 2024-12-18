@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Text;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
+using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors.Contexts;
 using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
@@ -149,6 +150,9 @@ public abstract partial class TypeConstructor : TypeConstructorContext, IEquatab
     /// Whether this type was declared `const` meaning that most references should be treated as const.
     /// </summary>
     public abstract bool IsDeclaredConst { get; }
+
+    internal Capability DefaultCapability
+        => IsDeclaredConst ? Capability.Constant : Capability.Read;
 
     // TODO add bool IsDeclaredMove { get; } once that is being supported
 

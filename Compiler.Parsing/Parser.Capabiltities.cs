@@ -1,11 +1,12 @@
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core.Code;
+using Azoth.Tools.Bootstrap.Compiler.Core.Types;
 using Azoth.Tools.Bootstrap.Compiler.Syntax;
 using Azoth.Tools.Bootstrap.Compiler.Tokens;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
-using static Azoth.Tools.Bootstrap.Compiler.Syntax.DeclaredCapability;
+using static Azoth.Tools.Bootstrap.Compiler.Core.Types.DeclaredCapability;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing;
 
@@ -78,7 +79,7 @@ public partial class Parser
                 return ICapabilitySyntax.Create(readKeyword.Span, readKeyword.Yield(), Read);
             }
             default:
-                return ICapabilitySyntax.CreateImplicitReadOnly(Tokens.Current.Span.AtStart());
+                return ICapabilitySyntax.CreateDefault(Tokens.Current.Span.AtStart());
         }
     }
 
@@ -107,7 +108,7 @@ public partial class Parser
     }
 
     private ICapabilityConstraintSyntax ParseStandardCapabilityConstraint()
-        => AcceptStandardCapabilityConstraint() ?? ICapabilitySyntax.CreateImplicitReadOnly(Tokens.Current.Span.AtStart());
+        => AcceptStandardCapabilityConstraint() ?? ICapabilitySyntax.CreateDefault(Tokens.Current.Span.AtStart());
 
     private ICapabilityConstraintSyntax? AcceptStandardCapabilityConstraint()
         => Tokens.Current switch

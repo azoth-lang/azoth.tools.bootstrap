@@ -1,9 +1,11 @@
 using System;
 using Azoth.Tools.Bootstrap.Compiler.Core.Code;
 using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
+using Azoth.Tools.Bootstrap.Compiler.Core.Types;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 using Azoth.Tools.Bootstrap.Compiler.Syntax;
+using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 using ExhaustiveMatching;
@@ -37,7 +39,7 @@ internal static partial class NameBindingTypesAspect
         if (type is not CapabilityType capabilityType)
             throw new NotImplementedException("Compile error: can't infer mutability for non-capability type.");
 
-        return capabilityType.With(capability.Capability);
+        return capabilityType.With(capability.DeclaredCapability);
     }
 
     public static partial IFlowState VariableDeclarationStatement_FlowStateAfter(IVariableDeclarationStatementNode node)
@@ -87,14 +89,10 @@ internal static partial class NameBindingTypesAspect
     {
         var selfType = node.ContainingSelfTypeConstructor.ConstructWithParameterTypes();
         var constraintNode = node.Constraint;
-        // TODO simplify this. It ought to be possible to do something like selfType.With(constraintNode.ConstraintFor(selfType))
         return constraintNode switch
         {
-            ICapabilityNode n
-                => n.Capability == Capability.Read
-                    ? selfType.WithDefaultCapability()
-                    : selfType.With(n.Capability),
-            ICapabilitySetNode n => new CapabilitySetSelfType(n.Constraint, selfType),
+            ICapabilityNode n => selfType.With(n.DeclaredCapability),
+            ICapabilitySetNode n => new CapabilitySetSelfType(n.CapabilitySet, selfType),
             _ => throw ExhaustiveMatch.Failed(constraintNode)
         };
     }
@@ -110,7 +108,7 @@ internal static partial class NameBindingTypesAspect
     public static partial CapabilityType ConstructorSelfParameter_BindingType(IConstructorSelfParameterNode node)
     {
         var bareType = node.ContainingTypeConstructor.ConstructWithParameterTypes();
-        var capability = node.Syntax.Constraint.Declared.ToSelfParameterCapability();
+        var capability = node.Capability.DeclaredCapability.ToSelfParameterCapability();
         return bareType.With(capability);
     }
 
@@ -121,7 +119,7 @@ internal static partial class NameBindingTypesAspect
     public static partial CapabilityType InitializerSelfParameter_BindingType(IInitializerSelfParameterNode node)
     {
         var bareType = node.ContainingTypeConstructor.ConstructWithParameterTypes();
-        var capability = node.Syntax.Constraint.Declared.ToSelfParameterCapability();
+        var capability = node.Capability.DeclaredCapability.ToSelfParameterCapability();
         return bareType.With(capability);
     }
 
@@ -130,18 +128,18 @@ internal static partial class NameBindingTypesAspect
         CodeFile file,
         DiagnosticCollectionBuilder diagnostics)
     {
-        var declaredCapability = capabilitySyntax.Declared;
+        var declaredCapability = capabilitySyntax.Capability;
         switch (declaredCapability)
         {
-            case DeclaredCapability.Read:
+            case DeclaredCapability.Default:
             case DeclaredCapability.Mutable:
                 break;
+            case DeclaredCapability.Read:
             case DeclaredCapability.Isolated:
             case DeclaredCapability.TemporarilyIsolated:
             case DeclaredCapability.Constant:
             case DeclaredCapability.TemporarilyConstant:
             case DeclaredCapability.Identity:
-
                 diagnostics.Add(TypeError.InvalidConstructorSelfParameterCapability(file, capabilitySyntax));
                 break;
             default:

@@ -39,6 +39,13 @@ public sealed class CapabilitySet : ICapabilityConstraint
     public static readonly CapabilitySet Any
         = new("any", Isolated, TemporarilyIsolated, Mutable, Constant, TemporarilyConstant, Read, Identity);
 
+    /// <summary>
+    /// The default capability set used for generic type parameters that do not specify one.
+    /// </summary>
+    /// <remarks>This is just an alias for the default of <see cref="Aliasable"/> used to make code
+    /// more readable.</remarks>
+    public static readonly CapabilitySet GenericParameterDefault = Aliasable;
+
     public IReadOnlySet<Capability> AllowedCapabilities { get; }
 
     public bool AnyCapabilityAllowsWrite { get; }

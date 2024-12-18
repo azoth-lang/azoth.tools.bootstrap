@@ -2,6 +2,7 @@ using Azoth.Tools.Bootstrap.Compiler.Core.Code;
 using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 using Azoth.Tools.Bootstrap.Compiler.Syntax;
+using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
@@ -101,9 +102,8 @@ public static class TypeError
 
     public static Diagnostic InvalidConstructorSelfParameterCapability(CodeFile file, ICapabilitySyntax syn)
     {
-        var capability = syn.Declared.ToCapability();
         return new(file, syn.Span, DiagnosticLevel.CompilationError, DiagnosticPhase.Analysis,
-            3014, $"Constructor self parameter cannot have reference capability `{capability.ToSourceCodeString()}`. Only `mut` and read-only are allowed");
+            3014, $"Constructor self parameter cannot have reference capability `{syn.Capability.ToSourceCodeString()}`. Only `mut` and read-only are allowed");
     }
 
     public static Diagnostic TypeCannotBeLent(CodeFile file, TextSpan span, IMaybeType type)

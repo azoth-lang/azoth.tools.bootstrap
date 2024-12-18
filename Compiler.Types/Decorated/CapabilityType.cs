@@ -1,3 +1,4 @@
+using Azoth.Tools.Bootstrap.Compiler.Core.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
@@ -23,7 +24,7 @@ public sealed class CapabilityType : NonVoidType
     public BareType BareType { get; }
     public override ConstructedPlainType PlainType => BareType.PlainType;
 
-    public TypeConstructor? TypeConstructor => BareType.TypeConstructor;
+    public TypeConstructor TypeConstructor => BareType.TypeConstructor;
 
     public IFixedList<Type> Arguments => BareType.Arguments;
 
@@ -54,6 +55,9 @@ public sealed class CapabilityType : NonVoidType
         if (Capability.Equals(capability)) return this;
         return BareType.With(capability);
     }
+
+    public IMaybeNonVoidType? With(DeclaredCapability declaredCapability)
+        => With(declaredCapability.ToCapabilityFor(TypeConstructor));
 
     public CapabilityType With(IFixedList<Type> arguments)
     {

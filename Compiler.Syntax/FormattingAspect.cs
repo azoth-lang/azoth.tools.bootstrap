@@ -3,6 +3,8 @@ using System.Globalization;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
+using Azoth.Tools.Bootstrap.Compiler.Core.Types;
+using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 
@@ -139,10 +141,10 @@ internal static partial class FormattingAspect
 
     #region Capabilities
     public static partial string CapabilitySet_ToString(ICapabilitySetSyntax node)
-        => node.Constraint.ToString();
+        => node.CapabilitySet.ToString();
 
     public static partial string Capability_ToString(ICapabilitySyntax node)
-        => node.Declared.ToCapability().ToSourceCodeString();
+        => node.Capability.ToSourceCodeString();
     #endregion
 
     #region Parameters and Return
@@ -157,7 +159,9 @@ internal static partial class FormattingAspect
     public static partial string SelfParameter_ToString(ISelfParameterSyntax node)
     {
         var lent = node.IsLentBinding ? "lent " : "";
-        return $"{lent}{node.Constraint} self";
+        var constraint = node.Constraint.ToString();
+        if (!string.IsNullOrEmpty(constraint)) constraint += " ";
+        return $"{lent}{constraint}self";
     }
 
     public static partial string FieldParameter_ToString(IFieldParameterSyntax node)

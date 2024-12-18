@@ -4,6 +4,7 @@ using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
+using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 using Azoth.Tools.Bootstrap.Framework;
@@ -38,7 +39,8 @@ internal static partial class TypeDefinitionsAspect
     }
 
     public static partial TypeConstructor.Parameter GenericParameter_Parameter(IGenericParameterNode node)
-        => new TypeConstructor.Parameter(node.Constraint.Constraint, node.Name, node.Independence, node.Variance);
+        => new TypeConstructor.Parameter(node.Constraint.ToConstraint(CapabilitySet.GenericParameterDefault),
+            node.Name, node.Independence, node.Variance);
 
     public static partial GenericParameterType GenericParameter_DeclaredType(IGenericParameterNode node)
         => node.ContainingTypeConstructor.ParameterTypes.Single(t => t.Parameter.Equals(node.Parameter));

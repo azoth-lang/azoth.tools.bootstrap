@@ -2,10 +2,10 @@ using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Numerics;
-using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Code;
 using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
+using Azoth.Tools.Bootstrap.Compiler.Core.Types;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Tokens;
@@ -604,20 +604,18 @@ public partial interface IAttributeSyntax : ICodeSyntax
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface ICapabilityConstraintSyntax : ICodeSyntax
 {
-    ICapabilityConstraint Constraint { get; }
 }
 
 // [Closed(typeof(CapabilitySetSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface ICapabilitySetSyntax : ICapabilityConstraintSyntax
 {
-    new CapabilitySet Constraint { get; }
-    ICapabilityConstraint ICapabilityConstraintSyntax.Constraint => Constraint;
+    CapabilitySet CapabilitySet { get; }
 
     public static ICapabilitySetSyntax Create(
         TextSpan span,
-        CapabilitySet constraint)
-        => new CapabilitySetSyntax(span, constraint);
+        CapabilitySet capabilitySet)
+        => new CapabilitySetSyntax(span, capabilitySet);
 }
 
 // [Closed(typeof(CapabilitySyntax))]
@@ -625,16 +623,13 @@ public partial interface ICapabilitySetSyntax : ICapabilityConstraintSyntax
 public partial interface ICapabilitySyntax : ICapabilityConstraintSyntax
 {
     IFixedList<ICapabilityToken> Tokens { get; }
-    DeclaredCapability Declared { get; }
-    Capability Capability { get; }
+    DeclaredCapability Capability { get; }
 
     public static ICapabilitySyntax Create(
         TextSpan span,
-        ICapabilityConstraint constraint,
         IEnumerable<ICapabilityToken> tokens,
-        DeclaredCapability declared,
-        Capability capability)
-        => new CapabilitySyntax(span, constraint, tokens, declared, capability);
+        DeclaredCapability capability)
+        => new CapabilitySyntax(span, tokens, capability);
 }
 
 [Closed(
@@ -2308,16 +2303,16 @@ file class CapabilitySetSyntax : ICapabilitySetSyntax
     private ICapabilitySetSyntax Self { [Inline] get => this; }
 
     public TextSpan Span { [DebuggerStepThrough] get; }
-    public CapabilitySet Constraint { [DebuggerStepThrough] get; }
+    public CapabilitySet CapabilitySet { [DebuggerStepThrough] get; }
     public override string ToString()
         => FormattingAspect.CapabilitySet_ToString(this);
 
     public CapabilitySetSyntax(
         TextSpan span,
-        CapabilitySet constraint)
+        CapabilitySet capabilitySet)
     {
         Span = span;
-        Constraint = constraint;
+        CapabilitySet = capabilitySet;
     }
 }
 
@@ -2327,24 +2322,18 @@ file class CapabilitySyntax : ICapabilitySyntax
     private ICapabilitySyntax Self { [Inline] get => this; }
 
     public TextSpan Span { [DebuggerStepThrough] get; }
-    public ICapabilityConstraint Constraint { [DebuggerStepThrough] get; }
     public IFixedList<ICapabilityToken> Tokens { [DebuggerStepThrough] get; }
-    public DeclaredCapability Declared { [DebuggerStepThrough] get; }
-    public Capability Capability { [DebuggerStepThrough] get; }
+    public DeclaredCapability Capability { [DebuggerStepThrough] get; }
     public override string ToString()
         => FormattingAspect.Capability_ToString(this);
 
     public CapabilitySyntax(
         TextSpan span,
-        ICapabilityConstraint constraint,
         IEnumerable<ICapabilityToken> tokens,
-        DeclaredCapability declared,
-        Capability capability)
+        DeclaredCapability capability)
     {
         Span = span;
-        Constraint = constraint;
         Tokens = tokens.ToFixedList();
-        Declared = declared;
         Capability = capability;
     }
 }

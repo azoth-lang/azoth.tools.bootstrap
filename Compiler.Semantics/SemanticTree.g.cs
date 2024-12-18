@@ -10,6 +10,7 @@ using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.Core.Code;
 using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
+using Azoth.Tools.Bootstrap.Compiler.Core.Types;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Primitives;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.ControlFlow;
@@ -1123,7 +1124,6 @@ public partial interface ICapabilityConstraintNode : ICodeNode
     new ICapabilityConstraintSyntax Syntax { get; }
     ICodeSyntax ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    ICapabilityConstraint Constraint { get; }
 }
 
 // [Closed(typeof(CapabilitySetNode))]
@@ -1134,9 +1134,8 @@ public partial interface ICapabilitySetNode : ICapabilityConstraintNode
     ICapabilityConstraintSyntax ICapabilityConstraintNode.Syntax => Syntax;
     ICodeSyntax ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    new CapabilitySet Constraint
-        => Syntax.Constraint;
-    ICapabilityConstraint ICapabilityConstraintNode.Constraint => Constraint;
+    CapabilitySet CapabilitySet
+        => Syntax.CapabilitySet;
 
     public static ICapabilitySetNode Create(ICapabilitySetSyntax syntax)
         => new CapabilitySetNode(syntax);
@@ -1150,9 +1149,7 @@ public partial interface ICapabilityNode : ICapabilityConstraintNode
     ICapabilityConstraintSyntax ICapabilityConstraintNode.Syntax => Syntax;
     ICodeSyntax ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    Capability Capability
-        => Syntax.Capability;
-    ICapabilityConstraint ICapabilityConstraintNode.Constraint
+    DeclaredCapability DeclaredCapability
         => Syntax.Capability;
 
     public static ICapabilityNode Create(ICapabilitySyntax syntax)

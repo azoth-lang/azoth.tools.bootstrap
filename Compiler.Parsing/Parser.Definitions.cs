@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Code;
+using Azoth.Tools.Bootstrap.Compiler.Core.Types;
 using Azoth.Tools.Bootstrap.Compiler.Lexing;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Syntax;
@@ -211,6 +211,7 @@ public partial class Parser
     private IGenericParameterSyntax? AcceptGenericParameter()
     {
         var constraint = AcceptExplicitCapabilityConstraint()
+                         // TODO do not do this in parsing
                          ?? ICapabilitySetSyntax.CreateImplicitAliasable(Tokens.Current.Span.AtStart());
         var identifier = Tokens.AcceptToken<IIdentifierToken>();
         if (identifier is null) return null;

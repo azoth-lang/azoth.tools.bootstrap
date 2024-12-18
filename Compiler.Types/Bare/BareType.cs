@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Text;
+using Azoth.Tools.Bootstrap.Compiler.Core.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
@@ -61,12 +62,15 @@ public sealed class BareType : IEquatable<BareType>
     public CapabilityType With(Capability capability)
         => CapabilityType.Create(capability, this);
 
+    public CapabilityType With(DeclaredCapability capability)
+        => CapabilityType.Create(capability.ToCapabilityFor(TypeConstructor), this);
+
     /// <summary>
     /// This type with whatever the default read capability is for the type based on whether it is
     /// declared `const`.
     /// </summary>
     public CapabilityType WithDefaultCapability()
-        => With(TypeConstructor.IsDeclaredConst ? Capability.Constant : Capability.Read);
+        => With(TypeConstructor.DefaultCapability);
 
     public BareType WithReplacement(IFixedList<Type> arguments)
         => new BareType(PlainType, ContainingType, arguments);

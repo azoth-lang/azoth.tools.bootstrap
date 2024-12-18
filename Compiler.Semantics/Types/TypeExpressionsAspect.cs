@@ -1,6 +1,7 @@
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
+using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
@@ -18,25 +19,22 @@ internal static partial class TypeExpressionsAspect
     #region Types
     public static partial IMaybeType TypeName_NamedType(ITypeNameNode node)
         // TODO don't use ReferencedSymbol (use referenced definition instead)
-        // TODO why is node.ReferencedSymbol?.TryGetType() needed here?
         => node.NamedBareType?.WithDefaultCapability()
            ?? node.ReferencedDeclaration?.TypeFactory.TryConstructNullaryType(containingType: null) ?? IMaybeType.Unknown;
 
     // TODO remove if this remains a duplicate of TypeName_NamedType
     public static partial IMaybeType BuiltInTypeName_NamedType(IBuiltInTypeNameNode node)
         // Special type names don't have bare types
-        // TODO don't use ReferencedSymbol (use referenced definition instead)
         => node.NamedBareType?.WithDefaultCapability()
            ?? node.ReferencedDeclaration?.TypeFactory.TryConstructNullaryType(containingType: null) ?? IMaybeType.Unknown;
 
     public static partial IMaybeType CapabilityType_NamedType(ICapabilityTypeNode node)
-        => (node.Referent as ITypeNameNode)?.NamedBareType?.With(node.Capability.Capability) ?? node.Referent.NamedType;
+        => (node.Referent as ITypeNameNode)?.NamedBareType?.With(node.Capability.DeclaredCapability) ?? node.Referent.NamedType;
 
     public static partial void CapabilityType_Contribute_Diagnostics(ICapabilityTypeNode node, DiagnosticCollectionBuilder diagnostics)
     {
-        var capability = node.Capability.Capability;
-        if (capability.AllowsWrite && node.NamedType is CapabilityType { TypeConstructor.IsDeclaredConst: true } capabilityType)
-            diagnostics.Add(TypeError.CannotApplyCapabilityToConstantType(node.File, node.Syntax, capability, capabilityType.TypeConstructor!));
+        if (node.NamedType is CapabilityType { TypeConstructor.IsDeclaredConst: true, Capability.AllowsWrite: true } capabilityType)
+            diagnostics.Add(TypeError.CannotApplyCapabilityToConstantType(node.File, node.Syntax, capabilityType.Capability, capabilityType.TypeConstructor));
         if (node.Referent.NamedType is GenericParameterType)
             diagnostics.Add(TypeError.CapabilityAppliedToTypeParameter(node.File, node.Syntax));
         if (node.Referent.NamedType is VoidType or NeverType)
@@ -55,7 +53,8 @@ internal static partial class TypeExpressionsAspect
         => ParameterType.Create(node.IsLent, node.Referent.NamedType.ToNonVoidType());
 
     public static partial IMaybeType CapabilityViewpointType_NamedType(ICapabilityViewpointTypeNode node)
-        => node.Referent.NamedType.AccessedVia(node.Capability.Capability);
+        // A capability viewpoint type cannot be the default capability, hence not null is safe
+        => node.Referent.NamedType.AccessedVia(node.Capability.DeclaredCapability.ToCapability(null)!);
 
     public static partial void CapabilityViewpointType_Contribute_Diagnostics(
         ICapabilityViewpointTypeNode node,
