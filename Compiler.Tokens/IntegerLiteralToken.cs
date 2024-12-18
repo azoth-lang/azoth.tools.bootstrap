@@ -1,6 +1,5 @@
 using System.Globalization;
 using System.Numerics;
-using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Code;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Tokens;

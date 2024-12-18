@@ -1,27 +1,40 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Numerics;
-using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Code;
 using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Tokens;
 using Azoth.Tools.Bootstrap.Framework;
-using MoreLinq;
 
 namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Lexing.Helpers;
 
+/// <summary>
+/// Used in tests for doing token like operations to set up and to do assertions. It acts as a
+/// pseudo token because it carries around the token type it replaces and uses that as part of its
+/// identity.
+/// </summary>
 public class PseudoToken
 {
     public Type TokenType { get; }
-
     public string Text { get; }
     public object? Value { get; }
 
-    public PseudoToken(Type tokenType, string text, object? value = null)
+    public PseudoToken(Type tokenType, string text)
     {
+        Requires.That(tokenType.IsInterface, nameof(tokenType), "Token type must be an interface.");
         TokenType = tokenType;
         Text = text;
+    }
+
+    public PseudoToken(Type tokenType, string text, string value)
+        : this(tokenType, text)
+    {
+        Value = value;
+    }
+
+    public PseudoToken(Type tokenType, string text, BigInteger value)
+        : this(tokenType, text)
+    {
         Value = value;
     }
 
@@ -30,39 +43,30 @@ public class PseudoToken
     public static PseudoToken For(IToken token, CodeText code)
     {
         var tokenType = token.GetType();
+        if (!tokenType.IsInterface)
+            tokenType = tokenType.GetInterface("I" + tokenType.Name)
+                ?? throw new InvalidOperationException($"Could not find proper interface for type {tokenType.GetFriendlyName()}");
         var text = token.Text(code);
         return token switch
         {
-            IIdentifierToken identifier => new PseudoToken(tokenType, text, identifier.Value),
-            IStringLiteralToken stringLiteral => new PseudoToken(tokenType, text, stringLiteral.Value),
-            IIntegerLiteralToken integerLiteral => new PseudoToken(tokenType, text, integerLiteral.Value),
-            _ => new PseudoToken(tokenType, text)
+            IIdentifierToken identifier => new(tokenType, text, identifier.Value),
+            IStringLiteralToken stringLiteral => new(tokenType, text, stringLiteral.Value),
+            IIntegerLiteralToken integerLiteral => new(tokenType, text, integerLiteral.Value),
+            _ => new(tokenType, text)
         };
     }
 
     public override bool Equals(object? obj)
     {
-        if (obj is PseudoToken token &&
-            (TokenType == token.TokenType
-             || TokenType.IsAssignableFrom(token.TokenType)
-             || token.TokenType.IsAssignableFrom(TokenType)) &&
-            Text == token.Text)
-        {
-            if (Value is IReadOnlyList<Diagnostic> diagnostics
-                && token.Value is IReadOnlyList<Diagnostic> otherDiagnostics)
-            {
-                // TODO this zip looks wrong, shouldn't it be comparing something rather than always returning false?
-                return diagnostics.EquiZip(otherDiagnostics, (d1, d2) => false).All(i => i);
-            }
-            return EqualityComparer<object>.Default.Equals(Value, token.Value);
-        }
-        return false;
+        if (obj is null) return false;
+        if (ReferenceEquals(this, obj)) return true;
+        return obj is PseudoToken other
+               && TokenType == other.TokenType
+               && Text == other.Text
+               && Equals(Value, other.Value);
     }
 
-    public override int GetHashCode()
-    {
-        return HashCode.Combine(TokenType, Text, Value);
-    }
+    public override int GetHashCode() => HashCode.Combine(TokenType, Text, Value);
 
     public override string ToString()
     {

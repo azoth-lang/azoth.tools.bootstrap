@@ -353,7 +353,7 @@ public static class Arbitrary
 
     private readonly record struct AppendedToken(IEnumerable<PseudoToken> Items, PseudoToken? LastToken)
     {
-        public static readonly AppendedToken Empty = new(Enumerable.Empty<PseudoToken>(), null);
+        public static readonly AppendedToken Empty = new([], null);
 
         public AppendedToken Append(PseudoToken token) => new(ToEnumerable(), token);
 
