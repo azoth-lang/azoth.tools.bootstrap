@@ -26,7 +26,7 @@ public sealed class CapabilitySetSelfType : NonVoidType
 
     public override ConstructedPlainType PlainType => BareType.PlainType;
 
-    public override BareTypeReplacements TypeReplacements => BareTypeReplacements.None;
+    public override BareTypeReplacements TypeReplacements => BareType.TypeReplacements;
 
     public override bool HasIndependentTypeArguments => false;
 
