@@ -5,6 +5,7 @@ using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 using Azoth.Tools.Bootstrap.Compiler.Syntax;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
+using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 using ExhaustiveMatching;
 using Type = Azoth.Tools.Bootstrap.Compiler.Types.Decorated.Type;
@@ -101,8 +102,7 @@ internal static partial class NameBindingTypesAspect
             _ => throw ExhaustiveMatch.Failed(constraintNode)
         };
 
-        //var selfTypeConstructor = node.ContainingSelfTypeConstructor;
-        //var selfType = selfTypeConstructor.ConstructWithParameterTypes();
+        //var selfType = node.ContainingSelfTypeConstructor.ConstructWithParameterTypes();
         //var constraintNode = node.Constraint;
         //// TODO shouldn't their be an overload of .With() that takes an ICapabilityConstraint (e.g. `capability.Constraint`)
         //return constraintNode switch
@@ -111,7 +111,7 @@ internal static partial class NameBindingTypesAspect
         //        => n.Capability == Capability.Read
         //            ? selfType.WithDefaultCapability()
         //            : selfType.With(n.Capability),
-        //    ICapabilitySetNode n => new CapabilitySetSelfType(n.Constraint, selfTypeConstructor),
+        //    ICapabilitySetNode n => new CapabilitySetSelfType(n.Constraint, selfType),
         //    _ => throw ExhaustiveMatch.Failed(constraintNode)
         //};
     }

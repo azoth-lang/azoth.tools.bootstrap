@@ -170,6 +170,10 @@ public abstract partial class TypeConstructor : TypeConstructorContext, IEquatab
     /// </summary>
     public abstract bool CanBeSupertype { get; }
 
+    /// <summary>
+    /// The semantics of types created with this constructor or <see langword="null"/> if the
+    /// semantics can't be determined (e.g. because this is a type variable).
+    /// </summary>
     public abstract TypeSemantics? Semantics { get; }
 
     public abstract TypeName Name { get; }

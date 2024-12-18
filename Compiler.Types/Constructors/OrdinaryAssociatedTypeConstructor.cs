@@ -8,6 +8,8 @@ public sealed class OrdinaryAssociatedTypeConstructor : AssociatedTypeConstructo
 {
     public override bool IsDeclaredConst => false;
 
+    public override TypeSemantics? Semantics => null;
+
     public override IdentifierName Name { get; }
 
     public override IFixedSet<BareType> Supertypes => BareType.AnySet;
