@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
@@ -5,9 +6,10 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.PlainTypes;
 
-public sealed class CallCandidate<TDeclaration>
+public sealed class CallCandidate<TDeclaration> : IEquatable<CallCandidate<TDeclaration>>
     where TDeclaration : IInvocableDeclarationNode
 {
+    public IMaybePlainType? ContextPlainType { get; }
     public TDeclaration Declaration { get; }
     public IMaybeNonVoidPlainType? SelfParameterPlainType { get; }
     public IFixedList<IMaybeNonVoidPlainType> ParameterPlainTypes { get; }
@@ -15,15 +17,17 @@ public sealed class CallCandidate<TDeclaration>
     public IMaybePlainType ReturnPlainType { get; }
 
     internal CallCandidate(
+        IMaybePlainType? contextPlainType,
         TDeclaration declaration,
         IMaybeNonVoidPlainType? selfParameterPlainType,
         IEnumerable<IMaybeNonVoidPlainType> parameterPlainTypes,
         IMaybePlainType returnPlainType)
     {
+        ContextPlainType = contextPlainType;
+        Declaration = declaration;
         SelfParameterPlainType = selfParameterPlainType;
         ParameterPlainTypes = parameterPlainTypes.ToFixedList();
         ReturnPlainType = returnPlainType;
-        Declaration = declaration;
     }
 
     public bool CompatibleWith(ArgumentPlainTypes arguments)
@@ -41,6 +45,25 @@ public sealed class CallCandidate<TDeclaration>
 
         return ParameterPlainTypes.EquiZip(arguments.Arguments).All((p, a) => a.IsAssignableTo(p));
     }
+
+    #region Equality
+    public bool Equals(CallCandidate<TDeclaration>? other)
+    {
+        if (other is null) return false;
+        if (ReferenceEquals(this, other)) return true;
+        return Equals(ContextPlainType, other.ContextPlainType)
+               && Declaration.Equals(other.Declaration)
+               && Equals(SelfParameterPlainType, other.SelfParameterPlainType)
+               && ParameterPlainTypes.Equals(other.ParameterPlainTypes)
+               && ReturnPlainType.Equals(other.ReturnPlainType);
+    }
+
+    public override bool Equals(object? obj)
+        => ReferenceEquals(this, obj) || obj is CallCandidate<TDeclaration> other && Equals(other);
+
+    public override int GetHashCode()
+        => HashCode.Combine(ContextPlainType, Declaration, SelfParameterPlainType, ParameterPlainTypes, ReturnPlainType);
+    #endregion
 }
 
 internal static class CallCandidate
@@ -50,7 +73,7 @@ internal static class CallCandidate
     {
         var parameterPlainTypes = function.ParameterPlainTypes;
         var returnPlainType = function.ReturnPlainType;
-        return new(function, null, parameterPlainTypes, returnPlainType);
+        return new(null, function, null, parameterPlainTypes, returnPlainType);
     }
 
     public static CallCandidate<IConstructorDeclarationNode> Create(
@@ -77,7 +100,7 @@ internal static class CallCandidate
         selfParameterPlainType = SelfParameterPlainType(contextPlainType, selfParameterPlainType);
         var parameterPlainTypes = ParameterPlainTypes(contextPlainType, declaration);
         var returnPlainType = ReturnPlainType(contextPlainType, declaration);
-        return new(declaration, selfParameterPlainType, parameterPlainTypes, returnPlainType);
+        return new(contextPlainType, declaration, selfParameterPlainType, parameterPlainTypes, returnPlainType);
     }
 
     private static IMaybeNonVoidPlainType SelfParameterPlainType(

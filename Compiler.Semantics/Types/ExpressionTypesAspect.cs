@@ -295,6 +295,8 @@ internal static partial class ExpressionTypesAspect
 
     public static partial IMaybeType FieldAccessExpression_Type(IFieldAccessExpressionNode node)
     {
+        // TODO this ought to just be `node.Context.Type` and Pseudotype should be removed. But,
+        // flow typing doesn't handle capability sets correctly right now
         var contextType = node.Context is ISelfExpressionNode selfNode
             ? selfNode.Pseudotype : node.Context.Type;
         var fieldType = node.ReferencedDeclaration.BindingType;
