@@ -1,3 +1,4 @@
+using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using ExhaustiveMatching;
 
@@ -22,11 +23,11 @@ public static partial class TypeOperations
     public static bool CanBeLent(this IMaybeType type)
         => type switch
         {
-            CapabilityType t => t.Capability.CanBeLent() || t.ArgumentsCanBeLent(),
+            CapabilityType t => t.Capability.CanBeLent() || t.BareType.ArgumentsCanBeLent(),
             OptionalType t => t.Referent.CanBeLent(),
             CapabilityViewpointType t => t.Capability.CanBeLent() && t.Referent.CanBeLent(),
             SelfViewpointType t => t.CapabilitySet.CanBeLent() && t.Referent.CanBeLent(),
-            CapabilitySetSelfType t => t.CapabilitySet.CanBeLent(),
+            CapabilitySetSelfType t => t.CapabilitySet.CanBeLent() || t.BareType.ArgumentsCanBeLent(),
             GenericParameterType _ => true,
             VoidType _ => false,
             NeverType _ => false,
@@ -39,13 +40,14 @@ public static partial class TypeOperations
         => (arg.Parameter.HasIndependence && arg.Argument.CanBeLent())
            || arg.Argument.ArgumentsCanBeLent();
 
-    public static bool ArgumentsCanBeLent(this CapabilityType type)
-        => type.HasIndependentTypeArguments && type.TypeParameterArguments.Any(a => a.CanBeLent());
+    public static bool ArgumentsCanBeLent(this BareType type)
+        => (type.HasIndependentTypeArguments && type.TypeParameterArguments.Any(a => a.CanBeLent()))
+           || (type.ContainingType?.ArgumentsCanBeLent() ?? false);
 
     public static bool ArgumentsCanBeLent(this Type type)
         => type switch
         {
-            CapabilityType t => t.ArgumentsCanBeLent(),
+            CapabilityType t => t.BareType.ArgumentsCanBeLent(),
             OptionalType t => t.Referent.ArgumentsCanBeLent(),
             CapabilityViewpointType _ => false,
             // TODO is it right that the capability must be lendable? If so, explain why
