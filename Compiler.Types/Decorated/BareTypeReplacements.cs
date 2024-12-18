@@ -10,13 +10,13 @@ public sealed class BareTypeReplacements
 {
     public static readonly BareTypeReplacements None = new();
 
+    // TODO directly use self type replacements instead?
     private readonly PlainTypeReplacements plainTypeReplacements;
-    private readonly Dictionary<GenericParameterType, Type> replacements;
+    private readonly Dictionary<GenericParameterType, Type> replacements = new();
 
     private BareTypeReplacements()
     {
         plainTypeReplacements = PlainTypeReplacements.None;
-        replacements = new();
     }
 
     /// <summary>
@@ -26,8 +26,15 @@ public sealed class BareTypeReplacements
     internal BareTypeReplacements(BareType bareSelfType)
     {
         plainTypeReplacements = bareSelfType.PlainType.TypeReplacements;
-        replacements = bareSelfType.TypeConstructor.ParameterTypes.EquiZip(bareSelfType.Arguments)
-                                   .ToDictionary(t => t.Item1, t => t.Item2);
+        AddReplacements(bareSelfType);
+    }
+
+    private void AddReplacements(BareType bareType)
+    {
+        if (bareType.ContainingType is { } containingType)
+            AddReplacements(containingType);
+        foreach (var (parameter, arg) in bareType.TypeConstructor.ParameterTypes.EquiZip(bareType.Arguments))
+            replacements.Add(parameter, arg);
     }
 
     public IMaybeType Apply(IMaybeType type)

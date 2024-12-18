@@ -1,5 +1,4 @@
 using System.Diagnostics.CodeAnalysis;
-using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 
@@ -9,21 +8,25 @@ public sealed class PlainTypeReplacements
 {
     public static readonly PlainTypeReplacements None = new();
 
-    private readonly Dictionary<GenericParameterPlainType, PlainType> replacements;
+    private readonly Dictionary<GenericParameterPlainType, PlainType> replacements = new();
 
-    private PlainTypeReplacements()
-    {
-        replacements = new();
-    }
+    private PlainTypeReplacements() { }
 
     /// <summary>
     /// Build a dictionary of type replacements. Generic parameter types of both this type and the
     /// supertypes can be replaced with type arguments of this type.
     /// </summary>
-    public PlainTypeReplacements(TypeConstructor typeConstructor, IFixedList<PlainType> typeArguments)
+    public PlainTypeReplacements(ConstructedPlainType selfPlainType)
     {
-        replacements = typeConstructor.ParameterPlainTypes.EquiZip(typeArguments)
-                                   .ToDictionary(t => t.Item1, t => t.Item2);
+        AddReplacements(selfPlainType);
+    }
+
+    private void AddReplacements(ConstructedPlainType plainType)
+    {
+        if (plainType.ContainingType is { } containingType)
+            AddReplacements(containingType);
+        foreach (var (parameter, arg) in plainType.TypeConstructor.ParameterPlainTypes.EquiZip(plainType.Arguments))
+            replacements.Add(parameter, arg);
     }
 
     public IMaybePlainType Apply(IMaybePlainType plainType)

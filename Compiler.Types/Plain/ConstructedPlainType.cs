@@ -17,8 +17,14 @@ public sealed class ConstructedPlainType : NonVoidPlainType
     public TypeName Name => TypeConstructor.Name;
     public bool AllowsVariance => TypeConstructor.AllowsVariance;
     public IFixedList<PlainType> Arguments { get; }
-    public IFixedSet<ConstructedPlainType> Supertypes { get; }
-    public override PlainTypeReplacements TypeReplacements { get; }
+    public IFixedSet<ConstructedPlainType> Supertypes
+        => Lazy.Initialize(ref supertypes, TypeConstructor, TypeReplacements,
+            static (typeConstructor, replacements)
+                => typeConstructor.Supertypes.Select(s => replacements.Apply(s.PlainType)).ToFixedSet());
+    private IFixedSet<ConstructedPlainType>? supertypes;
+    public override PlainTypeReplacements TypeReplacements
+        => Lazy.Initialize(ref typeReplacements, this, static plainType => new(plainType));
+    private PlainTypeReplacements? typeReplacements;
 
     public ConstructedPlainType(
         TypeConstructor typeConstructor,
@@ -34,10 +40,6 @@ public sealed class ConstructedPlainType : NonVoidPlainType
         Requires.That(TypeConstructor.Parameters.Count == Arguments.Count, nameof(typeArguments),
             $"Number of type arguments must match the type constructor. "
             + $"Given `[{string.Join(", ", Arguments)}]` for `{typeConstructor}`.");
-
-        TypeReplacements = new(TypeConstructor, Arguments);
-
-        Supertypes = typeConstructor.Supertypes.Select(s => TypeReplacements.Apply(s.PlainType)).ToFixedSet();
     }
 
     public override ConstructedPlainType? TryToNonLiteral()
