@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 
 namespace Azoth.Tools.Bootstrap.Lab.Config;
 
@@ -19,8 +20,12 @@ internal class ProjectConfigSet : IEnumerable<ProjectConfig>
             return existingConfig;
 
         configs.Add(config.Name ?? throw new InvalidOperationException(), config);
+        var configDir = Path.GetDirectoryName(config.FullPath!)!;
         foreach (var dependency in config.Dependencies ?? throw new InvalidOperationException())
-            Load(dependency.Value?.Path ?? throw new InvalidOperationException());
+        {
+            var dependencyPath = dependency.Value?.Path ?? throw new InvalidOperationException();
+            Load(Path.Combine(configDir, dependencyPath));
+        }
 
         return config;
     }
