@@ -15,7 +15,7 @@ internal class ProjectConfigSet : IEnumerable<ProjectConfig>
     public ProjectConfig Load(string packagePath)
     {
         var config = ProjectConfig.Load(packagePath);
-        if (configs.TryGetValue(config.FullPath ?? throw new InvalidOperationException(), out var existingConfig))
+        if (configs.TryGetValue(config.Name ?? throw new InvalidOperationException(), out var existingConfig))
             return existingConfig;
 
         configs.Add(config.Name ?? throw new InvalidOperationException(), config);
