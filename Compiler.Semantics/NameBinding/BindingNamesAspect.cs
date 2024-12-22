@@ -2,7 +2,6 @@ using System;
 using System.Diagnostics;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
-using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
@@ -30,6 +29,7 @@ internal static partial class BindingNamesAspect
     #region Types
     public static partial ITypeDeclarationNode? StandardTypeName_ReferencedDeclaration(IStandardTypeNameNode node)
     {
+        // TODO this prefers the non-suffixed name. Maybe it should be the other way around to avoid conflict
         var symbolNode = LookupDeclarations(node).TrySingle();
         if (node.IsAttributeType) symbolNode ??= LookupDeclarations(node, withAttributeSuffix: true).TrySingle();
         return symbolNode;
@@ -59,7 +59,7 @@ internal static partial class BindingNamesAspect
         IStandardTypeNameNode node,
         bool withAttributeSuffix = false)
     {
-        var name = withAttributeSuffix ? node.Name + SpecialNames.AttributeSuffix : node.Name;
+        var name = withAttributeSuffix ? node.Name.WithAttributeSuffix() : node.Name;
         return node.ContainingLexicalScope.Lookup(name).OfType<ITypeDeclarationNode>().ToFixedSet();
     }
 
