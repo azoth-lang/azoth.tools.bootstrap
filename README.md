@@ -2,7 +2,7 @@
 
 A bootstrap compiler for the [Azoth language](http://azoth-lang.org). That is, a compiler for a
 subset of the language that will be used to write the Azoth compiler in Azoth. The compiler
-currently compiles a small subset of the Azoth language to C.
+currently runs as a tree interpreter.
 
 ## Project Status: Alpha Active
 
