@@ -70,7 +70,7 @@ public sealed class CapabilityType : NonVoidType
     // not provide enough information to properly determine what to upcast to).
     public CapabilityType UpcastTo(TypeConstructor target)
     {
-        if (TypeConstructor?.Equals(target) ?? false) return this;
+        if (TypeConstructor.Equals(target)) return this;
 
         // TODO this will fail if the type implements the target type in multiple ways.
         var supertype = TypeConstructor?.Supertypes.Where(s => s.TypeConstructor.Equals(target)).TrySingle();

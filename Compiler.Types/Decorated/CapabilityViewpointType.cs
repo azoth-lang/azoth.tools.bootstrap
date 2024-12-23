@@ -12,8 +12,7 @@ public sealed class CapabilityViewpointType : NonVoidType
         {
             GenericParameterType t => Create(capability, t),
             // In an error case, don't actually make a capability type.
-            // TODO doesn't this need to combine the capabilities? (th
-            _ => referent,
+            _ => referent.AccessedVia(capability),
         };
 
     public static NonVoidType Create(Capability capability, GenericParameterType referent)
