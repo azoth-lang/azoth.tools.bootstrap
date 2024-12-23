@@ -76,7 +76,7 @@ public interface IFlowState : IEquatable<IFlowState>
     IEnumerable<ValueId> CombineDisallowedDueToLent(ValueId left, ValueId? right);
     IFlowState FreezeVariable(ValueId bindingId, IMaybeType bindingType, ValueId id, ValueId intoValueId);
     IFlowState FreezeValue(ValueId id, ValueId intoValueId);
-    IFlowState MoveVariable(IBindingNode? binding, ValueId valueId, ValueId intoValueId);
+    IFlowState MoveVariable(ValueId bindingId, IMaybeType bindingType, ValueId valueId, ValueId intoValueId);
     IFlowState MoveValue(ValueId valueId, ValueId intoValueId);
     IFlowState TempFreeze(ValueId valueId, ValueId intoValueId);
     IFlowState TempMove(ValueId valueId, ValueId intoValueId);

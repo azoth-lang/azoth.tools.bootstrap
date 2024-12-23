@@ -575,13 +575,15 @@ internal sealed class FlowState : IFlowState
         return builder.ToImmutable();
     }
 
-    public IFlowState MoveVariable(IBindingNode? binding, ValueId valueId, ValueId intoValueId)
-        => Move(binding, valueId, intoValueId);
+    public IFlowState MoveVariable(ValueId bindingId, IMaybeType bindingType, ValueId valueId, ValueId intoValueId)
+        => Move(BindingValue.ForType(bindingId, bindingType)
+                           .Where(p => p.Value.Original.SharingIsTracked())
+                           .Select(p => p.Key), valueId, intoValueId);
 
     public IFlowState MoveValue(ValueId valueId, ValueId intoValueId)
-        => Move(null, valueId, intoValueId);
+        => Move([], valueId, intoValueId);
 
-    private FlowState Move(IBindingNode? binding, ValueId valueId, ValueId intoValueId)
+    private FlowState Move(IEnumerable<BindingValue> bindingValues, ValueId valueId, ValueId intoValueId)
     {
         var builder = ToBuilder();
         var valueMap = LegacyAliasValueMapping(valueId, intoValueId);
@@ -593,19 +595,9 @@ internal sealed class FlowState : IFlowState
                 builder.AddUntracked(newValue);
         }
 
-        if (binding is not null)
-        {
-            var bindingValues = BindingValue
-                                .ForType(binding.BindingValueId, (CapabilityType)binding.BindingType.ToUpperBound())
-                                .Where(p => p.Value.Original.SharingIsTracked())
-                                .Select(p => p.Key);
-            foreach (var bindingValue in bindingValues)
-                // TODO these are now `id`, doesn't that mean they no longer need tracked?
-                builder.UpdateCapability(bindingValue, c => c.AfterMove());
-
-            // Old binding values are now `id` and no longer need tracked
-            //builder.Remove(binding.ValueId);
-        }
+        foreach (var bindingValue in bindingValues)
+            // TODO these are now `id`, doesn't that mean they no longer need tracked?
+            builder.UpdateCapability(bindingValue, c => c.AfterMove());
 
         builder.AddValueId(intoValueId, valueMap.Values);
         builder.Remove(valueId);

@@ -78,4 +78,9 @@ internal static class FlowStateExtensions
         => binding is null
             ? self.FreezeValue(id, intoValueId)
             : self.FreezeVariable(binding.BindingValueId, binding.BindingType, id, intoValueId);
+
+    public static IFlowState MoveVariable(this IFlowState self, IBindingNode? binding, ValueId valueId, ValueId intoValueId)
+        => binding is null
+            ? self.MoveValue(valueId, intoValueId)
+            : self.MoveVariable(binding.BindingValueId, binding.BindingType, valueId, intoValueId);
 }
