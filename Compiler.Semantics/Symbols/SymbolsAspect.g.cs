@@ -37,5 +37,5 @@ internal static partial class SymbolsAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IPackageSymbols Package_PackageSymbols(IPackageNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial ConstructorSymbol? Attribute_ReferencedSymbol(IAttributeNode node);
+    public static partial InvocableSymbol? Attribute_ReferencedSymbol(IAttributeNode node);
 }

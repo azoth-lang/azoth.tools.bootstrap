@@ -1107,7 +1107,7 @@ public partial interface IAttributeNode : ICodeNode
     ICodeSyntax ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     IStandardTypeNameNode TypeName { get; }
-    ConstructorSymbol? ReferencedSymbol { get; }
+    InvocableSymbol? ReferencedSymbol { get; }
 
     public static IAttributeNode Create(
         IAttributeSyntax syntax,
@@ -7776,11 +7776,11 @@ file class AttributeNode : SemanticNode, IAttributeNode
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
-    public ConstructorSymbol? ReferencedSymbol
+    public InvocableSymbol? ReferencedSymbol
         => GrammarAttribute.IsCached(in referencedSymbolCached) ? referencedSymbol
             : this.Synthetic(ref referencedSymbolCached, ref referencedSymbol,
                 SymbolsAspect.Attribute_ReferencedSymbol);
-    private ConstructorSymbol? referencedSymbol;
+    private InvocableSymbol? referencedSymbol;
     private bool referencedSymbolCached;
 
     public AttributeNode(

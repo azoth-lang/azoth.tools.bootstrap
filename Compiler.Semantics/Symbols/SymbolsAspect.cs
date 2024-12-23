@@ -90,21 +90,27 @@ internal static partial class SymbolsAspect
             return null;
         return new(node.ContainingSymbol, node.Name, type);
     }
-
     #endregion
 
     #region Attributes
     // TODO eliminate ReferencedSymbol because ReferencedDeclaration should be used instead
-    public static partial ConstructorSymbol? Attribute_ReferencedSymbol(IAttributeNode node)
+    public static partial InvocableSymbol? Attribute_ReferencedSymbol(IAttributeNode node)
     {
         var referencedTypeSymbolNode = node.TypeName.ReferencedDeclaration;
         if (referencedTypeSymbolNode is not IUserTypeDeclarationNode userTypeSymbolNode)
             return null;
 
-        return userTypeSymbolNode.Members.OfType<IConstructorDeclarationNode>()
-                                 .Where(c => c.ParameterTypes.IsEmpty)
-                                 .Select(c => c.Symbol)
-                                 .SingleOrDefault();
+        // TODO there should be a cleaner way to do this
+        InvocableSymbol? symbol = userTypeSymbolNode.InclusiveMembers
+                                                    .OfType<IConstructorDeclarationNode>()
+                                                    .Where(c => c.ParameterTypes.IsEmpty)
+                                                    .Select(c => c.Symbol)
+                                                    .SingleOrDefault();
+        symbol ??= userTypeSymbolNode.InclusiveMembers.OfType<IInitializerDeclarationNode>()
+                                     .Where(c => c.ParameterTypes.IsEmpty)
+                                     .Select(c => c.Symbol)
+                                     .SingleOrDefault();
+        return symbol;
     }
     #endregion
 }
