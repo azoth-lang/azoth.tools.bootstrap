@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
+using Azoth.Tools.Bootstrap.Compiler.Types.Flow;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 

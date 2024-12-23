@@ -1,9 +1,7 @@
-using System;
-using System.Collections.Generic;
 using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 using Azoth.Tools.Bootstrap.Framework;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow.Sharing;
+namespace Azoth.Tools.Bootstrap.Compiler.Types.Flow.Sharing;
 
 /// <summary>
 /// A <see cref="IValue"/> that has its capability affected by flow typing and sharing.

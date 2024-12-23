@@ -1,4 +1,4 @@
-namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
+namespace Azoth.Tools.Bootstrap.Compiler.Types.Flow;
 
 public enum CapabilityRestrictions
 {

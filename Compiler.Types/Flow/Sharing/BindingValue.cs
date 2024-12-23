@@ -1,10 +1,8 @@
-using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow.Sharing;
+namespace Azoth.Tools.Bootstrap.Compiler.Types.Flow.Sharing;
 
 /// <summary>
 /// A value for a binding (i.e. a variable, parameter, or field).

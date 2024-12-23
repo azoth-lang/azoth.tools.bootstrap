@@ -1,8 +1,7 @@
-using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow.Sharing;
+namespace Azoth.Tools.Bootstrap.Compiler.Types.Flow.Sharing;
 
 /// <summary>
 /// Represents the possibility that there are external references to parameters of a method.

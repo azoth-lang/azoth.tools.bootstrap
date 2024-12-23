@@ -1,8 +1,7 @@
-using System;
 using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow.Sharing;
+namespace Azoth.Tools.Bootstrap.Compiler.Types.Flow.Sharing;
 
 [DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
 public sealed class TempConversionTo : IConversion

@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
+namespace Azoth.Tools.Bootstrap.Compiler.Types.Flow;
 
 [DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
 [StructLayout(LayoutKind.Auto)]

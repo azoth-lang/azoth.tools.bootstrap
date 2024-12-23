@@ -1,8 +1,6 @@
-using System;
 using System.Runtime.CompilerServices;
-using System.Threading;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
+namespace Azoth.Tools.Bootstrap.Compiler.Types.Flow;
 
 /// <summary>
 /// A scope or space of value IDs.

@@ -1,6 +1,7 @@
 using System.CodeDom.Compiler;
 using System.Runtime.CompilerServices;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
+using Azoth.Tools.Bootstrap.Compiler.Types.Flow;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 
