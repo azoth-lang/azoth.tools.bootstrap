@@ -1,15 +1,10 @@
-using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Linq;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow.Sharing;
-using Azoth.Tools.Bootstrap.Compiler.Types.Flow;
 using Azoth.Tools.Bootstrap.Compiler.Types.Flow.Sharing;
 using Azoth.Tools.Bootstrap.Framework.Collections;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
+namespace Azoth.Tools.Bootstrap.Compiler.Types.Flow;
 
-internal readonly struct SharingSetState : IMergeable<SharingSetState>, IEquatable<SharingSetState>
+public readonly struct SharingSetState : IMergeable<SharingSetState>, IEquatable<SharingSetState>
 {
     public bool IsLent { get; }
     public ImmutableHashSet<IConversion> Conversions { get; }

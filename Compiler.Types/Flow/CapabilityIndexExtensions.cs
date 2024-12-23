@@ -1,11 +1,8 @@
-using System;
-using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
-using Azoth.Tools.Bootstrap.Compiler.Types.Flow;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
+namespace Azoth.Tools.Bootstrap.Compiler.Types.Flow;
 
-internal static class CapabilityIndexExtensions
+public static class CapabilityIndexExtensions
 {
     // TODO this does not properly handle optional types and should probably be replaced with TypeAt
     public static CapabilityType ArgumentAt(this CapabilityType type, CapabilityIndex index)

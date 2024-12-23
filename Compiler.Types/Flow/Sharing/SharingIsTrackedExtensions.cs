@@ -1,7 +1,7 @@
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow.Sharing;
+namespace Azoth.Tools.Bootstrap.Compiler.Types.Flow.Sharing;
 
 public static class SharingIsTrackedExtensions
 {
