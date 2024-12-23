@@ -8,6 +8,7 @@ using Azoth.Tools.Bootstrap.Compiler.Syntax;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
+using Azoth.Tools.Bootstrap.Compiler.Types.Flow;
 using ExhaustiveMatching;
 using Type = Azoth.Tools.Bootstrap.Compiler.Types.Decorated.Type;
 

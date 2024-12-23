@@ -1,10 +1,7 @@
-using System;
-using System.Collections.Generic;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
-using Azoth.Tools.Bootstrap.Compiler.Types.Flow;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
+namespace Azoth.Tools.Bootstrap.Compiler.Types.Flow;
 
 /// <summary>
 /// Wraps up all the state that changes with the flow of the code to make it easy to attach to each

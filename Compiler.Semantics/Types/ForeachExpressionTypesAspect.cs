@@ -2,6 +2,7 @@ using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
+using Azoth.Tools.Bootstrap.Compiler.Types.Flow;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 

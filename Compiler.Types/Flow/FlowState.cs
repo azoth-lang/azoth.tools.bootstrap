@@ -1,18 +1,14 @@
-using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
-using Azoth.Tools.Bootstrap.Compiler.Types.Flow;
 using Azoth.Tools.Bootstrap.Compiler.Types.Flow.Sharing;
 using Azoth.Tools.Bootstrap.Framework;
 using Azoth.Tools.Bootstrap.Framework.Collections;
 using DotNet.Collections.Generic;
 using InlineMethod;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
+namespace Azoth.Tools.Bootstrap.Compiler.Types.Flow;
 
 internal sealed class FlowState : IFlowState
 {
@@ -256,10 +252,6 @@ internal sealed class FlowState : IFlowState
         // TODO what about independent parameters?
         return ((CapabilityType)declaredType).With(transform(current));
     }
-
-    public bool IsIsolated(IBindingNode? binding)
-        // TODO what about independent parameters?
-        => binding is null || IsIsolated(values.Sets.TrySetFor(BindingValue.CreateTopLevel(binding.BindingValueId)));
 
     public bool IsIsolated(ValueId valueId)
         // TODO what about independent parameters?

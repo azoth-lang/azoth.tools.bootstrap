@@ -57,6 +57,10 @@ internal static class FlowStateExtensions
         return self.AliasType(binding.BindingValueId, binding.BindingType);
     }
 
+    public static bool IsIsolated(this IFlowState self, IBindingNode? binding)
+        // TODO what about independent parameters?
+        => binding is null || self.IsIsolated(binding.BindingValueId);
+
     public static bool IsIsolatedExceptFor(this IFlowState self, IBindingNode? binding, ValueId exceptForId)
         => binding is null || self.IsIsolatedExceptFor(binding.BindingValueId, exceptForId);
 
