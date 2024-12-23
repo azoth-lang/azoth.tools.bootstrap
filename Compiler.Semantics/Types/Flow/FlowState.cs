@@ -252,12 +252,12 @@ internal sealed class FlowState : IFlowState
         if (binding is null) return Compiler.Types.Decorated.Type.Unknown;
         if (!binding.SharingIsTracked())
             // Other types don't have capabilities and don't need to be tracked
-            return binding.BindingType.ToUpperBound();
+            return binding.BindingType;
 
         var bindingValue = BindingValue.CreateTopLevel(binding);
         var current = values[bindingValue].Current;
         // TODO what about independent parameters?
-        return ((CapabilityType)binding.BindingType.ToUpperBound()).With(transform(current));
+        return ((CapabilityType)binding.BindingType).With(transform(current));
     }
 
     public bool IsIsolated(IBindingNode? binding)
