@@ -80,7 +80,7 @@ public interface IFlowState : IEquatable<IFlowState>
     IFlowState MoveValue(ValueId valueId, ValueId intoValueId);
     IFlowState TempFreeze(ValueId valueId, ValueId intoValueId);
     IFlowState TempMove(ValueId valueId, ValueId intoValueId);
-    IFlowState DropBindings(IEnumerable<INamedBindingNode> bindings);
+    IFlowState DropBindings(IEnumerable<ValueId> bindingIds);
     IFlowState DropValue(ValueId valueId);
 
     /// <summary>

@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 using Azoth.Tools.Bootstrap.Compiler.Types.Flow;
@@ -83,4 +85,7 @@ internal static class FlowStateExtensions
         => binding is null
             ? self.MoveValue(valueId, intoValueId)
             : self.MoveVariable(binding.BindingValueId, binding.BindingType, valueId, intoValueId);
+
+    public static IFlowState DropBindings(this IFlowState self, IEnumerable<INamedBindingNode> bindings)
+        => self.DropBindings(bindings.Select(b => b.BindingValueId));
 }

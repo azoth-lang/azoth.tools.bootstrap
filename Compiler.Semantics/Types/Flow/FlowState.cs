@@ -637,10 +637,10 @@ internal sealed class FlowState : IFlowState
         return builder.ToImmutable();
     }
 
-    public IFlowState DropBindings(IEnumerable<INamedBindingNode> bindings)
+    public IFlowState DropBindings(IEnumerable<ValueId> bindingIds)
     {
         var builder = ToBuilder();
-        builder.Remove(bindings.Select(b => b.BindingValueId));
+        builder.Remove(bindingIds);
         return builder.ToImmutable();
     }
 
