@@ -295,10 +295,7 @@ internal static partial class ExpressionTypesAspect
 
     public static partial IMaybeType FieldAccessExpression_Type(IFieldAccessExpressionNode node)
     {
-        // TODO this ought to just be `node.Context.Type` and Pseudotype should be removed. But,
-        // flow typing doesn't handle capability sets correctly right now
-        var contextType = node.Context is ISelfExpressionNode selfNode
-            ? selfNode.Pseudotype : node.Context.Type;
+        var contextType = node.Context.Type;
         var fieldType = node.ReferencedDeclaration.BindingType;
         // Access must be applied first, so it can account for independent generic parameters.
         var type = fieldType.AccessedVia(contextType);
@@ -332,9 +329,6 @@ internal static partial class ExpressionTypesAspect
 
     public static partial IMaybeType SelfExpression_Type(ISelfExpressionNode node)
         => node.FlowStateAfter.AliasType(node.ReferencedDefinition);
-
-    public static partial IMaybeType SelfExpression_Pseudotype(ISelfExpressionNode node)
-        => node.ReferencedDefinition?.BindingType ?? Type.Unknown;
 
     public static partial IFlowState AmbiguousMemberAccessExpression_FlowStateAfter(IAmbiguousMemberAccessExpressionNode node)
         => node.Context.FlowStateAfter.Transform(node.Context.ValueId, node.ValueId, node.Type);

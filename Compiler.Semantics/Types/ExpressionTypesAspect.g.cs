@@ -188,8 +188,6 @@ internal static partial class ExpressionTypesAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IMaybeType SelfExpression_Type(ISelfExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IMaybeType SelfExpression_Pseudotype(ISelfExpressionNode node);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFlowState MoveVariableExpression_FlowStateAfter(IMoveVariableExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFlowState MoveValueExpression_FlowStateAfter(IMoveValueExpressionNode node);

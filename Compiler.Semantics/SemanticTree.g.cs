@@ -3256,7 +3256,6 @@ public partial interface ISelfExpressionNode : IInstanceExpressionNode, ILocalBi
     ISyntax? ISemanticNode.Syntax => Syntax;
     INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
     ISimpleNameSyntax IUnresolvedSimpleNameNode.Syntax => Syntax;
-    IMaybeType Pseudotype { get; }
     IExecutableDefinitionNode ContainingDeclaration { get; }
     bool IsImplicit
         => Syntax.IsImplicit;
@@ -16363,12 +16362,6 @@ file class SelfExpressionNode : SemanticNode, ISelfExpressionNode
                 ExpressionPlainTypesAspect.SelfExpression_PlainType);
     private IMaybePlainType? plainType;
     private bool plainTypeCached;
-    public IMaybeType Pseudotype
-        => GrammarAttribute.IsCached(in pseudotypeCached) ? pseudotype!
-            : this.Synthetic(ref pseudotypeCached, ref pseudotype,
-                ExpressionTypesAspect.SelfExpression_Pseudotype);
-    private IMaybeType? pseudotype;
-    private bool pseudotypeCached;
     public ISelfParameterNode? ReferencedDefinition
         => GrammarAttribute.IsCached(in referencedDefinitionCached) ? referencedDefinition
             : this.Synthetic(ref referencedDefinitionCached, ref referencedDefinition,

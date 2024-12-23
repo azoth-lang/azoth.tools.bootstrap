@@ -216,7 +216,6 @@
 = TypeNameExpression.Type => AzothType.Unknown;
 = InitializerGroupName.Type => throw new NotImplementedException();
 ↑ BuiltInTypeNameExpression.Type:`UnknownType` => AzothType.Unknown;
-↑ SelfExpression.Pseudotype: `IMaybeType`;
 = SelfExpression.FlowStateAfter;
 ↑ MissingNameExpression.Type: `UnknownType` => AzothType.Unknown;
 ↑ UnknownNameExpression.Type: `UnknownType` => AzothType.Unknown;
