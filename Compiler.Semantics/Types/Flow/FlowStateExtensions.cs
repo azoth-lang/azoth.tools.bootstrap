@@ -73,4 +73,9 @@ internal static class FlowStateExtensions
 
         return self.AccessField(contextId, contextType, declaringTypeConstructor, id, bindingType, memberType);
     }
+
+    public static IFlowState FreezeVariable(this IFlowState self, IBindingNode? binding, ValueId id, ValueId intoValueId)
+        => binding is null
+            ? self.FreezeValue(id, intoValueId)
+            : self.FreezeVariable(binding.BindingValueId, binding.BindingType, id, intoValueId);
 }

@@ -548,24 +548,19 @@ internal sealed class FlowState : IFlowState
         return CombineDisallowedDueToLent([left, right.Value]);
     }
 
-    public IFlowState FreezeVariable(IBindingNode? binding, ValueId valueId, ValueId intoValueId)
-        => Freeze(binding, valueId, intoValueId);
+    public IFlowState FreezeVariable(ValueId bindingId, IMaybeType bindingType, ValueId id, ValueId intoValueId)
+        => Freeze(BindingValue.ForType(bindingId, bindingType).Keys, id, intoValueId);
 
-    public IFlowState FreezeValue(ValueId valueId, ValueId intoValueId)
-        => Freeze(null, valueId, intoValueId);
+    public IFlowState FreezeValue(ValueId id, ValueId intoValueId)
+        => Freeze([], id, intoValueId);
 
-    private FlowState Freeze(IBindingNode? binding, ValueId valueId, ValueId intoValueId)
+    private FlowState Freeze(IEnumerable<BindingValue> bindingValues, ValueId id, ValueId intoValueId)
     {
         var builder = ToBuilder();
-        if (binding is not null)
-        {
-            var bindingValuePairs
-                = BindingValue.ForType(binding.BindingValueId, (CapabilityType)binding.BindingType.ToUpperBound());
-            foreach (var bindingValue in bindingValuePairs.Keys)
-                builder.UpdateCapability(bindingValue, c => c.AfterFreeze());
-        }
+        foreach (var bindingValue in bindingValues)
+            builder.UpdateCapability(bindingValue, c => c.AfterFreeze());
 
-        var valueMap = LegacyAliasValueMapping(valueId, intoValueId);
+        var valueMap = LegacyAliasValueMapping(id, intoValueId);
         foreach (var (oldValue, newValue) in valueMap)
         {
             // If the value could reference `temp const` data, then it needs to be tracked. (However,
@@ -575,7 +570,7 @@ internal sealed class FlowState : IFlowState
         }
 
         builder.AddValueId(intoValueId, valueMap.Values);
-        builder.Remove(valueId);
+        builder.Remove(id);
 
         return builder.ToImmutable();
     }
