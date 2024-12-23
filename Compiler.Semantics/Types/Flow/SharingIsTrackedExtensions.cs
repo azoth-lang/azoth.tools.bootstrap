@@ -1,4 +1,6 @@
-namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow.Sharing;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow.Sharing;
+
+namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 
 public static class SharingIsTrackedExtensions
 {
