@@ -10,7 +10,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow.Sharing;
 /// A value for a binding (i.e. a variable, parameter, or field).
 /// </summary>
 [DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
-internal sealed class BindingValue : ICapabilityValue
+public sealed class BindingValue : ICapabilityValue
 {
     #region Cache
     private static readonly ConcurrentDictionary<ulong, BindingValue> TopLevelCache = new();
@@ -21,8 +21,8 @@ internal sealed class BindingValue : ICapabilityValue
     public static BindingValue Create(ValueId id, CapabilityIndex index)
         => index.IsTopLevel ? TopLevelCache.GetOrAdd(id.Value, TopLevelFactory) : new(id.Value, index);
 
-    public static BindingValue CreateTopLevel(IBindingNode node)
-        => TopLevelCache.GetOrAdd(node.BindingValueId.Value, TopLevelFactory);
+    public static BindingValue CreateTopLevel(ValueId id)
+        => TopLevelCache.GetOrAdd(id.Value, TopLevelFactory);
 
     public static IReadOnlyDictionary<BindingValue, FlowCapability> ForType(ValueId id, IMaybeType type)
         => ICapabilityValue.ForType(id, type, Create);

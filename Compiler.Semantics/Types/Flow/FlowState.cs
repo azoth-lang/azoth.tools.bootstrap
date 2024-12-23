@@ -254,7 +254,7 @@ internal sealed class FlowState : IFlowState
             // Other types don't have capabilities and don't need to be tracked
             return binding.BindingType;
 
-        var bindingValue = BindingValue.CreateTopLevel(binding);
+        var bindingValue = BindingValue.CreateTopLevel(binding.BindingValueId);
         var current = values[bindingValue].Current;
         // TODO what about independent parameters?
         return ((CapabilityType)binding.BindingType).With(transform(current));
@@ -262,7 +262,7 @@ internal sealed class FlowState : IFlowState
 
     public bool IsIsolated(IBindingNode? binding)
         // TODO what about independent parameters?
-        => binding is null || IsIsolated(values.Sets.TrySetFor(BindingValue.CreateTopLevel(binding)));
+        => binding is null || IsIsolated(values.Sets.TrySetFor(BindingValue.CreateTopLevel(binding.BindingValueId)));
 
     public bool IsIsolated(ValueId valueId)
         // TODO what about independent parameters?
@@ -274,7 +274,7 @@ internal sealed class FlowState : IFlowState
     public bool IsIsolatedExceptFor(IBindingNode? binding, ValueId? valueId)
     {
         return binding is null || (valueId is ValueId v
-            ? IsIsolatedExceptFor(values.Sets.TrySetFor(BindingValue.CreateTopLevel(binding)), CapabilityValue.CreateTopLevel(v))
+            ? IsIsolatedExceptFor(values.Sets.TrySetFor(BindingValue.CreateTopLevel(binding.BindingValueId)), CapabilityValue.CreateTopLevel(v))
             : IsIsolated(binding));
     }
 
@@ -285,7 +285,7 @@ internal sealed class FlowState : IFlowState
     {
         if (binding is null) return true;
         // TODO what about independent parameters?
-        var bindingValue = BindingValue.CreateTopLevel(binding);
+        var bindingValue = BindingValue.CreateTopLevel(binding.BindingValueId);
         var set = values.Sets.TrySetFor(bindingValue);
         if (set is null) return false;
         if (IsIsolated(set)) return true;

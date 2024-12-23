@@ -5,7 +5,7 @@ using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow.Sharing;
 
 [DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
-internal sealed class TempConversionTo : IConversion
+public sealed class TempConversionTo : IConversion
 {
     public static TempConversionTo Constant(ValueId id) => new(id, Capability.TemporarilyConstant);
     public static TempConversionTo Isolated(ValueId id) => new(id, Capability.TemporarilyIsolated);
@@ -41,5 +41,4 @@ internal sealed class TempConversionTo : IConversion
     #endregion
 
     public override string ToString() => $"⧼to{Number}⧽";
-
 }

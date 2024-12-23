@@ -5,7 +5,7 @@ using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow.Sharing;
 
 [DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
-internal sealed class TempConversionFrom : IConversion
+public sealed class TempConversionFrom : IConversion
 {
     private readonly TempConversionTo to;
     public ulong Number => to.Number;

@@ -3,7 +3,7 @@ using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow.Sharing;
 
-internal static class SharingIsTrackedExtensions
+public static class SharingIsTrackedExtensions
 {
     public static bool SharingIsTracked(this IBindingNode node)
     {

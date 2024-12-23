@@ -8,7 +8,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow.Sharing;
 /// Represents the possibility that there are external references to parameters of a method.
 /// </summary>
 [DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
-internal sealed class ExternalReference : IValue
+public sealed class ExternalReference : IValue
 {
     #region Cache
     private static readonly ConcurrentDictionary<BindingValue, ExternalReference> Cache = new();

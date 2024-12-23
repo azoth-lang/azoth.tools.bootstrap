@@ -5,7 +5,7 @@ using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow.Sharing;
 
-internal sealed class CapabilityValue : ICapabilityValue
+public sealed class CapabilityValue : ICapabilityValue
 {
     #region Cache
     private static readonly ConcurrentDictionary<ulong, CapabilityValue> TopLevelCache = new();
