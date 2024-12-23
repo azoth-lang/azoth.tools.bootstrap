@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
@@ -136,17 +135,11 @@ internal sealed class FlowState : IFlowState
     }
     #endregion
 
-    public IFlowState Declare(INamedParameterNode parameter)
-        => Declare(parameter, parameter.IsLentBinding);
-
-    public IFlowState Declare(ISelfParameterNode parameter)
-        => Declare(parameter, parameter.IsLentBinding);
-
-    private FlowState Declare(IParameterNode parameter, bool isLent)
+    public IFlowState DeclareParameter(bool isLent, ValueId id, IMaybeType type)
     {
         var builder = ToBuilder();
-        var bindingValuePairs = BindingValue.ForType(parameter.BindingValueId, parameter.BindingType);
-        builder.AddValueId(parameter.BindingValueId, bindingValuePairs.Keys);
+        var bindingValuePairs = BindingValue.ForType(id, type);
+        builder.AddValueId(id, bindingValuePairs.Keys);
         foreach (var (value, flowCapability) in bindingValuePairs)
         {
             var capability = flowCapability.Original;
@@ -170,11 +163,11 @@ internal sealed class FlowState : IFlowState
         return builder.ToImmutable();
     }
 
-    public IFlowState Declare(INamedBindingNode binding, ValueId? initializerValueId)
+    public IFlowState DeclareVariable(ValueId id, IMaybeNonVoidType type, ValueId? initializerId)
     {
         var builder = ToBuilder();
-        var bindingValuePairs = BindingValue.ForType(binding.BindingValueId, binding.BindingType);
-        builder.AddValueId(binding.BindingValueId, bindingValuePairs.Keys);
+        var bindingValuePairs = BindingValue.ForType(id, type);
+        builder.AddValueId(id, bindingValuePairs.Keys);
         foreach (var (value, flowCapability) in bindingValuePairs)
         {
             if (!flowCapability.Original.SharingIsTracked())
@@ -183,7 +176,7 @@ internal sealed class FlowState : IFlowState
                 continue;
             }
 
-            if (initializerValueId is ValueId valueId)
+            if (initializerId is ValueId valueId)
             {
                 // TODO this isn't correct. If the value is upcast there may not be a direct correspondence
                 var initializerValue = CapabilityValue.Create(valueId, value.Index);
@@ -200,8 +193,8 @@ internal sealed class FlowState : IFlowState
             builder.AddSet(false, value, flowCapability);
         }
 
-        if (initializerValueId is ValueId id)
-            builder.Remove(id);
+        if (initializerId is ValueId initializerValueId)
+            builder.Remove(initializerValueId);
 
         return builder.ToImmutable();
     }
@@ -215,15 +208,16 @@ internal sealed class FlowState : IFlowState
         return builder.ToImmutable();
     }
 
-    public IFlowState Alias(IBindingNode? binding, ValueId aliasValueId)
+    public IFlowState Alias(ValueId? id, ValueId aliasId)
     {
         // TODO maybe sharing should be tracked even in this case? Or should it be treated as untracked?
-        if (binding is null) return this;
+        if (id is not { } valueId) return this;
 
         var builder = ToBuilder();
         // An alias has the same type (modulo aliasing) as the original value and as such the same
         // capability values. Thus, we can simply map the original values to the alias values.
-        var valueMap = LegacyAliasValueMapping(binding.BindingValueId, aliasValueId);
+
+        var valueMap = LegacyAliasValueMapping(valueId, aliasId);
         foreach (var (bindingValue, aliasValue) in valueMap)
         {
             // Aliases match the tracking of the original value
@@ -240,26 +234,27 @@ internal sealed class FlowState : IFlowState
                 builder.UpdateCapability(bindingValue, c => c.WhenAliased());
             }
         }
-        builder.AddValueId(aliasValueId, valueMap.Values);
+        builder.AddValueId(aliasId, valueMap.Values);
 
         return builder.ToImmutable();
     }
 
-    public IMaybeType Type(IBindingNode? binding) => Type(binding, Functions.Identity);
+    public IMaybeType Type(ValueId id, IMaybeType declaredType)
+        => Type(id, declaredType, Functions.Identity);
 
-    public IMaybeType AliasType(IBindingNode? binding) => Type(binding, c => c.OfAlias());
+    public IMaybeType AliasType(ValueId id, IMaybeType declaredType)
+        => Type(id, declaredType, c => c.OfAlias());
 
-    private IMaybeType Type(IBindingNode? binding, Func<Capability, Capability> transform)
+    private IMaybeType Type(ValueId id, IMaybeType declaredType, Func<Capability, Capability> transform)
     {
-        if (binding is null) return Compiler.Types.Decorated.Type.Unknown;
-        if (!binding.SharingIsTracked())
+        if (!declaredType.SharingIsTracked())
             // Other types don't have capabilities and don't need to be tracked
-            return binding.BindingType;
+            return declaredType;
 
-        var bindingValue = BindingValue.CreateTopLevel(binding.BindingValueId);
+        var bindingValue = BindingValue.CreateTopLevel(id);
         var current = values[bindingValue].Current;
         // TODO what about independent parameters?
-        return ((CapabilityType)binding.BindingType).With(transform(current));
+        return ((CapabilityType)declaredType).With(transform(current));
     }
 
     public bool IsIsolated(IBindingNode? binding)
@@ -273,26 +268,22 @@ internal sealed class FlowState : IFlowState
     private static bool IsIsolated(IImmutableDisjointSet<IValue, SharingSetState>? set)
         => set?.Count == 1;
 
-    public bool IsIsolatedExceptFor(IBindingNode? binding, ValueId? valueId)
-    {
-        return binding is null || (valueId is ValueId v
-            ? IsIsolatedExceptFor(values.Sets.TrySetFor(BindingValue.CreateTopLevel(binding.BindingValueId)), CapabilityValue.CreateTopLevel(v))
-            : IsIsolated(binding));
-    }
+
+    public bool IsIsolatedExceptFor(ValueId id, ValueId exceptForId)
+        => IsIsolatedExceptFor(values.Sets.TrySetFor(BindingValue.CreateTopLevel(id)), CapabilityValue.CreateTopLevel(exceptForId));
 
     private static bool IsIsolatedExceptFor(IImmutableDisjointSet<IValue, SharingSetState>? set, IValue value)
         => set?.Count <= 2 && set.Except(value).Count() == 1;
 
-    public bool CanFreezeExceptFor(IBindingNode? binding, ValueId? valueId)
+    public bool CanFreezeExceptFor(ValueId id, ValueId exceptForId)
     {
-        if (binding is null) return true;
         // TODO what about independent parameters?
-        var bindingValue = BindingValue.CreateTopLevel(binding.BindingValueId);
+        var bindingValue = BindingValue.CreateTopLevel(id);
         var set = values.Sets.TrySetFor(bindingValue);
         if (set is null) return false;
         if (IsIsolated(set)) return true;
 
-        var exceptValue = valueId is ValueId v ? CapabilityValue.CreateTopLevel(v) : null;
+        var exceptValue = CapabilityValue.CreateTopLevel(exceptForId);
         foreach (var otherValue in set.Except(bindingValue).Except(exceptValue))
         {
             if (otherValue is ICapabilityValue capabilityValue)
@@ -395,20 +386,18 @@ internal sealed class FlowState : IFlowState
         return [];
     }
 
-    public IFlowState AccessField(IFieldAccessExpressionNode node)
+    public IFlowState AccessField(
+        ValueId contextId,
+        CapabilityType contextType,
+        TypeConstructor declaringTypeConstructor,
+        ValueId id,
+        IMaybeNonVoidType bindingType,
+        IMaybeType memberType)
     {
-        var contextValueId = node.Context.ValueId;
-        var valueId = node.ValueId;
-        var memberType = node.Type;
         var builder = ToBuilder();
-        var contextType = (CapabilityType)node.Context.Type;
-        var containingDeclaredType = node.ReferencedDeclaration.ContainingDeclaration.Symbol.TryGetTypeConstructor()
-            ?? throw new InvalidOperationException("Cannot access field of primitive type.");
-        var bindingType = node.ReferencedDeclaration.BindingType;
-
-        var newValueCapabilities = CapabilityValue.ForType(valueId, memberType);
-        var valueMap = AccessFieldValueMapping(contextValueId, contextType, containingDeclaredType,
-            bindingType, valueId, newValueCapabilities.Keys);
+        var newValueCapabilities = CapabilityValue.ForType(id, memberType);
+        var valueMap = AccessFieldValueMapping(contextId, contextType, declaringTypeConstructor,
+            bindingType, id, newValueCapabilities.Keys);
         foreach (var (newValue, flowCapability) in newValueCapabilities)
         {
             if (flowCapability.Original.SharingIsTracked())
@@ -421,8 +410,8 @@ internal sealed class FlowState : IFlowState
                 builder.AddUntracked(newValue);
         }
 
-        builder.AddValueId(valueId, newValueCapabilities.Keys);
-        builder.Remove(contextValueId);
+        builder.AddValueId(id, newValueCapabilities.Keys);
+        builder.Remove(contextId);
 
         return builder.ToImmutable();
     }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 using Azoth.Tools.Bootstrap.Compiler.Types.Flow;
 
@@ -18,44 +19,36 @@ public interface IFlowState : IEquatable<IFlowState>
     /// <summary>
     /// Declare the given parameter as part of the flow state including any independent parameters.
     /// </summary>
-    IFlowState Declare(INamedParameterNode parameter);
+    public IFlowState DeclareParameter(bool isLent, ValueId id, IMaybeType type);
 
-    /// <summary>
-    /// Declare the given parameter as part of the flow state including any independent parameters.
-    /// </summary>
-    IFlowState Declare(ISelfParameterNode parameter);
-
-    // TODO should be a type that doesn't include INamedParameterNode
-    IFlowState Declare(INamedBindingNode binding, ValueId? initializerValueId);
+    IFlowState DeclareVariable(ValueId id, IMaybeNonVoidType type, ValueId? initializerId);
 
     IFlowState Constant(ValueId valueId);
 
     /// <summary>
-    /// Make <paramref name="aliasValueId"/> an alias to the <paramref name="binding"/>.
+    /// Make <paramref name="aliasId"/> an alias to the <paramref name="id"/>.
     /// </summary>
     /// <remarks>This does not alias any independent parameters of the binding because only an alias
     /// to the top level object has been created. For example, if <c>iso List[iso Foo]</c> is aliased
     /// the list elements are still isolated. Only the list itself has been aliased and is now
     /// <c>mut</c>.</remarks>
-    IFlowState Alias(IBindingNode? binding, ValueId aliasValueId);
+    IFlowState Alias(ValueId? id, ValueId aliasId);
 
     /// <summary>
-    /// Gives the current flow type of the symbol.
+    /// The current flow type of the value.
     /// </summary>
-    /// <remarks>This is named for it to be used as <c>flow.Type(symbol)</c></remarks>
-    IMaybeType Type(IBindingNode? binding);
-
+    /// <remarks>This is named for it to be used as <c>flow.Type(id, type)</c></remarks>
+    IMaybeType Type(ValueId id, IMaybeType declaredType);
 
     /// <summary>
-    /// Gives the type of an alias to the symbol
+    /// The current flow type of the value.
     /// </summary>
-    /// <remarks>This is named for it to be used as <c>flow.AliasType(symbol)</c></remarks>
-    IMaybeType AliasType(IBindingNode? binding);
+    /// <remarks>This is named for it to be used as <c>flow.AliasType(id, type)</c></remarks>
+    IMaybeType AliasType(ValueId id, IMaybeType declaredType);
 
-    bool IsIsolated(IBindingNode? binding);
     bool IsIsolated(ValueId valueId);
-    bool IsIsolatedExceptFor(IBindingNode? binding, ValueId? valueId);
-    bool CanFreezeExceptFor(IBindingNode? binding, ValueId? valueId);
+    bool IsIsolatedExceptFor(ValueId id, ValueId exceptForId);
+    bool CanFreezeExceptFor(ValueId id, ValueId exceptForId);
     bool CanFreeze(ValueId valueId);
     bool IsLent(ValueId valueId);
 
@@ -67,7 +60,13 @@ public interface IFlowState : IEquatable<IFlowState>
 
     IEnumerable<ValueId> CombineArgumentsDisallowedDueToLent(IEnumerable<ArgumentValueId> arguments);
 
-    IFlowState AccessField(IFieldAccessExpressionNode node);
+    IFlowState AccessField(
+        ValueId contextId,
+        CapabilityType contextType,
+        TypeConstructor declaringTypeConstructor,
+        ValueId id,
+        IMaybeNonVoidType bindingType,
+        IMaybeType memberType);
     IFlowState Merge(IFlowState? other);
     IFlowState Transform(ValueId? valueId, ValueId toValueId, IMaybeType withType);
 
