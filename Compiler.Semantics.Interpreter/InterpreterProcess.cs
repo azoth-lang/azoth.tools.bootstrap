@@ -16,6 +16,7 @@ using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
+using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 using Type = Azoth.Tools.Bootstrap.Compiler.Types.Decorated.Type;
@@ -663,10 +664,10 @@ public class InterpreterProcess
                         return await DivideAsync(exp.LeftOperand!, exp.RightOperand!, variables)
                             .ConfigureAwait(false);
                     case BinaryOperator.EqualsEquals:
-                        return AzothValue.Bool(await EqualsAsync(exp.LeftOperand!, exp.RightOperand!, variables)
+                        return AzothValue.Bool(await BuiltInEqualsAsync(exp.NumericOperatorCommonPlainType!, exp.LeftOperand!, exp.RightOperand!, variables)
                             .ConfigureAwait(false));
                     case BinaryOperator.NotEqual:
-                        return AzothValue.Bool(!await EqualsAsync(exp.LeftOperand!, exp.RightOperand!, variables)
+                        return AzothValue.Bool(!await BuiltInEqualsAsync(exp.NumericOperatorCommonPlainType!, exp.LeftOperand!, exp.RightOperand!, variables)
                             .ConfigureAwait(false));
                     case BinaryOperator.ReferenceEquals:
                         return AzothValue.Bool(await ReferenceEqualsAsync(exp.LeftOperand!, exp.RightOperand!, variables)
@@ -1094,41 +1095,37 @@ public class InterpreterProcess
         throw new NotImplementedException($"Divide {type.ToILString()}");
     }
 
-    private async ValueTask<bool> EqualsAsync(IExpressionNode leftExp, IExpressionNode rightExp, LocalVariableScope variables)
+    private async ValueTask<bool> BuiltInEqualsAsync(PlainType commonPlainType, IExpressionNode leftExp, IExpressionNode rightExp, LocalVariableScope variables)
     {
-        if (!leftExp.Type.Equals(rightExp.Type))
-            throw new InvalidOperationException(
-                $"Can't compare expressions of type {leftExp.Type.ToILString()} and {rightExp.Type.ToILString()} for equality.");
         var left = await ExecuteAsync(leftExp, variables).ConfigureAwait(false);
         var right = await ExecuteAsync(rightExp, variables).ConfigureAwait(false);
-        var type = leftExp.Type.Known();
-        if (type is OptionalType optionalType)
+        if (commonPlainType is OptionalPlainType optionalType)
         {
             if (left.IsNone && right.IsNone) return true;
             if (left.IsNone || right.IsNone) return false;
-            return EqualsAsync(optionalType.Referent, left, right);
+            return BuiltInEqualsAsync(optionalType.Referent, left, right);
         }
 
-        return EqualsAsync(type, left, right);
+        return BuiltInEqualsAsync(commonPlainType, left, right);
     }
 
-    private static bool EqualsAsync(Type type, AzothValue left, AzothValue right)
+    private static bool BuiltInEqualsAsync(PlainType type, AzothValue left, AzothValue right)
     {
-        if (type.Equals(Type.Int)) return left.IntValue.Equals(right.IntValue);
-        if (type.Equals(Type.UInt)) return left.IntValue.Equals(right.IntValue);
-        if (type.Equals(Type.Int8)) return left.I8Value.Equals(right.I8Value);
-        if (type.Equals(Type.Byte)) return left.ByteValue.Equals(right.ByteValue);
-        if (type.Equals(Type.Int16)) return left.I16Value.Equals(right.I16Value);
-        if (type.Equals(Type.UInt16)) return left.U16Value.Equals(right.U16Value);
-        if (type.Equals(Type.Int32)) return left.I32Value.Equals(right.I32Value);
-        if (type.Equals(Type.UInt32)) return left.U32Value.Equals(right.U32Value);
-        if (type.Equals(Type.Int64)) return left.I64Value.Equals(right.I64Value);
-        if (type.Equals(Type.UInt64)) return left.U64Value.Equals(right.U64Value);
-        if (type.Equals(Type.Offset)) return left.OffsetValue.Equals(right.OffsetValue);
-        if (type.Equals(Type.Size)) return left.SizeValue.Equals(right.SizeValue);
-        if (type.Equals(Type.NInt)) return left.NIntValue.Equals(right.NIntValue);
-        if (type.Equals(Type.NUInt)) return left.NUIntValue.Equals(right.NUIntValue);
-        throw new NotImplementedException($"Compare equality of `{type.ToILString()}`.");
+        if (type.Equals(PlainType.Int)) return left.IntValue.Equals(right.IntValue);
+        if (type.Equals(PlainType.UInt)) return left.IntValue.Equals(right.IntValue);
+        if (type.Equals(PlainType.Int8)) return left.I8Value.Equals(right.I8Value);
+        if (type.Equals(PlainType.Byte)) return left.ByteValue.Equals(right.ByteValue);
+        if (type.Equals(PlainType.Int16)) return left.I16Value.Equals(right.I16Value);
+        if (type.Equals(PlainType.UInt16)) return left.U16Value.Equals(right.U16Value);
+        if (type.Equals(PlainType.Int32)) return left.I32Value.Equals(right.I32Value);
+        if (type.Equals(PlainType.UInt32)) return left.U32Value.Equals(right.U32Value);
+        if (type.Equals(PlainType.Int64)) return left.I64Value.Equals(right.I64Value);
+        if (type.Equals(PlainType.UInt64)) return left.U64Value.Equals(right.U64Value);
+        if (type.Equals(PlainType.Offset)) return left.OffsetValue.Equals(right.OffsetValue);
+        if (type.Equals(PlainType.Size)) return left.SizeValue.Equals(right.SizeValue);
+        if (type.Equals(PlainType.NInt)) return left.NIntValue.Equals(right.NIntValue);
+        if (type.Equals(PlainType.NUInt)) return left.NUIntValue.Equals(right.NUIntValue);
+        throw new NotImplementedException($"Compare equality of `{type}`.");
     }
 
     private async ValueTask<bool> ReferenceEqualsAsync(IExpressionNode leftExp, IExpressionNode rightExp, LocalVariableScope variables)
