@@ -10,14 +10,13 @@ struct `ParameterType`;
 struct `SelfParameterType`;
 
 // ---------- Bindings
-↑ Binding.BindingType: `IMaybeType`;
-↑ NamedBinding.BindingType: `IMaybeNonVoidType`;
+↑ Binding.BindingType: `IMaybeNonVoidType`;
 
 // ---------- Member Definitions
 ↑ FieldDefinition.BindingType: `IMaybeNonVoidType`;
 
 // ---------- Parameters
-↑ Parameter.BindingType: `IMaybeType`;
+↑ Parameter.BindingType: `IMaybeNonVoidType`;
 ↑ ConstructorOrInitializerParameter.BindingType: `IMaybeNonVoidType`;
 ↑ ConstructorOrInitializerParameter.ParameterType: `IMaybeParameterType`;
 = NamedParameter.↑.Diagnostics;

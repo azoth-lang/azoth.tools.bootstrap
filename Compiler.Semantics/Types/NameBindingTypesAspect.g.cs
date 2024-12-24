@@ -43,7 +43,7 @@ internal static partial class NameBindingTypesAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial CapabilityType InitializerSelfParameter_BindingType(IInitializerSelfParameterNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IMaybeType MethodSelfParameter_BindingType(IMethodSelfParameterNode node);
+    public static partial IMaybeNonVoidType MethodSelfParameter_BindingType(IMethodSelfParameterNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IMaybeNonVoidType FieldParameter_BindingType(IFieldParameterNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

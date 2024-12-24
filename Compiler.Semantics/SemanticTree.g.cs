@@ -107,7 +107,7 @@ public partial interface IBindingNode : ICodeNode, IBindingDeclarationNode
 {
     ValueId BindingValueId { get; }
     IMaybeNonVoidPlainType BindingPlainType { get; }
-    IMaybeType BindingType { get; }
+    IMaybeNonVoidType BindingType { get; }
     bool IsLentBinding { get; }
 }
 
@@ -118,8 +118,6 @@ public partial interface IBindingNode : ICodeNode, IBindingDeclarationNode
 public partial interface INamedBindingNode : IBindingNode, INamedBindingDeclarationNode
 {
     LexicalScope ContainingLexicalScope { get; }
-    new IMaybeNonVoidType BindingType { get; }
-    IMaybeType IBindingNode.BindingType => BindingType;
     bool IsMutableBinding { get; }
 }
 
@@ -1049,8 +1047,7 @@ public partial interface IFieldDefinitionNode : ICodeNode, IAlwaysTypeMemberDefi
     LexicalScope IDefinitionNode.ContainingLexicalScope => ContainingLexicalScope;
     LexicalScope INamedBindingNode.ContainingLexicalScope => ContainingLexicalScope;
     new IMaybeNonVoidType BindingType { get; }
-    IMaybeNonVoidType INamedBindingNode.BindingType => BindingType;
-    IMaybeType IBindingNode.BindingType => BindingType;
+    IMaybeNonVoidType IBindingNode.BindingType => BindingType;
     IMaybeNonVoidType IFieldDeclarationNode.BindingType => BindingType;
     new bool IsMutableBinding
         => Syntax.IsMutableBinding;
@@ -1171,7 +1168,7 @@ public partial interface IParameterNode : ICodeNode
     IFlowState FlowStateBefore();
     IFlowState FlowStateAfter { get; }
     IMaybeNonVoidPlainType BindingPlainType { get; }
-    IMaybeType BindingType { get; }
+    IMaybeNonVoidType BindingType { get; }
     IdentifierName? Name { get; }
     bool Unused
         => Name?.Text.StartsWith('_') ?? false;
@@ -1187,8 +1184,6 @@ public partial interface IConstructorOrInitializerParameterNode : IParameterNode
     IParameterSyntax IParameterNode.Syntax => Syntax;
     ICodeSyntax ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    new IMaybeNonVoidType BindingType { get; }
-    IMaybeType IParameterNode.BindingType => BindingType;
     IMaybeParameterType ParameterType { get; }
     new IdentifierName Name { get; }
     IdentifierName? IParameterNode.Name => Name;
@@ -1218,10 +1213,8 @@ public partial interface INamedParameterNode : IConstructorOrInitializerParamete
     IMaybeNonVoidPlainType IParameterNode.BindingPlainType => BindingPlainType;
     IMaybeNonVoidPlainType IBindingNode.BindingPlainType => BindingPlainType;
     new IMaybeNonVoidType BindingType { get; }
-    IMaybeNonVoidType IConstructorOrInitializerParameterNode.BindingType => BindingType;
-    IMaybeType IParameterNode.BindingType => BindingType;
-    IMaybeNonVoidType INamedBindingNode.BindingType => BindingType;
-    IMaybeType IBindingNode.BindingType => BindingType;
+    IMaybeNonVoidType IParameterNode.BindingType => BindingType;
+    IMaybeNonVoidType IBindingNode.BindingType => BindingType;
     bool IBindingNode.IsLentBinding
         => Syntax.IsLentBinding;
     bool INamedBindingNode.IsMutableBinding
@@ -1254,9 +1247,9 @@ public partial interface ISelfParameterNode : IParameterNode, IBindingNode
     new ValueId BindingValueId { get; }
     ValueId IParameterNode.BindingValueId => BindingValueId;
     ValueId IBindingNode.BindingValueId => BindingValueId;
-    new IMaybeType BindingType { get; }
-    IMaybeType IParameterNode.BindingType => BindingType;
-    IMaybeType IBindingNode.BindingType => BindingType;
+    new IMaybeNonVoidType BindingType { get; }
+    IMaybeNonVoidType IParameterNode.BindingType => BindingType;
+    IMaybeNonVoidType IBindingNode.BindingType => BindingType;
     IdentifierName? IParameterNode.Name
         => null;
     bool IBindingNode.IsLentBinding
@@ -1274,9 +1267,9 @@ public partial interface IConstructorSelfParameterNode : ISelfParameterNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     ICapabilityNode Capability { get; }
     new CapabilityType BindingType { get; }
-    IMaybeType ISelfParameterNode.BindingType => BindingType;
-    IMaybeType IParameterNode.BindingType => BindingType;
-    IMaybeType IBindingNode.BindingType => BindingType;
+    IMaybeNonVoidType ISelfParameterNode.BindingType => BindingType;
+    IMaybeNonVoidType IParameterNode.BindingType => BindingType;
+    IMaybeNonVoidType IBindingNode.BindingType => BindingType;
 
     public static IConstructorSelfParameterNode Create(
         IConstructorSelfParameterSyntax syntax,
@@ -1295,9 +1288,9 @@ public partial interface IInitializerSelfParameterNode : ISelfParameterNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     ICapabilityNode Capability { get; }
     new CapabilityType BindingType { get; }
-    IMaybeType ISelfParameterNode.BindingType => BindingType;
-    IMaybeType IParameterNode.BindingType => BindingType;
-    IMaybeType IBindingNode.BindingType => BindingType;
+    IMaybeNonVoidType ISelfParameterNode.BindingType => BindingType;
+    IMaybeNonVoidType IParameterNode.BindingType => BindingType;
+    IMaybeNonVoidType IBindingNode.BindingType => BindingType;
 
     public static IInitializerSelfParameterNode Create(
         IInitializerSelfParameterSyntax syntax,
@@ -8136,11 +8129,11 @@ file class MethodSelfParameterNode : SemanticNode, IMethodSelfParameterNode
                 NameBindingPlainTypesAspect.SelfParameter_BindingPlainType);
     private ConstructedPlainType? bindingPlainType;
     private bool bindingPlainTypeCached;
-    public IMaybeType BindingType
+    public IMaybeNonVoidType BindingType
         => GrammarAttribute.IsCached(in bindingTypeCached) ? bindingType!
             : this.Synthetic(ref bindingTypeCached, ref bindingType,
                 NameBindingTypesAspect.MethodSelfParameter_BindingType);
-    private IMaybeType? bindingType;
+    private IMaybeNonVoidType? bindingType;
     private bool bindingTypeCached;
     public ValueId BindingValueId
         => GrammarAttribute.IsCached(in bindingValueIdCached) ? bindingValueId

@@ -86,7 +86,7 @@ internal static partial class NameBindingTypesAspect
         return ParameterType.Create(isLent, node.BindingType);
     }
 
-    public static partial IMaybeType MethodSelfParameter_BindingType(IMethodSelfParameterNode node)
+    public static partial IMaybeNonVoidType MethodSelfParameter_BindingType(IMethodSelfParameterNode node)
     {
         var selfType = node.ContainingSelfTypeConstructor.ConstructWithParameterTypes(node.BindingPlainType);
         var constraintNode = node.Constraint;

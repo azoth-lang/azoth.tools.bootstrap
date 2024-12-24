@@ -74,8 +74,8 @@ public sealed class CapabilityType : NonVoidType
         if (TypeConstructor.Equals(target)) return this;
 
         // TODO this will fail if the type implements the target type in multiple ways.
-        var supertype = TypeConstructor?.Supertypes.Where(s => s.TypeConstructor.Equals(target)).TrySingle();
-        if (supertype is null) throw new ArgumentException($"The type {target} is not a supertype of {ToILString()}.");
+        var supertype = TypeConstructor.Supertypes.Where(s => s.TypeConstructor.Equals(target)).TrySingle()
+                        ?? throw new ArgumentException($"The type {target} is not a supertype of {ToILString()}.");
 
         // TODO determine the correct containing type
         var bareType = new BareType(supertype.PlainType, containingType: null, supertype.Arguments);
