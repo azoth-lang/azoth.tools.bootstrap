@@ -30,13 +30,20 @@ internal abstract class RawBoundedList<T> : IRawBoundedList
     public abstract void Add(AzothValue value);
     protected void AddValue(T value)
     {
+        // Even though this is raw and not supposed to check bounds, aborting makes debugging easier
         if (Count >= Capacity)
             throw new Abort("Cannot add to Raw_Bounded_List.");
         items[Count++] = value;
     }
 
     public abstract AzothValue At(nuint index);
-    public T ValueAt(nuint index) => items[index];
+    public T ValueAt(nuint index)
+    {
+        // Even though this is raw and not supposed to check bounds, aborting makes debugging easier
+        if (index >= Count)
+            throw new Abort("Index out of bounds");
+        return items[index];
+    }
 
     public abstract void Set(nuint index, AzothValue value);
     public void SetValue(nuint index, T value) => items[index] = value;
