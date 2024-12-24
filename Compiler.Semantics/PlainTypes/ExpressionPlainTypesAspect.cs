@@ -187,6 +187,9 @@ internal static partial class ExpressionPlainTypesAspect
                 or (_, BinaryOperator.LessThanDotDotLessThan, _)
                 => InferRangeOperatorType(node.ContainingLexicalScope),
 
+            (OptionalPlainType { Referent: var referentType }, BinaryOperator.QuestionQuestion, PlainType)
+                when referentType.IsSubtypeOf(rightPlainType)
+                => rightPlainType,
             (OptionalPlainType { Referent: var referentType }, BinaryOperator.QuestionQuestion, NeverPlainType)
                 => referentType,
 

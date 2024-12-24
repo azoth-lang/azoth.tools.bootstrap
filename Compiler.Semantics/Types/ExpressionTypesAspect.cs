@@ -482,6 +482,9 @@ internal static partial class ExpressionTypesAspect
                 or (_, BinaryOperator.LessThanDotDotLessThan, _)
                 => InferRangeOperatorType(node.ContainingLexicalScope, leftType, rightType),
 
+            (OptionalType { Referent: var referentType }, BinaryOperator.QuestionQuestion, Type)
+                when referentType.IsSubtypeOf(rightType)
+                => rightType,
             (OptionalType { Referent: var referentType }, BinaryOperator.QuestionQuestion, NeverType)
                 => referentType,
 

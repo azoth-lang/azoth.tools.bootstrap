@@ -711,7 +711,11 @@ public class InterpreterProcess
                         return await InitializeStruct(rangeStruct!, rangeInitializer!, [left, right]);
                     }
                     case BinaryOperator.QuestionQuestion:
-                        throw new NotImplementedException($"Operator `{exp.Operator}`");
+                    {
+                        var left = await ExecuteAsync(exp.LeftOperand!, variables).ConfigureAwait(false);
+                        if (!left.IsNone) return left;
+                        return await ExecuteAsync(exp.RightOperand!, variables).ConfigureAwait(false);
+                    }
                 }
             case IUnaryOperatorExpressionNode exp:
                 return exp.Operator switch
