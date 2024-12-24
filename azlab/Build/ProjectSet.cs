@@ -43,17 +43,28 @@ internal class ProjectSet : IEnumerable<Project>
 
         // Add a placeholder to prevent cycles (safe because we will replace it below)
         projects.Add(projectDir, null!);
-        var dependencies = config.Dependencies!.Select(d =>
-        {
-            var (name, config) = d;
-            var dependencyConfig = configs[name];
-            var dependencyProject = GetOrAdd(dependencyConfig, configs);
-            return new ProjectReference(name, dependencyProject, config?.Trusted ?? throw new InvalidOperationException());
-        }).ToList();
 
-        var project = new Project(config, dependencies);
+        // TODO be more exact about selecting distinct references or possibly even merging them
+        var references = config.Dependencies!.SelectMany(CreateReferences).DistinctBy(r => r.Project.Name).ToList();
+
+        var project = new Project(config, references);
         projects[projectDir] = project;
         return project;
+
+        IEnumerable<ProjectReference> CreateReferences(string alias, ProjectDependencyConfig? dependencyConfig)
+        {
+            if (dependencyConfig is null) throw new ArgumentNullException(nameof(dependencyConfig));
+            var dependencyProjectConfig = configs[config, alias];
+            var dependencyProject = GetOrAdd(dependencyProjectConfig, configs);
+            var isTrusted = dependencyConfig.Trusted ?? throw new InvalidOperationException();
+            if (dependencyConfig.Relation == ProjectRelation.None) throw new InvalidOperationException();
+            yield return new(alias, dependencyProject, isTrusted, dependencyConfig.Relation, dependencyConfig.Bundle);
+            foreach (var bundledReference in dependencyProject.References.Where(r => r.Bundle != ProjectRelation.None))
+            {
+                yield return new(bundledReference.Project.Name, bundledReference.Project,
+                    isTrusted && bundledReference.IsTrusted, bundledReference.Bundle, ProjectRelation.None);
+            }
+        }
     }
 
     private static string GetDirectoryName(ProjectConfig config)
@@ -189,7 +200,7 @@ internal class ProjectSet : IEnumerable<Project>
         {
             var package = await packageTask.ConfigureAwait(false);
             if (package is not null)
-                references.Add(new PackageReference(reference.NameOrAlias, package.PackageSymbols, reference.IsTrusted));
+                references.Add(new PackageReference(reference.Alias, package.PackageSymbols, reference.IsTrusted));
         }
 
         using (await consoleLock.LockAsync())

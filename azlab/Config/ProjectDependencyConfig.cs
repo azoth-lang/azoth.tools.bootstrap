@@ -1,3 +1,4 @@
+using Azoth.Tools.Bootstrap.Lab.Build;
 using Newtonsoft.Json;
 
 namespace Azoth.Tools.Bootstrap.Lab.Config;
@@ -11,8 +12,8 @@ internal class ProjectDependencyConfig
     public bool? Trusted { get; set; }
 
     [JsonProperty("relation")]
-    public ProjectDependencyRelation Relation { get; set; } = ProjectDependencyRelation.Internal;
+    public ProjectRelation Relation { get; set; } = ProjectRelation.Internal;
 
     [JsonProperty("bundle")]
-    public ProjectDependencyRelation Bundle { get; set; } = ProjectDependencyRelation.None;
+    public ProjectRelation Bundle { get; set; } = ProjectRelation.None;
 }

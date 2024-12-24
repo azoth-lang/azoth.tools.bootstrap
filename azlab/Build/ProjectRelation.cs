@@ -1,6 +1,6 @@
-namespace Azoth.Tools.Bootstrap.Lab.Config;
+namespace Azoth.Tools.Bootstrap.Lab.Build;
 
-internal enum ProjectDependencyRelation
+internal enum ProjectRelation
 {
     /// <summary>
     /// A package that is not used by this package.

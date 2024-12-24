@@ -114,6 +114,14 @@ public static class EnumerableExtensions
     public static IEnumerable<(T1, T2)> Where<T1, T2>(this IEnumerable<(T1, T2)> source, Func<T1, T2, bool> predicate)
         => source.Where(tuple => predicate(tuple.Item1, tuple.Item2));
 
+    public static IEnumerable<TResult> Select<T1, T2, TResult>(this IEnumerable<KeyValuePair<T1, T2>> source, Func<T1, T2, TResult> selector)
+        => source.Select(pair => selector(pair.Key, pair.Value));
+
+    public static IEnumerable<TResult> SelectMany<T1, T2, TResult>(
+        this IEnumerable<KeyValuePair<T1, T2>> source,
+        Func<T1, T2, IEnumerable<TResult>> selector)
+        => source.SelectMany(pair => selector(pair.Key, pair.Value));
+
     public static IEnumerable<TResult> Select<T1, T2, TResult>(this IEnumerable<(T1, T2)> source, Func<T1, T2, TResult> selector)
         => source.Select(tuple => selector(tuple.Item1, tuple.Item2));
 
