@@ -23,12 +23,12 @@ internal static partial class ExpressionTypesAspect
 {
     public static partial void Expression_Contribute_Diagnostics(IExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
-        // TODO should ExpectedType be `IMaybeNonVoidType?` or even `NonVoidType?` ?
-        if (node.ExpectedType is not { } expectedType)
+        // Expected type can be void (e.g. when a function returns void)
+        if (node.ExpectedType is not Type expectedType)
             return;
 
         if (!node.Type.IsSubtypeOf(expectedType))
-            diagnostics.Add(TypeError.CannotImplicitlyConvert(node.File, node.Syntax, node.Type, (IMaybeNonVoidType)expectedType));
+            diagnostics.Add(TypeError.CannotImplicitlyConvert(node.File, node.Syntax, node.Type, expectedType));
     }
 
     public static partial IMaybeType VariableNameExpression_Type(IVariableNameExpressionNode node)

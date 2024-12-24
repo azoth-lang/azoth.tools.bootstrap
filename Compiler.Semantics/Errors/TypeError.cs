@@ -58,10 +58,10 @@ public static class TypeError
             3005, "Expression must be of type `bool`");
     }
 
-    public static Diagnostic CannotImplicitlyConvert(CodeFile file, ICodeSyntax expression, IMaybeType ofType, IMaybeNonVoidType toType)
+    public static Diagnostic CannotImplicitlyConvert(CodeFile file, ICodeSyntax expression, IMaybeType ofType, Type toType)
     {
         return new(file, expression.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
-            3006, $"Cannot convert expression `{file.Code[expression.Span]}` of type `{ofType.ToSourceCodeString()}` to type `{toType.ToNonLiteral().ToSourceCodeString()}`");
+            3006, $"Cannot convert expression `{file.Code[expression.Span]}` of type `{ofType.ToSourceCodeString()}` to type `{toType.ToSourceCodeString()}`");
     }
 
     public static Diagnostic MustBeInvocable(CodeFile file, IExpressionSyntax expression)
