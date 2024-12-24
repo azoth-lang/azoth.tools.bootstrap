@@ -23,7 +23,7 @@ public abstract class SimpleTypeConstructor : SimpleOrLiteralTypeConstructor
 
     public sealed override BuiltInTypeName Name { [DebuggerStepThrough] get; }
 
-    public sealed override IFixedList<Parameter> Parameters => [];
+    public sealed override IFixedList<TypeConstructorParameter> Parameters => [];
 
     public sealed override bool AllowsVariance => false;
 

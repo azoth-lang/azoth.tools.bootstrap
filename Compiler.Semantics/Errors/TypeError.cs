@@ -214,7 +214,7 @@ public static class TypeError
             3032, $"Special type `{typeSyntax}` cannot be used here.");
     }
 
-    public static Diagnostic CapabilityNotCompatibleWithConstraint(CodeFile file, ICodeSyntax typeSyntax, TypeConstructor.Parameter parameter, Type arg)
+    public static Diagnostic CapabilityNotCompatibleWithConstraint(CodeFile file, ICodeSyntax typeSyntax, TypeConstructorParameter parameter, Type arg)
     {
         return new(file, typeSyntax.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             3033, $"In `{typeSyntax}` the capability of `{arg.ToSourceCodeString()}` is not compatible with the capability constraint on `{parameter}`.");

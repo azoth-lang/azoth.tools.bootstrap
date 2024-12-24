@@ -11,7 +11,7 @@ public sealed class GenericParameterPlainType : NonVoidPlainType
 {
     public OrdinaryTypeConstructor DeclaringTypeConstructor { [DebuggerStepThrough] get; }
     public override TypeSemantics? Semantics => null;
-    public TypeConstructor.Parameter Parameter { [DebuggerStepThrough] get; }
+    public TypeConstructorParameter Parameter { [DebuggerStepThrough] get; }
     public IdentifierName Name => Parameter.Name;
 
     // TODO generic parameters can have supertypes based on generic constraints
@@ -19,7 +19,7 @@ public sealed class GenericParameterPlainType : NonVoidPlainType
     /// <remarks>Use <see cref="GenericParameterTypeFactory.PlainType"/> instead of directly using this.</remarks>
     internal GenericParameterPlainType(
         OrdinaryTypeConstructor declaringTypeConstructor,
-        TypeConstructor.Parameter parameter)
+        TypeConstructorParameter parameter)
     {
         DeclaringTypeConstructor = declaringTypeConstructor;
         Parameter = parameter;

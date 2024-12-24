@@ -22,7 +22,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
     typeof(SimpleOrLiteralTypeConstructor),
     typeof(AssociatedTypeConstructor))]
 [DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
-public abstract partial class TypeConstructor : TypeConstructorContext, IEquatable<TypeConstructor>, ITypeFactory
+public abstract class TypeConstructor : TypeConstructorContext, IEquatable<TypeConstructor>, ITypeFactory
 {
     #region Standard Type Constructors
     public static readonly AnyTypeConstructor Any = AnyTypeConstructor.Instance;
@@ -54,7 +54,7 @@ public abstract partial class TypeConstructor : TypeConstructorContext, IEquatab
         NamespaceName containingNamespace,
         bool isConst,
         OrdinaryName name,
-        IFixedList<Parameter> genericParameters,
+        IFixedList<TypeConstructorParameter> genericParameters,
         IFixedSet<BareType> supertypes)
         => new(new NamespaceContext(containingPackage, containingNamespace),
             isAbstract: false, isConst, TypeKind.Struct, name, genericParameters, supertypes);
@@ -82,7 +82,7 @@ public abstract partial class TypeConstructor : TypeConstructorContext, IEquatab
         bool isAbstract,
         bool isConst,
         string name,
-        IFixedList<Parameter> genericParameters,
+        IFixedList<TypeConstructorParameter> genericParameters,
         IFixedSet<BareType> supertypes)
         => new(new NamespaceContext(containingPackage, containingNamespace),
             isAbstract, isConst, TypeKind.Class, OrdinaryName.Create(name, genericParameters.Count),
@@ -94,7 +94,7 @@ public abstract partial class TypeConstructor : TypeConstructorContext, IEquatab
         bool isAbstract,
         bool isConst,
         OrdinaryName name,
-        IFixedList<Parameter> genericParameters,
+        IFixedList<TypeConstructorParameter> genericParameters,
         IFixedSet<BareType> supertypes)
         => new(new NamespaceContext(containingPackage, containingNamespace),
             isAbstract, isConst, TypeKind.Class, name, genericParameters, supertypes);
@@ -104,7 +104,7 @@ public abstract partial class TypeConstructor : TypeConstructorContext, IEquatab
         NamespaceName containingNamespace,
         bool isConst,
         OrdinaryName name,
-        IFixedList<Parameter> genericParameters,
+        IFixedList<TypeConstructorParameter> genericParameters,
         IFixedSet<BareType> supertypes)
         => new(new NamespaceContext(containingPackage, containingNamespace),
             isAbstract: true, isConst, TypeKind.Trait, name, genericParameters, supertypes);
@@ -115,7 +115,7 @@ public abstract partial class TypeConstructor : TypeConstructorContext, IEquatab
         bool isAbstract,
         bool isConst,
         string name,
-        params Parameter[] genericParameters)
+        params TypeConstructorParameter[] genericParameters)
         => new(new NamespaceContext(containingPackage, containingNamespace),
             isAbstract, isConst, TypeKind.Class, OrdinaryName.Create(name, genericParameters.Length),
             genericParameters.ToFixedList(), BareType.AnySet);
@@ -125,7 +125,7 @@ public abstract partial class TypeConstructor : TypeConstructorContext, IEquatab
         NamespaceName containingNamespace,
         bool isConst,
         string name,
-        params Parameter[] genericParameters)
+        params TypeConstructorParameter[] genericParameters)
         => new(new NamespaceContext(containingPackage, containingNamespace),
             isAbstract: true, isConst, TypeKind.Trait, OrdinaryName.Create(name, genericParameters.Length),
              genericParameters.ToFixedList(), BareType.AnySet);
@@ -183,7 +183,7 @@ public abstract partial class TypeConstructor : TypeConstructorContext, IEquatab
     public abstract TypeName Name { get; }
 
     public bool HasParameters => !Parameters.IsEmpty;
-    public abstract IFixedList<Parameter> Parameters { get; }
+    public abstract IFixedList<TypeConstructorParameter> Parameters { get; }
 
     /// <summary>
     /// Whether this type allows any variance in its parameters (e.g. it has `out` or `in` parameters).

@@ -108,7 +108,7 @@ public static class Intrinsic
     {
         var intrinsicsPackage = azothNamespace.Package;
         var promiseType = TypeConstructor.CreateClass(intrinsicsPackage.Name, azothNamespace.NamespaceName,
-                       isAbstract: false, isConst: false, "Promise", TypeConstructor.Parameter.Out(CapabilitySet.Any, "T"));
+                       isAbstract: false, isConst: false, "Promise", TypeConstructorParameter.Out(CapabilitySet.Any, "T"));
         var classSymbol = new OrdinaryTypeSymbol(azothNamespace, promiseType);
         tree.Add(classSymbol);
 
@@ -131,8 +131,8 @@ public static class Intrinsic
     {
         var typeConstructor = TypeConstructor.CreateClass(@namespace.Package.Name, @namespace.NamespaceName,
             isAbstract: false, isConst: false, "Raw_Hybrid_Bounded_List",
-            TypeConstructor.Parameter.Independent(CapabilitySet.Aliasable, "F"),
-            TypeConstructor.Parameter.Independent(CapabilitySet.Aliasable, "T"));
+            TypeConstructorParameter.Independent(CapabilitySet.Aliasable, "F"),
+            TypeConstructorParameter.Independent(CapabilitySet.Aliasable, "T"));
         var plainType = typeConstructor.ConstructWithParameterPlainTypes();
         var bareType = typeConstructor.ConstructWithParameterTypes(plainType);
         var fixedType = typeConstructor.ParameterTypes[0];

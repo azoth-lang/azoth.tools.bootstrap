@@ -11,7 +11,7 @@ public static partial class TypeOperations
 
         return Check(param, arg);
 
-        static bool Check(TypeConstructor.Parameter param, Type arg)
+        static bool Check(TypeConstructorParameter param, Type arg)
         {
             switch (arg)
             {

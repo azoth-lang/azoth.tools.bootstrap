@@ -28,7 +28,7 @@ public abstract class LiteralTypeConstructor : SimpleOrLiteralTypeConstructor
     public sealed override BuiltInTypeName Name { [DebuggerStepThrough] get; }
 
     // TODO these need type parameters that are values
-    public sealed override IFixedList<Parameter> Parameters => [];
+    public sealed override IFixedList<TypeConstructorParameter> Parameters => [];
 
     public sealed override bool AllowsVariance => false;
 

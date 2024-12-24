@@ -18,7 +18,7 @@ public abstract class AssociatedTypeConstructor : TypeConstructor
     /// associated types can't be supertypes.</remarks>
     public sealed override bool CanHaveFields => true;
     public sealed override bool CanBeSupertype => false;
-    public sealed override IFixedList<Parameter> Parameters => [];
+    public sealed override IFixedList<TypeConstructorParameter> Parameters => [];
     public sealed override bool AllowsVariance => false;
     public sealed override bool HasIndependentParameters => false;
     public sealed override IFixedList<GenericParameterTypeFactory> ParameterTypeFactories => [];

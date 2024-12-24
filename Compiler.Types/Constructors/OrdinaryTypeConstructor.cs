@@ -55,7 +55,7 @@ public sealed class OrdinaryTypeConstructor : TypeConstructor
     /// <summary>
     /// The parameters of this type constructor. Commonly referred to as "generic parameters".
     /// </summary>
-    public override IFixedList<Parameter> Parameters { [DebuggerStepThrough] get; }
+    public override IFixedList<TypeConstructorParameter> Parameters { [DebuggerStepThrough] get; }
     public override bool AllowsVariance { [DebuggerStepThrough] get; }
     public override bool HasIndependentParameters { [DebuggerStepThrough] get; }
 
@@ -71,7 +71,7 @@ public sealed class OrdinaryTypeConstructor : TypeConstructor
         bool isDeclaredConst,
         TypeKind kind,
         OrdinaryName name,
-        IEnumerable<Parameter> genericParameters,
+        IEnumerable<TypeConstructorParameter> genericParameters,
         IFixedSet<BareType> supertypes)
     {
         Requires.That((kind == TypeKind.Trait).Implies(isAbstract), nameof(isAbstract), "Traits must be abstract.");

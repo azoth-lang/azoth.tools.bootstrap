@@ -643,7 +643,7 @@ public partial interface IGenericParameterNode : ICodeNode, IGenericParameterDec
     OrdinaryTypeSymbol ContainingSymbol
         => ContainingDeclaration.Symbol;
     OrdinaryTypeConstructor ContainingTypeConstructor { get; }
-    TypeConstructor.Parameter Parameter { get; }
+    TypeConstructorParameter Parameter { get; }
     GenericParameterType DeclaredType { get; }
     new IFixedSet<ITypeMemberDefinitionNode> Members
         => [];
@@ -6068,11 +6068,11 @@ file class GenericParameterNode : SemanticNode, IGenericParameterNode
                 TypeDefinitionsAspect.GenericParameter_DeclaredType);
     private GenericParameterType? declaredType;
     private bool declaredTypeCached;
-    public TypeConstructor.Parameter Parameter
+    public TypeConstructorParameter Parameter
         => GrammarAttribute.IsCached(in parameterCached) ? parameter!
             : this.Synthetic(ref parameterCached, ref parameter,
                 TypeDefinitionsAspect.GenericParameter_Parameter);
-    private TypeConstructor.Parameter? parameter;
+    private TypeConstructorParameter? parameter;
     private bool parameterCached;
     public GenericParameterTypeSymbol Symbol
         => GrammarAttribute.IsCached(in symbolCached) ? symbol!

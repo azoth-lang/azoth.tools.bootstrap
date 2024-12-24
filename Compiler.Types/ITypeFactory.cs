@@ -3,6 +3,7 @@ using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using Azoth.Tools.Bootstrap.Framework;
+using ExhaustiveMatching;
 using Type = Azoth.Tools.Bootstrap.Compiler.Types.Decorated.Type;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types;
@@ -12,6 +13,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 /// the ability to construct a type is needed even if it doesn't have a one. A <see cref="ITypeFactory"/>
 /// provides that ability.
 /// </summary>
+[Closed(
+    typeof(TypeConstructor),
+    typeof(VoidTypeFactory),
+    typeof(NeverTypeFactory),
+    typeof(GenericParameterTypeFactory))]
 public interface ITypeFactory
 {
     #region Standard

@@ -38,8 +38,8 @@ internal static partial class TypeDefinitionsAspect
             diagnostics.Add(TypeError.SupertypeMustMaintainIndependence(node.File, typeName.Syntax));
     }
 
-    public static partial TypeConstructor.Parameter GenericParameter_Parameter(IGenericParameterNode node)
-        => new TypeConstructor.Parameter(node.Constraint.ToConstraint(CapabilitySet.GenericParameterDefault),
+    public static partial TypeConstructorParameter GenericParameter_Parameter(IGenericParameterNode node)
+        => new TypeConstructorParameter(node.Constraint.ToConstraint(CapabilitySet.GenericParameterDefault),
             node.Name, node.Independence, node.Variance);
 
     public static partial GenericParameterType GenericParameter_DeclaredType(IGenericParameterNode node)

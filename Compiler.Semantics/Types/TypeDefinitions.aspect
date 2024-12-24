@@ -17,5 +17,5 @@
 
 // ---------- Type Definition Parts
 = GenericParameter.Supertypes => [];
-↑ GenericParameter.Parameter: `TypeConstructor.Parameter`;
+↑ GenericParameter.Parameter: `TypeConstructorParameter`;
 ↑ GenericParameter.DeclaredType: `GenericParameterType`

@@ -13,13 +13,13 @@ public class GenericParameterTypeFactory : ITypeFactory
     private const string? NoContainingTypeMessage = "Generic parameter types imply the containing type and should be constructed without one.";
 
     public OrdinaryTypeConstructor DeclaringTypeConstructor { [DebuggerStepThrough] get; }
-    public TypeConstructor.Parameter Parameter { [DebuggerStepThrough] get; }
+    public TypeConstructorParameter Parameter { [DebuggerStepThrough] get; }
     public GenericParameterPlainType PlainType { [DebuggerStepThrough] get; }
     public GenericParameterType Type { [DebuggerStepThrough] get; }
 
     internal GenericParameterTypeFactory(
         OrdinaryTypeConstructor declaringTypeConstructor,
-        TypeConstructor.Parameter parameter)
+        TypeConstructorParameter parameter)
     {
         DeclaringTypeConstructor = declaringTypeConstructor;
         Parameter = parameter;

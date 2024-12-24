@@ -13,7 +13,7 @@ public sealed class GenericParameterType : NonVoidType
 
     public IdentifierName Name => PlainType.Name;
 
-    public TypeConstructor.Parameter Parameter => PlainType.Parameter;
+    public TypeConstructorParameter Parameter => PlainType.Parameter;
 
     internal override GenericParameterTypeReplacements BareTypeReplacements => GenericParameterTypeReplacements.None;
 

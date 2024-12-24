@@ -51,7 +51,7 @@ internal static partial class DefinitionPlainTypesAspect
         return containingNamespaceName;
     }
 
-    private static IFixedList<TypeConstructor.Parameter> GetGenericParameters(ITypeDefinitionNode node)
+    private static IFixedList<TypeConstructorParameter> GetGenericParameters(ITypeDefinitionNode node)
         => node.GenericParameters.Select(p => p.Parameter).ToFixedList();
     #endregion
 
