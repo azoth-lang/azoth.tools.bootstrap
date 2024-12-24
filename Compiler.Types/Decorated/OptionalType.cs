@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
@@ -45,11 +46,12 @@ public sealed class OptionalType : NonVoidType
             _ => throw ExhaustiveMatch.Failed(referent),
         };
 
+    [DebuggerStepThrough]
     public static OptionalType Create(NonVoidType referent) => new OptionalType(referent);
 
-    public override OptionalPlainType PlainType { get; }
+    public override OptionalPlainType PlainType { [DebuggerStepThrough] get; }
 
-    public NonVoidType Referent { get; }
+    public NonVoidType Referent { [DebuggerStepThrough] get; }
 
     internal override GenericParameterTypeReplacements BareTypeReplacements => Referent.BareTypeReplacements;
 

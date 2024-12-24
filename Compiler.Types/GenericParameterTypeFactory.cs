@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
@@ -11,10 +12,10 @@ public class GenericParameterTypeFactory : ITypeFactory
 {
     private const string? NoContainingTypeMessage = "Generic parameter types imply the containing type and should be constructed without one.";
 
-    public OrdinaryTypeConstructor DeclaringTypeConstructor { get; }
-    public TypeConstructor.Parameter Parameter { get; }
-    public GenericParameterPlainType PlainType { get; }
-    public GenericParameterType Type { get; }
+    public OrdinaryTypeConstructor DeclaringTypeConstructor { [DebuggerStepThrough] get; }
+    public TypeConstructor.Parameter Parameter { [DebuggerStepThrough] get; }
+    public GenericParameterPlainType PlainType { [DebuggerStepThrough] get; }
+    public GenericParameterType Type { [DebuggerStepThrough] get; }
 
     internal GenericParameterTypeFactory(
         OrdinaryTypeConstructor declaringTypeConstructor,

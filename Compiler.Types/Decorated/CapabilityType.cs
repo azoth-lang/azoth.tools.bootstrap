@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Core.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
@@ -19,9 +20,9 @@ public sealed class CapabilityType : NonVoidType
     public static CapabilityType Create(Capability capability, BareType bareType)
         => new(capability, bareType);
 
-    public Capability Capability { get; }
+    public Capability Capability { [DebuggerStepThrough] get; }
 
-    public BareType BareType { get; }
+    public BareType BareType { [DebuggerStepThrough] get; }
     public override ConstructedPlainType PlainType => BareType.PlainType;
 
     public TypeConstructor TypeConstructor => BareType.TypeConstructor;

@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Text;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
@@ -10,7 +11,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 [Closed(typeof(OrdinaryAssociatedTypeConstructor), typeof(SelfTypeConstructor))]
 public abstract class AssociatedTypeConstructor : TypeConstructor
 {
-    public sealed override TypeConstructor Context { get; }
+    public sealed override TypeConstructor Context { [DebuggerStepThrough] get; }
     public sealed override bool CanBeInstantiated => false;
     /// <remarks>While the associated type itself won't have fields, the type it is instantiated to
     /// might. However, it probably doesn't matter since I believe this is used for supertypes and

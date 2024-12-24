@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Text;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
@@ -24,7 +25,7 @@ public abstract class LiteralTypeConstructor : SimpleOrLiteralTypeConstructor
 
     public sealed override TypeSemantics? Semantics => TypeSemantics.Value;
 
-    public sealed override BuiltInTypeName Name { get; }
+    public sealed override BuiltInTypeName Name { [DebuggerStepThrough] get; }
 
     // TODO these need type parameters that are values
     public sealed override IFixedList<Parameter> Parameters => [];

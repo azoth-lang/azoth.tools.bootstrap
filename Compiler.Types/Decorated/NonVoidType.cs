@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
@@ -15,10 +16,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
     typeof(NeverType))]
 public abstract class NonVoidType : Type, IMaybeNonVoidType
 {
-    public abstract override NonVoidPlainType PlainType { get; }
+    public abstract override NonVoidPlainType PlainType { [DebuggerStepThrough] get; }
     IMaybeNonVoidPlainType IMaybeNonVoidType.PlainType => PlainType;
 
-    internal abstract GenericParameterTypeReplacements BareTypeReplacements { get; }
+    internal abstract GenericParameterTypeReplacements BareTypeReplacements { [DebuggerStepThrough] get; }
 
     public TypeReplacements TypeReplacements
         => Lazy.Initialize(ref typeReplacements, this, static type => new(type));

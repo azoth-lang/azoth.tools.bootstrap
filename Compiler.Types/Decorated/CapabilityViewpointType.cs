@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using Azoth.Tools.Bootstrap.Framework;
@@ -22,9 +23,9 @@ public sealed class CapabilityViewpointType : NonVoidType
         return new CapabilityViewpointType(capability, referent);
     }
 
-    public Capability Capability { get; }
+    public Capability Capability { [DebuggerStepThrough] get; }
 
-    public GenericParameterType Referent { get; }
+    public GenericParameterType Referent { [DebuggerStepThrough] get; }
 
     public override GenericParameterPlainType PlainType => Referent.PlainType;
 

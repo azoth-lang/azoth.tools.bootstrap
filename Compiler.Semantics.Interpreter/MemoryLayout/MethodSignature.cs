@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
@@ -9,10 +10,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.MemoryLayout;
 
 internal class MethodSignature : IEquatable<MethodSignature>
 {
-    public IdentifierName Name { get; }
-    public NonVoidType SelfType { get; }
-    public IFixedList<ParameterType> ParameterTypes { get; }
-    public Type ReturnType { get; }
+    public IdentifierName Name { [DebuggerStepThrough] get; }
+    public NonVoidType SelfType { [DebuggerStepThrough] get; }
+    public IFixedList<ParameterType> ParameterTypes { [DebuggerStepThrough] get; }
+    public Type ReturnType { [DebuggerStepThrough] get; }
     private readonly int hashCode;
 
     public MethodSignature(

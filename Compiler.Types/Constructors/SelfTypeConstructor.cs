@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Framework;
@@ -9,11 +10,11 @@ public sealed class SelfTypeConstructor : AssociatedTypeConstructor
 {
     public override bool IsDeclaredConst => Context.IsDeclaredConst;
 
-    public override TypeSemantics? Semantics { get; }
+    public override TypeSemantics? Semantics { [DebuggerStepThrough] get; }
 
     public override BuiltInTypeName Name => BuiltInTypeName.Self;
 
-    public override IFixedSet<BareType> Supertypes { get; }
+    public override IFixedSet<BareType> Supertypes { [DebuggerStepThrough] get; }
 
     public SelfTypeConstructor(TypeConstructor containingTypeConstructor)
         : base(containingTypeConstructor)

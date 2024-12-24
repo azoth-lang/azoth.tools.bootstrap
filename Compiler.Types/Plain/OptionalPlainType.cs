@@ -1,3 +1,5 @@
+using System.Diagnostics;
+
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 
 public sealed class OptionalPlainType : NonVoidPlainType
@@ -5,7 +7,7 @@ public sealed class OptionalPlainType : NonVoidPlainType
     /// <remarks>The optional type acts as a value type that may contain a reference and as such
     /// always has value semantics.</remarks>
     public override TypeSemantics? Semantics => TypeSemantics.Value;
-    public NonVoidPlainType Referent { get; }
+    public NonVoidPlainType Referent { [DebuggerStepThrough] get; }
 
     public OptionalPlainType(NonVoidPlainType referent)
     {

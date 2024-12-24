@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Numerics;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
@@ -8,7 +9,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 // TODO this isn't right. The value should be a type parameter
 public sealed class IntegerLiteralTypeConstructor : LiteralTypeConstructor
 {
-    public BigInteger Value { get; }
+    public BigInteger Value { [DebuggerStepThrough] get; }
     public bool IsSigned => Value.Sign < 0;
 
     public bool IsUInt16

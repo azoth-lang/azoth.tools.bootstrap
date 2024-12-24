@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
@@ -16,11 +17,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 /// plain type.</para></remarks>
 public sealed class CapabilitySetSelfType : NonVoidType
 {
-    public CapabilitySet CapabilitySet { get; }
+    public CapabilitySet CapabilitySet { [DebuggerStepThrough] get; }
 
-    public BareType BareType { get; }
+    public BareType BareType { [DebuggerStepThrough] get; }
 
-    public SelfTypeConstructor TypeConstructor { get; }
+    public SelfTypeConstructor TypeConstructor { [DebuggerStepThrough] get; }
 
     public override ConstructedPlainType PlainType => BareType.PlainType;
 

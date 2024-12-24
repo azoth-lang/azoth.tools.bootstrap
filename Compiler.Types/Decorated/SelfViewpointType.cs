@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using ExhaustiveMatching;
@@ -24,9 +25,9 @@ public sealed class SelfViewpointType : NonVoidType
             _ => throw ExhaustiveMatch.Failed(referent),
         };
 
-    public CapabilitySet CapabilitySet { get; }
+    public CapabilitySet CapabilitySet { [DebuggerStepThrough] get; }
 
-    public NonVoidType Referent { get; }
+    public NonVoidType Referent { [DebuggerStepThrough] get; }
 
     public override NonVoidPlainType PlainType => Referent.PlainType;
 

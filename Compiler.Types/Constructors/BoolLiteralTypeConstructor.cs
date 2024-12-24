@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 
@@ -9,7 +10,7 @@ public sealed class BoolLiteralTypeConstructor : LiteralTypeConstructor
     internal new static readonly BoolLiteralTypeConstructor True = new(true);
     internal new static readonly BoolLiteralTypeConstructor False = new(false);
 
-    public bool Value { get; }
+    public bool Value { [DebuggerStepThrough] get; }
     public override ConstructedPlainType PlainType { get; }
     private BoolLiteralTypeConstructor(bool value)
         : base(BuiltInTypeName.Bool)

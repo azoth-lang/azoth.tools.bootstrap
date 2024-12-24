@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Text;
 using Azoth.Tools.Bootstrap.Compiler.Names;
@@ -20,7 +21,7 @@ public abstract class SimpleTypeConstructor : SimpleOrLiteralTypeConstructor
 
     public sealed override TypeSemantics? Semantics => TypeSemantics.Value;
 
-    public sealed override BuiltInTypeName Name { get; }
+    public sealed override BuiltInTypeName Name { [DebuggerStepThrough] get; }
 
     public sealed override IFixedList<Parameter> Parameters => [];
 
@@ -32,7 +33,7 @@ public abstract class SimpleTypeConstructor : SimpleOrLiteralTypeConstructor
 
     public sealed override IFixedSet<BareType> Supertypes => BareType.AnySet;
 
-    public sealed override ConstructedPlainType PlainType { get; }
+    public sealed override ConstructedPlainType PlainType { [DebuggerStepThrough] get; }
 
     private protected SimpleTypeConstructor(BuiltInTypeName name)
     {

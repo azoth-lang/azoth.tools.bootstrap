@@ -24,11 +24,11 @@ public sealed class BareType : IEquatable<BareType>
     public static readonly BareType Any = new(AnyTypeConstructor.PlainType, containingType: null, []);
     public static readonly IFixedSet<BareType> AnySet = Any.Yield().ToFixedSet();
 
-    public ConstructedPlainType PlainType { get; }
+    public ConstructedPlainType PlainType { [DebuggerStepThrough] get; }
     public TypeConstructor TypeConstructor => PlainType.TypeConstructor;
-    public BareType? ContainingType { get; }
-    public IFixedList<Type> Arguments { get; }
-    public bool HasIndependentTypeArguments { get; }
+    public BareType? ContainingType { [DebuggerStepThrough] get; }
+    public IFixedList<Type> Arguments { [DebuggerStepThrough] get; }
+    public bool HasIndependentTypeArguments { [DebuggerStepThrough] get; }
     public GenericParameterTypeReplacements TypeReplacements
         => Lazy.Initialize(ref bareTypeReplacements, this, static bareType => new(bareType));
     private GenericParameterTypeReplacements? bareTypeReplacements;

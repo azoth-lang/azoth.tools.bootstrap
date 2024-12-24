@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Text;
 using Azoth.Tools.Bootstrap.Compiler.Core.Types;
 using Azoth.Tools.Bootstrap.Compiler.Names;
@@ -18,21 +19,21 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 /// </summary>
 public sealed class OrdinaryTypeConstructor : TypeConstructor
 {
-    public override TypeConstructorContext Context { get; }
+    public override TypeConstructorContext Context { [DebuggerStepThrough] get; }
 
     /// <summary>
     /// Whether the declaration for this type constructor is abstract.
     /// </summary>
     /// <remarks>Classes can be declared abstract with the <c>abstract</c> keyword. Traits are
     /// always abstract. Structs are never abstract.</remarks>
-    public bool IsAbstract { get; }
+    public bool IsAbstract { [DebuggerStepThrough] get; }
 
-    public override bool IsDeclaredConst { get; }
+    public override bool IsDeclaredConst { [DebuggerStepThrough] get; }
 
     /// <summary>
     /// What kind of type this is (e.g. class, trait, or struct).
     /// </summary>
-    public TypeKind Kind { get; }
+    public TypeKind Kind { [DebuggerStepThrough] get; }
 
     /// <summary>
     /// Whether types constructed with this type constructor can be instantiated directly. Even if
@@ -49,18 +50,18 @@ public sealed class OrdinaryTypeConstructor : TypeConstructor
 
     public override bool CanBeSupertype => Kind != TypeKind.Struct;
 
-    public override OrdinaryName Name { get; }
+    public override OrdinaryName Name { [DebuggerStepThrough] get; }
 
     /// <summary>
     /// The parameters of this type constructor. Commonly referred to as "generic parameters".
     /// </summary>
-    public override IFixedList<Parameter> Parameters { get; }
-    public override bool AllowsVariance { get; }
-    public override bool HasIndependentParameters { get; }
+    public override IFixedList<Parameter> Parameters { [DebuggerStepThrough] get; }
+    public override bool AllowsVariance { [DebuggerStepThrough] get; }
+    public override bool HasIndependentParameters { [DebuggerStepThrough] get; }
 
-    public override IFixedList<GenericParameterTypeFactory> ParameterTypeFactories { get; }
+    public override IFixedList<GenericParameterTypeFactory> ParameterTypeFactories { [DebuggerStepThrough] get; }
 
-    public override IFixedSet<BareType> Supertypes { get; }
+    public override IFixedSet<BareType> Supertypes { [DebuggerStepThrough] get; }
     public override TypeSemantics? Semantics
         => Kind == TypeKind.Struct ? TypeSemantics.Value : TypeSemantics.Reference;
 

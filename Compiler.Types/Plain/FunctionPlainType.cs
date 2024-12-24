@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
@@ -6,16 +7,16 @@ public sealed class FunctionPlainType : NonVoidPlainType, IMaybeFunctionPlainTyp
 {
     public static IMaybeFunctionPlainType Create(IEnumerable<IMaybeNonVoidPlainType> parameters, IMaybePlainType @return)
     {
-        if (@return is not PlainType returnType) return PlainType.Unknown;
+        if (@return is not PlainType returnType) return Unknown;
 
-        if (parameters.AsKnownFixedList() is not { } properParameters) return PlainType.Unknown;
+        if (parameters.AsKnownFixedList() is not { } properParameters) return Unknown;
 
         return new FunctionPlainType(properParameters, returnType);
     }
 
     public override TypeSemantics? Semantics => TypeSemantics.Reference;
-    public IFixedList<NonVoidPlainType> Parameters { get; }
-    public PlainType Return { get; }
+    public IFixedList<NonVoidPlainType> Parameters { [DebuggerStepThrough] get; }
+    public PlainType Return { [DebuggerStepThrough] get; }
     IMaybePlainType IMaybeFunctionPlainType.Return => Return;
 
     public FunctionPlainType(IEnumerable<NonVoidPlainType> parameters, PlainType returnPlainType)

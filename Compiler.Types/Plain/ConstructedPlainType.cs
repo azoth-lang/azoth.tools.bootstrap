@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Text;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
@@ -11,12 +12,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 /// <remarks>This includes all types defined in source code, all simple types, and the `Any` type.</remarks>
 public sealed class ConstructedPlainType : NonVoidPlainType
 {
-    public TypeConstructor TypeConstructor { get; }
-    public ConstructedPlainType? ContainingType { get; }
+    public TypeConstructor TypeConstructor { [DebuggerStepThrough] get; }
+    public ConstructedPlainType? ContainingType { [DebuggerStepThrough] get; }
     public override TypeSemantics? Semantics => TypeConstructor.Semantics;
     public TypeName Name => TypeConstructor.Name;
     public bool AllowsVariance => TypeConstructor.AllowsVariance;
-    public IFixedList<PlainType> Arguments { get; }
+    public IFixedList<PlainType> Arguments { [DebuggerStepThrough] get; }
     public IFixedSet<ConstructedPlainType> Supertypes
         => Lazy.Initialize(ref supertypes, TypeConstructor, TypeReplacements,
             static (typeConstructor, replacements)

@@ -46,11 +46,11 @@ public sealed class CapabilitySet : ICapabilityConstraint
     /// more readable.</remarks>
     public static readonly CapabilitySet GenericParameterDefault = Aliasable;
 
-    public IReadOnlySet<Capability> AllowedCapabilities { get; }
+    public IReadOnlySet<Capability> AllowedCapabilities { [DebuggerStepThrough] get; }
 
-    public bool AnyCapabilityAllowsWrite { get; }
+    public bool AnyCapabilityAllowsWrite { [DebuggerStepThrough] get; }
 
-    public Capability UpperBound { get; }
+    public Capability UpperBound { [DebuggerStepThrough] get; }
 
     private CapabilitySet(string name, params Capability[] allowedCapabilities)
     {

@@ -1,6 +1,5 @@
 using System.Diagnostics;
 using System.Text;
-using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Types;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
@@ -27,13 +26,13 @@ public partial class TypeConstructor
         public static Parameter In(ICapabilityConstraint constraint, IdentifierName name)
             => new(constraint, name, TypeParameterIndependence.None, TypeParameterVariance.Contravariant);
 
-        public ICapabilityConstraint Constraint { get; }
+        public ICapabilityConstraint Constraint { [DebuggerStepThrough] get; }
 
-        public IdentifierName Name { get; }
+        public IdentifierName Name { [DebuggerStepThrough] get; }
 
-        public TypeParameterIndependence Independence { get; }
+        public TypeParameterIndependence Independence { [DebuggerStepThrough] get; }
 
-        public TypeParameterVariance Variance { get; }
+        public TypeParameterVariance Variance { [DebuggerStepThrough] get; }
 
         public bool HasIndependence => Independence != TypeParameterIndependence.None;
 

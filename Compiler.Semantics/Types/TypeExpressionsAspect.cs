@@ -18,7 +18,6 @@ internal static partial class TypeExpressionsAspect
 
     #region Types
     public static partial IMaybeType TypeName_NamedType(ITypeNameNode node)
-        // TODO don't use ReferencedSymbol (use referenced definition instead)
         => node.NamedBareType?.WithDefaultCapability()
            ?? node.ReferencedDeclaration?.TypeFactory.TryConstructNullaryType(containingType: null) ?? IMaybeType.Unknown;
 

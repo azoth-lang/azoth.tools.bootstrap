@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using ExhaustiveMatching;
 
@@ -9,7 +10,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
     typeof(BigIntegerTypeConstructor))]
 public abstract class IntegerTypeConstructor : SimpleTypeConstructor
 {
-    public bool IsSigned { get; }
+    public bool IsSigned { [DebuggerStepThrough] get; }
 
     protected IntegerTypeConstructor(BuiltInTypeName name, bool isSigned)
         : base(name)

@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors.Contexts;
 using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
@@ -19,7 +20,7 @@ public abstract class SimpleOrLiteralTypeConstructor : TypeConstructor
 
     public override bool CanBeSupertype => false;
 
-    public abstract ConstructedPlainType PlainType { get; }
+    public abstract ConstructedPlainType PlainType { [DebuggerStepThrough] get; }
 
     public CapabilityType Type
         => Lazy.Initialize(ref type, PlainType,

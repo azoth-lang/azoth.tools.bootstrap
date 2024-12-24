@@ -75,31 +75,31 @@ public sealed class Capability : ICapabilityConstraint
     /// into fields (even `let` fields). They also do not permit aliases. Aliases have the `id`
     /// capability.
     /// </summary>
-    public bool AllowsInit { get; }
+    public bool AllowsInit { [DebuggerStepThrough] get; }
     /// <summary>
     /// Whether this kind of reference permits mutating the referenced object through this reference.
     /// </summary>
-    public bool AllowsWrite { get; }
+    public bool AllowsWrite { [DebuggerStepThrough] get; }
     bool ICapabilityConstraint.AnyCapabilityAllowsWrite => AllowsWrite;
     /// <summary>
     /// Whether this kind of reference permits other writable aliases to the object to exist.
     /// </summary>
-    public bool AllowsWriteAliases { get; }
+    public bool AllowsWriteAliases { [DebuggerStepThrough] get; }
     /// <summary>
     /// Whether this kind of reference permits reading the value of an object through this reference.
     /// </summary>
-    public bool AllowsRead { get; }
+    public bool AllowsRead { [DebuggerStepThrough] get; }
     /// <summary>
     /// Whether this kind of reference permits other readable aliases to the object to exist.
     /// </summary>
     /// <remarks>Note that <see cref="Constant"/> does <see cref="AllowsReadAliases"/> but not
     /// <see cref="AllowsWriteAliases"/>.</remarks>
-    public bool AllowsReadAliases { get; }
+    public bool AllowsReadAliases { [DebuggerStepThrough] get; }
     /// <summary>
     /// Whether this kind of reference permits aliases that have been sequestered to temporarily
     /// strengthen the capability of the reference. This is only true for `temp iso` and `temp const`.
     /// </summary>
-    public bool AllowsSequesteredAliases { get; }
+    public bool AllowsSequesteredAliases { [DebuggerStepThrough] get; }
 
     /// <summary>
     /// Does this capability allow a reference with it to be recovered to isolated if reference

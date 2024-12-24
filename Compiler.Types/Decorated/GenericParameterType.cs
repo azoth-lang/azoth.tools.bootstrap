@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
@@ -8,7 +9,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 // NOTE: generic parameters are the only plain types that do not need a capability
 public sealed class GenericParameterType : NonVoidType
 {
-    public override GenericParameterPlainType PlainType { get; }
+    public override GenericParameterPlainType PlainType { [DebuggerStepThrough] get; }
 
     public IdentifierName Name => PlainType.Name;
 

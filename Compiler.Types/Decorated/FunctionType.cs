@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using Azoth.Tools.Bootstrap.Framework;
 
@@ -14,11 +15,11 @@ public sealed class FunctionType : NonVoidType, IMaybeFunctionType
         return new FunctionType(properParameters.ToFixedList(), returnType);
     }
 
-    public override FunctionPlainType PlainType { get; }
+    public override FunctionPlainType PlainType { [DebuggerStepThrough] get; }
     IMaybeFunctionPlainType IMaybeFunctionType.PlainType => PlainType;
 
-    public IFixedList<ParameterType> Parameters { get; }
-    public Type Return { get; }
+    public IFixedList<ParameterType> Parameters { [DebuggerStepThrough] get; }
+    public Type Return { [DebuggerStepThrough] get; }
     IMaybeType IMaybeFunctionType.Return => Return;
 
     internal override GenericParameterTypeReplacements BareTypeReplacements => GenericParameterTypeReplacements.None;

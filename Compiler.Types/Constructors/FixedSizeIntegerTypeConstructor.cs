@@ -15,7 +15,7 @@ public sealed class FixedSizeIntegerTypeConstructor : IntegerTypeConstructor
     internal new static readonly FixedSizeIntegerTypeConstructor Int64 = new(BuiltInTypeName.Int64, 64, true);
     internal new static readonly FixedSizeIntegerTypeConstructor UInt64 = new(BuiltInTypeName.UInt64, 64, false);
 
-    public int Bits { get; }
+    public int Bits { [DebuggerStepThrough] get; }
     public BigInteger MaxValue;
     public BigInteger MinValue;
 

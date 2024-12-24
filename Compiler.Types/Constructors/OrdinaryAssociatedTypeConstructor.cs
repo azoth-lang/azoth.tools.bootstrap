@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Framework;
@@ -10,7 +11,7 @@ public sealed class OrdinaryAssociatedTypeConstructor : AssociatedTypeConstructo
 
     public override TypeSemantics? Semantics => null;
 
-    public override IdentifierName Name { get; }
+    public override IdentifierName Name { [DebuggerStepThrough] get; }
 
     public override IFixedSet<BareType> Supertypes => BareType.AnySet;
 

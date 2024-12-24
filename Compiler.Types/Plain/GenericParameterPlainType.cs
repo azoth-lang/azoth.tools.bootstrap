@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 
@@ -8,9 +9,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 /// </summary>
 public sealed class GenericParameterPlainType : NonVoidPlainType
 {
-    public OrdinaryTypeConstructor DeclaringTypeConstructor { get; }
+    public OrdinaryTypeConstructor DeclaringTypeConstructor { [DebuggerStepThrough] get; }
     public override TypeSemantics? Semantics => null;
-    public TypeConstructor.Parameter Parameter { get; }
+    public TypeConstructor.Parameter Parameter { [DebuggerStepThrough] get; }
     public IdentifierName Name => Parameter.Name;
 
     // TODO generic parameters can have supertypes based on generic constraints
