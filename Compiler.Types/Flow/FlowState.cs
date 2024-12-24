@@ -549,13 +549,16 @@ internal sealed class FlowState : IFlowState
 
         var valueMap = AliasValueMapping(id, intoValueId);
         foreach (var (newValue, oldValue) in valueMap)
-        {
-            // If the value could reference `temp const` data, then it needs to be tracked. (However,
-            // that could be detected by looking at whether the set is lent or not, correct?)
-            var set = builder.TrySetFor(oldValue) ?? throw new InvalidOperationException();
-            builder.AddToSet(set, newValue, default); // TODO what is the correct flow capability for the result?
-        }
-
+            // New value matches the tracking of the old value
+            if (untrackedValues.Contains(oldValue))
+                builder.AddUntracked(newValue);
+            else
+            {
+                // If the value could reference `temp const` data, then it needs to be tracked. (However,
+                // that could be detected by looking at whether the set is lent or not, correct?)
+                var set = builder.TrySetFor(oldValue) ?? throw new InvalidOperationException();
+                builder.AddToSet(set, newValue, default); // TODO what is the correct flow capability for the result?}
+            }
         builder.AddValueId(intoValueId, valueMap.Keys);
         builder.Remove(id);
 
