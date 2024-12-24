@@ -14,7 +14,8 @@ public sealed class UnknownPlainType : IMaybeFunctionPlainType
     IMaybePlainType IMaybeFunctionPlainType.Return => PlainType.Unknown;
 
     PlainTypeReplacements IMaybePlainType.TypeReplacements => PlainTypeReplacements.None;
-    IMaybePlainType IMaybePlainType.ToNonLiteral() => PlainType.Unknown;
+
+    IMaybeNonVoidPlainType IMaybeNonVoidPlainType.ToNonLiteral() => PlainType.Unknown;
 
     #region Equality
     public bool Equals(IMaybePlainType? other) => ReferenceEquals(this, other);

@@ -57,7 +57,7 @@ public abstract class PlainType : IMaybePlainType
     public virtual PlainTypeReplacements TypeReplacements => PlainTypeReplacements.None;
 
     public virtual ConstructedPlainType? TryToNonLiteral() => null;
-    public PlainType ToNonLiteral() => TryToNonLiteral() ?? this;
+    public virtual PlainType ToNonLiteral() => TryToNonLiteral() ?? this;
     IMaybePlainType IMaybePlainType.ToNonLiteral() => ToNonLiteral();
 
     #region Equality

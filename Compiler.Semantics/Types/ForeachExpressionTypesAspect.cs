@@ -29,7 +29,7 @@ internal static partial class ForeachExpressionTypesAspect
             return iteratedType;
 
         // TODO report an error for void type
-        return nonVoidIteratorType.TypeReplacements.Apply(iteratedType).ToNonLiteral().ToNonVoidType();
+        return nonVoidIteratorType.TypeReplacements.Apply(iteratedType).ToNonVoidType();
     }
 
     public static partial IFlowState ForeachExpression_FlowStateBeforeBlock(IForeachExpressionNode node)

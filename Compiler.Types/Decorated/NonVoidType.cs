@@ -26,4 +26,5 @@ public abstract class NonVoidType : Type, IMaybeNonVoidType
     private TypeReplacements? typeReplacements;
 
     public override NonVoidType ToNonLiteral() => this;
+    IMaybeNonVoidType IMaybeNonVoidType.ToNonLiteral() => ToNonLiteral();
 }

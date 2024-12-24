@@ -24,6 +24,8 @@ public sealed class UnknownType : IMaybeFunctionType, IMaybeParameterType
     IMaybeNonVoidType IMaybeParameterType.Type => this;
     #endregion
 
+    IMaybeNonVoidType IMaybeNonVoidType.ToNonLiteral() => this;
+
     #region Equality
     public bool Equals(IMaybeType? other)
         // Singleton, so a reference equality suffices

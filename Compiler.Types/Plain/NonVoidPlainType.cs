@@ -15,4 +15,7 @@ public abstract class NonVoidPlainType : PlainType, IMaybeNonVoidPlainType
     /// semantics are not known.
     /// </summary>
     public abstract TypeSemantics? Semantics { get; }
+
+    public sealed override NonVoidPlainType ToNonLiteral() => TryToNonLiteral() ?? this;
+    IMaybeNonVoidPlainType IMaybeNonVoidPlainType.ToNonLiteral() => ToNonLiteral();
 }

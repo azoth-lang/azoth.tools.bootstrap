@@ -51,7 +51,7 @@ internal static partial class NameBindingTypesAspect
 
     public static partial IMaybeNonVoidType ForeachExpression_BindingType(IForeachExpressionNode node)
         // TODO report an error for void type
-        => node.DeclaredType?.NamedType.ToNonVoidType() ?? node.IteratedType;
+        => node.DeclaredType?.NamedType.ToNonVoidType() ?? node.IteratedType.ToNonLiteral();
 
     public static partial IMaybeNonVoidType BindingPattern_BindingType(IBindingPatternNode node)
         => node.ContextBindingType();

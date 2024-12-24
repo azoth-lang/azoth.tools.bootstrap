@@ -54,7 +54,7 @@ internal static partial class ExpressionPlainTypesAspect
         => node.LeftOperand?.PlainType ?? PlainType.Unknown;
 
     public static partial IMaybePlainType ResultStatement_PlainType(IResultStatementNode node)
-        => node.Expression?.PlainType.ToNonLiteral() ?? PlainType.Unknown;
+        => node.Expression?.PlainType ?? PlainType.Unknown;
 
     public static partial PlainType? BinaryOperatorExpression_NumericOperatorCommonPlainType(IBinaryOperatorExpressionNode node)
     {
@@ -241,7 +241,7 @@ internal static partial class ExpressionPlainTypesAspect
         => PlainType.None;
 
     public static partial IMaybePlainType AsyncStartExpression_PlainType(IAsyncStartExpressionNode node)
-        => Intrinsic.PromiseOf(node.Expression?.PlainType.ToNonLiteral() ?? PlainType.Unknown);
+        => Intrinsic.PromiseOf(node.Expression?.PlainType ?? PlainType.Unknown);
 
     public static partial IMaybePlainType AwaitExpression_PlainType(IAwaitExpressionNode node)
     {

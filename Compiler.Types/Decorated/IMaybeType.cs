@@ -19,7 +19,7 @@ public interface IMaybeType : IEquatable<IMaybeType>
     /// corresponding types.
     /// </summary>
     // TODO this makes literal types special. Perhaps there should be a way to declare other literal types in code
-    public IMaybeType ToNonLiteral() => this;
+    public IMaybeType ToNonLiteral();
 
     /// <summary>
     /// How this type would be written in source code.

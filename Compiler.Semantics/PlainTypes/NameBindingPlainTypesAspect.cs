@@ -44,7 +44,7 @@ internal static partial class NameBindingPlainTypesAspect
     }
 
     public static partial IMaybeNonVoidPlainType ForeachExpression_BindingPlainType(IForeachExpressionNode node)
-        => node.DeclaredType?.NamedPlainType.ToNonVoid() ?? node.IteratedPlainType;
+        => node.DeclaredType?.NamedPlainType.ToNonVoid() ?? node.IteratedPlainType.ToNonLiteral();
 
     public static partial IMaybeNonVoidPlainType NewObjectExpression_ConstructingPlainType(INewObjectExpressionNode node)
         => node.ConstructingType.NamedPlainType.ToNonVoid();
