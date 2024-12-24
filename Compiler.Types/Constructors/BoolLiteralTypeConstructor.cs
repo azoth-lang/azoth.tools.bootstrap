@@ -21,21 +21,6 @@ public sealed class BoolLiteralTypeConstructor : LiteralTypeConstructor
 
     public override BoolTypeConstructor TryToNonLiteral() => Bool;
 
-    public static implicit operator BoolLiteralTypeConstructor(bool value) => value ? True : False;
-
-    // TODO remove operations. Literal types should not be used for constant folding `true and false` doesn't have the type `bool[false]`
-    #region Operations
-    public BoolLiteralTypeConstructor Equals(BoolLiteralTypeConstructor other) => Value == other.Value;
-
-    public BoolLiteralTypeConstructor NotEquals(BoolLiteralTypeConstructor other) => Value != other.Value;
-
-    public BoolLiteralTypeConstructor And(BoolLiteralTypeConstructor other) => Value && other.Value;
-
-    public BoolLiteralTypeConstructor Or(BoolLiteralTypeConstructor other) => Value || other.Value;
-
-    public BoolLiteralTypeConstructor Not() => Value ? False : True;
-    #endregion
-
     #region Equality
     public override bool Equals(TypeConstructor? other)
         // Bool literal values are singletons, so we can use reference equality.

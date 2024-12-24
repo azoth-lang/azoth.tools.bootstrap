@@ -57,40 +57,7 @@ public sealed class IntegerLiteralTypeConstructor : LiteralTypeConstructor
         return Byte;
     }
 
-    // TODO remove operations except for negate. Literal types should not be used for constant folding `1 + 1` doesn't have the type `int[2]`
-    #region Operations
-    public IntegerLiteralTypeConstructor Add(IntegerLiteralTypeConstructor other)
-        => new(Value + other.Value);
-
-    public IntegerLiteralTypeConstructor Subtract(IntegerLiteralTypeConstructor other)
-        => new(Value - other.Value);
-
-    public IntegerLiteralTypeConstructor Multiply(IntegerLiteralTypeConstructor other)
-        => new(Value * other.Value);
-
-    public IntegerLiteralTypeConstructor DivideBy(IntegerLiteralTypeConstructor other)
-        => new(Value / other.Value);
-
     public IntegerLiteralTypeConstructor Negate() => new(-Value);
-
-    public BoolLiteralTypeConstructor Equals(IntegerLiteralTypeConstructor other)
-        => Value == other.Value;
-
-    public BoolLiteralTypeConstructor NotEquals(IntegerLiteralTypeConstructor other)
-        => Value != other.Value;
-
-    public BoolLiteralTypeConstructor LessThan(IntegerLiteralTypeConstructor other)
-        => Value < other.Value;
-
-    public BoolLiteralTypeConstructor LessThanOrEqual(IntegerLiteralTypeConstructor other)
-        => Value <= other.Value;
-
-    public BoolLiteralTypeConstructor GreaterThan(IntegerLiteralTypeConstructor other)
-        => Value > other.Value;
-
-    public BoolLiteralTypeConstructor GreaterThanOrEqual(IntegerLiteralTypeConstructor other)
-        => Value >= other.Value;
-    #endregion
 
     #region Equality
     public override bool Equals(TypeConstructor? other)

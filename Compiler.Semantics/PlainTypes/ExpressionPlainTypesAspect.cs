@@ -125,36 +125,6 @@ internal static partial class ExpressionPlainTypesAspect
         var rightPlainType = node.RightOperand?.PlainType ?? PlainType.Unknown;
         return (leftPlainType, node.Operator, rightPlainType) switch
         {
-            (ConstructedPlainType { TypeConstructor: IntegerLiteralTypeConstructor left }, BinaryOperator.Plus,
-                ConstructedPlainType { TypeConstructor: IntegerLiteralTypeConstructor right }) => left.Add(right).PlainType,
-            (ConstructedPlainType { TypeConstructor: IntegerLiteralTypeConstructor left }, BinaryOperator.Minus,
-                ConstructedPlainType { TypeConstructor: IntegerLiteralTypeConstructor right }) => left.Subtract(right).PlainType,
-            (ConstructedPlainType { TypeConstructor: IntegerLiteralTypeConstructor left }, BinaryOperator.Asterisk,
-                ConstructedPlainType { TypeConstructor: IntegerLiteralTypeConstructor right }) => left.Multiply(right).PlainType,
-            (ConstructedPlainType { TypeConstructor: IntegerLiteralTypeConstructor left }, BinaryOperator.Slash,
-                ConstructedPlainType { TypeConstructor: IntegerLiteralTypeConstructor right }) => left.DivideBy(right).PlainType,
-            (ConstructedPlainType { TypeConstructor: IntegerLiteralTypeConstructor left }, BinaryOperator.EqualsEquals,
-                ConstructedPlainType { TypeConstructor: IntegerLiteralTypeConstructor right }) => left.Equals(right).PlainType,
-            (ConstructedPlainType { TypeConstructor: IntegerLiteralTypeConstructor left }, BinaryOperator.NotEqual,
-                ConstructedPlainType { TypeConstructor: IntegerLiteralTypeConstructor right }) => left.NotEquals(right).PlainType,
-            (ConstructedPlainType { TypeConstructor: IntegerLiteralTypeConstructor left }, BinaryOperator.LessThan,
-                ConstructedPlainType { TypeConstructor: IntegerLiteralTypeConstructor right }) => left.LessThan(right).PlainType,
-            (ConstructedPlainType { TypeConstructor: IntegerLiteralTypeConstructor left }, BinaryOperator.LessThanOrEqual,
-                ConstructedPlainType { TypeConstructor: IntegerLiteralTypeConstructor right }) => left.LessThanOrEqual(right).PlainType,
-            (ConstructedPlainType { TypeConstructor: IntegerLiteralTypeConstructor left }, BinaryOperator.GreaterThan,
-                ConstructedPlainType { TypeConstructor: IntegerLiteralTypeConstructor right }) => left.GreaterThan(right).PlainType,
-            (ConstructedPlainType { TypeConstructor: IntegerLiteralTypeConstructor left }, BinaryOperator.GreaterThanOrEqual,
-                ConstructedPlainType { TypeConstructor: IntegerLiteralTypeConstructor right }) => left.GreaterThanOrEqual(right).PlainType,
-
-            (ConstructedPlainType { TypeConstructor: BoolLiteralTypeConstructor left }, BinaryOperator.EqualsEquals,
-                ConstructedPlainType { TypeConstructor: BoolLiteralTypeConstructor right }) => left.Equals(right).PlainType,
-            (ConstructedPlainType { TypeConstructor: BoolLiteralTypeConstructor left }, BinaryOperator.NotEqual,
-                ConstructedPlainType { TypeConstructor: BoolLiteralTypeConstructor right }) => left.NotEquals(right).PlainType,
-            (ConstructedPlainType { TypeConstructor: BoolLiteralTypeConstructor left }, BinaryOperator.And,
-                ConstructedPlainType { TypeConstructor: BoolLiteralTypeConstructor right }) => left.And(right).PlainType,
-            (ConstructedPlainType { TypeConstructor: BoolLiteralTypeConstructor left }, BinaryOperator.Or,
-                ConstructedPlainType { TypeConstructor: BoolLiteralTypeConstructor right }) => left.Or(right).PlainType,
-
             (NonVoidPlainType { Semantics: TypeSemantics.Reference }, BinaryOperator.ReferenceEquals, NonVoidPlainType { Semantics: TypeSemantics.Reference })
                 or (NonVoidPlainType { Semantics: TypeSemantics.Reference }, BinaryOperator.NotReferenceEqual, NonVoidPlainType { Semantics: TypeSemantics.Reference })
                 => PlainType.Bool,
@@ -302,11 +272,7 @@ internal static partial class ExpressionPlainTypesAspect
         };
 
     private static IMaybePlainType UnaryOperatorExpression_PlainType_Not(IUnaryOperatorExpressionNode node)
-    {
-        if (node.Operand?.PlainType is ConstructedPlainType { TypeConstructor: BoolLiteralTypeConstructor typeConstructor })
-            return typeConstructor.Not().PlainType;
-        return PlainType.Bool;
-    }
+        => PlainType.Bool;
 
     private static IMaybePlainType UnaryOperatorExpression_PlainType_Minus(IUnaryOperatorExpressionNode node)
     {
