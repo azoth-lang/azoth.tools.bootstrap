@@ -57,7 +57,7 @@ public sealed class CapabilityType : NonVoidType
         return BareType.With(capability);
     }
 
-    public IMaybeNonVoidType? With(DeclaredCapability declaredCapability)
+    public IMaybeNonVoidType With(DeclaredCapability declaredCapability)
         => With(declaredCapability.ToCapabilityFor(TypeConstructor));
 
     public CapabilityType With(IFixedList<Type> arguments)

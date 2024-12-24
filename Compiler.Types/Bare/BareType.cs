@@ -66,6 +66,14 @@ public sealed class BareType : IEquatable<BareType>
         => CapabilityType.Create(capability.ToCapabilityFor(TypeConstructor), this);
 
     /// <summary>
+    /// Create a capability type with a capability appropriately modified to fit whether this type
+    /// is declared constant.
+    /// </summary>
+    // TODO this needs a better name
+    public CapabilityType WithModified(Capability capability)
+        => CapabilityType.Create(capability.ToCapabilityFor(TypeConstructor), this);
+
+    /// <summary>
     /// This type with whatever the default read capability is for the type based on whether it is
     /// declared `const`.
     /// </summary>

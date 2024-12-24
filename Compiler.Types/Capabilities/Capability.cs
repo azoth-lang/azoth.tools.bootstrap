@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
@@ -248,6 +249,12 @@ public sealed class Capability : ICapabilityConstraint
     /// </summary>
     /// <remarks>`id` references remain `id` otherwise they become `const`.</remarks>
     public Capability Freeze() => this == Identity ? this : Constant;
+
+    public Capability ToCapabilityFor(TypeConstructor typeConstructor)
+    {
+        if (typeConstructor.IsDeclaredConst && this == Read) return Constant;
+        return this;
+    }
 
     public override string ToString()
         => ToILString();

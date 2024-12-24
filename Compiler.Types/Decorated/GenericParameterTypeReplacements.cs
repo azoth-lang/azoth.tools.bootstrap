@@ -152,7 +152,7 @@ public sealed class GenericParameterTypeReplacements
         var bareSelfReplacement = (selfReplacement as CapabilityType)?.BareType;
         var replacementBareType = Apply(type.BareType, selfReplacement, bareSelfReplacement);
         if (ReferenceEquals(type.BareType, replacementBareType)) return type;
-        return replacementBareType.With(type.Capability);
+        return replacementBareType.WithModified(type.Capability);
     }
 
     internal ParameterType? Apply(ParameterType type, NonVoidType? selfReplacement)
