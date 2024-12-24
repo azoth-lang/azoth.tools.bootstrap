@@ -27,7 +27,7 @@ public static class TypeError
         IMaybeType rightOperandType)
     {
         return new(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
-            3001, $"Operator `{@operator.ToSymbolString()}` cannot be applied to operands of type `{leftOperandType.ToNonLiteral().ToSourceCodeString()}` and `{rightOperandType.ToNonLiteral().ToSourceCodeString()}`.");
+            3001, $"Operator `{@operator.ToSymbolString()}` cannot be applied to operands of type `{leftOperandType.ToSourceCodeString()}` and `{rightOperandType.ToSourceCodeString()}`.");
     }
 
     public static Diagnostic OperatorCannotBeAppliedToOperandOfType(

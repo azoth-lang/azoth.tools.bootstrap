@@ -499,13 +499,15 @@ internal static partial class ExpressionTypesAspect
         IMaybeType leftType,
         IMaybeType rightType)
     {
+        // TODO use the expression plain type too
         // TODO the left and right types need to be compatible with the range type
-        var rangeTypeDeclaration = containingLexicalScope.Lookup("azoth")
-            .OfType<INamespaceDeclarationNode>().SelectMany(ns => ns.MembersNamed("range"))
-            .OfType<ITypeDeclarationNode>().TrySingle();
-        var rangePlainType = rangeTypeDeclaration?.Symbol.TryGetTypeConstructor()?.ConstructNullaryType(containingType: null).With(Capability.Constant)
+        var globalScope = containingLexicalScope.PackageNames.ImportGlobalScope;
+        var typeDeclaration = globalScope.Lookup("azoth").OfType<INamespaceDeclarationNode>()
+            .SelectMany(ns => ns.MembersNamed("range")).OfType<ITypeDeclarationNode>().TrySingle();
+        var typeConstructor = typeDeclaration?.TypeFactory as TypeConstructor;
+        var rangeType = typeConstructor?.ConstructNullaryType(containingType: null).With(Capability.Constant)
                              ?? IMaybeType.Unknown;
-        return rangePlainType;
+        return rangeType;
     }
 
     public static partial IFlowState BinaryOperatorExpression_FlowStateAfter(IBinaryOperatorExpressionNode node)

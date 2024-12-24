@@ -211,10 +211,11 @@ internal static partial class ExpressionPlainTypesAspect
     private static IMaybePlainType InferRangeOperatorType(LexicalScope containingLexicalScope)
     {
         // TODO the left and right plain types need to be compatible with the range type
-        var rangeTypeDeclaration = containingLexicalScope.Lookup("azoth")
-            .OfType<INamespaceDeclarationNode>().SelectMany(ns => ns.MembersNamed("range"))
-            .OfType<ITypeDeclarationNode>().TrySingle();
-        var rangePlainType = rangeTypeDeclaration?.Symbol.TryGetTypeConstructor()?.TryConstructNullaryPlainType(containingType: null)
+        var globalScope = containingLexicalScope.PackageNames.ImportGlobalScope;
+        var typeDeclaration = globalScope.Lookup("azoth").OfType<INamespaceDeclarationNode>()
+            .SelectMany(ns => ns.MembersNamed("range")).OfType<ITypeDeclarationNode>().TrySingle();
+        var typeConstructor = typeDeclaration?.TypeFactory as TypeConstructor;
+        var rangePlainType = typeConstructor?.TryConstructNullaryPlainType(containingType: null)
                              ?? IMaybePlainType.Unknown;
         return rangePlainType;
     }
