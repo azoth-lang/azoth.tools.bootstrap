@@ -451,7 +451,7 @@ public class InterpreterProcess
         IEnumerable<AzothValue> arguments)
     {
         if (method.Body is null)
-            throw new InvalidOperationException($"Can't call abstract method {method}");
+            throw new InvalidOperationException($"Can't call abstract method {method.Syntax}");
 
         try
         {

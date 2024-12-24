@@ -224,7 +224,7 @@ internal static partial class ExpressionPlainTypesAspect
     {
         var typeSymbolNode = node.ContainingLexicalScope.Lookup(StringTypeName)
                                  .OfType<ITypeDeclarationNode>().TrySingle();
-        return (IMaybePlainType?)typeSymbolNode?.Symbol.TryGetTypeConstructor()?.TryConstructNullaryPlainType(containingType: null) ?? PlainType.Unknown;
+        return typeSymbolNode?.Symbol.TryGetTypeConstructor()?.TryConstructNullaryPlainType(containingType: null) ?? IMaybePlainType.Unknown;
     }
 
     private static readonly IdentifierName StringTypeName = "String";
