@@ -629,6 +629,8 @@ internal sealed class FlowState : IFlowState
 
     public IFlowState DropBindings(IEnumerable<ValueId> bindingIds)
     {
+        // return statements etc can lead to an empty state where all bindings have already been dropped
+        if (IsEmpty) return this;
         var builder = ToBuilder();
         builder.Remove(bindingIds);
         return builder.ToImmutable();
@@ -834,8 +836,8 @@ internal sealed class FlowState : IFlowState
 
         public void Remove(IEnumerable<ValueId> valueIds)
         {
-            foreach (var value in valueIds)
-                Remove(value);
+            foreach (var valueId in valueIds)
+                Remove(valueId);
         }
 
         public int? Union(int? set1, int? set2)
