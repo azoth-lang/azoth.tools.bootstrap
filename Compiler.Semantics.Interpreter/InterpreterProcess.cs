@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Pipelines;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -48,7 +49,6 @@ public class InterpreterProcess
     private readonly IStructDefinitionNode? rangeStruct;
     private readonly InitializerSymbol? rangeInitializer;
     private byte? exitCode;
-    private readonly MemoryStream standardOutput = new();
     private readonly TextWriter standardOutputWriter;
     private readonly MethodSignatureCache methodSignatures = new();
     private readonly ConcurrentDictionary<IClassDefinitionNode, VTable> vTables = new();
@@ -93,9 +93,9 @@ public class InterpreterProcess
                                .Select(c => (c.Symbol.Assigned(), (IOrdinaryInitializerDefinitionNode?)c)))
                        .ToFixedDictionary();
 
-        // TODO pointing both of these to a memory stream is probably wrong. Need something that acts like a pipe.
-        standardOutputWriter = new StreamWriter(standardOutput, Encoding.UTF8, leaveOpen: true);
-        StandardOutput = new StreamReader(standardOutput, Encoding.UTF8);
+        var pipe = new Pipe();
+        standardOutputWriter = new StreamWriter(pipe.Writer.AsStream(), Encoding.UTF8);
+        StandardOutput = new StreamReader(pipe.Reader.AsStream(), Encoding.UTF8);
 
         executionTask = runTests ? Task.Run(RunTestsAsync) : Task.Run(CallEntryPointAsync);
     }
@@ -121,73 +121,61 @@ public class InterpreterProcess
 
     private async Task CallEntryPointAsync()
     {
-        try
-        {
-            var entryPoint = package.EntryPoint!;
-            var arguments = new List<AzothValue>();
-            foreach (var parameterType in entryPoint.Symbol.Assigned().ParameterTypes)
-                arguments.Add(await ConstructMainParameterAsync(parameterType.Type));
+        await using var _ = standardOutputWriter;
 
-            var returnValue = await CallFunctionAsync(entryPoint, arguments).ConfigureAwait(false);
-            // Flush any buffered output
-            await standardOutputWriter.FlushAsync().ConfigureAwait(false);
-            var returnType = entryPoint.Symbol.Assigned().ReturnType;
-            if (returnType.Equals(Type.Void))
-                exitCode = 0;
-            else if (returnType.Equals(Type.Byte))
-                exitCode = returnValue.ByteValue;
-            else
-                throw new InvalidOperationException($"Main function cannot have return type {returnType.ToILString()}");
-        }
-        finally
-        {
-            await standardOutputWriter.DisposeAsync().ConfigureAwait(false);
-            standardOutput.Position = 0;
-        }
+        var entryPoint = package.EntryPoint!;
+        var arguments = new List<AzothValue>();
+        foreach (var parameterType in entryPoint.Symbol.Assigned().ParameterTypes)
+            arguments.Add(await ConstructMainParameterAsync(parameterType.Type));
+
+        var returnValue = await CallFunctionAsync(entryPoint, arguments).ConfigureAwait(false);
+        // Flush any buffered output
+        await standardOutputWriter.FlushAsync().ConfigureAwait(false);
+        var returnType = entryPoint.Symbol.Assigned().ReturnType;
+        if (returnType.Equals(Type.Void))
+            exitCode = 0;
+        else if (returnType.Equals(Type.Byte))
+            exitCode = returnValue.ByteValue;
+        else
+            throw new InvalidOperationException($"Main function cannot have return type {returnType.ToILString()}");
     }
 
     private async Task RunTestsAsync()
     {
-        try
+        await using var _ = standardOutputWriter;
+
+        var testFunctions = package.TestingFacet.Definitions.OfType<IFunctionDefinitionNode>()
+                                   .Where(f => f.Attributes.Any(IsTestAttribute)).ToFixedSet();
+
+        await standardOutputWriter.WriteLineAsync($"Testing {package.Symbol.Name} package...");
+        await standardOutputWriter.WriteLineAsync($"  Found {testFunctions.Count} tests");
+        await standardOutputWriter.WriteLineAsync();
+
+        int failed = 0;
+
+        foreach (var function in testFunctions)
         {
-            var testFunctions = package.TestingFacet.Definitions.OfType<IFunctionDefinitionNode>()
-                                       .Where(f => f.Attributes.Any(IsTestAttribute)).ToFixedSet();
-
-            await standardOutputWriter.WriteLineAsync($"Testing {package.Symbol.Name} package...");
-            await standardOutputWriter.WriteLineAsync($"  Found {testFunctions.Count} tests");
-            await standardOutputWriter.WriteLineAsync();
-
-            int failed = 0;
-
-            foreach (var function in testFunctions)
+            // TODO check that return type is void
+            var symbol = function.Symbol;
+            await standardOutputWriter.WriteLineAsync($"{symbol.Assigned().ContainingSymbol.ToILString()}.{symbol.Assigned().Name} ...");
+            try
             {
-                // TODO check that return type is void
-                var symbol = function.Symbol;
-                await standardOutputWriter.WriteLineAsync($"{symbol.Assigned().ContainingSymbol.ToILString()}.{symbol.Assigned().Name} ...");
-                try
-                {
-                    await CallFunctionAsync(function, []).ConfigureAwait(false);
-                    await standardOutputWriter.WriteLineAsync("  passed");
-                }
-                catch (Abort ex)
-                {
-                    await standardOutputWriter.WriteLineAsync("  FAILED: " + ex.Message);
-                    failed += 1;
-                }
+                await CallFunctionAsync(function, []).ConfigureAwait(false);
+                await standardOutputWriter.WriteLineAsync("  passed");
             }
-
-            await standardOutputWriter.WriteLineAsync();
-            await standardOutputWriter.WriteLineAsync($"Tested {package.Symbol.Name} package");
-            await standardOutputWriter.WriteLineAsync($"{failed} failed tests out of {testFunctions.Count} total");
-
-            // Flush any buffered output
-            await standardOutputWriter.FlushAsync().ConfigureAwait(false);
+            catch (Abort ex)
+            {
+                await standardOutputWriter.WriteLineAsync("  FAILED: " + ex.Message);
+                failed += 1;
+            }
         }
-        finally
-        {
-            await standardOutputWriter.DisposeAsync().ConfigureAwait(false);
-            standardOutput.Position = 0;
-        }
+
+        await standardOutputWriter.WriteLineAsync();
+        await standardOutputWriter.WriteLineAsync($"Tested {package.Symbol.Name} package");
+        await standardOutputWriter.WriteLineAsync($"{failed} failed tests out of {testFunctions.Count} total");
+
+        // Flush any buffered output
+        await standardOutputWriter.FlushAsync().ConfigureAwait(false);
     }
 
     private static bool IsTestAttribute(IAttributeNode attribute)

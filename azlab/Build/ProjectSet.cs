@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Azoth.Tools.Bootstrap.Compiler.API;
-using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Code;
 using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Semantics;
@@ -124,9 +123,9 @@ internal class ProjectSet : IEnumerable<Project>
 
         var interpreter = new AzothTreeInterpreter();
         var process = interpreter.Execute(entryPackageNode, referencedPackages);
+        while (await process.StandardOutput.ReadLineAsync() is { } line)
+            Console.WriteLine(line);
         await process.WaitForExitAsync();
-        var stdout = await process.StandardOutput.ReadToEndAsync();
-        Console.WriteLine(stdout);
         var stderr = await process.StandardError.ReadToEndAsync();
         await Console.Error.WriteLineAsync(stderr);
     }
@@ -141,9 +140,9 @@ internal class ProjectSet : IEnumerable<Project>
 
         var interpreter = new AzothTreeInterpreter();
         var process = interpreter.ExecuteTests(testPackageNode, referencedPackages);
+        while (await process.StandardOutput.ReadLineAsync() is { } line)
+            Console.WriteLine(line);
         await process.WaitForExitAsync();
-        var stdout = await process.StandardOutput.ReadToEndAsync();
-        Console.WriteLine(stdout);
         var stderr = await process.StandardError.ReadToEndAsync();
         await Console.Error.WriteLineAsync(stderr);
     }
