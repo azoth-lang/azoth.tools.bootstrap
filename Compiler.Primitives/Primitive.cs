@@ -33,27 +33,27 @@ public static class Primitive
         var tree = SymbolTreeBuilder.CreateForPrimitives();
 
         // TODO: This is a hack to "have" a string type from here. Replace by extending primitive types with string related methods.
-        var stringType = TypeConstructor.CreateClass("fake", NamespaceName.Global, false, false, "String")
+        var stringType = BareTypeConstructor.CreateClass("fake", NamespaceName.Global, false, false, "String")
                                         .ConstructNullaryType(containingType: null).With(Capability.Constant);
 
         // Simple Types
         BuildBoolSymbol(tree);
 
-        BuildIntegerTypeSymbol(tree, TypeConstructor.Int, stringType);
-        BuildIntegerTypeSymbol(tree, TypeConstructor.UInt, stringType);
-        BuildIntegerTypeSymbol(tree, TypeConstructor.Int8, stringType);
-        BuildIntegerTypeSymbol(tree, TypeConstructor.Byte, stringType);
-        BuildIntegerTypeSymbol(tree, TypeConstructor.Int16, stringType);
-        BuildIntegerTypeSymbol(tree, TypeConstructor.UInt16, stringType);
-        BuildIntegerTypeSymbol(tree, TypeConstructor.Int32, stringType);
-        BuildIntegerTypeSymbol(tree, TypeConstructor.UInt32, stringType);
-        BuildIntegerTypeSymbol(tree, TypeConstructor.Int64, stringType);
-        BuildIntegerTypeSymbol(tree, TypeConstructor.UInt64, stringType);
+        BuildIntegerTypeSymbol(tree, BareTypeConstructor.Int, stringType);
+        BuildIntegerTypeSymbol(tree, BareTypeConstructor.UInt, stringType);
+        BuildIntegerTypeSymbol(tree, BareTypeConstructor.Int8, stringType);
+        BuildIntegerTypeSymbol(tree, BareTypeConstructor.Byte, stringType);
+        BuildIntegerTypeSymbol(tree, BareTypeConstructor.Int16, stringType);
+        BuildIntegerTypeSymbol(tree, BareTypeConstructor.UInt16, stringType);
+        BuildIntegerTypeSymbol(tree, BareTypeConstructor.Int32, stringType);
+        BuildIntegerTypeSymbol(tree, BareTypeConstructor.UInt32, stringType);
+        BuildIntegerTypeSymbol(tree, BareTypeConstructor.Int64, stringType);
+        BuildIntegerTypeSymbol(tree, BareTypeConstructor.UInt64, stringType);
 
-        BuildIntegerTypeSymbol(tree, TypeConstructor.Size, stringType);
-        BuildIntegerTypeSymbol(tree, TypeConstructor.Offset, stringType);
-        BuildIntegerTypeSymbol(tree, TypeConstructor.NInt, stringType);
-        BuildIntegerTypeSymbol(tree, TypeConstructor.NUInt, stringType);
+        BuildIntegerTypeSymbol(tree, BareTypeConstructor.Size, stringType);
+        BuildIntegerTypeSymbol(tree, BareTypeConstructor.Offset, stringType);
+        BuildIntegerTypeSymbol(tree, BareTypeConstructor.NInt, stringType);
+        BuildIntegerTypeSymbol(tree, BareTypeConstructor.NUInt, stringType);
 
         tree.Add(VoidTypeSymbol.Instance);
         tree.Add(NeverTypeSymbol.Instance);
@@ -65,7 +65,7 @@ public static class Primitive
 
     private static void BuildBoolSymbol(SymbolTreeBuilder tree)
     {
-        var symbol = new BuiltInTypeSymbol(TypeConstructor.Bool);
+        var symbol = new BuiltInTypeSymbol(BareTypeConstructor.Bool);
         tree.Add(symbol);
     }
 
@@ -90,7 +90,7 @@ public static class Primitive
 
     private static void BuildAnyTypeSymbol(SymbolTreeBuilder tree)
     {
-        var symbol = new BuiltInTypeSymbol(TypeConstructor.Any);
+        var symbol = new BuiltInTypeSymbol(BareTypeConstructor.Any);
         tree.Add(symbol);
 
         // published fn identity_hash(id self) -> nuint

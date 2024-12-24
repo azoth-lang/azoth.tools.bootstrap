@@ -71,7 +71,7 @@ public static partial class TypeOperations
     }
 
     private static bool IsSubtypeOf(
-        TypeConstructor typeConstructor,
+        BareTypeConstructor typeConstructor,
         IFixedList<IMaybeType> self,
         IFixedList<IMaybeType> other,
         bool otherAllowsWrite)

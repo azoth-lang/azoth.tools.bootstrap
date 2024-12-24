@@ -22,7 +22,7 @@ public sealed class BoolLiteralTypeConstructor : LiteralTypeConstructor
     public override BoolTypeConstructor TryToNonLiteral() => Bool;
 
     #region Equality
-    public override bool Equals(TypeConstructor? other)
+    public override bool Equals(BareTypeConstructor? other)
         // Bool literal values are singletons, so we can use reference equality.
         => ReferenceEquals(this, other);
 

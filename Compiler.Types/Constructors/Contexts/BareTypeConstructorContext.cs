@@ -12,9 +12,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors.Contexts;
 [Closed(
     typeof(BuiltInContext),
     typeof(NamespaceContext),
-    typeof(TypeConstructor))]
+    typeof(BareTypeConstructor))]
 [DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
-public abstract class TypeConstructorContext : IEquatable<TypeConstructorContext>
+public abstract class BareTypeConstructorContext : IEquatable<BareTypeConstructorContext>
 {
     /// <summary>
     /// Append the prefix the context applies to the name of type constructors in the context to the
@@ -23,10 +23,10 @@ public abstract class TypeConstructorContext : IEquatable<TypeConstructorContext
     public abstract void AppendContextPrefix(StringBuilder builder, ConstructedPlainType? containingType);
 
     #region Equality
-    public abstract bool Equals(TypeConstructorContext? other);
+    public abstract bool Equals(BareTypeConstructorContext? other);
 
     public sealed override bool Equals(object? obj)
-        => ReferenceEquals(this, obj) || obj is TypeConstructorContext other && Equals(other);
+        => ReferenceEquals(this, obj) || obj is BareTypeConstructorContext other && Equals(other);
 
     public abstract override int GetHashCode();
     #endregion

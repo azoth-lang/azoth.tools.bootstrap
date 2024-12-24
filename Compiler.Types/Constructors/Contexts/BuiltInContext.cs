@@ -8,7 +8,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors.Contexts;
 /// The context for type constructors for built-in types. This represents not being in any
 /// package or namespace.
 /// </summary>
-public sealed class BuiltInContext : TypeConstructorContext
+public sealed class BuiltInContext : BareTypeConstructorContext
 {
     #region Singleton
     public static readonly BuiltInContext Instance = new BuiltInContext();
@@ -23,7 +23,7 @@ public sealed class BuiltInContext : TypeConstructorContext
     }
 
     #region Equality
-    public override bool Equals(TypeConstructorContext? other)
+    public override bool Equals(BareTypeConstructorContext? other)
         // This type is a singleton, so we can use reference equality.
         => ReferenceEquals(this, other);
 

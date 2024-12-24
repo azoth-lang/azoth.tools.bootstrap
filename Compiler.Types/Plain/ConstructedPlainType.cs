@@ -12,7 +12,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 /// <remarks>This includes all types defined in source code, all simple types, and the `Any` type.</remarks>
 public sealed class ConstructedPlainType : NonVoidPlainType
 {
-    public TypeConstructor TypeConstructor { [DebuggerStepThrough] get; }
+    public BareTypeConstructor TypeConstructor { [DebuggerStepThrough] get; }
     public ConstructedPlainType? ContainingType { [DebuggerStepThrough] get; }
     public override TypeSemantics? Semantics => TypeConstructor.Semantics;
     public TypeName Name => TypeConstructor.Name;
@@ -28,11 +28,11 @@ public sealed class ConstructedPlainType : NonVoidPlainType
     private PlainTypeReplacements? typeReplacements;
 
     public ConstructedPlainType(
-        TypeConstructor typeConstructor,
+        BareTypeConstructor typeConstructor,
         ConstructedPlainType? containingType,
         IEnumerable<PlainType> typeArguments)
     {
-        Requires.That(Equals(typeConstructor.Context as TypeConstructor, containingType?.TypeConstructor),
+        Requires.That(Equals(typeConstructor.Context as BareTypeConstructor, containingType?.TypeConstructor),
             nameof(containingType),
             "Does not match type constructor.");
         TypeConstructor = typeConstructor;

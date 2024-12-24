@@ -19,7 +19,7 @@ public static class Intrinsic
 
     public static readonly OrdinaryTypeSymbol Promise = Find<OrdinaryTypeSymbol>("Promise");
 
-    public static readonly TypeConstructor PromiseTypeConstructor = Promise.TypeConstructor;
+    public static readonly BareTypeConstructor PromiseTypeConstructor = Promise.TypeConstructor;
 
     public static IMaybeType PromiseOf(IMaybeType type)
         => PromiseTypeConstructor.TryConstruct(containingType: null, FixedList.Create(type))?.WithDefaultCapability() ?? IMaybeType.Unknown;
@@ -107,7 +107,7 @@ public static class Intrinsic
     private static OrdinaryTypeConstructor BuildPromiseSymbol(LocalNamespaceSymbol azothNamespace, SymbolTreeBuilder tree)
     {
         var intrinsicsPackage = azothNamespace.Package;
-        var promiseType = TypeConstructor.CreateClass(intrinsicsPackage.Name, azothNamespace.NamespaceName,
+        var promiseType = BareTypeConstructor.CreateClass(intrinsicsPackage.Name, azothNamespace.NamespaceName,
                        isAbstract: false, isConst: false, "Promise", TypeConstructorParameter.Out(CapabilitySet.Any, "T"));
         var classSymbol = new OrdinaryTypeSymbol(azothNamespace, promiseType);
         tree.Add(classSymbol);
@@ -129,7 +129,7 @@ public static class Intrinsic
 
     private static OrdinaryTypeConstructor BuildRawHybridBoundedListSymbol(SymbolTreeBuilder tree, LocalNamespaceSymbol @namespace)
     {
-        var typeConstructor = TypeConstructor.CreateClass(@namespace.Package.Name, @namespace.NamespaceName,
+        var typeConstructor = BareTypeConstructor.CreateClass(@namespace.Package.Name, @namespace.NamespaceName,
             isAbstract: false, isConst: false, "Raw_Hybrid_Bounded_List",
             TypeConstructorParameter.Independent(CapabilitySet.Aliasable, "F"),
             TypeConstructorParameter.Independent(CapabilitySet.Aliasable, "T"));

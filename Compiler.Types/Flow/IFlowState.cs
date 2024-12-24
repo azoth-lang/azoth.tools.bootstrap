@@ -61,7 +61,7 @@ public interface IFlowState : IEquatable<IFlowState>
     IFlowState AccessField(
         ValueId contextId,
         CapabilityType contextType,
-        TypeConstructor declaringTypeConstructor,
+        BareTypeConstructor declaringTypeConstructor,
         ValueId id,
         IMaybeNonVoidType bindingType,
         IMaybeType memberType);

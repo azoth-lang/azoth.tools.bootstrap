@@ -376,7 +376,7 @@ internal sealed class FlowState : IFlowState
     public IFlowState AccessField(
         ValueId contextId,
         CapabilityType contextType,
-        TypeConstructor declaringTypeConstructor,
+        BareTypeConstructor declaringTypeConstructor,
         ValueId id,
         IMaybeNonVoidType bindingType,
         IMaybeType memberType)
@@ -406,7 +406,7 @@ internal sealed class FlowState : IFlowState
     private MultiMapHashSet<CapabilityValue, ICapabilityValue> AccessFieldValueMapping(
         ValueId contextValueId,
         CapabilityType contextType,
-        TypeConstructor containingTypeConstructor,
+        BareTypeConstructor containingTypeConstructor,
         IMaybeType bindingType,
         ValueId valueId,
         IEnumerable<CapabilityValue> newValues)

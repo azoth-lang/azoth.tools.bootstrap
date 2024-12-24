@@ -23,7 +23,7 @@ public abstract class TypeSymbol : Symbol
         Name = name;
     }
 
-    public virtual TypeConstructor? TryGetTypeConstructor() => null;
+    public virtual BareTypeConstructor? TryGetTypeConstructor() => null;
 
     public virtual PlainType? TryGetPlainType() => null;
 }

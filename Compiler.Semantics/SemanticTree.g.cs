@@ -524,7 +524,7 @@ public partial interface ITypeDefinitionNode : ICodeNode, IFacetMemberDefinition
         => ContainingDeclaration.Symbol!;
     Symbol? IDefinitionNode.ContainingSymbol => ContainingSymbol;
     new OrdinaryTypeConstructor TypeFactory { get; }
-    TypeConstructor INonVariableTypeDeclarationNode.TypeFactory => TypeFactory;
+    BareTypeConstructor INonVariableTypeDeclarationNode.TypeFactory => TypeFactory;
     ITypeFactory ITypeDeclarationNode.TypeFactory => TypeFactory;
     new IFixedSet<BareType> Supertypes { get; }
     IFixedSet<BareType> ITypeDeclarationNode.Supertypes => Supertypes;
@@ -3803,7 +3803,7 @@ public partial interface ITypeDeclarationNode : INamedDeclarationNode, ISymbolDe
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface INonVariableTypeDeclarationNode : ITypeDeclarationNode
 {
-    new TypeConstructor TypeFactory { get; }
+    new BareTypeConstructor TypeFactory { get; }
     ITypeFactory ITypeDeclarationNode.TypeFactory => TypeFactory;
     IImplicitSelfDeclarationNode ImplicitSelf { get; }
 }
@@ -4361,7 +4361,7 @@ public partial interface IPrimitiveTypeSymbolNode : IBuiltInTypeSymbolNode
     Symbol IChildSymbolNode.Symbol => Symbol;
     BuiltInTypeName IBuiltInTypeSymbolNode.Name
         => Symbol.Name;
-    TypeConstructor INonVariableTypeDeclarationNode.TypeFactory
+    BareTypeConstructor INonVariableTypeDeclarationNode.TypeFactory
         => Symbol.TypeConstructor;
 
     public static IPrimitiveTypeSymbolNode Create(BuiltInTypeSymbol symbol)
@@ -4394,7 +4394,7 @@ public partial interface IOrdinaryTypeSymbolNode : IUserTypeDeclarationNode, INo
     IFixedSet<ITypeMemberSymbolNode> ITypeSymbolNode.Members => Members;
     IFixedSet<BareType> ITypeDeclarationNode.Supertypes
         => Symbol.TryGetTypeConstructor().Supertypes;
-    TypeConstructor INonVariableTypeDeclarationNode.TypeFactory
+    BareTypeConstructor INonVariableTypeDeclarationNode.TypeFactory
         => Symbol.TypeConstructor;
 }
 

@@ -94,7 +94,7 @@ public static class TypeError
             3012, $"Cannot explicitly convert expression `{file.Code[expression.Span]}` of type `{ofType.ToNonLiteral().ToSourceCodeString()}` to type `{toType.ToNonLiteral().ToSourceCodeString()}`");
     }
 
-    public static Diagnostic CannotApplyCapabilityToConstantType(CodeFile file, ICodeSyntax expression, Capability capability, TypeConstructor type)
+    public static Diagnostic CannotApplyCapabilityToConstantType(CodeFile file, ICodeSyntax expression, Capability capability, BareTypeConstructor type)
     {
         return new(file, expression.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             3013, $"Cannot use `{capability.ToSourceCodeString()}` on constant type `{type}`");

@@ -7,7 +7,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 
-public sealed class AnyTypeConstructor : TypeConstructor
+public sealed class AnyTypeConstructor : BareTypeConstructor
 {
     #region Singleton
     internal static readonly AnyTypeConstructor Instance = new();
@@ -60,7 +60,7 @@ public sealed class AnyTypeConstructor : TypeConstructor
     }
 
     #region Equality
-    public override bool Equals(TypeConstructor? other)
+    public override bool Equals(BareTypeConstructor? other)
         // AnyTypeConstructor is a singleton, so we can use reference equality.
         => ReferenceEquals(this, other);
 

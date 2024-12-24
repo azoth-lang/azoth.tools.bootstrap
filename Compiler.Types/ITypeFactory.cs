@@ -9,12 +9,12 @@ using Type = Azoth.Tools.Bootstrap.Compiler.Types.Decorated.Type;
 namespace Azoth.Tools.Bootstrap.Compiler.Types;
 
 /// <summary>
-/// Not all types have a <see cref="TypeConstructor"/>, yet there are places in the compiler where
+/// Not all types have a <see cref="BareTypeConstructor"/>, yet there are places in the compiler where
 /// the ability to construct a type is needed even if it doesn't have a one. A <see cref="ITypeFactory"/>
 /// provides that ability.
 /// </summary>
 [Closed(
-    typeof(TypeConstructor),
+    typeof(BareTypeConstructor),
     typeof(VoidTypeFactory),
     typeof(NeverTypeFactory),
     typeof(GenericParameterTypeFactory))]

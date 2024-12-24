@@ -17,9 +17,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 /// <see cref="SimpleTypeConstructor"/>s). That is, it was declared with a <c>class</c>,
 /// <c>struct</c>, or <c>trait</c> declaration.
 /// </summary>
-public sealed class OrdinaryTypeConstructor : TypeConstructor
+public sealed class OrdinaryTypeConstructor : BareTypeConstructor
 {
-    public override TypeConstructorContext Context { [DebuggerStepThrough] get; }
+    public override BareTypeConstructorContext Context { [DebuggerStepThrough] get; }
 
     /// <summary>
     /// Whether the declaration for this type constructor is abstract.
@@ -66,7 +66,7 @@ public sealed class OrdinaryTypeConstructor : TypeConstructor
         => Kind == TypeKind.Struct ? TypeSemantics.Value : TypeSemantics.Reference;
 
     public OrdinaryTypeConstructor(
-        TypeConstructorContext context,
+        BareTypeConstructorContext context,
         bool isAbstract,
         bool isDeclaredConst,
         TypeKind kind,
@@ -152,7 +152,7 @@ public sealed class OrdinaryTypeConstructor : TypeConstructor
         => Parameters.IsEmpty ? new ConstructedPlainType(this, containingType, []) : null;
 
     #region Equality
-    public override bool Equals(TypeConstructor? other)
+    public override bool Equals(BareTypeConstructor? other)
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;

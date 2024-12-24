@@ -15,22 +15,22 @@ public abstract class Type : IMaybeType
     public static readonly VoidType Void = VoidType.Instance;
     public static readonly NeverType Never = NeverType.Instance;
     public static readonly CapabilityType IdAny = CapabilityType.Create(Capability.Identity, Plain.PlainType.Any);
-    public static readonly CapabilityType Bool = TypeConstructor.Bool.Type;
+    public static readonly CapabilityType Bool = BareTypeConstructor.Bool.Type;
     public static readonly OptionalType OptionalBool = new(Plain.PlainType.OptionalBool, Bool);
-    public static readonly CapabilityType Int = TypeConstructor.Int.Type;
-    public static readonly CapabilityType UInt = TypeConstructor.UInt.Type;
-    public static readonly CapabilityType Int8 = TypeConstructor.Int8.Type;
-    public static readonly CapabilityType Byte = TypeConstructor.Byte.Type;
-    public static readonly CapabilityType Int16 = TypeConstructor.Int16.Type;
-    public static readonly CapabilityType UInt16 = TypeConstructor.UInt16.Type;
-    public static readonly CapabilityType Int32 = TypeConstructor.Int32.Type;
-    public static readonly CapabilityType UInt32 = TypeConstructor.UInt32.Type;
-    public static readonly CapabilityType Int64 = TypeConstructor.Int64.Type;
-    public static readonly CapabilityType UInt64 = TypeConstructor.UInt64.Type;
-    public static readonly CapabilityType Size = TypeConstructor.Size.Type;
-    public static readonly CapabilityType Offset = TypeConstructor.Offset.Type;
-    public static readonly CapabilityType NInt = TypeConstructor.NInt.Type;
-    public static readonly CapabilityType NUInt = TypeConstructor.NUInt.Type;
+    public static readonly CapabilityType Int = BareTypeConstructor.Int.Type;
+    public static readonly CapabilityType UInt = BareTypeConstructor.UInt.Type;
+    public static readonly CapabilityType Int8 = BareTypeConstructor.Int8.Type;
+    public static readonly CapabilityType Byte = BareTypeConstructor.Byte.Type;
+    public static readonly CapabilityType Int16 = BareTypeConstructor.Int16.Type;
+    public static readonly CapabilityType UInt16 = BareTypeConstructor.UInt16.Type;
+    public static readonly CapabilityType Int32 = BareTypeConstructor.Int32.Type;
+    public static readonly CapabilityType UInt32 = BareTypeConstructor.UInt32.Type;
+    public static readonly CapabilityType Int64 = BareTypeConstructor.Int64.Type;
+    public static readonly CapabilityType UInt64 = BareTypeConstructor.UInt64.Type;
+    public static readonly CapabilityType Size = BareTypeConstructor.Size.Type;
+    public static readonly CapabilityType Offset = BareTypeConstructor.Offset.Type;
+    public static readonly CapabilityType NInt = BareTypeConstructor.NInt.Type;
+    public static readonly CapabilityType NUInt = BareTypeConstructor.NUInt.Type;
     #endregion
 
     #region Literal Types
@@ -39,8 +39,8 @@ public abstract class Type : IMaybeType
     /// </summary>
     public static readonly OptionalType None = new(Plain.PlainType.None, Never);
 
-    public static readonly CapabilityType True = TypeConstructor.True.Type;
-    public static readonly CapabilityType False = TypeConstructor.False.Type;
+    public static readonly CapabilityType True = BareTypeConstructor.True.Type;
+    public static readonly CapabilityType False = BareTypeConstructor.False.Type;
     #endregion
 
     public abstract PlainType PlainType { get; }

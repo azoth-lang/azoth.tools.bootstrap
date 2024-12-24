@@ -23,7 +23,7 @@ public static class DeclaredCapabilityExtensions
             _ => throw ExhaustiveMatch.Failed(capability),
         };
 
-    public static Capability ToCapabilityFor(this DeclaredCapability capability, TypeConstructor typeConstructor)
+    public static Capability ToCapabilityFor(this DeclaredCapability capability, BareTypeConstructor typeConstructor)
         => capability.ToCapability(typeConstructor.DefaultCapability);
 
     public static Capability ToSelfParameterCapability(this DeclaredCapability capability)

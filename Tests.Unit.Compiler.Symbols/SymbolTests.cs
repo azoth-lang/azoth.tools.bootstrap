@@ -10,7 +10,7 @@ public class SymbolTests : SymbolTestFixture
     [Fact]
     public void Symbol_not_in_namespace_is_global()
     {
-        var symbol = new BuiltInTypeSymbol(TypeConstructor.Byte);
+        var symbol = new BuiltInTypeSymbol(BareTypeConstructor.Byte);
 
         Assert.True(symbol.IsGlobal);
     }
@@ -19,7 +19,7 @@ public class SymbolTests : SymbolTestFixture
     public void Symbol_in_namespace_is_not_global()
     {
         var ns = Namespace();
-        var type = TypeConstructor.CreateClass(ns.Package!.Name, ns.Name, isAbstract: false,
+        var type = BareTypeConstructor.CreateClass(ns.Package!.Name, ns.Name, isAbstract: false,
             isConst: false, "My_Class");
         var symbol = new OrdinaryTypeSymbol(ns, type);
 

@@ -22,7 +22,7 @@ internal static partial class DefinitionPlainTypesAspect
     {
         // TODO use ContainingTypeConstructor in case this is a nested type
         NamespaceName containingNamespaceName = GetContainingNamespaceName(node);
-        return TypeConstructor.CreateClass(node.Package.Name, containingNamespaceName,
+        return BareTypeConstructor.CreateClass(node.Package.Name, containingNamespaceName,
             node.IsAbstract, node.IsConst, node.Name, GetGenericParameters(node), node.Supertypes);
     }
 
@@ -30,7 +30,7 @@ internal static partial class DefinitionPlainTypesAspect
     {
         // TODO use ContainingTypeConstructor in case this is a nested type
         NamespaceName containingNamespaceName = GetContainingNamespaceName(node);
-        return TypeConstructor.CreateStruct(node.Package.Name, containingNamespaceName,
+        return BareTypeConstructor.CreateStruct(node.Package.Name, containingNamespaceName,
             node.IsConst, node.Name, GetGenericParameters(node), node.Supertypes);
     }
 
@@ -38,7 +38,7 @@ internal static partial class DefinitionPlainTypesAspect
     {
         // TODO use ContainingTypeConstructor in case this is a nested type
         NamespaceName containingNamespaceName = GetContainingNamespaceName(node);
-        return TypeConstructor.CreateTrait(node.Package.Name, containingNamespaceName,
+        return BareTypeConstructor.CreateTrait(node.Package.Name, containingNamespaceName,
             node.IsConst, node.Name, GetGenericParameters(node), node.Supertypes);
     }
 

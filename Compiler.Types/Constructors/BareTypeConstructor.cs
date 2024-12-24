@@ -22,7 +22,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
     typeof(SimpleOrLiteralTypeConstructor),
     typeof(AssociatedTypeConstructor))]
 [DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
-public abstract class TypeConstructor : TypeConstructorContext, IEquatable<TypeConstructor>, ITypeFactory
+public abstract class BareTypeConstructor : BareTypeConstructorContext, IEquatable<BareTypeConstructor>, ITypeFactory
 {
     #region Standard Type Constructors
     public static readonly AnyTypeConstructor Any = AnyTypeConstructor.Instance;
@@ -144,7 +144,7 @@ public abstract class TypeConstructor : TypeConstructorContext, IEquatable<TypeC
         builder.Append('.');
     }
 
-    public abstract TypeConstructorContext Context { get; }
+    public abstract BareTypeConstructorContext Context { get; }
 
     /// <summary>
     /// Whether this type was declared `const` meaning that most references should be treated as const.
@@ -231,7 +231,7 @@ public abstract class TypeConstructor : TypeConstructorContext, IEquatable<TypeC
         => Lazy.Initialize(ref withParameterPlainTypes, this, ParameterPlainTypes,
             static (typeConstructor, arguments) =>
             {
-                var containingType = (typeConstructor.Context as TypeConstructor)?.ConstructWithParameterPlainTypes();
+                var containingType = (typeConstructor.Context as BareTypeConstructor)?.ConstructWithParameterPlainTypes();
                 return typeConstructor.Construct(containingType, arguments);
             });
 
@@ -255,7 +255,7 @@ public abstract class TypeConstructor : TypeConstructorContext, IEquatable<TypeC
         => Lazy.Initialize(ref withParameterTypes, this, ParameterTypes,
             static (typeConstructor, arguments) =>
             {
-                var containingType = (typeConstructor.Context as TypeConstructor)?.ConstructWithParameterTypes();
+                var containingType = (typeConstructor.Context as BareTypeConstructor)?.ConstructWithParameterTypes();
                 return typeConstructor.Construct(containingType, arguments);
             });
 
@@ -297,7 +297,7 @@ public abstract class TypeConstructor : TypeConstructorContext, IEquatable<TypeC
 
     Type? ITypeFactory.TryConstructNullaryType(BareType? containingType)
     {
-        Requires.That(Equals(Context as TypeConstructor, containingType?.TypeConstructor), nameof(containingType),
+        Requires.That(Equals(Context as BareTypeConstructor, containingType?.TypeConstructor), nameof(containingType),
             "Must match the context.");
         if (!Parameters.IsEmpty)
             throw new InvalidOperationException($"Cannot construct nullary type for type constructor `{this}` expecting arguments.");
@@ -318,10 +318,10 @@ public abstract class TypeConstructor : TypeConstructorContext, IEquatable<TypeC
     public virtual SimpleTypeConstructor? TryToNonLiteral() => null;
 
     #region Equality
-    public abstract bool Equals(TypeConstructor? other);
+    public abstract bool Equals(BareTypeConstructor? other);
 
-    public sealed override bool Equals(TypeConstructorContext? other)
-        => ReferenceEquals(this, other) || other is TypeConstructor that && Equals(that);
+    public sealed override bool Equals(BareTypeConstructorContext? other)
+        => ReferenceEquals(this, other) || other is BareTypeConstructor that && Equals(that);
     #endregion
 
     public override string ToString()

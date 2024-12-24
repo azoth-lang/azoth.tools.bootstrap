@@ -26,22 +26,22 @@ public abstract class PlainType : IMaybePlainType
     public static readonly VoidPlainType Void = VoidPlainType.Instance;
     public static readonly NeverPlainType Never = NeverPlainType.Instance;
     public static readonly ConstructedPlainType Any = AnyTypeConstructor.PlainType;
-    public static readonly ConstructedPlainType Bool = TypeConstructor.Bool.PlainType;
+    public static readonly ConstructedPlainType Bool = BareTypeConstructor.Bool.PlainType;
     public static readonly OptionalPlainType OptionalBool = new(Bool);
-    public static readonly ConstructedPlainType Int = TypeConstructor.Int.PlainType;
-    public static readonly ConstructedPlainType UInt = TypeConstructor.UInt.PlainType;
-    public static readonly ConstructedPlainType Int8 = TypeConstructor.Int8.PlainType;
-    public static readonly ConstructedPlainType Byte = TypeConstructor.Byte.PlainType;
-    public static readonly ConstructedPlainType Int16 = TypeConstructor.Int16.PlainType;
-    public static readonly ConstructedPlainType UInt16 = TypeConstructor.UInt16.PlainType;
-    public static readonly ConstructedPlainType Int32 = TypeConstructor.Int32.PlainType;
-    public static readonly ConstructedPlainType UInt32 = TypeConstructor.UInt32.PlainType;
-    public static readonly ConstructedPlainType Int64 = TypeConstructor.Int64.PlainType;
-    public static readonly ConstructedPlainType UInt64 = TypeConstructor.UInt64.PlainType;
-    public static readonly ConstructedPlainType Size = TypeConstructor.Size.PlainType;
-    public static readonly ConstructedPlainType Offset = TypeConstructor.Offset.PlainType;
-    public static readonly ConstructedPlainType NInt = TypeConstructor.NInt.PlainType;
-    public static readonly ConstructedPlainType NUInt = TypeConstructor.NUInt.PlainType;
+    public static readonly ConstructedPlainType Int = BareTypeConstructor.Int.PlainType;
+    public static readonly ConstructedPlainType UInt = BareTypeConstructor.UInt.PlainType;
+    public static readonly ConstructedPlainType Int8 = BareTypeConstructor.Int8.PlainType;
+    public static readonly ConstructedPlainType Byte = BareTypeConstructor.Byte.PlainType;
+    public static readonly ConstructedPlainType Int16 = BareTypeConstructor.Int16.PlainType;
+    public static readonly ConstructedPlainType UInt16 = BareTypeConstructor.UInt16.PlainType;
+    public static readonly ConstructedPlainType Int32 = BareTypeConstructor.Int32.PlainType;
+    public static readonly ConstructedPlainType UInt32 = BareTypeConstructor.UInt32.PlainType;
+    public static readonly ConstructedPlainType Int64 = BareTypeConstructor.Int64.PlainType;
+    public static readonly ConstructedPlainType UInt64 = BareTypeConstructor.UInt64.PlainType;
+    public static readonly ConstructedPlainType Size = BareTypeConstructor.Size.PlainType;
+    public static readonly ConstructedPlainType Offset = BareTypeConstructor.Offset.PlainType;
+    public static readonly ConstructedPlainType NInt = BareTypeConstructor.NInt.PlainType;
+    public static readonly ConstructedPlainType NUInt = BareTypeConstructor.NUInt.PlainType;
     #endregion
 
     #region Literal Types
@@ -50,8 +50,8 @@ public abstract class PlainType : IMaybePlainType
     /// </summary>
     public static readonly OptionalPlainType None = new(Never);
 
-    public static readonly ConstructedPlainType True = TypeConstructor.True.PlainType;
-    public static readonly ConstructedPlainType False = TypeConstructor.False.PlainType;
+    public static readonly ConstructedPlainType True = BareTypeConstructor.True.PlainType;
+    public static readonly ConstructedPlainType False = BareTypeConstructor.False.PlainType;
     #endregion
 
     public virtual PlainTypeReplacements TypeReplacements => PlainTypeReplacements.None;

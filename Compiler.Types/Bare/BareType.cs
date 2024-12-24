@@ -25,7 +25,7 @@ public sealed class BareType : IEquatable<BareType>
     public static readonly IFixedSet<BareType> AnySet = Any.Yield().ToFixedSet();
 
     public ConstructedPlainType PlainType { [DebuggerStepThrough] get; }
-    public TypeConstructor TypeConstructor => PlainType.TypeConstructor;
+    public BareTypeConstructor TypeConstructor => PlainType.TypeConstructor;
     public BareType? ContainingType { [DebuggerStepThrough] get; }
     public IFixedList<Type> Arguments { [DebuggerStepThrough] get; }
     public bool HasIndependentTypeArguments { [DebuggerStepThrough] get; }

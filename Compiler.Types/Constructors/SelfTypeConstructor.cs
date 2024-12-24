@@ -16,7 +16,7 @@ public sealed class SelfTypeConstructor : AssociatedTypeConstructor
 
     public override IFixedSet<BareType> Supertypes { [DebuggerStepThrough] get; }
 
-    public SelfTypeConstructor(TypeConstructor containingTypeConstructor)
+    public SelfTypeConstructor(BareTypeConstructor containingTypeConstructor)
         : base(containingTypeConstructor)
     {
         Semantics = ComputeSemantics(containingTypeConstructor);
@@ -24,7 +24,7 @@ public sealed class SelfTypeConstructor : AssociatedTypeConstructor
             .Prepend(containingTypeConstructor.ConstructWithParameterTypes()).ToFixedSet();
     }
 
-    private TypeSemantics? ComputeSemantics(TypeConstructor typeConstructor)
+    private TypeSemantics? ComputeSemantics(BareTypeConstructor typeConstructor)
     {
         // TODO this all seems correct, but is it really necessary?
         if (Context is not OrdinaryTypeConstructor ordinaryTypeConstructor) return null;

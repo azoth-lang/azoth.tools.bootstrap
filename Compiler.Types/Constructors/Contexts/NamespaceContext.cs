@@ -8,7 +8,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors.Contexts;
 /// <summary>
 /// The context of a type constructor that is declared in a namespace in a package.
 /// </summary>
-public sealed class NamespaceContext : TypeConstructorContext
+public sealed class NamespaceContext : BareTypeConstructorContext
 {
     public IdentifierName Package { get; }
     public NamespaceName Namespace { get; }
@@ -35,7 +35,7 @@ public sealed class NamespaceContext : TypeConstructorContext
     }
 
     #region Equality
-    public override bool Equals(TypeConstructorContext? other)
+    public override bool Equals(BareTypeConstructorContext? other)
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;

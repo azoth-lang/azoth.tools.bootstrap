@@ -184,7 +184,7 @@ internal static partial class ExpressionPlainTypesAspect
         var globalScope = containingLexicalScope.PackageNames.ImportGlobalScope;
         var typeDeclaration = globalScope.Lookup("azoth").OfType<INamespaceDeclarationNode>()
             .SelectMany(ns => ns.MembersNamed("range")).OfType<ITypeDeclarationNode>().TrySingle();
-        var typeConstructor = typeDeclaration?.TypeFactory as TypeConstructor;
+        var typeConstructor = typeDeclaration?.TypeFactory as BareTypeConstructor;
         var rangePlainType = typeConstructor?.TryConstructNullaryPlainType(containingType: null)
                              ?? IMaybePlainType.Unknown;
         return rangePlainType;
@@ -383,7 +383,7 @@ internal static partial class ExpressionPlainTypesAspect
             _ => false,
         };
 
-    private static bool CanPossiblyImplicitlyConvertFrom(TypeConstructor fromTypeConstructor)
+    private static bool CanPossiblyImplicitlyConvertFrom(BareTypeConstructor fromTypeConstructor)
         => fromTypeConstructor switch
         {
             BoolLiteralTypeConstructor => true,
@@ -431,7 +431,7 @@ internal static partial class ExpressionPlainTypesAspect
                 ConstructedPlainType { TypeConstructor: IntegerTypeConstructor }):
             case (ConstructedPlainType { TypeConstructor: BigIntegerTypeConstructor { IsSigned: true } },
                 ConstructedPlainType { TypeConstructor: IntegerLiteralTypeConstructor }):
-                return TypeConstructor.Int;
+                return BareTypeConstructor.Int;
             case (ConstructedPlainType { TypeConstructor: BigIntegerTypeConstructor to },
                 ConstructedPlainType
                 {
@@ -441,7 +441,7 @@ internal static partial class ExpressionPlainTypesAspect
                 return to;
             case (ConstructedPlainType { TypeConstructor: BoolTypeConstructor },
                 ConstructedPlainType { TypeConstructor: BoolLiteralTypeConstructor }):
-                return TypeConstructor.Bool;
+                return BareTypeConstructor.Bool;
             // TODO support lifted implicit conversions
             //case (OptionalPlainType { Referent: var to }, OptionalPlainType { Referent: var from }):
             //    return ImplicitlyConvertToType(to, from)?.MakeOptional();

@@ -115,7 +115,7 @@ public sealed class PackageNameScope
     #endregion
 
     #region Lookup(*TypeConstructor)
-    public ITypeDeclarationNode? Lookup(TypeConstructor? typeConstructor)
+    public ITypeDeclarationNode? Lookup(BareTypeConstructor? typeConstructor)
         => typeConstructor switch
         {
             null => null,

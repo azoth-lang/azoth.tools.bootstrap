@@ -21,7 +21,7 @@ public sealed class NeverPlainType : NonVoidPlainType
     private NeverPlainType() { }
     #endregion
 
-    public TypeConstructor? TypeConstructor => null;
+    public BareTypeConstructor? TypeConstructor => null;
     public override TypeSemantics? Semantics => null;
     public BuiltInTypeName Name => BuiltInTypeName.Never;
 

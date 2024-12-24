@@ -11,7 +11,7 @@ public sealed class BuiltInTypeSymbol : TypeSymbol
     public override Symbol? ContainingSymbol => null;
     public override TypeSymbol? ContextTypeSymbol => null;
     public override BuiltInTypeName Name { get; }
-    public TypeConstructor TypeConstructor { get; }
+    public BareTypeConstructor TypeConstructor { get; }
 
     public BuiltInTypeSymbol(AnyTypeConstructor typeConstructor)
         : base(typeConstructor.Name)
@@ -27,7 +27,7 @@ public sealed class BuiltInTypeSymbol : TypeSymbol
         TypeConstructor = typeConstructor;
     }
 
-    public override TypeConstructor TryGetTypeConstructor() => TypeConstructor;
+    public override BareTypeConstructor TryGetTypeConstructor() => TypeConstructor;
 
     #region Equality
     public override bool Equals(Symbol? other)

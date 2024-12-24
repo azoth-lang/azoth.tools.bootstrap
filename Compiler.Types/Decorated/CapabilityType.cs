@@ -25,7 +25,7 @@ public sealed class CapabilityType : NonVoidType
     public BareType BareType { [DebuggerStepThrough] get; }
     public override ConstructedPlainType PlainType => BareType.PlainType;
 
-    public TypeConstructor TypeConstructor => BareType.TypeConstructor;
+    public BareTypeConstructor TypeConstructor => BareType.TypeConstructor;
 
     public IFixedList<Type> Arguments => BareType.Arguments;
 
@@ -69,7 +69,7 @@ public sealed class CapabilityType : NonVoidType
 
     // TODO this method represents an invalid operation and should be eliminated (the parameters do
     // not provide enough information to properly determine what to upcast to).
-    public CapabilityType UpcastTo(TypeConstructor target)
+    public CapabilityType UpcastTo(BareTypeConstructor target)
     {
         if (TypeConstructor.Equals(target)) return this;
 

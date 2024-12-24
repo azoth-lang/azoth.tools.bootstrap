@@ -56,7 +56,7 @@ public abstract class SimpleTypeConstructor : SimpleOrLiteralTypeConstructor
     }
 
     #region Equality
-    public sealed override bool Equals(TypeConstructor? other)
+    public sealed override bool Equals(BareTypeConstructor? other)
         // All simple type constructors are singletons, so we can use reference equality.
         => ReferenceEquals(this, other);
 

@@ -12,7 +12,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 [Closed(
     typeof(SimpleTypeConstructor),
     typeof(LiteralTypeConstructor))]
-public abstract class SimpleOrLiteralTypeConstructor : TypeConstructor
+public abstract class SimpleOrLiteralTypeConstructor : BareTypeConstructor
 {
     public override BuiltInContext Context => BuiltInContext.Instance;
 

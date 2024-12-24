@@ -28,7 +28,7 @@ public sealed class IntegerLiteralTypeConstructor : LiteralTypeConstructor
     }
 
     /// <remarks>For <see cref="IntegerLiteralTypeConstructor"/>, this is
-    /// <see cref="TypeConstructor.Int"/>. It might be thought this should return the smallest
+    /// <see cref="BareTypeConstructor.Int"/>. It might be thought this should return the smallest
     /// integer type constructor that contains the value. However, that would lead to unexpected
     /// behavior in some cases because small integer constants might produce small fixed size
     /// integers leading to overflow.</remarks>
@@ -60,7 +60,7 @@ public sealed class IntegerLiteralTypeConstructor : LiteralTypeConstructor
     public IntegerLiteralTypeConstructor Negate() => new(-Value);
 
     #region Equality
-    public override bool Equals(TypeConstructor? other)
+    public override bool Equals(BareTypeConstructor? other)
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;

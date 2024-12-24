@@ -15,7 +15,7 @@ public sealed class OrdinaryAssociatedTypeConstructor : AssociatedTypeConstructo
 
     public override IFixedSet<BareType> Supertypes => BareType.AnySet;
 
-    public OrdinaryAssociatedTypeConstructor(TypeConstructor containingTypeConstructor, IdentifierName name)
+    public OrdinaryAssociatedTypeConstructor(BareTypeConstructor containingTypeConstructor, IdentifierName name)
         : base(containingTypeConstructor)
     {
         Name = name;

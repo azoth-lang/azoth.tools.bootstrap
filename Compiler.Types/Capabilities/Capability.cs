@@ -250,7 +250,7 @@ public sealed class Capability : ICapabilityConstraint
     /// <remarks>`id` references remain `id` otherwise they become `const`.</remarks>
     public Capability Freeze() => this == Identity ? this : Constant;
 
-    public Capability ToCapabilityFor(TypeConstructor typeConstructor)
+    public Capability ToCapabilityFor(BareTypeConstructor typeConstructor)
     {
         if (typeConstructor.IsDeclaredConst && this == Read) return Constant;
         return this;

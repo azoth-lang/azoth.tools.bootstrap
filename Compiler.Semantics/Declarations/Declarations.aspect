@@ -50,7 +50,7 @@
 ↑ TypeDeclaration.Members: {TypeMemberDeclaration};
 /// Members including ones inherited from supertypes
 ↑ TypeDeclaration.InclusiveMembers: {TypeMemberDeclaration};
-↑ NonVariableTypeDeclaration.TypeFactory: `TypeConstructor`;
+↑ NonVariableTypeDeclaration.TypeFactory: `BareTypeConstructor`;
 ↑ NonVariableTypeDeclaration.ImplicitSelf: ImplicitSelfDeclaration;
 ↑ UserTypeDeclaration.Symbol: `OrdinaryTypeSymbol`;
 ↑ UserTypeDeclaration.InclusiveMembers: {TypeMemberDeclaration};
