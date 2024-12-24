@@ -12,7 +12,7 @@ public sealed class CapabilityValue : ICapabilityValue
     #endregion
 
     public static CapabilityValue Create(ValueId id, CapabilityIndex index)
-        => index.IsTopLevel ? TopLevelCache.GetOrAdd(id.Value, TopLevelFactory) : new(id.Value, index);
+        => index.IsTopLevel ? CreateTopLevel(id) : new(id.Value, index);
 
     public static CapabilityValue CreateTopLevel(ValueId id)
         => TopLevelCache.GetOrAdd(id.Value, TopLevelFactory);

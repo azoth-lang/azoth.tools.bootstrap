@@ -40,7 +40,7 @@ internal sealed class FlowState : IFlowState
     {
         valuesForId = ImmutableDictionary<ValueId, IFixedSet<ICapabilityValue>>.Empty;
         values = ImmutableDisjointHashSets<IValue, FlowCapability, SharingSetState>.Empty;
-        untrackedValues = ImmutableHashSet<IValue>.Empty;
+        untrackedValues = [];
     }
 
     private FlowState(
@@ -63,17 +63,13 @@ internal sealed class FlowState : IFlowState
     private IEnumerable<ICapabilityValue> TrackedValues(IEnumerable<ArgumentValueId> argumentValueIds)
         => argumentValueIds.SelectMany(a => valuesForId[a.ValueId]).Where(v => !untrackedValues.Contains(v));
 
-    // TODO replace with AliasValueMapping
-    private IReadOnlyDictionary<ICapabilityValue, CapabilityValue> LegacyAliasValueMapping(ValueId oldValueId, ValueId newValueId)
-         => valuesForId[oldValueId].ToDictionaryWithValue(v => CapabilityValue.Create(newValueId, v.Index)).AsReadOnly();
-
     /// <summary>
     /// Build a mapping from new <see cref="CapabilityValue"/>s to the old <see cref="ICapabilityValue"/>s.
     /// </summary>
     /// <remarks>Since this is an alias, all old values can be mapped directly to new values without
     /// concern for the types involved.</remarks>
     private IReadOnlyDictionary<CapabilityValue, ICapabilityValue> AliasValueMapping(ValueId oldValueId, ValueId newValueId)
-        => valuesForId[oldValueId].ToDictionary(v => CapabilityValue.Create(newValueId, v.Index)).AsReadOnly();
+        => valuesForId[oldValueId].ToDictionary(v => CapabilityValue.Create(newValueId, v.Index));
 
     /// <summary>
     /// Build a mapping from new <see cref="CapabilityValue"/>s to the old <see cref="ICapabilityValue"/>s.
@@ -116,9 +112,8 @@ internal sealed class FlowState : IFlowState
         if (declaredSupertypes.Count > 1)
             throw new NotImplementedException("Type is a subtype of the new type in multiple ways");
 
-        var declaredSupertype = declaredSupertypes.TrySingle();
-        if (declaredSupertype is null)
-            throw new ArgumentException($"The type `{newValueType.ToILString()}` is not a supertype of `{oldValueType.ToILString()}`.");
+        var declaredSupertype = declaredSupertypes.TrySingle()
+            ?? throw new ArgumentException($"The type `{newValueType.ToILString()}` is not a supertype of `{oldValueType.ToILString()}`.");
 
         foreach (var (toValue, fromValue) in aliasValueMap)
         {
@@ -213,8 +208,8 @@ internal sealed class FlowState : IFlowState
         // An alias has the same type (modulo aliasing) as the original value and as such the same
         // capability values. Thus, we can simply map the original values to the alias values.
 
-        var valueMap = LegacyAliasValueMapping(valueId, aliasId);
-        foreach (var (bindingValue, aliasValue) in valueMap)
+        var valueMap = AliasValueMapping(valueId, aliasId);
+        foreach (var (aliasValue, bindingValue) in valueMap)
         {
             // Aliases match the tracking of the original value
             if (untrackedValues.Contains(bindingValue))
@@ -230,7 +225,7 @@ internal sealed class FlowState : IFlowState
                 builder.UpdateCapability(bindingValue, c => c.WhenAliased());
             }
         }
-        builder.AddValueId(aliasId, valueMap.Values);
+        builder.AddValueId(aliasId, valueMap.Keys);
 
         return builder.ToImmutable();
     }
@@ -552,8 +547,8 @@ internal sealed class FlowState : IFlowState
         foreach (var bindingValue in bindingValues)
             builder.UpdateCapability(bindingValue, c => c.AfterFreeze());
 
-        var valueMap = LegacyAliasValueMapping(id, intoValueId);
-        foreach (var (oldValue, newValue) in valueMap)
+        var valueMap = AliasValueMapping(id, intoValueId);
+        foreach (var (newValue, oldValue) in valueMap)
         {
             // If the value could reference `temp const` data, then it needs to be tracked. (However,
             // that could be detected by looking at whether the set is lent or not, correct?)
@@ -561,7 +556,7 @@ internal sealed class FlowState : IFlowState
             builder.AddToSet(set, newValue, default); // TODO what is the correct flow capability for the result?
         }
 
-        builder.AddValueId(intoValueId, valueMap.Values);
+        builder.AddValueId(intoValueId, valueMap.Keys);
         builder.Remove(id);
 
         return builder.ToImmutable();
@@ -578,8 +573,8 @@ internal sealed class FlowState : IFlowState
     private FlowState Move(IEnumerable<BindingValue> bindingValues, ValueId valueId, ValueId intoValueId)
     {
         var builder = ToBuilder();
-        var valueMap = LegacyAliasValueMapping(valueId, intoValueId);
-        foreach (var (oldValue, newValue) in valueMap)
+        var valueMap = AliasValueMapping(valueId, intoValueId);
+        foreach (var (newValue, oldValue) in valueMap)
         {
             if (builder.TrySetFor(oldValue) is int set)
                 builder.AddToSet(set, newValue, default); // TODO what is the correct flow capability for the result?
@@ -591,7 +586,7 @@ internal sealed class FlowState : IFlowState
             // TODO these are now `id`, doesn't that mean they no longer need tracked?
             builder.UpdateCapability(bindingValue, c => c.AfterMove());
 
-        builder.AddValueId(intoValueId, valueMap.Values);
+        builder.AddValueId(intoValueId, valueMap.Keys);
         builder.Remove(valueId);
 
         return builder.ToImmutable();
@@ -606,8 +601,8 @@ internal sealed class FlowState : IFlowState
     private FlowState TemporarilyConvert(ValueId valueId, ValueId intoValueId, TempConversionTo to)
     {
         var builder = ToBuilder();
-        var valueMap = LegacyAliasValueMapping(valueId, intoValueId);
-        foreach (var (oldValue, newValue) in valueMap)
+        var valueMap = AliasValueMapping(valueId, intoValueId);
+        foreach (var (newValue, oldValue) in valueMap)
         {
             if (untrackedValues.Contains(oldValue))
                 builder.AddUntracked(newValue);
@@ -623,7 +618,7 @@ internal sealed class FlowState : IFlowState
             }
         }
 
-        builder.AddValueId(intoValueId, valueMap.Values);
+        builder.AddValueId(intoValueId, valueMap.Keys);
         builder.Remove(valueId);
 
         return builder.ToImmutable();
@@ -721,8 +716,7 @@ internal sealed class FlowState : IFlowState
     }
     #endregion
 
-    private Builder ToBuilder()
-        => new Builder(valuesForId, values, untrackedValues);
+    private Builder ToBuilder() => new(valuesForId, values, untrackedValues);
 
     private readonly struct Builder
     {
