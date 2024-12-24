@@ -45,7 +45,7 @@ internal static partial class OverloadResolutionAspect
                 return;
             case NeverPlainType:
             case GenericParameterPlainType:
-            case ConstructedPlainType { TypeConstructor.CanBeInstantiated: false }:
+            case BarePlainType { TypeConstructor.CanBeInstantiated: false }:
                 // TODO type variables, empty types and others also cannot be constructed. Report proper error message in that case
                 diagnostics.Add(
                     OtherSemanticError.CannotConstructAbstractType(node.File, node.ConstructingType.Syntax));

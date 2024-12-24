@@ -15,7 +15,7 @@ public sealed class AnyTypeConstructor : BareTypeConstructor
     private AnyTypeConstructor() { }
     #endregion
 
-    internal static readonly ConstructedPlainType PlainType = new(Instance, containingType: null, []);
+    internal static readonly BarePlainType PlainType = new(Instance, containingType: null, []);
 
     public override BuiltInContext Context => BuiltInContext.Instance;
 
@@ -44,8 +44,8 @@ public sealed class AnyTypeConstructor : BareTypeConstructor
     /// <remarks>Because `Any` is the base of the constructed type hierarchy, it has no supertypes.</remarks>
     public override IFixedSet<BareType> Supertypes => [];
 
-    public override ConstructedPlainType Construct(
-        ConstructedPlainType? containingType,
+    public override BarePlainType Construct(
+        BarePlainType? containingType,
         IFixedList<PlainType> arguments)
     {
         Requires.Null(containingType, nameof(containingType), "Any does not have a containing type.");
@@ -53,7 +53,7 @@ public sealed class AnyTypeConstructor : BareTypeConstructor
         return PlainType;
     }
 
-    public override PlainType? TryConstructNullaryPlainType(ConstructedPlainType? containingType)
+    public override PlainType? TryConstructNullaryPlainType(BarePlainType? containingType)
     {
         Requires.Null(containingType, nameof(containingType), "Any does not have a containing type.");
         return PlainType;

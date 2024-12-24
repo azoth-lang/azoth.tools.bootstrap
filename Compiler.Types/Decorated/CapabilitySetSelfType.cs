@@ -23,7 +23,7 @@ public sealed class CapabilitySetSelfType : NonVoidType
 
     public SelfTypeConstructor TypeConstructor { [DebuggerStepThrough] get; }
 
-    public override ConstructedPlainType PlainType => BareType.PlainType;
+    public override BarePlainType PlainType => BareType.PlainType;
 
     internal override GenericParameterTypeReplacements BareTypeReplacements => BareType.TypeReplacements;
 

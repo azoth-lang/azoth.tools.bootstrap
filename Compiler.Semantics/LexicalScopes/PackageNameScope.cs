@@ -103,7 +103,7 @@ public sealed class PackageNameScope
             FunctionPlainType _ => null,
             OptionalPlainType _ => throw new NotImplementedException(),
             GenericParameterPlainType t => Lookup(t),
-            ConstructedPlainType t => Lookup(t.TypeConstructor),
+            BarePlainType t => Lookup(t.TypeConstructor),
             _ => throw ExhaustiveMatch.Failed(plainType),
         };
 

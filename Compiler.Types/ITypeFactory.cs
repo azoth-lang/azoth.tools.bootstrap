@@ -25,7 +25,7 @@ public interface ITypeFactory
     public static readonly ITypeFactory Never = NeverTypeFactory.Instance;
     #endregion
 
-    PlainType? TryConstructNullaryPlainType(ConstructedPlainType? containingType);
+    PlainType? TryConstructNullaryPlainType(BarePlainType? containingType);
 
     /// <summary>
     /// Attempt to construct a type from this type constructor with possibly unknown arguments. If

@@ -33,7 +33,7 @@ public abstract class SimpleTypeConstructor : SimpleOrLiteralTypeConstructor
 
     public sealed override IFixedSet<BareType> Supertypes => BareType.AnySet;
 
-    public sealed override ConstructedPlainType PlainType { [DebuggerStepThrough] get; }
+    public sealed override BarePlainType PlainType { [DebuggerStepThrough] get; }
 
     private protected SimpleTypeConstructor(BuiltInTypeName name)
     {
@@ -41,15 +41,15 @@ public abstract class SimpleTypeConstructor : SimpleOrLiteralTypeConstructor
         PlainType = new(this, containingType: null, []);
     }
 
-    public sealed override ConstructedPlainType Construct(
-        ConstructedPlainType? containingType,
+    public sealed override BarePlainType Construct(
+        BarePlainType? containingType,
         IFixedList<PlainType> arguments)
     {
         TypeRequires.NoArgs(arguments, nameof(arguments));
         return PlainType;
     }
 
-    public sealed override PlainType TryConstructNullaryPlainType(ConstructedPlainType? containingType)
+    public sealed override PlainType TryConstructNullaryPlainType(BarePlainType? containingType)
     {
         Requires.Null(containingType, nameof(containingType), "Simple types do not have a containing type.");
         return PlainType;

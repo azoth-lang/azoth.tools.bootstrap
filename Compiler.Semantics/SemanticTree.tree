@@ -236,7 +236,7 @@ UnaryOperatorExpression <: Expression = Syntax:`IUnaryOperatorExpressionSyntax`
      Operand:AmbiguousExpression;
 ConversionExpression <: Expression = Syntax:`IConversionExpressionSyntax`
     Referent:AmbiguousExpression ConvertToType:Type;
-ImplicitConversionExpression <: Expression = Referent:Expression PlainType:`ConstructedPlainType`;
+ImplicitConversionExpression <: Expression = Referent:Expression PlainType:`BarePlainType`;
 PatternMatchExpression <: Expression
     = Syntax:`IPatternMatchExpressionSyntax` Referent:AmbiguousExpression Pattern;
 

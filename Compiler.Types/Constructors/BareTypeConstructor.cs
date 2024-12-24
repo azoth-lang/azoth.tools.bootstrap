@@ -131,7 +131,7 @@ public abstract class BareTypeConstructor : BareTypeConstructorContext, IEquatab
              genericParameters.ToFixedList(), BareType.AnySet);
     #endregion
 
-    public sealed override void AppendContextPrefix(StringBuilder builder, ConstructedPlainType? containingType)
+    public sealed override void AppendContextPrefix(StringBuilder builder, BarePlainType? containingType)
     {
         if (containingType is not null)
         {
@@ -215,11 +215,11 @@ public abstract class BareTypeConstructor : BareTypeConstructorContext, IEquatab
 
     public abstract IFixedSet<BareType> Supertypes { get; }
 
-    private ConstructedPlainType? withParameterPlainTypes;
+    private BarePlainType? withParameterPlainTypes;
     private BareType? withParameterTypes;
 
-    public abstract ConstructedPlainType Construct(
-        ConstructedPlainType? containingType,
+    public abstract BarePlainType Construct(
+        BarePlainType? containingType,
         IFixedList<PlainType> arguments);
 
     /// <summary>
@@ -227,7 +227,7 @@ public abstract class BareTypeConstructor : BareTypeConstructorContext, IEquatab
     /// would be used inside the type definition.
     /// </summary>
     // TODO will this be needed once `Self` is properly used?
-    public ConstructedPlainType ConstructWithParameterPlainTypes()
+    public BarePlainType ConstructWithParameterPlainTypes()
         => Lazy.Initialize(ref withParameterPlainTypes, this, ParameterPlainTypes,
             static (typeConstructor, arguments) =>
             {
@@ -241,7 +241,7 @@ public abstract class BareTypeConstructor : BareTypeConstructorContext, IEquatab
     /// </summary>
     /// <remarks>This takes the <paramref name="plainType"/> to check for a match to help enforce
     /// consistency between plain types and types.</remarks>
-    public BareType ConstructWithParameterTypes(ConstructedPlainType plainType)
+    public BareType ConstructWithParameterTypes(BarePlainType plainType)
     {
         Requires.That(ConstructWithParameterPlainTypes().Equals(plainType), nameof(plainType),
             "Plain type must match.");
@@ -265,7 +265,7 @@ public abstract class BareTypeConstructor : BareTypeConstructorContext, IEquatab
     /// </summary>
     public IMaybePlainType Construct(IMaybePlainType? containingType, IFixedList<IMaybePlainType> arguments)
     {
-        var properContainingType = containingType as ConstructedPlainType;
+        var properContainingType = containingType as BarePlainType;
         if (containingType is not null && properContainingType is null) return PlainType.Unknown;
         var properArguments = arguments.As<PlainType>();
         if (properArguments is null) return PlainType.Unknown;
@@ -309,7 +309,7 @@ public abstract class BareTypeConstructor : BareTypeConstructorContext, IEquatab
     /// Try to construct a plain type with type arguments. If the type constructor takes one or more
     /// arguments, <see langword="null"/> is returned.
     /// </summary>
-    public abstract PlainType? TryConstructNullaryPlainType(ConstructedPlainType? containingType);
+    public abstract PlainType? TryConstructNullaryPlainType(BarePlainType? containingType);
 
     /// <summary>
     /// If this is a non-literal type, return the default non-literal type to place values of this

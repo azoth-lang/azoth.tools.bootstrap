@@ -1237,7 +1237,7 @@ public partial interface ISelfParameterNode : IParameterNode, IBindingNode
     IParameterSyntax IParameterNode.Syntax => Syntax;
     ICodeSyntax ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    new ConstructedPlainType BindingPlainType { get; }
+    new BarePlainType BindingPlainType { get; }
     IMaybeNonVoidPlainType IParameterNode.BindingPlainType => BindingPlainType;
     IMaybeNonVoidPlainType IBindingNode.BindingPlainType => BindingPlainType;
     IMaybeNonVoidType ParameterType { get; }
@@ -2288,7 +2288,7 @@ public partial interface IImplicitConversionExpressionNode : IExpressionNode
 {
     IExpressionNode Referent { get; }
     IExpressionNode CurrentReferent { get; }
-    new ConstructedPlainType PlainType { get; }
+    new BarePlainType PlainType { get; }
     IMaybePlainType IExpressionNode.PlainType => PlainType;
     new IExpressionSyntax Syntax
         => Referent.Syntax;
@@ -2300,7 +2300,7 @@ public partial interface IImplicitConversionExpressionNode : IExpressionNode
 
     public static IImplicitConversionExpressionNode Create(
         IExpressionNode referent,
-        ConstructedPlainType plainType)
+        BarePlainType plainType)
         => new ImplicitConversionExpressionNode(referent, plainType);
 }
 
@@ -7949,11 +7949,11 @@ file class ConstructorSelfParameterNode : SemanticNode, IConstructorSelfParamete
                 Inherited_ContainingSelfTypeConstructor);
     private SelfTypeConstructor? containingSelfTypeConstructor;
     private bool containingSelfTypeConstructorCached;
-    public ConstructedPlainType BindingPlainType
+    public BarePlainType BindingPlainType
         => GrammarAttribute.IsCached(in bindingPlainTypeCached) ? bindingPlainType!
             : this.Synthetic(ref bindingPlainTypeCached, ref bindingPlainType,
                 NameBindingPlainTypesAspect.SelfParameter_BindingPlainType);
-    private ConstructedPlainType? bindingPlainType;
+    private BarePlainType? bindingPlainType;
     private bool bindingPlainTypeCached;
     public CapabilityType BindingType
         => GrammarAttribute.IsCached(in bindingTypeCached) ? bindingType!
@@ -8036,11 +8036,11 @@ file class InitializerSelfParameterNode : SemanticNode, IInitializerSelfParamete
                 Inherited_ContainingSelfTypeConstructor);
     private SelfTypeConstructor? containingSelfTypeConstructor;
     private bool containingSelfTypeConstructorCached;
-    public ConstructedPlainType BindingPlainType
+    public BarePlainType BindingPlainType
         => GrammarAttribute.IsCached(in bindingPlainTypeCached) ? bindingPlainType!
             : this.Synthetic(ref bindingPlainTypeCached, ref bindingPlainType,
                 NameBindingPlainTypesAspect.SelfParameter_BindingPlainType);
-    private ConstructedPlainType? bindingPlainType;
+    private BarePlainType? bindingPlainType;
     private bool bindingPlainTypeCached;
     public CapabilityType BindingType
         => GrammarAttribute.IsCached(in bindingTypeCached) ? bindingType!
@@ -8123,11 +8123,11 @@ file class MethodSelfParameterNode : SemanticNode, IMethodSelfParameterNode
                 Inherited_ContainingSelfTypeConstructor);
     private SelfTypeConstructor? containingSelfTypeConstructor;
     private bool containingSelfTypeConstructorCached;
-    public ConstructedPlainType BindingPlainType
+    public BarePlainType BindingPlainType
         => GrammarAttribute.IsCached(in bindingPlainTypeCached) ? bindingPlainType!
             : this.Synthetic(ref bindingPlainTypeCached, ref bindingPlainType,
                 NameBindingPlainTypesAspect.SelfParameter_BindingPlainType);
-    private ConstructedPlainType? bindingPlainType;
+    private BarePlainType? bindingPlainType;
     private bool bindingPlainTypeCached;
     public IMaybeNonVoidType BindingType
         => GrammarAttribute.IsCached(in bindingTypeCached) ? bindingType!
@@ -11382,7 +11382,7 @@ file class ImplicitConversionExpressionNode : SemanticNode, IImplicitConversionE
         => GrammarAttribute.IsCached(in referentCached) ? referent.UnsafeValue
             : this.RewritableChild(ref referentCached, ref referent);
     public IExpressionNode CurrentReferent => referent.UnsafeValue;
-    public ConstructedPlainType PlainType { [DebuggerStepThrough] get; }
+    public BarePlainType PlainType { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -11445,7 +11445,7 @@ file class ImplicitConversionExpressionNode : SemanticNode, IImplicitConversionE
 
     public ImplicitConversionExpressionNode(
         IExpressionNode referent,
-        ConstructedPlainType plainType)
+        BarePlainType plainType)
     {
         this.referent = Child.Create(this, referent);
         PlainType = plainType;

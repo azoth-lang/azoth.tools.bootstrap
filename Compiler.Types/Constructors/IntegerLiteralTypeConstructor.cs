@@ -17,9 +17,9 @@ public sealed class IntegerLiteralTypeConstructor : LiteralTypeConstructor
     public bool IsInt16
         => Value >= Int16.MinValue && Value <= Int16.MaxValue;
 
-    public override ConstructedPlainType PlainType
+    public override BarePlainType PlainType
         => Lazy.Initialize(ref plainType, this, static typeConstructor => new(typeConstructor, containingType: null, []));
-    private ConstructedPlainType? plainType;
+    private BarePlainType? plainType;
 
     public IntegerLiteralTypeConstructor(BigInteger value)
         : base(BuiltInTypeName.Int)

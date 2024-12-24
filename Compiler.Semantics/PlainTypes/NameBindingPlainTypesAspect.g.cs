@@ -12,7 +12,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.PlainTypes;
 internal static partial class NameBindingPlainTypesAspect
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial ConstructedPlainType SelfParameter_BindingPlainType(ISelfParameterNode node);
+    public static partial BarePlainType SelfParameter_BindingPlainType(ISelfParameterNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial void VariableDeclarationStatement_Contribute_Diagnostics(IVariableDeclarationStatementNode node, DiagnosticCollectionBuilder diagnostics);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

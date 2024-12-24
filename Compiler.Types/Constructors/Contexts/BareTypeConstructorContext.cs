@@ -20,7 +20,7 @@ public abstract class BareTypeConstructorContext : IEquatable<BareTypeConstructo
     /// Append the prefix the context applies to the name of type constructors in the context to the
     /// given <see cref="StringBuilder"/>.
     /// </summary>
-    public abstract void AppendContextPrefix(StringBuilder builder, ConstructedPlainType? containingType);
+    public abstract void AppendContextPrefix(StringBuilder builder, BarePlainType? containingType);
 
     #region Equality
     public abstract bool Equals(BareTypeConstructorContext? other);

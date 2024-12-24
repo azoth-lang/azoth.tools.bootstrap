@@ -29,14 +29,14 @@ public static partial class PlainTypeOperations
             (VoidPlainType, _) => false,
             (OptionalPlainType s, OptionalPlainType o) => s.Referent.IsSubtypeOf(o.Referent),
             (_, OptionalPlainType o) => self.IsSubtypeOf(o.Referent),
-            (ConstructedPlainType s, ConstructedPlainType t) => s.IsSubtypeOf(t),
+            (BarePlainType s, BarePlainType t) => s.IsSubtypeOf(t),
             (FunctionPlainType s, FunctionPlainType o) => s.IsSubtypeOf(o),
             _ => false
         };
 
     public static bool IsSubtypeOf(
-        this ConstructedPlainType self,
-        ConstructedPlainType other)
+        this BarePlainType self,
+        BarePlainType other)
     {
         if (self.Equals(other) || self.Supertypes.Contains(other))
             return true;

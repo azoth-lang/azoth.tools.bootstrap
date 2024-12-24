@@ -20,7 +20,7 @@ public static partial class PlainTypeOperations
         => type as IMaybeNonVoidPlainType ?? PlainType.Unknown;
 
     // TODO remove hack
-    internal static bool IsStringType(this ConstructedPlainType self)
+    internal static bool IsStringType(this BarePlainType self)
         => !self.TypeConstructor.HasParameters
            && self.TypeConstructor.Context is NamespaceContext sc
            && sc.Namespace == NamespaceName.Global;

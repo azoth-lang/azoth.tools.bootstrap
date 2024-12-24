@@ -139,8 +139,8 @@ public sealed class OrdinaryTypeConstructor : BareTypeConstructor
             _ => true
         };
 
-    public override ConstructedPlainType Construct(
-        ConstructedPlainType? containingType,
+    public override BarePlainType Construct(
+        BarePlainType? containingType,
         IFixedList<PlainType> arguments)
     {
         if (arguments.Count != Parameters.Count)
@@ -148,8 +148,8 @@ public sealed class OrdinaryTypeConstructor : BareTypeConstructor
         return new(this, containingType, arguments);
     }
 
-    public override PlainType? TryConstructNullaryPlainType(ConstructedPlainType? containingType)
-        => Parameters.IsEmpty ? new ConstructedPlainType(this, containingType, []) : null;
+    public override PlainType? TryConstructNullaryPlainType(BarePlainType? containingType)
+        => Parameters.IsEmpty ? new BarePlainType(this, containingType, []) : null;
 
     #region Equality
     public override bool Equals(BareTypeConstructor? other)

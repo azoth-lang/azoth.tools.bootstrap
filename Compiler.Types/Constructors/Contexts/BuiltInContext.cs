@@ -16,7 +16,7 @@ public sealed class BuiltInContext : BareTypeConstructorContext
     private BuiltInContext() { }
     #endregion
 
-    public override void AppendContextPrefix(StringBuilder builder, ConstructedPlainType? containingType)
+    public override void AppendContextPrefix(StringBuilder builder, BarePlainType? containingType)
     {
         Requires.Null(containingType, nameof(containingType), "No containing type for built-in context.");
         // no prefix to append

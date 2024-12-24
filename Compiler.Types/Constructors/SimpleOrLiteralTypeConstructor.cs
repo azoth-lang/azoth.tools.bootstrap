@@ -20,7 +20,7 @@ public abstract class SimpleOrLiteralTypeConstructor : BareTypeConstructor
 
     public override bool CanBeSupertype => false;
 
-    public abstract ConstructedPlainType PlainType { [DebuggerStepThrough] get; }
+    public abstract BarePlainType PlainType { [DebuggerStepThrough] get; }
 
     public CapabilityType Type
         => Lazy.Initialize(ref type, PlainType,

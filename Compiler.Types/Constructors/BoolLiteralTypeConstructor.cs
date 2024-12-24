@@ -11,7 +11,7 @@ public sealed class BoolLiteralTypeConstructor : LiteralTypeConstructor
     internal new static readonly BoolLiteralTypeConstructor False = new(false);
 
     public bool Value { [DebuggerStepThrough] get; }
-    public override ConstructedPlainType PlainType { get; }
+    public override BarePlainType PlainType { get; }
     private BoolLiteralTypeConstructor(bool value)
         : base(BuiltInTypeName.Bool)
     {

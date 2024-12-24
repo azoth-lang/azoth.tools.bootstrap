@@ -7,29 +7,29 @@ using Azoth.Tools.Bootstrap.Framework;
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 
 /// <summary>
-/// A plain type constructed from a type constructor.
+/// A plain type for a type that can be a bare type.
 /// </summary>
 /// <remarks>This includes all types defined in source code, all simple types, and the `Any` type.</remarks>
-public sealed class ConstructedPlainType : NonVoidPlainType
+public sealed class BarePlainType : NonVoidPlainType
 {
     public BareTypeConstructor TypeConstructor { [DebuggerStepThrough] get; }
-    public ConstructedPlainType? ContainingType { [DebuggerStepThrough] get; }
+    public BarePlainType? ContainingType { [DebuggerStepThrough] get; }
     public override TypeSemantics? Semantics => TypeConstructor.Semantics;
     public TypeName Name => TypeConstructor.Name;
     public bool AllowsVariance => TypeConstructor.AllowsVariance;
     public IFixedList<PlainType> Arguments { [DebuggerStepThrough] get; }
-    public IFixedSet<ConstructedPlainType> Supertypes
+    public IFixedSet<BarePlainType> Supertypes
         => Lazy.Initialize(ref supertypes, TypeConstructor, TypeReplacements,
             static (typeConstructor, replacements)
                 => typeConstructor.Supertypes.Select(s => replacements.Apply(s.PlainType)).ToFixedSet());
-    private IFixedSet<ConstructedPlainType>? supertypes;
+    private IFixedSet<BarePlainType>? supertypes;
     public override PlainTypeReplacements TypeReplacements
         => Lazy.Initialize(ref typeReplacements, this, static plainType => new(plainType));
     private PlainTypeReplacements? typeReplacements;
 
-    public ConstructedPlainType(
+    public BarePlainType(
         BareTypeConstructor typeConstructor,
-        ConstructedPlainType? containingType,
+        BarePlainType? containingType,
         IEnumerable<PlainType> typeArguments)
     {
         Requires.That(Equals(typeConstructor.Context as BareTypeConstructor, containingType?.TypeConstructor),
@@ -43,7 +43,7 @@ public sealed class ConstructedPlainType : NonVoidPlainType
             + $"Given `[{string.Join(", ", Arguments)}]` for `{typeConstructor}`.");
     }
 
-    public override ConstructedPlainType? TryToNonLiteral()
+    public override BarePlainType? TryToNonLiteral()
     {
         // TODO handle containing type is the literal type?
         var newTypeConstructor = TypeConstructor.TryToNonLiteral();
@@ -58,7 +58,7 @@ public sealed class ConstructedPlainType : NonVoidPlainType
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
-        return other is ConstructedPlainType that
+        return other is BarePlainType that
                && TypeConstructor.Equals(that.TypeConstructor)
                && Arguments.Equals(that.Arguments);
     }

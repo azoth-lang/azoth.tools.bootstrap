@@ -24,7 +24,7 @@ public sealed class BareType : IEquatable<BareType>
     public static readonly BareType Any = new(AnyTypeConstructor.PlainType, containingType: null, []);
     public static readonly IFixedSet<BareType> AnySet = Any.Yield().ToFixedSet();
 
-    public ConstructedPlainType PlainType { [DebuggerStepThrough] get; }
+    public BarePlainType PlainType { [DebuggerStepThrough] get; }
     public BareTypeConstructor TypeConstructor => PlainType.TypeConstructor;
     public BareType? ContainingType { [DebuggerStepThrough] get; }
     public IFixedList<Type> Arguments { [DebuggerStepThrough] get; }
@@ -46,7 +46,7 @@ public sealed class BareType : IEquatable<BareType>
                 => constructor.Supertypes.Select(t => replacements.Apply(t)).ToFixedSet());
     private IFixedSet<BareType>? supertypes;
 
-    public BareType(ConstructedPlainType plainType, BareType? containingType, IFixedList<Type> arguments)
+    public BareType(BarePlainType plainType, BareType? containingType, IFixedList<Type> arguments)
     {
         Requires.That(Equals(plainType.ContainingType, containingType?.PlainType), nameof(containingType),
             "Must match the plain type.");

@@ -28,7 +28,7 @@ public class GenericParameterTypeFactory : ITypeFactory
     }
 
     #region ITypeFactory implementation
-    PlainType ITypeFactory.TryConstructNullaryPlainType(ConstructedPlainType? containingType)
+    PlainType ITypeFactory.TryConstructNullaryPlainType(BarePlainType? containingType)
     {
         Requires.Null(containingType, nameof(containingType), NoContainingTypeMessage);
         return PlainType;

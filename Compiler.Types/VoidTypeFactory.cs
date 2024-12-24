@@ -14,7 +14,7 @@ internal sealed class VoidTypeFactory : ITypeFactory
     private VoidTypeFactory() { }
     #endregion
 
-    public PlainType TryConstructNullaryPlainType(ConstructedPlainType? containingType)
+    public PlainType TryConstructNullaryPlainType(BarePlainType? containingType)
     {
         Requires.Null(containingType, nameof(containingType), "Void does not have a containing type.");
         return PlainType.Void;

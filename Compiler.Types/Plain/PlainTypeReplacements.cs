@@ -9,7 +9,7 @@ public sealed class PlainTypeReplacements
 {
     public static readonly PlainTypeReplacements None = new();
 
-    private readonly ConstructedPlainType? selfReplacement;
+    private readonly BarePlainType? selfReplacement;
     private readonly Dictionary<GenericParameterPlainType, PlainType> replacements = new();
 
     private PlainTypeReplacements() { }
@@ -18,13 +18,13 @@ public sealed class PlainTypeReplacements
     /// Build a dictionary of type replacements. Generic parameter types of both this type and the
     /// supertypes can be replaced with type arguments of this type.
     /// </summary>
-    public PlainTypeReplacements(ConstructedPlainType plainType)
+    public PlainTypeReplacements(BarePlainType plainType)
     {
         selfReplacement = plainType;
         AddReplacements(plainType);
     }
 
-    private void AddReplacements(ConstructedPlainType plainType)
+    private void AddReplacements(BarePlainType plainType)
     {
         if (plainType.ContainingType is { } containingType)
             AddReplacements(containingType);
@@ -71,7 +71,7 @@ public sealed class PlainTypeReplacements
         => plainType switch
         {
             NeverPlainType t => t,
-            ConstructedPlainType t => Apply(t),
+            BarePlainType t => Apply(t),
             GenericParameterPlainType t => Apply(t),
             FunctionPlainType t => Apply(t),
             OptionalPlainType t => Apply(t),
@@ -79,7 +79,7 @@ public sealed class PlainTypeReplacements
         };
 
     [return: NotNullIfNotNull(nameof(plainType))]
-    public ConstructedPlainType? Apply(ConstructedPlainType? plainType)
+    public BarePlainType? Apply(BarePlainType? plainType)
     {
         if (plainType is null) return null;
         if (selfReplacement is not null && plainType is { TypeConstructor: SelfTypeConstructor })

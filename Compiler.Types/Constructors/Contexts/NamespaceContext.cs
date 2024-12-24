@@ -15,7 +15,7 @@ public sealed class NamespaceContext : BareTypeConstructorContext
 
     /// <remarks>The prefix includes a trailing dot so that the type constructor doesn't need to
     /// check the context type to determine if a dot separator is needed.</remarks>
-    public override void AppendContextPrefix(StringBuilder builder, ConstructedPlainType? containingType)
+    public override void AppendContextPrefix(StringBuilder builder, BarePlainType? containingType)
     {
         Requires.Null(containingType, nameof(containingType), "No containing type for namespace context.");
         builder.Append(Package);

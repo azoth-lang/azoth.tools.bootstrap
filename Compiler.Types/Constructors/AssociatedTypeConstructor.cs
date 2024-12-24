@@ -32,8 +32,8 @@ public abstract class AssociatedTypeConstructor : BareTypeConstructor
     /// that is constructed with the parameter plain types. This is because when referenced from
     /// within a type definition they are referenced without a containing type and the containing
     /// type is implied.</remarks>
-    public override ConstructedPlainType Construct(
-        ConstructedPlainType? containingType,
+    public override BarePlainType Construct(
+        BarePlainType? containingType,
         IFixedList<PlainType> arguments)
     {
         TypeRequires.NoArgs(arguments, nameof(arguments));
@@ -53,7 +53,7 @@ public abstract class AssociatedTypeConstructor : BareTypeConstructor
     /// that is constructed with the parameter plain types. This is because when referenced from
     /// within a type definition they are referenced without a containing type and the containing
     /// type is implied.</remarks>
-    public sealed override ConstructedPlainType TryConstructNullaryPlainType(ConstructedPlainType? containingType)
+    public sealed override BarePlainType TryConstructNullaryPlainType(BarePlainType? containingType)
         => new(this, containingType ?? Context.ConstructWithParameterPlainTypes(), []);
 
     #region Equality

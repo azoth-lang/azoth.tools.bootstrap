@@ -27,7 +27,7 @@ public sealed class NeverPlainType : NonVoidPlainType
 
     /// <remarks>Even though <see cref="NeverPlainType"/> is a subtype of all types, this property
     /// returns an empty set because it is not declared with any supertypes.</remarks>
-    public IFixedSet<ConstructedPlainType> Supertypes => [];
+    public IFixedSet<BarePlainType> Supertypes => [];
 
     #region Equality
     public override bool Equals(IMaybePlainType? other)

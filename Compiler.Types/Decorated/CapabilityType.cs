@@ -11,10 +11,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 // e.g. `mut Foo`, `const Self`, etc. when not applied to GenericParameterPlainType
 public sealed class CapabilityType : NonVoidType
 {
-    public static CapabilityType Create(Capability capability, BareType? containingType, ConstructedPlainType plainType)
+    public static CapabilityType Create(Capability capability, BareType? containingType, BarePlainType plainType)
         => new(capability, new(plainType, containingType, []));
 
-    public static CapabilityType Create(Capability capability, ConstructedPlainType plainType)
+    public static CapabilityType Create(Capability capability, BarePlainType plainType)
         => new(capability, new(plainType, containingType: null, []));
 
     public static CapabilityType Create(Capability capability, BareType bareType)
@@ -23,7 +23,7 @@ public sealed class CapabilityType : NonVoidType
     public Capability Capability { [DebuggerStepThrough] get; }
 
     public BareType BareType { [DebuggerStepThrough] get; }
-    public override ConstructedPlainType PlainType => BareType.PlainType;
+    public override BarePlainType PlainType => BareType.PlainType;
 
     public BareTypeConstructor TypeConstructor => BareType.TypeConstructor;
 

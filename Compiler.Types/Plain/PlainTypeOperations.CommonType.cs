@@ -16,8 +16,8 @@ public static partial class PlainTypeOperations
                 => left.NumericOperatorCommonType(right)?.MakeOptional(),
             (OptionalPlainType { Referent: var left }, _) => left.NumericOperatorCommonType(rightType)?.MakeOptional(),
             (_, OptionalPlainType { Referent: var right }) => leftType.NumericOperatorCommonType(right)?.MakeOptional(),
-            (ConstructedPlainType { TypeConstructor: SimpleOrLiteralTypeConstructor left },
-                ConstructedPlainType { TypeConstructor: SimpleOrLiteralTypeConstructor right })
+            (BarePlainType { TypeConstructor: SimpleOrLiteralTypeConstructor left },
+                BarePlainType { TypeConstructor: SimpleOrLiteralTypeConstructor right })
                 => left.NumericOperatorCommonType(right),
             _ => null,
         };
