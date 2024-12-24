@@ -81,8 +81,18 @@ internal static class Operations
         if (from.Equals(Type.Int) || from.Equals(Type.UInt))
         {
             if (to.Equals(Type.Int)) return value;
-
             var fromValue = value.IntValue;
+            if (to.Equals(Type.UInt))
+            {
+                var isSigned = fromValue.Sign < 0;
+                if (isSigned)
+                {
+                    if (isOptional) return AzothValue.None;
+                    throw new Abort($"Cannot convert value {fromValue} to {to.ToILString()}");
+                }
+                return value;
+            }
+
             if (to is { TypeConstructor: FixedSizeIntegerTypeConstructor fixedSizeIntegerType })
             {
                 var isSigned = fromValue.Sign < 0;
@@ -94,18 +104,18 @@ internal static class Operations
                 }
             }
 
-            if (to.Equals(Type.Int8)) return AzothValue.I8((sbyte)value.IntValue);
-            if (to.Equals(Type.Byte)) return AzothValue.Byte((byte)value.IntValue);
-            if (to.Equals(Type.Int16)) return AzothValue.I16((short)value.IntValue);
-            if (to.Equals(Type.UInt16)) return AzothValue.U16((ushort)value.IntValue);
-            if (to.Equals(Type.Int32)) return AzothValue.I32((int)value.IntValue);
-            if (to.Equals(Type.UInt32)) return AzothValue.U32((uint)value.IntValue);
-            if (to.Equals(Type.Int64)) return AzothValue.I64((long)value.IntValue);
-            if (to.Equals(Type.UInt64)) return AzothValue.U64((ulong)value.IntValue);
-            if (to.Equals(Type.Offset)) return AzothValue.Offset((nint)(long)value.IntValue);
-            if (to.Equals(Type.Size)) return AzothValue.Size((nuint)(ulong)value.IntValue);
-            if (to.Equals(Type.NInt)) return AzothValue.NInt((nint)(long)value.IntValue);
-            if (to.Equals(Type.NUInt)) return AzothValue.NUInt((nuint)(ulong)value.IntValue);
+            if (to.Equals(Type.Int8)) return AzothValue.I8((sbyte)fromValue);
+            if (to.Equals(Type.Byte)) return AzothValue.Byte((byte)fromValue);
+            if (to.Equals(Type.Int16)) return AzothValue.I16((short)fromValue);
+            if (to.Equals(Type.UInt16)) return AzothValue.U16((ushort)fromValue);
+            if (to.Equals(Type.Int32)) return AzothValue.I32((int)fromValue);
+            if (to.Equals(Type.UInt32)) return AzothValue.U32((uint)fromValue);
+            if (to.Equals(Type.Int64)) return AzothValue.I64((long)fromValue);
+            if (to.Equals(Type.UInt64)) return AzothValue.U64((ulong)fromValue);
+            if (to.Equals(Type.Offset)) return AzothValue.Offset((nint)(long)fromValue);
+            if (to.Equals(Type.Size)) return AzothValue.Size((nuint)(ulong)fromValue);
+            if (to.Equals(Type.NInt)) return AzothValue.NInt((nint)(long)fromValue);
+            if (to.Equals(Type.NUInt)) return AzothValue.NUInt((nuint)(ulong)fromValue);
         }
 
         throw new NotImplementedException($"Conversion from {from.ToILString()} to {to.ToILString()}");
