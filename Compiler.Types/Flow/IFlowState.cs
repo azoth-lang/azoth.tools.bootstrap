@@ -7,6 +7,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Flow;
 /// Wraps up all the state that changes with the flow of the code to make it easy to attach to each
 /// node in the semantic tree.
 /// </summary>
+// TODO eliminate this interface and just use FlowState?
 public interface IFlowState : IEquatable<IFlowState>
 {
     public static IFlowState Empty => FlowState.Empty;

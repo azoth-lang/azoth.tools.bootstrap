@@ -482,7 +482,8 @@ internal sealed class FlowState : IFlowState
 
     public IFlowState Transform(ValueId? valueId, ValueId toValueId, IMaybeType withType)
     {
-        if (valueId is not ValueId fromValueId) return this;
+        // After a return statement the state is empty and there is nothing to do
+        if (IsEmpty || valueId is not ValueId fromValueId) return this;
 
         var builder = ToBuilder();
         // TODO map the original capability values to the result capability values
