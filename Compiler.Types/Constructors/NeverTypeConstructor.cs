@@ -4,7 +4,7 @@ using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using Azoth.Tools.Bootstrap.Framework;
 using Type = Azoth.Tools.Bootstrap.Compiler.Types.Decorated.Type;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Types;
+namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 
 internal class NeverTypeConstructor : ITypeConstructor
 {

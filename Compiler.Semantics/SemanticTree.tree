@@ -13,7 +13,6 @@
 ◊using Azoth.Tools.Bootstrap.Compiler.Semantics.ControlFlow;
 ◊using Azoth.Tools.Bootstrap.Compiler.Semantics.DataFlow;
 ◊using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
-◊using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 ◊using Azoth.Tools.Bootstrap.Compiler.Symbols;
 ◊using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 ◊using Azoth.Tools.Bootstrap.Compiler.Syntax;
