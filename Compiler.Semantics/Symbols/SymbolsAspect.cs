@@ -37,7 +37,7 @@ internal static partial class SymbolsAspect
 
     #region Type Definitions
     public static partial OrdinaryTypeSymbol TypeDefinition_Symbol(ITypeDefinitionNode node)
-        => new(node.ContainingSymbol, node.TypeFactory);
+        => new(node.ContainingSymbol, node.TypeConstructor);
     #endregion
 
     #region Type Definition Parts
@@ -45,7 +45,7 @@ internal static partial class SymbolsAspect
         => new(node.ContainingSymbol, node.DeclaredType.PlainType);
 
     public static partial AssociatedTypeSymbol ImplicitSelfDefinition_Symbol(IImplicitSelfDefinitionNode node)
-        => new AssociatedTypeSymbol(node.ContainingSymbol, node.TypeFactory);
+        => new AssociatedTypeSymbol(node.ContainingSymbol, node.TypeConstructor);
     #endregion
 
     #region Member Definitions

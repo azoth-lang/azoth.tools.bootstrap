@@ -504,7 +504,7 @@ internal static partial class ExpressionTypesAspect
         var globalScope = containingLexicalScope.PackageNames.ImportGlobalScope;
         var typeDeclaration = globalScope.Lookup("azoth").OfType<INamespaceDeclarationNode>()
             .SelectMany(ns => ns.MembersNamed("range")).OfType<ITypeDeclarationNode>().TrySingle();
-        var typeConstructor = typeDeclaration?.TypeFactory as BareTypeConstructor;
+        var typeConstructor = typeDeclaration?.TypeConstructor as BareTypeConstructor;
         var rangeType = typeConstructor?.ConstructNullaryType(containingType: null).With(Capability.Constant)
                              ?? IMaybeType.Unknown;
         return rangeType;

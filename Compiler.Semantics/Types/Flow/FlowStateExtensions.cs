@@ -71,7 +71,7 @@ internal static class FlowStateExtensions
     {
         var contextId = node.Context.ValueId;
         var contextType = (CapabilityType)node.Context.Type;
-        var declaringTypeConstructor = node.ReferencedDeclaration.ContainingDeclaration.TypeFactory as BareTypeConstructor
+        var declaringTypeConstructor = node.ReferencedDeclaration.ContainingDeclaration.TypeConstructor as BareTypeConstructor
                                        ?? throw new InvalidOperationException("Cannot access field of primitive type.");
         var id = node.ValueId;
         var bindingType = node.ReferencedDeclaration.BindingType;

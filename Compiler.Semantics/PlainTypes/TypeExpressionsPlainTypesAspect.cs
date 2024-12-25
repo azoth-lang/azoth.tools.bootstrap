@@ -20,7 +20,7 @@ internal static partial class TypeExpressionsPlainTypesAspect
         => node.Referent.NamedPlainType;
 
     public static partial IMaybePlainType BuiltInTypeName_NamedPlainType(IBuiltInTypeNameNode node)
-        => node.ReferencedDeclaration?.TypeFactory.TryConstructNullaryPlainType(containingType: null) ?? IMaybePlainType.Unknown;
+        => node.ReferencedDeclaration?.TypeConstructor.TryConstructNullaryPlainType(containingType: null) ?? IMaybePlainType.Unknown;
 
     public static partial IMaybePlainType FunctionType_NamedPlainType(IFunctionTypeNode node)
     {

@@ -45,12 +45,12 @@
 
 // ---------- Type Declarations
 ↑ TypeDeclaration.Supertypes: {`BareType`};
-↑ TypeDeclaration.TypeFactory: `ITypeConstructor`;
+↑ TypeDeclaration.TypeConstructor: `ITypeConstructor`;
 ↑ TypeDeclaration.Symbol: `TypeSymbol`;
 ↑ TypeDeclaration.Members: {TypeMemberDeclaration};
 /// Members including ones inherited from supertypes
 ↑ TypeDeclaration.InclusiveMembers: {TypeMemberDeclaration};
-↑ NonVariableTypeDeclaration.TypeFactory: `BareTypeConstructor`;
+↑ NonVariableTypeDeclaration.TypeConstructor: `BareTypeConstructor`;
 ↑ NonVariableTypeDeclaration.ImplicitSelf: ImplicitSelfDeclaration;
 ↑ UserTypeDeclaration.Symbol: `OrdinaryTypeSymbol`;
 ↑ UserTypeDeclaration.InclusiveMembers: {TypeMemberDeclaration};
@@ -59,12 +59,12 @@
 ↑ TraitDeclaration.InclusiveMembers: {TraitMemberDeclaration};
 
 // ---------- Type Declaration Parts
-= GenericParameterDeclaration.TypeFactory;
+= GenericParameterDeclaration.TypeConstructor;
 ↑ GenericParameterDeclaration.Symbol: `GenericParameterTypeSymbol`;
 ↑ ImplicitSelfDeclaration.Syntax: `ISyntax`? => null;
 ↑ ImplicitSelfDeclaration.Name: `BuiltInTypeName` => BuiltInTypeName.Self;
 = ImplicitSelfDeclaration.Supertypes => [];
-↑ ImplicitSelfDeclaration.TypeFactory: `AssociatedTypeConstructor`;
+↑ ImplicitSelfDeclaration.TypeConstructor: `AssociatedTypeConstructor`;
 ↑ ImplicitSelfDeclaration.Symbol: `AssociatedTypeSymbol`;
 = ImplicitSelfDeclaration.Members => [];
 = ImplicitSelfDeclaration.InclusiveMembers => [];

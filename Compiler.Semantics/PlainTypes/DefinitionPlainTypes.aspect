@@ -17,12 +17,12 @@
 = FunctionDefinition.Body.**.ExpectedReturnPlainType => Self.ReturnPlainType;
 
 // ---------- Type Definitions
-// TODO move the definition of type factories to their own aspect
-↑ TypeDefinition.TypeFactory: `OrdinaryTypeConstructor`;
+// TODO move the definition of type constructors to their own aspect
+↑ TypeDefinition.TypeConstructor: `OrdinaryTypeConstructor`;
 
 // ---------- Type Definition Parts
-↑ ImplicitSelfDefinition.TypeFactory: `SelfTypeConstructor`;
-= ImplicitSelfDefinition.TypeFactory;
+↑ ImplicitSelfDefinition.TypeConstructor: `SelfTypeConstructor`;
+= ImplicitSelfDefinition.TypeConstructor;
 
 // ---------- Member Definitions
 = MethodDefinition.SelfParameterPlainType => SelfParameter.BindingPlainType;
@@ -37,15 +37,15 @@
 // TODO it would be good to refactor to not depend on Type
 = OrdinaryMethodDefinition.MethodGroupPlainType => MethodGroupType.PlainType;
 = ConstructorDefinition.ReturnPlainType
-    => ContainingTypeDefinition.TypeFactory.ConstructWithParameterPlainTypes();
+    => ContainingTypeDefinition.TypeConstructor.ConstructWithParameterPlainTypes();
 = DefaultConstructorDefinition.SelfParameterPlainType
-    => ContainingTypeDefinition.TypeFactory.ConstructWithParameterPlainTypes();
+    => ContainingTypeDefinition.TypeConstructor.ConstructWithParameterPlainTypes();
 = OrdinaryConstructorDefinition.SelfParameterPlainType => SelfParameter.BindingPlainType;
 = OrdinaryConstructorDefinition.Body.**.ExpectedReturnPlainType => AzothPlainType.Void;
 = InitializerDefinition.ReturnPlainType
-    => ContainingTypeDefinition.TypeFactory.ConstructWithParameterPlainTypes();
+    => ContainingTypeDefinition.TypeConstructor.ConstructWithParameterPlainTypes();
 = DefaultInitializerDefinition.SelfParameterPlainType
-    => ContainingTypeDefinition.TypeFactory.ConstructWithParameterPlainTypes();
+    => ContainingTypeDefinition.TypeConstructor.ConstructWithParameterPlainTypes();
 = OrdinaryInitializerDefinition.SelfParameterPlainType => SelfParameter.BindingPlainType;
 = OrdinaryInitializerDefinition.Body.**.ExpectedReturnPlainType => AzothPlainType.Void;
 // Null is the signal that this is a field initializer and not a method body

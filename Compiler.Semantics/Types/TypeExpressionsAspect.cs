@@ -19,13 +19,13 @@ internal static partial class TypeExpressionsAspect
     #region Types
     public static partial IMaybeType TypeName_NamedType(ITypeNameNode node)
         => node.NamedBareType?.WithDefaultCapability()
-           ?? node.ReferencedDeclaration?.TypeFactory.TryConstructNullaryType(containingType: null) ?? IMaybeType.Unknown;
+           ?? node.ReferencedDeclaration?.TypeConstructor.TryConstructNullaryType(containingType: null) ?? IMaybeType.Unknown;
 
     // TODO remove if this remains a duplicate of TypeName_NamedType
     public static partial IMaybeType BuiltInTypeName_NamedType(IBuiltInTypeNameNode node)
         // Special type names don't have bare types
         => node.NamedBareType?.WithDefaultCapability()
-           ?? node.ReferencedDeclaration?.TypeFactory.TryConstructNullaryType(containingType: null) ?? IMaybeType.Unknown;
+           ?? node.ReferencedDeclaration?.TypeConstructor.TryConstructNullaryType(containingType: null) ?? IMaybeType.Unknown;
 
     public static partial IMaybeType CapabilityType_NamedType(ICapabilityTypeNode node)
         => (node.Referent as ITypeNameNode)?.NamedBareType?.With(node.Capability.DeclaredCapability) ?? node.Referent.NamedType;

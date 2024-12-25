@@ -74,27 +74,27 @@
 = BuiltInTypeSymbol.InclusiveMembers => Members;
 
 = VoidTypeSymbol.Name => Symbol.Name;
-= VoidTypeSymbol.TypeFactory => ITypeConstructor.Void;
+= VoidTypeSymbol.TypeConstructor => ITypeConstructor.Void;
 = VoidTypeSymbol.Supertypes => [];
 = VoidTypeSymbol.Members => [];
 = VoidTypeSymbol.InclusiveMembers => Members;
 = VoidTypeSymbol.InclusiveInstanceMembersNamed(OrdinaryName named) => [];
 = VoidTypeSymbol.AssociatedMembersNamed(OrdinaryName named) => [];
 = NeverTypeSymbol.Name => Symbol.Name;
-= NeverTypeSymbol.TypeFactory => ITypeConstructor.Never;
+= NeverTypeSymbol.TypeConstructor => ITypeConstructor.Never;
 = NeverTypeSymbol.Supertypes => [];
 = NeverTypeSymbol.Members => [];
 = NeverTypeSymbol.InclusiveMembers => Members;
 = NeverTypeSymbol.InclusiveInstanceMembersNamed(OrdinaryName named) => [];
 = NeverTypeSymbol.AssociatedMembersNamed(OrdinaryName named) => [];
 = PrimitiveTypeSymbol.Name => Symbol.Name;
-= PrimitiveTypeSymbol.TypeFactory => Symbol.TypeConstructor;
+= PrimitiveTypeSymbol.TypeConstructor => Symbol.TypeConstructor;
 
 ↑ OrdinaryTypeSymbol.Name: `OrdinaryName` => Symbol.Name;
 ↑ child OrdinaryTypeSymbol.GenericParameters: GenericParameterSymbol*;
 = OrdinaryTypeSymbol.Supertypes => Symbol.TryGetTypeConstructor().Supertypes;
 = OrdinaryTypeSymbol.GenericParameters;
-= OrdinaryTypeSymbol.TypeFactory => Symbol.TypeConstructor;
+= OrdinaryTypeSymbol.TypeConstructor => Symbol.TypeConstructor;
 ↑ child OrdinaryTypeSymbol.Members: {TypeMemberSymbol};
 
 + ClassSymbol.new.Validate;
@@ -117,7 +117,7 @@
 = GenericParameterSymbol.Supertypes => Symbol.TryGetTypeConstructor()?.Supertypes ?? [];
 ↑ GenericParameterSymbol.Members: {TypeMemberSymbol} => [];
 = GenericParameterSymbol.InclusiveMembers => [];
-= SelfSymbol.TypeFactory => Symbol.TypeConstructor;
+= SelfSymbol.TypeConstructor => Symbol.TypeConstructor;
 ↑ SelfSymbol.Members: {TypeMemberSymbol} => [];
 = SelfSymbol.InclusiveMembers => [];
 

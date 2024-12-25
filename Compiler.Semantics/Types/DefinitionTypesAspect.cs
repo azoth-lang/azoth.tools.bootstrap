@@ -11,8 +11,8 @@ internal static partial class DefinitionTypesAspect
         => node.Parameters.Select(p => p.ParameterType).ToFixedList();
 
     public static partial OrdinaryTypeConstructor TypeDefinition_Children_Broadcast_ContainingTypeConstructor(ITypeDefinitionNode node)
-        => node.TypeFactory;
+        => node.TypeConstructor;
 
     public static partial SelfTypeConstructor TypeDefinition_Children_Broadcast_ContainingSelfTypeConstructor(ITypeDefinitionNode node)
-        => node.ImplicitSelf.TypeFactory;
+        => node.ImplicitSelf.TypeConstructor;
 }

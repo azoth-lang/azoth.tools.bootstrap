@@ -14,5 +14,5 @@ internal static partial class DeclarationsAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFixedList<INamespaceMemberDeclarationNode> NamespaceDeclaration_NestedMembers(INamespaceDeclarationNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial ITypeConstructor GenericParameterDeclaration_TypeFactory(IGenericParameterDeclarationNode node);
+    public static partial ITypeConstructor GenericParameterDeclaration_TypeConstructor(IGenericParameterDeclarationNode node);
 }

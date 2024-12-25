@@ -18,7 +18,7 @@ internal static partial class DefinitionPlainTypesAspect
     #endregion
 
     #region Type Definitions
-    public static partial OrdinaryTypeConstructor ClassDefinition_TypeFactory(IClassDefinitionNode node)
+    public static partial OrdinaryTypeConstructor ClassDefinition_TypeConstructor(IClassDefinitionNode node)
     {
         // TODO use ContainingTypeConstructor in case this is a nested type
         NamespaceName containingNamespaceName = GetContainingNamespaceName(node);
@@ -26,7 +26,7 @@ internal static partial class DefinitionPlainTypesAspect
             node.IsAbstract, node.IsConst, node.Name, GetGenericParameters(node), node.Supertypes);
     }
 
-    public static partial OrdinaryTypeConstructor StructDefinition_TypeFactory(IStructDefinitionNode node)
+    public static partial OrdinaryTypeConstructor StructDefinition_TypeConstructor(IStructDefinitionNode node)
     {
         // TODO use ContainingTypeConstructor in case this is a nested type
         NamespaceName containingNamespaceName = GetContainingNamespaceName(node);
@@ -34,7 +34,7 @@ internal static partial class DefinitionPlainTypesAspect
             node.IsConst, node.Name, GetGenericParameters(node), node.Supertypes);
     }
 
-    public static partial OrdinaryTypeConstructor TraitDefinition_TypeFactory(ITraitDefinitionNode node)
+    public static partial OrdinaryTypeConstructor TraitDefinition_TypeConstructor(ITraitDefinitionNode node)
     {
         // TODO use ContainingTypeConstructor in case this is a nested type
         NamespaceName containingNamespaceName = GetContainingNamespaceName(node);
@@ -56,8 +56,8 @@ internal static partial class DefinitionPlainTypesAspect
     #endregion
 
     #region Type Definition Parts
-    public static partial SelfTypeConstructor ImplicitSelfDefinition_TypeFactory(IImplicitSelfDefinitionNode node)
-        => new(node.ContainingDeclaration.TypeFactory);
+    public static partial SelfTypeConstructor ImplicitSelfDefinition_TypeConstructor(IImplicitSelfDefinitionNode node)
+        => new(node.ContainingDeclaration.TypeConstructor);
     #endregion
 
     public static partial IMaybeNonVoidPlainType FieldDefinition_BindingPlainType(IFieldDefinitionNode node)

@@ -14,7 +14,7 @@ internal class SemanticTreeValidator
 
         if (node is ITypeDefinitionNode typeDecl)
         {
-            _ = typeDecl.TypeFactory;
+            _ = typeDecl.TypeConstructor;
             _ = typeDecl.Supertypes;
         }
         if (node is ITypeNameNode typeName)
@@ -83,17 +83,17 @@ internal class SemanticTreeValidator
                 break;
             case IClassDefinitionNode n:
                 _ = n.File;
-                _ = n.TypeFactory;
+                _ = n.TypeConstructor;
                 _ = n.Symbol;
                 break;
             case IStructDefinitionNode n:
                 _ = n.File;
-                _ = n.TypeFactory;
+                _ = n.TypeConstructor;
                 _ = n.Symbol;
                 break;
             case ITraitDefinitionNode n:
                 _ = n.File;
-                _ = n.TypeFactory;
+                _ = n.TypeConstructor;
                 _ = n.Symbol;
                 break;
             case IGenericParameterNode n:
