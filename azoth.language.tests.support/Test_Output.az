@@ -1,4 +1,4 @@
-published class TestOutput
+published class Test_Output
 {
     let newline: const string;
 
