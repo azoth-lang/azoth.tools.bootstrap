@@ -21,7 +21,8 @@ public static partial class PlainTypeOperations
 
     // TODO remove hack
     internal static bool IsStringType(this BarePlainType self)
-        => !self.TypeConstructor.HasParameters
+        => self.Name == SpecialNames.StringTypeName
+           && !self.TypeConstructor.HasParameters
            && self.TypeConstructor.Context is NamespaceContext sc
            && sc.Namespace == NamespaceName.Global;
 }

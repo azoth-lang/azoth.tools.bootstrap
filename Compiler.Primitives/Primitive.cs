@@ -33,7 +33,7 @@ public static class Primitive
         var tree = SymbolTreeBuilder.CreateForPrimitives();
 
         // TODO: This is a hack to "have" a string type from here. Replace by extending primitive types with string related methods.
-        var stringType = BareTypeConstructor.CreateClass("fake", NamespaceName.Global, false, false, "String")
+        var stringType = BareTypeConstructor.CreateClass("fake", NamespaceName.Global, false, false, SpecialNames.StringTypeName)
                                         .ConstructNullaryType(containingType: null).With(Capability.Constant);
 
         // Simple Types

@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
+using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Primitives;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.Async;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.ControlFlow;
@@ -69,9 +70,9 @@ public class InterpreterProcess
 
         userTypes = allDefinitions.OfType<ITypeDefinitionNode>()
                                  .ToFixedDictionary(c => c.Symbol);
-        stringClass = userTypes.Values.OfType<IClassDefinitionNode>().Single(c => c.Symbol.Name == "String");
+        stringClass = userTypes.Values.OfType<IClassDefinitionNode>().Single(c => c.Symbol.Name == SpecialNames.StringTypeName);
         stringConstructor = stringClass.Members.OfType<IOrdinaryConstructorDefinitionNode>().Single(c => c.Parameters.Count == 3);
-        rangeStruct = userTypes.Values.OfType<IStructDefinitionNode>().SingleOrDefault(c => c.Symbol.Name == "range");
+        rangeStruct = userTypes.Values.OfType<IStructDefinitionNode>().SingleOrDefault(c => c.Symbol.Name == SpecialNames.RangeTypeName);
         rangeInitializer = rangeStruct?.Members.OfType<IInitializerDefinitionNode>().SingleOrDefault(c => c.Parameters.Count == 2)?.Symbol;
         var defaultConstructorSymbols = allDefinitions
                                         .OfType<IClassDefinitionNode>()
