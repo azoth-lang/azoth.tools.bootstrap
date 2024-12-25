@@ -5884,6 +5884,7 @@ file class StructDefinitionNode : SemanticNode, IStructDefinitionNode
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
     {
         TypeDefinitionsAspect.TypeDefinition_Contribute_Diagnostics(this, builder);
+        DefinitionsAspect.StructDefinition_Contribute_Diagnostics(this, builder);
     }
 }
 

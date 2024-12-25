@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Tokens;
 
@@ -8,7 +9,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Lexing;
 public class TokenIterator<TToken> : ITokenIterator<TToken>
     where TToken : class, IToken
 {
-    public ParseContext Context { get; }
+    public ParseContext Context { [DebuggerStepThrough] get; }
     private IEnumerator<TToken>? tokens;
 
     public TokenIterator(ParseContext context, IEnumerable<TToken> tokens)

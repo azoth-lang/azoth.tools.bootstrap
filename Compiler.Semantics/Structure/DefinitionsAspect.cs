@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Framework;
 using MoreLinq;
 
@@ -28,4 +29,12 @@ internal static partial class DefinitionsAspect
 
     public static partial IFixedList<INamespaceMemberDefinitionNode> NamespaceDefinition_Members(INamespaceDefinitionNode node)
         => node.MemberNamespaces.Concat<INamespaceMemberDefinitionNode>(node.PackageMembers).ToFixedList();
+
+    #region Type Definitions
+    public static partial void StructDefinition_Contribute_Diagnostics(IStructDefinitionNode node, DiagnosticCollectionBuilder diagnostics)
+    {
+        if (node.Syntax.StructKindModifier is null)
+            diagnostics.Add(OtherSemanticError.StructKindRequired(node.Syntax.File, node.Syntax));
+    }
+    #endregion
 }

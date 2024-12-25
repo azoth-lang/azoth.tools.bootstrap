@@ -1,4 +1,4 @@
-using Azoth.Tools.Bootstrap.Compiler.Core;
+using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Core.Code;
 using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Lexing;
@@ -8,8 +8,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing;
 
 public class RecursiveDescentParser
 {
-    protected CodeFile File { get; }
-    protected ITokenIterator<IEssentialToken> Tokens { get; }
+    protected CodeFile File { [DebuggerStepThrough] get; }
+    protected ITokenIterator<IEssentialToken> Tokens { [DebuggerStepThrough] get; }
 
     public RecursiveDescentParser(ITokenIterator<IEssentialToken> tokens)
     {

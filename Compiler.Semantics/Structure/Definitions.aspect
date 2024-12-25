@@ -51,6 +51,7 @@
 ↑ TypeDefinition.IsConst: `bool` => Syntax.ConstModifier is not null;
 ↑ TypeDefinition.Name: `OrdinaryName` => Syntax.Name;
 ↑ ClassDefinition.IsAbstract: `bool` => Syntax.AbstractModifier is not null;
+= StructDefinition.↑.Diagnostics;
 
 // ---------- Type Definition Parts
 ↑ GenericParameter.Name: `IdentifierName` => Syntax.Name;
