@@ -74,14 +74,14 @@
 = BuiltInTypeSymbol.InclusiveMembers => Members;
 
 = VoidTypeSymbol.Name => Symbol.Name;
-= VoidTypeSymbol.TypeFactory => ITypeFactory.Void;
+= VoidTypeSymbol.TypeFactory => ITypeConstructor.Void;
 = VoidTypeSymbol.Supertypes => [];
 = VoidTypeSymbol.Members => [];
 = VoidTypeSymbol.InclusiveMembers => Members;
 = VoidTypeSymbol.InclusiveInstanceMembersNamed(OrdinaryName named) => [];
 = VoidTypeSymbol.AssociatedMembersNamed(OrdinaryName named) => [];
 = NeverTypeSymbol.Name => Symbol.Name;
-= NeverTypeSymbol.TypeFactory => ITypeFactory.Never;
+= NeverTypeSymbol.TypeFactory => ITypeConstructor.Never;
 = NeverTypeSymbol.Supertypes => [];
 = NeverTypeSymbol.Members => [];
 = NeverTypeSymbol.InclusiveMembers => Members;

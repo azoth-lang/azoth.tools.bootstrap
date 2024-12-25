@@ -29,7 +29,7 @@ public abstract class SimpleTypeConstructor : SimpleOrLiteralTypeConstructor
 
     public override bool HasIndependentParameters => false;
 
-    public override IFixedList<GenericParameterTypeFactory> ParameterTypeFactories => [];
+    public override IFixedList<GenericParameterTypeConstructor> ParameterTypeFactories => [];
 
     public sealed override IFixedSet<BareType> Supertypes => BareType.AnySet;
 

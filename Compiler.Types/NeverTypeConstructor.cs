@@ -6,30 +6,30 @@ using Type = Azoth.Tools.Bootstrap.Compiler.Types.Decorated.Type;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types;
 
-internal sealed class VoidTypeFactory : ITypeFactory
+internal class NeverTypeConstructor : ITypeConstructor
 {
     #region Singleton
-    internal static readonly VoidTypeFactory Instance = new VoidTypeFactory();
+    internal static readonly NeverTypeConstructor Instance = new NeverTypeConstructor();
 
-    private VoidTypeFactory() { }
+    private NeverTypeConstructor() { }
     #endregion
 
     public PlainType TryConstructNullaryPlainType(BarePlainType? containingType)
     {
-        Requires.Null(containingType, nameof(containingType), "Void does not have a containing type.");
-        return PlainType.Void;
+        Requires.Null(containingType, nameof(containingType), "Never does not have a containing type.");
+        return PlainType.Never;
     }
 
     public BareType? TryConstruct(BareType? containingType, IFixedList<IMaybeType> arguments)
     {
-        Requires.Null(containingType, nameof(containingType), "Void does not have a containing type.");
+        Requires.Null(containingType, nameof(containingType), "Never does not have a containing type.");
         TypeRequires.NoArgs(arguments, nameof(arguments));
         return null;
     }
 
     public Type? TryConstructNullaryType(BareType? containingType)
     {
-        Requires.Null(containingType, nameof(containingType), "Void does not have a containing type.");
-        return Type.Void;
+        Requires.Null(containingType, nameof(containingType), "Never does not have a containing type.");
+        return Type.Never;
     }
 }

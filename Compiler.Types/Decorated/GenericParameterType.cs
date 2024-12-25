@@ -19,7 +19,7 @@ public sealed class GenericParameterType : NonVoidType
 
     public override bool HasIndependentTypeArguments => false;
 
-    /// <remarks>Use <see cref="GenericParameterTypeFactory.Type"/> instead of directly using this.</remarks>
+    /// <remarks>Use <see cref="GenericParameterTypeConstructor.Type"/> instead of directly using this.</remarks>
     internal GenericParameterType(GenericParameterPlainType plainType)
     {
         PlainType = plainType;

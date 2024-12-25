@@ -22,7 +22,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
     typeof(SimpleOrLiteralTypeConstructor),
     typeof(AssociatedTypeConstructor))]
 [DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
-public abstract class BareTypeConstructor : BareTypeConstructorContext, IEquatable<BareTypeConstructor>, ITypeFactory
+public abstract class BareTypeConstructor : BareTypeConstructorContext, IEquatable<BareTypeConstructor>, ITypeConstructor
 {
     #region Standard Type Constructors
     public static readonly AnyTypeConstructor Any = AnyTypeConstructor.Instance;
@@ -195,7 +195,7 @@ public abstract class BareTypeConstructor : BareTypeConstructorContext, IEquatab
     /// </summary>
     public abstract bool HasIndependentParameters { get; }
 
-    public abstract IFixedList<GenericParameterTypeFactory> ParameterTypeFactories { get; }
+    public abstract IFixedList<GenericParameterTypeConstructor> ParameterTypeFactories { get; }
 
     /// <summary>
     /// The plain types used to refer to the parameters to this type within the type definition.
@@ -295,7 +295,7 @@ public abstract class BareTypeConstructor : BareTypeConstructorContext, IEquatab
     /// <exception cref="InvalidOperationException">This type constructor takes one or more arguments.</exception>
     public BareType ConstructNullaryType(BareType? containingType) => Construct(containingType, []);
 
-    Type? ITypeFactory.TryConstructNullaryType(BareType? containingType)
+    Type? ITypeConstructor.TryConstructNullaryType(BareType? containingType)
     {
         Requires.That(Equals(Context as BareTypeConstructor, containingType?.TypeConstructor), nameof(containingType),
             "Must match the context.");

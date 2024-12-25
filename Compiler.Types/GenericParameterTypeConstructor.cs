@@ -8,7 +8,7 @@ using Type = Azoth.Tools.Bootstrap.Compiler.Types.Decorated.Type;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types;
 
-public class GenericParameterTypeFactory : ITypeFactory
+public class GenericParameterTypeConstructor : ITypeConstructor
 {
     private const string? NoContainingTypeMessage = "Generic parameter types imply the containing type and should be constructed without one.";
 
@@ -17,7 +17,7 @@ public class GenericParameterTypeFactory : ITypeFactory
     public GenericParameterPlainType PlainType { [DebuggerStepThrough] get; }
     public GenericParameterType Type { [DebuggerStepThrough] get; }
 
-    internal GenericParameterTypeFactory(
+    internal GenericParameterTypeConstructor(
         OrdinaryTypeConstructor declaringTypeConstructor,
         TypeConstructorParameter parameter)
     {
@@ -27,14 +27,14 @@ public class GenericParameterTypeFactory : ITypeFactory
         Type = new(PlainType);
     }
 
-    #region ITypeFactory implementation
-    PlainType ITypeFactory.TryConstructNullaryPlainType(BarePlainType? containingType)
+    #region ITypeConstructor implementation
+    PlainType ITypeConstructor.TryConstructNullaryPlainType(BarePlainType? containingType)
     {
         Requires.Null(containingType, nameof(containingType), NoContainingTypeMessage);
         return PlainType;
     }
 
-    BareType? ITypeFactory.TryConstruct(BareType? containingType, IFixedList<IMaybeType> arguments)
+    BareType? ITypeConstructor.TryConstruct(BareType? containingType, IFixedList<IMaybeType> arguments)
     {
         Requires.Null(containingType, nameof(containingType), NoContainingTypeMessage);
         TypeRequires.NoArgs(arguments, nameof(arguments));
@@ -42,7 +42,7 @@ public class GenericParameterTypeFactory : ITypeFactory
         return null;
     }
 
-    Type? ITypeFactory.TryConstructNullaryType(BareType? containingType)
+    Type? ITypeConstructor.TryConstructNullaryType(BareType? containingType)
     {
         Requires.Null(containingType, nameof(containingType), NoContainingTypeMessage);
         return Type;

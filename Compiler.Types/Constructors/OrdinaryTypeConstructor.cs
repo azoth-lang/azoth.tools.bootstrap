@@ -59,7 +59,7 @@ public sealed class OrdinaryTypeConstructor : BareTypeConstructor
     public override bool AllowsVariance { [DebuggerStepThrough] get; }
     public override bool HasIndependentParameters { [DebuggerStepThrough] get; }
 
-    public override IFixedList<GenericParameterTypeFactory> ParameterTypeFactories { [DebuggerStepThrough] get; }
+    public override IFixedList<GenericParameterTypeConstructor> ParameterTypeFactories { [DebuggerStepThrough] get; }
 
     public override IFixedSet<BareType> Supertypes { [DebuggerStepThrough] get; }
     public override TypeSemantics? Semantics
@@ -90,7 +90,7 @@ public sealed class OrdinaryTypeConstructor : BareTypeConstructor
             "All ordinary type constructors must have `Any` as a supertype.");
         Supertypes = supertypes;
         IsDeclaredConst = isDeclaredConst;
-        ParameterTypeFactories = Parameters.Select(p => new GenericParameterTypeFactory(this, p)).ToFixedList();
+        ParameterTypeFactories = Parameters.Select(p => new GenericParameterTypeConstructor(this, p)).ToFixedList();
     }
 
     /// <summary>

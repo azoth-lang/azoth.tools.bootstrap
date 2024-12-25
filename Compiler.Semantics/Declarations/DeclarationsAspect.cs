@@ -16,7 +16,7 @@ internal static partial class DeclarationsAspect
     #endregion
 
     #region Type Declarations
-    public static partial ITypeFactory GenericParameterDeclaration_TypeFactory(IGenericParameterDeclarationNode node)
+    public static partial ITypeConstructor GenericParameterDeclaration_TypeFactory(IGenericParameterDeclarationNode node)
         => node.ContainingDeclaration.TypeFactory.ParameterTypeFactories.Single(p => p.Parameter.Name.Equals(node.Name));
     #endregion
 }

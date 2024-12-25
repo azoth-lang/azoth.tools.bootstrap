@@ -9,20 +9,18 @@ using Type = Azoth.Tools.Bootstrap.Compiler.Types.Decorated.Type;
 namespace Azoth.Tools.Bootstrap.Compiler.Types;
 
 /// <summary>
-/// Not all types have a <see cref="BareTypeConstructor"/>, yet there are places in the compiler where
-/// the ability to construct a type is needed even if it doesn't have a one. A <see cref="ITypeFactory"/>
-/// provides that ability.
+/// A fully generalized type constructor capable of constructing any type.
 /// </summary>
 [Closed(
     typeof(BareTypeConstructor),
-    typeof(VoidTypeFactory),
-    typeof(NeverTypeFactory),
-    typeof(GenericParameterTypeFactory))]
-public interface ITypeFactory
+    typeof(VoidTypeConstructor),
+    typeof(NeverTypeConstructor),
+    typeof(GenericParameterTypeConstructor))]
+public interface ITypeConstructor
 {
     #region Standard
-    public static readonly ITypeFactory Void = VoidTypeFactory.Instance;
-    public static readonly ITypeFactory Never = NeverTypeFactory.Instance;
+    public static readonly ITypeConstructor Void = VoidTypeConstructor.Instance;
+    public static readonly ITypeConstructor Never = NeverTypeConstructor.Instance;
     #endregion
 
     PlainType? TryConstructNullaryPlainType(BarePlainType? containingType);

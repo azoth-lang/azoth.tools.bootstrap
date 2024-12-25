@@ -45,7 +45,7 @@
 
 // ---------- Type Declarations
 ↑ TypeDeclaration.Supertypes: {`BareType`};
-↑ TypeDeclaration.TypeFactory: `ITypeFactory`;
+↑ TypeDeclaration.TypeFactory: `ITypeConstructor`;
 ↑ TypeDeclaration.Symbol: `TypeSymbol`;
 ↑ TypeDeclaration.Members: {TypeMemberDeclaration};
 /// Members including ones inherited from supertypes

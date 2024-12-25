@@ -21,7 +21,7 @@ public abstract class AssociatedTypeConstructor : BareTypeConstructor
     public sealed override IFixedList<TypeConstructorParameter> Parameters => [];
     public sealed override bool AllowsVariance => false;
     public sealed override bool HasIndependentParameters => false;
-    public sealed override IFixedList<GenericParameterTypeFactory> ParameterTypeFactories => [];
+    public sealed override IFixedList<GenericParameterTypeConstructor> ParameterTypeFactories => [];
 
     protected AssociatedTypeConstructor(BareTypeConstructor context)
     {

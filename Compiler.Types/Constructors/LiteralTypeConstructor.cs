@@ -34,7 +34,7 @@ public abstract class LiteralTypeConstructor : SimpleOrLiteralTypeConstructor
 
     public override bool HasIndependentParameters => false;
 
-    public override IFixedList<GenericParameterTypeFactory> ParameterTypeFactories => [];
+    public override IFixedList<GenericParameterTypeConstructor> ParameterTypeFactories => [];
 
     // TODO should this instead include the non-literal type (e.g. `int` or `bool`)?
     public sealed override IFixedSet<BareType> Supertypes => BareType.AnySet;

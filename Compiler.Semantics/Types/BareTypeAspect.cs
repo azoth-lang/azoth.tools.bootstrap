@@ -17,7 +17,7 @@ internal static partial class BareTypeAspect
     public static partial BareType? BuiltInTypeName_NamedBareType(IBuiltInTypeNameNode node)
         => BuildBareType(node.ReferencedDeclaration?.TypeFactory, []);
 
-    private static BareType? BuildBareType(ITypeFactory? typeConstructor, IFixedList<IMaybeType> typeArguments)
+    private static BareType? BuildBareType(ITypeConstructor? typeConstructor, IFixedList<IMaybeType> typeArguments)
         // The number of arguments will match the type because name binding will only pick a matching type
         => typeConstructor?.TryConstruct(containingType: null, typeArguments);
 
