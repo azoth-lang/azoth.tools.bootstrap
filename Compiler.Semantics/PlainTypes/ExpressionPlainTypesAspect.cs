@@ -192,9 +192,9 @@ internal static partial class ExpressionPlainTypesAspect
 
     public static partial IMaybePlainType StringLiteralExpression_PlainType(IStringLiteralExpressionNode node)
     {
-        var typeSymbolNode = node.ContainingLexicalScope.Lookup(SpecialNames.StringTypeName)
-                                 .OfType<ITypeDeclarationNode>().TrySingle();
-        return typeSymbolNode?.Symbol.TryGetTypeConstructor()?.TryConstructNullaryPlainType(containingType: null) ?? IMaybePlainType.Unknown;
+        var typeDeclarationNode = node.ContainingLexicalScope.Lookup(SpecialNames.StringTypeName)
+                                      .OfType<ITypeDeclarationNode>().TrySingle();
+        return typeDeclarationNode?.TypeConstructor.TryConstructNullaryPlainType(containingType: null) ?? IMaybePlainType.Unknown;
     }
 
     public static partial IMaybePlainType IfExpression_PlainType(IIfExpressionNode node)

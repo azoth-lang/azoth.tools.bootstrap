@@ -45,8 +45,8 @@ public class InterpreterProcess
     private readonly FixedDictionary<ConstructorSymbol, IOrdinaryConstructorDefinitionNode?> constructors;
     private readonly FixedDictionary<InitializerSymbol, IOrdinaryInitializerDefinitionNode?> initializers;
     private readonly FixedDictionary<OrdinaryTypeSymbol, ITypeDefinitionNode> userTypes;
-    private readonly IClassDefinitionNode stringClass;
-    private readonly IOrdinaryConstructorDefinitionNode stringConstructor;
+    private readonly IStructDefinitionNode stringStruct;
+    private readonly IOrdinaryInitializerDefinitionNode stringInitializer;
     private readonly IStructDefinitionNode? rangeStruct;
     private readonly InitializerSymbol? rangeInitializer;
     private byte? exitCode;
@@ -70,8 +70,8 @@ public class InterpreterProcess
 
         userTypes = allDefinitions.OfType<ITypeDefinitionNode>()
                                  .ToFixedDictionary(c => c.Symbol);
-        stringClass = userTypes.Values.OfType<IClassDefinitionNode>().Single(c => c.Symbol.Name == SpecialNames.StringTypeName);
-        stringConstructor = stringClass.Members.OfType<IOrdinaryConstructorDefinitionNode>().Single(c => c.Parameters.Count == 3);
+        stringStruct = userTypes.Values.OfType<IStructDefinitionNode>().Single(c => c.Symbol.Name == SpecialNames.StringTypeName);
+        stringInitializer = stringStruct.Members.OfType<IOrdinaryInitializerDefinitionNode>().Single(c => c.Parameters.Count == 3);
         rangeStruct = userTypes.Values.OfType<IStructDefinitionNode>().SingleOrDefault(c => c.Symbol.Name == SpecialNames.RangeTypeName);
         rangeInitializer = rangeStruct?.Members.OfType<IInitializerDefinitionNode>().SingleOrDefault(c => c.Parameters.Count == 2)?.Symbol;
         var defaultConstructorSymbols = allDefinitions
@@ -898,9 +898,8 @@ public class InterpreterProcess
             // byte_count: size
             AzothValue.Size(bytes.Count),
         };
-        var vTable = vTables.GetOrAdd(stringClass, CreateVTable);
-        var self = AzothValue.Object(new AzothObject(vTable));
-        return await CallConstructorAsync(stringConstructor, self, arguments).ConfigureAwait(false);
+        var self = AzothValue.Struct(new AzothStruct());
+        return await CallInitializerAsync(stringInitializer, self, arguments).ConfigureAwait(false);
     }
 
     private async ValueTask<AzothValue> CallIntrinsicAsync(FunctionSymbol function, List<AzothValue> arguments)

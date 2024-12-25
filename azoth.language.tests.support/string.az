@@ -1,5 +1,5 @@
 // TODO replace with `ref[C] struct`
-published class String
+published const copy struct string
 {
     /// The index of the start of the string data in `bytes`.
     public let start: size;
@@ -10,7 +10,7 @@ published class String
 
     // Constructor is private because this is a temporary way of constructing strings for constants
     // TODO parameter type doesn't make sense for string literals
-    /* unsafe */ new(self, bytes: const Raw_Hybrid_Bounded_List[void, byte], start: size, byte_count: size)
+    /* unsafe */ init(self, bytes: const Raw_Hybrid_Bounded_List[void, byte], start: size, byte_count: size)
     {
         .bytes = bytes;
         .start = start;
@@ -23,7 +23,7 @@ published class String
     }
 
     // Once it is supported, this should be a copy constructor
-    // published safe new(other: String)
+    // published safe new(other: string)
     // {
     //     self.byte_count = other.byte_count;
     //     self.bytes = mem_allocate(self.byte_count);
@@ -31,7 +31,7 @@ published class String
     // }
 
     /// Concatenate two strings producing a new one
-    // published /* safe */ fn concat(self, other: String) -> owned String
+    // published /* safe */ fn concat(self, other: string) -> owned string
     // {
     //     let new_byte_count = self.byte_count + other.byte_count;
     //     let new_bytes = mem_allocate(new_byte_count);
@@ -39,11 +39,11 @@ published class String
     //     {
     //         mem_copy(self.bytes, new_bytes, self.byte_count);
     //         mem_copy(other.bytes, new_bytes + self.byte_count, other.byte_count);
-    //         return new String(new_byte_count, new_bytes);
+    //         return new string(new_byte_count, new_bytes);
     //     }
     // }
 
-    // published safe fn equals(self, other: String) -> bool
+    // published safe fn equals(self, other: string) -> bool
     // {
     //     if self.byte_count =/= other.byte_count => return false;
 
@@ -61,9 +61,9 @@ published class String
     // Pad this string out to a given length using the supplied string
     // Currently only works correctly if the string is comprised only of ASCII
     // characters and `with` is only a single character
-    // published safe fn pad_left(self, total_length: size, pad_with: String) -> String$owned
+    // published safe fn pad_left(self, total_length: size, pad_with: string) -> string$owned
     // {
-    //     if self.bytes >= total_length => return new String(self);
+    //     if self.bytes >= total_length => return new string(self);
 
     //     let new_bytes = mem_allocate(total_length);
     //     let padding = total_length - self.byte_count;
@@ -74,12 +74,12 @@ published class String
     //         // {
     //         //     mem_copy(pad_with.bytes, new_bytes+i, 1);
     //         // }
-    //         return new String(total_length, new_bytes);
+    //         return new string(total_length, new_bytes);
     //     }
     // }
 
-    // published implicit operator "_"(value: const Raw_Array[byte]) -> String
+    // published implicit operator "_"(value: const Raw_Array[byte]) -> string
     // {
-    //     return new String(value);
+    //     return new string(value);
     // }
 }

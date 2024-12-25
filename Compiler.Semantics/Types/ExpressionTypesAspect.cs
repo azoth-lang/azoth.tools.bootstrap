@@ -123,8 +123,9 @@ internal static partial class ExpressionTypesAspect
 
     public static partial IMaybeType StringLiteralExpression_Type(IStringLiteralExpressionNode node)
     {
-        var typeSymbolNode = node.ContainingLexicalScope.Lookup(StringTypeName).OfType<ITypeDeclarationNode>().TrySingle();
-        return typeSymbolNode?.Symbol.TryGetTypeConstructor()?.ConstructNullaryType(containingType: null).With(Capability.Constant) ?? IMaybeType.Unknown;
+        var typeDeclarationNode = node.ContainingLexicalScope.Lookup(SpecialNames.StringTypeName)
+                                      .OfType<ITypeDeclarationNode>().TrySingle();
+        return typeDeclarationNode?.TypeConstructor.TryConstruct(containingType: null, [])?.With(Capability.Constant) ?? IMaybeType.Unknown;
     }
 
     public static partial IFlowState LiteralExpression_FlowStateAfter(ILiteralExpressionNode node)
@@ -137,8 +138,6 @@ internal static partial class ExpressionTypesAspect
         if (node.Type is UnknownType)
             diagnostics.Add(TypeError.NotImplemented(node.File, node.Syntax.Span, "Could not find string type for string literal."));
     }
-
-    private static readonly IdentifierName StringTypeName = "String";
 
     public static partial ContextualizedCall? MethodInvocationExpression_ContextualizedCall(
         IMethodInvocationExpressionNode node)

@@ -1,18 +1,18 @@
 published class TestOutput
 {
-    let newline: const String;
+    let newline: const string;
 
     public new(mut self)
     {
         .newline = "\n";
     }
 
-    published /*safe*/ fn write(mut self, value: String)
+    published /*safe*/ fn write(mut self, value: string)
     {
         unsafe (print_raw_utf8_bytes(value.raw_bytes(), value.start, value.byte_count));
     }
 
-    published fn write_line(mut self, line: String)
+    published fn write_line(mut self, line: string)
     {
         .write(line);
         .write(.newline);
