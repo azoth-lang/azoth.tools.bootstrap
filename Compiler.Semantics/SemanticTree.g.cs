@@ -13009,7 +13009,7 @@ file class UnknownInvocationExpressionNode : SemanticNode, IUnknownInvocationExp
     public ControlFlowSet ControlFlowNext
         => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
             : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
-                ControlFlowAspect.Expression_ControlFlowNext);
+                ControlFlowAspect.UnknownInvocationExpression_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
     public IFlowState FlowStateAfter
@@ -13044,6 +13044,15 @@ file class UnknownInvocationExpressionNode : SemanticNode, IUnknownInvocationExp
         if (IndexOfNode(Self.CurrentArguments, child) is { } argumentIndex)
             return TempArguments[argumentIndex - 1].FlowLexicalScope().True;
         return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
+    }
+
+    internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.CurrentExpression))
+            return !TempArguments.IsEmpty ? ControlFlowSet.CreateNormal(Arguments[0]) : base.Inherited_ControlFlowFollowing(child, descendant, ctx);
+        if (IndexOfNode(Self.CurrentArguments, child) is { } index)
+            return index < Arguments.Count - 1 ? ControlFlowSet.CreateNormal(Arguments[index + 1]) : base.Inherited_ControlFlowFollowing(child, descendant, ctx);
+        return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
     }
 
     internal override IMaybePlainType? Inherited_ExpectedPlainType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -14425,7 +14434,7 @@ file class UnresolvedMemberAccessExpressionNode : SemanticNode, IUnresolvedMembe
     public ControlFlowSet ControlFlowNext
         => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
             : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
-                ControlFlowAspect.Expression_ControlFlowNext);
+                ControlFlowAspect.UnresolvedMemberAccessExpression_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
     public ValueId ValueId
@@ -16878,7 +16887,7 @@ file class AmbiguousMemberAccessExpressionNode : SemanticNode, IAmbiguousMemberA
     public ControlFlowSet ControlFlowNext
         => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
             : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
-                ControlFlowAspect.Expression_ControlFlowNext);
+                ControlFlowAspect.AmbiguousMemberAccessExpression_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
     public ValueId ValueId

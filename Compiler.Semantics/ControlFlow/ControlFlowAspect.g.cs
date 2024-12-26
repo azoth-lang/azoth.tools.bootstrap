@@ -49,6 +49,8 @@ internal static partial class ControlFlowAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial ControlFlowSet ReturnExpression_ControlFlowNext(IReturnExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial ControlFlowSet UnknownInvocationExpression_ControlFlowNext(IUnknownInvocationExpressionNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial ControlFlowSet FunctionInvocationExpression_ControlFlowNext(IFunctionInvocationExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial ControlFlowSet MethodInvocationExpression_ControlFlowNext(IMethodInvocationExpressionNode node);
@@ -59,11 +61,15 @@ internal static partial class ControlFlowAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial ControlFlowSet FunctionReferenceInvocationExpression_ControlFlowNext(IFunctionReferenceInvocationExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial ControlFlowSet UnresolvedMemberAccessExpression_ControlFlowNext(IUnresolvedMemberAccessExpressionNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial ControlFlowSet MethodGroupName_ControlFlowNext(IMethodGroupNameNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial ControlFlowSet MethodName_ControlFlowNext(IMethodNameNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial ControlFlowSet FieldAccessExpression_ControlFlowNext(IFieldAccessExpressionNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial ControlFlowSet AmbiguousMemberAccessExpression_ControlFlowNext(IAmbiguousMemberAccessExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial ControlFlowSet RecoveryExpression_ControlFlowNext(IRecoveryExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

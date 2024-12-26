@@ -46,26 +46,39 @@ internal static partial class ControlFlowAspect
     public static partial ControlFlowSet Expression_ControlFlowNext(IExpressionNode node)
         => node.ControlFlowFollowing();
 
+    #region Invocation Expressions
+    public static partial ControlFlowSet UnknownInvocationExpression_ControlFlowNext(IUnknownInvocationExpressionNode node)
+        => ControlFlowSet.CreateNormal(node.Expression);
+
     public static partial ControlFlowSet FunctionInvocationExpression_ControlFlowNext(IFunctionInvocationExpressionNode node)
         => ControlFlowSet.CreateNormal(node.Function);
-
-    public static partial ControlFlowSet FunctionReferenceInvocationExpression_ControlFlowNext(IFunctionReferenceInvocationExpressionNode node)
-        => ControlFlowSet.CreateNormal(node.Expression);
 
     public static partial ControlFlowSet MethodInvocationExpression_ControlFlowNext(IMethodInvocationExpressionNode node)
         => ControlFlowSet.CreateNormal(node.Method);
 
-    public static partial ControlFlowSet FieldAccessExpression_ControlFlowNext(IFieldAccessExpressionNode node)
-        => ControlFlowSet.CreateNormal(node.Context);
-
     public static partial ControlFlowSet GetterInvocationExpression_ControlFlowNext(IGetterInvocationExpressionNode node)
         => ControlFlowSet.CreateNormal(node.Context);
 
-    public static partial ControlFlowSet AssignmentExpression_ControlFlowNext(IAssignmentExpressionNode node)
-        => ControlFlowSet.CreateNormal(node.LeftOperand);
-
     public static partial ControlFlowSet SetterInvocationExpression_ControlFlowNext(ISetterInvocationExpressionNode node)
         => ControlFlowSet.CreateNormal(node.Context);
+
+    public static partial ControlFlowSet FunctionReferenceInvocationExpression_ControlFlowNext(IFunctionReferenceInvocationExpressionNode node)
+        => ControlFlowSet.CreateNormal(node.Expression);
+    #endregion
+
+    #region Name Expressions
+    public static partial ControlFlowSet UnresolvedMemberAccessExpression_ControlFlowNext(IUnresolvedMemberAccessExpressionNode node)
+        => ControlFlowSet.CreateNormal(node.Context);
+
+    public static partial ControlFlowSet FieldAccessExpression_ControlFlowNext(IFieldAccessExpressionNode node)
+        => ControlFlowSet.CreateNormal(node.Context);
+
+    public static partial ControlFlowSet AmbiguousMemberAccessExpression_ControlFlowNext(IAmbiguousMemberAccessExpressionNode node)
+        => ControlFlowSet.CreateNormal(node.Context);
+    #endregion
+
+    public static partial ControlFlowSet AssignmentExpression_ControlFlowNext(IAssignmentExpressionNode node)
+        => ControlFlowSet.CreateNormal(node.LeftOperand);
 
     public static partial ControlFlowSet UnsafeExpression_ControlFlowNext(IUnsafeExpressionNode node)
         => ControlFlowSet.CreateNormal(node.Expression);
