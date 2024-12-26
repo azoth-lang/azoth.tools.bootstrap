@@ -445,6 +445,9 @@ internal static partial class ExpressionTypesAspect
             case IVariableNameExpressionNode:
                 // TODO fix this condition. It is really about LValues
                 break;
+            case IUnknownNameExpressionNode:
+                // Since it is unknown, we must assume that it can be assigned into
+                break;
             default:
                 diagnostics.Add(OtherSemanticError.CantAssignIntoExpression(node.File, node.TempLeftOperand.Syntax.Span));
                 break;
