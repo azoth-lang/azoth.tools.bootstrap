@@ -69,9 +69,9 @@ public interface IFlowState : IEquatable<IFlowState>
     IFlowState Transform(ValueId? valueId, ValueId toValueId, IMaybeType withType);
 
     // TODO make parameters non-nullable?
-    IFlowState Combine(ValueId left, ValueId? right, ValueId intoValueId);
+    IFlowState Combine(ValueId? left, ValueId? right, ValueId intoValueId);
 
-    IEnumerable<ValueId> CombineDisallowedDueToLent(ValueId left, ValueId? right);
+    IEnumerable<ValueId> CombineDisallowedDueToLent(ValueId? left, ValueId? right);
     IFlowState FreezeVariable(ValueId bindingId, IMaybeType bindingType, ValueId id, ValueId intoValueId);
     IFlowState FreezeValue(ValueId id, ValueId intoValueId);
     IFlowState MoveVariable(ValueId bindingId, IMaybeType bindingType, ValueId valueId, ValueId intoValueId);

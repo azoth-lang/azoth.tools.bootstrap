@@ -190,7 +190,9 @@ internal sealed class FlowState : IFlowState
         return builder.ToImmutable();
     }
 
-    public IFlowState Constant(ValueId valueId)
+    public IFlowState Constant(ValueId valueId) => AddUntracked(valueId);
+
+    private IFlowState AddUntracked(ValueId valueId)
     {
         var builder = ToBuilder();
         var value = CapabilityValue.CreateTopLevel(valueId);
@@ -201,10 +203,12 @@ internal sealed class FlowState : IFlowState
 
     public IFlowState Alias(ValueId? id, ValueId aliasId)
     {
-        // TODO maybe sharing should be tracked even in this case? Or should it be treated as untracked?
-        if (id is not { } valueId) return this;
-
         var builder = ToBuilder();
+
+        if (id is not { } valueId)
+            // An alias of an unknown thing cannot be tracked. It will have an unknown type.
+            return AddUntracked(aliasId);
+
         // An alias has the same type (modulo aliasing) as the original value and as such the same
         // capability values. Thus, we can simply map the original values to the alias values.
 
@@ -508,10 +512,12 @@ internal sealed class FlowState : IFlowState
         return builder.ToImmutable();
     }
 
-    public IFlowState Combine(ValueId left, ValueId? right, ValueId intoValueId)
+    public IFlowState Combine(ValueId? left, ValueId? right, ValueId intoValueId)
     {
+        var valueIds = new[] { left, right }.WhereNotNull().ToFixedList();
+        if (valueIds.IsEmpty) return this;
+
         var builder = ToBuilder();
-        var valueIds = right.YieldValue().Prepend(left).ToFixedList();
         int? set = builder.Union(TrackedValues(valueIds));
 
         // TODO properly handle or restrict independent parameters
@@ -527,13 +533,13 @@ internal sealed class FlowState : IFlowState
         return builder.ToImmutable();
     }
 
-    public IEnumerable<ValueId> CombineDisallowedDueToLent(ValueId left, ValueId? right)
+    public IEnumerable<ValueId> CombineDisallowedDueToLent(ValueId? left, ValueId? right)
     {
-        if (right is null)
+        if (left is null || right is null)
             // When there is only a single argument, even if it is in a lent set, it isn't being unioned with anything else
             return [];
 
-        return CombineDisallowedDueToLent([left, right.Value]);
+        return CombineDisallowedDueToLent([left.Value, right.Value]);
     }
 
     public IFlowState FreezeVariable(ValueId bindingId, IMaybeType bindingType, ValueId id, ValueId intoValueId)

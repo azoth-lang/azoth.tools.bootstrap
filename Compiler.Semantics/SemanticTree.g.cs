@@ -2839,6 +2839,8 @@ public partial interface IUnknownNameExpressionNode : INameExpressionNode
     new UnknownType Type
         => AzothType.Unknown;
     IMaybeType IExpressionNode.Type => Type;
+    IFlowState INameExpressionNode.FlowStateAfter
+        => ExpressionTypesAspect.UnknownNameExpression_FlowStateAfter(this);
     IMaybePlainType IExpressionNode.PlainType
         => AzothPlainType.Unknown;
 }

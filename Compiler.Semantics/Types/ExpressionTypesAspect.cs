@@ -455,7 +455,7 @@ internal static partial class ExpressionTypesAspect
             var flowStateBefore = rightOperand.FlowStateAfter;
             var leftValueId = leftOperand.ValueId;
             var rightValueId = rightOperand.ValueId;
-            var valueIds = flowStateBefore.CombineDisallowedDueToLent(rightValueId, leftValueId);
+            var valueIds = flowStateBefore.CombineDisallowedDueToLent(leftValueId, rightValueId);
             foreach (var valueId in valueIds)
             {
                 var operand = valueId == leftValueId ? leftOperand : rightOperand;
@@ -510,9 +510,8 @@ internal static partial class ExpressionTypesAspect
     }
 
     public static partial IFlowState BinaryOperatorExpression_FlowStateAfter(IBinaryOperatorExpressionNode node)
-        // Left and right are swapped here because right is known to not be null while left may be null and order doesn't matter to combine
         => node.RightOperand?.FlowStateAfter.Combine(
-            node.RightOperand.ValueId, node.LeftOperand?.ValueId, node.ValueId)
+               node.LeftOperand?.ValueId, node.RightOperand.ValueId, node.ValueId)
            ?? IFlowState.Empty;
 
     public static partial void BinaryOperatorExpression_Contribute_Diagnostics(IBinaryOperatorExpressionNode node, DiagnosticCollectionBuilder diagnostics)
@@ -553,7 +552,7 @@ internal static partial class ExpressionTypesAspect
             var flowStateBefore = thenBlock.FlowStateAfter.Merge(elseClause.FlowStateAfter);
             var thenValueId = thenBlock.ValueId;
             var elseValueId = elseClause.ValueId;
-            var valueIds = flowStateBefore.CombineDisallowedDueToLent(elseValueId, thenValueId);
+            var valueIds = flowStateBefore.CombineDisallowedDueToLent(thenValueId, elseValueId);
             foreach (var valueId in valueIds)
             {
                 var branch = valueId == thenValueId ? thenBlock : elseClause;
@@ -840,4 +839,10 @@ internal static partial class ExpressionTypesAspect
         return flowStateBefore.Transform(node.Value.ValueId, node.ValueId, node.Type)
                               .DropBindingsForReturn();
     }
+
+    #region Name Expressions
+    public static partial IFlowState UnknownNameExpression_FlowStateAfter(IUnknownNameExpressionNode node)
+        // Things with unknown type are inherently untracked so there is no change to the flow state
+        => node.FlowStateBefore().Alias(null, node.ValueId);
+    #endregion
 }

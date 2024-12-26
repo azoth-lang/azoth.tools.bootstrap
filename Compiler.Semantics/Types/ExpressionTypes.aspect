@@ -219,6 +219,7 @@
 = SelfExpression.FlowStateAfter;
 ↑ MissingNameExpression.Type: `UnknownType` => AzothType.Unknown;
 ↑ UnknownNameExpression.Type: `UnknownType` => AzothType.Unknown;
+= UnknownNameExpression.FlowStateAfter;
 = AmbiguousMemberAccessExpression.FlowStateAfter;
 
 // ---------- Capability Expressions
