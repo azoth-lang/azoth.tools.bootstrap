@@ -15,9 +15,9 @@ internal static partial class OverloadResolutionAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial void NewObjectExpression_Contribute_Diagnostics(INewObjectExpressionNode node, DiagnosticCollectionBuilder diagnostics);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IMaybePlainType? UnknownInvocationExpression_Expression_ExpectedPlainType(IUnknownInvocationExpressionNode node);
+    public static partial IMaybePlainType? UnresolvedInvocationExpression_Expression_ExpectedPlainType(IUnresolvedInvocationExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial void UnknownInvocationExpression_Contribute_Diagnostics(IUnknownInvocationExpressionNode node, DiagnosticCollectionBuilder diagnostics);
+    public static partial void UnresolvedInvocationExpression_Contribute_Diagnostics(IUnresolvedInvocationExpressionNode node, DiagnosticCollectionBuilder diagnostics);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial void MethodInvocationExpression_Contribute_Diagnostics(IMethodInvocationExpressionNode node, DiagnosticCollectionBuilder diagnostics);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -50,9 +50,9 @@ internal static partial class OverloadResolutionAspect
     public static partial CallCandidate<IOrdinaryMethodDeclarationNode>? MethodGroupName_SelectedCallCandidate(IMethodGroupNameNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IOrdinaryMethodDeclarationNode? MethodGroupName_ReferencedDeclaration(IMethodGroupNameNode node);
-    public static partial IExpressionNode? UnknownInvocationExpression_Rewrite_FunctionNameExpression(IUnknownInvocationExpressionNode node);
-    public static partial IExpressionNode? UnknownInvocationExpression_Rewrite_MethodNameExpression(IUnknownInvocationExpressionNode node);
-    public static partial IExpressionNode? UnknownInvocationExpression_Rewrite_TypeNameExpression(IUnknownInvocationExpressionNode node);
-    public static partial IExpressionNode? UnknownInvocationExpression_Rewrite_InitializerGroupNameExpression(IUnknownInvocationExpressionNode node);
-    public static partial IExpressionNode? UnknownInvocationExpression_Rewrite_FunctionReferenceExpression(IUnknownInvocationExpressionNode node);
+    public static partial IExpressionNode? UnresolvedInvocationExpression_Rewrite_FunctionNameExpression(IUnresolvedInvocationExpressionNode node);
+    public static partial IExpressionNode? UnresolvedInvocationExpression_Rewrite_MethodNameExpression(IUnresolvedInvocationExpressionNode node);
+    public static partial IExpressionNode? UnresolvedInvocationExpression_Rewrite_TypeNameExpression(IUnresolvedInvocationExpressionNode node);
+    public static partial IExpressionNode? UnresolvedInvocationExpression_Rewrite_InitializerGroupNameExpression(IUnresolvedInvocationExpressionNode node);
+    public static partial IExpressionNode? UnresolvedInvocationExpression_Rewrite_FunctionReferenceExpression(IUnresolvedInvocationExpressionNode node);
 }

@@ -100,15 +100,15 @@
 = ReturnExpression.ControlFlowNext;
 
 // ---------- Invocation Expressions
-= UnknownInvocationExpression.Expression.**.ControlFlowFollowing()
+= UnresolvedInvocationExpression.Expression.**.ControlFlowFollowing()
     => !TempArguments.IsEmpty
         ? ControlFlowSet.CreateNormal(Arguments[0])
         : base.Inherited_ControlFlowFollowing(child, descendant, ctx);
-= UnknownInvocationExpression.Arguments[index].**.ControlFlowFollowing()
+= UnresolvedInvocationExpression.Arguments[index].**.ControlFlowFollowing()
     => index < Arguments.Count - 1
         ? ControlFlowSet.CreateNormal(Arguments[index + 1])
         : base.Inherited_ControlFlowFollowing(child, descendant, ctx);
-= UnknownInvocationExpression.ControlFlowNext;
+= UnresolvedInvocationExpression.ControlFlowNext;
 = FunctionInvocationExpression.Function.**.ControlFlowFollowing()
     => !TempArguments.IsEmpty
         ? ControlFlowSet.CreateNormal(Arguments[0])

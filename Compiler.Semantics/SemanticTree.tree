@@ -255,7 +255,7 @@ ReturnExpression <: NeverTypedExpression
 
 // ---------- Invocation Expressions
 InvocationExpression <: Expression;
-UnknownInvocationExpression <: InvocationExpression = Syntax:`IInvocationExpressionSyntax`
+UnresolvedInvocationExpression <: InvocationExpression = Syntax:`IInvocationExpressionSyntax`
     Expression:AmbiguousExpression Arguments:AmbiguousExpression*;
 FunctionInvocationExpression <: InvocationExpression = Syntax:`IInvocationExpressionSyntax`
     Function:FunctionName Arguments:AmbiguousExpression*;

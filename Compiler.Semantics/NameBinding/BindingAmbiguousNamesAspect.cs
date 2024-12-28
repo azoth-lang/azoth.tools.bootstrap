@@ -173,7 +173,7 @@ internal static partial class BindingAmbiguousNamesAspect
     public static partial void FunctionGroupName_Contribute_Diagnostics(IFunctionGroupNameNode node, DiagnosticCollectionBuilder diagnostics)
     {
         // TODO develop a better check that this node is ambiguous
-        if (node.Parent is IUnknownInvocationExpressionNode)
+        if (node.Parent is IUnresolvedInvocationExpressionNode)
             return;
 
         if (node.CompatibleCallCandidates.Count == 0)
@@ -199,7 +199,7 @@ internal static partial class BindingAmbiguousNamesAspect
     public static partial void MethodGroupName_Contribute_Diagnostics(IMethodGroupNameNode node, DiagnosticCollectionBuilder diagnostics)
     {
         // TODO develop a better check that this node is ambiguous
-        if (node.Parent is IUnknownInvocationExpressionNode) return;
+        if (node.Parent is IUnresolvedInvocationExpressionNode) return;
 
         if (node.CompatibleCallCandidates.Count == 0)
             diagnostics.Add(NameBindingError.CouldNotBindName(node.File, node.Syntax.Span));
@@ -222,7 +222,7 @@ internal static partial class BindingAmbiguousNamesAspect
                 diagnostics.Add(NameBindingError.CouldNotBindMember(node.File, node.Syntax.MemberNameSpan));
                 break;
             case IUnknownNameExpressionNode:
-            case IUnknownInvocationExpressionNode:
+            case IUnresolvedInvocationExpressionNode:
             case { Type: UnknownType }:
                 // These presumably report their own errors and should be ignored here
                 break;
@@ -245,7 +245,7 @@ internal static partial class BindingAmbiguousNamesAspect
                 diagnostics.Add(NameBindingError.AmbiguousName(node.File, node.Syntax.MemberNameSpan));
                 break;
             case IUnknownNameExpressionNode:
-            case IUnknownInvocationExpressionNode:
+            case IUnresolvedInvocationExpressionNode:
             case { Type: UnknownType }:
                 // These presumably report their own errors and should be ignored here
                 break;

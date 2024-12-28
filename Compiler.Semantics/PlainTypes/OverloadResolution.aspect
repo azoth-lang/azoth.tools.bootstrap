@@ -12,13 +12,13 @@
 = NewObjectExpression.↑.Diagnostics;
 
 // ---------- Invocation Expressions
-= UnknownInvocationExpression.Expression.ExpectedPlainType;
-✎ UnknownInvocationExpression FunctionNameExpression;
-✎ UnknownInvocationExpression MethodNameExpression;
-✎ UnknownInvocationExpression TypeNameExpression;
-✎ UnknownInvocationExpression InitializerGroupNameExpression;
-✎ UnknownInvocationExpression FunctionReferenceExpression;
-= UnknownInvocationExpression.↑.Diagnostics;
+= UnresolvedInvocationExpression.Expression.ExpectedPlainType;
+✎ UnresolvedInvocationExpression FunctionNameExpression;
+✎ UnresolvedInvocationExpression MethodNameExpression;
+✎ UnresolvedInvocationExpression TypeNameExpression;
+✎ UnresolvedInvocationExpression InitializerGroupNameExpression;
+✎ UnresolvedInvocationExpression FunctionReferenceExpression;
+= UnresolvedInvocationExpression.↑.Diagnostics;
 
 ↑ FunctionInvocationExpression.SelectedCallCandidate: `CallCandidate<IFunctionInvocableDeclarationNode>`?
     => Function.SelectedCallCandidate;

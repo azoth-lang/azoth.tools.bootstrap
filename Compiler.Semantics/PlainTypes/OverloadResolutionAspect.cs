@@ -70,7 +70,7 @@ internal static partial class OverloadResolutionAspect
     #endregion
 
     #region Invocation Expressions
-    public static partial IMaybePlainType? UnknownInvocationExpression_Expression_ExpectedPlainType(IUnknownInvocationExpressionNode node)
+    public static partial IMaybePlainType? UnresolvedInvocationExpression_Expression_ExpectedPlainType(IUnresolvedInvocationExpressionNode node)
     {
         var expectedReturnPlainType = node.ExpectedPlainType ?? PlainType.Unknown;
         return new FunctionPlainType(node.Arguments.Select(NonVoidPlainTypeIfKnown),
@@ -89,7 +89,7 @@ internal static partial class OverloadResolutionAspect
         return PlainType.Never;
     }
 
-    public static partial IExpressionNode? UnknownInvocationExpression_Rewrite_FunctionNameExpression(IUnknownInvocationExpressionNode node)
+    public static partial IExpressionNode? UnresolvedInvocationExpression_Rewrite_FunctionNameExpression(IUnresolvedInvocationExpressionNode node)
     {
         if (node.Expression is not IFunctionNameNode function)
             return null;
@@ -97,7 +97,7 @@ internal static partial class OverloadResolutionAspect
         return IFunctionInvocationExpressionNode.Create(node.Syntax, function, node.CurrentArguments);
     }
 
-    public static partial IExpressionNode? UnknownInvocationExpression_Rewrite_MethodNameExpression(IUnknownInvocationExpressionNode node)
+    public static partial IExpressionNode? UnresolvedInvocationExpression_Rewrite_MethodNameExpression(IUnresolvedInvocationExpressionNode node)
     {
         if (node.Expression is not IMethodNameNode method) return null;
 
@@ -107,7 +107,7 @@ internal static partial class OverloadResolutionAspect
         return IMethodInvocationExpressionNode.Create(node.Syntax, method, node.CurrentArguments);
     }
 
-    public static partial IExpressionNode? UnknownInvocationExpression_Rewrite_TypeNameExpression(IUnknownInvocationExpressionNode node)
+    public static partial IExpressionNode? UnresolvedInvocationExpression_Rewrite_TypeNameExpression(IUnresolvedInvocationExpressionNode node)
     {
         if (node.Expression is not ITypeNameExpressionNode context) return null;
 
@@ -117,10 +117,10 @@ internal static partial class OverloadResolutionAspect
                                             .Where(c => c.Name is null).ToFixedSet();
 
         var initializerGroupName = IInitializerGroupNameNode.Create(context.Syntax, context, null, referencedDeclarations);
-        return IUnknownInvocationExpressionNode.Create(node.Syntax, initializerGroupName, node.CurrentArguments);
+        return IUnresolvedInvocationExpressionNode.Create(node.Syntax, initializerGroupName, node.CurrentArguments);
     }
 
-    public static partial IExpressionNode? UnknownInvocationExpression_Rewrite_InitializerGroupNameExpression(IUnknownInvocationExpressionNode node)
+    public static partial IExpressionNode? UnresolvedInvocationExpression_Rewrite_InitializerGroupNameExpression(IUnresolvedInvocationExpressionNode node)
     {
         if (node.Expression is not IInitializerGroupNameNode initializer)
             return null;
@@ -128,7 +128,7 @@ internal static partial class OverloadResolutionAspect
         return IInitializerInvocationExpressionNode.Create(node.Syntax, initializer, node.CurrentArguments);
     }
 
-    public static partial IExpressionNode? UnknownInvocationExpression_Rewrite_FunctionReferenceExpression(IUnknownInvocationExpressionNode node)
+    public static partial IExpressionNode? UnresolvedInvocationExpression_Rewrite_FunctionReferenceExpression(IUnresolvedInvocationExpressionNode node)
     {
         if (node.Expression is not { PlainType: FunctionPlainType } expression)
             return null;
@@ -136,7 +136,7 @@ internal static partial class OverloadResolutionAspect
         return IFunctionReferenceInvocationExpressionNode.Create(node.Syntax, expression, node.CurrentArguments);
     }
 
-    public static partial void UnknownInvocationExpression_Contribute_Diagnostics(IUnknownInvocationExpressionNode node, DiagnosticCollectionBuilder diagnostics)
+    public static partial void UnresolvedInvocationExpression_Contribute_Diagnostics(IUnresolvedInvocationExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
         switch (node.Expression)
         {
@@ -149,7 +149,7 @@ internal static partial class OverloadResolutionAspect
                     function.CompatibleCallCandidates, node.File, node.Syntax, diagnostics);
                 break;
             case IUnknownNameExpressionNode:
-            case IUnknownInvocationExpressionNode:
+            case IUnresolvedInvocationExpressionNode:
                 // These presumably report their own errors and should be ignored here
                 break;
             // TODO other cases
@@ -245,7 +245,7 @@ internal static partial class OverloadResolutionAspect
     {
         if (referencedDeclaration is not null
             // errors will be reported by the parent in this case
-            || node.Parent is IUnknownInvocationExpressionNode)
+            || node.Parent is IUnresolvedInvocationExpressionNode)
             return;
 
         switch (compatibleCallCandidates.Count)
@@ -286,7 +286,7 @@ internal static partial class OverloadResolutionAspect
     {
         if (node.ReferencedDeclaration is not null
             // errors will be reported by the parent in this case
-            || node.Parent is IUnknownInvocationExpressionNode)
+            || node.Parent is IUnresolvedInvocationExpressionNode)
             return;
 
         switch (node.CompatibleCallCandidates.Count)

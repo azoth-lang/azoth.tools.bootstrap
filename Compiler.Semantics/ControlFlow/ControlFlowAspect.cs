@@ -47,7 +47,7 @@ internal static partial class ControlFlowAspect
         => node.ControlFlowFollowing();
 
     #region Invocation Expressions
-    public static partial ControlFlowSet UnknownInvocationExpression_ControlFlowNext(IUnknownInvocationExpressionNode node)
+    public static partial ControlFlowSet UnresolvedInvocationExpression_ControlFlowNext(IUnresolvedInvocationExpressionNode node)
         => ControlFlowSet.CreateNormal(node.Expression);
 
     public static partial ControlFlowSet FunctionInvocationExpression_ControlFlowNext(IFunctionInvocationExpressionNode node)

@@ -49,7 +49,7 @@ internal static partial class ControlFlowAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial ControlFlowSet ReturnExpression_ControlFlowNext(IReturnExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial ControlFlowSet UnknownInvocationExpression_ControlFlowNext(IUnknownInvocationExpressionNode node);
+    public static partial ControlFlowSet UnresolvedInvocationExpression_ControlFlowNext(IUnresolvedInvocationExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial ControlFlowSet FunctionInvocationExpression_ControlFlowNext(IFunctionInvocationExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

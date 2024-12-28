@@ -2498,7 +2498,7 @@ public partial interface IReturnExpressionNode : INeverTypedExpressionNode
 
 [Closed(
     typeof(INewObjectExpressionNode),
-    typeof(IUnknownInvocationExpressionNode),
+    typeof(IUnresolvedInvocationExpressionNode),
     typeof(IFunctionInvocationExpressionNode),
     typeof(IMethodInvocationExpressionNode),
     typeof(IGetterInvocationExpressionNode),
@@ -2512,9 +2512,9 @@ public partial interface IInvocationExpressionNode : IExpressionNode
     IEnumerable<IExpressionNode?> AllArguments { get; }
 }
 
-// [Closed(typeof(UnknownInvocationExpressionNode))]
+// [Closed(typeof(UnresolvedInvocationExpressionNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IUnknownInvocationExpressionNode : IInvocationExpressionNode
+public partial interface IUnresolvedInvocationExpressionNode : IInvocationExpressionNode
 {
     new IInvocationExpressionSyntax Syntax { get; }
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
@@ -2536,11 +2536,11 @@ public partial interface IUnknownInvocationExpressionNode : IInvocationExpressio
     IMaybePlainType IExpressionNode.PlainType
         => AzothPlainType.Unknown;
 
-    public static IUnknownInvocationExpressionNode Create(
+    public static IUnresolvedInvocationExpressionNode Create(
         IInvocationExpressionSyntax syntax,
         IAmbiguousExpressionNode expression,
         IEnumerable<IAmbiguousExpressionNode> arguments)
-        => new UnknownInvocationExpressionNode(syntax, expression, arguments);
+        => new UnresolvedInvocationExpressionNode(syntax, expression, arguments);
 }
 
 // [Closed(typeof(FunctionInvocationExpressionNode))]
@@ -12958,9 +12958,9 @@ file class ReturnExpressionNode : SemanticNode, IReturnExpressionNode
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class UnknownInvocationExpressionNode : SemanticNode, IUnknownInvocationExpressionNode
+file class UnresolvedInvocationExpressionNode : SemanticNode, IUnresolvedInvocationExpressionNode
 {
-    private IUnknownInvocationExpressionNode Self { [Inline] get => this; }
+    private IUnresolvedInvocationExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
     protected override bool MayHaveRewrite => true;
 
@@ -13016,13 +13016,13 @@ file class UnknownInvocationExpressionNode : SemanticNode, IUnknownInvocationExp
     public ControlFlowSet ControlFlowNext
         => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
             : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
-                ControlFlowAspect.UnknownInvocationExpression_ControlFlowNext);
+                ControlFlowAspect.UnresolvedInvocationExpression_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
     public IFlowState FlowStateAfter
         => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
             : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
-                ExpressionTypesAspect.UnknownInvocationExpression_FlowStateAfter);
+                ExpressionTypesAspect.UnresolvedInvocationExpression_FlowStateAfter);
     private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
     public ValueId ValueId
@@ -13032,7 +13032,7 @@ file class UnknownInvocationExpressionNode : SemanticNode, IUnknownInvocationExp
     private ValueId valueId;
     private bool valueIdCached;
 
-    public UnknownInvocationExpressionNode(
+    public UnresolvedInvocationExpressionNode(
         IInvocationExpressionSyntax syntax,
         IAmbiguousExpressionNode expression,
         IEnumerable<IAmbiguousExpressionNode> arguments)
@@ -13065,7 +13065,7 @@ file class UnknownInvocationExpressionNode : SemanticNode, IUnknownInvocationExp
     internal override IMaybePlainType? Inherited_ExpectedPlainType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.CurrentExpression))
-            return OverloadResolutionAspect.UnknownInvocationExpression_Expression_ExpectedPlainType(this);
+            return OverloadResolutionAspect.UnresolvedInvocationExpression_Expression_ExpectedPlainType(this);
         if (ReferenceEquals(child, descendant))
             return null;
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
@@ -13112,7 +13112,7 @@ file class UnknownInvocationExpressionNode : SemanticNode, IUnknownInvocationExp
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
     {
         ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
-        OverloadResolutionAspect.UnknownInvocationExpression_Contribute_Diagnostics(this, builder);
+        OverloadResolutionAspect.UnresolvedInvocationExpression_Contribute_Diagnostics(this, builder);
     }
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
@@ -13128,11 +13128,11 @@ file class UnknownInvocationExpressionNode : SemanticNode, IUnknownInvocationExp
     }
 
     protected override IChildTreeNode Rewrite()
-        => OverloadResolutionAspect.UnknownInvocationExpression_Rewrite_FunctionNameExpression(this)
-        ?? OverloadResolutionAspect.UnknownInvocationExpression_Rewrite_MethodNameExpression(this)
-        ?? OverloadResolutionAspect.UnknownInvocationExpression_Rewrite_TypeNameExpression(this)
-        ?? OverloadResolutionAspect.UnknownInvocationExpression_Rewrite_InitializerGroupNameExpression(this)
-        ?? OverloadResolutionAspect.UnknownInvocationExpression_Rewrite_FunctionReferenceExpression(this)
+        => OverloadResolutionAspect.UnresolvedInvocationExpression_Rewrite_FunctionNameExpression(this)
+        ?? OverloadResolutionAspect.UnresolvedInvocationExpression_Rewrite_MethodNameExpression(this)
+        ?? OverloadResolutionAspect.UnresolvedInvocationExpression_Rewrite_TypeNameExpression(this)
+        ?? OverloadResolutionAspect.UnresolvedInvocationExpression_Rewrite_InitializerGroupNameExpression(this)
+        ?? OverloadResolutionAspect.UnresolvedInvocationExpression_Rewrite_FunctionReferenceExpression(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)

@@ -406,7 +406,7 @@ internal static partial class ExpressionTypesAspect
         return flowState.CombineArguments(argumentValueIds, node.ValueId, node.Type);
     }
 
-    public static partial IFlowState UnknownInvocationExpression_FlowStateAfter(IUnknownInvocationExpressionNode node)
+    public static partial IFlowState UnresolvedInvocationExpression_FlowStateAfter(IUnresolvedInvocationExpressionNode node)
     {
         // The flow state just before the invocation happens is the state after all arguments have evaluated
         var flowState = node.Arguments.LastOrDefault()?.FlowStateAfter ?? node.FlowStateBefore();

@@ -349,7 +349,7 @@ public static class ISemanticNodeExtensions
                 if (n.TempValue is not null)
                     yield return n.TempValue;
                 yield break;
-            case IUnknownInvocationExpressionNode n:
+            case IUnresolvedInvocationExpressionNode n:
                 yield return n.TempExpression;
                 foreach (var child in n.TempArguments)
                     yield return child;

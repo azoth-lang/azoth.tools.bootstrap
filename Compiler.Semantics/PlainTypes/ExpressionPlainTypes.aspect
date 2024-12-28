@@ -58,7 +58,7 @@
 = ReturnExpression.Value.ExpectedPlainType => ExpectedReturnPlainType;
 
 // ---------- Invocation Expressions
-= UnknownInvocationExpression.PlainType => AzothPlainType.Unknown;
+= UnresolvedInvocationExpression.PlainType => AzothPlainType.Unknown;
 = FunctionInvocationExpression.Arguments[index].ExpectedPlainType
     => Self.SelectedCallCandidate?.ParameterPlainTypes[index];
 = MethodInvocationExpression.Arguments[index].ExpectedPlainType
