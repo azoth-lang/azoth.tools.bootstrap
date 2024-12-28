@@ -1,4 +1,3 @@
-using System;
 using System.Globalization;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
@@ -343,7 +342,7 @@ internal static partial class FormattingAspect
         => node.Name.ToString();
 
     public static partial string GenericNameExpression_ToString(IGenericNameExpressionSyntax node)
-        => throw new NotImplementedException();
+        => $"{node.Name.Text}[{string.Join(',', node.GenericArguments)}]";
 
     public static partial string SelfExpression_ToString(ISelfExpressionSyntax node)
         => node.IsImplicit ? "⟦self⟧" : "self";
