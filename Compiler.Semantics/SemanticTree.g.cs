@@ -4733,12 +4733,12 @@ internal abstract partial class SemanticNode : TreeNode, IChildTreeNode<ISemanti
     protected sealed override SemanticNode? PeekParent()
         // Use volatile read to ensure order of operations as seen by other threads. If parent is
         // null, report an error if not in final tree. Root nodes are always in the final tree.
-        => Volatile.Read(in parent) ?? (InFinalTree ? null : throw Child.ParentMissing(this));
+        => Volatile.Read(in parent) ?? (InFinalTree ? throw Child.ParentMissing(this) : null);
 
     private SemanticNode? GetParent(IInheritanceContext ctx)
     {
         // Use volatile read to ensure order of operations as seen by other threads
-        var node = Volatile.Read(in parent) ?? (InFinalTree ? null : throw Child.ParentMissing(this));
+        var node = Volatile.Read(in parent) ?? (InFinalTree ? throw Child.ParentMissing(this) : null);
         ctx.AccessParentOf(this);
         return node;
     }
