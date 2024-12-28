@@ -369,6 +369,7 @@ public partial interface ITypeMemberDefinitionSyntax : IEntityDefinitionSyntax
     typeof(ITypeDefinitionSyntax),
     typeof(IMethodDefinitionSyntax),
     typeof(IConstructorDefinitionSyntax),
+    typeof(IInitializerDefinitionSyntax),
     typeof(IFieldDefinitionSyntax),
     typeof(IAssociatedFunctionDefinitionSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -521,7 +522,7 @@ public partial interface IConstructorDefinitionSyntax : IInvocableDefinitionSynt
 
 // [Closed(typeof(InitializerDefinitionSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IInitializerDefinitionSyntax : IInvocableDefinitionSyntax, IStructMemberDefinitionSyntax
+public partial interface IInitializerDefinitionSyntax : IInvocableDefinitionSyntax, IStructMemberDefinitionSyntax, IClassMemberDefinitionSyntax
 {
     new IdentifierName? Name { get; }
     TypeName? IDefinitionSyntax.Name => Name;

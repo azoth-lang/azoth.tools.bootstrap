@@ -91,7 +91,7 @@ GetterMethodDefinition <: MethodDefinition = SelfParameter:MethodSelfParameter R
 SetterMethodDefinition <: MethodDefinition = SelfParameter:MethodSelfParameter Parameters:NamedParameter* Body;
 ConstructorDefinition <: InvocableDefinition, ClassMemberDefinition
     = Name:`IdentifierName`? SelfParameter:ConstructorSelfParameter Parameters:ConstructorOrInitializerParameter* Body:BlockBody;
-InitializerDefinition <: InvocableDefinition, StructMemberDefinition
+InitializerDefinition <: InvocableDefinition, StructMemberDefinition, ClassMemberDefinition
     = Name:`IdentifierName`? SelfParameter:InitializerSelfParameter Parameters:ConstructorOrInitializerParameter* Body:BlockBody;
 FieldDefinition <: TypeMemberDefinition, ClassMemberDefinition, StructMemberDefinition, Binding
     = Name:`IdentifierName` Type Initializer:Expression?;

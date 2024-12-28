@@ -215,6 +215,16 @@ public class InterpreterProcess
         }
     }
 
+    private async Task<AzothValue> InitializeClass(
+        IClassDefinitionNode @class,
+        InitializerSymbol initializerSymbol,
+        IEnumerable<AzothValue> arguments)
+    {
+        var vTable = vTables.GetOrAdd(@class, CreateVTable);
+        var self = AzothValue.Object(new AzothObject(vTable));
+        return await CallInitializerAsync(@class, initializerSymbol, self, arguments);
+    }
+
     private async Task<AzothValue> ConstructClass(
         IClassDefinitionNode @class,
         ConstructorSymbol constructorSymbol,
@@ -307,15 +317,15 @@ public class InterpreterProcess
     }
 
     private async Task<AzothValue> CallInitializerAsync(
-        IStructDefinitionNode @struct,
+        ITypeDefinitionNode typeDefinition,
         InitializerSymbol initializerSymbol,
         AzothValue self,
         IEnumerable<AzothValue> arguments)
     {
         // TODO run field initializers
         var initializer = initializers[initializerSymbol];
-        // Default constructor is null
-        if (initializer is null) return await CallDefaultInitializerAsync(@struct, self);
+        // Default initializer is null
+        if (initializer is null) return await CallDefaultInitializerAsync(typeDefinition, self);
         return await CallInitializerAsync(initializer, self, arguments).ConfigureAwait(false);
     }
 
@@ -352,12 +362,13 @@ public class InterpreterProcess
     }
 
     /// <summary>
-    /// Call the implicit default initializer for a type that has no constructors.
+    /// Call the implicit default initializer for a type that has no initializers.
     /// </summary>
-    private static ValueTask<AzothValue> CallDefaultInitializerAsync(IStructDefinitionNode @struct, AzothValue self)
+    private static ValueTask<AzothValue> CallDefaultInitializerAsync(
+        ITypeDefinitionNode typeDefinition, AzothValue self)
     {
         // Initialize fields to default values
-        var fields = @struct.Members.OfType<IFieldDefinitionNode>();
+        var fields = typeDefinition.Members.OfType<IFieldDefinitionNode>();
         foreach (var field in fields)
             self.ObjectValue[field.Symbol.Assigned().Name] = new AzothValue();
 
@@ -544,8 +555,16 @@ public class InterpreterProcess
             {
                 var arguments = await ExecuteArgumentsAsync(exp.Arguments!, variables).ConfigureAwait(false);
                 var initializerSymbol = exp.ReferencedDeclaration!.Symbol.Assigned();
-                var @struct = (IStructDefinitionNode)userTypes[initializerSymbol.ContextTypeSymbol];
-                return await InitializeStruct(@struct, initializerSymbol, arguments).ConfigureAwait(false);
+                var typeDefinition = userTypes[initializerSymbol.ContextTypeSymbol];
+                return typeDefinition switch
+                {
+                    IStructDefinitionNode @struct
+                        => await InitializeStruct(@struct, initializerSymbol, arguments).ConfigureAwait(false),
+                    IClassDefinitionNode @class
+                        => await InitializeClass(@class, initializerSymbol, arguments).ConfigureAwait(false),
+                    ITraitDefinitionNode _ => throw new UnreachableException("Traits don't have initializers."),
+                    _ => throw ExhaustiveMatch.Failed(typeDefinition)
+                };
             }
             case IBoolLiteralExpressionNode exp:
                 return AzothValue.Bool(exp.Value);

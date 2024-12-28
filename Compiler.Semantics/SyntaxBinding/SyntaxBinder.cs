@@ -131,6 +131,7 @@ internal static class SyntaxBinder
             ITypeDefinitionSyntax syn => TypeDefinition(syn),
             IMethodDefinitionSyntax syn => MethodDefinition(syn),
             IConstructorDefinitionSyntax syn => ConstructorDefinition(syn),
+            IInitializerDefinitionSyntax syn => InitializerDefinition(syn),
             IFieldDefinitionSyntax syn => FieldDefinition(syn),
             IAssociatedFunctionDefinitionSyntax syn => AssociatedFunctionDefinition(syn),
             _ => throw ExhaustiveMatch.Failed(syntax)

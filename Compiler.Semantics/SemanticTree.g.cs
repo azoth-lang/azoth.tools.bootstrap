@@ -556,6 +556,7 @@ public partial interface IClassDefinitionNode : ITypeDefinitionNode, IClassDecla
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
     IFixedSet<IClassMemberDeclarationNode> IClassDeclarationNode.Members => Members;
     IDefaultConstructorDefinitionNode? DefaultConstructor { get; }
+    IDefaultInitializerDefinitionNode? DefaultInitializer { get; }
     IEnumerable<IStandardTypeNameNode> ITypeDefinitionNode.AllSupertypeNames
         => BaseTypeName is null ? SupertypeNames : SupertypeNames.Prepend(BaseTypeName);
 
@@ -690,6 +691,7 @@ public partial interface ITypeMemberDefinitionNode : IDefinitionNode, ITypeMembe
     typeof(IAssociatedMemberDefinitionNode),
     typeof(IMethodDefinitionNode),
     typeof(IConstructorDefinitionNode),
+    typeof(IInitializerDefinitionNode),
     typeof(IFieldDefinitionNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IClassMemberDefinitionNode : ITypeMemberDefinitionNode, IClassMemberDeclarationNode
@@ -960,7 +962,7 @@ public partial interface IOrdinaryConstructorDefinitionNode : ICodeNode, IConstr
     typeof(IDefaultInitializerDefinitionNode),
     typeof(IOrdinaryInitializerDefinitionNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IInitializerDefinitionNode : IInvocableDefinitionNode, IAlwaysTypeMemberDefinitionNode, IStructMemberDefinitionNode, IInitializerDeclarationNode
+public partial interface IInitializerDefinitionNode : IInvocableDefinitionNode, IAlwaysTypeMemberDefinitionNode, IStructMemberDefinitionNode, IClassMemberDefinitionNode, IInitializerDeclarationNode
 {
     new IInitializerDefinitionSyntax? Syntax { get; }
     IDefinitionSyntax? IDefinitionNode.Syntax => Syntax;
@@ -5605,6 +5607,12 @@ file class ClassDefinitionNode : SemanticNode, IClassDefinitionNode
                 n => Child.Attach(this, DefaultMembersAspect.ClassDefinition_DefaultConstructor(n)));
     private IDefaultConstructorDefinitionNode? defaultConstructor;
     private bool defaultConstructorCached;
+    public IDefaultInitializerDefinitionNode? DefaultInitializer
+        => GrammarAttribute.IsCached(in defaultInitializerCached) ? defaultInitializer
+            : this.Synthetic(ref defaultInitializerCached, ref defaultInitializer,
+                n => Child.Attach(this, DefaultMembersAspect.ClassDefinition_DefaultInitializer(n)));
+    private IDefaultInitializerDefinitionNode? defaultInitializer;
+    private bool defaultInitializerCached;
     public IImplicitSelfDefinitionNode ImplicitSelf
         => GrammarAttribute.IsCached(in implicitSelfCached) ? implicitSelf!
             : this.Synthetic(ref implicitSelfCached, ref implicitSelf,

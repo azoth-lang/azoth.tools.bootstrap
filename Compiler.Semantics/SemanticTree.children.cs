@@ -77,6 +77,8 @@ public static class ISemanticNodeExtensions
                     yield return child;
                 if (n.DefaultConstructor is not null)
                     yield return n.DefaultConstructor;
+                if (n.DefaultInitializer is not null)
+                    yield return n.DefaultInitializer;
                 yield break;
             case IStructDefinitionNode n:
                 yield return n.ImplicitSelf;

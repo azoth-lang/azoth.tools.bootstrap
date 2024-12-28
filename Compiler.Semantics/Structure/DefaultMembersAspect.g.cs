@@ -17,6 +17,8 @@ internal static partial class DefaultMembersAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IDefaultConstructorDefinitionNode? ClassDefinition_DefaultConstructor(IClassDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial IDefaultInitializerDefinitionNode? ClassDefinition_DefaultInitializer(IClassDefinitionNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFixedSet<IStructMemberDefinitionNode> StructDefinition_Members(IStructDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IDefaultInitializerDefinitionNode? StructDefinition_DefaultInitializer(IStructDefinitionNode node);

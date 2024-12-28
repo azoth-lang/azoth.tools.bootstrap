@@ -284,6 +284,8 @@ public partial class Parser
                 return ParseSetterMethod(modifiers, inTrait: false);
             case INewKeywordToken _:
                 return ParseConstructor(modifiers);
+            case IInitKeywordToken _:
+                return ParseInitializer(modifiers);
             case ILetKeywordToken _:
                 return ParseField(false, modifiers);
             case IVarKeywordToken _:

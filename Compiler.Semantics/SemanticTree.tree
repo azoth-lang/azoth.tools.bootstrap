@@ -129,7 +129,7 @@ DefaultConstructorDefinition <: ConstructorDefinition;
 OrdinaryConstructorDefinition <: Code, ConstructorDefinition
     = Syntax:`IConstructorDefinitionSyntax`
     SelfParameter:ConstructorSelfParameter /Parameters/ /Entry/ Body:BlockBody /Exit/;
-InitializerDefinition <: InvocableDefinition, AlwaysTypeMemberDefinition, StructMemberDefinition, InitializerDeclaration
+InitializerDefinition <: InvocableDefinition, AlwaysTypeMemberDefinition, StructMemberDefinition, ClassMemberDefinition, InitializerDeclaration
     = Syntax:`IInitializerDefinitionSyntax`? Name:`IdentifierName`? Parameters:ConstructorOrInitializerParameter*;
 DefaultInitializerDefinition <: InitializerDefinition;
 OrdinaryInitializerDefinition <: Code, InitializerDefinition
@@ -449,7 +449,7 @@ GetterMethodDeclaration <: PropertyAccessorDeclaration;
 SetterMethodDeclaration <: PropertyAccessorDeclaration;
 ConstructorDeclaration <: ClassMemberDeclaration, AssociatedMemberDeclaration, InvocableDeclaration, AlwaysTypeMemberDeclaration
     = Name:`IdentifierName`?;
-InitializerDeclaration <: StructMemberDeclaration, AssociatedMemberDeclaration, InvocableDeclaration, AlwaysTypeMemberDeclaration
+InitializerDeclaration <: StructMemberDeclaration, ClassMemberDeclaration, AssociatedMemberDeclaration, InvocableDeclaration, AlwaysTypeMemberDeclaration
     = Name:`IdentifierName`?;
 FieldDeclaration <: NamedDeclaration, ClassMemberDeclaration, StructMemberDeclaration, InstanceMemberDeclaration, NamedBindingDeclaration, AlwaysTypeMemberDeclaration
     = Name:`IdentifierName`;
