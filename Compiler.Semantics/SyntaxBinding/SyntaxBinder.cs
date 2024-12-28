@@ -568,7 +568,7 @@ internal static class SyntaxBinder
         => IBuiltInTypeNameExpressionNode.Create(syntax);
 
     private static IGenericNameExpressionNode GenericNameExpression(IGenericNameExpressionSyntax syntax)
-        => IGenericNameExpressionNode.Create(syntax, Types(syntax.TypeArguments));
+        => IGenericNameExpressionNode.Create(syntax, Types(syntax.GenericArguments));
 
     private static IUnresolvedMemberAccessExpressionNode MemberAccessExpression(IMemberAccessExpressionSyntax syntax)
         => IUnresolvedMemberAccessExpressionNode.Create(syntax, Expression(syntax.Context), Types(syntax.TypeArguments));

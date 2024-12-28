@@ -1481,6 +1481,7 @@ public partial interface ISimpleNameSyntax : INameExpressionSyntax
 public partial interface IStandardNameExpressionSyntax : INameExpressionSyntax
 {
     OrdinaryName Name { get; }
+    IFixedList<ITypeSyntax> GenericArguments { get; }
 }
 
 // [Closed(typeof(IdentifierNameExpressionSyntax))]
@@ -1489,6 +1490,9 @@ public partial interface IIdentifierNameExpressionSyntax : IStandardNameExpressi
 {
     new IdentifierName Name { get; }
     OrdinaryName IStandardNameExpressionSyntax.Name => Name;
+    new IFixedList<ITypeSyntax> GenericArguments
+        => [];
+    IFixedList<ITypeSyntax> IStandardNameExpressionSyntax.GenericArguments => GenericArguments;
 
     public static IIdentifierNameExpressionSyntax Create(
         TextSpan span,
@@ -1514,13 +1518,12 @@ public partial interface IGenericNameExpressionSyntax : IStandardNameExpressionS
 {
     new GenericName Name { get; }
     OrdinaryName IStandardNameExpressionSyntax.Name => Name;
-    IFixedList<ITypeSyntax> TypeArguments { get; }
 
     public static IGenericNameExpressionSyntax Create(
         TextSpan span,
         GenericName name,
-        IEnumerable<ITypeSyntax> typeArguments)
-        => new GenericNameExpressionSyntax(span, name, typeArguments);
+        IEnumerable<ITypeSyntax> genericArguments)
+        => new GenericNameExpressionSyntax(span, name, genericArguments);
 }
 
 [Closed(
@@ -3368,18 +3371,18 @@ file class GenericNameExpressionSyntax : IGenericNameExpressionSyntax
 
     public TextSpan Span { [DebuggerStepThrough] get; }
     public GenericName Name { [DebuggerStepThrough] get; }
-    public IFixedList<ITypeSyntax> TypeArguments { [DebuggerStepThrough] get; }
+    public IFixedList<ITypeSyntax> GenericArguments { [DebuggerStepThrough] get; }
     public override string ToString()
         => FormattingAspect.GenericNameExpression_ToString(this);
 
     public GenericNameExpressionSyntax(
         TextSpan span,
         GenericName name,
-        IEnumerable<ITypeSyntax> typeArguments)
+        IEnumerable<ITypeSyntax> genericArguments)
     {
         Span = span;
         Name = name;
-        TypeArguments = typeArguments.ToFixedList();
+        GenericArguments = genericArguments.ToFixedList();
     }
 }
 

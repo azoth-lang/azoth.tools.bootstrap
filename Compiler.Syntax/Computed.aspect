@@ -23,3 +23,6 @@
 
 // ---------- Patterns
 ↑ BindingPattern.Span: `TextSpan` => NameSpan;
+
+// ---------- Name Expressions
+↑ IdentifierNameExpression.GenericArguments: Type* => [];

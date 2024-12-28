@@ -158,11 +158,10 @@ public partial class Parser
                     {
                         // Member Access
                         Tokens.ConsumeToken<IAccessOperatorToken>();
-                        // TODO support generic names
-                        var nameSyntax = ParseIdentifierName();
+                        var nameSyntax = ParseStandardName();
                         var memberAccessSpan = TextSpan.Covering(expression.Span, nameSyntax.Span);
                         expression = IMemberAccessExpressionSyntax.Create(memberAccessSpan,
-                            expression, nameSyntax.Name, FixedList.Empty<ITypeSyntax>(), nameSyntax.Span);
+                            expression, nameSyntax.Name, nameSyntax.GenericArguments, nameSyntax.Span);
                         continue;
                     }
                     break;
@@ -321,7 +320,7 @@ public partial class Parser
                 return INoneLiteralExpressionSyntax.Create(literal);
             }
             case IIdentifierToken _:
-                return ParseIdentifierName();
+                return ParseStandardName();
             case IForeachKeywordToken _:
                 return ParseForeach();
             case IWhileKeywordToken _:

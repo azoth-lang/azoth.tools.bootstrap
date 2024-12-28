@@ -302,7 +302,7 @@ public static class ISyntaxExtensions
             case IBuiltInTypeNameExpressionSyntax n:
                 yield break;
             case IGenericNameExpressionSyntax n:
-                foreach (var child in n.TypeArguments)
+                foreach (var child in n.GenericArguments)
                     yield return child;
                 yield break;
             case ISelfExpressionSyntax n:
