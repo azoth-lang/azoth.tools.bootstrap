@@ -168,7 +168,7 @@ public static class ISyntaxExtensions
             case IBuiltInTypeNameSyntax n:
                 yield break;
             case IGenericTypeNameSyntax n:
-                foreach (var child in n.TypeArguments)
+                foreach (var child in n.GenericArguments)
                     yield return child;
                 yield break;
             case IQualifiedTypeNameSyntax n:
@@ -309,7 +309,7 @@ public static class ISyntaxExtensions
                 yield break;
             case IMemberAccessExpressionSyntax n:
                 yield return n.Context;
-                foreach (var child in n.TypeArguments)
+                foreach (var child in n.GenericArguments)
                     yield return child;
                 yield break;
             case IMissingNameSyntax n:

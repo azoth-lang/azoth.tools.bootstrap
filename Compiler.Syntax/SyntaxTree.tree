@@ -133,7 +133,7 @@ StandardTypeName <: TypeName = Name:`OrdinaryName`;
 SimpleTypeName <: TypeName;
 IdentifierTypeName <: TypeName, StandardTypeName, SimpleTypeName = Name:`IdentifierName`;
 BuiltInTypeName <: SimpleTypeName = Name:`BuiltInTypeName`;
-GenericTypeName <: StandardTypeName = Name:`GenericName` TypeArguments:Type*;
+GenericTypeName <: StandardTypeName = Name:`GenericName` GenericArguments:Type*;
 QualifiedTypeName <: TypeName = Context:TypeName QualifiedName:StandardTypeName;
 OptionalType <: Type = Referent:Type;
 CapabilityType <: Type = Capability Referent:Type;
@@ -215,7 +215,7 @@ GenericNameExpression <: NameExpression, StandardNameExpression = Name:`GenericN
 InstanceExpression <: SimpleName; // i.e. `self` or `base`
 SelfExpression <: NameExpression, InstanceExpression = IsImplicit:`bool`;
 MemberAccessExpression <: NameExpression
-    = Context:Expression MemberName:`OrdinaryName` TypeArguments:Type* MemberNameSpan:`TextSpan`;
+    = Context:Expression MemberName:`OrdinaryName` GenericArguments:Type* MemberNameSpan:`TextSpan`;
 MissingName <: NameExpression, SimpleName;
 
 // ---------- Capability Expressions

@@ -322,7 +322,7 @@ internal static class SyntaxBinder
         => IIdentifierTypeNameNode.Create(syntax);
 
     private static IGenericTypeNameNode GenericTypeName(IGenericTypeNameSyntax syntax)
-        => IGenericTypeNameNode.Create(syntax, Types(syntax.TypeArguments));
+        => IGenericTypeNameNode.Create(syntax, Types(syntax.GenericArguments));
 
     private static ISimpleTypeNameNode SimpleTypeName(ISimpleTypeNameSyntax syntax)
         => syntax switch
@@ -571,7 +571,7 @@ internal static class SyntaxBinder
         => IGenericNameExpressionNode.Create(syntax, Types(syntax.GenericArguments));
 
     private static IUnresolvedMemberAccessExpressionNode MemberAccessExpression(IMemberAccessExpressionSyntax syntax)
-        => IUnresolvedMemberAccessExpressionNode.Create(syntax, Expression(syntax.Context), Types(syntax.TypeArguments));
+        => IUnresolvedMemberAccessExpressionNode.Create(syntax, Expression(syntax.Context), Types(syntax.GenericArguments));
 
     private static ISelfExpressionNode SelfExpression(ISelfExpressionSyntax syntax)
         => ISelfExpressionNode.Create(syntax);

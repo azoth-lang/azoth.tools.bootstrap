@@ -860,13 +860,13 @@ public partial interface IGenericTypeNameSyntax : IStandardTypeNameSyntax
     new GenericName Name { get; }
     OrdinaryName IStandardTypeNameSyntax.Name => Name;
     TypeName ITypeNameSyntax.Name => Name;
-    IFixedList<ITypeSyntax> TypeArguments { get; }
+    IFixedList<ITypeSyntax> GenericArguments { get; }
 
     public static IGenericTypeNameSyntax Create(
         TextSpan span,
         GenericName name,
-        IEnumerable<ITypeSyntax> typeArguments)
-        => new GenericTypeNameSyntax(span, name, typeArguments);
+        IEnumerable<ITypeSyntax> genericArguments)
+        => new GenericTypeNameSyntax(span, name, genericArguments);
 }
 
 // [Closed(typeof(QualifiedTypeNameSyntax))]
@@ -1551,16 +1551,16 @@ public partial interface IMemberAccessExpressionSyntax : INameExpressionSyntax
 {
     IExpressionSyntax Context { get; }
     OrdinaryName MemberName { get; }
-    IFixedList<ITypeSyntax> TypeArguments { get; }
+    IFixedList<ITypeSyntax> GenericArguments { get; }
     TextSpan MemberNameSpan { get; }
 
     public static IMemberAccessExpressionSyntax Create(
         TextSpan span,
         IExpressionSyntax context,
         OrdinaryName memberName,
-        IEnumerable<ITypeSyntax> typeArguments,
+        IEnumerable<ITypeSyntax> genericArguments,
         TextSpan memberNameSpan)
-        => new MemberAccessExpressionSyntax(span, context, memberName, typeArguments, memberNameSpan);
+        => new MemberAccessExpressionSyntax(span, context, memberName, genericArguments, memberNameSpan);
 }
 
 // [Closed(typeof(MissingNameSyntax))]
@@ -2568,18 +2568,18 @@ file class GenericTypeNameSyntax : IGenericTypeNameSyntax
 
     public TextSpan Span { [DebuggerStepThrough] get; }
     public GenericName Name { [DebuggerStepThrough] get; }
-    public IFixedList<ITypeSyntax> TypeArguments { [DebuggerStepThrough] get; }
+    public IFixedList<ITypeSyntax> GenericArguments { [DebuggerStepThrough] get; }
     public override string ToString()
         => FormattingAspect.GenericTypeName_ToString(this);
 
     public GenericTypeNameSyntax(
         TextSpan span,
         GenericName name,
-        IEnumerable<ITypeSyntax> typeArguments)
+        IEnumerable<ITypeSyntax> genericArguments)
     {
         Span = span;
         Name = name;
-        TypeArguments = typeArguments.ToFixedList();
+        GenericArguments = genericArguments.ToFixedList();
     }
 }
 
@@ -3413,7 +3413,7 @@ file class MemberAccessExpressionSyntax : IMemberAccessExpressionSyntax
     public TextSpan Span { [DebuggerStepThrough] get; }
     public IExpressionSyntax Context { [DebuggerStepThrough] get; }
     public OrdinaryName MemberName { [DebuggerStepThrough] get; }
-    public IFixedList<ITypeSyntax> TypeArguments { [DebuggerStepThrough] get; }
+    public IFixedList<ITypeSyntax> GenericArguments { [DebuggerStepThrough] get; }
     public TextSpan MemberNameSpan { [DebuggerStepThrough] get; }
     public override string ToString()
         => FormattingAspect.MemberAccessExpression_ToString(this);
@@ -3422,13 +3422,13 @@ file class MemberAccessExpressionSyntax : IMemberAccessExpressionSyntax
         TextSpan span,
         IExpressionSyntax context,
         OrdinaryName memberName,
-        IEnumerable<ITypeSyntax> typeArguments,
+        IEnumerable<ITypeSyntax> genericArguments,
         TextSpan memberNameSpan)
     {
         Span = span;
         Context = context;
         MemberName = memberName;
-        TypeArguments = typeArguments.ToFixedList();
+        GenericArguments = genericArguments.ToFixedList();
         MemberNameSpan = memberNameSpan;
     }
 }

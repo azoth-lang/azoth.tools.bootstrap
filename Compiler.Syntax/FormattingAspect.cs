@@ -49,7 +49,7 @@ internal static partial class FormattingAspect
         if (node.AbstractModifier is not null) modifiers += "abstract ";
         if (node.ConstModifier is not null) modifiers += "const ";
         if (node.MoveModifier is not null) modifiers += "move ";
-        var generics = node.GenericParameters.Any() ? $"[{string.Join(", ", node.GenericParameters)}]" : "";
+        var generics = !node.GenericParameters.IsEmpty ? $"[{string.Join(", ", node.GenericParameters)}]" : "";
         return $"{modifiers}class {node.Name.ToBareString()}{generics} {{ … }}";
     }
 
@@ -60,7 +60,7 @@ internal static partial class FormattingAspect
         if (accessModifier != AccessModifier.Private) modifiers += accessModifier.ToSourceString() + " ";
         if (node.ConstModifier is not null) modifiers += "const ";
         if (node.MoveModifier is not null) modifiers += "move ";
-        var generics = node.GenericParameters.Any() ? $"[{string.Join(", ", node.GenericParameters)}]" : "";
+        var generics = !node.GenericParameters.IsEmpty ? $"[{string.Join(", ", node.GenericParameters)}]" : "";
         return $"{modifiers}class {node.Name.ToBareString()}{generics} {{ … }}";
     }
 
@@ -71,7 +71,7 @@ internal static partial class FormattingAspect
         if (accessModifier != AccessModifier.Private) modifiers += accessModifier.ToSourceString() + " ";
         if (node.ConstModifier is not null) modifiers += "const ";
         if (node.MoveModifier is not null) modifiers += "move ";
-        var generics = node.GenericParameters.Any() ? $"[{string.Join(", ", node.GenericParameters)}]" : "";
+        var generics = !node.GenericParameters.IsEmpty ? $"[{string.Join(", ", node.GenericParameters)}]" : "";
         return $"{modifiers}trait {node.Name.ToBareString()}{generics} {{ … }}";
     }
     #endregion
@@ -186,7 +186,7 @@ internal static partial class FormattingAspect
         => node.Name.ToString();
 
     public static partial string GenericTypeName_ToString(IGenericTypeNameSyntax node)
-        => $"{node.Name.ToBareString()}[{string.Join(", ", node.TypeArguments)}]";
+        => $"{node.Name.ToBareString()}[{string.Join(", ", node.GenericArguments)}]";
 
     public static partial string QualifiedTypeName_ToString(IQualifiedTypeNameSyntax node)
         => $"{node.Context}.{node.QualifiedName}";
@@ -247,12 +247,7 @@ internal static partial class FormattingAspect
 
     #region Expressions
     public static partial string BlockExpression_ToString(IBlockExpressionSyntax node)
-    {
-        if (node.Statements.Any())
-            return $"{{ {node.Statements.Count} Statements }}";
-
-        return "{ }";
-    }
+        => node.Statements.IsEmpty ? "{ }" : $"{{ {node.Statements.Count} Statements }}";
 
     public static partial string NewObjectExpression_ToString(INewObjectExpressionSyntax node)
     {
