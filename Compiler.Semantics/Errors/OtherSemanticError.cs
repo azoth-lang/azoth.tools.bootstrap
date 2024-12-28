@@ -130,10 +130,4 @@ public static class OtherSemanticError
         return new(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             6021, "Expression can not appear on the left hand side of an assignment.");
     }
-
-    public static Diagnostic StructKindRequired(CodeFile file, IStructDefinitionSyntax definition)
-    {
-        return new(file, definition.NameSpan, DiagnosticLevel.CompilationError, DiagnosticPhase.Analysis,
-            6022, $"Struct `{definition.Name}` must be declared `copy` or `move` (`copy` assumed).");
-    }
 }

@@ -300,7 +300,7 @@ public partial class Parser
     {
         var accessModifier = modifiers.ParseAccessModifier();
         var constModifier = modifiers.ParseConstModifier();
-        var structKindModifier = modifiers.ParseStructKindModifier();
+        var moveModifier = modifiers.ParseMoveModifier();
         modifiers.ParseEndOfModifiers();
         var structKeywordSpan = Tokens.Consume<IStructKeywordToken>();
         var identifier = Tokens.RequiredToken<IIdentifierToken>();
@@ -313,7 +313,7 @@ public partial class Parser
             TextSpan.Covering(superTypes.Select(st => st.Span)), bodySpan);
         // TODO parse nested traits
         return IStructDefinitionSyntax.Create(span, File, identifier.Span, accessModifier,
-            constModifier, structKindModifier, name, genericParameters, superTypes,
+            constModifier, moveModifier, name, genericParameters, superTypes,
             members);
     }
 

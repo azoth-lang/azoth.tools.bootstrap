@@ -1,5 +1,5 @@
 // TODO replace with `ref[C] struct`
-published const copy struct string
+published const struct string
 {
     /// The index of the start of the string data in `bytes`.
     public let start: size;

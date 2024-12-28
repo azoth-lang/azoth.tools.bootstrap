@@ -1,6 +1,6 @@
 namespace azoth
 {
-    published const copy struct range
+    published const struct range
         // where T <: Steppable
     {
         /// The inclusive start of the range.

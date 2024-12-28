@@ -10,9 +10,6 @@
 // ---------- Packages
 ↑ eager Package.Diagnostics: `DiagnosticCollection`;
 
-// ---------- Type Definitions
-↑ StructDefinition.MoveModifier: `IMoveKeywordToken`? => StructKindModifier as IMoveKeywordToken;
-
 // ---------- Member Definitions
 ↑ AbstractMethodDefinition.Body: Body? => null;
 ↑ GetterMethodDefinition.Parameters: NamedParameter* => [];

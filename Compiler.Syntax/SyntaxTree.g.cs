@@ -300,12 +300,8 @@ public partial interface IClassDefinitionSyntax : ITypeDefinitionSyntax
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IStructDefinitionSyntax : ITypeDefinitionSyntax
 {
-    IStructKindKeywordToken? StructKindModifier { get; }
     new IFixedList<IStructMemberDefinitionSyntax> Members { get; }
     IFixedList<ITypeMemberDefinitionSyntax> ITypeDefinitionSyntax.Members => Members;
-    new IMoveKeywordToken? MoveModifier
-        => StructKindModifier as IMoveKeywordToken;
-    IMoveKeywordToken? ITypeDefinitionSyntax.MoveModifier => MoveModifier;
 
     public static IStructDefinitionSyntax Create(
         TextSpan span,
@@ -313,12 +309,12 @@ public partial interface IStructDefinitionSyntax : ITypeDefinitionSyntax
         TextSpan nameSpan,
         IAccessModifierToken? accessModifier,
         IConstKeywordToken? constModifier,
-        IStructKindKeywordToken? structKindModifier,
+        IMoveKeywordToken? moveModifier,
         OrdinaryName name,
         IEnumerable<IGenericParameterSyntax> genericParameters,
         IEnumerable<IStandardTypeNameSyntax> supertypeNames,
         IEnumerable<IStructMemberDefinitionSyntax> members)
-        => new StructDefinitionSyntax(span, file, nameSpan, accessModifier, constModifier, structKindModifier, name, genericParameters, supertypeNames, members);
+        => new StructDefinitionSyntax(span, file, nameSpan, accessModifier, constModifier, moveModifier, name, genericParameters, supertypeNames, members);
 }
 
 // [Closed(typeof(TraitDefinitionSyntax))]
@@ -1879,7 +1875,7 @@ file class StructDefinitionSyntax : IStructDefinitionSyntax
     public TextSpan NameSpan { [DebuggerStepThrough] get; }
     public IAccessModifierToken? AccessModifier { [DebuggerStepThrough] get; }
     public IConstKeywordToken? ConstModifier { [DebuggerStepThrough] get; }
-    public IStructKindKeywordToken? StructKindModifier { [DebuggerStepThrough] get; }
+    public IMoveKeywordToken? MoveModifier { [DebuggerStepThrough] get; }
     public OrdinaryName Name { [DebuggerStepThrough] get; }
     public IFixedList<IGenericParameterSyntax> GenericParameters { [DebuggerStepThrough] get; }
     public IFixedList<IStandardTypeNameSyntax> SupertypeNames { [DebuggerStepThrough] get; }
@@ -1893,7 +1889,7 @@ file class StructDefinitionSyntax : IStructDefinitionSyntax
         TextSpan nameSpan,
         IAccessModifierToken? accessModifier,
         IConstKeywordToken? constModifier,
-        IStructKindKeywordToken? structKindModifier,
+        IMoveKeywordToken? moveModifier,
         OrdinaryName name,
         IEnumerable<IGenericParameterSyntax> genericParameters,
         IEnumerable<IStandardTypeNameSyntax> supertypeNames,
@@ -1904,7 +1900,7 @@ file class StructDefinitionSyntax : IStructDefinitionSyntax
         NameSpan = nameSpan;
         AccessModifier = accessModifier;
         ConstModifier = constModifier;
-        StructKindModifier = structKindModifier;
+        MoveModifier = moveModifier;
         Name = name;
         GenericParameters = genericParameters.ToFixedList();
         SupertypeNames = supertypeNames.ToFixedList();
