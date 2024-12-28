@@ -876,9 +876,10 @@ public class InterpreterProcess
                 return await value.PromiseValue.ConfigureAwait(false);
             }
             case IUnresolvedInvocationExpressionNode _:
+            case INonInvocableInvocationExpressionNode _:
             case IUnknownNameExpressionNode _:
             case IMissingNameExpressionNode _:
-                throw new UnreachableException($"Node type {expression.GetType().GetFriendlyName()} won't be in final tree.");
+                throw new UnreachableException($"Node type {expression.GetType().GetFriendlyName()} won't be in error free tree.");
             case INameExpressionNode _:
                 throw new UnreachableException($"Name node type {expression.GetType().GetFriendlyName()} won't be traversed.");
         }

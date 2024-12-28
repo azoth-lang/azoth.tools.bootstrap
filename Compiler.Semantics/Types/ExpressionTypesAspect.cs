@@ -414,6 +414,14 @@ internal static partial class ExpressionTypesAspect
         return flowState.CombineArguments(argumentValueIds, node.ValueId, node.Type);
     }
 
+    public static partial IFlowState NonInvocableInvocationExpression_FlowStateAfter(INonInvocableInvocationExpressionNode node)
+    {
+        // The flow state just before the invocation happens is the state after all arguments have evaluated
+        var flowState = node.Arguments.LastOrDefault()?.FlowStateAfter ?? node.FlowStateBefore();
+        var argumentValueIds = ArgumentValueIds(null, null, node.Arguments);
+        return flowState.CombineArguments(argumentValueIds, node.ValueId, node.Type);
+    }
+
     public static partial IMaybeType AssignmentExpression_Type(IAssignmentExpressionNode node)
         => node.LeftOperand?.Type ?? Type.Unknown;
 

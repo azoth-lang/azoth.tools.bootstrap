@@ -165,6 +165,8 @@
 = FunctionReferenceInvocationExpression.AllArguments => Arguments;
 = InitializerInvocationExpression.TempAllArguments => TempArguments;
 = InitializerInvocationExpression.AllArguments => Arguments;
+= NonInvocableInvocationExpression.TempAllArguments => TempArguments;
+= NonInvocableInvocationExpression.AllArguments => Arguments;
 
 // ---------- Ambiguous Name Expressions
 ↑ StandardNameExpression.Name: `OrdinaryName` => Syntax.Name;
@@ -181,7 +183,8 @@
 = QualifiedTypeNameExpression.Name => Syntax.MemberName;
 ↑ BuiltInTypeNameExpression.Name: `BuiltInTypeName` => Syntax.Name;
 ↑ SelfExpression.IsImplicit: `bool` => Syntax.IsImplicit;
-↑ UnknownIdentifierNameExpression.Name :`IdentifierName`=> Syntax.Name;
+↑ UnknownIdentifierNameExpression.Name: `IdentifierName` => Syntax.Name;
+↑ UnknownGenericNameExpression.Name: `GenericName `=> Syntax.Name;
 ↑ AmbiguousMemberAccessExpression.MemberName: `OrdinaryName` => Syntax.MemberName;
 
 // ---------- Capability Expressions

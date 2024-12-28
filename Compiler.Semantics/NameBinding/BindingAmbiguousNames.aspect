@@ -15,6 +15,7 @@
 ↑ StandardNameExpression.ReferencedDeclarations: Declaration*;
 = StandardNameExpression.ReferencedDeclarations;
 ✎ IdentifierNameExpression;
+✎ GenericNameExpression;
 
 // ---------- Name Expressions
 ✎ UnresolvedMemberAccessExpression NamespaceNameContext;

@@ -3,6 +3,7 @@ using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 
+// TODO rename to GenericArgument?
 public readonly record struct TypeParameterArgument(TypeConstructorParameter Parameter, Type Argument)
 {
     public bool ParameterHasIndependence => Parameter.HasIndependence;

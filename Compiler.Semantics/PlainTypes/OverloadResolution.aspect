@@ -18,6 +18,7 @@
 ✎ UnresolvedInvocationExpression TypeNameExpression;
 ✎ UnresolvedInvocationExpression InitializerGroupNameExpression;
 ✎ UnresolvedInvocationExpression FunctionReferenceExpression;
+✎ UnresolvedInvocationExpression Unbound;
 = UnresolvedInvocationExpression.↑.Diagnostics;
 
 ↑ FunctionInvocationExpression.SelectedCallCandidate: `CallCandidate<IFunctionInvocableDeclarationNode>`?

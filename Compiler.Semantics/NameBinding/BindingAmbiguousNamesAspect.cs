@@ -37,6 +37,23 @@ internal static partial class BindingAmbiguousNamesAspect
         return IUnknownIdentifierNameExpressionNode.Create(node.Syntax, node.ReferencedDeclarations);
     }
 
+    public static partial IAmbiguousNameExpressionNode? GenericNameExpression_Rewrite(IGenericNameExpressionNode node)
+    {
+        // TODO rename TypeArguments to GenericArguments
+        if (node.ReferencedDeclarations.TryAllOfType<IFunctionInvocableDeclarationNode>(out var referencedFunctions))
+            return IFunctionGroupNameNode.Create(node.Syntax, null, node.Name, node.TypeArguments, referencedFunctions);
+
+        if (node.ReferencedDeclarations.TrySingle() is not null and var referencedDeclaration)
+            switch (referencedDeclaration)
+            {
+                case ITypeDeclarationNode referencedType:
+                    return IStandardTypeNameExpressionNode.Create(node.Syntax, node.TypeArguments, referencedType);
+            }
+
+        // TODO theoretically, this has the same problem where uncached ReferencedDeclarations could cause premature rewrite to UnknownNameExpression
+        return IUnknownGenericNameExpressionNode.Create(node.Syntax, node.TypeArguments, node.ReferencedDeclarations);
+    }
+
     public static partial void UnknownIdentifierNameExpression_Contribute_Diagnostics(
         IUnknownIdentifierNameExpressionNode node,
         DiagnosticCollectionBuilder diagnostics)

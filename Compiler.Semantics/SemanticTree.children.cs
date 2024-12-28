@@ -381,6 +381,11 @@ public static class ISemanticNodeExtensions
                 foreach (var child in n.TempArguments)
                     yield return child;
                 yield break;
+            case INonInvocableInvocationExpressionNode n:
+                yield return n.TempExpression;
+                foreach (var child in n.TempArguments)
+                    yield return child;
+                yield break;
             case IIdentifierNameExpressionNode n:
                 yield break;
             case IGenericNameExpressionNode n:

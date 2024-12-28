@@ -142,6 +142,12 @@
 
 // ---------- Invocation Expressions
 = UnresolvedInvocationExpression.Expression.ExpectedType => null;
+↓ UnresolvedInvocationExpression.FlowStateBefore(): `IFlowState`;
+= UnresolvedInvocationExpression.Arguments[0].**.FlowStateBefore()
+    => Expression?.FlowStateAfter ?? base.Inherited_FlowStateBefore(child, descendant, ctx);
+= UnresolvedInvocationExpression.Arguments[index].**.FlowStateBefore()
+    => Arguments[index - 1]?.FlowStateAfter ?? IFlowState.Empty;
+= UnresolvedInvocationExpression.Type => AzothType.Unknown;
 ↓ FunctionInvocationExpression.FlowStateBefore(): `IFlowState`;
 = FunctionInvocationExpression.Arguments[0].**.FlowStateBefore()
     => base.Inherited_FlowStateBefore(child, descendant, ctx);
@@ -185,12 +191,13 @@
 ↑ InitializerInvocationExpression.ContextualizedCall: `ContextualizedCall`?;
 = InitializerInvocationExpression.Arguments[index].ExpectedType
     => ContextualizedCall?.ParameterTypes[index].Type;
-↓ UnresolvedInvocationExpression.FlowStateBefore(): `IFlowState`;
-= UnresolvedInvocationExpression.Arguments[0].**.FlowStateBefore()
+= NonInvocableInvocationExpression.Expression.ExpectedType => null;
+↓ NonInvocableInvocationExpression.FlowStateBefore(): `IFlowState`;
+= NonInvocableInvocationExpression.Arguments[0].**.FlowStateBefore()
     => Expression?.FlowStateAfter ?? base.Inherited_FlowStateBefore(child, descendant, ctx);
-= UnresolvedInvocationExpression.Arguments[index].**.FlowStateBefore()
+= NonInvocableInvocationExpression.Arguments[index].**.FlowStateBefore()
     => Arguments[index - 1]?.FlowStateAfter ?? IFlowState.Empty;
-= UnresolvedInvocationExpression.Type => AzothType.Unknown;
+= NonInvocableInvocationExpression.Type => AzothType.Unknown;
 
 // ---------- Name Expressions
 ↓ NameExpression.FlowStateBefore(): `IFlowState`;

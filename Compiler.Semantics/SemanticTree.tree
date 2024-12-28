@@ -271,6 +271,8 @@ FunctionReferenceInvocationExpression <: InvocationExpression = Syntax:`IInvocat
     Expression:Expression Arguments:AmbiguousExpression*;
 InitializerInvocationExpression <: InvocationExpression = Syntax:`IInvocationExpressionSyntax`
     InitializerGroup:InitializerGroupName Arguments:AmbiguousExpression*;
+NonInvocableInvocationExpression <: InvocationExpression = Syntax:`IInvocationExpressionSyntax`
+    Expression:AmbiguousExpression Arguments:AmbiguousExpression*;
 
 // ---------- Ambiguous Name Expressions
 // TODO consider renaming to `UnresolvedNameExpression` because the final tree could have a bound
@@ -348,7 +350,7 @@ UnknownStandardNameExpression <: UnknownNameExpression
 UnknownIdentifierNameExpression <: UnknownStandardNameExpression, SimpleNameExpression
     = Syntax:`IIdentifierNameExpressionSyntax` /ReferencedDeclarations/;
 UnknownGenericNameExpression <: UnknownStandardNameExpression
-    = Syntax:`IGenericNameExpressionSyntax` Name:`GenericName` TypeArguments:Type*;
+    = Syntax:`IGenericNameExpressionSyntax` TypeArguments:Type* /ReferencedDeclarations/;
 AmbiguousMemberAccessExpression <: UnknownNameExpression
     = Syntax:`IMemberAccessExpressionSyntax` Context:Expression TypeArguments:Type*
     ReferencedMembers:{`IDeclarationNode`};

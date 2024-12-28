@@ -76,6 +76,7 @@
 // TODO this needs to be contextualized with the generic arguments
 = InitializerInvocationExpression.Arguments[index].ExpectedPlainType
     => Self.ReferencedDeclaration?.ParameterPlainTypes[index];
+= NonInvocableInvocationExpression.PlainType => AzothPlainType.Unknown;
 
 // ---------- Ambiguous Name Expressions
 

@@ -136,6 +136,25 @@ internal static partial class OverloadResolutionAspect
         return IFunctionReferenceInvocationExpressionNode.Create(node.Syntax, expression, node.CurrentArguments);
     }
 
+    public static partial IExpressionNode? UnresolvedInvocationExpression_Rewrite_Unbound(IUnresolvedInvocationExpressionNode node)
+    {
+        if (node.Expression is
+            IFunctionGroupNameNode
+            or IFunctionNameNode
+            or IMethodGroupNameNode
+            or IMethodNameNode
+            or IUnknownNameExpressionNode
+            or IUnresolvedInvocationExpressionNode
+            or INonInvocableInvocationExpressionNode)
+            return null;
+
+        var plainType = node.Expression?.PlainType;
+        if (plainType is not null and not FunctionPlainType)
+            return INonInvocableInvocationExpressionNode.Create(node.Syntax, node.CurrentExpression, node.CurrentArguments);
+
+        return null;
+    }
+
     public static partial void UnresolvedInvocationExpression_Contribute_Diagnostics(IUnresolvedInvocationExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
         switch (node.Expression)
@@ -152,7 +171,7 @@ internal static partial class OverloadResolutionAspect
             case IUnresolvedInvocationExpressionNode:
                 // These presumably report their own errors and should be ignored here
                 break;
-            // TODO other cases
+            // TODO other cases?
             default:
                 diagnostics.Add(NameBindingError.NotImplemented(node.File, node.Syntax.Span,
                     "Invocation not properly bound. Unknown call."));
