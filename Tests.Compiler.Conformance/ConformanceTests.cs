@@ -8,7 +8,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Azoth.Tools.Bootstrap.Compiler.API;
-using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Code;
 using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Semantics;
@@ -62,7 +61,7 @@ public partial class ConformanceTests
 
         // Reference Standard Library
         var supportPackage = CompileSupportPackage(compiler);
-        references.Add(new PackageReference(TestsSupportPackage.Name, supportPackage.PackageSymbols, true));
+        references.Add(new(TestsSupportPackage.Name, supportPackage.PackageSymbols, true));
 
         try
         {
@@ -75,8 +74,7 @@ public partial class ConformanceTests
             var errorDiagnostics = CheckErrorsExpected(testCase, codeFile, code, diagnostics);
 
             // We got only expected errors, but need to not go on to emit code
-            if (errorDiagnostics.Any())
-                return;
+            if (errorDiagnostics.Any()) return;
 
             // Emit Code
             //var (packageIL, stdLibIL) = EmitIL(package, supportPackage);

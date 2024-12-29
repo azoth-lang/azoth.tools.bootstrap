@@ -21,10 +21,10 @@
 ✎ UnresolvedInvocationExpression Unbound;
 = UnresolvedInvocationExpression.↑.Diagnostics;
 
-↑ FunctionInvocationExpression.SelectedCallCandidate: `CallCandidate<IFunctionInvocableDeclarationNode>`?
+↑ FunctionInvocationExpression.SelectedCallCandidate: `ICallCandidate<IFunctionInvocableDeclarationNode>`?
     => Function.SelectedCallCandidate;
 
-↑ MethodInvocationExpression.SelectedCallCandidate: `CallCandidate<IOrdinaryMethodDeclarationNode>`?
+↑ MethodInvocationExpression.SelectedCallCandidate: `ICallCandidate<IOrdinaryMethodDeclarationNode>`?
     => Method.SelectedCallCandidate;
 = MethodInvocationExpression.↑.Diagnostics;
 
@@ -32,14 +32,14 @@
 ↑ InitializerInvocationExpression.ReferencedDeclaration: InitializerDeclaration?;
 
 // ---------- Name Expressions
-↑ FunctionGroupName.CallCandidates: {`CallCandidate<IFunctionInvocableDeclarationNode>`};
-↑ FunctionGroupName.CompatibleCallCandidates: {`CallCandidate<IFunctionInvocableDeclarationNode>`};
-↑ FunctionGroupName.SelectedCallCandidate: `CallCandidate<IFunctionInvocableDeclarationNode>`?;
+↑ FunctionGroupName.CallCandidates: {`ICallCandidate<IFunctionInvocableDeclarationNode>`};
+↑ FunctionGroupName.CompatibleCallCandidates: {`ICallCandidate<IFunctionInvocableDeclarationNode>`};
+↑ FunctionGroupName.SelectedCallCandidate: `ICallCandidate<IFunctionInvocableDeclarationNode>`?;
 ↑ FunctionGroupName.ReferencedDeclaration: FunctionInvocableDeclaration?;
 = FunctionGroupName.↑.Diagnostics;
 = FunctionName.↑.Diagnostics;
-↑ MethodGroupName.CallCandidates: {`CallCandidate<IOrdinaryMethodDeclarationNode>`};
-↑ MethodGroupName.CompatibleCallCandidates: {`CallCandidate<IOrdinaryMethodDeclarationNode>`};
-↑ MethodGroupName.SelectedCallCandidate: `CallCandidate<IOrdinaryMethodDeclarationNode>`?;
+↑ MethodGroupName.CallCandidates: {`ICallCandidate<IOrdinaryMethodDeclarationNode>`};
+↑ MethodGroupName.CompatibleCallCandidates: {`ICallCandidate<IOrdinaryMethodDeclarationNode>`};
+↑ MethodGroupName.SelectedCallCandidate: `ICallCandidate<IOrdinaryMethodDeclarationNode>`?;
 ↑ MethodGroupName.ReferencedDeclaration: OrdinaryMethodDeclaration?;
 = MethodGroupName.↑.Diagnostics;

@@ -181,7 +181,7 @@ internal static partial class OverloadResolutionAspect
 
     private static void ContributeFunctionBindingDiagnostics(
         IFunctionInvocableDeclarationNode? referencedDeclaration,
-        IFixedSet<CallCandidate<IFunctionInvocableDeclarationNode>> compatibleCallCandidates,
+        IFixedSet<ICallCandidate<IFunctionInvocableDeclarationNode>> compatibleCallCandidates,
         CodeFile file,
         IInvocationExpressionSyntax syntax,
         DiagnosticCollectionBuilder diagnostics)
@@ -236,10 +236,10 @@ internal static partial class OverloadResolutionAspect
     #endregion
 
     #region Name Expressions
-    public static partial IFixedSet<CallCandidate<IFunctionInvocableDeclarationNode>> FunctionGroupName_CallCandidates(IFunctionGroupNameNode node)
+    public static partial IFixedSet<ICallCandidate<IFunctionInvocableDeclarationNode>> FunctionGroupName_CallCandidates(IFunctionGroupNameNode node)
         => node.ReferencedDeclarations.Select(CallCandidate.Create).ToFixedSet();
 
-    public static partial IFixedSet<CallCandidate<IFunctionInvocableDeclarationNode>> FunctionGroupName_CompatibleCallCandidates(IFunctionGroupNameNode node)
+    public static partial IFixedSet<ICallCandidate<IFunctionInvocableDeclarationNode>> FunctionGroupName_CompatibleCallCandidates(IFunctionGroupNameNode node)
     {
         if (node.ExpectedPlainType is not FunctionPlainType expectedPlainType) return [];
 
@@ -247,7 +247,7 @@ internal static partial class OverloadResolutionAspect
         return node.CallCandidates.Where(o => o.CompatibleWith(argumentPlainTypes)).ToFixedSet();
     }
 
-    public static partial CallCandidate<IFunctionInvocableDeclarationNode>? FunctionGroupName_SelectedCallCandidate(IFunctionGroupNameNode node)
+    public static partial ICallCandidate<IFunctionInvocableDeclarationNode>? FunctionGroupName_SelectedCallCandidate(IFunctionGroupNameNode node)
         => node.CompatibleCallCandidates.TrySingle();
 
     public static partial IFunctionInvocableDeclarationNode? FunctionGroupName_ReferencedDeclaration(IFunctionGroupNameNode node)
@@ -258,7 +258,7 @@ internal static partial class OverloadResolutionAspect
 
     private static void ContributeFunctionNameBindingDiagnostics(
         IFunctionInvocableDeclarationNode? referencedDeclaration,
-        IFixedSet<CallCandidate<IFunctionInvocableDeclarationNode>> compatibleCallCandidates,
+        IFixedSet<ICallCandidate<IFunctionInvocableDeclarationNode>> compatibleCallCandidates,
         INameExpressionNode node,
         DiagnosticCollectionBuilder diagnostics)
     {
@@ -283,10 +283,10 @@ internal static partial class OverloadResolutionAspect
     public static partial void FunctionName_Contribute_Diagnostics(IFunctionNameNode node, DiagnosticCollectionBuilder diagnostics)
         => ContributeFunctionNameBindingDiagnostics(node.ReferencedDeclaration, node.CompatibleCallCandidates, node, diagnostics);
 
-    public static partial IFixedSet<CallCandidate<IOrdinaryMethodDeclarationNode>> MethodGroupName_CallCandidates(IMethodGroupNameNode node)
+    public static partial IFixedSet<ICallCandidate<IOrdinaryMethodDeclarationNode>> MethodGroupName_CallCandidates(IMethodGroupNameNode node)
         => node.ReferencedDeclarations.Select(m => CallCandidate.Create(node.Context.PlainType, m)).ToFixedSet();
 
-    public static partial IFixedSet<CallCandidate<IOrdinaryMethodDeclarationNode>> MethodGroupName_CompatibleCallCandidates(IMethodGroupNameNode node)
+    public static partial IFixedSet<ICallCandidate<IOrdinaryMethodDeclarationNode>> MethodGroupName_CompatibleCallCandidates(IMethodGroupNameNode node)
     {
         if (node.ExpectedPlainType is not FunctionPlainType expectedPlainType) return [];
 
@@ -295,7 +295,7 @@ internal static partial class OverloadResolutionAspect
         return node.CallCandidates.Where(o => o.CompatibleWith(argumentPlainTypes)).ToFixedSet();
     }
 
-    public static partial CallCandidate<IOrdinaryMethodDeclarationNode>? MethodGroupName_SelectedCallCandidate(IMethodGroupNameNode node)
+    public static partial ICallCandidate<IOrdinaryMethodDeclarationNode>? MethodGroupName_SelectedCallCandidate(IMethodGroupNameNode node)
         => node.CompatibleCallCandidates.TrySingle();
 
     public static partial IOrdinaryMethodDeclarationNode? MethodGroupName_ReferencedDeclaration(IMethodGroupNameNode node)

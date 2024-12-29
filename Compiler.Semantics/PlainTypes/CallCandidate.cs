@@ -3,10 +3,24 @@ using System.Collections.Generic;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using Azoth.Tools.Bootstrap.Framework;
+using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.PlainTypes;
 
-public sealed class CallCandidate<TDeclaration> : IEquatable<CallCandidate<TDeclaration>>
+public interface ICallCandidate<out TDeclaration> : IEquatable<ICallCandidate<IInvocableDeclarationNode>>
+    where TDeclaration : IInvocableDeclarationNode
+{
+    IMaybePlainType? ContextPlainType { get; }
+    TDeclaration Declaration { get; }
+    IMaybeNonVoidPlainType? SelfParameterPlainType { get; }
+    IFixedList<IMaybeNonVoidPlainType> ParameterPlainTypes { get; }
+    int Arity { get; }
+    IMaybePlainType ReturnPlainType { get; }
+
+    bool CompatibleWith(ArgumentPlainTypes arguments);
+}
+
+internal sealed class CallCandidate<TDeclaration> : ICallCandidate<TDeclaration>
     where TDeclaration : IInvocableDeclarationNode
 {
     public IMaybePlainType? ContextPlainType { get; }
@@ -47,15 +61,16 @@ public sealed class CallCandidate<TDeclaration> : IEquatable<CallCandidate<TDecl
     }
 
     #region Equality
-    public bool Equals(CallCandidate<TDeclaration>? other)
+    public bool Equals(ICallCandidate<IInvocableDeclarationNode>? other)
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
-        return Equals(ContextPlainType, other.ContextPlainType)
-               && Declaration.Equals(other.Declaration)
-               && Equals(SelfParameterPlainType, other.SelfParameterPlainType)
-               && ParameterPlainTypes.Equals(other.ParameterPlainTypes)
-               && ReturnPlainType.Equals(other.ReturnPlainType);
+        return other is CallCandidate<TDeclaration> o
+               && Equals(ContextPlainType, o.ContextPlainType)
+               && Declaration.Equals(o.Declaration)
+               && Equals(SelfParameterPlainType, o.SelfParameterPlainType)
+               && ParameterPlainTypes.Equals(o.ParameterPlainTypes)
+               && ReturnPlainType.Equals(o.ReturnPlainType);
     }
 
     public override bool Equals(object? obj)
@@ -68,30 +83,42 @@ public sealed class CallCandidate<TDeclaration> : IEquatable<CallCandidate<TDecl
 
 internal static class CallCandidate
 {
-    public static CallCandidate<IFunctionInvocableDeclarationNode> Create(
+    public static ICallCandidate<IFunctionInvocableDeclarationNode> Create(
         IFunctionInvocableDeclarationNode function)
     {
         var parameterPlainTypes = function.ParameterPlainTypes;
         var returnPlainType = function.ReturnPlainType;
-        return new(null, function, null, parameterPlainTypes, returnPlainType);
+        return new CallCandidate<IFunctionInvocableDeclarationNode>(null, function, null, parameterPlainTypes, returnPlainType);
     }
 
-    public static CallCandidate<IConstructorDeclarationNode> Create(
+    public static ICallCandidate<IConstructorDeclarationNode> Create(
         IMaybePlainType constructingPlainType,
         IConstructorDeclarationNode constructor)
         => Create(constructingPlainType, constructor, constructor.SelfParameterPlainType);
 
-    public static CallCandidate<IInitializerDeclarationNode> Create(
+    public static ICallCandidate<IInitializerDeclarationNode> Create(
         IMaybePlainType initializingPlainType,
         IInitializerDeclarationNode initializer)
         => Create(initializingPlainType, initializer, initializer.SelfParameterPlainType);
 
-    public static CallCandidate<IOrdinaryMethodDeclarationNode> Create(
+    public static ICallCandidate<IOrdinaryMethodDeclarationNode> Create(
         IMaybePlainType contextPlainType,
         IOrdinaryMethodDeclarationNode method)
         => Create(contextPlainType, method, method.SelfParameterPlainType);
 
-    private static CallCandidate<TDeclaration> Create<TDeclaration>(
+    public static ICallCandidate<IPropertyAccessorDeclarationNode> Create(
+        IMaybePlainType contextPlainType,
+        IPropertyAccessorDeclarationNode property)
+        => property switch
+        {
+            IGetterMethodDeclarationNode node
+                => Create(contextPlainType, node, property.SelfParameterPlainType),
+            ISetterMethodDeclarationNode node
+                => Create(contextPlainType, node, property.SelfParameterPlainType),
+            _ => throw ExhaustiveMatch.Failed(property),
+        };
+
+    private static ICallCandidate<TDeclaration> Create<TDeclaration>(
         IMaybePlainType contextPlainType,
         TDeclaration declaration,
         IMaybeNonVoidPlainType selfParameterPlainType)
@@ -100,7 +127,7 @@ internal static class CallCandidate
         selfParameterPlainType = SelfParameterPlainType(contextPlainType, selfParameterPlainType);
         var parameterPlainTypes = ParameterPlainTypes(contextPlainType, declaration);
         var returnPlainType = ReturnPlainType(contextPlainType, declaration);
-        return new(contextPlainType, declaration, selfParameterPlainType, parameterPlainTypes, returnPlainType);
+        return new CallCandidate<TDeclaration>(contextPlainType, declaration, selfParameterPlainType, parameterPlainTypes, returnPlainType);
     }
 
     private static IMaybeNonVoidPlainType SelfParameterPlainType(

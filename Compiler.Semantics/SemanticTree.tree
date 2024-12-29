@@ -308,9 +308,9 @@ FunctionGroupName <: NameExpression
 FunctionName <: NameExpression
     = Syntax:`INameExpressionSyntax` Context:NameExpression?  FunctionName:`OrdinaryName` TypeArguments:Type*
     ReferencedDeclarations:{`IFunctionInvocableDeclarationNode`}
-    CallCandidates:{`CallCandidate<IFunctionInvocableDeclarationNode>`}
-    CompatibleCallCandidates:{`CallCandidate<IFunctionInvocableDeclarationNode>`}
-    SelectedCallCandidate:`CallCandidate<IFunctionInvocableDeclarationNode>`?
+    CallCandidates:{`ICallCandidate<IFunctionInvocableDeclarationNode>`}
+    CompatibleCallCandidates:{`ICallCandidate<IFunctionInvocableDeclarationNode>`}
+    SelectedCallCandidate:`ICallCandidate<IFunctionInvocableDeclarationNode>`?
     ReferencedDeclaration:`IFunctionInvocableDeclarationNode`?;
 MethodGroupName <: NameExpression = Syntax:`IMemberAccessExpressionSyntax`
     Context:Expression MethodName:`OrdinaryName` TypeArguments:Type*
@@ -318,9 +318,9 @@ MethodGroupName <: NameExpression = Syntax:`IMemberAccessExpressionSyntax`
 MethodName <: NameExpression = Syntax:`IMemberAccessExpressionSyntax`
     Context:Expression MethodName:`OrdinaryName` TypeArguments:Type*
     ReferencedDeclarations:{`IOrdinaryMethodDeclarationNode`}
-    CallCandidates:{`CallCandidate<IOrdinaryMethodDeclarationNode>`}
-    CompatibleCallCandidates:{`CallCandidate<IOrdinaryMethodDeclarationNode>`}
-    SelectedCallCandidate:`CallCandidate<IOrdinaryMethodDeclarationNode>`?
+    CallCandidates:{`ICallCandidate<IOrdinaryMethodDeclarationNode>`}
+    CompatibleCallCandidates:{`ICallCandidate<IOrdinaryMethodDeclarationNode>`}
+    SelectedCallCandidate:`ICallCandidate<IOrdinaryMethodDeclarationNode>`?
     ReferencedDeclaration:`IOrdinaryMethodDeclarationNode`?;
 FieldAccessExpression <: NameExpression = Syntax:`IMemberAccessExpressionSyntax`
     Context:Expression FieldName:`IdentifierName` ReferencedDeclaration:`IFieldDeclarationNode`;
