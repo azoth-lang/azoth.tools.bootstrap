@@ -58,12 +58,12 @@ internal static partial class OverloadResolutionAspect
         switch (node.CompatibleConstructors.Count)
         {
             case 0:
-                diagnostics.Add(NameBindingError.CouldNotBindConstructor(node.File, node.Syntax.Span));
+                diagnostics.Add(NameBindingError.CouldNotBindInitializer(node.File, node.Syntax.Span));
                 break;
             case 1:
                 throw new UnreachableException("ReferencedConstructor would not be null");
             default:
-                diagnostics.Add(NameBindingError.AmbiguousConstructorCall(node.File, node.Syntax.Span));
+                diagnostics.Add(NameBindingError.AmbiguousInitializerCall(node.File, node.Syntax.Span));
                 break;
         }
     }
@@ -122,7 +122,7 @@ internal static partial class OverloadResolutionAspect
 
     public static partial IExpressionNode? UnresolvedInvocationExpression_Rewrite_InitializerGroupNameExpression(IUnresolvedInvocationExpressionNode node)
     {
-        if (node.Expression is not IInitializerGroupNameNode initializer)
+        if (node.Expression is not IInitializerNameNode initializer)
             return null;
 
         return IInitializerInvocationExpressionNode.Create(node.Syntax, initializer, node.CurrentArguments);
@@ -230,9 +230,6 @@ internal static partial class OverloadResolutionAspect
                    .Where(c => c.CompatibleWith(argumentPlainTypes)).ToFixedSet();
     }
 
-    public static partial IGetterMethodDeclarationNode? GetterInvocationExpression_ReferencedDeclaration(IGetterInvocationExpressionNode node)
-        => node.SelectedCallCandidate?.Declaration;
-
     public static partial IFixedSet<ICallCandidate<IPropertyAccessorDeclarationNode>> SetterInvocationExpression_CallCandidates(ISetterInvocationExpressionNode node)
         => node.ReferencedDeclarations.Select(p => CallCandidate.Create(node.Context.PlainType, p)).ToFixedSet();
 
@@ -242,26 +239,6 @@ internal static partial class OverloadResolutionAspect
         return node.CallCandidates.OfType<ICallCandidate<ISetterMethodDeclarationNode>>()
                    .Where(c => c.CompatibleWith(argumentPlainTypes)).ToFixedSet();
     }
-
-    public static partial ICallCandidate<ISetterMethodDeclarationNode>? SetterInvocationExpression_SelectedCallCandidate(ISetterInvocationExpressionNode node)
-        => node.CompatibleCallCandidates.TrySingle();
-
-    public static partial ISetterMethodDeclarationNode? SetterInvocationExpression_ReferencedDeclaration(ISetterInvocationExpressionNode node)
-        => node.SelectedCallCandidate?.Declaration;
-
-    public static partial IFixedSet<IInitializerDeclarationNode> InitializerInvocationExpression_CompatibleDeclarations(IInitializerInvocationExpressionNode node)
-    {
-        var initializingPlainType = node.InitializerGroup.InitializingPlainType;
-        var arguments = node.Arguments.Select(PlainTypeIfKnown);
-        var argumentPlainTypes = ArgumentPlainTypes.ForInitializer(arguments);
-        return node.InitializerGroup.ReferencedDeclarations
-                   .Select(d => CallCandidate.Create(initializingPlainType, d))
-                   .Where(c => c.CompatibleWith(argumentPlainTypes))
-                   .Select(c => c.Declaration).ToFixedSet();
-    }
-
-    public static partial IInitializerDeclarationNode? InitializerInvocationExpression_ReferencedDeclaration(IInitializerInvocationExpressionNode node)
-        => node.CompatibleDeclarations.TrySingle();
     #endregion
 
     #region Name Expressions
@@ -278,9 +255,6 @@ internal static partial class OverloadResolutionAspect
 
     public static partial ICallCandidate<IFunctionInvocableDeclarationNode>? FunctionGroupName_SelectedCallCandidate(IFunctionGroupNameNode node)
         => node.CompatibleCallCandidates.TrySingle();
-
-    public static partial IFunctionInvocableDeclarationNode? FunctionGroupName_ReferencedDeclaration(IFunctionGroupNameNode node)
-        => node.SelectedCallCandidate?.Declaration;
 
     public static partial void FunctionGroupName_Contribute_Diagnostics(IFunctionGroupNameNode node, DiagnosticCollectionBuilder diagnostics)
         => ContributeFunctionNameBindingDiagnostics(node.ReferencedDeclaration, node.CompatibleCallCandidates, node, diagnostics);
@@ -327,9 +301,6 @@ internal static partial class OverloadResolutionAspect
     public static partial ICallCandidate<IOrdinaryMethodDeclarationNode>? MethodGroupName_SelectedCallCandidate(IMethodGroupNameNode node)
         => node.CompatibleCallCandidates.TrySingle();
 
-    public static partial IOrdinaryMethodDeclarationNode? MethodGroupName_ReferencedDeclaration(IMethodGroupNameNode node)
-        => node.SelectedCallCandidate?.Declaration;
-
     public static partial void MethodGroupName_Contribute_Diagnostics(IMethodGroupNameNode node, DiagnosticCollectionBuilder diagnostics)
     {
         if (node.ReferencedDeclaration is not null
@@ -346,6 +317,42 @@ internal static partial class OverloadResolutionAspect
                 throw new UnreachableException("ReferencedDeclaration would not be null");
             default:
                 diagnostics.Add(NameBindingError.AmbiguousMethodName(node.File, node.Syntax));
+                break;
+        }
+    }
+
+    public static partial IFixedSet<ICallCandidate<IInitializerDeclarationNode>> InitializerGroupName_CallCandidates(IInitializerGroupNameNode node)
+    {
+        var initializingPlainType = node.InitializingPlainType;
+        return node.ReferencedDeclarations.Select(i => CallCandidate.Create(initializingPlainType, i)).ToFixedSet();
+    }
+
+    public static partial IFixedSet<ICallCandidate<IInitializerDeclarationNode>> InitializerGroupName_CompatibleCallCandidates(IInitializerGroupNameNode node)
+    {
+        if (node.ExpectedPlainType is not FunctionPlainType expectedPlainType) return [];
+        var argumentPlainTypes = ArgumentPlainTypes.ForInitializer(expectedPlainType.Parameters);
+        return node.CallCandidates.Where(o => o.CompatibleWith(argumentPlainTypes)).ToFixedSet();
+    }
+
+    public static partial ICallCandidate<IInitializerDeclarationNode>? InitializerGroupName_SelectedCallCandidate(IInitializerGroupNameNode node)
+        => node.CompatibleCallCandidates.TrySingle();
+
+    public static partial void InitializerGroupName_Contribute_Diagnostics(IInitializerGroupNameNode node, DiagnosticCollectionBuilder diagnostics)
+    {
+        if (node.ReferencedDeclaration is not null
+            // errors will be reported by the parent in this case
+            || node.Parent is IUnresolvedInvocationExpressionNode)
+            return;
+
+        switch (node.CompatibleCallCandidates.Count)
+        {
+            case 0:
+                diagnostics.Add(NameBindingError.CouldNotBindInitializer(node.File, node.Syntax.Span));
+                break;
+            case 1:
+                throw new UnreachableException("ReferencedDeclaration would not be null");
+            default:
+                diagnostics.Add(NameBindingError.AmbiguousInitializerCall(node.File, node.Syntax.Span));
                 break;
         }
     }

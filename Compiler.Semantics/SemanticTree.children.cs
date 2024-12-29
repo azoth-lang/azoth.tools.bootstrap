@@ -377,7 +377,7 @@ public static class ISemanticNodeExtensions
                     yield return child;
                 yield break;
             case IInitializerInvocationExpressionNode n:
-                yield return n.InitializerGroup;
+                yield return n.Initializer;
                 foreach (var child in n.TempArguments)
                     yield return child;
                 yield break;
@@ -439,6 +439,9 @@ public static class ISemanticNodeExtensions
                     yield return child;
                 yield break;
             case IInitializerGroupNameNode n:
+                yield return n.Context;
+                yield break;
+            case IInitializerNameNode n:
                 yield return n.Context;
                 yield break;
             case IBuiltInTypeNameExpressionNode n:

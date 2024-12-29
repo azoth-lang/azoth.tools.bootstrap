@@ -27,6 +27,7 @@
 = FunctionGroupName.↑.Diagnostics;
 ✎ MethodGroupName ToMethodName;
 = MethodGroupName.↑.Diagnostics;
+✎ InitializerGroupName ToInitializerName;
 = UnknownIdentifierNameExpression.↑.Diagnostics;
 // TODO validate that AmbiguousMemberAccessExpression.ReferencedMembers is not empty
 = AmbiguousMemberAccessExpression.↑.Diagnostics;

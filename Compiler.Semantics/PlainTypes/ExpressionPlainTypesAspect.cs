@@ -338,8 +338,8 @@ internal static partial class ExpressionPlainTypesAspect
 
     public static partial IMaybePlainType InitializerInvocationExpression_PlainType(IInitializerInvocationExpressionNode node)
     {
-        var unboundPlainType = node.ReferencedDeclaration?.ReturnPlainType ?? PlainType.Unknown;
-        var boundPlainType = node.InitializerGroup.InitializingPlainType.TypeReplacements.Apply(unboundPlainType);
+        var unboundPlainType = node.SelectedCallCandidate?.ReturnPlainType ?? PlainType.Unknown;
+        var boundPlainType = node.Initializer.InitializingPlainType.TypeReplacements.Apply(unboundPlainType);
         return boundPlainType;
     }
 
@@ -347,12 +347,18 @@ internal static partial class ExpressionPlainTypesAspect
         => node.ReferencedDeclaration?.PlainType ?? PlainType.Unknown;
 
     public static partial IMaybePlainType MethodName_PlainType(IMethodNameNode node)
+        // TODO should MethodGroupPlainType be renamed to just MethodPlainType? The declaration is one method
         => node.ReferencedDeclaration?.MethodGroupPlainType ?? PlainType.Unknown;
 
     // TODO this is strange and maybe a hack
     public static partial IMaybePlainType? MethodName_Context_ExpectedPlainType(IMethodNameNode node)
         => (node.Parent as IMethodInvocationExpressionNode)
            ?.SelectedCallCandidate?.SelfParameterPlainType;
+
+    public static partial IMaybePlainType InitializerName_PlainType(IInitializerNameNode node)
+        // TODO proper plain type
+        // => node.ReferencedDeclaration?.InitializerGroupPlainType ?? PlainType.Unknown;
+        => PlainType.Unknown;
 
     public static partial IExpressionNode? Expression_Rewrite_ImplicitConversion(IExpressionNode node)
     {

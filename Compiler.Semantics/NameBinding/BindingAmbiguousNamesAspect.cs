@@ -225,6 +225,20 @@ internal static partial class BindingAmbiguousNamesAspect
             diagnostics.Add(TypeError.AmbiguousMethodGroup(node.File, node.Syntax, Type.Unknown));
     }
 
+    public static partial INameExpressionNode? InitializerGroupName_Rewrite_ToInitializerName(IInitializerGroupNameNode node)
+    {
+        if (node.CompatibleCallCandidates.Count > 1)
+            // TODO should this be used instead?
+            //if (node.ReferencedDeclaration is not null)
+            return null;
+
+        // if there is aren't multiple declarations, then it isn't ambiguous (it may fail to reference if there are zero).
+        return IInitializerNameNode.Create(node.Syntax, node.Context, node.InitializerName,
+            node.ReferencedDeclarations, node.CallCandidates, node.CompatibleCallCandidates, node.SelectedCallCandidate,
+            node.ReferencedDeclaration);
+    }
+
+
     public static partial void UnresolvedMemberAccessExpression_Contribute_Diagnostics(
         IUnresolvedMemberAccessExpressionNode node,
         DiagnosticCollectionBuilder diagnostics)

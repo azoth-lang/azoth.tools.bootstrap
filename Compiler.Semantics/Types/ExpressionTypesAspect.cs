@@ -389,9 +389,9 @@ internal static partial class ExpressionTypesAspect
     }
 
     public static partial ContextualizedCall? InitializerInvocationExpression_ContextualizedCall(IInitializerInvocationExpressionNode node)
-        => node.ReferencedDeclaration is not null
-           && node.InitializerGroup.Context.NamedBareType is not null and var initializingType
-            ? ContextualizedCall.Create(initializingType.With(Capability.Mutable), node.ReferencedDeclaration)
+        => node.Initializer.ReferencedDeclaration is not null
+           && node.Initializer.Context.NamedBareType is not null and var initializingType
+            ? ContextualizedCall.Create(initializingType.With(Capability.Mutable), node.Initializer.ReferencedDeclaration)
             : null;
 
     public static partial IMaybeType InitializerInvocationExpression_Type(IInitializerInvocationExpressionNode node)
@@ -693,6 +693,14 @@ internal static partial class ExpressionTypesAspect
     // TODO this is strange and maybe a hack
     public static partial IMaybeType? MethodName_Context_ExpectedType(IMethodNameNode node)
         => (node.Parent as IMethodInvocationExpressionNode)?.ContextualizedCall?.SelfParameterType?.ToUpperBound();
+
+    public static partial IMaybeType InitializerName_Type(IInitializerNameNode node)
+        // TODO proper type
+        // => node.ReferencedDeclaration?.InitializerGroupType ?? IMaybeType.Unknown;
+        => IMaybeType.Unknown;
+
+    public static partial IFlowState InitializerName_FlowStateAfter(IInitializerNameNode node)
+        => node.FlowStateBefore().Constant(node.ValueId);
 
     public static partial IMaybeType FreezeExpression_Type(IFreezeExpressionNode node)
     {

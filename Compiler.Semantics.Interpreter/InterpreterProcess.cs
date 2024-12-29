@@ -554,7 +554,7 @@ public class InterpreterProcess
             case IInitializerInvocationExpressionNode exp:
             {
                 var arguments = await ExecuteArgumentsAsync(exp.Arguments!, variables).ConfigureAwait(false);
-                var initializerSymbol = exp.ReferencedDeclaration!.Symbol.Assigned();
+                var initializerSymbol = exp.Initializer.ReferencedDeclaration!.Symbol.Assigned();
                 var typeDefinition = userTypes[initializerSymbol.ContextTypeSymbol];
                 return typeDefinition switch
                 {

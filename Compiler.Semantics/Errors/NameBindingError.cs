@@ -32,16 +32,16 @@ public static class NameBindingError
             5003, $"Could not find member `{file.Code[span]}` on object.");
     }
 
-    public static Diagnostic CouldNotBindConstructor(CodeFile file, TextSpan span)
+    public static Diagnostic CouldNotBindInitializer(CodeFile file, TextSpan span)
     {
         return new(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
-            5004, "Type doesn't have a constructor with this name and matching arguments.");
+            5004, "Type doesn't have a initializer with this name and matching arguments.");
     }
 
-    public static Diagnostic AmbiguousConstructorCall(CodeFile file, TextSpan span)
+    public static Diagnostic AmbiguousInitializerCall(CodeFile file, TextSpan span)
     {
         return new(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
-            5005, "Constructor call is ambiguous.");
+            5005, "Initializer call is ambiguous.");
     }
 
     public static Diagnostic CouldNotBindFunction(CodeFile file, IInvocationExpressionSyntax invocation)

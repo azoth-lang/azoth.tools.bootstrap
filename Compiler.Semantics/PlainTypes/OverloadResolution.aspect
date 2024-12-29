@@ -32,26 +32,36 @@
 ↑ GetterInvocationExpression.CompatibleCallCandidates: {`ICallCandidate<IGetterMethodDeclarationNode>`};
 ↑ GetterInvocationExpression.SelectedCallCandidate: `ICallCandidate<IGetterMethodDeclarationNode>`?
     => CompatibleCallCandidates.TrySingle();
-↑ GetterInvocationExpression.ReferencedDeclaration: GetterMethodDeclaration?;
+↑ GetterInvocationExpression.ReferencedDeclaration: GetterMethodDeclaration?
+    => SelectedCallCandidate?.Declaration;
 
-↑ eager SetterInvocationExpression.CallCandidates: {`ICallCandidate<IPropertyAccessorDeclarationNode>`};
-↑ eager SetterInvocationExpression.CompatibleCallCandidates: {`ICallCandidate<ISetterMethodDeclarationNode>`};
-// TODO eager doesn't support inline/default implementation yet.
-↑ eager SetterInvocationExpression.SelectedCallCandidate: `ICallCandidate<ISetterMethodDeclarationNode>`?;
-↑ eager SetterInvocationExpression.ReferencedDeclaration: SetterMethodDeclaration?;
+↑ SetterInvocationExpression.CallCandidates: {`ICallCandidate<IPropertyAccessorDeclarationNode>`};
+↑ SetterInvocationExpression.CompatibleCallCandidates: {`ICallCandidate<ISetterMethodDeclarationNode>`};
+↑ SetterInvocationExpression.SelectedCallCandidate: `ICallCandidate<ISetterMethodDeclarationNode>`?
+    => CompatibleCallCandidates.TrySingle();
+↑ SetterInvocationExpression.ReferencedDeclaration: SetterMethodDeclaration?
+    => SelectedCallCandidate?.Declaration;
 
-↑ InitializerInvocationExpression.CompatibleDeclarations: {InitializerDeclaration};
-↑ InitializerInvocationExpression.ReferencedDeclaration: InitializerDeclaration?;
+↑ InitializerInvocationExpression.SelectedCallCandidate: `ICallCandidate<IInitializerDeclarationNode>`?
+    => Initializer.SelectedCallCandidate;
 
 // ---------- Name Expressions
 ↑ FunctionGroupName.CallCandidates: {`ICallCandidate<IFunctionInvocableDeclarationNode>`};
 ↑ FunctionGroupName.CompatibleCallCandidates: {`ICallCandidate<IFunctionInvocableDeclarationNode>`};
 ↑ FunctionGroupName.SelectedCallCandidate: `ICallCandidate<IFunctionInvocableDeclarationNode>`?;
-↑ FunctionGroupName.ReferencedDeclaration: FunctionInvocableDeclaration?;
+↑ FunctionGroupName.ReferencedDeclaration: FunctionInvocableDeclaration?
+    => SelectedCallCandidate?.Declaration;
 = FunctionGroupName.↑.Diagnostics;
 = FunctionName.↑.Diagnostics;
 ↑ MethodGroupName.CallCandidates: {`ICallCandidate<IOrdinaryMethodDeclarationNode>`};
 ↑ MethodGroupName.CompatibleCallCandidates: {`ICallCandidate<IOrdinaryMethodDeclarationNode>`};
 ↑ MethodGroupName.SelectedCallCandidate: `ICallCandidate<IOrdinaryMethodDeclarationNode>`?;
-↑ MethodGroupName.ReferencedDeclaration: OrdinaryMethodDeclaration?;
+↑ MethodGroupName.ReferencedDeclaration: OrdinaryMethodDeclaration?
+    => SelectedCallCandidate?.Declaration;
 = MethodGroupName.↑.Diagnostics;
+↑ InitializerGroupName.CallCandidates: {`ICallCandidate<IInitializerDeclarationNode>`};
+↑ InitializerGroupName.CompatibleCallCandidates: {`ICallCandidate<IInitializerDeclarationNode>`};
+↑ InitializerGroupName.SelectedCallCandidate: `ICallCandidate<IInitializerDeclarationNode>`?;
+↑ InitializerGroupName.ReferencedDeclaration: InitializerDeclaration?
+    => SelectedCallCandidate?.Declaration;
+= InitializerGroupName.↑.Diagnostics;

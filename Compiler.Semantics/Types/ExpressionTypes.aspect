@@ -214,14 +214,13 @@
 = MethodGroupName.FlowStateAfter => Context.FlowStateAfter;
 = MethodName.Context.ExpectedType;
 = MethodName.Context.ImplicitRecoveryAllowed() => true;
-// Skip the value Id of the method name since the context will be used as the parameter
-// TODO clean up value Id handling for this and function names (is the value id of function names being removed?)
 = MethodName.FlowStateAfter => Context.FlowStateAfter;
 = FieldAccessExpression.FlowStateAfter;
 = FieldAccessExpression.↑.Diagnostics;
 = VariableNameExpression.FlowStateAfter;
 = TypeNameExpression.Type => AzothType.Unknown;
-= InitializerGroupName.Type => throw new NotImplementedException();
+↑ InitializerGroupName.Type: `UnknownType` => AzothType.Unknown;
+= InitializerName.FlowStateAfter;
 ↑ BuiltInTypeNameExpression.Type:`UnknownType` => AzothType.Unknown;
 = SelfExpression.FlowStateAfter;
 ↑ MissingNameExpression.Type: `UnknownType` => AzothType.Unknown;

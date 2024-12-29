@@ -69,10 +69,11 @@
     => Self.SelectedCallCandidate?.SelfParameterPlainType;
 = SetterInvocationExpression.Value.ExpectedPlainType
     => Self.SelectedCallCandidate?.ParameterPlainTypes[0];
+= FunctionReferenceInvocationExpression.Arguments[index].ExpectedPlainType
+    => Self.FunctionPlainType.Parameters[index];
 ↑ FunctionReferenceInvocationExpression.FunctionPlainType: `FunctionPlainType`;
-// TODO this needs to be contextualized with the generic arguments
 = InitializerInvocationExpression.Arguments[index].ExpectedPlainType
-    => Self.ReferencedDeclaration?.ParameterPlainTypes[index];
+    => Self.SelectedCallCandidate?.ParameterPlainTypes[index];
 = NonInvocableInvocationExpression.PlainType => AzothPlainType.Unknown;
 
 // ---------- Ambiguous Name Expressions
@@ -89,6 +90,7 @@
 = TypeNameExpression.PlainType => AzothPlainType.Unknown;
 = InitializerGroupName.PlainType => AzothPlainType.Unknown;
 ↑ InitializerGroupName.InitializingPlainType: `IMaybePlainType` => Context.NamedPlainType;
+↑ InitializerName.InitializingPlainType: `IMaybePlainType` => Context.NamedPlainType;
 = BuiltInTypeNameExpression.PlainType => AzothPlainType.Unknown;
 = MissingNameExpression.PlainType => AzothPlainType.Unknown;
 = UnknownNameExpression.PlainType => AzothPlainType.Unknown;
