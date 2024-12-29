@@ -70,7 +70,11 @@ public sealed class BarePlainType : NonVoidPlainType
     {
         var builder = new StringBuilder();
         TypeConstructor.Context.AppendContextPrefix(builder, ContainingType);
-        builder.Append(TypeConstructor.Name.ToBareString());
+        // TODO remove special case for literal types once they properly have arguments
+        if (TypeConstructor is LiteralTypeConstructor)
+            builder.Append(TypeConstructor);
+        else
+            builder.Append(TypeConstructor.Name.ToBareString());
         return builder.ToString();
     }
 
@@ -84,7 +88,11 @@ public sealed class BarePlainType : NonVoidPlainType
     public void ToString(StringBuilder builder)
     {
         TypeConstructor.Context.AppendContextPrefix(builder, ContainingType);
-        builder.Append(TypeConstructor.Name.ToBareString());
+        // TODO remove special case for literal types once they properly have arguments
+        if (TypeConstructor is LiteralTypeConstructor)
+            builder.Append(TypeConstructor);
+        else
+            builder.Append(TypeConstructor.Name.ToBareString());
         if (!Arguments.IsEmpty)
         {
             builder.Append('[');
