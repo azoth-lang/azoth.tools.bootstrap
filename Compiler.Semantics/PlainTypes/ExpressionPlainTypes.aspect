@@ -63,15 +63,12 @@
     => Self.SelectedCallCandidate?.ParameterPlainTypes[index];
 = MethodInvocationExpression.Arguments[index].ExpectedPlainType
     => Self.SelectedCallCandidate?.ParameterPlainTypes[index];
-// TODO this needs to be contextualized with the generic arguments
 = GetterInvocationExpression.Context.ExpectedPlainType
-    => Self.ReferencedDeclaration?.SelfParameterPlainType;
-// TODO this needs to be contextualized with the generic arguments
+    => Self.SelectedCallCandidate?.SelfParameterPlainType;
 = SetterInvocationExpression.Context.ExpectedPlainType
-    => Self.ReferencedDeclaration?.SelfParameterPlainType;
-// TODO this needs to be contextualized with the generic arguments
+    => Self.SelectedCallCandidate?.SelfParameterPlainType;
 = SetterInvocationExpression.Value.ExpectedPlainType
-    => Self.ReferencedDeclaration?.ParameterPlainTypes[0];
+    => Self.SelectedCallCandidate?.ParameterPlainTypes[0];
 ↑ FunctionReferenceInvocationExpression.FunctionPlainType: `FunctionPlainType`;
 // TODO this needs to be contextualized with the generic arguments
 = InitializerInvocationExpression.Arguments[index].ExpectedPlainType

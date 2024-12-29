@@ -160,7 +160,7 @@ internal static partial class BindingAmbiguousNamesAspect
 
         return ISetterInvocationExpressionNode.Create(node.Syntax, getterInvocation.Context,
             getterInvocation.PropertyName, node.CurrentRightOperand,
-            getterInvocation.ReferencedPropertyAccessors);
+            getterInvocation.ReferencedDeclarations);
     }
 
     public static partial void Validate_FunctionGroupNameNode(

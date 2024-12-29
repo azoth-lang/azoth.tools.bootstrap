@@ -263,10 +263,10 @@ MethodInvocationExpression <: InvocationExpression = Syntax:`IInvocationExpressi
     Method:MethodName Arguments:AmbiguousExpression*;
 GetterInvocationExpression <: InvocationExpression, NameExpression = Syntax:`IMemberAccessExpressionSyntax`
     Context:Expression PropertyName:`OrdinaryName`
-    ReferencedPropertyAccessors:{`IPropertyAccessorDeclarationNode`};
+    ReferencedDeclarations:{`IPropertyAccessorDeclarationNode`};
 SetterInvocationExpression <: InvocationExpression = Syntax:`IAssignmentExpressionSyntax`
     Context:Expression PropertyName:`OrdinaryName` Value:AmbiguousExpression
-    ReferencedPropertyAccessors:{`IPropertyAccessorDeclarationNode`};
+    ReferencedDeclarations:{`IPropertyAccessorDeclarationNode`};
 FunctionReferenceInvocationExpression <: InvocationExpression = Syntax:`IInvocationExpressionSyntax`
     Expression:Expression Arguments:AmbiguousExpression*;
 InitializerInvocationExpression <: InvocationExpression = Syntax:`IInvocationExpressionSyntax`

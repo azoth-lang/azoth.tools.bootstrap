@@ -28,6 +28,18 @@
     => Method.SelectedCallCandidate;
 = MethodInvocationExpression.↑.Diagnostics;
 
+↑ GetterInvocationExpression.CallCandidates: {`ICallCandidate<IPropertyAccessorDeclarationNode>`};
+↑ GetterInvocationExpression.CompatibleCallCandidates: {`ICallCandidate<IGetterMethodDeclarationNode>`};
+↑ GetterInvocationExpression.SelectedCallCandidate: `ICallCandidate<IGetterMethodDeclarationNode>`?
+    => CompatibleCallCandidates.TrySingle();
+↑ GetterInvocationExpression.ReferencedDeclaration: GetterMethodDeclaration?;
+
+↑ eager SetterInvocationExpression.CallCandidates: {`ICallCandidate<IPropertyAccessorDeclarationNode>`};
+↑ eager SetterInvocationExpression.CompatibleCallCandidates: {`ICallCandidate<ISetterMethodDeclarationNode>`};
+// TODO eager doesn't support inline/default implementation yet.
+↑ eager SetterInvocationExpression.SelectedCallCandidate: `ICallCandidate<ISetterMethodDeclarationNode>`?;
+↑ eager SetterInvocationExpression.ReferencedDeclaration: SetterMethodDeclaration?;
+
 ↑ InitializerInvocationExpression.CompatibleDeclarations: {InitializerDeclaration};
 ↑ InitializerInvocationExpression.ReferencedDeclaration: InitializerDeclaration?;
 

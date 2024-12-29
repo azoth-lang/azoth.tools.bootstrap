@@ -87,14 +87,6 @@ internal static partial class BindingNamesAspect
     }
     #endregion
 
-    #region Invocation Expressions
-    public static partial IGetterMethodDeclarationNode? GetterInvocationExpression_ReferencedDeclaration(IGetterInvocationExpressionNode node)
-        => node.ReferencedPropertyAccessors.OfType<IGetterMethodDeclarationNode>().TrySingle();
-
-    public static partial ISetterMethodDeclarationNode? SetterInvocationExpression_ReferencedDeclaration(ISetterInvocationExpressionNode node)
-        => node.ReferencedPropertyAccessors.OfType<ISetterMethodDeclarationNode>().TrySingle();
-    #endregion
-
     #region Name Expressions
     public static partial ITypeDeclarationNode? BuiltInTypeNameExpression_ReferencedDeclaration(IBuiltInTypeNameExpressionNode node)
         // TODO report error for use of `Self` outside of a type

@@ -74,7 +74,9 @@ internal sealed class CallCandidate<TDeclaration> : ICallCandidate<TDeclaration>
     }
 
     public override bool Equals(object? obj)
-        => ReferenceEquals(this, obj) || obj is CallCandidate<TDeclaration> other && Equals(other);
+        // For some reason, checking for `is CallCandidate<TDeclaration>` makes Equals a recursive
+        // call. So instead have to only check for `ICallCandidate<IInvocableDeclarationNode>`.
+        => ReferenceEquals(this, obj) || obj is ICallCandidate<IInvocableDeclarationNode> other && Equals(other);
 
     public override int GetHashCode()
         => HashCode.Combine(ContextPlainType, Declaration, SelfParameterPlainType, ParameterPlainTypes, ReturnPlainType);

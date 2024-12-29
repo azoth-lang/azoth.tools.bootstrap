@@ -220,6 +220,35 @@ internal static partial class OverloadResolutionAspect
         }
     }
 
+    public static partial IFixedSet<ICallCandidate<IPropertyAccessorDeclarationNode>> GetterInvocationExpression_CallCandidates(IGetterInvocationExpressionNode node)
+        => node.ReferencedDeclarations.Select(p => CallCandidate.Create(node.Context.PlainType, p)).ToFixedSet();
+
+    public static partial IFixedSet<ICallCandidate<IGetterMethodDeclarationNode>> GetterInvocationExpression_CompatibleCallCandidates(IGetterInvocationExpressionNode node)
+    {
+        var argumentPlainTypes = ArgumentPlainTypes.ForMethod(node.Context.PlainType, []);
+        return node.CallCandidates.OfType<ICallCandidate<IGetterMethodDeclarationNode>>()
+                   .Where(c => c.CompatibleWith(argumentPlainTypes)).ToFixedSet();
+    }
+
+    public static partial IGetterMethodDeclarationNode? GetterInvocationExpression_ReferencedDeclaration(IGetterInvocationExpressionNode node)
+        => node.SelectedCallCandidate?.Declaration;
+
+    public static partial IFixedSet<ICallCandidate<IPropertyAccessorDeclarationNode>> SetterInvocationExpression_CallCandidates(ISetterInvocationExpressionNode node)
+        => node.ReferencedDeclarations.Select(p => CallCandidate.Create(node.Context.PlainType, p)).ToFixedSet();
+
+    public static partial IFixedSet<ICallCandidate<ISetterMethodDeclarationNode>> SetterInvocationExpression_CompatibleCallCandidates(ISetterInvocationExpressionNode node)
+    {
+        var argumentPlainTypes = ArgumentPlainTypes.ForMethod(node.Context.PlainType, PlainTypeIfKnown(node.Value).Yield());
+        return node.CallCandidates.OfType<ICallCandidate<ISetterMethodDeclarationNode>>()
+                   .Where(c => c.CompatibleWith(argumentPlainTypes)).ToFixedSet();
+    }
+
+    public static partial ICallCandidate<ISetterMethodDeclarationNode>? SetterInvocationExpression_SelectedCallCandidate(ISetterInvocationExpressionNode node)
+        => node.CompatibleCallCandidates.TrySingle();
+
+    public static partial ISetterMethodDeclarationNode? SetterInvocationExpression_ReferencedDeclaration(ISetterInvocationExpressionNode node)
+        => node.SelectedCallCandidate?.Declaration;
+
     public static partial IFixedSet<IInitializerDeclarationNode> InitializerInvocationExpression_CompatibleDeclarations(IInitializerInvocationExpressionNode node)
     {
         var initializingPlainType = node.InitializerGroup.InitializingPlainType;
@@ -227,8 +256,8 @@ internal static partial class OverloadResolutionAspect
         var argumentPlainTypes = ArgumentPlainTypes.ForInitializer(arguments);
         return node.InitializerGroup.ReferencedDeclarations
                    .Select(d => CallCandidate.Create(initializingPlainType, d))
-                   .Where(o => o.CompatibleWith(argumentPlainTypes))
-                   .Select(o => o.Declaration).ToFixedSet();
+                   .Where(c => c.CompatibleWith(argumentPlainTypes))
+                   .Select(c => c.Declaration).ToFixedSet();
     }
 
     public static partial IInitializerDeclarationNode? InitializerInvocationExpression_ReferencedDeclaration(IInitializerInvocationExpressionNode node)
