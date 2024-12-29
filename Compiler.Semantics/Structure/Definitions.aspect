@@ -184,7 +184,7 @@
 ↑ BuiltInTypeNameExpression.Name: `BuiltInTypeName` => Syntax.Name;
 ↑ SelfExpression.IsImplicit: `bool` => Syntax.IsImplicit;
 ↑ UnknownIdentifierNameExpression.Name: `IdentifierName` => Syntax.Name;
-↑ UnknownGenericNameExpression.Name: `GenericName `=> Syntax.Name;
+↑ UnknownGenericNameExpression.Name: `GenericName` => Syntax.Name;
 ↑ AmbiguousMemberAccessExpression.MemberName: `OrdinaryName` => Syntax.MemberName;
 
 // ---------- Capability Expressions
