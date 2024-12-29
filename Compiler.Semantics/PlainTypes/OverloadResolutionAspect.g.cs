@@ -61,7 +61,7 @@ internal static partial class OverloadResolutionAspect
     public static partial IExpressionNode? UnresolvedInvocationExpression_Rewrite_FunctionNameExpression(IUnresolvedInvocationExpressionNode node);
     public static partial IExpressionNode? UnresolvedInvocationExpression_Rewrite_MethodNameExpression(IUnresolvedInvocationExpressionNode node);
     public static partial IExpressionNode? UnresolvedInvocationExpression_Rewrite_TypeNameExpression(IUnresolvedInvocationExpressionNode node);
-    public static partial IExpressionNode? UnresolvedInvocationExpression_Rewrite_InitializerGroupNameExpression(IUnresolvedInvocationExpressionNode node);
+    public static partial IExpressionNode? UnresolvedInvocationExpression_Rewrite_InitializerNameExpression(IUnresolvedInvocationExpressionNode node);
     public static partial IExpressionNode? UnresolvedInvocationExpression_Rewrite_FunctionReferenceExpression(IUnresolvedInvocationExpressionNode node);
     public static partial IExpressionNode? UnresolvedInvocationExpression_Rewrite_Unbound(IUnresolvedInvocationExpressionNode node);
 }

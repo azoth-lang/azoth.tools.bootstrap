@@ -16,7 +16,7 @@
 ✎ UnresolvedInvocationExpression FunctionNameExpression;
 ✎ UnresolvedInvocationExpression MethodNameExpression;
 ✎ UnresolvedInvocationExpression TypeNameExpression;
-✎ UnresolvedInvocationExpression InitializerGroupNameExpression;
+✎ UnresolvedInvocationExpression InitializerNameExpression;
 ✎ UnresolvedInvocationExpression FunctionReferenceExpression;
 ✎ UnresolvedInvocationExpression Unbound;
 = UnresolvedInvocationExpression.↑.Diagnostics;

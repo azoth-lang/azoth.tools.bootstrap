@@ -120,7 +120,7 @@ internal static partial class OverloadResolutionAspect
         return IUnresolvedInvocationExpressionNode.Create(node.Syntax, initializerGroupName, node.CurrentArguments);
     }
 
-    public static partial IExpressionNode? UnresolvedInvocationExpression_Rewrite_InitializerGroupNameExpression(IUnresolvedInvocationExpressionNode node)
+    public static partial IExpressionNode? UnresolvedInvocationExpression_Rewrite_InitializerNameExpression(IUnresolvedInvocationExpressionNode node)
     {
         if (node.Expression is not IInitializerNameNode initializer)
             return null;
@@ -143,6 +143,8 @@ internal static partial class OverloadResolutionAspect
             or IFunctionNameNode
             or IMethodGroupNameNode
             or IMethodNameNode
+            or IInitializerGroupNameNode
+            or IInitializerNameNode
             or IUnknownNameExpressionNode
             or IUnresolvedInvocationExpressionNode
             or INonInvocableInvocationExpressionNode)

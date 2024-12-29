@@ -13211,7 +13211,7 @@ file class UnresolvedInvocationExpressionNode : SemanticNode, IUnresolvedInvocat
         => OverloadResolutionAspect.UnresolvedInvocationExpression_Rewrite_FunctionNameExpression(this)
         ?? OverloadResolutionAspect.UnresolvedInvocationExpression_Rewrite_MethodNameExpression(this)
         ?? OverloadResolutionAspect.UnresolvedInvocationExpression_Rewrite_TypeNameExpression(this)
-        ?? OverloadResolutionAspect.UnresolvedInvocationExpression_Rewrite_InitializerGroupNameExpression(this)
+        ?? OverloadResolutionAspect.UnresolvedInvocationExpression_Rewrite_InitializerNameExpression(this)
         ?? OverloadResolutionAspect.UnresolvedInvocationExpression_Rewrite_FunctionReferenceExpression(this)
         ?? OverloadResolutionAspect.UnresolvedInvocationExpression_Rewrite_Unbound(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
