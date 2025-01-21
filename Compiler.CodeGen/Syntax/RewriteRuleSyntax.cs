@@ -23,7 +23,8 @@ public sealed class RewriteRuleSyntax
         {
             RewriteKind.InsertAbove => $"✎ {Node} insert {ToNode}",
             RewriteKind.Replace => $"✎ {Node} replace_with {ToNode}",
-            RewriteKind.Subtree => Name is not null ? $"✎ {Node} {Name}" : $"✎ {Node} rewrite",
+            RewriteKind.RewriteSubtree => Name is not null ? $"✎ {Node} {Name}"
+                : (ToNode is not null ? $"✎ {Node} rewrite {ToNode}" : $"✎ {Node} rewrite"),
             _ => throw ExhaustiveMatch.Failed(Kind)
         };
 }

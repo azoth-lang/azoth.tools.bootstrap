@@ -491,14 +491,14 @@ public static class AspectParser
 
         var (target, rest) = OptionalSplitOffEnd(statement);
         var targetNode = ParseSymbol(target);
-        if (rest is null) return new(targetNode, RewriteKind.Subtree, null, null);
+        if (rest is null) return new(targetNode, RewriteKind.RewriteSubtree, null, null);
         var (kind, rewriteTo) = OptionalSplitOffEnd(rest);
         return kind switch
         {
             "insert" => new(targetNode, RewriteKind.InsertAbove, ParseSymbol(rewriteTo), null),
             "replace_with" => new(targetNode, RewriteKind.Replace, ParseSymbol(rewriteTo), null),
-            "subtree" => new(targetNode, RewriteKind.Subtree, ParseSymbol(rewriteTo), null),
-            _ => new(targetNode, RewriteKind.Subtree, null, kind)
+            "rewrite" => new(targetNode, RewriteKind.RewriteSubtree, ParseSymbol(rewriteTo), null),
+            _ => new(targetNode, RewriteKind.RewriteSubtree, null, kind)
         };
     }
 
