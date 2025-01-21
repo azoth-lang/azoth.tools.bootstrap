@@ -633,7 +633,7 @@ internal static class Emit
     public static string RewriteRuleMethod(RewriteRuleModel rule)
         => rule.Kind switch
         {
-            RewriteKind.InsertAbove => throw new NotImplementedException(),
+            RewriteKind.InsertAbove => $"{rule.NodeSymbol}_Insert_{rule.ToNodeSymbol}",
             RewriteKind.Replace => $"{rule.NodeSymbol}_ReplaceWith_{rule.ToNodeSymbol}",
             RewriteKind.RewriteSubtree => rule.Name is not null
                 ? $"{rule.NodeSymbol}_Rewrite_{rule.Name}"

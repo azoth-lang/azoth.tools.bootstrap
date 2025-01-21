@@ -78,7 +78,7 @@
 = Expression.↑.Diagnostics;
 ✎ Expression ImplicitMove;
 ✎ Expression ImplicitFreeze;
-✎ Expression PrepareToReturn;
+✎ Expression insert PrepareToReturnExpression;
 
 ↓ BlockExpression.FlowStateBefore(): `IFlowState`;
 // TODO it would be better to have a way to specify that this inherits and not emit any code

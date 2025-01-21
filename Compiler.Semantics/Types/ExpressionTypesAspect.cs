@@ -197,7 +197,7 @@ internal static partial class ExpressionTypesAspect
         return implicitFreeze;
     }
 
-    public static partial IExpressionNode? Expression_Rewrite_PrepareToReturn(IExpressionNode node)
+    public static partial IPrepareToReturnExpressionNode? Expression_Insert_PrepareToReturnExpression(IExpressionNode node)
     {
         if (node is IRecoveryExpressionNode { IsImplicit: true } or IPrepareToReturnExpressionNode
             || !node.ShouldPrepareToReturn())

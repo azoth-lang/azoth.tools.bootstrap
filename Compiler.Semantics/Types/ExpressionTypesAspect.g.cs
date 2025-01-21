@@ -219,5 +219,5 @@ internal static partial class ExpressionTypesAspect
     public static partial IFlowState AwaitExpression_FlowStateAfter(IAwaitExpressionNode node);
     public static partial IExpressionNode? Expression_Rewrite_ImplicitMove(IExpressionNode node);
     public static partial IExpressionNode? Expression_Rewrite_ImplicitFreeze(IExpressionNode node);
-    public static partial IExpressionNode? Expression_Rewrite_PrepareToReturn(IExpressionNode node);
+    public static partial IPrepareToReturnExpressionNode? Expression_Insert_PrepareToReturnExpression(IExpressionNode node);
 }
