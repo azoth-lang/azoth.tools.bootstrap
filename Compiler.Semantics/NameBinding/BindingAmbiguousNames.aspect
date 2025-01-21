@@ -14,8 +14,8 @@
 // ---------- Ambiguous Name Expressions
 ↑ StandardNameExpression.ReferencedDeclarations: Declaration*;
 = StandardNameExpression.ReferencedDeclarations;
-✎ IdentifierNameExpression;
-✎ GenericNameExpression;
+✎ IdentifierNameExpression rewrite;
+✎ GenericNameExpression rewrite;
 
 // ---------- Name Expressions
 ✎ UnresolvedMemberAccessExpression NamespaceNameContext;

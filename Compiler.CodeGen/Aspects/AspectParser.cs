@@ -93,19 +93,13 @@ public static class AspectParser
 
         var (definition, type) = Bisect(statement, "<:", "Should be exactly one `<:` in: '{0}'");
         (var modifier, definition) = OptionalSplitOffStart(definition);
-        bool isStable;
-        switch (modifier)
+        bool isStable = modifier switch
         {
-            case "stable":
-                isStable = true;
-                break;
-            case null:
-                isStable = false;
-                break;
-            default:
-                throw new FormatException(
-                    $"Unexpected modifier '{modifier}' on inherited attribute family '{definition}'.");
-        }
+            "stable" => true,
+            null => false,
+            _ => throw new FormatException(
+                $"Unexpected modifier '{modifier}' on inherited attribute family '{definition}'.")
+        };
         string name = ParseAttributeFamily(definition);
         var typeSyntax = ParseType(type);
         return new(isStable, name, typeSyntax);
@@ -489,9 +483,8 @@ public static class AspectParser
         if (!ParseOffStart(ref statement, "✎"))
             throw new ArgumentException("Not a rewrite rule.", nameof(statement));
 
-        var (target, rest) = OptionalSplitOffEnd(statement);
+        var (target, rest) = SplitOffStart(statement, "Missing whitespace in: '{0}'");
         var targetNode = ParseSymbol(target);
-        if (rest is null) return new(targetNode, RewriteKind.RewriteSubtree, null, null);
         var (kind, rewriteTo) = OptionalSplitOffEnd(rest);
         return kind switch
         {

@@ -202,9 +202,9 @@ happening?
 
 Rewrite rule names are optional. They exist to distinguish rewrites from each other.
 
-| Declaration                         | Meaning                                                     |
-| ----------------------------------- | ----------------------------------------------------------- |
-| `✎` *Node* *Name*?`;`               | Add a rewrite rule to the given node with the given name    |
-| `✎` *Node* `insert` *Node*`;`       | Add a rewrite that could insert a node above the given node |
+| Declaration                         | Meaning                                                      |
+| ----------------------------------- | ------------------------------------------------------------ |
+| `✎` *Node* *Name*`;`                | Add a rewrite rule to the given node with the given name     |
+| `✎` *Node* `insert` *Node*`;`       | Add a rewrite that could insert a node above the given node  |
 | `✎` *Node* `replace_with` *Node*`;` | Add a rewrite that could replace a node above the given node |
-| `✎` *Node* `rewrite` *Node*?`;`               | Add a rewrite rule to the given node                        |
+| `✎` *Node* `rewrite` *Node*?`;`     | Add a rewrite rule to the given node                         |
