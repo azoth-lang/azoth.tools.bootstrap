@@ -13208,12 +13208,12 @@ file class UnresolvedInvocationExpressionNode : SemanticNode, IUnresolvedInvocat
     }
 
     protected override IChildTreeNode Rewrite()
-        => OverloadResolutionAspect.UnresolvedInvocationExpression_Rewrite_FunctionNameExpression(this)
-        ?? OverloadResolutionAspect.UnresolvedInvocationExpression_Rewrite_MethodNameExpression(this)
+        => OverloadResolutionAspect.UnresolvedInvocationExpression_ReplaceWith_FunctionInvocationExpression(this)
+        ?? OverloadResolutionAspect.UnresolvedInvocationExpression_ReplaceWith_MethodInvocationExpression(this)
         ?? OverloadResolutionAspect.UnresolvedInvocationExpression_Rewrite_TypeNameExpression(this)
-        ?? OverloadResolutionAspect.UnresolvedInvocationExpression_Rewrite_InitializerNameExpression(this)
-        ?? OverloadResolutionAspect.UnresolvedInvocationExpression_Rewrite_FunctionReferenceExpression(this)
-        ?? OverloadResolutionAspect.UnresolvedInvocationExpression_Rewrite_Unbound(this)
+        ?? OverloadResolutionAspect.UnresolvedInvocationExpression_ReplaceWith_InitializerInvocationExpression(this)
+        ?? OverloadResolutionAspect.UnresolvedInvocationExpression_ReplaceWith_FunctionReferenceInvocationExpression(this)
+        ?? OverloadResolutionAspect.UnresolvedInvocationExpression_ReplaceWith_NonInvocableInvocationExpression(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
@@ -14554,7 +14554,7 @@ file class IdentifierNameExpressionNode : SemanticNode, IIdentifierNameExpressio
     }
 
     protected override IChildTreeNode Rewrite()
-        => BindingAmbiguousNamesAspect.IdentifierNameExpression_Rewrite(this)
+        => BindingAmbiguousNamesAspect.IdentifierNameExpression_ReplaceWith_NameExpression(this)
         ?? base.Rewrite();
 }
 
@@ -14629,7 +14629,7 @@ file class GenericNameExpressionNode : SemanticNode, IGenericNameExpressionNode
     }
 
     protected override IChildTreeNode Rewrite()
-        => BindingAmbiguousNamesAspect.GenericNameExpression_Rewrite(this)
+        => BindingAmbiguousNamesAspect.GenericNameExpression_ReplaceWith_NameExpression(this)
         ?? base.Rewrite();
 }
 
@@ -15188,7 +15188,7 @@ file class FunctionGroupNameNode : SemanticNode, IFunctionGroupNameNode
     }
 
     protected override IChildTreeNode Rewrite()
-        => BindingAmbiguousNamesAspect.FunctionGroupName_Rewrite_ToFunctionName(this)
+        => BindingAmbiguousNamesAspect.FunctionGroupName_ReplaceWith_FunctionName(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
@@ -15514,7 +15514,7 @@ file class MethodGroupNameNode : SemanticNode, IMethodGroupNameNode
     }
 
     protected override IChildTreeNode Rewrite()
-        => BindingAmbiguousNamesAspect.MethodGroupName_Rewrite_ToMethodName(this)
+        => BindingAmbiguousNamesAspect.MethodGroupName_ReplaceWith_MethodName(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
@@ -16428,7 +16428,7 @@ file class InitializerGroupNameNode : SemanticNode, IInitializerGroupNameNode
     }
 
     protected override IChildTreeNode Rewrite()
-        => BindingAmbiguousNamesAspect.InitializerGroupName_Rewrite_ToInitializerName(this)
+        => BindingAmbiguousNamesAspect.InitializerGroupName_ReplaceWith_InitializerName(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
@@ -17964,8 +17964,8 @@ file class AmbiguousFreezeExpressionNode : SemanticNode, IAmbiguousFreezeExpress
     }
 
     protected override IChildTreeNode Rewrite()
-        => CapabilityExpressionsAspect.AmbiguousFreezeExpression_Rewrite_Variable(this)
-        ?? CapabilityExpressionsAspect.AmbiguousFreezeExpression_Rewrite_Value(this)
+        => CapabilityExpressionsAspect.AmbiguousFreezeExpression_ReplaceWith_FreezeVariableExpression(this)
+        ?? CapabilityExpressionsAspect.AmbiguousFreezeExpression_ReplaceWith_FreezeValueExpression(this)
         ?? base.Rewrite();
 }
 

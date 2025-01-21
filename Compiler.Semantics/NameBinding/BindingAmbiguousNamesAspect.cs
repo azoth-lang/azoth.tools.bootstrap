@@ -15,7 +15,7 @@ internal static partial class BindingAmbiguousNamesAspect
     public static partial IFixedList<IDeclarationNode> StandardNameExpression_ReferencedDeclarations(IStandardNameExpressionNode node)
         => node.ContainingLexicalScope.Lookup(node.Name).ToFixedList();
 
-    public static partial IAmbiguousNameExpressionNode? IdentifierNameExpression_Rewrite(IIdentifierNameExpressionNode node)
+    public static partial INameExpressionNode? IdentifierNameExpression_ReplaceWith_NameExpression(IIdentifierNameExpressionNode node)
     {
         // If not all referenced declarations are namespaces, then this is not a namespace name.
         if (node.ReferencedDeclarations.TryAllOfType<INamespaceDeclarationNode>(out var referencedNamespaces))
@@ -37,7 +37,7 @@ internal static partial class BindingAmbiguousNamesAspect
         return IUnknownIdentifierNameExpressionNode.Create(node.Syntax, node.ReferencedDeclarations);
     }
 
-    public static partial IAmbiguousNameExpressionNode? GenericNameExpression_Rewrite(IGenericNameExpressionNode node)
+    public static partial INameExpressionNode? GenericNameExpression_ReplaceWith_NameExpression(IGenericNameExpressionNode node)
     {
         // TODO rename TypeArguments to GenericArguments
         if (node.ReferencedDeclarations.TryAllOfType<IFunctionInvocableDeclarationNode>(out var referencedFunctions))
@@ -174,7 +174,7 @@ internal static partial class BindingAmbiguousNamesAspect
     //=> Requires.That(!ReferencedDeclarations.IsEmpty, nameof(referencedDeclarations),
     //    "Must be at least one referenced declaration");
 
-    public static partial INameExpressionNode? FunctionGroupName_Rewrite_ToFunctionName(IFunctionGroupNameNode node)
+    public static partial IFunctionNameNode? FunctionGroupName_ReplaceWith_FunctionName(IFunctionGroupNameNode node)
     {
         if (node.CompatibleCallCandidates.Count > 1)
             // TODO should this be used instead?
@@ -200,7 +200,7 @@ internal static partial class BindingAmbiguousNamesAspect
             diagnostics.Add(TypeError.AmbiguousFunctionGroup(node.File, node.Syntax, Type.Unknown));
     }
 
-    public static partial INameExpressionNode? MethodGroupName_Rewrite_ToMethodName(IMethodGroupNameNode node)
+    public static partial IMethodNameNode? MethodGroupName_ReplaceWith_MethodName(IMethodGroupNameNode node)
     {
         if (node.CompatibleCallCandidates.Count > 1)
             // TODO should this be used instead?
@@ -225,7 +225,7 @@ internal static partial class BindingAmbiguousNamesAspect
             diagnostics.Add(TypeError.AmbiguousMethodGroup(node.File, node.Syntax, Type.Unknown));
     }
 
-    public static partial INameExpressionNode? InitializerGroupName_Rewrite_ToInitializerName(IInitializerGroupNameNode node)
+    public static partial IInitializerNameNode? InitializerGroupName_ReplaceWith_InitializerName(IInitializerGroupNameNode node)
     {
         if (node.CompatibleCallCandidates.Count > 1)
             // TODO should this be used instead?

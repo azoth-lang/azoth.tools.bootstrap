@@ -89,7 +89,7 @@ internal static partial class OverloadResolutionAspect
         return PlainType.Never;
     }
 
-    public static partial IExpressionNode? UnresolvedInvocationExpression_Rewrite_FunctionNameExpression(IUnresolvedInvocationExpressionNode node)
+    public static partial IFunctionInvocationExpressionNode? UnresolvedInvocationExpression_ReplaceWith_FunctionInvocationExpression(IUnresolvedInvocationExpressionNode node)
     {
         if (node.Expression is not IFunctionNameNode function)
             return null;
@@ -97,7 +97,7 @@ internal static partial class OverloadResolutionAspect
         return IFunctionInvocationExpressionNode.Create(node.Syntax, function, node.CurrentArguments);
     }
 
-    public static partial IExpressionNode? UnresolvedInvocationExpression_Rewrite_MethodNameExpression(IUnresolvedInvocationExpressionNode node)
+    public static partial IMethodInvocationExpressionNode? UnresolvedInvocationExpression_ReplaceWith_MethodInvocationExpression(IUnresolvedInvocationExpressionNode node)
     {
         if (node.Expression is not IMethodNameNode method) return null;
 
@@ -120,7 +120,7 @@ internal static partial class OverloadResolutionAspect
         return IUnresolvedInvocationExpressionNode.Create(node.Syntax, initializerGroupName, node.CurrentArguments);
     }
 
-    public static partial IExpressionNode? UnresolvedInvocationExpression_Rewrite_InitializerNameExpression(IUnresolvedInvocationExpressionNode node)
+    public static partial IInitializerInvocationExpressionNode? UnresolvedInvocationExpression_ReplaceWith_InitializerInvocationExpression(IUnresolvedInvocationExpressionNode node)
     {
         if (node.Expression is not IInitializerNameNode initializer)
             return null;
@@ -128,7 +128,7 @@ internal static partial class OverloadResolutionAspect
         return IInitializerInvocationExpressionNode.Create(node.Syntax, initializer, node.CurrentArguments);
     }
 
-    public static partial IExpressionNode? UnresolvedInvocationExpression_Rewrite_FunctionReferenceExpression(IUnresolvedInvocationExpressionNode node)
+    public static partial IFunctionReferenceInvocationExpressionNode? UnresolvedInvocationExpression_ReplaceWith_FunctionReferenceInvocationExpression(IUnresolvedInvocationExpressionNode node)
     {
         if (node.Expression is not { PlainType: FunctionPlainType } expression)
             return null;
@@ -136,7 +136,7 @@ internal static partial class OverloadResolutionAspect
         return IFunctionReferenceInvocationExpressionNode.Create(node.Syntax, expression, node.CurrentArguments);
     }
 
-    public static partial IExpressionNode? UnresolvedInvocationExpression_Rewrite_Unbound(IUnresolvedInvocationExpressionNode node)
+    public static partial INonInvocableInvocationExpressionNode? UnresolvedInvocationExpression_ReplaceWith_NonInvocableInvocationExpression(IUnresolvedInvocationExpressionNode node)
     {
         var expression = node.Expression;
 

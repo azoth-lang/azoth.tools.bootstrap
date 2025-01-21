@@ -13,12 +13,12 @@
 
 // ---------- Invocation Expressions
 = UnresolvedInvocationExpression.Expression.ExpectedPlainType;
-✎ UnresolvedInvocationExpression FunctionNameExpression;
-✎ UnresolvedInvocationExpression MethodNameExpression;
+✎ UnresolvedInvocationExpression replace_with FunctionInvocationExpression;
+✎ UnresolvedInvocationExpression replace_with MethodInvocationExpression;
 ✎ UnresolvedInvocationExpression TypeNameExpression;
-✎ UnresolvedInvocationExpression InitializerNameExpression;
-✎ UnresolvedInvocationExpression FunctionReferenceExpression;
-✎ UnresolvedInvocationExpression Unbound;
+✎ UnresolvedInvocationExpression replace_with InitializerInvocationExpression;
+✎ UnresolvedInvocationExpression replace_with FunctionReferenceInvocationExpression;
+✎ UnresolvedInvocationExpression replace_with NonInvocableInvocationExpression;
 = UnresolvedInvocationExpression.↑.Diagnostics;
 
 ↑ FunctionInvocationExpression.SelectedCallCandidate: `ICallCandidate<IFunctionInvocableDeclarationNode>`?

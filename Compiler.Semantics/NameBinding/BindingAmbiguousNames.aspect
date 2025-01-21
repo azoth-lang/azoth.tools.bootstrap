@@ -14,8 +14,8 @@
 // ---------- Ambiguous Name Expressions
 ↑ StandardNameExpression.ReferencedDeclarations: Declaration*;
 = StandardNameExpression.ReferencedDeclarations;
-✎ IdentifierNameExpression rewrite;
-✎ GenericNameExpression rewrite;
+✎ IdentifierNameExpression replace_with NameExpression;
+✎ GenericNameExpression replace_with NameExpression;
 
 // ---------- Name Expressions
 ✎ UnresolvedMemberAccessExpression NamespaceNameContext;
@@ -23,11 +23,11 @@
 ✎ UnresolvedMemberAccessExpression ExpressionContext;
 = UnresolvedMemberAccessExpression.↑.Diagnostics;
 + FunctionGroupName.new.Validate;
-✎ FunctionGroupName ToFunctionName;
+✎ FunctionGroupName replace_with FunctionName;
 = FunctionGroupName.↑.Diagnostics;
-✎ MethodGroupName ToMethodName;
+✎ MethodGroupName replace_with MethodName;
 = MethodGroupName.↑.Diagnostics;
-✎ InitializerGroupName ToInitializerName;
+✎ InitializerGroupName replace_with InitializerName;
 = UnknownIdentifierNameExpression.↑.Diagnostics;
 // TODO validate that AmbiguousMemberAccessExpression.ReferencedMembers is not empty
 = AmbiguousMemberAccessExpression.↑.Diagnostics;

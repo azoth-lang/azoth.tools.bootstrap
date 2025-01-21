@@ -6,5 +6,5 @@
 // ---------- Capability Expressions
 ✎ AmbiguousMoveExpression replace_with MoveVariableExpression;
 ✎ AmbiguousMoveExpression replace_with MoveValueExpression;
-✎ AmbiguousFreezeExpression Variable;
-✎ AmbiguousFreezeExpression Value;
+✎ AmbiguousFreezeExpression replace_with FreezeVariableExpression;
+✎ AmbiguousFreezeExpression replace_with FreezeValueExpression;
