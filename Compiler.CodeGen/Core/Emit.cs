@@ -631,7 +631,14 @@ internal static class Emit
         => $"{rule.Aspect.Name}.{RewriteRuleMethod(rule)}";
 
     public static string RewriteRuleMethod(RewriteRuleModel rule)
-        => rule.Name is not null ? $"{rule.NodeSymbol}_Rewrite_{rule.Name}"
-            : $"{rule.NodeSymbol}_Rewrite";
+        => rule.Kind switch
+        {
+            RewriteKind.InsertAbove => throw new NotImplementedException(),
+            RewriteKind.Replace => $"{rule.NodeSymbol}_ReplaceWith_{rule.ToNodeSymbol}",
+            RewriteKind.RewriteSubtree => rule.Name is not null
+                ? $"{rule.NodeSymbol}_Rewrite_{rule.Name}"
+                : $"{rule.NodeSymbol}_Rewrite",
+            _ => throw ExhaustiveMatch.Failed(rule.Kind)
+        };
     #endregion
 }

@@ -17459,8 +17459,8 @@ file class AmbiguousMoveExpressionNode : SemanticNode, IAmbiguousMoveExpressionN
     }
 
     protected override IChildTreeNode Rewrite()
-        => CapabilityExpressionsAspect.AmbiguousMoveExpression_Rewrite_Variable(this)
-        ?? CapabilityExpressionsAspect.AmbiguousMoveExpression_Rewrite_Value(this)
+        => CapabilityExpressionsAspect.AmbiguousMoveExpression_ReplaceWith_MoveVariableExpression(this)
+        ?? CapabilityExpressionsAspect.AmbiguousMoveExpression_ReplaceWith_MoveValueExpression(this)
         ?? base.Rewrite();
 }
 

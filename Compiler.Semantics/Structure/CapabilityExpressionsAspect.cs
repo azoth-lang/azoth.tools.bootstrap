@@ -16,17 +16,17 @@ internal static partial class CapabilityExpressionsAspect
         return IFreezeValueExpressionNode.Create(node.Syntax, node.Referent, isTemporary: false, isImplicit: false);
     }
 
-    public static partial IAmbiguousExpressionNode? AmbiguousMoveExpression_Rewrite_Variable(IAmbiguousMoveExpressionNode node)
+    public static partial IMoveVariableExpressionNode? AmbiguousMoveExpression_ReplaceWith_MoveVariableExpression(IAmbiguousMoveExpressionNode node)
     {
-        if (node.Referent is not ILocalBindingNameExpressionNode localBindingName) return null;
+        if (node.Referent is not ILocalBindingNameExpressionNode referent) return null;
 
-        return IMoveVariableExpressionNode.Create(node.Syntax, localBindingName, isImplicit: false);
+        return IMoveVariableExpressionNode.Create(node.Syntax, referent, isImplicit: false);
     }
 
-    public static partial IAmbiguousExpressionNode? AmbiguousMoveExpression_Rewrite_Value(IAmbiguousMoveExpressionNode node)
+    public static partial IMoveValueExpressionNode? AmbiguousMoveExpression_ReplaceWith_MoveValueExpression(IAmbiguousMoveExpressionNode node)
     {
-        if (node.Referent is null) return null;
+        if (node.Referent is not { } referent) return null;
 
-        return IMoveValueExpressionNode.Create(node.Syntax, node.Referent, isImplicit: false);
+        return IMoveValueExpressionNode.Create(node.Syntax, referent, isImplicit: false);
     }
 }

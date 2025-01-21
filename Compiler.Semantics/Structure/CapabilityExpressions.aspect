@@ -4,7 +4,7 @@
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
 // ---------- Capability Expressions
-✎ AmbiguousMoveExpression Variable;
-✎ AmbiguousMoveExpression Value;
+✎ AmbiguousMoveExpression replace_with MoveVariableExpression;
+✎ AmbiguousMoveExpression replace_with MoveValueExpression;
 ✎ AmbiguousFreezeExpression Variable;
 ✎ AmbiguousFreezeExpression Value;
