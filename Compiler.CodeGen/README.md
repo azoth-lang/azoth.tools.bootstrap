@@ -41,11 +41,14 @@
 
 ## Aspect File Syntax
 
-| Declaration                           | Meaning |
-| ------------------------------------- | ------- |
-| `◊namespace` *DottedNamespaceName*`;` |         |
-| `◊name` *Node*`;`                     |         |
-| `◊using` *DottedNamespaceName*`;`     |         |
+| Declaration                           | Meaning                                              |
+| ------------------------------------- | ---------------------------------------------------- |
+| `◊namespace` *DottedNamespaceName*`;` | Namespace of the aspect partial class                |
+| `◊name` *Node*`;`                     | Name of the aspect (determines class and file names) |
+| `◊using` *DottedNamespaceName*`;`     | Use the given namespace in the aspect                |
+
+Note that using declarations for aspects are also added to the tree declaration since properties
+added by the aspect may need the using declaration too.
 
 ### Construction
 
@@ -108,7 +111,8 @@ progress rewrite.
 | `=` *Node*`.`*Selector*`.`*Attribute*`()` `=>` *Expression*`;`     | Inherited method equation with inline expression                |
 | `↓` `stable`? `*.`*Attribute* `<:` *Type*`;`<sup>1</sup>           | An inherited attribute family that specifies a common supertype |
 
-1. Only necessary when in two situations. First, when code generation is not able to determine the type and gives an error. Second, when specifying the `stable` option.
+1. Only necessary when in two situations. First, when code generation is not able to determine the
+   type and gives an error. Second, when specifying the `stable` option.
 
 | Selector                       | Meaning                                                                    |
 | ------------------------------ | -------------------------------------------------------------------------- |
@@ -198,6 +202,9 @@ happening?
 
 Rewrite rule names are optional. They exist to distinguish rewrites from each other.
 
-| Declaration           | Meaning                                                  |
-| --------------------- | -------------------------------------------------------- |
-| `✎` *Node* *Name*?`;` | Add a rewrite rule to the given node with the given name |
+| Declaration                         | Meaning                                                     |
+| ----------------------------------- | ----------------------------------------------------------- |
+| `✎` *Node* *Name*?`;`               | Add a rewrite rule to the given node with the given name    |
+| `✎` *Node* `insert` *Node*`;`       | Add a rewrite that could insert a node above the given node |
+| `✎` *Node* `replace_with` *Node*`;` | Add a rewrite that could replace a node above the given node |
+| `✎` *Node* `rewrite` *Node*?`;`               | Add a rewrite rule to the given node                        |

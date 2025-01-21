@@ -489,8 +489,17 @@ public static class AspectParser
         if (!ParseOffStart(ref statement, "✎"))
             throw new ArgumentException("Not a rewrite rule.", nameof(statement));
 
-        var (node, name) = OptionalSplitOffEnd(statement);
-        return new(ParseSymbol(node), name);
+        var (target, rest) = OptionalSplitOffEnd(statement);
+        var targetNode = ParseSymbol(target);
+        if (rest is null) return new(targetNode, RewriteKind.Subtree, null, null);
+        var (kind, rewriteTo) = OptionalSplitOffEnd(rest);
+        return kind switch
+        {
+            "insert" => new(targetNode, RewriteKind.InsertAbove, ParseSymbol(rewriteTo), null),
+            "replace_with" => new(targetNode, RewriteKind.Replace, ParseSymbol(rewriteTo), null),
+            "subtree" => new(targetNode, RewriteKind.Subtree, ParseSymbol(rewriteTo), null),
+            _ => new(targetNode, RewriteKind.Subtree, null, kind)
+        };
     }
 
     private record AspectStatementsSyntax(
