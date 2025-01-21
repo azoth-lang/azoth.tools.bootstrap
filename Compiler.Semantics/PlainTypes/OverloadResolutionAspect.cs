@@ -138,23 +138,18 @@ internal static partial class OverloadResolutionAspect
 
     public static partial IExpressionNode? UnresolvedInvocationExpression_Rewrite_Unbound(IUnresolvedInvocationExpressionNode node)
     {
-        if (node.Expression is
-            IFunctionGroupNameNode
-            or IFunctionNameNode
-            or IMethodGroupNameNode
-            or IMethodNameNode
-            or IInitializerGroupNameNode
-            or IInitializerNameNode
-            or IUnknownNameExpressionNode
-            or IUnresolvedInvocationExpressionNode
-            or INonInvocableInvocationExpressionNode)
-            return null;
+        var expression = node.Expression;
 
-        var plainType = node.Expression?.PlainType;
-        if (plainType is not null and not FunctionPlainType)
-            return INonInvocableInvocationExpressionNode.Create(node.Syntax, node.CurrentExpression, node.CurrentArguments);
+        // The expression isn't available yet.
+        if (expression is null) return null;
 
-        return null;
+        var plainType = expression.PlainType;
+
+        // If the type is unknown it isn't known whether it is invocable or not.
+        // If it is a function type, it will get rewritten to an invocation by something else.
+        if (plainType is UnknownPlainType or FunctionPlainType) return null;
+
+        return INonInvocableInvocationExpressionNode.Create(node.Syntax, node.CurrentExpression, node.CurrentArguments);
     }
 
     public static partial void UnresolvedInvocationExpression_Contribute_Diagnostics(IUnresolvedInvocationExpressionNode node, DiagnosticCollectionBuilder diagnostics)
