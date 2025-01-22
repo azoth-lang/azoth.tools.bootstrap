@@ -7,7 +7,7 @@ published const struct string
     // TODO use iref var?
     var bytes: mut Raw_Hybrid_Bounded_List[void, byte];
 
-    // Constructor is private because this is a temporary way of constructing strings for constants
+    // Initializer is private because this is a temporary way of initializing strings for constants
     // TODO parameter type doesn't make sense for string literals
     /* unsafe */ init(self, bytes: const Raw_Hybrid_Bounded_List[void, byte], start: size, byte_count: size)
     {
@@ -22,7 +22,7 @@ published const struct string
     }
 
     // Once it is supported, this should be a copy constructor
-    // published safe new(other: string)
+    // published safe init(other: string)
     // {
     //     self.byte_count = other.byte_count;
     //     self.bytes = mem_allocate(self.byte_count);
@@ -38,7 +38,7 @@ published const struct string
     //     {
     //         mem_copy(self.bytes, new_bytes, self.byte_count);
     //         mem_copy(other.bytes, new_bytes + self.byte_count, other.byte_count);
-    //         return new string(new_byte_count, new_bytes);
+    //         return string(new_byte_count, new_bytes);
     //     }
     // }
 
@@ -62,7 +62,7 @@ published const struct string
     // characters and `with` is only a single character
     // published safe fn pad_left(self, total_length: size, pad_with: string) -> string$owned
     // {
-    //     if self.bytes >= total_length => return new string(self);
+    //     if self.bytes >= total_length => return string(self);
 
     //     let new_bytes = mem_allocate(total_length);
     //     let padding = total_length - self.byte_count;
@@ -73,12 +73,12 @@ published const struct string
     //         // {
     //         //     mem_copy(pad_with.bytes, new_bytes+i, 1);
     //         // }
-    //         return new string(total_length, new_bytes);
+    //         return string(total_length, new_bytes);
     //     }
     // }
 
     // published implicit operator "_"(value: const Raw_Array[byte]) -> string
     // {
-    //     return new string(value);
+    //     return string(value);
     // }
 }

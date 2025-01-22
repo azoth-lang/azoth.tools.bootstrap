@@ -7,6 +7,11 @@ published class Test_Output
         .newline = "\n";
     }
 
+    public init(mut self)
+    {
+        .newline = "\n";
+    }
+
     published /*safe*/ fn write(mut self, value: string)
     {
         unsafe (print_raw_utf8_bytes(value.raw_bytes(), value.start, value.byte_count));

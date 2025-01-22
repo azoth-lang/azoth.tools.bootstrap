@@ -2,12 +2,12 @@ published class List[T ind]
 {
     var items: mut Raw_Hybrid_Bounded_List[void, T];
 
-    published new(mut self)
+    published init(mut self)
     {
         .items = Raw_Hybrid_Bounded_List[void, T](2);
     }
 
-    published new(mut self, var capacity: size)
+    published init(mut self, var capacity: size)
     {
         if capacity < 2 => capacity = 2;
         .items = Raw_Hybrid_Bounded_List[void, T](capacity);
