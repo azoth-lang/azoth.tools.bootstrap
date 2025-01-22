@@ -80,8 +80,6 @@ internal static partial class FormattingAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial string ParameterType_ToString(IParameterTypeSyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial string ReturnType_ToString(IReturnTypeSyntax node);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial string CapabilityViewpointType_ToString(ICapabilityViewpointTypeSyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial string SelfViewpointType_ToString(ISelfViewpointTypeSyntax node);

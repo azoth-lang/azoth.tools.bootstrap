@@ -190,9 +190,6 @@ public static class ISyntaxExtensions
             case IParameterTypeSyntax n:
                 yield return n.Referent;
                 yield break;
-            case IReturnTypeSyntax n:
-                yield return n.Referent;
-                yield break;
             case ICapabilityViewpointTypeSyntax n:
                 yield return n.Capability;
                 yield return n.Referent;

@@ -198,7 +198,7 @@ public partial class Parser
         var parameterTypes = AcceptManySeparated<IParameterTypeSyntax, ICommaToken>(AcceptParameterType);
         Tokens.Required<ICloseParenToken>();
         Tokens.Required<IRightArrowToken>();
-        var returnType = ParseReturnType();
+        var returnType = ParseType();
         var span = TextSpan.Covering(openParen.Span, returnType.Span);
         return IFunctionTypeSyntax.Create(span, parameterTypes, returnType);
     }
@@ -211,11 +211,5 @@ public partial class Parser
             return null;
         var span = TextSpan.Covering(lent?.Span, referent.Span);
         return IParameterTypeSyntax.Create(span, lent is not null, referent);
-    }
-
-    private IReturnTypeSyntax ParseReturnType()
-    {
-        var referent = ParseType();
-        return IReturnTypeSyntax.Create(referent.Span, referent);
     }
 }

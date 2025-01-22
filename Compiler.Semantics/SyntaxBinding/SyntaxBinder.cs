@@ -337,7 +337,7 @@ internal static class SyntaxBinder
         => ICapabilityTypeNode.Create(syntax, Capability(syntax.Capability), Type(syntax.Referent));
 
     private static IFunctionTypeNode FunctionType(IFunctionTypeSyntax syntax)
-        => IFunctionTypeNode.Create(syntax, ParameterTypes(syntax.Parameters), Type(syntax.Return.Referent));
+        => IFunctionTypeNode.Create(syntax, ParameterTypes(syntax.Parameters), Type(syntax.Return));
 
     private static IEnumerable<IParameterTypeNode> ParameterTypes(IEnumerable<IParameterTypeSyntax> syntax)
         => syntax.Select(ParameterType);

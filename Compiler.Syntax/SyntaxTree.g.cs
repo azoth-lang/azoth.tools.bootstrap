@@ -46,7 +46,6 @@ public partial interface ISyntax
     typeof(IReturnSyntax),
     typeof(ITypeSyntax),
     typeof(IParameterTypeSyntax),
-    typeof(IReturnTypeSyntax),
     typeof(IStatementSyntax),
     typeof(IPatternSyntax),
     typeof(IExpressionSyntax))]
@@ -907,12 +906,12 @@ public partial interface ICapabilityTypeSyntax : ITypeSyntax
 public partial interface IFunctionTypeSyntax : ITypeSyntax
 {
     IFixedList<IParameterTypeSyntax> Parameters { get; }
-    IReturnTypeSyntax Return { get; }
+    ITypeSyntax Return { get; }
 
     public static IFunctionTypeSyntax Create(
         TextSpan span,
         IEnumerable<IParameterTypeSyntax> parameters,
-        IReturnTypeSyntax @return)
+        ITypeSyntax @return)
         => new FunctionTypeSyntax(span, parameters, @return);
 }
 
@@ -928,18 +927,6 @@ public partial interface IParameterTypeSyntax : ICodeSyntax
         bool isLent,
         ITypeSyntax referent)
         => new ParameterTypeSyntax(span, isLent, referent);
-}
-
-// [Closed(typeof(ReturnTypeSyntax))]
-[GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IReturnTypeSyntax : ICodeSyntax
-{
-    ITypeSyntax Referent { get; }
-
-    public static IReturnTypeSyntax Create(
-        TextSpan span,
-        ITypeSyntax referent)
-        => new ReturnTypeSyntax(span, referent);
 }
 
 [Closed(
@@ -2639,14 +2626,14 @@ file class FunctionTypeSyntax : IFunctionTypeSyntax
 
     public TextSpan Span { [DebuggerStepThrough] get; }
     public IFixedList<IParameterTypeSyntax> Parameters { [DebuggerStepThrough] get; }
-    public IReturnTypeSyntax Return { [DebuggerStepThrough] get; }
+    public ITypeSyntax Return { [DebuggerStepThrough] get; }
     public override string ToString()
         => FormattingAspect.FunctionType_ToString(this);
 
     public FunctionTypeSyntax(
         TextSpan span,
         IEnumerable<IParameterTypeSyntax> parameters,
-        IReturnTypeSyntax @return)
+        ITypeSyntax @return)
     {
         Span = span;
         Parameters = parameters.ToFixedList();
@@ -2672,25 +2659,6 @@ file class ParameterTypeSyntax : IParameterTypeSyntax
     {
         Span = span;
         IsLent = isLent;
-        Referent = referent;
-    }
-}
-
-[GeneratedCode("AzothCompilerCodeGen", null)]
-file class ReturnTypeSyntax : IReturnTypeSyntax
-{
-    private IReturnTypeSyntax Self { [Inline] get => this; }
-
-    public TextSpan Span { [DebuggerStepThrough] get; }
-    public ITypeSyntax Referent { [DebuggerStepThrough] get; }
-    public override string ToString()
-        => FormattingAspect.ReturnType_ToString(this);
-
-    public ReturnTypeSyntax(
-        TextSpan span,
-        ITypeSyntax referent)
-    {
-        Span = span;
         Referent = referent;
     }
 }

@@ -202,9 +202,6 @@ internal static partial class FormattingAspect
     public static partial string ParameterType_ToString(IParameterTypeSyntax node)
         => $"{(node.IsLent ? "lent " : "")}{node.Referent}";
 
-    public static partial string ReturnType_ToString(IReturnTypeSyntax node)
-        => node.Referent.ToString();
-
     public static partial string CapabilityViewpointType_ToString(ICapabilityViewpointTypeSyntax node)
         => $"{node.Capability}|>{node.Referent}";
 
