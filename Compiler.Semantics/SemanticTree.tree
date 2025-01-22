@@ -371,6 +371,7 @@ AmbiguousMemberAccessExpression <: UnknownNameExpression
 temp AmbiguousMoveExpression <: AmbiguousExpression = Syntax:`IMoveExpressionSyntax` Referent:AmbiguousNameExpression;
 RecoveryExpression <: Expression = Referent:Expression IsImplicit:`bool`;
 MoveExpression <: RecoveryExpression = Referent:Expression;
+// TODO why is move variable expression needed? Shouldn't moving a value just change any variables in the sharing set to `id`?
 MoveVariableExpression <: MoveExpression = Referent:LocalBindingNameExpression /IsImplicit/;
 MoveValueExpression <: MoveExpression = /Referent/ /IsImplicit/;
 ImplicitTempMoveExpression <: Expression = Referent:Expression;

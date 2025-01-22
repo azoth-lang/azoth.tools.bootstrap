@@ -86,7 +86,11 @@ public class InterpreterProcess
 
         var defaultInitializerSymbols = allDefinitions
                                        .OfType<IStructDefinitionNode>()
-                                       .Select(c => c.DefaultInitializer?.Symbol).WhereNotNull();
+                                       .Select(c => c.DefaultInitializer?.Symbol)
+                                       .Concat(allDefinitions
+                                               .OfType<IClassDefinitionNode>()
+                                               .Select(c => c.DefaultInitializer?.Symbol))
+                                       .WhereNotNull();
         initializers = defaultInitializerSymbols
                        .Select(c => (c, default(IOrdinaryInitializerDefinitionNode)))
                        .Concat(allDefinitions
