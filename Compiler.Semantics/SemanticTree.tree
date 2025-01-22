@@ -174,7 +174,7 @@ BuiltInTypeName <: UnqualifiedTypeName = Syntax:`IBuiltInTypeNameSyntax`;
 OrdinaryTypeName <: UnqualifiedTypeName = Syntax:`IOrdinaryNameSyntax`;
 IdentifierTypeName <: OrdinaryTypeName = Syntax:`IIdentifierNameSyntax`;
 GenericTypeName <: OrdinaryTypeName = Syntax:`IGenericNameSyntax` TypeArguments:Type*;
-QualifiedTypeName <: TypeName = Syntax:`IQualifiedNameSyntax` Context:TypeName QualifiedName:OrdinaryTypeName;
+QualifiedTypeName <: TypeName = Syntax:`IQualifiedNameSyntax` Context:TypeName TypeArguments:Type*;
 OptionalType <: Type = Syntax:`IOptionalTypeSyntax` Referent:Type;
 CapabilityType <: Type = Syntax:`ICapabilityTypeSyntax` Capability Referent:Type;
 FunctionType <: Type = Syntax:`IFunctionTypeSyntax` Parameters:ParameterType* Return:Type;
@@ -370,7 +370,7 @@ UnknownGenericNameExpression <: UnknownStandardNameExpression
 
 // ---------- Unresolved Name Expressions
 UnresolvedQualifiedNameExpression <: UnknownNameExpression, UnresolvedMemberAccessExpression
-    = Syntax:`IQualifiedNameSyntax` Context:AmbiguousExpression QualifiedName:AmbiguousNameExpression;
+    = Syntax:`IQualifiedNameSyntax` /Context/ /TypeArguments/;
 
 // ---------- Capability Expressions
 temp AmbiguousMoveExpression <: AmbiguousExpression = Syntax:`IMoveExpressionSyntax` Referent:AmbiguousExpression;

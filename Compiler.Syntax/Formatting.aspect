@@ -40,9 +40,6 @@
 // ---------- Name Expressions
 = NameExpression.ExpressionPrecedence => OperatorPrecedence.Primary;
 
-// ---------- Names
-= QualifiedName.ToString();
-
 // ---------- Capability Expressions
 = MoveExpression.ExpressionPrecedence => OperatorPrecedence.Min;
 = FreezeExpression.ExpressionPrecedence => OperatorPrecedence.Min;

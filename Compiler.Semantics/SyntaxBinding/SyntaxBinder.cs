@@ -331,7 +331,7 @@ internal static class SyntaxBinder
         => IBuiltInTypeNameNode.Create(syntax);
 
     private static IQualifiedTypeNameNode QualifiedTypeName(IQualifiedNameSyntax syntax)
-        => IQualifiedTypeNameNode.Create(syntax, TypeName(syntax.Context), OrdinaryTypeName(syntax.QualifiedName));
+        => IQualifiedTypeNameNode.Create(syntax, TypeName(syntax.Context), Types(syntax.GenericArguments));
 
     private static IOptionalTypeNode OptionalType(IOptionalTypeSyntax syntax)
         => IOptionalTypeNode.Create(syntax, Type(syntax.Referent));
@@ -552,7 +552,7 @@ internal static class SyntaxBinder
         => ISelfExpressionNode.Create(syntax);
 
     private static IUnresolvedMemberAccessExpressionNode MemberAccessExpression(IMemberAccessExpressionSyntax syntax)
-        => IUnresolvedMemberAccessExpressionNode.Create(syntax, Expression(syntax.Context), Types(syntax.QualifiedName.GenericArguments));
+        => IUnresolvedMemberAccessExpressionNode.Create(syntax, Expression(syntax.Context), Types(syntax.GenericArguments));
 
     private static IMissingNameExpressionNode MissingName(IMissingNameSyntax syn)
         => IMissingNameExpressionNode.Create(syn);
@@ -562,14 +562,6 @@ internal static class SyntaxBinder
     private static IBuiltInTypeNameExpressionNode BuiltInTypeNameExpression(IBuiltInTypeNameSyntax syntax)
         => IBuiltInTypeNameExpressionNode.Create(syntax);
 
-    private static IOrdinaryNameExpressionNode OrdinaryNameExpression(IOrdinaryNameSyntax syntax)
-        => syntax switch
-        {
-            IIdentifierNameSyntax syn => IdentifierNameExpression(syn),
-            IGenericNameSyntax syn => GenericNameExpression(syn),
-            _ => throw ExhaustiveMatch.Failed(syntax),
-        };
-
     private static IIdentifierNameExpressionNode IdentifierNameExpression(IIdentifierNameSyntax syntax)
         => IIdentifierNameExpressionNode.Create(syntax);
 
@@ -577,7 +569,7 @@ internal static class SyntaxBinder
         => IGenericNameExpressionNode.Create(syntax, Types(syntax.GenericArguments));
 
     private static IUnresolvedQualifiedNameExpressionNode QualifiedNameExpression(IQualifiedNameSyntax syntax)
-        => IUnresolvedQualifiedNameExpressionNode.Create(syntax, Expression(syntax.Context), OrdinaryNameExpression(syntax.QualifiedName));
+        => IUnresolvedQualifiedNameExpressionNode.Create(syntax, Expression(syntax.Context), Types(syntax.GenericArguments));
     #endregion
 
     #region Capability Expressions

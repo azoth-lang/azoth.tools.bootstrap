@@ -109,7 +109,7 @@ internal static partial class BindingAmbiguousNamesAspect
                 break;
             case INamespaceNameNode:
             case ITypeNameExpressionNode:
-                diagnostics.Add(NameBindingError.CouldNotBindMember(node.File, node.Syntax.QualifiedName.Span));
+                diagnostics.Add(NameBindingError.CouldNotBindMember(node.File, node.Syntax.MemberNameSpan));
                 break;
             case IUnknownNameExpressionNode:
             case IUnresolvedInvocationExpressionNode:

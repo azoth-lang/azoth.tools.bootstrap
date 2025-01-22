@@ -324,7 +324,11 @@ internal static partial class FormattingAspect
         => node.IsImplicit ? "⟦self⟧" : "self";
 
     public static partial string MemberAccessExpression_ToString(IMemberAccessExpressionSyntax node)
-        => $"{node.Context.ToGroupedString(node.ExpressionPrecedence)}.{node.QualifiedName}";
+    {
+        var genericArguments = !node.GenericArguments.IsEmpty
+            ? $"[{string.Join(", ", node.GenericArguments)}]" : "";
+        return $"{node.Context.ToGroupedString(node.ExpressionPrecedence)}.{node.MemberName.ToBareString()}{genericArguments}";
+    }
 
     public static partial string MissingName_ToString(IMissingNameSyntax node) => "⧼unknown⧽";
     #endregion
@@ -338,9 +342,6 @@ internal static partial class FormattingAspect
 
     public static partial string GenericName_ToString(IGenericNameSyntax node)
         => $"{node.Name.ToBareString()}[{string.Join(", ", node.GenericArguments)}]";
-
-    public static partial string QualifiedName_ToString(IQualifiedNameSyntax node)
-        => $"{node.Context}.{node.QualifiedName}";
     #endregion
 
     #region Capability Expressions

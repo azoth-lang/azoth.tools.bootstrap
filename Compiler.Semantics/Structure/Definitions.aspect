@@ -135,6 +135,9 @@
 = NewObjectExpression.TempAllArguments => TempArguments;
 = NewObjectExpression.AllArguments => Arguments;
 
+// ---------- Unresolved Expressions
+↑ UnresolvedMemberAccessExpression.MemberName: `OrdinaryName` => Syntax.MemberName;
+
 // ---------- Literal Expressions
 ↑ BoolLiteralExpression.Value: `bool` => Syntax.Value;
 ↑ IntegerLiteralExpression.Value: `BigInteger` => Syntax.Value;
@@ -174,21 +177,18 @@
 ↑ GenericNameExpression.Name: `GenericName` => Syntax.Name;
 
 // ---------- Name Expressions
-↑ UnresolvedMemberAccessExpression.MemberName: `OrdinaryName` => Syntax.QualifiedName.Name;
 ↑ UnqualifiedNamespaceName.Name: `IdentifierName` => Syntax.Name;
-↑ QualifiedNamespaceName.Name: `IdentifierName` => (IdentifierName)Syntax.QualifiedName.Name;
+↑ QualifiedNamespaceName.Name: `IdentifierName` => (IdentifierName)Syntax.MemberName;
 ↑ VariableNameExpression.Name: `IdentifierName` => Syntax.Name;
 ↑ TypeNameExpression.Name: `OrdinaryName`;
 = OrdinaryTypeNameExpression.Name => Syntax.Name;
-= QualifiedTypeNameExpression.Name => Syntax.QualifiedName.Name;
+= QualifiedTypeNameExpression.Name => Syntax.MemberName;
 ↑ BuiltInTypeNameExpression.Name: `BuiltInTypeName` => Syntax.Name;
 ↑ SelfExpression.IsImplicit: `bool` => Syntax.IsImplicit;
 ↑ UnknownIdentifierNameExpression.Name: `IdentifierName` => Syntax.Name;
 ↑ UnknownGenericNameExpression.Name: `GenericName` => Syntax.Name;
 
 // ---------- Unresolved Name Expressions
-↑ UnresolvedQualifiedNameExpression.TypeArguments: Type*
-    => (QualifiedName as IGenericNameExpressionNode)?.TypeArguments ?? [];
 
 // ---------- Capability Expressions
 ↑ PrepareToReturnExpression.Syntax: `IExpressionSyntax` => Value.Syntax;

@@ -254,11 +254,13 @@ public static class ISyntaxExtensions
                 yield break;
             case IQualifiedNameSyntax n:
                 yield return n.Context;
-                yield return n.QualifiedName;
+                foreach (var child in n.GenericArguments)
+                    yield return child;
                 yield break;
             case IMemberAccessExpressionSyntax n:
                 yield return n.Context;
-                yield return n.QualifiedName;
+                foreach (var child in n.GenericArguments)
+                    yield return child;
                 yield break;
             case IResultStatementSyntax n:
                 yield return n.Expression;

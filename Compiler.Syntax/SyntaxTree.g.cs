@@ -1391,13 +1391,17 @@ public partial interface ISelfExpressionSyntax : IInstanceExpressionSyntax
 public partial interface IMemberAccessExpressionSyntax : INameExpressionSyntax
 {
     IExpressionSyntax Context { get; }
-    IOrdinaryNameSyntax QualifiedName { get; }
+    TextSpan MemberNameSpan { get; }
+    OrdinaryName MemberName { get; }
+    IFixedList<ITypeSyntax> GenericArguments { get; }
 
     public static IMemberAccessExpressionSyntax Create(
         TextSpan span,
         IExpressionSyntax context,
-        IOrdinaryNameSyntax qualifiedName)
-        => new MemberAccessExpressionSyntax(span, context, qualifiedName);
+        TextSpan memberNameSpan,
+        OrdinaryName memberName,
+        IEnumerable<ITypeSyntax> genericArguments)
+        => new MemberAccessExpressionSyntax(span, context, memberNameSpan, memberName, genericArguments);
 }
 
 [Closed(typeof(MissingNameSyntax))]
@@ -1492,8 +1496,10 @@ public partial interface IQualifiedNameSyntax : INameSyntax, IMemberAccessExpres
     public static IQualifiedNameSyntax Create(
         TextSpan span,
         INameSyntax context,
-        IOrdinaryNameSyntax qualifiedName)
-        => new QualifiedNameSyntax(span, context, qualifiedName);
+        TextSpan memberNameSpan,
+        OrdinaryName memberName,
+        IEnumerable<ITypeSyntax> genericArguments)
+        => new QualifiedNameSyntax(span, context, memberNameSpan, memberName, genericArguments);
 }
 
 [Closed(typeof(MoveExpressionSyntax))]
@@ -3172,18 +3178,24 @@ file class MemberAccessExpressionSyntax : IMemberAccessExpressionSyntax
 
     public TextSpan Span { [DebuggerStepThrough] get; }
     public IExpressionSyntax Context { [DebuggerStepThrough] get; }
-    public IOrdinaryNameSyntax QualifiedName { [DebuggerStepThrough] get; }
+    public TextSpan MemberNameSpan { [DebuggerStepThrough] get; }
+    public OrdinaryName MemberName { [DebuggerStepThrough] get; }
+    public IFixedList<ITypeSyntax> GenericArguments { [DebuggerStepThrough] get; }
     public override string ToString()
         => FormattingAspect.MemberAccessExpression_ToString(this);
 
     public MemberAccessExpressionSyntax(
         TextSpan span,
         IExpressionSyntax context,
-        IOrdinaryNameSyntax qualifiedName)
+        TextSpan memberNameSpan,
+        OrdinaryName memberName,
+        IEnumerable<ITypeSyntax> genericArguments)
     {
         Span = span;
         Context = context;
-        QualifiedName = qualifiedName;
+        MemberNameSpan = memberNameSpan;
+        MemberName = memberName;
+        GenericArguments = genericArguments.ToFixedList();
     }
 }
 
@@ -3269,18 +3281,24 @@ file class QualifiedNameSyntax : IQualifiedNameSyntax
 
     public TextSpan Span { [DebuggerStepThrough] get; }
     public INameSyntax Context { [DebuggerStepThrough] get; }
-    public IOrdinaryNameSyntax QualifiedName { [DebuggerStepThrough] get; }
+    public TextSpan MemberNameSpan { [DebuggerStepThrough] get; }
+    public OrdinaryName MemberName { [DebuggerStepThrough] get; }
+    public IFixedList<ITypeSyntax> GenericArguments { [DebuggerStepThrough] get; }
     public override string ToString()
-        => FormattingAspect.QualifiedName_ToString(this);
+        => FormattingAspect.MemberAccessExpression_ToString(this);
 
     public QualifiedNameSyntax(
         TextSpan span,
         INameSyntax context,
-        IOrdinaryNameSyntax qualifiedName)
+        TextSpan memberNameSpan,
+        OrdinaryName memberName,
+        IEnumerable<ITypeSyntax> genericArguments)
     {
         Span = span;
         Context = context;
-        QualifiedName = qualifiedName;
+        MemberNameSpan = memberNameSpan;
+        MemberName = memberName;
+        GenericArguments = genericArguments.ToFixedList();
     }
 }
 

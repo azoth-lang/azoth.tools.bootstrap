@@ -1521,7 +1521,7 @@ public partial interface IQualifiedTypeNameNode : ITypeNameNode
     ICodeSyntax ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     ITypeNameNode Context { get; }
-    IOrdinaryTypeNameNode QualifiedName { get; }
+    IFixedList<ITypeNode> TypeArguments { get; }
     IMaybePlainType ITypeNode.NamedPlainType
         => throw new NotImplementedException();
     BareType? ITypeNameNode.NamedBareType
@@ -1530,8 +1530,8 @@ public partial interface IQualifiedTypeNameNode : ITypeNameNode
     public static IQualifiedTypeNameNode Create(
         IQualifiedNameSyntax syntax,
         ITypeNameNode context,
-        IOrdinaryTypeNameNode qualifiedName)
-        => new QualifiedTypeNameNode(syntax, context, qualifiedName);
+        IEnumerable<ITypeNode> typeArguments)
+        => new QualifiedTypeNameNode(syntax, context, typeArguments);
 }
 
 [Closed(typeof(OptionalTypeNode))]
@@ -2121,7 +2121,7 @@ public partial interface IUnresolvedMemberAccessExpressionNode : IUnknownNameExp
     IFixedList<ITypeNode> TypeArguments { get; }
     PackageNameScope PackageNameScope();
     OrdinaryName MemberName
-        => Syntax.QualifiedName.Name;
+        => Syntax.MemberName;
     IFlowState INameExpressionNode.FlowStateAfter
         => ExpressionTypesAspect.UnresolvedMemberAccessExpression_FlowStateAfter(this);
 
@@ -2966,7 +2966,7 @@ public partial interface IQualifiedNamespaceNameNode : INamespaceNameNode
     INamespaceNameNode Context { get; }
     INamespaceNameNode CurrentContext { get; }
     IdentifierName Name
-        => (IdentifierName)Syntax.QualifiedName.Name;
+        => (IdentifierName)Syntax.MemberName;
 
     public static IQualifiedNamespaceNameNode Create(
         IMemberAccessExpressionSyntax syntax,
@@ -3200,7 +3200,7 @@ public partial interface IQualifiedTypeNameExpressionNode : ITypeNameExpressionN
     INamespaceNameNode Context { get; }
     INamespaceNameNode CurrentContext { get; }
     OrdinaryName ITypeNameExpressionNode.Name
-        => Syntax.QualifiedName.Name;
+        => Syntax.MemberName;
 
     public static IQualifiedTypeNameExpressionNode Create(
         IMemberAccessExpressionSyntax syntax,
@@ -3412,18 +3412,12 @@ public partial interface IUnresolvedQualifiedNameExpressionNode : IUnresolvedMem
     ICodeSyntax ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
-    IAmbiguousNameExpressionNode TempQualifiedName { get; }
-    INameExpressionNode? QualifiedName { get; }
-    IAmbiguousNameExpressionNode CurrentQualifiedName { get; }
-    new IFixedList<ITypeNode> TypeArguments
-        => (QualifiedName as IGenericNameExpressionNode)?.TypeArguments ?? [];
-    IFixedList<ITypeNode> IUnresolvedMemberAccessExpressionNode.TypeArguments => TypeArguments;
 
     public static IUnresolvedQualifiedNameExpressionNode Create(
         IQualifiedNameSyntax syntax,
         IAmbiguousExpressionNode context,
-        IAmbiguousNameExpressionNode qualifiedName)
-        => new UnresolvedQualifiedNameExpressionNode(syntax, context, qualifiedName);
+        IEnumerable<ITypeNode> typeArguments)
+        => new UnresolvedQualifiedNameExpressionNode(syntax, context, typeArguments);
 }
 
 [Closed(typeof(AmbiguousMoveExpressionNode))]
@@ -8595,7 +8589,7 @@ file class QualifiedTypeNameNode : SemanticNode, IQualifiedTypeNameNode
 
     public IQualifiedNameSyntax Syntax { [DebuggerStepThrough] get; }
     public ITypeNameNode Context { [DebuggerStepThrough] get; }
-    public IOrdinaryTypeNameNode QualifiedName { [DebuggerStepThrough] get; }
+    public IFixedList<ITypeNode> TypeArguments { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -8622,11 +8616,11 @@ file class QualifiedTypeNameNode : SemanticNode, IQualifiedTypeNameNode
     public QualifiedTypeNameNode(
         IQualifiedNameSyntax syntax,
         ITypeNameNode context,
-        IOrdinaryTypeNameNode qualifiedName)
+        IEnumerable<ITypeNode> typeArguments)
     {
         Syntax = syntax;
         Context = Child.Attach(this, context);
-        QualifiedName = Child.Attach(this, qualifiedName);
+        TypeArguments = ChildList.Attach(this, typeArguments);
     }
 }
 
@@ -17262,13 +17256,7 @@ file class UnresolvedQualifiedNameExpressionNode : SemanticNode, IUnresolvedQual
             : this.RewritableChild(ref contextCached, ref context);
     public IExpressionNode? Context => TempContext as IExpressionNode;
     public IAmbiguousExpressionNode CurrentContext => context.UnsafeValue;
-    private RewritableChild<IAmbiguousNameExpressionNode> qualifiedName;
-    private bool qualifiedNameCached;
-    public IAmbiguousNameExpressionNode TempQualifiedName
-        => GrammarAttribute.IsCached(in qualifiedNameCached) ? qualifiedName.UnsafeValue
-            : this.RewritableChild(ref qualifiedNameCached, ref qualifiedName);
-    public INameExpressionNode? QualifiedName => TempQualifiedName as INameExpressionNode;
-    public IAmbiguousNameExpressionNode CurrentQualifiedName => qualifiedName.UnsafeValue;
+    public IFixedList<ITypeNode> TypeArguments { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -17324,11 +17312,11 @@ file class UnresolvedQualifiedNameExpressionNode : SemanticNode, IUnresolvedQual
     public UnresolvedQualifiedNameExpressionNode(
         IQualifiedNameSyntax syntax,
         IAmbiguousExpressionNode context,
-        IAmbiguousNameExpressionNode qualifiedName)
+        IEnumerable<ITypeNode> typeArguments)
     {
         Syntax = syntax;
         this.context = Child.Create(this, context);
-        this.qualifiedName = Child.Create(this, qualifiedName);
+        TypeArguments = ChildList.Attach(this, typeArguments);
     }
 
     internal override IMaybePlainType? Inherited_ExpectedPlainType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
