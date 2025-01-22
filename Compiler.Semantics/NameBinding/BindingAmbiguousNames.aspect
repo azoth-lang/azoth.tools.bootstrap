@@ -18,9 +18,9 @@
 ✎ GenericNameExpression replace_with NameExpression;
 
 // ---------- Name Expressions
-✎ UnresolvedMemberAccessExpression NamespaceNameContext rewrite;
-✎ UnresolvedMemberAccessExpression TypeNameExpressionContext rewrite;
-✎ UnresolvedMemberAccessExpression ExpressionContext rewrite;
+✎ UnresolvedMemberAccessExpression NamespaceNameContext replace_with NameExpression;
+✎ UnresolvedMemberAccessExpression TypeNameExpressionContext replace_with NameExpression;
+✎ UnresolvedMemberAccessExpression ExpressionContext replace_with NameExpression;
 = UnresolvedMemberAccessExpression.↑.Diagnostics;
 + FunctionGroupName.new.Validate;
 ✎ FunctionGroupName replace_with FunctionName;

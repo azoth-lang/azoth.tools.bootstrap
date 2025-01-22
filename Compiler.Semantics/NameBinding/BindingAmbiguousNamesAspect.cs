@@ -73,7 +73,7 @@ internal static partial class BindingAmbiguousNamesAspect
         }
     }
 
-    public static partial INameExpressionNode? UnresolvedMemberAccessExpression_NamespaceNameContext_Rewrite(IUnresolvedMemberAccessExpressionNode node)
+    public static partial INameExpressionNode? UnresolvedMemberAccessExpression_NamespaceNameContext_ReplaceWith_NameExpression(IUnresolvedMemberAccessExpressionNode node)
     {
         if (node.Context is not INamespaceNameNode context)
             return null;
@@ -97,7 +97,7 @@ internal static partial class BindingAmbiguousNamesAspect
         return IAmbiguousMemberAccessExpressionNode.Create(node.Syntax, context, node.TypeArguments, members);
     }
 
-    public static partial INameExpressionNode? UnresolvedMemberAccessExpression_TypeNameExpressionContext_Rewrite(IUnresolvedMemberAccessExpressionNode node)
+    public static partial INameExpressionNode? UnresolvedMemberAccessExpression_TypeNameExpressionContext_ReplaceWith_NameExpression(IUnresolvedMemberAccessExpressionNode node)
     {
         if (node.Context is not ITypeNameExpressionNode context)
             return null;
@@ -120,7 +120,7 @@ internal static partial class BindingAmbiguousNamesAspect
         return IAmbiguousMemberAccessExpressionNode.Create(node.Syntax, context, node.TypeArguments, members);
     }
 
-    public static partial INameExpressionNode? UnresolvedMemberAccessExpression_ExpressionContext_Rewrite(IUnresolvedMemberAccessExpressionNode node)
+    public static partial INameExpressionNode? UnresolvedMemberAccessExpression_ExpressionContext_ReplaceWith_NameExpression(IUnresolvedMemberAccessExpressionNode node)
     {
         if (node.Context is not { } context)
             return null;
@@ -158,6 +158,9 @@ internal static partial class BindingAmbiguousNamesAspect
 
     public static partial IExpressionNode? AssignmentExpression_PropertyNameLeftOperand_Rewrite(IAssignmentExpressionNode node)
     {
+        // TODO refactor to a replacement of the getter node based on an inherited attribute. That
+        // should allow optimization of caching compared to a full rewrite.
+
         if (node.TempLeftOperand is not IGetterInvocationExpressionNode getterInvocation)
             return null;
 

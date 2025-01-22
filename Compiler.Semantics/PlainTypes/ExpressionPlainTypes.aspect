@@ -33,7 +33,7 @@
 = AmbiguousExpression.*.ExpectedPlainType => null;
 ↓ Expression.ExpectedPlainType: `IMaybePlainType`?;
 ↑ Expression.PlainType: `IMaybePlainType`;
-✎ Expression ImplicitConversion insert;
+✎ Expression insert ImplicitConversionExpression;
 ↑ BlockExpression.PlainType: `IMaybePlainType`;
 // TODO it would be better if this didn't depend on types, but only on plain types
 // However, it needs to be contextualized with the generic arguments and currently there isn't another way to do that.

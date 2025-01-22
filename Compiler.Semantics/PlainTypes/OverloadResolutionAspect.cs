@@ -109,6 +109,10 @@ internal static partial class OverloadResolutionAspect
 
     public static partial IExpressionNode? UnresolvedInvocationExpression_TypeNameExpression_Rewrite(IUnresolvedInvocationExpressionNode node)
     {
+        // TODO refactor to replacement of type name expression when used in invocation context
+        // based on an inherited attribute. That should allow optimization of caching compared to a
+        // full rewrite.
+
         if (node.Expression is not ITypeNameExpressionNode context) return null;
 
         // Rewrite to insert an initializer group name node between the type name expression and the

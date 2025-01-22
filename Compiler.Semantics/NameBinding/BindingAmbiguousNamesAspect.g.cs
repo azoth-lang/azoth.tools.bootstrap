@@ -36,9 +36,9 @@ internal static partial class BindingAmbiguousNamesAspect
     public static partial IExpressionNode? AssignmentExpression_PropertyNameLeftOperand_Rewrite(IAssignmentExpressionNode node);
     public static partial INameExpressionNode? IdentifierNameExpression_ReplaceWith_NameExpression(IIdentifierNameExpressionNode node);
     public static partial INameExpressionNode? GenericNameExpression_ReplaceWith_NameExpression(IGenericNameExpressionNode node);
-    public static partial INameExpressionNode? UnresolvedMemberAccessExpression_NamespaceNameContext_Rewrite(IUnresolvedMemberAccessExpressionNode node);
-    public static partial INameExpressionNode? UnresolvedMemberAccessExpression_TypeNameExpressionContext_Rewrite(IUnresolvedMemberAccessExpressionNode node);
-    public static partial INameExpressionNode? UnresolvedMemberAccessExpression_ExpressionContext_Rewrite(IUnresolvedMemberAccessExpressionNode node);
+    public static partial INameExpressionNode? UnresolvedMemberAccessExpression_NamespaceNameContext_ReplaceWith_NameExpression(IUnresolvedMemberAccessExpressionNode node);
+    public static partial INameExpressionNode? UnresolvedMemberAccessExpression_TypeNameExpressionContext_ReplaceWith_NameExpression(IUnresolvedMemberAccessExpressionNode node);
+    public static partial INameExpressionNode? UnresolvedMemberAccessExpression_ExpressionContext_ReplaceWith_NameExpression(IUnresolvedMemberAccessExpressionNode node);
     public static partial IFunctionNameNode? FunctionGroupName_ReplaceWith_FunctionName(IFunctionGroupNameNode node);
     public static partial IMethodNameNode? MethodGroupName_ReplaceWith_MethodName(IMethodGroupNameNode node);
     public static partial IInitializerNameNode? InitializerGroupName_ReplaceWith_InitializerName(IInitializerGroupNameNode node);
