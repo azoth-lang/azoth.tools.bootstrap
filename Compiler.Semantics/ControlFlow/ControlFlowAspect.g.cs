@@ -27,6 +27,8 @@ internal static partial class ControlFlowAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial ControlFlowSet UnsafeExpression_ControlFlowNext(IUnsafeExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial ControlFlowSet UnresolvedMemberAccessExpression_ControlFlowNext(IUnresolvedMemberAccessExpressionNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial ControlFlowSet AssignmentExpression_ControlFlowNext(IAssignmentExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial ControlFlowSet BinaryOperatorExpression_ControlFlowNext(IBinaryOperatorExpressionNode node);
@@ -65,15 +67,11 @@ internal static partial class ControlFlowAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial ControlFlowSet NonInvocableInvocationExpression_ControlFlowNext(INonInvocableInvocationExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial ControlFlowSet UnresolvedMemberAccessExpression_ControlFlowNext(IUnresolvedMemberAccessExpressionNode node);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial ControlFlowSet MethodGroupName_ControlFlowNext(IMethodGroupNameNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial ControlFlowSet MethodName_ControlFlowNext(IMethodNameNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial ControlFlowSet FieldAccessExpression_ControlFlowNext(IFieldAccessExpressionNode node);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial ControlFlowSet AmbiguousMemberAccessExpression_ControlFlowNext(IAmbiguousMemberAccessExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial ControlFlowSet RecoveryExpression_ControlFlowNext(IRecoveryExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

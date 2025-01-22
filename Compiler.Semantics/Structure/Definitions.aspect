@@ -185,7 +185,6 @@
 ↑ SelfExpression.IsImplicit: `bool` => Syntax.IsImplicit;
 ↑ UnknownIdentifierNameExpression.Name: `IdentifierName` => Syntax.Name;
 ↑ UnknownGenericNameExpression.Name: `GenericName` => Syntax.Name;
-↑ AmbiguousMemberAccessExpression.MemberName: `OrdinaryName` => Syntax.QualifiedName.Name;
 
 // ---------- Unresolved Name Expressions
 ↑ UnresolvedQualifiedNameExpression.TypeArguments: Type*

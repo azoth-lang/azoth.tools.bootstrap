@@ -12,6 +12,142 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.NameBinding;
 
 internal static partial class BindingAmbiguousNamesAspect
 {
+    #region Unresolved Expressions
+    public static partial INameExpressionNode? UnresolvedMemberAccessExpression_NamespaceNameContext_ReplaceWith_NameExpression(IUnresolvedMemberAccessExpressionNode node)
+    {
+        if (node.Context is not INamespaceNameNode context)
+            return null;
+
+        var members = context.ReferencedDeclarations.SelectMany(d => d.MembersNamed(node.MemberName)).ToFixedSet();
+        if (members.Count == 0)
+            // definitely namespace member access, no need to process other rewrites
+            return node;
+
+        if (members.TryAllOfType<INamespaceDeclarationNode>(out var referencedNamespaces))
+            return IQualifiedNamespaceNameNode.Create(node.Syntax, context, referencedNamespaces);
+
+        if (members.TryAllOfType<IFunctionDeclarationNode>(out var referencedFunctions))
+            return IFunctionGroupNameNode.Create(node.Syntax, context, node.MemberName, node.TypeArguments,
+                referencedFunctions);
+
+        // TODO select correct type declaration based on generic arguments
+        if (members.TrySingle() is ITypeDeclarationNode referencedType)
+            return IQualifiedTypeNameExpressionNode.Create(node.Syntax, context, node.TypeArguments, referencedType);
+
+        return null;
+        //return IAmbiguousMemberAccessExpressionNode.Create(node.Syntax, context, node.TypeArguments, members);
+    }
+
+    public static partial INameExpressionNode? UnresolvedMemberAccessExpression_TypeNameExpressionContext_ReplaceWith_NameExpression(IUnresolvedMemberAccessExpressionNode node)
+    {
+        if (node.Context is not ITypeNameExpressionNode context)
+            return null;
+
+        // TODO metatypes would change this into an ordinary expression
+
+        var members = context.ReferencedDeclaration.AssociatedMembersNamed(node.MemberName).ToFixedSet();
+        if (members.Count == 0)
+            // definitely associated member access, no need to process other rewrites
+            return node;
+
+        if (members.TryAllOfType<IAssociatedFunctionDeclarationNode>(out var referencedFunctions))
+            return IFunctionGroupNameNode.Create(node.Syntax, context, node.MemberName, node.TypeArguments,
+                referencedFunctions);
+
+        if (members.TryAllOfType<IInitializerDeclarationNode>(out var referencedInitializers))
+            // TODO handle type arguments (which are not allowed for initializers)
+            return IInitializerGroupNameNode.Create(node.Syntax, context, context.Name, referencedInitializers);
+
+        return null;
+        //return IAmbiguousMemberAccessExpressionNode.Create(node.Syntax, context, node.TypeArguments, members);
+    }
+
+    public static partial INameExpressionNode? UnresolvedMemberAccessExpression_ExpressionContext_ReplaceWith_NameExpression(IUnresolvedMemberAccessExpressionNode node)
+    {
+        if (node.Context is not { } context)
+            return null;
+
+        // No need to check if context is INamespaceNameNode or ITypeNameExpressionNode because
+        // those rewrites have already run and stop rewriting in those cases.
+
+        // Ignore names that never have members
+        if (context is IFunctionGroupNameNode
+            or IMethodGroupNameNode
+            or IInitializerGroupNameNode)
+            return null;
+
+        var contextTypeDeclaration = node.PackageNameScope().Lookup(context.PlainType);
+        // TODO members needs to be filtered to visible accessible members
+        var members = contextTypeDeclaration?.InclusiveInstanceMembersNamed(node.MemberName).ToFixedSet() ?? [];
+        if (members.Count == 0)
+            return null;
+
+        if (members.TryAllOfType<IOrdinaryMethodDeclarationNode>(out var referencedMethods))
+            return IMethodGroupNameNode.Create(node.Syntax, context, node.MemberName, node.TypeArguments, referencedMethods);
+
+        if (members.TryAllOfType<IPropertyAccessorDeclarationNode>(out var referencedProperties)
+            && node.TypeArguments.Count == 0)
+            // We don't really know that it is a getter, but if it isn't then it will be rewritten to a setter
+            return IGetterInvocationExpressionNode.Create(node.Syntax, context, node.MemberName, referencedProperties);
+
+        // TODO does this need to change for get vs set?
+        if (members.Where(m => m is not IPropertyAccessorDeclarationNode)
+                   .TrySingle() is IFieldDeclarationNode fieldDeclaration)
+            return IFieldAccessExpressionNode.Create(node.Syntax, context, fieldDeclaration.Name, fieldDeclaration);
+
+        return null;
+        //return IAmbiguousMemberAccessExpressionNode.Create(node.Syntax, context, node.TypeArguments, members);
+    }
+
+    public static partial void UnresolvedMemberAccessExpression_Contribute_Diagnostics(IUnresolvedMemberAccessExpressionNode node, DiagnosticCollectionBuilder diagnostics)
+    {
+        switch (node.Context)
+        {
+            case IFunctionGroupNameNode or IFunctionNameNode or IMethodGroupNameNode:
+                diagnostics.Add(TypeError.NotImplemented(node.File, node.Syntax.Span,
+                    "No member accessible from function or method."));
+                break;
+            case INamespaceNameNode:
+            case ITypeNameExpressionNode:
+                diagnostics.Add(NameBindingError.CouldNotBindMember(node.File, node.Syntax.QualifiedName.Span));
+                break;
+            case IUnknownNameExpressionNode:
+            case IUnresolvedInvocationExpressionNode:
+            case { Type: UnknownType }:
+                // These presumably report their own errors and should be ignored here
+                break;
+            default:
+                diagnostics.Add(NameBindingError.NotImplemented(node.File, node.Syntax.Span,
+                    $"Could not access `{node.MemberName}` on `{node.Context!.Syntax}` (Unknown member)."));
+                break;
+        }
+    }
+
+    /*public static partial void AmbiguousMemberAccessExpression_Contribute_Diagnostics(
+        IAmbiguousMemberAccessExpressionNode node,
+        DiagnosticCollectionBuilder diagnostics)
+    {
+        switch (node.Context)
+        {
+            case INamespaceNameNode:
+            case ITypeNameExpressionNode:
+                // TODO better errors explaining. For example, are they different kinds of declarations?
+                diagnostics.Add(NameBindingError.AmbiguousName(node.File, node.Syntax.QualifiedName.Span));
+                break;
+            case IUnknownNameExpressionNode:
+            case IUnresolvedInvocationExpressionNode:
+            case { Type: UnknownType }:
+                // These presumably report their own errors and should be ignored here
+                break;
+            default:
+                // TODO aren't normal expression contexts falling into this case right now?
+                diagnostics.Add(NameBindingError.NotImplemented(node.File, node.Syntax.Span,
+                    $"Could not access `{node.MemberName}` on `{node.Context.Syntax}` (Unknown member)."));
+                break;
+        }
+    }*/
+    #endregion
+
     public static partial IFixedList<IDeclarationNode> OrdinaryNameExpression_ReferencedDeclarations(IOrdinaryNameExpressionNode node)
         => node.ContainingLexicalScope.Lookup(node.Name).ToFixedList();
 
@@ -73,88 +209,6 @@ internal static partial class BindingAmbiguousNamesAspect
         }
     }
 
-    public static partial INameExpressionNode? UnresolvedMemberAccessExpression_NamespaceNameContext_ReplaceWith_NameExpression(IUnresolvedMemberAccessExpressionNode node)
-    {
-        if (node.Context is not INamespaceNameNode context)
-            return null;
-
-        var members = context.ReferencedDeclarations.SelectMany(d => d.MembersNamed(node.MemberName)).ToFixedSet();
-        if (members.Count == 0)
-            // definitely namespace member access, no need to process other rewrites
-            return node;
-
-        if (members.TryAllOfType<INamespaceDeclarationNode>(out var referencedNamespaces))
-            return IQualifiedNamespaceNameNode.Create(node.Syntax, context, referencedNamespaces);
-
-        if (members.TryAllOfType<IFunctionDeclarationNode>(out var referencedFunctions))
-            return IFunctionGroupNameNode.Create(node.Syntax, context, node.MemberName, node.TypeArguments,
-                referencedFunctions);
-
-        // TODO select correct type declaration based on generic arguments
-        if (members.TrySingle() is ITypeDeclarationNode referencedType)
-            return IQualifiedTypeNameExpressionNode.Create(node.Syntax, context, node.TypeArguments, referencedType);
-
-        return IAmbiguousMemberAccessExpressionNode.Create(node.Syntax, context, node.TypeArguments, members);
-    }
-
-    public static partial INameExpressionNode? UnresolvedMemberAccessExpression_TypeNameExpressionContext_ReplaceWith_NameExpression(IUnresolvedMemberAccessExpressionNode node)
-    {
-        if (node.Context is not ITypeNameExpressionNode context)
-            return null;
-
-        // TODO metatypes would change this into an ordinary expression
-
-        var members = context.ReferencedDeclaration.AssociatedMembersNamed(node.MemberName).ToFixedSet();
-        if (members.Count == 0)
-            // definitely associated member access, no need to process other rewrites
-            return node;
-
-        if (members.TryAllOfType<IAssociatedFunctionDeclarationNode>(out var referencedFunctions))
-            return IFunctionGroupNameNode.Create(node.Syntax, context, node.MemberName, node.TypeArguments,
-                referencedFunctions);
-
-        if (members.TryAllOfType<IInitializerDeclarationNode>(out var referencedInitializers))
-            // TODO handle type arguments (which are not allowed for initializers)
-            return IInitializerGroupNameNode.Create(node.Syntax, context, context.Name, referencedInitializers);
-
-        return IAmbiguousMemberAccessExpressionNode.Create(node.Syntax, context, node.TypeArguments, members);
-    }
-
-    public static partial INameExpressionNode? UnresolvedMemberAccessExpression_ExpressionContext_ReplaceWith_NameExpression(IUnresolvedMemberAccessExpressionNode node)
-    {
-        if (node.Context is not { } context)
-            return null;
-
-        // No need to check if context is INamespaceNameNode or ITypeNameExpressionNode because
-        // those rewrites have already run and stop rewriting in those cases.
-
-        // Ignore names that never have members
-        if (context is IFunctionGroupNameNode
-            or IMethodGroupNameNode
-            or IInitializerGroupNameNode)
-            return null;
-
-        var contextTypeDeclaration = node.PackageNameScope().Lookup(context.PlainType);
-        // TODO members needs to be filtered to visible accessible members
-        var members = contextTypeDeclaration?.InclusiveInstanceMembersNamed(node.MemberName).ToFixedSet() ?? [];
-        if (members.Count == 0)
-            return null;
-
-        if (members.TryAllOfType<IOrdinaryMethodDeclarationNode>(out var referencedMethods))
-            return IMethodGroupNameNode.Create(node.Syntax, context, node.MemberName, node.TypeArguments, referencedMethods);
-
-        if (members.TryAllOfType<IPropertyAccessorDeclarationNode>(out var referencedProperties)
-            && node.TypeArguments.Count == 0)
-            // We don't really know that it is a getter, but if it isn't then it will be rewritten to a setter
-            return IGetterInvocationExpressionNode.Create(node.Syntax, context, node.MemberName, referencedProperties);
-
-        // TODO does this need to change for get vs set?
-        if (members.Where(m => m is not IPropertyAccessorDeclarationNode)
-                   .TrySingle() is IFieldDeclarationNode fieldDeclaration)
-            return IFieldAccessExpressionNode.Create(node.Syntax, context, fieldDeclaration.Name, fieldDeclaration);
-
-        return IAmbiguousMemberAccessExpressionNode.Create(node.Syntax, context, node.TypeArguments, members);
-    }
 
     public static partial IExpressionNode? AssignmentExpression_PropertyNameLeftOperand_Rewrite(IAssignmentExpressionNode node)
     {
@@ -242,56 +296,6 @@ internal static partial class BindingAmbiguousNamesAspect
         return IInitializerNameNode.Create(node.Syntax, node.Context, node.InitializerName,
             node.ReferencedDeclarations, node.CallCandidates, node.CompatibleCallCandidates, node.SelectedCallCandidate,
             node.ReferencedDeclaration);
-    }
-
-
-    public static partial void UnresolvedMemberAccessExpression_Contribute_Diagnostics(
-        IUnresolvedMemberAccessExpressionNode node,
-        DiagnosticCollectionBuilder diagnostics)
-    {
-        switch (node.Context)
-        {
-            case IFunctionGroupNameNode or IFunctionNameNode or IMethodGroupNameNode:
-                diagnostics.Add(TypeError.NotImplemented(node.File, node.Syntax.Span, "No member accessible from function or method."));
-                break;
-            case INamespaceNameNode:
-            case ITypeNameExpressionNode:
-                diagnostics.Add(NameBindingError.CouldNotBindMember(node.File, node.Syntax.QualifiedName.Span));
-                break;
-            case IUnknownNameExpressionNode:
-            case IUnresolvedInvocationExpressionNode:
-            case { Type: UnknownType }:
-                // These presumably report their own errors and should be ignored here
-                break;
-            default:
-                diagnostics.Add(NameBindingError.NotImplemented(node.File, node.Syntax.Span,
-                    $"Could not access `{node.MemberName}` on `{node.Context!.Syntax}` (Unknown member)."));
-                break;
-        }
-    }
-
-    public static partial void AmbiguousMemberAccessExpression_Contribute_Diagnostics(
-        IAmbiguousMemberAccessExpressionNode node,
-        DiagnosticCollectionBuilder diagnostics)
-    {
-        switch (node.Context)
-        {
-            case INamespaceNameNode:
-            case ITypeNameExpressionNode:
-                // TODO better errors explaining. For example, are they different kinds of declarations?
-                diagnostics.Add(NameBindingError.AmbiguousName(node.File, node.Syntax.QualifiedName.Span));
-                break;
-            case IUnknownNameExpressionNode:
-            case IUnresolvedInvocationExpressionNode:
-            case { Type: UnknownType }:
-                // These presumably report their own errors and should be ignored here
-                break;
-            default:
-                // TODO aren't normal expression contexts falling into this case right now?
-                diagnostics.Add(NameBindingError.NotImplemented(node.File, node.Syntax.Span,
-                    $"Could not access `{node.MemberName}` on `{node.Context.Syntax}` (Unknown member)."));
-                break;
-        }
     }
 
     private static bool TryAllOfType<T>(

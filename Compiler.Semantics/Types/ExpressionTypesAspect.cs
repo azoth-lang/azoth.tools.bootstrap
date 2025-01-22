@@ -31,6 +31,17 @@ internal static partial class ExpressionTypesAspect
             diagnostics.Add(TypeError.CannotImplicitlyConvert(node.File, node.Syntax, node.Type, expectedType));
     }
 
+    #region Unresolved Expressions
+    public static partial IFlowState UnresolvedMemberAccessExpression_FlowStateAfter(IUnresolvedMemberAccessExpressionNode node)
+        => node.Context?.FlowStateAfter.Transform(node.Context.ValueId, node.ValueId, node.Type)
+           ?? IFlowState.Empty;
+
+    /*
+       public static partial IFlowState AmbiguousMemberAccessExpression_FlowStateAfter(IAmbiguousMemberAccessExpressionNode node)
+           => node.Context.FlowStateAfter.Transform(node.Context.ValueId, node.ValueId, node.Type);
+*/
+    #endregion
+
     public static partial IMaybeType VariableNameExpression_Type(IVariableNameExpressionNode node)
         => node.FlowStateAfter.AliasType(node.ReferencedDefinition);
 
@@ -329,9 +340,6 @@ internal static partial class ExpressionTypesAspect
 
     public static partial IMaybeType SelfExpression_Type(ISelfExpressionNode node)
         => node.FlowStateAfter.AliasType(node.ReferencedDefinition);
-
-    public static partial IFlowState AmbiguousMemberAccessExpression_FlowStateAfter(IAmbiguousMemberAccessExpressionNode node)
-        => node.Context.FlowStateAfter.Transform(node.Context.ValueId, node.ValueId, node.Type);
 
     public static partial ContextualizedCall? NewObjectExpression_ContextualizedCall(
         INewObjectExpressionNode node)
@@ -885,9 +893,6 @@ internal static partial class ExpressionTypesAspect
     public static partial IFlowState PatternMatchExpression_FlowStateAfter(IPatternMatchExpressionNode node)
         // Constant for the boolean result of the pattern match
         => node.Pattern.FlowStateAfter.Constant(node.ValueId);
-
-    public static partial IFlowState UnresolvedMemberAccessExpression_FlowStateAfter(IUnresolvedMemberAccessExpressionNode node)
-        => node.Context?.FlowStateAfter.Transform(node.Context.ValueId, node.ValueId, node.Type) ?? IFlowState.Empty;
 
     public static partial IFlowState PrepareToReturnExpression_FlowStateAfter(IPrepareToReturnExpressionNode node)
     {

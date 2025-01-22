@@ -8,6 +8,12 @@
 
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
+// ---------- Unresolved Expressions
+✎ UnresolvedMemberAccessExpression NamespaceNameContext replace_with NameExpression;
+✎ UnresolvedMemberAccessExpression TypeNameExpressionContext replace_with NameExpression;
+✎ UnresolvedMemberAccessExpression ExpressionContext replace_with NameExpression;
+= UnresolvedMemberAccessExpression.↑.Diagnostics;
+
 // ---------- Operator Expressions
 ✎ AssignmentExpression PropertyNameLeftOperand rewrite;
 
@@ -18,10 +24,6 @@
 ✎ GenericNameExpression replace_with NameExpression;
 
 // ---------- Name Expressions
-✎ UnresolvedMemberAccessExpression NamespaceNameContext replace_with NameExpression;
-✎ UnresolvedMemberAccessExpression TypeNameExpressionContext replace_with NameExpression;
-✎ UnresolvedMemberAccessExpression ExpressionContext replace_with NameExpression;
-= UnresolvedMemberAccessExpression.↑.Diagnostics;
 + FunctionGroupName.new.Validate;
 ✎ FunctionGroupName replace_with FunctionName;
 = FunctionGroupName.↑.Diagnostics;
@@ -29,5 +31,3 @@
 = MethodGroupName.↑.Diagnostics;
 ✎ InitializerGroupName replace_with InitializerName;
 = UnknownIdentifierNameExpression.↑.Diagnostics;
-// TODO validate that AmbiguousMemberAccessExpression.ReferencedMembers is not empty
-= AmbiguousMemberAccessExpression.↑.Diagnostics;

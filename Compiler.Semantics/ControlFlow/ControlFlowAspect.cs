@@ -46,6 +46,11 @@ internal static partial class ControlFlowAspect
     public static partial ControlFlowSet Expression_ControlFlowNext(IExpressionNode node)
         => node.ControlFlowFollowing();
 
+    #region Unresolved Expressions
+    public static partial ControlFlowSet UnresolvedMemberAccessExpression_ControlFlowNext(IUnresolvedMemberAccessExpressionNode node)
+        => ControlFlowSet.CreateNormal(node.Context);
+    #endregion
+
     #region Invocation Expressions
     public static partial ControlFlowSet UnresolvedInvocationExpression_ControlFlowNext(IUnresolvedInvocationExpressionNode node)
         => ControlFlowSet.CreateNormal(node.Expression);
@@ -73,13 +78,7 @@ internal static partial class ControlFlowAspect
     #endregion
 
     #region Name Expressions
-    public static partial ControlFlowSet UnresolvedMemberAccessExpression_ControlFlowNext(IUnresolvedMemberAccessExpressionNode node)
-        => ControlFlowSet.CreateNormal(node.Context);
-
     public static partial ControlFlowSet FieldAccessExpression_ControlFlowNext(IFieldAccessExpressionNode node)
-        => ControlFlowSet.CreateNormal(node.Context);
-
-    public static partial ControlFlowSet AmbiguousMemberAccessExpression_ControlFlowNext(IAmbiguousMemberAccessExpressionNode node)
         => ControlFlowSet.CreateNormal(node.Context);
     #endregion
 

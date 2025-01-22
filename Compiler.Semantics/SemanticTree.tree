@@ -213,15 +213,19 @@ OptionalPattern <: OptionalOrBindingPattern = Syntax:`IOptionalPatternSyntax` Pa
 /// existence.
 temp AmbiguousExpression <: Code = Syntax:`IExpressionSyntax`;
 Expression <: AmbiguousExpression, ControlFlow = Syntax:`IExpressionSyntax`;
-/// An unresolved expression is one that hasn't had name binding on it. Expressions where name
-/// binding fails can stay unresolved.
-UnresolvedExpression <: Expression;
 BlockExpression <: Expression, BlockOrResult, BodyOrBlock
     = Syntax:`IBlockExpressionSyntax` Statements:Statement*;
 NewObjectExpression <: InvocationExpression = Syntax:`INewObjectExpressionSyntax`
     ConstructingType:TypeName Arguments:AmbiguousExpression*;
 UnsafeExpression <: Expression = Syntax:`IUnsafeExpressionSyntax` Expression:AmbiguousExpression;
 NeverTypedExpression <: Expression;
+
+// ---------- Unresolved Expressions
+/// An unresolved expression is one that hasn't had name binding on it. Expressions where name
+/// binding fails can stay unresolved.
+UnresolvedExpression <: Expression;
+concrete UnresolvedMemberAccessExpression <: UnknownNameExpression
+    = Syntax:`IMemberAccessExpressionSyntax` Context:AmbiguousExpression TypeArguments:Type*;
 
 // ---------- Literal Expressions
 LiteralExpression <: Expression = Syntax:`ILiteralExpressionSyntax`;
@@ -259,7 +263,8 @@ ReturnExpression <: NeverTypedExpression
 
 // ---------- Invocation Expressions
 InvocationExpression <: Expression;
-UnresolvedInvocationExpression <: InvocationExpression = Syntax:`IInvocationExpressionSyntax`
+UnresolvedInvocationExpression <: InvocationExpression, UnresolvedExpression
+    = Syntax:`IInvocationExpressionSyntax`
     Expression:AmbiguousExpression Arguments:AmbiguousExpression*;
 FunctionInvocationExpression <: InvocationExpression = Syntax:`IInvocationExpressionSyntax`
     Function:FunctionName Arguments:AmbiguousExpression*;
@@ -294,8 +299,6 @@ temp GenericNameExpression <: AmbiguousName, OrdinaryNameExpression
 NameExpression <: Expression, AmbiguousNameExpression = Syntax:`INameExpressionSyntax`;
 // TODO rename UnknownNameExpression to UnresolvedNameExpression (note these are non-temp)
 UnknownNameExpression <: NameExpression, UnresolvedExpression = Syntax:`INameExpressionSyntax`;
-concrete UnresolvedMemberAccessExpression <: UnknownNameExpression
-    = Syntax:`IMemberAccessExpressionSyntax` Context:AmbiguousExpression TypeArguments:Type*;
 LocalBindingNameExpression <: NameExpression = ReferencedDefinition:`IBindingNode`?;
 // TODO Name <: NameExpression
 NamespaceName <: NameExpression = ReferencedDeclarations:`INamespaceDeclarationNode`*;
@@ -364,9 +367,6 @@ UnknownIdentifierNameExpression <: UnknownStandardNameExpression
     = Syntax:`IIdentifierNameSyntax` /ReferencedDeclarations/;
 UnknownGenericNameExpression <: UnknownStandardNameExpression
     = Syntax:`IGenericNameSyntax` TypeArguments:Type* /ReferencedDeclarations/;
-AmbiguousMemberAccessExpression <: UnknownNameExpression
-    = Syntax:`IMemberAccessExpressionSyntax` Context:Expression TypeArguments:Type*
-    ReferencedMembers:{`IDeclarationNode`};
 
 // ---------- Unresolved Name Expressions
 UnresolvedQualifiedNameExpression <: UnknownNameExpression, UnresolvedMemberAccessExpression
