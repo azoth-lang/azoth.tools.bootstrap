@@ -118,7 +118,7 @@
 
 // ---------- Types
 ↑ TypeName.Name: `TypeName` => Syntax.Name;
-↑ StandardTypeName.Name: `OrdinaryName` => Syntax.Name;
+↑ OrdinaryTypeName.Name: `OrdinaryName` => Syntax.Name;
 ↑ IdentifierTypeName.Name: `IdentifierName` => Syntax.Name;
 ↑ BuiltInTypeName.Name: `BuiltInTypeName` => Syntax.Name;
 ↑ GenericTypeName.Name: `GenericName` => Syntax.Name;
@@ -179,7 +179,7 @@
 ↑ QualifiedNamespaceName.Name: `IdentifierName` => (IdentifierName)Syntax.MemberName;
 ↑ VariableNameExpression.Name: `IdentifierName` => Syntax.Name;
 ↑ TypeNameExpression.Name: `OrdinaryName`;
-= StandardTypeNameExpression.Name => Syntax.Name;
+= OrdinaryTypeNameExpression.Name => Syntax.Name;
 = QualifiedTypeNameExpression.Name => Syntax.MemberName;
 ↑ BuiltInTypeNameExpression.Name: `BuiltInTypeName` => Syntax.Name;
 ↑ SelfExpression.IsImplicit: `bool` => Syntax.IsImplicit;

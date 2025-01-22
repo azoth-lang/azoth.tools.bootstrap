@@ -27,7 +27,7 @@ internal static partial class BindingNamesAspect
     #endregion
 
     #region Types
-    public static partial ITypeDeclarationNode? StandardTypeName_ReferencedDeclaration(IStandardTypeNameNode node)
+    public static partial ITypeDeclarationNode? OrdinaryTypeName_ReferencedDeclaration(IOrdinaryTypeNameNode node)
     {
         // TODO this prefers the non-suffixed name. Maybe it should be the other way around to avoid conflict
         var symbolNode = LookupDeclarations(node).TrySingle();
@@ -35,8 +35,8 @@ internal static partial class BindingNamesAspect
         return symbolNode;
     }
 
-    public static partial void StandardTypeName_Contribute_Diagnostics(
-        IStandardTypeNameNode node,
+    public static partial void OrdinaryTypeName_Contribute_Diagnostics(
+        IOrdinaryTypeNameNode node,
         DiagnosticCollectionBuilder diagnostics)
     {
         if (node.ReferencedDeclaration is not null) return;
@@ -56,7 +56,7 @@ internal static partial class BindingNamesAspect
     }
 
     private static IFixedSet<ITypeDeclarationNode> LookupDeclarations(
-        IStandardTypeNameNode node,
+        IOrdinaryTypeNameNode node,
         bool withAttributeSuffix = false)
     {
         var name = withAttributeSuffix ? node.Name.WithAttributeSuffix() : node.Name;

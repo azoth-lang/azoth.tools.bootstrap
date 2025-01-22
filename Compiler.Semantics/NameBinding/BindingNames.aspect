@@ -10,8 +10,8 @@
 
 // ---------- Types
 ↑ TypeName.ReferencedDeclaration: TypeDeclaration?;
-= StandardTypeName.ReferencedDeclaration;
-= StandardTypeName.↑.Diagnostics;
+= OrdinaryTypeName.ReferencedDeclaration;
+= OrdinaryTypeName.↑.Diagnostics;
 ↑ BuiltInTypeName.ReferencedDeclaration: TypeDeclaration?;
 
 // ---------- Parameters

@@ -81,18 +81,18 @@ FunctionDefinition <: FacetMemberDefinition, FunctionDeclaration, ConcreteFuncti
 TypeDefinition <: Code, FacetMemberDefinition, AssociatedMemberDefinition, UserTypeDeclaration
     = Syntax:`ITypeDefinitionSyntax`
     GenericParameters:GenericParameter*
-    SupertypeNames:StandardTypeName*;
+    SupertypeNames:OrdinaryTypeName*;
 ClassDefinition <: Code, TypeDefinition, ClassDeclaration = Syntax:`IClassDefinitionSyntax`
     Attributes:Attribute* GenericParameters:GenericParameter*
-    BaseTypeName:StandardTypeName? SupertypeNames:StandardTypeName*
+    BaseTypeName:OrdinaryTypeName? SupertypeNames:OrdinaryTypeName*
     SourceMembers:ClassMemberDefinition*;
 StructDefinition <: Code, TypeDefinition, StructDeclaration = Syntax:`IStructDefinitionSyntax`
     Attributes:Attribute* GenericParameters:GenericParameter*
-    SupertypeNames:StandardTypeName*
+    SupertypeNames:OrdinaryTypeName*
     SourceMembers:StructMemberDefinition*;
 TraitDefinition <: Code, TypeDefinition, TraitDeclaration = Syntax:`ITraitDefinitionSyntax`
     Attributes:Attribute* GenericParameters:GenericParameter*
-    SupertypeNames:StandardTypeName*
+    SupertypeNames:OrdinaryTypeName*
     Members:{TraitMemberDefinition};
 
 // ---------- Type Definition Parts
@@ -141,7 +141,7 @@ AssociatedFunctionDefinition <: ConcreteFunctionInvocableDefinition, AlwaysTypeM
     = Syntax:`IAssociatedFunctionDefinitionSyntax` /Parameters/ /Return/ /Entry/ /Body/ /Exit/;
 
 // ---------- Attributes
-Attribute <: Code = Syntax:`IAttributeSyntax` TypeName:StandardTypeName;
+Attribute <: Code = Syntax:`IAttributeSyntax` TypeName:OrdinaryTypeName;
 
 // ---------- Capabilities
 CapabilityConstraint <: Code = Syntax:`ICapabilityConstraintSyntax`;
@@ -169,11 +169,11 @@ ExpressionBody <: Body = Syntax:`IExpressionBodySyntax` ResultStatement;
 Type <: Code = Syntax:`ITypeSyntax`;
 // TODO start from generalized names in syntax and rewrite to type names
 TypeName <: Type = Syntax:`ITypeNameSyntax`;
-StandardTypeName <: TypeName = Syntax:`IStandardTypeNameSyntax`;
-IdentifierTypeName <: StandardTypeName = Syntax:`IIdentifierTypeNameSyntax`;
+OrdinaryTypeName <: TypeName = Syntax:`IOrdinaryTypeNameSyntax`;
+IdentifierTypeName <: OrdinaryTypeName = Syntax:`IIdentifierTypeNameSyntax`;
 BuiltInTypeName <: TypeName = Syntax:`IBuiltInTypeNameSyntax`;
-GenericTypeName <: StandardTypeName = Syntax:`IGenericTypeNameSyntax` TypeArguments:Type*;
-QualifiedTypeName <: TypeName = Syntax:`IQualifiedTypeNameSyntax` Context:TypeName QualifiedName:StandardTypeName;
+GenericTypeName <: OrdinaryTypeName = Syntax:`IGenericTypeNameSyntax` TypeArguments:Type*;
+QualifiedTypeName <: TypeName = Syntax:`IQualifiedTypeNameSyntax` Context:TypeName QualifiedName:OrdinaryTypeName;
 OptionalType <: Type = Syntax:`IOptionalTypeSyntax` Referent:Type;
 CapabilityType <: Type = Syntax:`ICapabilityTypeSyntax` Capability Referent:Type;
 FunctionType <: Type = Syntax:`IFunctionTypeSyntax` Parameters:ParameterType* Return:Type;
@@ -329,7 +329,7 @@ VariableNameExpression <: LocalBindingNameExpression, NameExpression
 TypeNameExpression <: NameExpression = Syntax:`INameExpressionSyntax`
     TypeArguments:Type* ReferencedDeclaration:`ITypeDeclarationNode`;
 // TODO rename to UnqualifiedTypeNameExpression
-StandardTypeNameExpression <: TypeNameExpression
+OrdinaryTypeNameExpression <: TypeNameExpression
     = Syntax:`IOrdinaryNameExpressionSyntax` /TypeArguments/ /ReferencedDeclaration/;
 QualifiedTypeNameExpression <: TypeNameExpression = Syntax:`IMemberAccessExpressionSyntax`
     Context:NamespaceName /TypeArguments/ /ReferencedDeclaration/;

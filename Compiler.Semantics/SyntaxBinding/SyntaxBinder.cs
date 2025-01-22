@@ -96,7 +96,7 @@ internal static class SyntaxBinder
     private static IClassDefinitionNode ClassDefinition(IClassDefinitionSyntax syntax)
         // TODO support attributes on class
         => IClassDefinitionNode.Create(syntax, [], GenericParameters(syntax.GenericParameters),
-            StandardTypeName(syntax.BaseTypeName), SupertypeNames(syntax.SupertypeNames),
+            OrdinaryTypeName(syntax.BaseTypeName), SupertypeNames(syntax.SupertypeNames),
             ClassMemberDefinitions(syntax.Members));
 
     private static IStructDefinitionNode StructDefinition(IStructDefinitionSyntax syntax)
@@ -109,8 +109,8 @@ internal static class SyntaxBinder
         => ITraitDefinitionNode.Create(syntax, [], GenericParameters(syntax.GenericParameters),
             SupertypeNames(syntax.SupertypeNames), TraitMemberDefinitions(syntax.Members));
 
-    private static IEnumerable<IStandardTypeNameNode> SupertypeNames(IEnumerable<IStandardTypeNameSyntax> syntax)
-        => syntax.Select(syn => StandardTypeName(syn));
+    private static IEnumerable<IOrdinaryTypeNameNode> SupertypeNames(IEnumerable<IOrdinaryTypeNameSyntax> syntax)
+        => syntax.Select(syn => OrdinaryTypeName(syn));
     #endregion
 
     #region Type Definition Parts
@@ -211,7 +211,7 @@ internal static class SyntaxBinder
         => syntax.Select(Attribute);
 
     private static IAttributeNode Attribute(IAttributeSyntax syntax)
-        => IAttributeNode.Create(syntax, StandardTypeName(syntax.TypeName));
+        => IAttributeNode.Create(syntax, OrdinaryTypeName(syntax.TypeName));
     #endregion
 
     #region Capabilities
@@ -302,14 +302,14 @@ internal static class SyntaxBinder
     private static ITypeNameNode TypeName(ITypeNameSyntax syntax)
         => syntax switch
         {
-            IStandardTypeNameSyntax syn => StandardTypeName(syn),
+            IOrdinaryTypeNameSyntax syn => OrdinaryTypeName(syn),
             IBuiltInTypeNameSyntax syn => BuiltInTypeName(syn),
             IQualifiedTypeNameSyntax syn => QualifiedTypeName(syn),
             _ => throw ExhaustiveMatch.Failed(syntax)
         };
 
     [return: NotNullIfNotNull(nameof(syntax))]
-    private static IStandardTypeNameNode? StandardTypeName(IStandardTypeNameSyntax? syntax)
+    private static IOrdinaryTypeNameNode? OrdinaryTypeName(IOrdinaryTypeNameSyntax? syntax)
         => syntax switch
         {
             null => null,
@@ -328,7 +328,7 @@ internal static class SyntaxBinder
         => IBuiltInTypeNameNode.Create(syntax);
 
     private static IQualifiedTypeNameNode QualifiedTypeName(IQualifiedTypeNameSyntax syntax)
-        => IQualifiedTypeNameNode.Create(syntax, TypeName(syntax.Context), StandardTypeName(syntax.QualifiedName));
+        => IQualifiedTypeNameNode.Create(syntax, TypeName(syntax.Context), OrdinaryTypeName(syntax.QualifiedName));
 
     private static IOptionalTypeNode OptionalType(IOptionalTypeSyntax syntax)
         => IOptionalTypeNode.Create(syntax, Type(syntax.Referent));

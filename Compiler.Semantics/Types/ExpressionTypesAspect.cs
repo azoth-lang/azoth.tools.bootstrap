@@ -366,7 +366,7 @@ internal static partial class ExpressionTypesAspect
         {
             default:
                 throw ExhaustiveMatch.Failed(node);
-            case IStandardTypeNameNode n:
+            case IOrdinaryTypeNameNode n:
                 CheckTypeArgumentsAreConstructable(n, diagnostics);
                 break;
             case IBuiltInTypeNameNode n:
@@ -378,7 +378,7 @@ internal static partial class ExpressionTypesAspect
         }
     }
 
-    public static void CheckTypeArgumentsAreConstructable(IStandardTypeNameNode node, DiagnosticCollectionBuilder diagnostics)
+    public static void CheckTypeArgumentsAreConstructable(IOrdinaryTypeNameNode node, DiagnosticCollectionBuilder diagnostics)
     {
         var bareType = node.NamedBareType;
         if (bareType is null) return;
@@ -421,7 +421,7 @@ internal static partial class ExpressionTypesAspect
         {
             default:
                 throw ExhaustiveMatch.Failed(node);
-            case IStandardTypeNameExpressionNode n:
+            case IOrdinaryTypeNameExpressionNode n:
                 CheckTypeArgumentsAreConstructable(n, diagnostics);
                 break;
             //case IBuiltInTypeNameNode n:
@@ -433,7 +433,7 @@ internal static partial class ExpressionTypesAspect
         }
     }
 
-    public static void CheckTypeArgumentsAreConstructable(IStandardTypeNameExpressionNode node, DiagnosticCollectionBuilder diagnostics)
+    public static void CheckTypeArgumentsAreConstructable(IOrdinaryTypeNameExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
         var bareType = node.NamedBareType;
         if (bareType is null) return;

@@ -24,7 +24,7 @@
 
 // ---------- Types
 // TODO move IsAttributeType to another aspect
-↓ StandardTypeName.IsAttributeType:`bool`;
+↓ OrdinaryTypeName.IsAttributeType:`bool`;
 
 // -------------------------------------------------------------------------------------------------
 // Symbol Nodes

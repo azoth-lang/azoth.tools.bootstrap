@@ -83,13 +83,13 @@ public static class OtherSemanticError
             6013, "Constructor or initializer `self` parameter cannot be `lent`");
     }
 
-    public static Diagnostic BaseTypeMustBeClass(CodeFile file, OrdinaryName className, IStandardTypeNameSyntax baseTypeName)
+    public static Diagnostic BaseTypeMustBeClass(CodeFile file, OrdinaryName className, IOrdinaryTypeNameSyntax baseTypeName)
     {
         return new(file, baseTypeName.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             6015, $"Class `{className}` cannot have base type `{baseTypeName}` because it is not a class.");
     }
 
-    public static Diagnostic SupertypeMustBeClassOrTrait(CodeFile file, OrdinaryName typeName, IStandardTypeNameSyntax superTypeName)
+    public static Diagnostic SupertypeMustBeClassOrTrait(CodeFile file, OrdinaryName typeName, IOrdinaryTypeNameSyntax superTypeName)
     {
         return new(file, superTypeName.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             6016, $"Type `{typeName}` cannot have super type `{superTypeName}` because it is not a trait or class.");
@@ -120,7 +120,7 @@ public static class OtherSemanticError
             6018, $"`foreach` cannot operate on value of type `{type.ToILString()}` because its iterator does not have a `next()` method.");
     }
 
-    public static Diagnostic CircularDefinitionInSupertype(CodeFile file, IStandardTypeNameSyntax supertypeName)
+    public static Diagnostic CircularDefinitionInSupertype(CodeFile file, IOrdinaryTypeNameSyntax supertypeName)
     {
         return new(file, supertypeName.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             6019, $"Circular definition found when trying to evaluate supertype `{supertypeName}`.");

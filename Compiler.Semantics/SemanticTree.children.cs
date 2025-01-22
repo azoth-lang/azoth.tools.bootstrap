@@ -429,7 +429,7 @@ public static class ISemanticNodeExtensions
                 yield break;
             case IVariableNameExpressionNode n:
                 yield break;
-            case IStandardTypeNameExpressionNode n:
+            case IOrdinaryTypeNameExpressionNode n:
                 foreach (var child in n.TypeArguments)
                     yield return child;
                 yield break;

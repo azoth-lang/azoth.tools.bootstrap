@@ -506,9 +506,9 @@ public partial interface ITypeDefinitionNode : ICodeNode, IFacetMemberDefinition
     ITypeMemberDefinitionSyntax? ITypeMemberDefinitionNode.Syntax => Syntax;
     new IFixedList<IGenericParameterNode> GenericParameters { get; }
     IFixedList<IGenericParameterDeclarationNode> IUserTypeDeclarationNode.GenericParameters => GenericParameters;
-    IFixedList<IStandardTypeNameNode> SupertypeNames { get; }
+    IFixedList<IOrdinaryTypeNameNode> SupertypeNames { get; }
     LexicalScope SupertypesLexicalScope { get; }
-    IEnumerable<IStandardTypeNameNode> AllSupertypeNames
+    IEnumerable<IOrdinaryTypeNameNode> AllSupertypeNames
         => SupertypeNames;
     bool IsConst
         => Syntax.ConstModifier is not null;
@@ -546,7 +546,7 @@ public partial interface IClassDefinitionNode : ITypeDefinitionNode, IClassDecla
     ISyntax? ISemanticNode.Syntax => Syntax;
     IDefinitionSyntax? IDefinitionNode.Syntax => Syntax;
     ITypeMemberDefinitionSyntax? ITypeMemberDefinitionNode.Syntax => Syntax;
-    IStandardTypeNameNode? BaseTypeName { get; }
+    IOrdinaryTypeNameNode? BaseTypeName { get; }
     IFixedList<IClassMemberDefinitionNode> SourceMembers { get; }
     bool IsAbstract
         => Syntax.AbstractModifier is not null;
@@ -557,15 +557,15 @@ public partial interface IClassDefinitionNode : ITypeDefinitionNode, IClassDecla
     IFixedSet<IClassMemberDeclarationNode> IClassDeclarationNode.Members => Members;
     IDefaultConstructorDefinitionNode? DefaultConstructor { get; }
     IDefaultInitializerDefinitionNode? DefaultInitializer { get; }
-    IEnumerable<IStandardTypeNameNode> ITypeDefinitionNode.AllSupertypeNames
+    IEnumerable<IOrdinaryTypeNameNode> ITypeDefinitionNode.AllSupertypeNames
         => BaseTypeName is null ? SupertypeNames : SupertypeNames.Prepend(BaseTypeName);
 
     public static IClassDefinitionNode Create(
         IClassDefinitionSyntax syntax,
         IEnumerable<IAttributeNode> attributes,
         IEnumerable<IGenericParameterNode> genericParameters,
-        IStandardTypeNameNode? baseTypeName,
-        IEnumerable<IStandardTypeNameNode> supertypeNames,
+        IOrdinaryTypeNameNode? baseTypeName,
+        IEnumerable<IOrdinaryTypeNameNode> supertypeNames,
         IEnumerable<IClassMemberDefinitionNode> sourceMembers)
         => new ClassDefinitionNode(syntax, attributes, genericParameters, baseTypeName, supertypeNames, sourceMembers);
 }
@@ -592,7 +592,7 @@ public partial interface IStructDefinitionNode : ITypeDefinitionNode, IStructDec
         IStructDefinitionSyntax syntax,
         IEnumerable<IAttributeNode> attributes,
         IEnumerable<IGenericParameterNode> genericParameters,
-        IEnumerable<IStandardTypeNameNode> supertypeNames,
+        IEnumerable<IOrdinaryTypeNameNode> supertypeNames,
         IEnumerable<IStructMemberDefinitionNode> sourceMembers)
         => new StructDefinitionNode(syntax, attributes, genericParameters, supertypeNames, sourceMembers);
 }
@@ -617,7 +617,7 @@ public partial interface ITraitDefinitionNode : ITypeDefinitionNode, ITraitDecla
         ITraitDefinitionSyntax syntax,
         IEnumerable<IAttributeNode> attributes,
         IEnumerable<IGenericParameterNode> genericParameters,
-        IEnumerable<IStandardTypeNameNode> supertypeNames,
+        IEnumerable<IOrdinaryTypeNameNode> supertypeNames,
         IEnumerable<ITraitMemberDefinitionNode> members)
         => new TraitDefinitionNode(syntax, attributes, genericParameters, supertypeNames, members);
 }
@@ -1104,12 +1104,12 @@ public partial interface IAttributeNode : ICodeNode
     new IAttributeSyntax Syntax { get; }
     ICodeSyntax ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    IStandardTypeNameNode TypeName { get; }
+    IOrdinaryTypeNameNode TypeName { get; }
     InvocableSymbol? ReferencedSymbol { get; }
 
     public static IAttributeNode Create(
         IAttributeSyntax syntax,
-        IStandardTypeNameNode typeName)
+        IOrdinaryTypeNameNode typeName)
         => new AttributeNode(syntax, typeName);
 }
 
@@ -1403,7 +1403,7 @@ public partial interface ITypeNode : ICodeNode
 }
 
 [Closed(
-    typeof(IStandardTypeNameNode),
+    typeof(IOrdinaryTypeNameNode),
     typeof(IBuiltInTypeNameNode),
     typeof(IQualifiedTypeNameNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -1424,9 +1424,9 @@ public partial interface ITypeNameNode : ITypeNode
     typeof(IIdentifierTypeNameNode),
     typeof(IGenericTypeNameNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IStandardTypeNameNode : ITypeNameNode
+public partial interface IOrdinaryTypeNameNode : ITypeNameNode
 {
-    new IStandardTypeNameSyntax Syntax { get; }
+    new IOrdinaryTypeNameSyntax Syntax { get; }
     ITypeNameSyntax ITypeNameNode.Syntax => Syntax;
     ITypeSyntax ITypeNode.Syntax => Syntax;
     ICodeSyntax ICodeNode.Syntax => Syntax;
@@ -1439,17 +1439,17 @@ public partial interface IStandardTypeNameNode : ITypeNameNode
 
 // [Closed(typeof(IdentifierTypeNameNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IIdentifierTypeNameNode : IStandardTypeNameNode
+public partial interface IIdentifierTypeNameNode : IOrdinaryTypeNameNode
 {
     new IIdentifierTypeNameSyntax Syntax { get; }
-    IStandardTypeNameSyntax IStandardTypeNameNode.Syntax => Syntax;
+    IOrdinaryTypeNameSyntax IOrdinaryTypeNameNode.Syntax => Syntax;
     ITypeNameSyntax ITypeNameNode.Syntax => Syntax;
     ITypeSyntax ITypeNode.Syntax => Syntax;
     ICodeSyntax ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     new IdentifierName Name
         => Syntax.Name;
-    OrdinaryName IStandardTypeNameNode.Name => Name;
+    OrdinaryName IOrdinaryTypeNameNode.Name => Name;
     TypeName ITypeNameNode.Name => Name;
 
     public static IIdentifierTypeNameNode Create(IIdentifierTypeNameSyntax syntax)
@@ -1475,10 +1475,10 @@ public partial interface IBuiltInTypeNameNode : ITypeNameNode
 
 // [Closed(typeof(GenericTypeNameNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IGenericTypeNameNode : IStandardTypeNameNode
+public partial interface IGenericTypeNameNode : IOrdinaryTypeNameNode
 {
     new IGenericTypeNameSyntax Syntax { get; }
-    IStandardTypeNameSyntax IStandardTypeNameNode.Syntax => Syntax;
+    IOrdinaryTypeNameSyntax IOrdinaryTypeNameNode.Syntax => Syntax;
     ITypeNameSyntax ITypeNameNode.Syntax => Syntax;
     ITypeSyntax ITypeNode.Syntax => Syntax;
     ICodeSyntax ICodeNode.Syntax => Syntax;
@@ -1486,7 +1486,7 @@ public partial interface IGenericTypeNameNode : IStandardTypeNameNode
     IFixedList<ITypeNode> TypeArguments { get; }
     new GenericName Name
         => Syntax.Name;
-    OrdinaryName IStandardTypeNameNode.Name => Name;
+    OrdinaryName IOrdinaryTypeNameNode.Name => Name;
     TypeName ITypeNameNode.Name => Name;
 
     public static IGenericTypeNameNode Create(
@@ -1505,7 +1505,7 @@ public partial interface IQualifiedTypeNameNode : ITypeNameNode
     ICodeSyntax ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     ITypeNameNode Context { get; }
-    IStandardTypeNameNode QualifiedName { get; }
+    IOrdinaryTypeNameNode QualifiedName { get; }
     IMaybePlainType ITypeNode.NamedPlainType
         => throw new NotImplementedException();
     BareType? ITypeNameNode.NamedBareType
@@ -1514,7 +1514,7 @@ public partial interface IQualifiedTypeNameNode : ITypeNameNode
     public static IQualifiedTypeNameNode Create(
         IQualifiedTypeNameSyntax syntax,
         ITypeNameNode context,
-        IStandardTypeNameNode qualifiedName)
+        IOrdinaryTypeNameNode qualifiedName)
         => new QualifiedTypeNameNode(syntax, context, qualifiedName);
 }
 
@@ -3127,7 +3127,7 @@ public partial interface IVariableNameExpressionNode : ILocalBindingNameExpressi
 }
 
 [Closed(
-    typeof(IStandardTypeNameExpressionNode),
+    typeof(IOrdinaryTypeNameExpressionNode),
     typeof(IQualifiedTypeNameExpressionNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface ITypeNameExpressionNode : INameExpressionNode
@@ -3143,9 +3143,9 @@ public partial interface ITypeNameExpressionNode : INameExpressionNode
         => AzothPlainType.Unknown;
 }
 
-// [Closed(typeof(StandardTypeNameExpressionNode))]
+// [Closed(typeof(OrdinaryTypeNameExpressionNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IStandardTypeNameExpressionNode : ITypeNameExpressionNode
+public partial interface IOrdinaryTypeNameExpressionNode : ITypeNameExpressionNode
 {
     new IOrdinaryNameExpressionSyntax Syntax { get; }
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
@@ -3155,11 +3155,11 @@ public partial interface IStandardTypeNameExpressionNode : ITypeNameExpressionNo
     OrdinaryName ITypeNameExpressionNode.Name
         => Syntax.Name;
 
-    public static IStandardTypeNameExpressionNode Create(
+    public static IOrdinaryTypeNameExpressionNode Create(
         IOrdinaryNameExpressionSyntax syntax,
         IEnumerable<ITypeNode> typeArguments,
         ITypeDeclarationNode referencedDeclaration)
-        => new StandardTypeNameExpressionNode(syntax, typeArguments, referencedDeclaration);
+        => new OrdinaryTypeNameExpressionNode(syntax, typeArguments, referencedDeclaration);
 }
 
 // [Closed(typeof(QualifiedTypeNameExpressionNode))]
@@ -5595,8 +5595,8 @@ file class ClassDefinitionNode : SemanticNode, IClassDefinitionNode
     public IClassDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
     public IFixedList<IAttributeNode> Attributes { [DebuggerStepThrough] get; }
     public IFixedList<IGenericParameterNode> GenericParameters { [DebuggerStepThrough] get; }
-    public IStandardTypeNameNode? BaseTypeName { [DebuggerStepThrough] get; }
-    public IFixedList<IStandardTypeNameNode> SupertypeNames { [DebuggerStepThrough] get; }
+    public IOrdinaryTypeNameNode? BaseTypeName { [DebuggerStepThrough] get; }
+    public IFixedList<IOrdinaryTypeNameNode> SupertypeNames { [DebuggerStepThrough] get; }
     public IFixedList<IClassMemberDefinitionNode> SourceMembers { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
@@ -5699,8 +5699,8 @@ file class ClassDefinitionNode : SemanticNode, IClassDefinitionNode
         IClassDefinitionSyntax syntax,
         IEnumerable<IAttributeNode> attributes,
         IEnumerable<IGenericParameterNode> genericParameters,
-        IStandardTypeNameNode? baseTypeName,
-        IEnumerable<IStandardTypeNameNode> supertypeNames,
+        IOrdinaryTypeNameNode? baseTypeName,
+        IEnumerable<IOrdinaryTypeNameNode> supertypeNames,
         IEnumerable<IClassMemberDefinitionNode> sourceMembers)
     {
         Syntax = syntax;
@@ -5769,7 +5769,7 @@ file class StructDefinitionNode : SemanticNode, IStructDefinitionNode
     public IStructDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
     public IFixedList<IAttributeNode> Attributes { [DebuggerStepThrough] get; }
     public IFixedList<IGenericParameterNode> GenericParameters { [DebuggerStepThrough] get; }
-    public IFixedList<IStandardTypeNameNode> SupertypeNames { [DebuggerStepThrough] get; }
+    public IFixedList<IOrdinaryTypeNameNode> SupertypeNames { [DebuggerStepThrough] get; }
     public IFixedList<IStructMemberDefinitionNode> SourceMembers { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
@@ -5866,7 +5866,7 @@ file class StructDefinitionNode : SemanticNode, IStructDefinitionNode
         IStructDefinitionSyntax syntax,
         IEnumerable<IAttributeNode> attributes,
         IEnumerable<IGenericParameterNode> genericParameters,
-        IEnumerable<IStandardTypeNameNode> supertypeNames,
+        IEnumerable<IOrdinaryTypeNameNode> supertypeNames,
         IEnumerable<IStructMemberDefinitionNode> sourceMembers)
     {
         Syntax = syntax;
@@ -5933,7 +5933,7 @@ file class TraitDefinitionNode : SemanticNode, ITraitDefinitionNode
     public ITraitDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
     public IFixedList<IAttributeNode> Attributes { [DebuggerStepThrough] get; }
     public IFixedList<IGenericParameterNode> GenericParameters { [DebuggerStepThrough] get; }
-    public IFixedList<IStandardTypeNameNode> SupertypeNames { [DebuggerStepThrough] get; }
+    public IFixedList<IOrdinaryTypeNameNode> SupertypeNames { [DebuggerStepThrough] get; }
     public IFixedSet<ITraitMemberDefinitionNode> Members { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
@@ -6018,7 +6018,7 @@ file class TraitDefinitionNode : SemanticNode, ITraitDefinitionNode
         ITraitDefinitionSyntax syntax,
         IEnumerable<IAttributeNode> attributes,
         IEnumerable<IGenericParameterNode> genericParameters,
-        IEnumerable<IStandardTypeNameNode> supertypeNames,
+        IEnumerable<IOrdinaryTypeNameNode> supertypeNames,
         IEnumerable<ITraitMemberDefinitionNode> members)
     {
         Syntax = syntax;
@@ -7800,7 +7800,7 @@ file class AttributeNode : SemanticNode, IAttributeNode
     private IAttributeNode Self { [Inline] get => this; }
 
     public IAttributeSyntax Syntax { [DebuggerStepThrough] get; }
-    public IStandardTypeNameNode TypeName { [DebuggerStepThrough] get; }
+    public IOrdinaryTypeNameNode TypeName { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -7814,7 +7814,7 @@ file class AttributeNode : SemanticNode, IAttributeNode
 
     public AttributeNode(
         IAttributeSyntax syntax,
-        IStandardTypeNameNode typeName)
+        IOrdinaryTypeNameNode typeName)
     {
         Syntax = syntax;
         TypeName = Child.Attach(this, typeName);
@@ -8427,7 +8427,7 @@ file class IdentifierTypeNameNode : SemanticNode, IIdentifierTypeNameNode
     public ITypeDeclarationNode? ReferencedDeclaration
         => GrammarAttribute.IsCached(in referencedDeclarationCached) ? referencedDeclaration
             : this.Synthetic(ref referencedDeclarationCached, ref referencedDeclaration,
-                BindingNamesAspect.StandardTypeName_ReferencedDeclaration);
+                BindingNamesAspect.OrdinaryTypeName_ReferencedDeclaration);
     private ITypeDeclarationNode? referencedDeclaration;
     private bool referencedDeclarationCached;
 
@@ -8444,7 +8444,7 @@ file class IdentifierTypeNameNode : SemanticNode, IIdentifierTypeNameNode
 
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
     {
-        BindingNamesAspect.StandardTypeName_Contribute_Diagnostics(this, builder);
+        BindingNamesAspect.OrdinaryTypeName_Contribute_Diagnostics(this, builder);
     }
 }
 
@@ -8540,7 +8540,7 @@ file class GenericTypeNameNode : SemanticNode, IGenericTypeNameNode
     public ITypeDeclarationNode? ReferencedDeclaration
         => GrammarAttribute.IsCached(in referencedDeclarationCached) ? referencedDeclaration
             : this.Synthetic(ref referencedDeclarationCached, ref referencedDeclaration,
-                BindingNamesAspect.StandardTypeName_ReferencedDeclaration);
+                BindingNamesAspect.OrdinaryTypeName_ReferencedDeclaration);
     private ITypeDeclarationNode? referencedDeclaration;
     private bool referencedDeclarationCached;
 
@@ -8560,7 +8560,7 @@ file class GenericTypeNameNode : SemanticNode, IGenericTypeNameNode
 
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
     {
-        BindingNamesAspect.StandardTypeName_Contribute_Diagnostics(this, builder);
+        BindingNamesAspect.OrdinaryTypeName_Contribute_Diagnostics(this, builder);
     }
 }
 
@@ -8571,7 +8571,7 @@ file class QualifiedTypeNameNode : SemanticNode, IQualifiedTypeNameNode
 
     public IQualifiedTypeNameSyntax Syntax { [DebuggerStepThrough] get; }
     public ITypeNameNode Context { [DebuggerStepThrough] get; }
-    public IStandardTypeNameNode QualifiedName { [DebuggerStepThrough] get; }
+    public IOrdinaryTypeNameNode QualifiedName { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -8598,7 +8598,7 @@ file class QualifiedTypeNameNode : SemanticNode, IQualifiedTypeNameNode
     public QualifiedTypeNameNode(
         IQualifiedTypeNameSyntax syntax,
         ITypeNameNode context,
-        IStandardTypeNameNode qualifiedName)
+        IOrdinaryTypeNameNode qualifiedName)
     {
         Syntax = syntax;
         Context = Child.Attach(this, context);
@@ -15958,9 +15958,9 @@ file class VariableNameExpressionNode : SemanticNode, IVariableNameExpressionNod
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class StandardTypeNameExpressionNode : SemanticNode, IStandardTypeNameExpressionNode
+file class OrdinaryTypeNameExpressionNode : SemanticNode, IOrdinaryTypeNameExpressionNode
 {
-    private IStandardTypeNameExpressionNode Self { [Inline] get => this; }
+    private IOrdinaryTypeNameExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
     protected override bool MayHaveRewrite => true;
 
@@ -16029,7 +16029,7 @@ file class StandardTypeNameExpressionNode : SemanticNode, IStandardTypeNameExpre
     private ValueId valueId;
     private bool valueIdCached;
 
-    public StandardTypeNameExpressionNode(
+    public OrdinaryTypeNameExpressionNode(
         IOrdinaryNameExpressionSyntax syntax,
         IEnumerable<ITypeNode> typeArguments,
         ITypeDeclarationNode referencedDeclaration)

@@ -125,14 +125,14 @@ public partial class Parser
             IOpenParenToken _ => ParseFunctionType(),
             ISelfTypeKeywordToken => ParseSelfType(),
             // otherwise we want a type name
-            _ => ParseStandardTypeName()
+            _ => ParseOrdinaryTypeName()
         };
     }
 
-    private IFixedList<IStandardTypeNameSyntax> ParseStandardTypeNames()
-        => AcceptManySeparated<IStandardTypeNameSyntax, ICommaToken>(ParseStandardTypeName);
+    private IFixedList<IOrdinaryTypeNameSyntax> ParseOrdinaryTypeNames()
+        => AcceptManySeparated<IOrdinaryTypeNameSyntax, ICommaToken>(ParseOrdinaryTypeName);
 
-    private IStandardTypeNameSyntax ParseStandardTypeName()
+    private IOrdinaryTypeNameSyntax ParseOrdinaryTypeName()
     {
         var identifier = Tokens.RequiredToken<IIdentifierToken>();
         var name = identifier.Value;

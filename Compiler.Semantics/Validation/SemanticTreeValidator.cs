@@ -23,7 +23,7 @@ internal class SemanticTreeValidator
             _ = typeName.NamedBareType;
             _ = typeName.NamedType;
         }
-        if (node is IStandardTypeNameNode standardTypeName)
+        if (node is IOrdinaryTypeNameNode standardTypeName)
         {
             _ = standardTypeName.ReferencedDeclaration;
         }

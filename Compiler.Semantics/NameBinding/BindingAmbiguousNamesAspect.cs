@@ -30,7 +30,7 @@ internal static partial class BindingAmbiguousNamesAspect
                 case ILocalBindingNode referencedVariable:
                     return IVariableNameExpressionNode.Create(node.Syntax, referencedVariable);
                 case ITypeDeclarationNode referencedType:
-                    return IStandardTypeNameExpressionNode.Create(node.Syntax, FixedList.Empty<ITypeNode>(), referencedType);
+                    return IOrdinaryTypeNameExpressionNode.Create(node.Syntax, FixedList.Empty<ITypeNode>(), referencedType);
             }
 
         // TODO theoretically, this has the same problem where uncached ReferencedDeclarations could cause premature rewrite to UnknownNameExpression
@@ -47,7 +47,7 @@ internal static partial class BindingAmbiguousNamesAspect
             switch (referencedDeclaration)
             {
                 case ITypeDeclarationNode referencedType:
-                    return IStandardTypeNameExpressionNode.Create(node.Syntax, node.TypeArguments, referencedType);
+                    return IOrdinaryTypeNameExpressionNode.Create(node.Syntax, node.TypeArguments, referencedType);
             }
 
         // TODO theoretically, this has the same problem where uncached ReferencedDeclarations could cause premature rewrite to UnknownNameExpression
