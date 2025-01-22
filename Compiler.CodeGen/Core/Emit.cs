@@ -25,6 +25,12 @@ internal static class Emit
         builder.Append(indent);
         builder.AppendLine("[Closed(");
         bool first = true;
+        if (!node.IsAbstract)
+        {
+            builder.Append(indent);
+            builder.Append($"    typeof({node.Defines.ClassName})");
+            first = false;
+        }
         foreach (var child in children)
         {
             if (first)

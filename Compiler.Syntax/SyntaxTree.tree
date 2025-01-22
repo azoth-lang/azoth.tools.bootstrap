@@ -206,7 +206,7 @@ NameExpression <: Expression;
 InstanceExpression <: NameExpression; // i.e. `self` or `base`
 SelfExpression <: InstanceExpression = IsImplicit:`bool`;
 // TODO should MemberAccessExpression really be a NameExpression once QualifiedName works properly?
-MemberAccessExpression <: NameExpression
+concrete MemberAccessExpression <: NameExpression
     = Context:Expression QualifiedName:OrdinaryName;
 MissingName <: NameExpression;
 
@@ -220,7 +220,7 @@ BuiltInTypeName <: UnqualifiedName = Name:`BuiltInTypeName`;
 OrdinaryName <: UnqualifiedName = Name:`OrdinaryName` GenericArguments:Type*;
 IdentifierName <: OrdinaryName = Name:`IdentifierName`;
 GenericName <: OrdinaryName = Name:`GenericName` /GenericArguments/;
-QualifiedName <: Name = Context:Name QualifiedName:OrdinaryName;
+QualifiedName <: Name, MemberAccessExpression = Context:Name /QualifiedName/;
 
 // ---------- Capability Expressions
 /// i.e. `move name`. A move takes ownership of something from a variable or expression.

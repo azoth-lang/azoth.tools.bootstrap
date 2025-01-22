@@ -65,7 +65,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees
                     "      throw ExhaustiveMatch.Failed(node);\r\n");
             
             #line 27 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\ChildrenCodeTemplate.tt"
-  foreach(var node in tree.Nodes.Where(r => !r.IsAbstract)) { 
+  foreach(var node in Build.OrderedNodes(tree.Nodes.Where(r => !r.IsAbstract))) { 
             
             #line default
             #line hidden

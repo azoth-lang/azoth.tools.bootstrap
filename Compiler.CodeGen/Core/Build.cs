@@ -5,6 +5,7 @@ using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.AttributeFamilies;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Equations;
 using Azoth.Tools.Bootstrap.Framework;
+using Medallion.Collections;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Core;
 
@@ -53,4 +54,7 @@ internal static class Build
 
     public static IEnumerable<CollectionAttributeEquationModel> Equations(TreeNodeModel node, CollectionAttributeFamilyModel family)
         => node.ActualEquations.OfType<CollectionAttributeEquationModel>().Where(eq => eq.AttributeFamily == family);
+
+    public static IEnumerable<TreeNodeModel> OrderedNodes(IEnumerable<TreeNodeModel> nodes)
+        => nodes.OrderTopologicallyBy(node => node.ChildNodes).ThenBy(node => node.Defines.FullName);
 }

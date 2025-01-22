@@ -52,10 +52,9 @@ public class TreeNodeModel
     /// <summary>
     /// Whether this tree node is abstract meaning that it cannot be instantiated directly.
     /// </summary>
-    /// <remarks>Right now, this is determined solely by whether this node has child nodes. If
-    /// needed, keywords <c>abstract</c> and <c>concrete</c> could be added to the definition file
-    /// to allow overriding this.</remarks>
-    public bool IsAbstract => !ChildNodes.IsEmpty;
+    /// <remarks>Right now, this is determined solely by whether this node has child nodes, and
+    /// keywords <c>abstract</c> and <c>concrete</c> in definition file to allow overriding this.</remarks>
+    public bool IsAbstract => Syntax.IsAbstract ?? !ChildNodes.IsEmpty;
 
     /// <summary>
     /// Whether this node needs a sync lock declared in it for the use by any of its attributes.

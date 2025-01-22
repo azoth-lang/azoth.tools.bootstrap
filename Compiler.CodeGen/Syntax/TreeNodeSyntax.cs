@@ -10,17 +10,20 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
 public sealed class TreeNodeSyntax
 {
     public bool IsTemp { get; }
+    public bool? IsAbstract { get; }
     public SymbolSyntax Defines { get; }
     public IFixedSet<SymbolSyntax> Supertypes { get; }
     public IFixedList<TreeAttributeSyntax> DeclaredAttributes { get; }
 
     public TreeNodeSyntax(
         bool isTemp,
+        bool? isAbstract,
         SymbolSyntax defines,
         IEnumerable<SymbolSyntax> supertypes,
         IEnumerable<TreeAttributeSyntax> declaredAttributes)
     {
         IsTemp = isTemp;
+        IsAbstract = isAbstract;
         Defines = defines;
         var supertypesList = supertypes.ToFixedList();
         if (supertypesList.Duplicates().Any())

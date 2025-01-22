@@ -1384,7 +1384,9 @@ public partial interface ISelfExpressionSyntax : IInstanceExpressionSyntax
         => new SelfExpressionSyntax(span, isImplicit);
 }
 
-[Closed(typeof(MemberAccessExpressionSyntax))]
+[Closed(
+    typeof(MemberAccessExpressionSyntax),
+    typeof(IQualifiedNameSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IMemberAccessExpressionSyntax : INameExpressionSyntax
 {
@@ -1482,10 +1484,10 @@ public partial interface IGenericNameSyntax : IOrdinaryNameSyntax
 
 [Closed(typeof(QualifiedNameSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IQualifiedNameSyntax : INameSyntax
+public partial interface IQualifiedNameSyntax : INameSyntax, IMemberAccessExpressionSyntax
 {
-    INameSyntax Context { get; }
-    IOrdinaryNameSyntax QualifiedName { get; }
+    new INameSyntax Context { get; }
+    IExpressionSyntax IMemberAccessExpressionSyntax.Context => Context;
 
     public static IQualifiedNameSyntax Create(
         TextSpan span,

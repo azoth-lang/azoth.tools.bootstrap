@@ -38,9 +38,9 @@ internal static class TreeParser
     private static TreeNodeSyntax ParseNode(string statement)
     {
         var (declaration, definition) = SplitDeclarationAndDefinition(statement);
-        var (isTemp, defines, supertypes) = ParseDeclaration(declaration);
+        var (isTemp, isAbstract, defines, supertypes) = ParseDeclaration(declaration);
         var attributes = ParseTreeAttributes(definition).ToFixedList();
-        return new(isTemp, defines, supertypes, attributes);
+        return new(isTemp, isAbstract, defines, supertypes, attributes);
     }
 
     private static (string Declaration, string? Definition) SplitDeclarationAndDefinition(string statement)
@@ -109,19 +109,41 @@ internal static class TreeParser
         }
     }
 
-    private static (bool isTemp, SymbolSyntax Defines, IEnumerable<SymbolSyntax> Supertypes) ParseDeclaration(
+    private static (bool isTemp, bool? isAbstract, SymbolSyntax Defines, IEnumerable<SymbolSyntax> Supertypes) ParseDeclaration(
         string declaration)
     {
         (declaration, var supertypes) = OptionalBisect(declaration, "<:", "Too many `<:` in: '{0}'");
-        var (tempKeyword, defines) = OptionalSplitOffStart(declaration);
-        bool isTemp = false;
-        if (tempKeyword == "temp")
-            isTemp = true;
-        else
-            defines = declaration;
-
-        var definesSymbol = ParseSymbol(defines);
+        bool isTemp = ParseIsTemp(ref declaration);
+        var isAbstract = ParseIsAbstract(ref declaration);
+        var definesSymbol = ParseSymbol(declaration);
         var supertypeSyntax = ParseSupertypes(supertypes);
-        return (isTemp, definesSymbol, supertypeSyntax);
+        return (isTemp, isAbstract, definesSymbol, supertypeSyntax);
+    }
+
+    private static bool ParseIsTemp(ref string declaration)
+    {
+        var (tempKeyword, defines) = OptionalSplitOffStart(declaration);
+        if (tempKeyword == "temp")
+        {
+            declaration = defines;
+            return true;
+        }
+        return false;
+    }
+
+    private static bool? ParseIsAbstract(ref string declaration)
+    {
+        var (keyword, defines) = OptionalSplitOffStart(declaration);
+        switch (keyword)
+        {
+            case "abstract":
+                declaration = defines;
+                return true;
+            case "concrete":
+                declaration = defines;
+                return false;
+            default:
+                return null;
+        }
     }
 }

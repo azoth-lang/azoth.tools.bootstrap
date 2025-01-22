@@ -2,19 +2,18 @@
 
 ## Tree File Syntax
 
-| Declaration                                            | Meaning |
-| ------------------------------------------------------ | ------- |
-| `◊namespace` *DottedNamespaceName*`;`                  |         |
-| `◊root-supertype` *Node*`;`                            |         |
-| `◊prefix` *Text*`;`                                    |         |
-| `◊suffix` *Text*`;`                                    |         |
-| `◊gen-classes` (`true`\|`false`)`;`                    |         |
-| `◊simplified-tree` (`true`\|`false`)`;`                |         |
-| `◊class-prefix` *Text*`;`                              |         |
-| `◊class-suffix` *Text*`;`                              |         |
-| `◊using` *DottedNamespaceName*`;`                      |         |
-| *Node* `=` *PropertyExp**`;`                           |         |
-| *Node* `<:` *Node* (`,` *Node*)* `=` *PropertyExp**`;` |         |
+| Declaration                                                                                 | Meaning |
+| ------------------------------------------------------------------------------------------- | ------- |
+| `◊namespace` *DottedNamespaceName*`;`                                                       |         |
+| `◊root-supertype` *Node*`;`                                                                 |         |
+| `◊prefix` *Text*`;`                                                                         |         |
+| `◊suffix` *Text*`;`                                                                         |         |
+| `◊gen-classes` (`true`\|`false`)`;`                                                         |         |
+| `◊simplified-tree` (`true`\|`false`)`;`                                                     |         |
+| `◊class-prefix` *Text*`;`                                                                   |         |
+| `◊class-suffix` *Text*`;`                                                                   |         |
+| `◊using` *DottedNamespaceName*`;`                                                           |         |
+| `temp`? (`abstract`\|`concrete`)? *Node* (`<:` *Node* (`,` *Node*)*)? `=` *PropertyExp**`;` |         |
 
 | Property Expression | Meaning                                                        |
 | ------------------- | -------------------------------------------------------------- |

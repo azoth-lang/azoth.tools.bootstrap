@@ -12,6 +12,8 @@ internal static partial class FormattingAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial string SelfParameter_ToString(ISelfParameterSyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial string QualifiedName_ToString(IQualifiedNameSyntax node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial string CompilationUnit_ToString(ICompilationUnitSyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial string ImportDirective_ToString(IImportDirectiveSyntax node);
@@ -139,8 +141,6 @@ internal static partial class FormattingAspect
     public static partial string IdentifierName_ToString(IIdentifierNameSyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial string GenericName_ToString(IGenericNameSyntax node);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial string QualifiedName_ToString(IQualifiedNameSyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial string MoveExpression_ToString(IMoveExpressionSyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

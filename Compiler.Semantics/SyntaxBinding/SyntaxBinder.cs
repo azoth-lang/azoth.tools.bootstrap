@@ -436,6 +436,8 @@ internal static class SyntaxBinder
         {
             null => null,
             IIdentifierNameSyntax syn => IdentifierNameExpression(syn),
+            // TODO no error reported if this case is missing
+            IQualifiedNameSyntax syn => throw new NotImplementedException(),
             IMemberAccessExpressionSyntax syn => MemberAccessExpression(syn),
             IMissingNameSyntax syn => MissingName(syn),
             IBlockExpressionSyntax syn => BlockExpression(syn),
@@ -463,7 +465,6 @@ internal static class SyntaxBinder
             IAwaitExpressionSyntax syn => AwaitExpression(syn),
             IBuiltInTypeNameSyntax syn => BuiltInTypeNameExpression(syn),
             IGenericNameSyntax syn => GenericNameExpression(syn),
-            IQualifiedNameSyntax syn => throw new NotImplementedException(),
             _ => throw ExhaustiveMatch.Failed(syntax)
         };
 
