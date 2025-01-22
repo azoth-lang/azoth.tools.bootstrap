@@ -191,6 +191,7 @@
 ↑ InitializerInvocationExpression.ContextualizedCall: `ContextualizedCall`?;
 = InitializerInvocationExpression.Arguments[index].ExpectedType
     => ContextualizedCall?.ParameterTypes[index].Type;
+= InitializerInvocationExpression.↑.Diagnostics;
 = NonInvocableInvocationExpression.Expression.ExpectedType => null;
 ↓ NonInvocableInvocationExpression.FlowStateBefore(): `IFlowState`;
 = NonInvocableInvocationExpression.Arguments[0].**.FlowStateBefore()

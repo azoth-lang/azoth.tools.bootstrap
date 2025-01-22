@@ -385,7 +385,7 @@ internal static partial class ExpressionTypesAspect
 
         foreach (TypeParameterArgument arg in bareType.TypeParameterArguments)
             if (!arg.IsConstructable())
-                diagnostics.Add(TypeError.CapabilityNotCompatibleWithConstraint(node.File, node.Syntax, arg.Parameter, (Type)arg.Argument));
+                diagnostics.Add(TypeError.CapabilityNotCompatibleWithConstraint(node.File, node.Syntax, arg.Parameter, arg.Argument));
     }
 
     public static partial ContextualizedCall? InitializerInvocationExpression_ContextualizedCall(IInitializerInvocationExpressionNode node)
@@ -404,6 +404,43 @@ internal static partial class ExpressionTypesAspect
         var flowState = node.Arguments.LastOrDefault()?.FlowStateAfter ?? node.FlowStateBefore();
         var argumentValueIds = ArgumentValueIds(node.ContextualizedCall, null, node.Arguments);
         return flowState.CombineArguments(argumentValueIds, node.ValueId, node.Type);
+    }
+
+    public static partial void InitializerInvocationExpression_Contribute_Diagnostics(IInitializerInvocationExpressionNode node, DiagnosticCollectionBuilder diagnostics)
+    {
+        CheckConstructingType(node.Initializer.Context, diagnostics);
+
+        var flowStateBefore = node.Arguments.LastOrDefault()?.FlowStateAfter ?? node.FlowStateBefore();
+        var argumentValueIds = ArgumentValueIds(node.ContextualizedCall, null, node.Arguments);
+        ContributeCannotUnionDiagnostics(node, flowStateBefore, argumentValueIds, diagnostics);
+    }
+
+    private static void CheckConstructingType(ITypeNameExpressionNode node, DiagnosticCollectionBuilder diagnostics)
+    {
+        switch (node)
+        {
+            default:
+                throw ExhaustiveMatch.Failed(node);
+            case IStandardTypeNameExpressionNode n:
+                CheckTypeArgumentsAreConstructable(n, diagnostics);
+                break;
+            //case IBuiltInTypeNameNode n:
+            //    diagnostics.Add(TypeError.SpecialTypeCannotBeUsedHere(node.File, n.Syntax));
+            //    break;
+            case IQualifiedTypeNameExpressionNode n:
+                diagnostics.Add(TypeError.TypeParameterCannotBeUsedHere(node.File, n.Syntax));
+                break;
+        }
+    }
+
+    public static void CheckTypeArgumentsAreConstructable(IStandardTypeNameExpressionNode node, DiagnosticCollectionBuilder diagnostics)
+    {
+        var bareType = node.NamedBareType;
+        if (bareType is null) return;
+
+        foreach (TypeParameterArgument arg in bareType.TypeParameterArguments)
+            if (!arg.IsConstructable())
+                diagnostics.Add(TypeError.CapabilityNotCompatibleWithConstraint(node.File, node.Syntax, arg.Parameter, arg.Argument));
     }
 
     public static partial IFlowState UnresolvedInvocationExpression_FlowStateAfter(IUnresolvedInvocationExpressionNode node)

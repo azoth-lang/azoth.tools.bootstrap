@@ -208,6 +208,7 @@ internal static partial class OverloadResolutionAspect
         if (method.ReferencedDeclaration is not null)
             return;
 
+        // TODO isn't this now a duplicate of the diagnostics on MethodName?
         switch (method.CompatibleCallCandidates.Count)
         {
             case 0:
@@ -239,6 +240,24 @@ internal static partial class OverloadResolutionAspect
         var argumentPlainTypes = ArgumentPlainTypes.ForMethod(node.Context.PlainType, PlainTypeIfKnown(node.Value).Yield());
         return node.CallCandidates.OfType<ICallCandidate<ISetterMethodDeclarationNode>>()
                    .Where(c => c.CompatibleWith(argumentPlainTypes)).ToFixedSet();
+    }
+
+    public static partial void InitializerInvocationExpression_Contribute_Diagnostics(IInitializerInvocationExpressionNode node, DiagnosticCollectionBuilder diagnostics)
+    {
+        var initializer = node.Initializer;
+        switch (initializer.InitializingPlainType)
+        {
+            case UnknownPlainType:
+                // Error should be reported elsewhere
+                return;
+            case NeverPlainType:
+            case GenericParameterPlainType:
+            case BarePlainType { TypeConstructor.CanBeInstantiated: false }:
+                // TODO type variables, empty types and others also cannot be constructed. Report proper error message in that case
+                diagnostics.Add(
+                    OtherSemanticError.CannotInitializeAbstractType(node.File, initializer.Context.Syntax));
+                return;
+        }
     }
     #endregion
 

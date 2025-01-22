@@ -14289,6 +14289,8 @@ file class InitializerInvocationExpressionNode : SemanticNode, IInitializerInvoc
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
     {
         ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
+        ExpressionTypesAspect.InitializerInvocationExpression_Contribute_Diagnostics(this, builder);
+        OverloadResolutionAspect.InitializerInvocationExpression_Contribute_Diagnostics(this, builder);
     }
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
