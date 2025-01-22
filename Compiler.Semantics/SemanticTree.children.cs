@@ -531,6 +531,10 @@ public static class ISemanticNodeExtensions
                 foreach (var child in n.TempArguments)
                     yield return child;
                 yield break;
+            case IUnresolvedQualifiedNameExpressionNode n:
+                yield return n.TempContext;
+                yield return n.TempQualifiedName;
+                yield break;
             case IUnresolvedMemberAccessExpressionNode n:
                 yield return n.TempContext;
                 foreach (var child in n.TypeArguments)

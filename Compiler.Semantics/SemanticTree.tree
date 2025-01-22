@@ -209,9 +209,13 @@ BindingPattern <: OptionalOrBindingPattern, VariableBinding = Syntax:`IBindingPa
 OptionalPattern <: OptionalOrBindingPattern = Syntax:`IOptionalPatternSyntax` Pattern:OptionalOrBindingPattern;
 
 // ---------- Expressions
-// TODO rename Ambiguous to `Unresolved` because it is not ambiguous, it is just not bound (avoid unbound because the issue is more than just name binding)
+/// An ambiguous expression is one that could mean one of several things and will be rewritten out of
+/// existence.
 temp AmbiguousExpression <: Code = Syntax:`IExpressionSyntax`;
 Expression <: AmbiguousExpression, ControlFlow = Syntax:`IExpressionSyntax`;
+/// An unresolved expression is one that hasn't had name binding on it. Expressions where name
+/// binding fails can stay unresolved.
+UnresolvedExpression <: Expression;
 BlockExpression <: Expression, BlockOrResult, BodyOrBlock
     = Syntax:`IBlockExpressionSyntax` Statements:Statement*;
 NewObjectExpression <: InvocationExpression = Syntax:`INewObjectExpressionSyntax`
@@ -289,8 +293,8 @@ temp GenericNameExpression <: AmbiguousName, OrdinaryNameExpression
 // ---------- Name Expressions
 NameExpression <: Expression, AmbiguousNameExpression = Syntax:`INameExpressionSyntax`;
 // TODO rename UnknownNameExpression to UnresolvedNameExpression (note these are non-temp)
-UnknownNameExpression <: NameExpression = Syntax:`INameExpressionSyntax`;
-UnresolvedMemberAccessExpression <: UnknownNameExpression
+UnknownNameExpression <: NameExpression, UnresolvedExpression = Syntax:`INameExpressionSyntax`;
+concrete UnresolvedMemberAccessExpression <: UnknownNameExpression
     = Syntax:`IMemberAccessExpressionSyntax` Context:AmbiguousExpression TypeArguments:Type*;
 LocalBindingNameExpression <: NameExpression = ReferencedDefinition:`IBindingNode`?;
 // TODO Name <: NameExpression
@@ -363,6 +367,10 @@ UnknownGenericNameExpression <: UnknownStandardNameExpression
 AmbiguousMemberAccessExpression <: UnknownNameExpression
     = Syntax:`IMemberAccessExpressionSyntax` Context:Expression TypeArguments:Type*
     ReferencedMembers:{`IDeclarationNode`};
+
+// ---------- Unresolved Name Expressions
+UnresolvedQualifiedNameExpression <: UnknownNameExpression, UnresolvedMemberAccessExpression
+    = Syntax:`IQualifiedNameSyntax` Context:AmbiguousExpression QualifiedName:AmbiguousNameExpression;
 
 // ---------- Capability Expressions
 temp AmbiguousMoveExpression <: AmbiguousExpression = Syntax:`IMoveExpressionSyntax` Referent:AmbiguousExpression;

@@ -187,6 +187,10 @@
 ↑ UnknownGenericNameExpression.Name: `GenericName` => Syntax.Name;
 ↑ AmbiguousMemberAccessExpression.MemberName: `OrdinaryName` => Syntax.QualifiedName.Name;
 
+// ---------- Unresolved Name Expressions
+↑ UnresolvedQualifiedNameExpression.TypeArguments: Type*
+    => (QualifiedName as IGenericNameExpressionNode)?.TypeArguments ?? [];
+
 // ---------- Capability Expressions
 ↑ PrepareToReturnExpression.Syntax: `IExpressionSyntax` => Value.Syntax;
 

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -436,8 +435,7 @@ internal static class SyntaxBinder
         {
             null => null,
             IIdentifierNameSyntax syn => IdentifierNameExpression(syn),
-            // TODO no error reported if this case is missing
-            IQualifiedNameSyntax syn => throw new NotImplementedException(),
+            IQualifiedNameSyntax syn => QualifiedNameExpression(syn),
             IMemberAccessExpressionSyntax syn => MemberAccessExpression(syn),
             IMissingNameSyntax syn => MissingName(syn),
             IBlockExpressionSyntax syn => BlockExpression(syn),
@@ -550,23 +548,36 @@ internal static class SyntaxBinder
     #endregion
 
     #region Name Expressions
-    private static IIdentifierNameExpressionNode IdentifierNameExpression(IIdentifierNameSyntax syntax)
-        => IIdentifierNameExpressionNode.Create(syntax);
-
-    private static IBuiltInTypeNameExpressionNode BuiltInTypeNameExpression(IBuiltInTypeNameSyntax syntax)
-        => IBuiltInTypeNameExpressionNode.Create(syntax);
-
-    private static IGenericNameExpressionNode GenericNameExpression(IGenericNameSyntax syntax)
-        => IGenericNameExpressionNode.Create(syntax, Types(syntax.GenericArguments));
+    private static ISelfExpressionNode SelfExpression(ISelfExpressionSyntax syntax)
+        => ISelfExpressionNode.Create(syntax);
 
     private static IUnresolvedMemberAccessExpressionNode MemberAccessExpression(IMemberAccessExpressionSyntax syntax)
         => IUnresolvedMemberAccessExpressionNode.Create(syntax, Expression(syntax.Context), Types(syntax.QualifiedName.GenericArguments));
 
-    private static ISelfExpressionNode SelfExpression(ISelfExpressionSyntax syntax)
-        => ISelfExpressionNode.Create(syntax);
-
     private static IMissingNameExpressionNode MissingName(IMissingNameSyntax syn)
         => IMissingNameExpressionNode.Create(syn);
+    #endregion
+
+    #region Names
+    private static IBuiltInTypeNameExpressionNode BuiltInTypeNameExpression(IBuiltInTypeNameSyntax syntax)
+        => IBuiltInTypeNameExpressionNode.Create(syntax);
+
+    private static IOrdinaryNameExpressionNode OrdinaryNameExpression(IOrdinaryNameSyntax syntax)
+        => syntax switch
+        {
+            IIdentifierNameSyntax syn => IdentifierNameExpression(syn),
+            IGenericNameSyntax syn => GenericNameExpression(syn),
+            _ => throw ExhaustiveMatch.Failed(syntax),
+        };
+
+    private static IIdentifierNameExpressionNode IdentifierNameExpression(IIdentifierNameSyntax syntax)
+        => IIdentifierNameExpressionNode.Create(syntax);
+
+    private static IGenericNameExpressionNode GenericNameExpression(IGenericNameSyntax syntax)
+        => IGenericNameExpressionNode.Create(syntax, Types(syntax.GenericArguments));
+
+    private static IUnresolvedQualifiedNameExpressionNode QualifiedNameExpression(IQualifiedNameSyntax syntax)
+        => IUnresolvedQualifiedNameExpressionNode.Create(syntax, Expression(syntax.Context), OrdinaryNameExpression(syntax.QualifiedName));
     #endregion
 
     #region Capability Expressions

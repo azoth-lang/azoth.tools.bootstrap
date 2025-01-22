@@ -159,8 +159,9 @@ public partial class Parser
                         Tokens.ConsumeToken<IAccessOperatorToken>();
                         var name = ParseOrdinaryName();
                         var memberAccessSpan = TextSpan.Covering(expression.Span, name.Span);
-                        expression = IMemberAccessExpressionSyntax.Create(memberAccessSpan,
-                            expression, name);
+                        expression = expression is INameSyntax nameExpression
+                            ? IQualifiedNameSyntax.Create(memberAccessSpan, nameExpression, name)
+                            : IMemberAccessExpressionSyntax.Create(memberAccessSpan, expression, name);
                         continue;
                     }
                     break;
