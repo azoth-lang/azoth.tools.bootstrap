@@ -798,13 +798,26 @@ public partial interface ITypeSyntax : ICodeSyntax
 }
 
 [Closed(
-    typeof(IStandardTypeNameSyntax),
     typeof(IBuiltInTypeNameSyntax),
+    typeof(IStandardTypeNameSyntax),
     typeof(IQualifiedTypeNameSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface ITypeNameSyntax : ITypeSyntax
 {
     TypeName Name { get; }
+}
+
+// [Closed(typeof(BuiltInTypeNameSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
+public partial interface IBuiltInTypeNameSyntax : ITypeNameSyntax
+{
+    new BuiltInTypeName Name { get; }
+    TypeName ITypeNameSyntax.Name => Name;
+
+    public static IBuiltInTypeNameSyntax Create(
+        TextSpan span,
+        BuiltInTypeName name)
+        => new BuiltInTypeNameSyntax(span, name);
 }
 
 [Closed(
@@ -829,19 +842,6 @@ public partial interface IIdentifierTypeNameSyntax : IStandardTypeNameSyntax
         TextSpan span,
         IdentifierName name)
         => new IdentifierTypeNameSyntax(span, name);
-}
-
-// [Closed(typeof(BuiltInTypeNameSyntax))]
-[GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IBuiltInTypeNameSyntax : ITypeNameSyntax
-{
-    new BuiltInTypeName Name { get; }
-    TypeName ITypeNameSyntax.Name => Name;
-
-    public static IBuiltInTypeNameSyntax Create(
-        TextSpan span,
-        BuiltInTypeName name)
-        => new BuiltInTypeNameSyntax(span, name);
 }
 
 // [Closed(typeof(GenericTypeNameSyntax))]
@@ -1432,8 +1432,8 @@ public partial interface IInvocationExpressionSyntax : IExpressionSyntax
 }
 
 [Closed(
-    typeof(IOrdinaryNameExpressionSyntax),
     typeof(IBuiltInTypeNameExpressionSyntax),
+    typeof(IOrdinaryNameExpressionSyntax),
     typeof(IInstanceExpressionSyntax),
     typeof(IMemberAccessExpressionSyntax),
     typeof(IMissingNameSyntax))]
@@ -1442,6 +1442,18 @@ public partial interface INameExpressionSyntax : IExpressionSyntax
 {
     OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
         => OperatorPrecedence.Primary;
+}
+
+// [Closed(typeof(BuiltInTypeNameExpressionSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
+public partial interface IBuiltInTypeNameExpressionSyntax : INameExpressionSyntax
+{
+    BuiltInTypeName Name { get; }
+
+    public static IBuiltInTypeNameExpressionSyntax Create(
+        TextSpan span,
+        BuiltInTypeName name)
+        => new BuiltInTypeNameExpressionSyntax(span, name);
 }
 
 [Closed(
@@ -1468,18 +1480,6 @@ public partial interface IIdentifierNameExpressionSyntax : IOrdinaryNameExpressi
         TextSpan span,
         IdentifierName name)
         => new IdentifierNameExpressionSyntax(span, name);
-}
-
-// [Closed(typeof(BuiltInTypeNameExpressionSyntax))]
-[GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IBuiltInTypeNameExpressionSyntax : INameExpressionSyntax
-{
-    BuiltInTypeName Name { get; }
-
-    public static IBuiltInTypeNameExpressionSyntax Create(
-        TextSpan span,
-        BuiltInTypeName name)
-        => new BuiltInTypeNameExpressionSyntax(span, name);
 }
 
 // [Closed(typeof(GenericNameExpressionSyntax))]
@@ -2494,25 +2494,6 @@ file class ExpressionBodySyntax : IExpressionBodySyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class IdentifierTypeNameSyntax : IIdentifierTypeNameSyntax
-{
-    private IIdentifierTypeNameSyntax Self { [Inline] get => this; }
-
-    public TextSpan Span { [DebuggerStepThrough] get; }
-    public IdentifierName Name { [DebuggerStepThrough] get; }
-    public override string ToString()
-        => FormattingAspect.IdentifierTypeName_ToString(this);
-
-    public IdentifierTypeNameSyntax(
-        TextSpan span,
-        IdentifierName name)
-    {
-        Span = span;
-        Name = name;
-    }
-}
-
-[GeneratedCode("AzothCompilerCodeGen", null)]
 file class BuiltInTypeNameSyntax : IBuiltInTypeNameSyntax
 {
     private IBuiltInTypeNameSyntax Self { [Inline] get => this; }
@@ -2525,6 +2506,25 @@ file class BuiltInTypeNameSyntax : IBuiltInTypeNameSyntax
     public BuiltInTypeNameSyntax(
         TextSpan span,
         BuiltInTypeName name)
+    {
+        Span = span;
+        Name = name;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class IdentifierTypeNameSyntax : IIdentifierTypeNameSyntax
+{
+    private IIdentifierTypeNameSyntax Self { [Inline] get => this; }
+
+    public TextSpan Span { [DebuggerStepThrough] get; }
+    public IdentifierName Name { [DebuggerStepThrough] get; }
+    public override string ToString()
+        => FormattingAspect.IdentifierTypeName_ToString(this);
+
+    public IdentifierTypeNameSyntax(
+        TextSpan span,
+        IdentifierName name)
     {
         Span = span;
         Name = name;
@@ -3278,25 +3278,6 @@ file class InvocationExpressionSyntax : IInvocationExpressionSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class IdentifierNameExpressionSyntax : IIdentifierNameExpressionSyntax
-{
-    private IIdentifierNameExpressionSyntax Self { [Inline] get => this; }
-
-    public TextSpan Span { [DebuggerStepThrough] get; }
-    public IdentifierName Name { [DebuggerStepThrough] get; }
-    public override string ToString()
-        => FormattingAspect.IdentifierNameExpression_ToString(this);
-
-    public IdentifierNameExpressionSyntax(
-        TextSpan span,
-        IdentifierName name)
-    {
-        Span = span;
-        Name = name;
-    }
-}
-
-[GeneratedCode("AzothCompilerCodeGen", null)]
 file class BuiltInTypeNameExpressionSyntax : IBuiltInTypeNameExpressionSyntax
 {
     private IBuiltInTypeNameExpressionSyntax Self { [Inline] get => this; }
@@ -3309,6 +3290,25 @@ file class BuiltInTypeNameExpressionSyntax : IBuiltInTypeNameExpressionSyntax
     public BuiltInTypeNameExpressionSyntax(
         TextSpan span,
         BuiltInTypeName name)
+    {
+        Span = span;
+        Name = name;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class IdentifierNameExpressionSyntax : IIdentifierNameExpressionSyntax
+{
+    private IIdentifierNameExpressionSyntax Self { [Inline] get => this; }
+
+    public TextSpan Span { [DebuggerStepThrough] get; }
+    public IdentifierName Name { [DebuggerStepThrough] get; }
+    public override string ToString()
+        => FormattingAspect.IdentifierNameExpression_ToString(this);
+
+    public IdentifierNameExpressionSyntax(
+        TextSpan span,
+        IdentifierName name)
     {
         Span = span;
         Name = name;

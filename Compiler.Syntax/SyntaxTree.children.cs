@@ -163,9 +163,9 @@ public static class ISyntaxExtensions
             case IExpressionBodySyntax n:
                 yield return n.ResultStatement;
                 yield break;
-            case IIdentifierTypeNameSyntax n:
-                yield break;
             case IBuiltInTypeNameSyntax n:
+                yield break;
+            case IIdentifierTypeNameSyntax n:
                 yield break;
             case IGenericTypeNameSyntax n:
                 foreach (var child in n.GenericArguments)
@@ -294,9 +294,9 @@ public static class ISyntaxExtensions
                 foreach (var child in n.Arguments)
                     yield return child;
                 yield break;
-            case IIdentifierNameExpressionSyntax n:
-                yield break;
             case IBuiltInTypeNameExpressionSyntax n:
+                yield break;
+            case IIdentifierNameExpressionSyntax n:
                 yield break;
             case IGenericNameExpressionSyntax n:
                 foreach (var child in n.GenericArguments)

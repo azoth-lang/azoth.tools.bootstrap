@@ -178,10 +178,10 @@ internal static partial class FormattingAspect
     #endregion
 
     #region Types
-    public static partial string IdentifierTypeName_ToString(IIdentifierTypeNameSyntax node)
+    public static partial string BuiltInTypeName_ToString(IBuiltInTypeNameSyntax node)
         => node.Name.ToString();
 
-    public static partial string BuiltInTypeName_ToString(IBuiltInTypeNameSyntax node)
+    public static partial string IdentifierTypeName_ToString(IIdentifierTypeNameSyntax node)
         => node.Name.ToString();
 
     public static partial string GenericTypeName_ToString(IGenericTypeNameSyntax node)
@@ -332,10 +332,10 @@ internal static partial class FormattingAspect
     #endregion
 
     #region Name Expressions
-    public static partial string IdentifierNameExpression_ToString(IIdentifierNameExpressionSyntax node)
+    public static partial string BuiltInTypeNameExpression_ToString(IBuiltInTypeNameExpressionSyntax node)
         => node.Name.ToString();
 
-    public static partial string BuiltInTypeNameExpression_ToString(IBuiltInTypeNameExpressionSyntax node)
+    public static partial string IdentifierNameExpression_ToString(IIdentifierNameExpressionSyntax node)
         => node.Name.ToString();
 
     public static partial string GenericNameExpression_ToString(IGenericNameExpressionSyntax node)

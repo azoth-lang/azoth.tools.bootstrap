@@ -48,5 +48,3 @@
 = AsyncBlockExpression.ExpressionPrecedence => OperatorPrecedence.Primary;
 = AsyncStartExpression.ExpressionPrecedence => OperatorPrecedence.Min;
 = AwaitExpression.ExpressionPrecedence => OperatorPrecedence.Unary;
-
-

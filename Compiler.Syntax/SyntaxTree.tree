@@ -128,9 +128,9 @@ ExpressionBody <: Body = ResultStatement;
 // ---------- Types
 Type <: Code;
 TypeName <: Type = Name:`TypeName`;
+BuiltInTypeName <: TypeName = Name:`BuiltInTypeName`;
 StandardTypeName <: TypeName = Name:`OrdinaryName`;
 IdentifierTypeName <: StandardTypeName = Name:`IdentifierName`;
-BuiltInTypeName <: TypeName = Name:`BuiltInTypeName`;
 GenericTypeName <: StandardTypeName = Name:`GenericName` GenericArguments:Type*;
 QualifiedTypeName <: TypeName = Context:TypeName QualifiedName:StandardTypeName;
 OptionalType <: Type = Referent:Type;
@@ -203,9 +203,9 @@ InvocationExpression <: Expression = Expression Arguments:Expression*;
 
 // ---------- Name Expressions
 NameExpression <: Expression;
+BuiltInTypeNameExpression <: NameExpression = Name:`BuiltInTypeName`;
 OrdinaryNameExpression <: NameExpression = Name:`OrdinaryName` GenericArguments:Type*;
 IdentifierNameExpression <: OrdinaryNameExpression = Name:`IdentifierName`;
-BuiltInTypeNameExpression <: NameExpression = Name:`BuiltInTypeName`;
 GenericNameExpression <: OrdinaryNameExpression = Name:`GenericName` /GenericArguments/;
 InstanceExpression <: NameExpression; // i.e. `self` or `base`
 SelfExpression <: InstanceExpression = IsImplicit:`bool`;

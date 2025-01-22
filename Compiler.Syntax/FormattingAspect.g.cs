@@ -64,9 +64,9 @@ internal static partial class FormattingAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial string ExpressionBody_ToString(IExpressionBodySyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial string IdentifierTypeName_ToString(IIdentifierTypeNameSyntax node);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial string BuiltInTypeName_ToString(IBuiltInTypeNameSyntax node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial string IdentifierTypeName_ToString(IIdentifierTypeNameSyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial string GenericTypeName_ToString(IGenericTypeNameSyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -136,9 +136,9 @@ internal static partial class FormattingAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial string InvocationExpression_ToString(IInvocationExpressionSyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial string IdentifierNameExpression_ToString(IIdentifierNameExpressionSyntax node);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial string BuiltInTypeNameExpression_ToString(IBuiltInTypeNameExpressionSyntax node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial string IdentifierNameExpression_ToString(IIdentifierNameExpressionSyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial string GenericNameExpression_ToString(IGenericNameExpressionSyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
