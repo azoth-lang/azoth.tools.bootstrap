@@ -218,15 +218,6 @@ public static class ISyntaxExtensions
                 foreach (var child in n.Arguments)
                     yield return child;
                 yield break;
-            case ISelfExpressionSyntax n:
-                yield break;
-            case IMemberAccessExpressionSyntax n:
-                yield return n.Context;
-                foreach (var child in n.GenericArguments)
-                    yield return child;
-                yield break;
-            case IMissingNameSyntax n:
-                yield break;
             case IUnsafeExpressionSyntax n:
                 yield return n.Expression;
                 yield break;
@@ -290,6 +281,15 @@ public static class ISyntaxExtensions
                 yield return n.Expression;
                 foreach (var child in n.Arguments)
                     yield return child;
+                yield break;
+            case ISelfExpressionSyntax n:
+                yield break;
+            case IMemberAccessExpressionSyntax n:
+                yield return n.Context;
+                foreach (var child in n.GenericArguments)
+                    yield return child;
+                yield break;
+            case IMissingNameSyntax n:
                 yield break;
             case IBuiltInTypeNameExpressionSyntax n:
                 yield break;

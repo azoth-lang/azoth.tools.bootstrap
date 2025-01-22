@@ -239,14 +239,6 @@ internal static partial class FormattingAspect
         return $"new {node.Type}{name}({string.Join(", ", node.Arguments)})";
     }
 
-    public static partial string SelfExpression_ToString(ISelfExpressionSyntax node)
-        => node.IsImplicit ? "⟦self⟧" : "self";
-
-    public static partial string MemberAccessExpression_ToString(IMemberAccessExpressionSyntax node)
-        => $"{node.Context.ToGroupedString(node.ExpressionPrecedence)}.{node.MemberName}";
-
-    public static partial string MissingName_ToString(IMissingNameSyntax node) => "⧼unknown⧽";
-
     public static partial string UnsafeExpression_ToString(IUnsafeExpressionSyntax node)
         => $"unsafe ({node.Expression})";
     #endregion
@@ -328,6 +320,14 @@ internal static partial class FormattingAspect
     #endregion
 
     #region Name Expressions
+    public static partial string SelfExpression_ToString(ISelfExpressionSyntax node)
+        => node.IsImplicit ? "⟦self⟧" : "self";
+
+    public static partial string MemberAccessExpression_ToString(IMemberAccessExpressionSyntax node)
+        => $"{node.Context.ToGroupedString(node.ExpressionPrecedence)}.{node.MemberName}";
+
+    public static partial string MissingName_ToString(IMissingNameSyntax node) => "⧼unknown⧽";
+
     public static partial string BuiltInTypeNameExpression_ToString(IBuiltInTypeNameExpressionSyntax node)
         => node.Name.ToString();
 

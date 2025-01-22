@@ -1069,52 +1069,6 @@ public partial interface INewObjectExpressionSyntax : IExpressionSyntax
         => new NewObjectExpressionSyntax(span, type, constructorName, constructorNameSpan, arguments);
 }
 
-[Closed(
-    typeof(ISelfExpressionSyntax))]
-[GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IInstanceExpressionSyntax : INameExpressionSyntax
-{
-}
-
-// [Closed(typeof(SelfExpressionSyntax))]
-[GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface ISelfExpressionSyntax : IInstanceExpressionSyntax
-{
-    bool IsImplicit { get; }
-
-    public static ISelfExpressionSyntax Create(
-        TextSpan span,
-        bool isImplicit)
-        => new SelfExpressionSyntax(span, isImplicit);
-}
-
-// [Closed(typeof(MemberAccessExpressionSyntax))]
-[GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IMemberAccessExpressionSyntax : INameExpressionSyntax
-{
-    IExpressionSyntax Context { get; }
-    OrdinaryName MemberName { get; }
-    IFixedList<ITypeSyntax> GenericArguments { get; }
-    TextSpan MemberNameSpan { get; }
-
-    public static IMemberAccessExpressionSyntax Create(
-        TextSpan span,
-        IExpressionSyntax context,
-        OrdinaryName memberName,
-        IEnumerable<ITypeSyntax> genericArguments,
-        TextSpan memberNameSpan)
-        => new MemberAccessExpressionSyntax(span, context, memberName, genericArguments, memberNameSpan);
-}
-
-// [Closed(typeof(MissingNameSyntax))]
-[GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IMissingNameSyntax : INameExpressionSyntax
-{
-
-    public static IMissingNameSyntax Create(TextSpan span)
-        => new MissingNameSyntax(span);
-}
-
 // [Closed(typeof(UnsafeExpressionSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IUnsafeExpressionSyntax : IExpressionSyntax
@@ -1410,6 +1364,52 @@ public partial interface INameExpressionSyntax : IExpressionSyntax
 {
     OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
         => OperatorPrecedence.Primary;
+}
+
+[Closed(
+    typeof(ISelfExpressionSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
+public partial interface IInstanceExpressionSyntax : INameExpressionSyntax
+{
+}
+
+// [Closed(typeof(SelfExpressionSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
+public partial interface ISelfExpressionSyntax : IInstanceExpressionSyntax
+{
+    bool IsImplicit { get; }
+
+    public static ISelfExpressionSyntax Create(
+        TextSpan span,
+        bool isImplicit)
+        => new SelfExpressionSyntax(span, isImplicit);
+}
+
+// [Closed(typeof(MemberAccessExpressionSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
+public partial interface IMemberAccessExpressionSyntax : INameExpressionSyntax
+{
+    IExpressionSyntax Context { get; }
+    OrdinaryName MemberName { get; }
+    IFixedList<ITypeSyntax> GenericArguments { get; }
+    TextSpan MemberNameSpan { get; }
+
+    public static IMemberAccessExpressionSyntax Create(
+        TextSpan span,
+        IExpressionSyntax context,
+        OrdinaryName memberName,
+        IEnumerable<ITypeSyntax> genericArguments,
+        TextSpan memberNameSpan)
+        => new MemberAccessExpressionSyntax(span, context, memberName, genericArguments, memberNameSpan);
+}
+
+// [Closed(typeof(MissingNameSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
+public partial interface IMissingNameSyntax : INameExpressionSyntax
+{
+
+    public static IMissingNameSyntax Create(TextSpan span)
+        => new MissingNameSyntax(span);
 }
 
 // [Closed(typeof(BuiltInTypeNameExpressionSyntax))]
@@ -2805,68 +2805,6 @@ file class NewObjectExpressionSyntax : INewObjectExpressionSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class SelfExpressionSyntax : ISelfExpressionSyntax
-{
-    private ISelfExpressionSyntax Self { [Inline] get => this; }
-
-    public TextSpan Span { [DebuggerStepThrough] get; }
-    public bool IsImplicit { [DebuggerStepThrough] get; }
-    public override string ToString()
-        => FormattingAspect.SelfExpression_ToString(this);
-
-    public SelfExpressionSyntax(
-        TextSpan span,
-        bool isImplicit)
-    {
-        Span = span;
-        IsImplicit = isImplicit;
-    }
-}
-
-[GeneratedCode("AzothCompilerCodeGen", null)]
-file class MemberAccessExpressionSyntax : IMemberAccessExpressionSyntax
-{
-    private IMemberAccessExpressionSyntax Self { [Inline] get => this; }
-
-    public TextSpan Span { [DebuggerStepThrough] get; }
-    public IExpressionSyntax Context { [DebuggerStepThrough] get; }
-    public OrdinaryName MemberName { [DebuggerStepThrough] get; }
-    public IFixedList<ITypeSyntax> GenericArguments { [DebuggerStepThrough] get; }
-    public TextSpan MemberNameSpan { [DebuggerStepThrough] get; }
-    public override string ToString()
-        => FormattingAspect.MemberAccessExpression_ToString(this);
-
-    public MemberAccessExpressionSyntax(
-        TextSpan span,
-        IExpressionSyntax context,
-        OrdinaryName memberName,
-        IEnumerable<ITypeSyntax> genericArguments,
-        TextSpan memberNameSpan)
-    {
-        Span = span;
-        Context = context;
-        MemberName = memberName;
-        GenericArguments = genericArguments.ToFixedList();
-        MemberNameSpan = memberNameSpan;
-    }
-}
-
-[GeneratedCode("AzothCompilerCodeGen", null)]
-file class MissingNameSyntax : IMissingNameSyntax
-{
-    private IMissingNameSyntax Self { [Inline] get => this; }
-
-    public TextSpan Span { [DebuggerStepThrough] get; }
-    public override string ToString()
-        => FormattingAspect.MissingName_ToString(this);
-
-    public MissingNameSyntax(TextSpan span)
-    {
-        Span = span;
-    }
-}
-
-[GeneratedCode("AzothCompilerCodeGen", null)]
 file class UnsafeExpressionSyntax : IUnsafeExpressionSyntax
 {
     private IUnsafeExpressionSyntax Self { [Inline] get => this; }
@@ -3251,6 +3189,68 @@ file class InvocationExpressionSyntax : IInvocationExpressionSyntax
         Span = span;
         Expression = expression;
         Arguments = arguments.ToFixedList();
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class SelfExpressionSyntax : ISelfExpressionSyntax
+{
+    private ISelfExpressionSyntax Self { [Inline] get => this; }
+
+    public TextSpan Span { [DebuggerStepThrough] get; }
+    public bool IsImplicit { [DebuggerStepThrough] get; }
+    public override string ToString()
+        => FormattingAspect.SelfExpression_ToString(this);
+
+    public SelfExpressionSyntax(
+        TextSpan span,
+        bool isImplicit)
+    {
+        Span = span;
+        IsImplicit = isImplicit;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class MemberAccessExpressionSyntax : IMemberAccessExpressionSyntax
+{
+    private IMemberAccessExpressionSyntax Self { [Inline] get => this; }
+
+    public TextSpan Span { [DebuggerStepThrough] get; }
+    public IExpressionSyntax Context { [DebuggerStepThrough] get; }
+    public OrdinaryName MemberName { [DebuggerStepThrough] get; }
+    public IFixedList<ITypeSyntax> GenericArguments { [DebuggerStepThrough] get; }
+    public TextSpan MemberNameSpan { [DebuggerStepThrough] get; }
+    public override string ToString()
+        => FormattingAspect.MemberAccessExpression_ToString(this);
+
+    public MemberAccessExpressionSyntax(
+        TextSpan span,
+        IExpressionSyntax context,
+        OrdinaryName memberName,
+        IEnumerable<ITypeSyntax> genericArguments,
+        TextSpan memberNameSpan)
+    {
+        Span = span;
+        Context = context;
+        MemberName = memberName;
+        GenericArguments = genericArguments.ToFixedList();
+        MemberNameSpan = memberNameSpan;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class MissingNameSyntax : IMissingNameSyntax
+{
+    private IMissingNameSyntax Self { [Inline] get => this; }
+
+    public TextSpan Span { [DebuggerStepThrough] get; }
+    public override string ToString()
+        => FormattingAspect.MissingName_ToString(this);
+
+    public MissingNameSyntax(TextSpan span)
+    {
+        Span = span;
     }
 }
 

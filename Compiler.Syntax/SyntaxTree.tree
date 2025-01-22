@@ -167,11 +167,6 @@ BlockExpression <: Expression, BlockOrResult, BodyOrBlock = Statements:Statement
 /// </summary>
 NewObjectExpression <: Expression
     = Type:Name ConstructorName:`IdentifierName`? ConstructorNameSpan:`TextSpan`? Arguments:Expression*;
-InstanceExpression <: NameExpression; // i.e. `self` or `base`
-SelfExpression <: InstanceExpression = IsImplicit:`bool`;
-MemberAccessExpression <: NameExpression
-    = Context:Expression MemberName:`OrdinaryName` GenericArguments:Type* MemberNameSpan:`TextSpan`;
-MissingName <: NameExpression;
 UnsafeExpression <: Expression = Expression;
 
 // ---------- Literal Expressions
@@ -203,6 +198,14 @@ InvocationExpression <: Expression = Expression Arguments:Expression*;
 
 // ---------- Name Expressions
 NameExpression <: Expression;
+// See the names section for more nodes that are name expressions
+InstanceExpression <: NameExpression; // i.e. `self` or `base`
+SelfExpression <: InstanceExpression = IsImplicit:`bool`;
+MemberAccessExpression <: NameExpression
+    = Context:Expression MemberName:`OrdinaryName` GenericArguments:Type* MemberNameSpan:`TextSpan`;
+MissingName <: NameExpression;
+
+// TODO replace these nodes with Name nodes
 BuiltInTypeNameExpression <: NameExpression = Name:`BuiltInTypeName`;
 OrdinaryNameExpression <: NameExpression = Name:`OrdinaryName` GenericArguments:Type*;
 IdentifierNameExpression <: OrdinaryNameExpression = Name:`IdentifierName`;
