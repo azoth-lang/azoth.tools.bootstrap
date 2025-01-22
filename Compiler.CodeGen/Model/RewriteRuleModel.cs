@@ -19,11 +19,11 @@ public sealed class RewriteRuleModel
     public InternalSymbol NodeSymbol { get; }
     public TreeNodeModel Node => node.Value;
     private readonly Lazy<TreeNodeModel> node;
+    public string? Name => Syntax.Name;
     public RewriteKind Kind => Syntax.Kind;
     public InternalSymbol? ToNodeSymbol { get; }
     public TreeNodeModel? ToNode => toNode.Value;
     private readonly Lazy<TreeNodeModel?> toNode;
-    public string? Name => Syntax.Name;
     public SymbolTypeModel RewriteToType => rewriteToType.Value;
     private readonly Lazy<SymbolTypeModel> rewriteToType;
 
@@ -52,9 +52,8 @@ public sealed class RewriteRuleModel
                                    .Where(fromType.IsSubtypeOf)
                                    .MostSpecificTypes()
                                    .ToFixedSet();
-        var rewriteToType = rewriteToTypes.TrySingle();
-        if (rewriteToType is null)
-            throw new($"Rewrite '{this}' does not have a specific rewrite to type. Candidates: {string.Join(", ", rewriteToTypes)}.");
+        var rewriteToType = rewriteToTypes.TrySingle()
+                            ?? throw new($"Rewrite '{this}' does not have a specific rewrite to type. Candidates: {string.Join(", ", rewriteToTypes)}.");
 
         if (ToNode is not { } toNode)
             return rewriteToType;
@@ -66,12 +65,15 @@ public sealed class RewriteRuleModel
     }
 
     public override string ToString()
-        => Kind switch
+    {
+        var name = Name is not null ? $" {Name}" : "";
+        return Kind switch
         {
-            RewriteKind.InsertAbove => $"✎ {NodeSymbol} insert {ToNode}",
-            RewriteKind.Replace => $"✎ {NodeSymbol} replace_with {ToNode}",
-            RewriteKind.RewriteSubtree => Name is not null ? $"✎ {NodeSymbol} {Name}"
-                : (ToNodeSymbol is not null ? $"✎ {NodeSymbol} rewrite {ToNodeSymbol}" : $"✎ {NodeSymbol} rewrite"),
+            RewriteKind.InsertAbove => $"✎ {NodeSymbol}{name} insert {ToNode}",
+            RewriteKind.Replace => $"✎ {NodeSymbol}{name} replace_with {ToNode}",
+            RewriteKind.RewriteSubtree => ToNodeSymbol is not null
+                ? $"✎ {NodeSymbol}{name} rewrite {ToNodeSymbol}" : $"✎ {NodeSymbol}{name} rewrite",
             _ => throw ExhaustiveMatch.Failed(Kind)
         };
+    }
 }

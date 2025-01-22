@@ -84,5 +84,5 @@ internal static partial class ExpressionPlainTypesAspect
     public static partial IMaybePlainType AsyncStartExpression_PlainType(IAsyncStartExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IMaybePlainType AwaitExpression_PlainType(IAwaitExpressionNode node);
-    public static partial IExpressionNode? Expression_Rewrite_ImplicitConversion(IExpressionNode node);
+    public static partial IExpressionNode? Expression_ImplicitConversion_Insert(IExpressionNode node);
 }

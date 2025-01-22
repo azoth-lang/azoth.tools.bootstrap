@@ -20,7 +20,7 @@ internal static class Emit
     public static string ClosedAttribute(TreeNodeModel node, string indent = "")
     {
         var children = node.ChildNodes;
-        if (!children.Any()) return $"// [Closed(typeof({node.Defines.ClassName}))]{Environment.NewLine}";
+        if (children.IsEmpty) return $"// [Closed(typeof({node.Defines.ClassName}))]{Environment.NewLine}";
         var builder = new StringBuilder();
         builder.Append(indent);
         builder.AppendLine("[Closed(");
@@ -631,14 +631,17 @@ internal static class Emit
         => $"{rule.Aspect.Name}.{RewriteRuleMethod(rule)}";
 
     public static string RewriteRuleMethod(RewriteRuleModel rule)
-        => rule.Kind switch
+    {
+        var name = rule.Name is not null ? $"_{rule.Name}" : "";
+        var kind = rule.Kind switch
         {
-            RewriteKind.InsertAbove => $"{rule.NodeSymbol}_Insert_{rule.ToNodeSymbol}",
-            RewriteKind.Replace => $"{rule.NodeSymbol}_ReplaceWith_{rule.ToNodeSymbol}",
-            RewriteKind.RewriteSubtree => rule.Name is not null
-                ? $"{rule.NodeSymbol}_Rewrite_{rule.Name}"
-                : $"{rule.NodeSymbol}_Rewrite",
+            RewriteKind.InsertAbove => "_Insert",
+            RewriteKind.Replace => "_ReplaceWith",
+            RewriteKind.RewriteSubtree => "_Rewrite",
             _ => throw ExhaustiveMatch.Failed(rule.Kind)
         };
+        var toNode = rule.ToNodeSymbol is not null ? $"_{rule.ToNodeSymbol}" : "";
+        return $"{rule.NodeSymbol}{name}{kind}{toNode}";
+    }
     #endregion
 }

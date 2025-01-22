@@ -33,12 +33,12 @@ internal static partial class BindingAmbiguousNamesAspect
     public static partial void UnknownIdentifierNameExpression_Contribute_Diagnostics(IUnknownIdentifierNameExpressionNode node, DiagnosticCollectionBuilder diagnostics);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial void AmbiguousMemberAccessExpression_Contribute_Diagnostics(IAmbiguousMemberAccessExpressionNode node, DiagnosticCollectionBuilder diagnostics);
-    public static partial IExpressionNode? AssignmentExpression_Rewrite_PropertyNameLeftOperand(IAssignmentExpressionNode node);
+    public static partial IExpressionNode? AssignmentExpression_PropertyNameLeftOperand_Rewrite(IAssignmentExpressionNode node);
     public static partial INameExpressionNode? IdentifierNameExpression_ReplaceWith_NameExpression(IIdentifierNameExpressionNode node);
     public static partial INameExpressionNode? GenericNameExpression_ReplaceWith_NameExpression(IGenericNameExpressionNode node);
-    public static partial INameExpressionNode? UnresolvedMemberAccessExpression_Rewrite_NamespaceNameContext(IUnresolvedMemberAccessExpressionNode node);
-    public static partial INameExpressionNode? UnresolvedMemberAccessExpression_Rewrite_TypeNameExpressionContext(IUnresolvedMemberAccessExpressionNode node);
-    public static partial INameExpressionNode? UnresolvedMemberAccessExpression_Rewrite_ExpressionContext(IUnresolvedMemberAccessExpressionNode node);
+    public static partial INameExpressionNode? UnresolvedMemberAccessExpression_NamespaceNameContext_Rewrite(IUnresolvedMemberAccessExpressionNode node);
+    public static partial INameExpressionNode? UnresolvedMemberAccessExpression_TypeNameExpressionContext_Rewrite(IUnresolvedMemberAccessExpressionNode node);
+    public static partial INameExpressionNode? UnresolvedMemberAccessExpression_ExpressionContext_Rewrite(IUnresolvedMemberAccessExpressionNode node);
     public static partial IFunctionNameNode? FunctionGroupName_ReplaceWith_FunctionName(IFunctionGroupNameNode node);
     public static partial IMethodNameNode? MethodGroupName_ReplaceWith_MethodName(IMethodGroupNameNode node);
     public static partial IInitializerNameNode? InitializerGroupName_ReplaceWith_InitializerName(IInitializerGroupNameNode node);

@@ -76,8 +76,8 @@
 ↑ Expression.Type: `IMaybeType`;
 ⟳ Expression.FlowStateAfter: `IFlowState` initial => IFlowState.Empty;
 = Expression.↑.Diagnostics;
-✎ Expression ImplicitMove;
-✎ Expression ImplicitFreeze;
+✎ Expression ImplicitMove insert;
+✎ Expression ImplicitFreeze insert;
 ✎ Expression insert PrepareToReturnExpression;
 
 ↓ BlockExpression.FlowStateBefore(): `IFlowState`;

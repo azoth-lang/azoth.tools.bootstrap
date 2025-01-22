@@ -216,6 +216,7 @@ public static class AspectParser
         var evaluationStrategy = ParseEvaluationStrategy(ref node);
         var isMethod = ParseOffEnd(ref definition, "()");
         var name = definition;
+        // TODO use the type syntax
         var typeSyntax = ParseType(type);
         var nodeSymbol = ParseSymbol(node);
         return new(evaluationStrategy, nodeSymbol, name, isMethod);
@@ -485,15 +486,31 @@ public static class AspectParser
 
         var (target, rest) = SplitOffStart(statement, "Missing whitespace in: '{0}'");
         var targetNode = ParseSymbol(target);
-        var (kind, rewriteTo) = OptionalSplitOffEnd(rest);
-        return kind switch
-        {
-            "insert" => new(targetNode, RewriteKind.InsertAbove, ParseSymbol(rewriteTo), null),
-            "replace_with" => new(targetNode, RewriteKind.Replace, ParseSymbol(rewriteTo), null),
-            "rewrite" => new(targetNode, RewriteKind.RewriteSubtree, ParseSymbol(rewriteTo), null),
-            _ => new(targetNode, RewriteKind.RewriteSubtree, null, kind)
-        };
+        var (name, kind, rewriteTo) = ParseRewriteNameAndKind(rest);
+        return new(targetNode, name, kind, ParseSymbol(rewriteTo));
     }
+
+    private static (string?, RewriteKind, string?) ParseRewriteNameAndKind(string rest)
+    {
+        (var nameOrKind, rest) = SplitOffStart(rest, "Missing whitespace in: '{0}'");
+        if (ParseRewriteKind(nameOrKind) is { } kind)
+            return (null, kind, rest);
+
+        var name = nameOrKind;
+        var (kindString, rewriteTo) = OptionalSplitOffEnd(rest);
+        kind = ParseRewriteKind(kindString)
+               ?? throw new FormatException($"Invalid rewrite kind '{kindString}'.");
+        return (name, kind, rewriteTo);
+    }
+
+    private static RewriteKind? ParseRewriteKind(string kind)
+        => kind switch
+        {
+            "insert" => RewriteKind.InsertAbove,
+            "replace_with" => RewriteKind.Replace,
+            "rewrite" => RewriteKind.RewriteSubtree,
+            _ => null
+        };
 
     private record AspectStatementsSyntax(
         IFixedSet<TypeDeclarationSyntax> TypeDeclarations,

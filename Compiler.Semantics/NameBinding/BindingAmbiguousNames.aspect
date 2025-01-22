@@ -9,7 +9,7 @@
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
 // ---------- Operator Expressions
-✎ AssignmentExpression PropertyNameLeftOperand;
+✎ AssignmentExpression PropertyNameLeftOperand rewrite;
 
 // ---------- Ambiguous Name Expressions
 ↑ StandardNameExpression.ReferencedDeclarations: Declaration*;
@@ -18,9 +18,9 @@
 ✎ GenericNameExpression replace_with NameExpression;
 
 // ---------- Name Expressions
-✎ UnresolvedMemberAccessExpression NamespaceNameContext;
-✎ UnresolvedMemberAccessExpression TypeNameExpressionContext;
-✎ UnresolvedMemberAccessExpression ExpressionContext;
+✎ UnresolvedMemberAccessExpression NamespaceNameContext rewrite;
+✎ UnresolvedMemberAccessExpression TypeNameExpressionContext rewrite;
+✎ UnresolvedMemberAccessExpression ExpressionContext rewrite;
 = UnresolvedMemberAccessExpression.↑.Diagnostics;
 + FunctionGroupName.new.Validate;
 ✎ FunctionGroupName replace_with FunctionName;

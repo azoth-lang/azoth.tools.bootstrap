@@ -145,7 +145,7 @@ internal static partial class ExpressionTypesAspect
             ? ContextualizedCall.Create(node.Method.Context.Type, node.Method.ReferencedDeclaration)
             : null;
 
-    public static partial IExpressionNode? Expression_Rewrite_ImplicitMove(IExpressionNode node)
+    public static partial IExpressionNode? Expression_ImplicitMove_Insert(IExpressionNode node)
     {
         if (!node.ImplicitRecoveryAllowed())
             return null;
@@ -172,7 +172,7 @@ internal static partial class ExpressionTypesAspect
         return implicitMove;
     }
 
-    public static partial IExpressionNode? Expression_Rewrite_ImplicitFreeze(IExpressionNode node)
+    public static partial IExpressionNode? Expression_ImplicitFreeze_Insert(IExpressionNode node)
     {
         if (!node.ImplicitRecoveryAllowed())
             return null;

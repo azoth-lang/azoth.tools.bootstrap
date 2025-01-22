@@ -360,7 +360,7 @@ internal static partial class ExpressionPlainTypesAspect
         // => node.ReferencedDeclaration?.InitializerGroupPlainType ?? PlainType.Unknown;
         => PlainType.Unknown;
 
-    public static partial IExpressionNode? Expression_Rewrite_ImplicitConversion(IExpressionNode node)
+    public static partial IExpressionNode? Expression_ImplicitConversion_Insert(IExpressionNode node)
     {
         if (node.ShouldNotBeExpression()) return null;
 

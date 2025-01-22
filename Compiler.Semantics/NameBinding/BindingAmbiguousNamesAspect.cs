@@ -73,7 +73,7 @@ internal static partial class BindingAmbiguousNamesAspect
         }
     }
 
-    public static partial INameExpressionNode? UnresolvedMemberAccessExpression_Rewrite_NamespaceNameContext(IUnresolvedMemberAccessExpressionNode node)
+    public static partial INameExpressionNode? UnresolvedMemberAccessExpression_NamespaceNameContext_Rewrite(IUnresolvedMemberAccessExpressionNode node)
     {
         if (node.Context is not INamespaceNameNode context)
             return null;
@@ -90,13 +90,14 @@ internal static partial class BindingAmbiguousNamesAspect
             return IFunctionGroupNameNode.Create(node.Syntax, context, node.MemberName, node.TypeArguments,
                 referencedFunctions);
 
+        // TODO select correct type declaration based on generic arguments
         if (members.TrySingle() is ITypeDeclarationNode referencedType)
             return IQualifiedTypeNameExpressionNode.Create(node.Syntax, context, node.TypeArguments, referencedType);
 
         return IAmbiguousMemberAccessExpressionNode.Create(node.Syntax, context, node.TypeArguments, members);
     }
 
-    public static partial INameExpressionNode? UnresolvedMemberAccessExpression_Rewrite_TypeNameExpressionContext(IUnresolvedMemberAccessExpressionNode node)
+    public static partial INameExpressionNode? UnresolvedMemberAccessExpression_TypeNameExpressionContext_Rewrite(IUnresolvedMemberAccessExpressionNode node)
     {
         if (node.Context is not ITypeNameExpressionNode context)
             return null;
@@ -119,7 +120,7 @@ internal static partial class BindingAmbiguousNamesAspect
         return IAmbiguousMemberAccessExpressionNode.Create(node.Syntax, context, node.TypeArguments, members);
     }
 
-    public static partial INameExpressionNode? UnresolvedMemberAccessExpression_Rewrite_ExpressionContext(IUnresolvedMemberAccessExpressionNode node)
+    public static partial INameExpressionNode? UnresolvedMemberAccessExpression_ExpressionContext_Rewrite(IUnresolvedMemberAccessExpressionNode node)
     {
         if (node.Context is not { } context)
             return null;
@@ -155,7 +156,7 @@ internal static partial class BindingAmbiguousNamesAspect
         return IAmbiguousMemberAccessExpressionNode.Create(node.Syntax, context, node.TypeArguments, members);
     }
 
-    public static partial IExpressionNode? AssignmentExpression_Rewrite_PropertyNameLeftOperand(IAssignmentExpressionNode node)
+    public static partial IExpressionNode? AssignmentExpression_PropertyNameLeftOperand_Rewrite(IAssignmentExpressionNode node)
     {
         if (node.TempLeftOperand is not IGetterInvocationExpressionNode getterInvocation)
             return null;

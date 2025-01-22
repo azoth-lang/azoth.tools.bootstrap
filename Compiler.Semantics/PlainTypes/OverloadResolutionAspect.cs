@@ -107,7 +107,7 @@ internal static partial class OverloadResolutionAspect
         return IMethodInvocationExpressionNode.Create(node.Syntax, method, node.CurrentArguments);
     }
 
-    public static partial IExpressionNode? UnresolvedInvocationExpression_Rewrite_TypeNameExpression(IUnresolvedInvocationExpressionNode node)
+    public static partial IExpressionNode? UnresolvedInvocationExpression_TypeNameExpression_Rewrite(IUnresolvedInvocationExpressionNode node)
     {
         if (node.Expression is not ITypeNameExpressionNode context) return null;
 
