@@ -64,14 +64,15 @@ FunctionDefinition <: InvocableDefinition, NamespaceBlockMemberDefinition
     = Attributes:Attribute* Name:`IdentifierName` Parameters:NamedParameter* Return? Body;
 
 // ---------- Type Definitions
+// TODO supertypes and base types must be Name since they are allowed to be qualified
 TypeDefinition <: NamespaceBlockMemberDefinition, ClassMemberDefinition, TraitMemberDefinition, StructMemberDefinition
-    = ConstModifier:`IConstKeywordToken`? MoveModifier:`IMoveKeywordToken`? Name:`OrdinaryName` GenericParameters:GenericParameter* SupertypeNames:OrdinaryTypeName* Members:TypeMemberDefinition*;
+    = ConstModifier:`IConstKeywordToken`? MoveModifier:`IMoveKeywordToken`? Name:`OrdinaryName` GenericParameters:GenericParameter* SupertypeNames:OrdinaryName* Members:TypeMemberDefinition*;
 ClassDefinition <: TypeDefinition
-    = AbstractModifier:`IAbstractKeywordToken`? GenericParameters:GenericParameter* BaseTypeName:OrdinaryTypeName? SupertypeNames:OrdinaryTypeName* Members:ClassMemberDefinition*;
+    = AbstractModifier:`IAbstractKeywordToken`? GenericParameters:GenericParameter* BaseTypeName:OrdinaryName? SupertypeNames:OrdinaryName* Members:ClassMemberDefinition*;
 StructDefinition <: TypeDefinition
-    = GenericParameters:GenericParameter* SupertypeNames:OrdinaryTypeName* Members:StructMemberDefinition*;
+    = GenericParameters:GenericParameter* SupertypeNames:OrdinaryName* Members:StructMemberDefinition*;
 TraitDefinition <: TypeDefinition
-    = GenericParameters:GenericParameter* SupertypeNames:OrdinaryTypeName* Members:TraitMemberDefinition*;
+    = GenericParameters:GenericParameter* SupertypeNames:OrdinaryName* Members:TraitMemberDefinition*;
 
 // ---------- Type Definition Parts
 GenericParameter <: Code = Constraint:CapabilityConstraint Name:`IdentifierName` Independence:`TypeParameterIndependence` Variance:`TypeParameterVariance`;
@@ -99,7 +100,8 @@ AssociatedFunctionDefinition <: TypeMemberDefinition, ClassMemberDefinition, Tra
     = Name:`IdentifierName` Parameters:NamedParameter* Return? Body;
 
 // ---------- Attributes
-Attribute <: Code = TypeName:OrdinaryTypeName;
+// TODO TypeName must be Name since they are allowed to be qualified
+Attribute <: Code = TypeName:OrdinaryName;
 
 // ---------- Capabilities
 CapabilityConstraint <: Code;
@@ -218,10 +220,10 @@ GenericNameExpression <: OrdinaryNameExpression = Name:`GenericName` /GenericArg
 Name <: Type;
 UnqualifiedName <: Name = Name:`TypeName`;
 BuiltInTypeName <: UnqualifiedName = Name:`BuiltInTypeName`;
-OrdinaryTypeName <: UnqualifiedName = Name:`OrdinaryName`;
-IdentifierTypeName <: OrdinaryTypeName = Name:`IdentifierName`;
-GenericTypeName <: OrdinaryTypeName = Name:`GenericName` GenericArguments:Type*;
-QualifiedTypeName <: Name = Context:Name QualifiedName:OrdinaryTypeName;
+OrdinaryName <: UnqualifiedName = Name:`OrdinaryName`;
+IdentifierName <: OrdinaryName = Name:`IdentifierName`;
+GenericName <: OrdinaryName = Name:`GenericName` GenericArguments:Type*;
+QualifiedName <: Name = Context:Name QualifiedName:OrdinaryName;
 
 // ---------- Capability Expressions
 /// i.e. `move name`. A move takes ownership of something from a variable or expression.

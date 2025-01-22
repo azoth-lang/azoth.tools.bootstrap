@@ -1456,7 +1456,7 @@ public partial interface IBuiltInTypeNameNode : IUnqualifiedTypeNameNode
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IOrdinaryTypeNameNode : IUnqualifiedTypeNameNode
 {
-    new IOrdinaryTypeNameSyntax Syntax { get; }
+    new IOrdinaryNameSyntax Syntax { get; }
     IUnqualifiedNameSyntax IUnqualifiedTypeNameNode.Syntax => Syntax;
     INameSyntax ITypeNameNode.Syntax => Syntax;
     ITypeSyntax ITypeNode.Syntax => Syntax;
@@ -1472,8 +1472,8 @@ public partial interface IOrdinaryTypeNameNode : IUnqualifiedTypeNameNode
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IIdentifierTypeNameNode : IOrdinaryTypeNameNode
 {
-    new IIdentifierTypeNameSyntax Syntax { get; }
-    IOrdinaryTypeNameSyntax IOrdinaryTypeNameNode.Syntax => Syntax;
+    new IIdentifierNameSyntax Syntax { get; }
+    IOrdinaryNameSyntax IOrdinaryTypeNameNode.Syntax => Syntax;
     IUnqualifiedNameSyntax IUnqualifiedTypeNameNode.Syntax => Syntax;
     INameSyntax ITypeNameNode.Syntax => Syntax;
     ITypeSyntax ITypeNode.Syntax => Syntax;
@@ -1484,7 +1484,7 @@ public partial interface IIdentifierTypeNameNode : IOrdinaryTypeNameNode
     OrdinaryName IOrdinaryTypeNameNode.Name => Name;
     TypeName IUnqualifiedTypeNameNode.Name => Name;
 
-    public static IIdentifierTypeNameNode Create(IIdentifierTypeNameSyntax syntax)
+    public static IIdentifierTypeNameNode Create(IIdentifierNameSyntax syntax)
         => new IdentifierTypeNameNode(syntax);
 }
 
@@ -1492,8 +1492,8 @@ public partial interface IIdentifierTypeNameNode : IOrdinaryTypeNameNode
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IGenericTypeNameNode : IOrdinaryTypeNameNode
 {
-    new IGenericTypeNameSyntax Syntax { get; }
-    IOrdinaryTypeNameSyntax IOrdinaryTypeNameNode.Syntax => Syntax;
+    new IGenericNameSyntax Syntax { get; }
+    IOrdinaryNameSyntax IOrdinaryTypeNameNode.Syntax => Syntax;
     IUnqualifiedNameSyntax IUnqualifiedTypeNameNode.Syntax => Syntax;
     INameSyntax ITypeNameNode.Syntax => Syntax;
     ITypeSyntax ITypeNode.Syntax => Syntax;
@@ -1506,7 +1506,7 @@ public partial interface IGenericTypeNameNode : IOrdinaryTypeNameNode
     TypeName IUnqualifiedTypeNameNode.Name => Name;
 
     public static IGenericTypeNameNode Create(
-        IGenericTypeNameSyntax syntax,
+        IGenericNameSyntax syntax,
         IEnumerable<ITypeNode> typeArguments)
         => new GenericTypeNameNode(syntax, typeArguments);
 }
@@ -1515,7 +1515,7 @@ public partial interface IGenericTypeNameNode : IOrdinaryTypeNameNode
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IQualifiedTypeNameNode : ITypeNameNode
 {
-    new IQualifiedTypeNameSyntax Syntax { get; }
+    new IQualifiedNameSyntax Syntax { get; }
     INameSyntax ITypeNameNode.Syntax => Syntax;
     ITypeSyntax ITypeNode.Syntax => Syntax;
     ICodeSyntax ICodeNode.Syntax => Syntax;
@@ -1528,7 +1528,7 @@ public partial interface IQualifiedTypeNameNode : ITypeNameNode
         => throw new NotImplementedException();
 
     public static IQualifiedTypeNameNode Create(
-        IQualifiedTypeNameSyntax syntax,
+        IQualifiedNameSyntax syntax,
         ITypeNameNode context,
         IOrdinaryTypeNameNode qualifiedName)
         => new QualifiedTypeNameNode(syntax, context, qualifiedName);
@@ -8452,7 +8452,7 @@ file class IdentifierTypeNameNode : SemanticNode, IIdentifierTypeNameNode
     private IIdentifierTypeNameNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
-    public IIdentifierTypeNameSyntax Syntax { [DebuggerStepThrough] get; }
+    public IIdentifierNameSyntax Syntax { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -8494,7 +8494,7 @@ file class IdentifierTypeNameNode : SemanticNode, IIdentifierTypeNameNode
     private ITypeDeclarationNode? referencedDeclaration;
     private bool referencedDeclarationCached;
 
-    public IdentifierTypeNameNode(IIdentifierTypeNameSyntax syntax)
+    public IdentifierTypeNameNode(IIdentifierNameSyntax syntax)
     {
         Syntax = syntax;
     }
@@ -8517,7 +8517,7 @@ file class GenericTypeNameNode : SemanticNode, IGenericTypeNameNode
     private IGenericTypeNameNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
-    public IGenericTypeNameSyntax Syntax { [DebuggerStepThrough] get; }
+    public IGenericNameSyntax Syntax { [DebuggerStepThrough] get; }
     public IFixedList<ITypeNode> TypeArguments { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
@@ -8561,7 +8561,7 @@ file class GenericTypeNameNode : SemanticNode, IGenericTypeNameNode
     private bool referencedDeclarationCached;
 
     public GenericTypeNameNode(
-        IGenericTypeNameSyntax syntax,
+        IGenericNameSyntax syntax,
         IEnumerable<ITypeNode> typeArguments)
     {
         Syntax = syntax;
@@ -8585,7 +8585,7 @@ file class QualifiedTypeNameNode : SemanticNode, IQualifiedTypeNameNode
 {
     private IQualifiedTypeNameNode Self { [Inline] get => this; }
 
-    public IQualifiedTypeNameSyntax Syntax { [DebuggerStepThrough] get; }
+    public IQualifiedNameSyntax Syntax { [DebuggerStepThrough] get; }
     public ITypeNameNode Context { [DebuggerStepThrough] get; }
     public IOrdinaryTypeNameNode QualifiedName { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
@@ -8612,7 +8612,7 @@ file class QualifiedTypeNameNode : SemanticNode, IQualifiedTypeNameNode
     private bool referencedDeclarationCached;
 
     public QualifiedTypeNameNode(
-        IQualifiedTypeNameSyntax syntax,
+        IQualifiedNameSyntax syntax,
         ITypeNameNode context,
         IOrdinaryTypeNameNode qualifiedName)
     {

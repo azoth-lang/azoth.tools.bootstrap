@@ -109,7 +109,7 @@ internal static class SyntaxBinder
         => ITraitDefinitionNode.Create(syntax, [], GenericParameters(syntax.GenericParameters),
             SupertypeNames(syntax.SupertypeNames), TraitMemberDefinitions(syntax.Members));
 
-    private static IEnumerable<IOrdinaryTypeNameNode> SupertypeNames(IEnumerable<IOrdinaryTypeNameSyntax> syntax)
+    private static IEnumerable<IOrdinaryTypeNameNode> SupertypeNames(IEnumerable<IOrdinaryNameSyntax> syntax)
         => syntax.Select(syn => OrdinaryTypeName(syn));
     #endregion
 
@@ -302,32 +302,32 @@ internal static class SyntaxBinder
     private static ITypeNameNode TypeName(INameSyntax syntax)
         => syntax switch
         {
-            IOrdinaryTypeNameSyntax syn => OrdinaryTypeName(syn),
+            IOrdinaryNameSyntax syn => OrdinaryTypeName(syn),
             IBuiltInTypeNameSyntax syn => BuiltInTypeName(syn),
-            IQualifiedTypeNameSyntax syn => QualifiedTypeName(syn),
+            IQualifiedNameSyntax syn => QualifiedTypeName(syn),
             _ => throw ExhaustiveMatch.Failed(syntax)
         };
 
     [return: NotNullIfNotNull(nameof(syntax))]
-    private static IOrdinaryTypeNameNode? OrdinaryTypeName(IOrdinaryTypeNameSyntax? syntax)
+    private static IOrdinaryTypeNameNode? OrdinaryTypeName(IOrdinaryNameSyntax? syntax)
         => syntax switch
         {
             null => null,
-            IIdentifierTypeNameSyntax syn => IdentifierTypeName(syn),
-            IGenericTypeNameSyntax syn => GenericTypeName(syn),
+            IIdentifierNameSyntax syn => IdentifierTypeName(syn),
+            IGenericNameSyntax syn => GenericTypeName(syn),
             _ => throw ExhaustiveMatch.Failed(syntax)
         };
 
-    private static IIdentifierTypeNameNode IdentifierTypeName(IIdentifierTypeNameSyntax syntax)
+    private static IIdentifierTypeNameNode IdentifierTypeName(IIdentifierNameSyntax syntax)
         => IIdentifierTypeNameNode.Create(syntax);
 
-    private static IGenericTypeNameNode GenericTypeName(IGenericTypeNameSyntax syntax)
+    private static IGenericTypeNameNode GenericTypeName(IGenericNameSyntax syntax)
         => IGenericTypeNameNode.Create(syntax, Types(syntax.GenericArguments));
 
     private static IBuiltInTypeNameNode BuiltInTypeName(IBuiltInTypeNameSyntax syntax)
         => IBuiltInTypeNameNode.Create(syntax);
 
-    private static IQualifiedTypeNameNode QualifiedTypeName(IQualifiedTypeNameSyntax syntax)
+    private static IQualifiedTypeNameNode QualifiedTypeName(IQualifiedNameSyntax syntax)
         => IQualifiedTypeNameNode.Create(syntax, TypeName(syntax.Context), OrdinaryTypeName(syntax.QualifiedName));
 
     private static IOptionalTypeNode OptionalType(IOptionalTypeSyntax syntax)

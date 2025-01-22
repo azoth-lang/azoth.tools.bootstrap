@@ -65,10 +65,10 @@ public partial class Parser
         return new ModifierParser(modifierTokens);
     }
 
-    private IFixedList<IOrdinaryTypeNameSyntax> ParseSupertypes()
+    private IFixedList<IOrdinaryNameSyntax> ParseSupertypes()
         => Tokens.Accept<ILessThanColonToken>()
             ? ParseOrdinaryTypeNames()
-            : FixedList.Empty<IOrdinaryTypeNameSyntax>();
+            : FixedList.Empty<IOrdinaryNameSyntax>();
 
     #region Parse Namespaces
     internal INamespaceBlockDefinitionSyntax ParseNamespaceBlock(ModifierParser modifiers)
@@ -188,7 +188,7 @@ public partial class Parser
         var generic = AcceptGenericParameters();
         var genericParameters = generic?.Parameters ?? FixedList.Empty<IGenericParameterSyntax>();
         var name = OrdinaryName.Create(identifier.Value, genericParameters.Count);
-        IOrdinaryTypeNameSyntax? baseClass = null;
+        IOrdinaryNameSyntax? baseClass = null;
         if (Tokens.Accept<IColonToken>()) baseClass = ParseOrdinaryTypeName();
         var supertypes = ParseSupertypes();
         var (members, bodySpan) = ParseClassBody();

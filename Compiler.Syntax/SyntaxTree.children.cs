@@ -301,13 +301,13 @@ public static class ISyntaxExtensions
                 yield break;
             case IBuiltInTypeNameSyntax n:
                 yield break;
-            case IIdentifierTypeNameSyntax n:
+            case IIdentifierNameSyntax n:
                 yield break;
-            case IGenericTypeNameSyntax n:
+            case IGenericNameSyntax n:
                 foreach (var child in n.GenericArguments)
                     yield return child;
                 yield break;
-            case IQualifiedTypeNameSyntax n:
+            case IQualifiedNameSyntax n:
                 yield return n.Context;
                 yield return n.QualifiedName;
                 yield break;

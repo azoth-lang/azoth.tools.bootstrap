@@ -142,11 +142,11 @@ internal static partial class FormattingAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial string BuiltInTypeName_ToString(IBuiltInTypeNameSyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial string IdentifierTypeName_ToString(IIdentifierTypeNameSyntax node);
+    public static partial string IdentifierName_ToString(IIdentifierNameSyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial string GenericTypeName_ToString(IGenericTypeNameSyntax node);
+    public static partial string GenericName_ToString(IGenericNameSyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial string QualifiedTypeName_ToString(IQualifiedTypeNameSyntax node);
+    public static partial string QualifiedName_ToString(IQualifiedNameSyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial string MoveExpression_ToString(IMoveExpressionSyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

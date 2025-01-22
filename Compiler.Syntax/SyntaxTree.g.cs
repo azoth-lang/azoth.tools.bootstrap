@@ -266,7 +266,7 @@ public partial interface ITypeDefinitionSyntax : INamespaceBlockMemberDefinition
     new OrdinaryName Name { get; }
     TypeName? IDefinitionSyntax.Name => Name;
     IFixedList<IGenericParameterSyntax> GenericParameters { get; }
-    IFixedList<IOrdinaryTypeNameSyntax> SupertypeNames { get; }
+    IFixedList<IOrdinaryNameSyntax> SupertypeNames { get; }
     IFixedList<ITypeMemberDefinitionSyntax> Members { get; }
 }
 
@@ -275,7 +275,7 @@ public partial interface ITypeDefinitionSyntax : INamespaceBlockMemberDefinition
 public partial interface IClassDefinitionSyntax : ITypeDefinitionSyntax
 {
     IAbstractKeywordToken? AbstractModifier { get; }
-    IOrdinaryTypeNameSyntax? BaseTypeName { get; }
+    IOrdinaryNameSyntax? BaseTypeName { get; }
     new IFixedList<IClassMemberDefinitionSyntax> Members { get; }
     IFixedList<ITypeMemberDefinitionSyntax> ITypeDefinitionSyntax.Members => Members;
 
@@ -289,8 +289,8 @@ public partial interface IClassDefinitionSyntax : ITypeDefinitionSyntax
         OrdinaryName name,
         IAbstractKeywordToken? abstractModifier,
         IEnumerable<IGenericParameterSyntax> genericParameters,
-        IOrdinaryTypeNameSyntax? baseTypeName,
-        IEnumerable<IOrdinaryTypeNameSyntax> supertypeNames,
+        IOrdinaryNameSyntax? baseTypeName,
+        IEnumerable<IOrdinaryNameSyntax> supertypeNames,
         IEnumerable<IClassMemberDefinitionSyntax> members)
         => new ClassDefinitionSyntax(span, file, nameSpan, accessModifier, constModifier, moveModifier, name, abstractModifier, genericParameters, baseTypeName, supertypeNames, members);
 }
@@ -311,7 +311,7 @@ public partial interface IStructDefinitionSyntax : ITypeDefinitionSyntax
         IMoveKeywordToken? moveModifier,
         OrdinaryName name,
         IEnumerable<IGenericParameterSyntax> genericParameters,
-        IEnumerable<IOrdinaryTypeNameSyntax> supertypeNames,
+        IEnumerable<IOrdinaryNameSyntax> supertypeNames,
         IEnumerable<IStructMemberDefinitionSyntax> members)
         => new StructDefinitionSyntax(span, file, nameSpan, accessModifier, constModifier, moveModifier, name, genericParameters, supertypeNames, members);
 }
@@ -332,7 +332,7 @@ public partial interface ITraitDefinitionSyntax : ITypeDefinitionSyntax
         IMoveKeywordToken? moveModifier,
         OrdinaryName name,
         IEnumerable<IGenericParameterSyntax> genericParameters,
-        IEnumerable<IOrdinaryTypeNameSyntax> supertypeNames,
+        IEnumerable<IOrdinaryNameSyntax> supertypeNames,
         IEnumerable<ITraitMemberDefinitionSyntax> members)
         => new TraitDefinitionSyntax(span, file, nameSpan, accessModifier, constModifier, moveModifier, name, genericParameters, supertypeNames, members);
 }
@@ -590,11 +590,11 @@ public partial interface IAssociatedFunctionDefinitionSyntax : IClassMemberDefin
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IAttributeSyntax : ICodeSyntax
 {
-    IOrdinaryTypeNameSyntax TypeName { get; }
+    IOrdinaryNameSyntax TypeName { get; }
 
     public static IAttributeSyntax Create(
         TextSpan span,
-        IOrdinaryTypeNameSyntax typeName)
+        IOrdinaryNameSyntax typeName)
         => new AttributeSyntax(span, typeName);
 }
 
@@ -1466,7 +1466,7 @@ public partial interface IGenericNameExpressionSyntax : IOrdinaryNameExpressionS
 
 [Closed(
     typeof(IUnqualifiedNameSyntax),
-    typeof(IQualifiedTypeNameSyntax))]
+    typeof(IQualifiedNameSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface INameSyntax : ITypeSyntax
 {
@@ -1474,7 +1474,7 @@ public partial interface INameSyntax : ITypeSyntax
 
 [Closed(
     typeof(IBuiltInTypeNameSyntax),
-    typeof(IOrdinaryTypeNameSyntax))]
+    typeof(IOrdinaryNameSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IUnqualifiedNameSyntax : INameSyntax
 {
@@ -1495,57 +1495,57 @@ public partial interface IBuiltInTypeNameSyntax : IUnqualifiedNameSyntax
 }
 
 [Closed(
-    typeof(IIdentifierTypeNameSyntax),
-    typeof(IGenericTypeNameSyntax))]
+    typeof(IIdentifierNameSyntax),
+    typeof(IGenericNameSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IOrdinaryTypeNameSyntax : IUnqualifiedNameSyntax
+public partial interface IOrdinaryNameSyntax : IUnqualifiedNameSyntax
 {
     new OrdinaryName Name { get; }
     TypeName IUnqualifiedNameSyntax.Name => Name;
 }
 
-// [Closed(typeof(IdentifierTypeNameSyntax))]
+// [Closed(typeof(IdentifierNameSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IIdentifierTypeNameSyntax : IOrdinaryTypeNameSyntax
+public partial interface IIdentifierNameSyntax : IOrdinaryNameSyntax
 {
     new IdentifierName Name { get; }
-    OrdinaryName IOrdinaryTypeNameSyntax.Name => Name;
+    OrdinaryName IOrdinaryNameSyntax.Name => Name;
     TypeName IUnqualifiedNameSyntax.Name => Name;
 
-    public static IIdentifierTypeNameSyntax Create(
+    public static IIdentifierNameSyntax Create(
         TextSpan span,
         IdentifierName name)
-        => new IdentifierTypeNameSyntax(span, name);
+        => new IdentifierNameSyntax(span, name);
 }
 
-// [Closed(typeof(GenericTypeNameSyntax))]
+// [Closed(typeof(GenericNameSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IGenericTypeNameSyntax : IOrdinaryTypeNameSyntax
+public partial interface IGenericNameSyntax : IOrdinaryNameSyntax
 {
     new GenericName Name { get; }
-    OrdinaryName IOrdinaryTypeNameSyntax.Name => Name;
+    OrdinaryName IOrdinaryNameSyntax.Name => Name;
     TypeName IUnqualifiedNameSyntax.Name => Name;
     IFixedList<ITypeSyntax> GenericArguments { get; }
 
-    public static IGenericTypeNameSyntax Create(
+    public static IGenericNameSyntax Create(
         TextSpan span,
         GenericName name,
         IEnumerable<ITypeSyntax> genericArguments)
-        => new GenericTypeNameSyntax(span, name, genericArguments);
+        => new GenericNameSyntax(span, name, genericArguments);
 }
 
-// [Closed(typeof(QualifiedTypeNameSyntax))]
+// [Closed(typeof(QualifiedNameSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IQualifiedTypeNameSyntax : INameSyntax
+public partial interface IQualifiedNameSyntax : INameSyntax
 {
     INameSyntax Context { get; }
-    IOrdinaryTypeNameSyntax QualifiedName { get; }
+    IOrdinaryNameSyntax QualifiedName { get; }
 
-    public static IQualifiedTypeNameSyntax Create(
+    public static IQualifiedNameSyntax Create(
         TextSpan span,
         INameSyntax context,
-        IOrdinaryTypeNameSyntax qualifiedName)
-        => new QualifiedTypeNameSyntax(span, context, qualifiedName);
+        IOrdinaryNameSyntax qualifiedName)
+        => new QualifiedNameSyntax(span, context, qualifiedName);
 }
 
 // [Closed(typeof(MoveExpressionSyntax))]
@@ -1810,8 +1810,8 @@ file class ClassDefinitionSyntax : IClassDefinitionSyntax
     public OrdinaryName Name { [DebuggerStepThrough] get; }
     public IAbstractKeywordToken? AbstractModifier { [DebuggerStepThrough] get; }
     public IFixedList<IGenericParameterSyntax> GenericParameters { [DebuggerStepThrough] get; }
-    public IOrdinaryTypeNameSyntax? BaseTypeName { [DebuggerStepThrough] get; }
-    public IFixedList<IOrdinaryTypeNameSyntax> SupertypeNames { [DebuggerStepThrough] get; }
+    public IOrdinaryNameSyntax? BaseTypeName { [DebuggerStepThrough] get; }
+    public IFixedList<IOrdinaryNameSyntax> SupertypeNames { [DebuggerStepThrough] get; }
     public IFixedList<IClassMemberDefinitionSyntax> Members { [DebuggerStepThrough] get; }
     public override string ToString()
         => FormattingAspect.ClassDefinition_ToString(this);
@@ -1826,8 +1826,8 @@ file class ClassDefinitionSyntax : IClassDefinitionSyntax
         OrdinaryName name,
         IAbstractKeywordToken? abstractModifier,
         IEnumerable<IGenericParameterSyntax> genericParameters,
-        IOrdinaryTypeNameSyntax? baseTypeName,
-        IEnumerable<IOrdinaryTypeNameSyntax> supertypeNames,
+        IOrdinaryNameSyntax? baseTypeName,
+        IEnumerable<IOrdinaryNameSyntax> supertypeNames,
         IEnumerable<IClassMemberDefinitionSyntax> members)
     {
         Span = span;
@@ -1858,7 +1858,7 @@ file class StructDefinitionSyntax : IStructDefinitionSyntax
     public IMoveKeywordToken? MoveModifier { [DebuggerStepThrough] get; }
     public OrdinaryName Name { [DebuggerStepThrough] get; }
     public IFixedList<IGenericParameterSyntax> GenericParameters { [DebuggerStepThrough] get; }
-    public IFixedList<IOrdinaryTypeNameSyntax> SupertypeNames { [DebuggerStepThrough] get; }
+    public IFixedList<IOrdinaryNameSyntax> SupertypeNames { [DebuggerStepThrough] get; }
     public IFixedList<IStructMemberDefinitionSyntax> Members { [DebuggerStepThrough] get; }
     public override string ToString()
         => FormattingAspect.StructDefinition_ToString(this);
@@ -1872,7 +1872,7 @@ file class StructDefinitionSyntax : IStructDefinitionSyntax
         IMoveKeywordToken? moveModifier,
         OrdinaryName name,
         IEnumerable<IGenericParameterSyntax> genericParameters,
-        IEnumerable<IOrdinaryTypeNameSyntax> supertypeNames,
+        IEnumerable<IOrdinaryNameSyntax> supertypeNames,
         IEnumerable<IStructMemberDefinitionSyntax> members)
     {
         Span = span;
@@ -1901,7 +1901,7 @@ file class TraitDefinitionSyntax : ITraitDefinitionSyntax
     public IMoveKeywordToken? MoveModifier { [DebuggerStepThrough] get; }
     public OrdinaryName Name { [DebuggerStepThrough] get; }
     public IFixedList<IGenericParameterSyntax> GenericParameters { [DebuggerStepThrough] get; }
-    public IFixedList<IOrdinaryTypeNameSyntax> SupertypeNames { [DebuggerStepThrough] get; }
+    public IFixedList<IOrdinaryNameSyntax> SupertypeNames { [DebuggerStepThrough] get; }
     public IFixedList<ITraitMemberDefinitionSyntax> Members { [DebuggerStepThrough] get; }
     public override string ToString()
         => FormattingAspect.TraitDefinition_ToString(this);
@@ -1915,7 +1915,7 @@ file class TraitDefinitionSyntax : ITraitDefinitionSyntax
         IMoveKeywordToken? moveModifier,
         OrdinaryName name,
         IEnumerable<IGenericParameterSyntax> genericParameters,
-        IEnumerable<IOrdinaryTypeNameSyntax> supertypeNames,
+        IEnumerable<IOrdinaryNameSyntax> supertypeNames,
         IEnumerable<ITraitMemberDefinitionSyntax> members)
     {
         Span = span;
@@ -2264,13 +2264,13 @@ file class AttributeSyntax : IAttributeSyntax
     private IAttributeSyntax Self { [Inline] get => this; }
 
     public TextSpan Span { [DebuggerStepThrough] get; }
-    public IOrdinaryTypeNameSyntax TypeName { [DebuggerStepThrough] get; }
+    public IOrdinaryNameSyntax TypeName { [DebuggerStepThrough] get; }
     public override string ToString()
         => FormattingAspect.Attribute_ToString(this);
 
     public AttributeSyntax(
         TextSpan span,
-        IOrdinaryTypeNameSyntax typeName)
+        IOrdinaryNameSyntax typeName)
     {
         Span = span;
         TypeName = typeName;
@@ -3340,16 +3340,16 @@ file class BuiltInTypeNameSyntax : IBuiltInTypeNameSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class IdentifierTypeNameSyntax : IIdentifierTypeNameSyntax
+file class IdentifierNameSyntax : IIdentifierNameSyntax
 {
-    private IIdentifierTypeNameSyntax Self { [Inline] get => this; }
+    private IIdentifierNameSyntax Self { [Inline] get => this; }
 
     public TextSpan Span { [DebuggerStepThrough] get; }
     public IdentifierName Name { [DebuggerStepThrough] get; }
     public override string ToString()
-        => FormattingAspect.IdentifierTypeName_ToString(this);
+        => FormattingAspect.IdentifierName_ToString(this);
 
-    public IdentifierTypeNameSyntax(
+    public IdentifierNameSyntax(
         TextSpan span,
         IdentifierName name)
     {
@@ -3359,17 +3359,17 @@ file class IdentifierTypeNameSyntax : IIdentifierTypeNameSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class GenericTypeNameSyntax : IGenericTypeNameSyntax
+file class GenericNameSyntax : IGenericNameSyntax
 {
-    private IGenericTypeNameSyntax Self { [Inline] get => this; }
+    private IGenericNameSyntax Self { [Inline] get => this; }
 
     public TextSpan Span { [DebuggerStepThrough] get; }
     public GenericName Name { [DebuggerStepThrough] get; }
     public IFixedList<ITypeSyntax> GenericArguments { [DebuggerStepThrough] get; }
     public override string ToString()
-        => FormattingAspect.GenericTypeName_ToString(this);
+        => FormattingAspect.GenericName_ToString(this);
 
-    public GenericTypeNameSyntax(
+    public GenericNameSyntax(
         TextSpan span,
         GenericName name,
         IEnumerable<ITypeSyntax> genericArguments)
@@ -3381,20 +3381,20 @@ file class GenericTypeNameSyntax : IGenericTypeNameSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class QualifiedTypeNameSyntax : IQualifiedTypeNameSyntax
+file class QualifiedNameSyntax : IQualifiedNameSyntax
 {
-    private IQualifiedTypeNameSyntax Self { [Inline] get => this; }
+    private IQualifiedNameSyntax Self { [Inline] get => this; }
 
     public TextSpan Span { [DebuggerStepThrough] get; }
     public INameSyntax Context { [DebuggerStepThrough] get; }
-    public IOrdinaryTypeNameSyntax QualifiedName { [DebuggerStepThrough] get; }
+    public IOrdinaryNameSyntax QualifiedName { [DebuggerStepThrough] get; }
     public override string ToString()
-        => FormattingAspect.QualifiedTypeName_ToString(this);
+        => FormattingAspect.QualifiedName_ToString(this);
 
-    public QualifiedTypeNameSyntax(
+    public QualifiedNameSyntax(
         TextSpan span,
         INameSyntax context,
-        IOrdinaryTypeNameSyntax qualifiedName)
+        IOrdinaryNameSyntax qualifiedName)
     {
         Span = span;
         Context = context;

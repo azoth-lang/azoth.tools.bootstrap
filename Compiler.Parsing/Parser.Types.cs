@@ -129,19 +129,19 @@ public partial class Parser
         };
     }
 
-    private IFixedList<IOrdinaryTypeNameSyntax> ParseOrdinaryTypeNames()
-        => AcceptManySeparated<IOrdinaryTypeNameSyntax, ICommaToken>(ParseOrdinaryTypeName);
+    private IFixedList<IOrdinaryNameSyntax> ParseOrdinaryTypeNames()
+        => AcceptManySeparated<IOrdinaryNameSyntax, ICommaToken>(ParseOrdinaryTypeName);
 
-    private IOrdinaryTypeNameSyntax ParseOrdinaryTypeName()
+    private IOrdinaryNameSyntax ParseOrdinaryTypeName()
     {
         var identifier = Tokens.RequiredToken<IIdentifierToken>();
         var name = identifier.Value;
         var optionalGenerics = AcceptGenericArguments();
         if (optionalGenerics is { } generics)
-            return IGenericTypeNameSyntax.Create(TextSpan.Covering(identifier.Span, generics.Span),
+            return IGenericNameSyntax.Create(TextSpan.Covering(identifier.Span, generics.Span),
                 name, generics.Arguments);
 
-        return IIdentifierTypeNameSyntax.Create(identifier.Span, name);
+        return IIdentifierNameSyntax.Create(identifier.Span, name);
     }
 
     private (IFixedList<ITypeSyntax> Arguments, TextSpan Span)? AcceptGenericArguments()

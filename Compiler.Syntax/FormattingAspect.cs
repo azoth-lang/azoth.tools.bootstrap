@@ -342,13 +342,13 @@ internal static partial class FormattingAspect
     public static partial string BuiltInTypeName_ToString(IBuiltInTypeNameSyntax node)
         => node.Name.ToString();
 
-    public static partial string IdentifierTypeName_ToString(IIdentifierTypeNameSyntax node)
+    public static partial string IdentifierName_ToString(IIdentifierNameSyntax node)
         => node.Name.ToString();
 
-    public static partial string GenericTypeName_ToString(IGenericTypeNameSyntax node)
+    public static partial string GenericName_ToString(IGenericNameSyntax node)
         => $"{node.Name.ToBareString()}[{string.Join(", ", node.GenericArguments)}]";
 
-    public static partial string QualifiedTypeName_ToString(IQualifiedTypeNameSyntax node)
+    public static partial string QualifiedName_ToString(IQualifiedNameSyntax node)
         => $"{node.Context}.{node.QualifiedName}";
     #endregion
 

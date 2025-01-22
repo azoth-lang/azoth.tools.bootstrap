@@ -4,9 +4,9 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Syntax;
 
-public partial interface IGenericTypeNameSyntax
+public partial interface IGenericNameSyntax
 {
-    public static IGenericTypeNameSyntax Create(TextSpan span, string name, IFixedList<ITypeSyntax> typeArguments)
+    public static IGenericNameSyntax Create(TextSpan span, string name, IFixedList<ITypeSyntax> typeArguments)
     {
         // TODO have a way to do this within the AG framework?
         var genericName = new GenericName(name, typeArguments.Count);
