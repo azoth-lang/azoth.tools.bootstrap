@@ -524,7 +524,7 @@ OrdinaryMethodSymbol <: OrdinaryMethodDeclaration, MethodSymbol;
 GetterMethodSymbol <: GetterMethodDeclaration, MethodSymbol;
 SetterMethodSymbol <: SetterMethodDeclaration, MethodSymbol;
 ConstructorSymbol <: ConstructorDeclaration, ClassMemberSymbol = Symbol:`ConstructorSymbol`;
-InitializerSymbol <: InitializerDeclaration, StructMemberSymbol = Symbol:`InitializerSymbol`;
+InitializerSymbol <: InitializerDeclaration, StructMemberSymbol, ClassMemberSymbol = Symbol:`InitializerSymbol`;
 FieldSymbol <: FieldDeclaration, ClassMemberSymbol, StructMemberSymbol = Symbol:`FieldSymbol`;
 AssociatedFunctionSymbol <: AssociatedFunctionDeclaration, AssociatedMemberSymbol
     = Symbol:`FunctionSymbol`;

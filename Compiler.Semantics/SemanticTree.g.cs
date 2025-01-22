@@ -4564,6 +4564,7 @@ public partial interface ITypeMemberSymbolNode : ITypeMemberDeclarationNode, ICh
     typeof(IAssociatedMemberSymbolNode),
     typeof(IMethodSymbolNode),
     typeof(IConstructorSymbolNode),
+    typeof(IInitializerSymbolNode),
     typeof(IFieldSymbolNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IClassMemberSymbolNode : IClassMemberDeclarationNode, ITypeMemberSymbolNode
@@ -4691,7 +4692,7 @@ public partial interface IConstructorSymbolNode : IConstructorDeclarationNode, I
 
 // [Closed(typeof(InitializerSymbolNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IInitializerSymbolNode : IInitializerDeclarationNode, IStructMemberSymbolNode
+public partial interface IInitializerSymbolNode : IInitializerDeclarationNode, IStructMemberSymbolNode, IClassMemberSymbolNode
 {
     new InitializerSymbol Symbol { get; }
     InitializerSymbol? IInitializerDeclarationNode.Symbol => Symbol;
@@ -14191,7 +14192,7 @@ file class InitializerInvocationExpressionNode : SemanticNode, IInitializerInvoc
     public ControlFlowSet ControlFlowNext
         => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
             : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
-                ControlFlowAspect.Expression_ControlFlowNext);
+                ControlFlowAspect.InitializerInvocationExpression_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
     public IFlowState FlowStateAfter
@@ -14227,6 +14228,15 @@ file class InitializerInvocationExpressionNode : SemanticNode, IInitializerInvoc
         Syntax = syntax;
         this.initializer = Child.Create(this, initializer);
         this.arguments = ChildList<IExpressionNode>.Create(this, nameof(Arguments), arguments);
+    }
+
+    internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.CurrentInitializer))
+            return !TempArguments.IsEmpty ? ControlFlowSet.CreateNormal(Arguments[0]) : base.Inherited_ControlFlowFollowing(child, descendant, ctx);
+        if (IndexOfNode(Self.CurrentArguments, child) is { } index)
+            return index < Arguments.Count - 1 ? ControlFlowSet.CreateNormal(Arguments[index + 1]) : base.Inherited_ControlFlowFollowing(child, descendant, ctx);
+        return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
     }
 
     internal override IMaybePlainType? Inherited_ExpectedPlainType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -14360,7 +14370,7 @@ file class NonInvocableInvocationExpressionNode : SemanticNode, INonInvocableInv
     public ControlFlowSet ControlFlowNext
         => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
             : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
-                ControlFlowAspect.Expression_ControlFlowNext);
+                ControlFlowAspect.NonInvocableInvocationExpression_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
     public IFlowState FlowStateAfter
@@ -14384,6 +14394,15 @@ file class NonInvocableInvocationExpressionNode : SemanticNode, INonInvocableInv
         Syntax = syntax;
         this.expression = Child.Create(this, expression);
         this.arguments = ChildList<IExpressionNode>.Create(this, nameof(Arguments), arguments);
+    }
+
+    internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.CurrentExpression))
+            return !TempArguments.IsEmpty ? ControlFlowSet.CreateNormal(Arguments[0]) : base.Inherited_ControlFlowFollowing(child, descendant, ctx);
+        if (IndexOfNode(Self.CurrentArguments, child) is { } index)
+            return index < Arguments.Count - 1 ? ControlFlowSet.CreateNormal(Arguments[index + 1]) : base.Inherited_ControlFlowFollowing(child, descendant, ctx);
+        return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
     }
 
     internal override IMaybePlainType? Inherited_ExpectedPlainType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -15639,6 +15658,7 @@ file class MethodNameNode : SemanticNode, IMethodNameNode
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
     {
         ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
+        OverloadResolutionAspect.MethodName_Contribute_Diagnostics(this, builder);
     }
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
@@ -16544,6 +16564,7 @@ file class InitializerNameNode : SemanticNode, IInitializerNameNode
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
     {
         ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
+        OverloadResolutionAspect.InitializerName_Contribute_Diagnostics(this, builder);
     }
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)

@@ -3,7 +3,7 @@ published class List_Iterator[T ind out]
     let list: temp const List[T];
     var index: size;
 
-    public new(mut self, .list)
+    public init(mut self, .list)
     {
         .index = 0;
     }

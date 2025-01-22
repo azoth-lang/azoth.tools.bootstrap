@@ -260,6 +260,11 @@ internal static partial class OverloadResolutionAspect
     public static partial void FunctionGroupName_Contribute_Diagnostics(IFunctionGroupNameNode node, DiagnosticCollectionBuilder diagnostics)
         => ContributeFunctionNameBindingDiagnostics(node.ReferencedDeclaration, node.CompatibleCallCandidates, node, diagnostics);
 
+    public static partial void FunctionName_Contribute_Diagnostics(
+        IFunctionNameNode node,
+        DiagnosticCollectionBuilder diagnostics)
+        => ContributeFunctionNameBindingDiagnostics(node.ReferencedDeclaration, node.CompatibleCallCandidates, node, diagnostics);
+
     private static void ContributeFunctionNameBindingDiagnostics(
         IFunctionInvocableDeclarationNode? referencedDeclaration,
         IFixedSet<ICallCandidate<IFunctionInvocableDeclarationNode>> compatibleCallCandidates,
@@ -284,9 +289,6 @@ internal static partial class OverloadResolutionAspect
         }
     }
 
-    public static partial void FunctionName_Contribute_Diagnostics(IFunctionNameNode node, DiagnosticCollectionBuilder diagnostics)
-        => ContributeFunctionNameBindingDiagnostics(node.ReferencedDeclaration, node.CompatibleCallCandidates, node, diagnostics);
-
     public static partial IFixedSet<ICallCandidate<IOrdinaryMethodDeclarationNode>> MethodGroupName_CallCandidates(IMethodGroupNameNode node)
         => node.ReferencedDeclarations.Select(m => CallCandidate.Create(node.Context.PlainType, m)).ToFixedSet();
 
@@ -303,13 +305,23 @@ internal static partial class OverloadResolutionAspect
         => node.CompatibleCallCandidates.TrySingle();
 
     public static partial void MethodGroupName_Contribute_Diagnostics(IMethodGroupNameNode node, DiagnosticCollectionBuilder diagnostics)
+        => ContributeMethodNameBindingDiagnostics(node.ReferencedDeclaration, node.CompatibleCallCandidates, node, diagnostics);
+
+    public static partial void MethodName_Contribute_Diagnostics(IMethodNameNode node, DiagnosticCollectionBuilder diagnostics)
+        => ContributeMethodNameBindingDiagnostics(node.ReferencedDeclaration, node.CompatibleCallCandidates, node, diagnostics);
+
+    private static void ContributeMethodNameBindingDiagnostics(
+        IOrdinaryMethodDeclarationNode? referencedDeclaration,
+        IFixedSet<ICallCandidate<IOrdinaryMethodDeclarationNode>> compatibleCallCandidates,
+        INameExpressionNode node,
+        DiagnosticCollectionBuilder diagnostics)
     {
-        if (node.ReferencedDeclaration is not null
+        if (referencedDeclaration is not null
             // errors will be reported by the parent in this case
             || node.Parent is IUnresolvedInvocationExpressionNode)
             return;
 
-        switch (node.CompatibleCallCandidates.Count)
+        switch (compatibleCallCandidates.Count)
         {
             case 0:
                 diagnostics.Add(NameBindingError.CouldNotBindMethodName(node.File, node.Syntax));
@@ -339,13 +351,23 @@ internal static partial class OverloadResolutionAspect
         => node.CompatibleCallCandidates.TrySingle();
 
     public static partial void InitializerGroupName_Contribute_Diagnostics(IInitializerGroupNameNode node, DiagnosticCollectionBuilder diagnostics)
+        => ContributeInitializerNameBindingDiagnostics(node.ReferencedDeclaration, node.CompatibleCallCandidates, node, diagnostics);
+
+    public static partial void InitializerName_Contribute_Diagnostics(IInitializerNameNode node, DiagnosticCollectionBuilder diagnostics)
+        => ContributeInitializerNameBindingDiagnostics(node.ReferencedDeclaration, node.CompatibleCallCandidates, node, diagnostics);
+
+    private static void ContributeInitializerNameBindingDiagnostics(
+        IInitializerDeclarationNode? referencedDeclaration,
+        IFixedSet<ICallCandidate<IInitializerDeclarationNode>> compatibleCallCandidates,
+        INameExpressionNode node,
+        DiagnosticCollectionBuilder diagnostics)
     {
-        if (node.ReferencedDeclaration is not null
+        if (referencedDeclaration is not null
             // errors will be reported by the parent in this case
             || node.Parent is IUnresolvedInvocationExpressionNode)
             return;
 
-        switch (node.CompatibleCallCandidates.Count)
+        switch (compatibleCallCandidates.Count)
         {
             case 0:
                 diagnostics.Add(NameBindingError.CouldNotBindInitializer(node.File, node.Syntax.Span));

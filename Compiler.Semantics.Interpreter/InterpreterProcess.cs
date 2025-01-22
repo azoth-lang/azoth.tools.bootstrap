@@ -559,6 +559,8 @@ public class InterpreterProcess
             {
                 var arguments = await ExecuteArgumentsAsync(exp.Arguments!, variables).ConfigureAwait(false);
                 var initializerSymbol = exp.Initializer.ReferencedDeclaration!.Symbol.Assigned();
+                if (initializerSymbol.Package == Intrinsic.SymbolTree.Package)
+                    return await CallIntrinsicAsync(initializerSymbol, arguments).ConfigureAwait(false);
                 var typeDefinition = userTypes[initializerSymbol.ContextTypeSymbol];
                 return typeDefinition switch
                 {
@@ -966,6 +968,23 @@ public class InterpreterProcess
         }
 
         throw new NotImplementedException($"Intrinsic {constructor}");
+    }
+
+    private static ValueTask<AzothValue> CallIntrinsicAsync(InitializerSymbol initializer, List<AzothValue> arguments)
+    {
+        if (initializer == Intrinsic.InitRawBoundedList)
+        {
+            var listType = initializer.ContainingSymbol.TypeConstructor.ParameterTypes[0];
+            nuint capacity = arguments[0].SizeValue;
+            IRawBoundedList list;
+            if (listType.Equals(Type.Byte))
+                list = new RawBoundedByteList(capacity);
+            else
+                list = new RawBoundedList(capacity);
+            return ValueTask.FromResult(AzothValue.RawBoundedList(list));
+        }
+
+        throw new NotImplementedException($"Intrinsic {initializer}");
     }
 
     private static ValueTask<AzothValue> CallIntrinsicAsync(

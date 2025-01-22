@@ -32,6 +32,9 @@ public static class Intrinsic
     public static readonly ConstructorSymbol NewRawBoundedList
         = Find<ConstructorSymbol>(RawHybridBoundedList, null);
 
+    public static readonly InitializerSymbol InitRawBoundedList
+        = Find<InitializerSymbol>(RawHybridBoundedList, null);
+
     public static readonly MethodSymbol GetRawBoundedListCapacity
         = Find<MethodSymbol>(RawHybridBoundedList, "capacity");
 
@@ -145,6 +148,10 @@ public static class Intrinsic
         // published new(.fixed, .capacity) {...}
         var constructor = new ConstructorSymbol(classSymbol, null, mutType, Params(fixedType, Type.Size));
         tree.Add(constructor);
+
+        // published init(.fixed, .capacity) {...}
+        var initializer = new InitializerSymbol(classSymbol, null, mutType, Params(fixedType, Type.Size));
+        tree.Add(initializer);
 
         // published get fixed(self) -> F;
         var getFixed = Getter(classSymbol, "fixed", readType, fixedType);

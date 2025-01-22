@@ -59,9 +59,11 @@
 ↑ MethodGroupName.ReferencedDeclaration: OrdinaryMethodDeclaration?
     => SelectedCallCandidate?.Declaration;
 = MethodGroupName.↑.Diagnostics;
+= MethodName.↑.Diagnostics;
 ↑ InitializerGroupName.CallCandidates: {`ICallCandidate<IInitializerDeclarationNode>`};
 ↑ InitializerGroupName.CompatibleCallCandidates: {`ICallCandidate<IInitializerDeclarationNode>`};
 ↑ InitializerGroupName.SelectedCallCandidate: `ICallCandidate<IInitializerDeclarationNode>`?;
 ↑ InitializerGroupName.ReferencedDeclaration: InitializerDeclaration?
     => SelectedCallCandidate?.Declaration;
 = InitializerGroupName.↑.Diagnostics;
+= InitializerName.↑.Diagnostics;

@@ -3,7 +3,7 @@ published class Range_Iterator
     let range: range;
     var index: uint;
 
-    published new(mut self, .range)
+    published init(mut self, .range)
     {
         .index = 0;
     }

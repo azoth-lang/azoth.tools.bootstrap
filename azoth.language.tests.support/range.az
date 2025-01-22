@@ -15,6 +15,6 @@ namespace azoth
         }
 
         published fn iterate(const self) -> mut Range_Iterator
-            => return new Range_Iterator(self);
+            => return Range_Iterator(self);
     }
 }

@@ -64,6 +64,12 @@ internal static partial class ControlFlowAspect
 
     public static partial ControlFlowSet FunctionReferenceInvocationExpression_ControlFlowNext(IFunctionReferenceInvocationExpressionNode node)
         => ControlFlowSet.CreateNormal(node.Expression);
+
+    public static partial ControlFlowSet InitializerInvocationExpression_ControlFlowNext(IInitializerInvocationExpressionNode node)
+        => ControlFlowSet.CreateNormal(node.Initializer);
+
+    public static partial ControlFlowSet NonInvocableInvocationExpression_ControlFlowNext(INonInvocableInvocationExpressionNode node)
+        => ControlFlowSet.CreateNormal(node.Expression);
     #endregion
 
     #region Name Expressions

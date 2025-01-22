@@ -61,6 +61,10 @@ internal static partial class ControlFlowAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial ControlFlowSet FunctionReferenceInvocationExpression_ControlFlowNext(IFunctionReferenceInvocationExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial ControlFlowSet InitializerInvocationExpression_ControlFlowNext(IInitializerInvocationExpressionNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial ControlFlowSet NonInvocableInvocationExpression_ControlFlowNext(INonInvocableInvocationExpressionNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial ControlFlowSet UnresolvedMemberAccessExpression_ControlFlowNext(IUnresolvedMemberAccessExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial ControlFlowSet MethodGroupName_ControlFlowNext(IMethodGroupNameNode node);

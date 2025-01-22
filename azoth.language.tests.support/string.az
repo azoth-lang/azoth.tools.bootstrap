@@ -1,4 +1,3 @@
-// TODO replace with `ref[C] struct`
 published const struct string
 {
     /// The index of the start of the string data in `bytes`.
