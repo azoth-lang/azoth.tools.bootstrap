@@ -1453,25 +1453,16 @@ public partial interface IInvocationExpressionSyntax : IExpressionSyntax
 }
 
 [Closed(
-    typeof(ISimpleNameSyntax),
     typeof(IOrdinaryNameExpressionSyntax),
     typeof(IBuiltInTypeNameExpressionSyntax),
-    typeof(ISelfExpressionSyntax),
-    typeof(IMemberAccessExpressionSyntax))]
+    typeof(IInstanceExpressionSyntax),
+    typeof(IMemberAccessExpressionSyntax),
+    typeof(IMissingNameSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface INameExpressionSyntax : IExpressionSyntax
 {
     OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
         => OperatorPrecedence.Primary;
-}
-
-[Closed(
-    typeof(IIdentifierNameExpressionSyntax),
-    typeof(IInstanceExpressionSyntax),
-    typeof(IMissingNameSyntax))]
-[GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface ISimpleNameSyntax : INameExpressionSyntax
-{
 }
 
 [Closed(
@@ -1486,7 +1477,7 @@ public partial interface IOrdinaryNameExpressionSyntax : INameExpressionSyntax
 
 // [Closed(typeof(IdentifierNameExpressionSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IIdentifierNameExpressionSyntax : IOrdinaryNameExpressionSyntax, ISimpleNameSyntax
+public partial interface IIdentifierNameExpressionSyntax : IOrdinaryNameExpressionSyntax
 {
     new IdentifierName Name { get; }
     OrdinaryName IOrdinaryNameExpressionSyntax.Name => Name;
@@ -1529,13 +1520,13 @@ public partial interface IGenericNameExpressionSyntax : IOrdinaryNameExpressionS
 [Closed(
     typeof(ISelfExpressionSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IInstanceExpressionSyntax : ISimpleNameSyntax
+public partial interface IInstanceExpressionSyntax : INameExpressionSyntax
 {
 }
 
 // [Closed(typeof(SelfExpressionSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface ISelfExpressionSyntax : INameExpressionSyntax, IInstanceExpressionSyntax
+public partial interface ISelfExpressionSyntax : IInstanceExpressionSyntax
 {
     bool IsImplicit { get; }
 
@@ -1565,7 +1556,7 @@ public partial interface IMemberAccessExpressionSyntax : INameExpressionSyntax
 
 // [Closed(typeof(MissingNameSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IMissingNameSyntax : ISimpleNameSyntax
+public partial interface IMissingNameSyntax : INameExpressionSyntax
 {
 
     public static IMissingNameSyntax Create(TextSpan span)
@@ -1576,13 +1567,13 @@ public partial interface IMissingNameSyntax : ISimpleNameSyntax
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IMoveExpressionSyntax : IExpressionSyntax
 {
-    ISimpleNameSyntax Referent { get; }
+    IExpressionSyntax Referent { get; }
     OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
         => OperatorPrecedence.Min;
 
     public static IMoveExpressionSyntax Create(
         TextSpan span,
-        ISimpleNameSyntax referent)
+        IExpressionSyntax referent)
         => new MoveExpressionSyntax(span, referent);
 }
 
@@ -1590,13 +1581,13 @@ public partial interface IMoveExpressionSyntax : IExpressionSyntax
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IFreezeExpressionSyntax : IExpressionSyntax
 {
-    ISimpleNameSyntax Referent { get; }
+    IExpressionSyntax Referent { get; }
     OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
         => OperatorPrecedence.Min;
 
     public static IFreezeExpressionSyntax Create(
         TextSpan span,
-        ISimpleNameSyntax referent)
+        IExpressionSyntax referent)
         => new FreezeExpressionSyntax(span, referent);
 }
 
@@ -3454,13 +3445,13 @@ file class MoveExpressionSyntax : IMoveExpressionSyntax
     private IMoveExpressionSyntax Self { [Inline] get => this; }
 
     public TextSpan Span { [DebuggerStepThrough] get; }
-    public ISimpleNameSyntax Referent { [DebuggerStepThrough] get; }
+    public IExpressionSyntax Referent { [DebuggerStepThrough] get; }
     public override string ToString()
         => FormattingAspect.MoveExpression_ToString(this);
 
     public MoveExpressionSyntax(
         TextSpan span,
-        ISimpleNameSyntax referent)
+        IExpressionSyntax referent)
     {
         Span = span;
         Referent = referent;
@@ -3473,13 +3464,13 @@ file class FreezeExpressionSyntax : IFreezeExpressionSyntax
     private IFreezeExpressionSyntax Self { [Inline] get => this; }
 
     public TextSpan Span { [DebuggerStepThrough] get; }
-    public ISimpleNameSyntax Referent { [DebuggerStepThrough] get; }
+    public IExpressionSyntax Referent { [DebuggerStepThrough] get; }
     public override string ToString()
         => FormattingAspect.FreezeExpression_ToString(this);
 
     public FreezeExpressionSyntax(
         TextSpan span,
-        ISimpleNameSyntax referent)
+        IExpressionSyntax referent)
     {
         Span = span;
         Referent = referent;

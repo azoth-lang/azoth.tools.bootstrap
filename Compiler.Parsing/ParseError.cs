@@ -50,12 +50,6 @@ internal static class ParseError
             2005, "Unexpected end of expression.");
     }
 
-    public static Diagnostic CantMoveOutOfExpression(CodeFile file, TextSpan span)
-    {
-        return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,
-            2006, "Can't move out of expression. Can only move out of variable or self.");
-    }
-
     public static Diagnostic ResultStatementInBody(CodeFile file, TextSpan span)
     {
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,
@@ -78,12 +72,6 @@ internal static class ParseError
     {
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,
             2011, "Variable type and capability are missing.");
-    }
-
-    public static Diagnostic CantFreezeExpression(CodeFile file, TextSpan span)
-    {
-        return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,
-            2012, "Can't freeze expression. Can only freeze a variable or self.");
     }
 
     public static Diagnostic AbstractAssociatedFunction(CodeFile file, TextSpan span)

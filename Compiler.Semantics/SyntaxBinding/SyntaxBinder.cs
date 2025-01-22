@@ -552,15 +552,6 @@ internal static class SyntaxBinder
     #endregion
 
     #region Name Expressions
-    private static IUnresolvedSimpleNameNode SimpleName(ISimpleNameSyntax syntax)
-        => syntax switch
-        {
-            IIdentifierNameExpressionSyntax syn => IdentifierNameExpression(syn),
-            ISelfExpressionSyntax syn => SelfExpression(syn),
-            IMissingNameSyntax syn => MissingName(syn),
-            _ => throw ExhaustiveMatch.Failed(syntax)
-        };
-
     private static IIdentifierNameExpressionNode IdentifierNameExpression(IIdentifierNameExpressionSyntax syntax)
         => IIdentifierNameExpressionNode.Create(syntax);
 
@@ -582,10 +573,10 @@ internal static class SyntaxBinder
 
     #region Capability Expressions
     private static IAmbiguousMoveExpressionNode MoveExpression(IMoveExpressionSyntax syntax)
-        => IAmbiguousMoveExpressionNode.Create(syntax, SimpleName(syntax.Referent));
+        => IAmbiguousMoveExpressionNode.Create(syntax, Expression(syntax.Referent));
 
     private static IAmbiguousFreezeExpressionNode FreezeExpression(IFreezeExpressionSyntax syntax)
-        => IAmbiguousFreezeExpressionNode.Create(syntax, SimpleName(syntax.Referent));
+        => IAmbiguousFreezeExpressionNode.Create(syntax, Expression(syntax.Referent));
     #endregion
 
     #region Async Expressions

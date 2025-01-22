@@ -280,9 +280,8 @@ NonInvocableInvocationExpression <: InvocationExpression = Syntax:`IInvocationEx
 // name is needed to distinguish between unresolved nodes and temp nodes.
 temp AmbiguousNameExpression <: AmbiguousExpression = Syntax:`INameExpressionSyntax`;
 temp AmbiguousName <: AmbiguousNameExpression;
-temp UnresolvedSimpleName <: AmbiguousName = Syntax:`ISimpleNameSyntax`;
 temp OrdinaryNameExpression <: AmbiguousName = Syntax:`IOrdinaryNameExpressionSyntax`;
-temp IdentifierNameExpression <: AmbiguousName, OrdinaryNameExpression, UnresolvedSimpleName
+temp IdentifierNameExpression <: AmbiguousName, OrdinaryNameExpression
     = Syntax:`IIdentifierNameExpressionSyntax`;
 temp GenericNameExpression <: AmbiguousName, OrdinaryNameExpression
     = Syntax:`IGenericNameExpressionSyntax` TypeArguments:Type*;
@@ -294,11 +293,9 @@ UnknownNameExpression <: NameExpression = Syntax:`INameExpressionSyntax`;
 UnresolvedMemberAccessExpression <: UnknownNameExpression
     = Syntax:`IMemberAccessExpressionSyntax` Context:AmbiguousExpression TypeArguments:Type*;
 LocalBindingNameExpression <: NameExpression = ReferencedDefinition:`IBindingNode`?;
-SimpleNameExpression <: NameExpression, UnresolvedSimpleName
-    = Syntax:`ISimpleNameSyntax`;
 // TODO Name <: NameExpression
 NamespaceName <: NameExpression = ReferencedDeclarations:`INamespaceDeclarationNode`*;
-UnqualifiedNamespaceName <: NamespaceName, SimpleNameExpression
+UnqualifiedNamespaceName <: NamespaceName
     = Syntax:`IIdentifierNameExpressionSyntax` /ReferencedDeclarations/;
 QualifiedNamespaceName <: NamespaceName
     = Syntax:`IMemberAccessExpressionSyntax` Context:NamespaceName /ReferencedDeclarations/;
@@ -328,7 +325,7 @@ MethodName <: NameExpression = Syntax:`IMemberAccessExpressionSyntax`
     ReferencedDeclaration:`IOrdinaryMethodDeclarationNode`?;
 FieldAccessExpression <: NameExpression = Syntax:`IMemberAccessExpressionSyntax`
     Context:Expression FieldName:`IdentifierName` ReferencedDeclaration:`IFieldDeclarationNode`;
-VariableNameExpression <: LocalBindingNameExpression, SimpleNameExpression
+VariableNameExpression <: LocalBindingNameExpression, NameExpression
     = Syntax:`IIdentifierNameExpressionSyntax` ReferencedDefinition:`ILocalBindingNode`;
 TypeNameExpression <: NameExpression = Syntax:`INameExpressionSyntax`
     TypeArguments:Type* ReferencedDeclaration:`ITypeDeclarationNode`;
@@ -351,15 +348,15 @@ InitializerName <: NameExpression = Syntax:`INameExpressionSyntax`
 // TODO merge with BuiltInTypeName and keep the name "BuiltInTypeName" because it really isn't an expression
 BuiltInTypeNameExpression <: NameExpression
     = Syntax:`IBuiltInTypeNameExpressionSyntax`;
-InstanceExpression <: NameExpression, SimpleNameExpression = Syntax:`IInstanceExpressionSyntax`; // i.e. `self` or `base`
+InstanceExpression <: NameExpression = Syntax:`IInstanceExpressionSyntax`; // i.e. `self` or `base`
 // TODO BaseExpression <: InstanceExpression
 SelfExpression <: InstanceExpression, LocalBindingNameExpression
     = Syntax:`ISelfExpressionSyntax`;
-MissingNameExpression <: NameExpression, SimpleNameExpression
+MissingNameExpression <: NameExpression
     = Syntax:`IMissingNameSyntax`;
 UnknownStandardNameExpression <: UnknownNameExpression
     = Syntax:`IOrdinaryNameExpressionSyntax` Name:`OrdinaryName` ReferencedDeclarations:{`IDeclarationNode`};
-UnknownIdentifierNameExpression <: UnknownStandardNameExpression, SimpleNameExpression
+UnknownIdentifierNameExpression <: UnknownStandardNameExpression
     = Syntax:`IIdentifierNameExpressionSyntax` /ReferencedDeclarations/;
 UnknownGenericNameExpression <: UnknownStandardNameExpression
     = Syntax:`IGenericNameExpressionSyntax` TypeArguments:Type* /ReferencedDeclarations/;
@@ -368,14 +365,14 @@ AmbiguousMemberAccessExpression <: UnknownNameExpression
     ReferencedMembers:{`IDeclarationNode`};
 
 // ---------- Capability Expressions
-temp AmbiguousMoveExpression <: AmbiguousExpression = Syntax:`IMoveExpressionSyntax` Referent:AmbiguousNameExpression;
+temp AmbiguousMoveExpression <: AmbiguousExpression = Syntax:`IMoveExpressionSyntax` Referent:AmbiguousExpression;
 RecoveryExpression <: Expression = Referent:Expression IsImplicit:`bool`;
 MoveExpression <: RecoveryExpression = Referent:Expression;
 // TODO why is move variable expression needed? Shouldn't moving a value just change any variables in the sharing set to `id`?
 MoveVariableExpression <: MoveExpression = Referent:LocalBindingNameExpression /IsImplicit/;
 MoveValueExpression <: MoveExpression = /Referent/ /IsImplicit/;
 ImplicitTempMoveExpression <: Expression = Referent:Expression;
-temp AmbiguousFreezeExpression <: AmbiguousExpression = Syntax:`IFreezeExpressionSyntax` Referent:AmbiguousNameExpression;
+temp AmbiguousFreezeExpression <: AmbiguousExpression = Syntax:`IFreezeExpressionSyntax` Referent:AmbiguousExpression;
 FreezeExpression <: RecoveryExpression = Referent:Expression IsTemporary:`bool`;
 FreezeVariableExpression <: FreezeExpression = Referent:LocalBindingNameExpression /IsTemporary/ /IsImplicit/;
 FreezeValueExpression <: FreezeExpression = /Referent/ /IsTemporary/ /IsImplicit/;

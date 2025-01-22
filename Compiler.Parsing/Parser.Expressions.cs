@@ -91,7 +91,6 @@ public partial class Parser
                         @operator = Tokens.ConsumeToken<IBinaryOperatorToken>();
                     }
                     break;
-
                 case ILessThanToken _:
                 case ILessThanOrEqualToken _:
                 case IGreaterThanToken _:
@@ -355,10 +354,7 @@ public partial class Parser
                 // `move` is like a unary operator
                 var expression = ParseExpression(OperatorPrecedence.Unary);
                 var span = TextSpan.Covering(move, expression.Span);
-                if (expression is ISimpleNameSyntax simpleName)
-                    return IMoveExpressionSyntax.Create(span, simpleName);
-                Add(ParseError.CantMoveOutOfExpression(File, span));
-                return expression;
+                return IMoveExpressionSyntax.Create(span, expression);
             }
             case IFreezeKeywordToken _:
             {
@@ -366,10 +362,7 @@ public partial class Parser
                 // `freeze` is like a unary operator
                 var expression = ParseExpression(OperatorPrecedence.Unary);
                 var span = TextSpan.Covering(freeze, expression.Span);
-                if (expression is ISimpleNameSyntax simpleName)
-                    return IFreezeExpressionSyntax.Create(span, simpleName);
-                Add(ParseError.CantFreezeExpression(File, span));
-                return expression;
+                return IFreezeExpressionSyntax.Create(span, expression);
             }
             case IAsyncKeywordToken _:
                 return ParseAsyncBlock();

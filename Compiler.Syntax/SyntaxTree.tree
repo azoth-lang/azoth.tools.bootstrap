@@ -206,22 +206,20 @@ InvocationExpression <: Expression = Expression Arguments:Expression*;
 
 // ---------- Name Expressions
 NameExpression <: Expression;
-SimpleName <: NameExpression;
 OrdinaryNameExpression <: NameExpression = Name:`OrdinaryName` GenericArguments:Type*;
-IdentifierNameExpression <: NameExpression, OrdinaryNameExpression, SimpleName
-    = Name:`IdentifierName`;
+IdentifierNameExpression <: OrdinaryNameExpression = Name:`IdentifierName`;
 BuiltInTypeNameExpression <: NameExpression, Expression = Name:`BuiltInTypeName`;
 GenericNameExpression <: NameExpression, OrdinaryNameExpression = Name:`GenericName` /GenericArguments/;
-InstanceExpression <: SimpleName; // i.e. `self` or `base`
+InstanceExpression <: NameExpression; // i.e. `self` or `base`
 SelfExpression <: NameExpression, InstanceExpression = IsImplicit:`bool`;
 MemberAccessExpression <: NameExpression
     = Context:Expression MemberName:`OrdinaryName` GenericArguments:Type* MemberNameSpan:`TextSpan`;
-MissingName <: NameExpression, SimpleName;
+MissingName <: NameExpression;
 
 // ---------- Capability Expressions
-/// i.e. `move name`. A move takes ownership of something from a variable.
-MoveExpression <: Expression = Referent:SimpleName;
-FreezeExpression <: Expression = Referent:SimpleName;
+/// i.e. `move name`. A move takes ownership of something from a variable or expression.
+MoveExpression <: Expression = Referent:Expression;
+FreezeExpression <: Expression = Referent:Expression;
 
 // ---------- Async Expressions
 AsyncBlockExpression <: Expression = Block:BlockExpression;
