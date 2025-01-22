@@ -361,13 +361,12 @@ MissingNameExpression <: NameExpression
     = Syntax:`IMissingNameSyntax`;
 
 // ---------- Unresolved Name Expressions
-// TODO rename UnresolvedNameExpression to UnresolvedNameExpression (note these are non-temp)
 UnresolvedNameExpression <: NameExpression, UnresolvedExpression = Syntax:`INameExpressionSyntax`;
-UnknownStandardNameExpression <: UnresolvedNameExpression
+UnresolvedOrdinaryNameExpression <: UnresolvedNameExpression
     = Syntax:`IOrdinaryNameSyntax` Name:`OrdinaryName` ReferencedDeclarations:{`IDeclarationNode`};
-UnknownIdentifierNameExpression <: UnknownStandardNameExpression
+UnresolvedIdentifierNameExpression <: UnresolvedOrdinaryNameExpression
     = Syntax:`IIdentifierNameSyntax` /ReferencedDeclarations/;
-UnknownGenericNameExpression <: UnknownStandardNameExpression
+UnresolvedGenericNameExpression <: UnresolvedOrdinaryNameExpression
     = Syntax:`IGenericNameSyntax` TypeArguments:Type* /ReferencedDeclarations/;
 UnresolvedQualifiedNameExpression <: UnresolvedNameExpression, UnresolvedMemberAccessExpression
     = Syntax:`IQualifiedNameSyntax` /Context/ /TypeArguments/;

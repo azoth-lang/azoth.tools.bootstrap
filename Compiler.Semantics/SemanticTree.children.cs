@@ -514,13 +514,13 @@ public static class ISemanticNodeExtensions
             case IUnaryOperatorExpressionNode n:
                 yield return n.TempOperand;
                 yield break;
-            case IUnknownGenericNameExpressionNode n:
+            case IUnqualifiedNamespaceNameNode n:
+                yield break;
+            case IUnresolvedGenericNameExpressionNode n:
                 foreach (var child in n.TypeArguments)
                     yield return child;
                 yield break;
-            case IUnknownIdentifierNameExpressionNode n:
-                yield break;
-            case IUnqualifiedNamespaceNameNode n:
+            case IUnresolvedIdentifierNameExpressionNode n:
                 yield break;
             case IUnresolvedInvocationExpressionNode n:
                 yield return n.TempExpression;

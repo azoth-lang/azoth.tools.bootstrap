@@ -30,4 +30,6 @@
 ✎ MethodGroupName replace_with MethodName;
 = MethodGroupName.↑.Diagnostics;
 ✎ InitializerGroupName replace_with InitializerName;
-= UnknownIdentifierNameExpression.↑.Diagnostics;
+
+// ---------- Unresolved Name Expressions
+= UnresolvedIdentifierNameExpression.↑.Diagnostics;

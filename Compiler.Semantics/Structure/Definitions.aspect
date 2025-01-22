@@ -185,10 +185,10 @@
 = QualifiedTypeNameExpression.Name => Syntax.MemberName;
 ↑ BuiltInTypeNameExpression.Name: `BuiltInTypeName` => Syntax.Name;
 ↑ SelfExpression.IsImplicit: `bool` => Syntax.IsImplicit;
-↑ UnknownIdentifierNameExpression.Name: `IdentifierName` => Syntax.Name;
-↑ UnknownGenericNameExpression.Name: `GenericName` => Syntax.Name;
 
 // ---------- Unresolved Name Expressions
+↑ UnresolvedIdentifierNameExpression.Name: `IdentifierName` => Syntax.Name;
+↑ UnresolvedGenericNameExpression.Name: `GenericName` => Syntax.Name;
 
 // ---------- Capability Expressions
 ↑ PrepareToReturnExpression.Syntax: `IExpressionSyntax` => Value.Syntax;
