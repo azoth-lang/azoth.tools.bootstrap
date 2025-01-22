@@ -166,7 +166,7 @@ BlockExpression <: Expression, BlockOrResult, BodyOrBlock = Statements:Statement
 /// this expression's type could be either an object type, or member type.
 /// </summary>
 NewObjectExpression <: Expression
-    = Type:TypeName ConstructorName:`IdentifierName`? ConstructorNameSpan:`TextSpan`? Arguments:Expression*;
+    = Type:Name ConstructorName:`IdentifierName`? ConstructorNameSpan:`TextSpan`? Arguments:Expression*;
 InstanceExpression <: NameExpression; // i.e. `self` or `base`
 SelfExpression <: InstanceExpression = IsImplicit:`bool`;
 MemberAccessExpression <: NameExpression
@@ -212,12 +212,12 @@ GenericNameExpression <: OrdinaryNameExpression = Name:`GenericName` /GenericArg
 // At the syntax level, there is no distinction between names of types and other names, they all use
 // the same node types so that rewrites of the semantic tree can refer to them when it is realized a
 // name refers to a type. Thus names are both types and expressions.
-TypeName <: Type = Name:`TypeName`;
-BuiltInTypeName <: TypeName = Name:`BuiltInTypeName`;
-OrdinaryTypeName <: TypeName = Name:`OrdinaryName`;
+Name <: Type = Name:`TypeName`;
+BuiltInTypeName <: Name = Name:`BuiltInTypeName`;
+OrdinaryTypeName <: Name = Name:`OrdinaryName`;
 IdentifierTypeName <: OrdinaryTypeName = Name:`IdentifierName`;
 GenericTypeName <: OrdinaryTypeName = Name:`GenericName` GenericArguments:Type*;
-QualifiedTypeName <: TypeName = Context:TypeName QualifiedName:OrdinaryTypeName;
+QualifiedTypeName <: Name = Context:Name QualifiedName:OrdinaryTypeName;
 
 // ---------- Capability Expressions
 /// i.e. `move name`. A move takes ownership of something from a variable or expression.

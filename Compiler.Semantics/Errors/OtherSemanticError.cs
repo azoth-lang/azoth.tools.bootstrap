@@ -96,7 +96,7 @@ public static class OtherSemanticError
     }
 
     // TODO remove overload when no longer needed for constructor calls
-    public static Diagnostic CannotConstructAbstractType(CodeFile file, ITypeNameSyntax typeName)
+    public static Diagnostic CannotConstructAbstractType(CodeFile file, INameSyntax typeName)
     {
         return new(file, typeName.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             6017, $"Type `{typeName}` cannot be constructed because it is abstract.");

@@ -168,7 +168,7 @@ ExpressionBody <: Body = Syntax:`IExpressionBodySyntax` ResultStatement;
 // ---------- Types
 Type <: Code = Syntax:`ITypeSyntax`;
 // TODO start from generalized names in syntax and rewrite to type names
-TypeName <: Type = Syntax:`ITypeNameSyntax`;
+TypeName <: Type = Syntax:`INameSyntax`;
 OrdinaryTypeName <: TypeName = Syntax:`IOrdinaryTypeNameSyntax`;
 IdentifierTypeName <: OrdinaryTypeName = Syntax:`IIdentifierTypeNameSyntax`;
 BuiltInTypeName <: TypeName = Syntax:`IBuiltInTypeNameSyntax`;

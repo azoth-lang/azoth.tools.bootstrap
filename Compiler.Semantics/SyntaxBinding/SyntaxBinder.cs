@@ -291,7 +291,7 @@ internal static class SyntaxBinder
         => syntax switch
         {
             null => null,
-            ITypeNameSyntax syn => TypeName(syn),
+            INameSyntax syn => TypeName(syn),
             IOptionalTypeSyntax syn => OptionalType(syn),
             ICapabilityTypeSyntax syn => CapabilityType(syn),
             IFunctionTypeSyntax syn => FunctionType(syn),
@@ -299,7 +299,7 @@ internal static class SyntaxBinder
             _ => throw ExhaustiveMatch.Failed(syntax)
         };
 
-    private static ITypeNameNode TypeName(ITypeNameSyntax syntax)
+    private static ITypeNameNode TypeName(INameSyntax syntax)
         => syntax switch
         {
             IOrdinaryTypeNameSyntax syn => OrdinaryTypeName(syn),

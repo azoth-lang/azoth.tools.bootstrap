@@ -1409,7 +1409,7 @@ public partial interface ITypeNode : ICodeNode
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface ITypeNameNode : ITypeNode
 {
-    new ITypeNameSyntax Syntax { get; }
+    new INameSyntax Syntax { get; }
     ITypeSyntax ITypeNode.Syntax => Syntax;
     ICodeSyntax ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
@@ -1427,7 +1427,7 @@ public partial interface ITypeNameNode : ITypeNode
 public partial interface IOrdinaryTypeNameNode : ITypeNameNode
 {
     new IOrdinaryTypeNameSyntax Syntax { get; }
-    ITypeNameSyntax ITypeNameNode.Syntax => Syntax;
+    INameSyntax ITypeNameNode.Syntax => Syntax;
     ITypeSyntax ITypeNode.Syntax => Syntax;
     ICodeSyntax ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
@@ -1443,7 +1443,7 @@ public partial interface IIdentifierTypeNameNode : IOrdinaryTypeNameNode
 {
     new IIdentifierTypeNameSyntax Syntax { get; }
     IOrdinaryTypeNameSyntax IOrdinaryTypeNameNode.Syntax => Syntax;
-    ITypeNameSyntax ITypeNameNode.Syntax => Syntax;
+    INameSyntax ITypeNameNode.Syntax => Syntax;
     ITypeSyntax ITypeNode.Syntax => Syntax;
     ICodeSyntax ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
@@ -1461,7 +1461,7 @@ public partial interface IIdentifierTypeNameNode : IOrdinaryTypeNameNode
 public partial interface IBuiltInTypeNameNode : ITypeNameNode
 {
     new IBuiltInTypeNameSyntax Syntax { get; }
-    ITypeNameSyntax ITypeNameNode.Syntax => Syntax;
+    INameSyntax ITypeNameNode.Syntax => Syntax;
     ITypeSyntax ITypeNode.Syntax => Syntax;
     ICodeSyntax ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
@@ -1479,7 +1479,7 @@ public partial interface IGenericTypeNameNode : IOrdinaryTypeNameNode
 {
     new IGenericTypeNameSyntax Syntax { get; }
     IOrdinaryTypeNameSyntax IOrdinaryTypeNameNode.Syntax => Syntax;
-    ITypeNameSyntax ITypeNameNode.Syntax => Syntax;
+    INameSyntax ITypeNameNode.Syntax => Syntax;
     ITypeSyntax ITypeNode.Syntax => Syntax;
     ICodeSyntax ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
@@ -1500,7 +1500,7 @@ public partial interface IGenericTypeNameNode : IOrdinaryTypeNameNode
 public partial interface IQualifiedTypeNameNode : ITypeNameNode
 {
     new IQualifiedTypeNameSyntax Syntax { get; }
-    ITypeNameSyntax ITypeNameNode.Syntax => Syntax;
+    INameSyntax ITypeNameNode.Syntax => Syntax;
     ITypeSyntax ITypeNode.Syntax => Syntax;
     ICodeSyntax ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;

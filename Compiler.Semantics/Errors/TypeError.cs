@@ -203,7 +203,7 @@ public static class TypeError
     }
 
     // TODO remove overload when no longer needed for new object expression
-    public static Diagnostic TypeParameterCannotBeUsedHere(CodeFile file, ITypeNameSyntax typeSyntax)
+    public static Diagnostic TypeParameterCannotBeUsedHere(CodeFile file, INameSyntax typeSyntax)
     {
         return new(file, typeSyntax.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             3031, $"Type parameter `{typeSyntax}` cannot be used here.");
@@ -215,7 +215,7 @@ public static class TypeError
         3031, $"Type parameter `{typeSyntax}` cannot be used here.");
     }
 
-    public static Diagnostic SpecialTypeCannotBeUsedHere(CodeFile file, ITypeNameSyntax typeSyntax)
+    public static Diagnostic SpecialTypeCannotBeUsedHere(CodeFile file, INameSyntax typeSyntax)
     {
         return new(file, typeSyntax.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             3032, $"Special type `{typeSyntax}` cannot be used here.");
