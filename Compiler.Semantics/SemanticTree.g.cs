@@ -2099,7 +2099,7 @@ public partial interface INeverTypedExpressionNode : IExpressionNode
 [Closed(
     typeof(IUnresolvedMemberAccessExpressionNode),
     typeof(IUnresolvedInvocationExpressionNode),
-    typeof(IUnknownNameExpressionNode))]
+    typeof(IUnresolvedNameExpressionNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IUnresolvedExpressionNode : IExpressionNode
 {
@@ -2878,7 +2878,6 @@ public partial interface IGenericNameExpressionNode : IOrdinaryNameExpressionNod
 
 [Closed(
     typeof(IGetterInvocationExpressionNode),
-    typeof(IUnknownNameExpressionNode),
     typeof(ILocalBindingNameExpressionNode),
     typeof(INamespaceNameNode),
     typeof(IFunctionGroupNameNode),
@@ -2891,7 +2890,8 @@ public partial interface IGenericNameExpressionNode : IOrdinaryNameExpressionNod
     typeof(IInitializerNameNode),
     typeof(IBuiltInTypeNameExpressionNode),
     typeof(IInstanceExpressionNode),
-    typeof(IMissingNameExpressionNode))]
+    typeof(IMissingNameExpressionNode),
+    typeof(IUnresolvedNameExpressionNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface INameExpressionNode : IExpressionNode, IAmbiguousNameExpressionNode
 {
@@ -2899,21 +2899,6 @@ public partial interface INameExpressionNode : IExpressionNode, IAmbiguousNameEx
     new IFlowState FlowStateAfter
         => throw new NotImplementedException($"{GetType().GetFriendlyName()}.{nameof(FlowStateAfter)} not implemented.");
     IFlowState IExpressionNode.FlowStateAfter => FlowStateAfter;
-}
-
-[Closed(
-    typeof(IUnknownStandardNameExpressionNode),
-    typeof(IUnresolvedQualifiedNameExpressionNode))]
-[GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IUnknownNameExpressionNode : INameExpressionNode, IUnresolvedExpressionNode
-{
-    new UnknownType Type
-        => AzothType.Unknown;
-    IMaybeType IExpressionNode.Type => Type;
-    IFlowState INameExpressionNode.FlowStateAfter
-        => ExpressionTypesAspect.UnknownNameExpression_FlowStateAfter(this);
-    IMaybePlainType IExpressionNode.PlainType
-        => AzothPlainType.Unknown;
 }
 
 [Closed(
@@ -3349,10 +3334,25 @@ public partial interface IMissingNameExpressionNode : INameExpressionNode
 }
 
 [Closed(
+    typeof(IUnknownStandardNameExpressionNode),
+    typeof(IUnresolvedQualifiedNameExpressionNode))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
+public partial interface IUnresolvedNameExpressionNode : INameExpressionNode, IUnresolvedExpressionNode
+{
+    new UnknownType Type
+        => AzothType.Unknown;
+    IMaybeType IExpressionNode.Type => Type;
+    IFlowState INameExpressionNode.FlowStateAfter
+        => ExpressionTypesAspect.UnresolvedNameExpression_FlowStateAfter(this);
+    IMaybePlainType IExpressionNode.PlainType
+        => AzothPlainType.Unknown;
+}
+
+[Closed(
     typeof(IUnknownIdentifierNameExpressionNode),
     typeof(IUnknownGenericNameExpressionNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IUnknownStandardNameExpressionNode : IUnknownNameExpressionNode
+public partial interface IUnknownStandardNameExpressionNode : IUnresolvedNameExpressionNode
 {
     new IOrdinaryNameSyntax Syntax { get; }
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
@@ -3407,7 +3407,7 @@ public partial interface IUnknownGenericNameExpressionNode : IUnknownStandardNam
 
 [Closed(typeof(UnresolvedQualifiedNameExpressionNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IUnresolvedQualifiedNameExpressionNode : IUnknownNameExpressionNode, IUnresolvedMemberAccessExpressionNode
+public partial interface IUnresolvedQualifiedNameExpressionNode : IUnresolvedNameExpressionNode, IUnresolvedMemberAccessExpressionNode
 {
     new IQualifiedNameSyntax Syntax { get; }
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
@@ -3417,7 +3417,7 @@ public partial interface IUnresolvedQualifiedNameExpressionNode : IUnknownNameEx
     IMemberAccessExpressionSyntax IUnresolvedMemberAccessExpressionNode.Syntax => Syntax;
     new UnknownType Type
         => AzothType.Unknown;
-    UnknownType IUnknownNameExpressionNode.Type => Type;
+    UnknownType IUnresolvedNameExpressionNode.Type => Type;
     IMaybeType IExpressionNode.Type => Type;
     UnknownType IUnresolvedMemberAccessExpressionNode.Type => Type;
     IFlowState INameExpressionNode.FlowStateAfter

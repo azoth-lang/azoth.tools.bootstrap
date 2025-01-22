@@ -80,8 +80,6 @@
     => Self.SelectedCallCandidate?.ParameterPlainTypes[index];
 = NonInvocableInvocationExpression.PlainType => AzothPlainType.Unknown;
 
-// ---------- Ambiguous Name Expressions
-
 // ---------- Name Expressions
 = NamespaceName.PlainType => AzothPlainType.Unknown;
 = FunctionGroupName.PlainType => AzothPlainType.Unknown;
@@ -96,9 +94,9 @@
 ↑ InitializerName.InitializingPlainType: `IMaybePlainType` => Context.NamedPlainType;
 = BuiltInTypeNameExpression.PlainType => AzothPlainType.Unknown;
 = MissingNameExpression.PlainType => AzothPlainType.Unknown;
-= UnknownNameExpression.PlainType => AzothPlainType.Unknown;
 
 // ---------- Unresolved Name Expressions
+= UnresolvedNameExpression.PlainType => AzothPlainType.Unknown;
 = UnresolvedQualifiedNameExpression.PlainType => AzothPlainType.Unknown;
 
 // ---------- Capability Expressions

@@ -228,10 +228,10 @@
 ↑ BuiltInTypeNameExpression.Type:`UnknownType` => AzothType.Unknown;
 = SelfExpression.FlowStateAfter;
 ↑ MissingNameExpression.Type: `UnknownType` => AzothType.Unknown;
-↑ UnknownNameExpression.Type: `UnknownType` => AzothType.Unknown;
-= UnknownNameExpression.FlowStateAfter;
 
 // ---------- Unresolved Name Expressions
+↑ UnresolvedNameExpression.Type: `UnknownType` => AzothType.Unknown;
+= UnresolvedNameExpression.FlowStateAfter;
 = UnresolvedQualifiedNameExpression.FlowStateAfter;
 
 // ---------- Capability Expressions

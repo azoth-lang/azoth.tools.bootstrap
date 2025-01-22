@@ -111,7 +111,7 @@ internal static partial class BindingAmbiguousNamesAspect
             case ITypeNameExpressionNode:
                 diagnostics.Add(NameBindingError.CouldNotBindMember(node.File, node.Syntax.MemberNameSpan));
                 break;
-            case IUnknownNameExpressionNode:
+            case IUnresolvedNameExpressionNode:
             case IUnresolvedInvocationExpressionNode:
             case { Type: UnknownType }:
                 // These presumably report their own errors and should be ignored here
@@ -134,7 +134,7 @@ internal static partial class BindingAmbiguousNamesAspect
                 // TODO better errors explaining. For example, are they different kinds of declarations?
                 diagnostics.Add(NameBindingError.AmbiguousName(node.File, node.Syntax.QualifiedName.Span));
                 break;
-            case IUnknownNameExpressionNode:
+            case IUnresolvedNameExpressionNode:
             case IUnresolvedInvocationExpressionNode:
             case { Type: UnknownType }:
                 // These presumably report their own errors and should be ignored here

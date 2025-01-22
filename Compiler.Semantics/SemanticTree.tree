@@ -297,8 +297,6 @@ temp GenericNameExpression <: AmbiguousName, OrdinaryNameExpression
 
 // ---------- Name Expressions
 NameExpression <: Expression, AmbiguousNameExpression = Syntax:`INameExpressionSyntax`;
-// TODO rename UnknownNameExpression to UnresolvedNameExpression (note these are non-temp)
-UnknownNameExpression <: NameExpression, UnresolvedExpression = Syntax:`INameExpressionSyntax`;
 LocalBindingNameExpression <: NameExpression = ReferencedDefinition:`IBindingNode`?;
 // TODO Name <: NameExpression
 NamespaceName <: NameExpression = ReferencedDeclarations:`INamespaceDeclarationNode`*;
@@ -361,15 +359,17 @@ SelfExpression <: InstanceExpression, LocalBindingNameExpression
     = Syntax:`ISelfExpressionSyntax`;
 MissingNameExpression <: NameExpression
     = Syntax:`IMissingNameSyntax`;
-UnknownStandardNameExpression <: UnknownNameExpression
+
+// ---------- Unresolved Name Expressions
+// TODO rename UnresolvedNameExpression to UnresolvedNameExpression (note these are non-temp)
+UnresolvedNameExpression <: NameExpression, UnresolvedExpression = Syntax:`INameExpressionSyntax`;
+UnknownStandardNameExpression <: UnresolvedNameExpression
     = Syntax:`IOrdinaryNameSyntax` Name:`OrdinaryName` ReferencedDeclarations:{`IDeclarationNode`};
 UnknownIdentifierNameExpression <: UnknownStandardNameExpression
     = Syntax:`IIdentifierNameSyntax` /ReferencedDeclarations/;
 UnknownGenericNameExpression <: UnknownStandardNameExpression
     = Syntax:`IGenericNameSyntax` TypeArguments:Type* /ReferencedDeclarations/;
-
-// ---------- Unresolved Name Expressions
-UnresolvedQualifiedNameExpression <: UnknownNameExpression, UnresolvedMemberAccessExpression
+UnresolvedQualifiedNameExpression <: UnresolvedNameExpression, UnresolvedMemberAccessExpression
     = Syntax:`IQualifiedNameSyntax` /Context/ /TypeArguments/;
 
 // ---------- Capability Expressions

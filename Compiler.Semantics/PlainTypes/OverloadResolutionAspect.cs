@@ -168,7 +168,7 @@ internal static partial class OverloadResolutionAspect
                 ContributeFunctionBindingDiagnostics(function.ReferencedDeclaration,
                     function.CompatibleCallCandidates, node.File, node.Syntax, diagnostics);
                 break;
-            case IUnknownNameExpressionNode:
+            case IUnresolvedNameExpressionNode:
             case IUnresolvedInvocationExpressionNode:
                 // These presumably report their own errors and should be ignored here
                 break;

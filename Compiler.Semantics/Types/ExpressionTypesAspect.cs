@@ -497,7 +497,7 @@ internal static partial class ExpressionTypesAspect
             case IVariableNameExpressionNode:
                 // TODO fix this condition. It is really about LValues
                 break;
-            case IUnknownNameExpressionNode:
+            case IUnresolvedNameExpressionNode:
                 // Since it is unknown, we must assume that it can be assigned into
                 break;
             default:
@@ -725,27 +725,6 @@ internal static partial class ExpressionTypesAspect
     public static partial IFlowState UnaryOperatorExpression_FlowStateAfter(IUnaryOperatorExpressionNode node)
         => node.Operand?.FlowStateAfter.Transform(node.Operand.ValueId, node.ValueId, node.Type) ?? IFlowState.Empty;
 
-    public static partial IMaybeType FunctionName_Type(IFunctionNameNode node)
-        => node.ReferencedDeclaration?.Type ?? IMaybeType.Unknown;
-
-    public static partial IFlowState FunctionName_FlowStateAfter(IFunctionNameNode node)
-        => node.FlowStateBefore().Constant(node.ValueId);
-
-    public static partial IMaybeType MethodName_Type(IMethodNameNode node)
-        => node.ReferencedDeclaration?.MethodGroupType ?? IMaybeType.Unknown;
-
-    // TODO this is strange and maybe a hack
-    public static partial IMaybeType? MethodName_Context_ExpectedType(IMethodNameNode node)
-        => (node.Parent as IMethodInvocationExpressionNode)?.ContextualizedCall?.SelfParameterType?.ToUpperBound();
-
-    public static partial IMaybeType InitializerName_Type(IInitializerNameNode node)
-        // TODO proper type
-        // => node.ReferencedDeclaration?.InitializerGroupType ?? IMaybeType.Unknown;
-        => IMaybeType.Unknown;
-
-    public static partial IFlowState InitializerName_FlowStateAfter(IInitializerNameNode node)
-        => node.FlowStateBefore().Constant(node.ValueId);
-
     public static partial IMaybeType FreezeExpression_Type(IFreezeExpressionNode node)
     {
         if (node.Referent.Type is not CapabilityType capabilityType)
@@ -901,12 +880,33 @@ internal static partial class ExpressionTypesAspect
     }
 
     #region Name Expressions
-    public static partial IFlowState UnknownNameExpression_FlowStateAfter(IUnknownNameExpressionNode node)
-        // Things with unknown type are inherently untracked so there is no change to the flow state
-        => node.FlowStateBefore().Alias(null, node.ValueId);
+    public static partial IMaybeType FunctionName_Type(IFunctionNameNode node)
+        => node.ReferencedDeclaration?.Type ?? IMaybeType.Unknown;
+
+    public static partial IFlowState FunctionName_FlowStateAfter(IFunctionNameNode node)
+        => node.FlowStateBefore().Constant(node.ValueId);
+
+    public static partial IMaybeType MethodName_Type(IMethodNameNode node)
+        => node.ReferencedDeclaration?.MethodGroupType ?? IMaybeType.Unknown;
+
+    // TODO this is strange and maybe a hack
+    public static partial IMaybeType? MethodName_Context_ExpectedType(IMethodNameNode node)
+        => (node.Parent as IMethodInvocationExpressionNode)?.ContextualizedCall?.SelfParameterType?.ToUpperBound();
+
+    public static partial IMaybeType InitializerName_Type(IInitializerNameNode node)
+        // TODO proper type
+        // => node.ReferencedDeclaration?.InitializerGroupType ?? IMaybeType.Unknown;
+        => IMaybeType.Unknown;
+
+    public static partial IFlowState InitializerName_FlowStateAfter(IInitializerNameNode node)
+        => node.FlowStateBefore().Constant(node.ValueId);
     #endregion
 
     #region Unresolved Name Expressions
+    public static partial IFlowState UnresolvedNameExpression_FlowStateAfter(IUnresolvedNameExpressionNode node)
+        // Things with unknown type are inherently untracked, this just adds it to the untracked list
+        => node.FlowStateBefore().Alias(null, node.ValueId);
+
     public static partial IFlowState UnresolvedQualifiedNameExpression_FlowStateAfter(IUnresolvedQualifiedNameExpressionNode node)
         => node.Context?.FlowStateAfter.Transform(node.Context.ValueId, node.ValueId, node.Type) ?? IFlowState.Empty;
     #endregion
