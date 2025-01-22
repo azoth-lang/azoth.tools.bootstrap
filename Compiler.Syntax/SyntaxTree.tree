@@ -18,8 +18,7 @@
 // TODO:
 //     The syntax tree ought to be independent of semantics. It should not try to enforce rules
 //     such as that certian kinds of expressions are expected in certian places. It should collapse
-//     node types even if they appear in different contexts. For example, a `BuiltInTypeName` and a
-//     `BuiltInTypeNameExpression` should be the same node type.
+//     node types even if they appear in different contexts.
 
 <default>;
 
@@ -169,6 +168,7 @@ BlockExpression <: Expression, BlockOrResult, BodyOrBlock = Statements:Statement
 /// </summary>
 NewObjectExpression <: Expression
     = Type:Name ConstructorName:`IdentifierName`? ConstructorNameSpan:`TextSpan`? Arguments:Expression*;
+
 UnsafeExpression <: Expression = Expression;
 
 // ---------- Literal Expressions
@@ -210,22 +210,16 @@ MemberAccessExpression <: NameExpression
     = Context:Expression MemberName:`OrdinaryName` GenericArguments:Type* MemberNameSpan:`TextSpan`;
 MissingName <: NameExpression;
 
-// TODO replace these nodes with Name nodes
-BuiltInTypeNameExpression <: NameExpression = Name:`BuiltInTypeName`;
-OrdinaryNameExpression <: NameExpression = Name:`OrdinaryName` GenericArguments:Type*;
-IdentifierNameExpression <: OrdinaryNameExpression = Name:`IdentifierName`;
-GenericNameExpression <: OrdinaryNameExpression = Name:`GenericName` /GenericArguments/;
-
 // ---------- Names
 // At the syntax level, there is no distinction between names of types and other names, they all use
 // the same node types so that rewrites of the semantic tree can refer to them when it is realized a
 // name refers to a type. Thus names are both types and name expressions.
-Name <: Type;
+Name <: Type, NameExpression;
 UnqualifiedName <: Name = Name:`UnqualifiedName`;
 BuiltInTypeName <: UnqualifiedName = Name:`BuiltInTypeName`;
-OrdinaryName <: UnqualifiedName = Name:`OrdinaryName`;
+OrdinaryName <: UnqualifiedName = Name:`OrdinaryName` GenericArguments:Type*;
 IdentifierName <: OrdinaryName = Name:`IdentifierName`;
-GenericName <: OrdinaryName = Name:`GenericName` GenericArguments:Type*;
+GenericName <: OrdinaryName = Name:`GenericName` /GenericArguments/;
 QualifiedName <: Name = Context:Name QualifiedName:OrdinaryName;
 
 // ---------- Capability Expressions

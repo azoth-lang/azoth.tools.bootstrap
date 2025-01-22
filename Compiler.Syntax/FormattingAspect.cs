@@ -327,15 +327,6 @@ internal static partial class FormattingAspect
         => $"{node.Context.ToGroupedString(node.ExpressionPrecedence)}.{node.MemberName}";
 
     public static partial string MissingName_ToString(IMissingNameSyntax node) => "⧼unknown⧽";
-
-    public static partial string BuiltInTypeNameExpression_ToString(IBuiltInTypeNameExpressionSyntax node)
-        => node.Name.ToString();
-
-    public static partial string IdentifierNameExpression_ToString(IIdentifierNameExpressionSyntax node)
-        => node.Name.ToString();
-
-    public static partial string GenericNameExpression_ToString(IGenericNameExpressionSyntax node)
-        => $"{node.Name.Text}[{string.Join(',', node.GenericArguments)}]";
     #endregion
 
     #region Names

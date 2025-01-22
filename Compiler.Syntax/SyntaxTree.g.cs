@@ -1357,8 +1357,7 @@ public partial interface IInvocationExpressionSyntax : IExpressionSyntax
     typeof(IInstanceExpressionSyntax),
     typeof(IMemberAccessExpressionSyntax),
     typeof(IMissingNameSyntax),
-    typeof(IBuiltInTypeNameExpressionSyntax),
-    typeof(IOrdinaryNameExpressionSyntax))]
+    typeof(INameSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface INameExpressionSyntax : IExpressionSyntax
 {
@@ -1412,63 +1411,11 @@ public partial interface IMissingNameSyntax : INameExpressionSyntax
         => new MissingNameSyntax(span);
 }
 
-// [Closed(typeof(BuiltInTypeNameExpressionSyntax))]
-[GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IBuiltInTypeNameExpressionSyntax : INameExpressionSyntax
-{
-    BuiltInTypeName Name { get; }
-
-    public static IBuiltInTypeNameExpressionSyntax Create(
-        TextSpan span,
-        BuiltInTypeName name)
-        => new BuiltInTypeNameExpressionSyntax(span, name);
-}
-
-[Closed(
-    typeof(IIdentifierNameExpressionSyntax),
-    typeof(IGenericNameExpressionSyntax))]
-[GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IOrdinaryNameExpressionSyntax : INameExpressionSyntax
-{
-    OrdinaryName Name { get; }
-    IFixedList<ITypeSyntax> GenericArguments { get; }
-}
-
-// [Closed(typeof(IdentifierNameExpressionSyntax))]
-[GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IIdentifierNameExpressionSyntax : IOrdinaryNameExpressionSyntax
-{
-    new IdentifierName Name { get; }
-    OrdinaryName IOrdinaryNameExpressionSyntax.Name => Name;
-    new IFixedList<ITypeSyntax> GenericArguments
-        => [];
-    IFixedList<ITypeSyntax> IOrdinaryNameExpressionSyntax.GenericArguments => GenericArguments;
-
-    public static IIdentifierNameExpressionSyntax Create(
-        TextSpan span,
-        IdentifierName name)
-        => new IdentifierNameExpressionSyntax(span, name);
-}
-
-// [Closed(typeof(GenericNameExpressionSyntax))]
-[GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IGenericNameExpressionSyntax : IOrdinaryNameExpressionSyntax
-{
-    new GenericName Name { get; }
-    OrdinaryName IOrdinaryNameExpressionSyntax.Name => Name;
-
-    public static IGenericNameExpressionSyntax Create(
-        TextSpan span,
-        GenericName name,
-        IEnumerable<ITypeSyntax> genericArguments)
-        => new GenericNameExpressionSyntax(span, name, genericArguments);
-}
-
 [Closed(
     typeof(IUnqualifiedNameSyntax),
     typeof(IQualifiedNameSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface INameSyntax : ITypeSyntax
+public partial interface INameSyntax : ITypeSyntax, INameExpressionSyntax
 {
 }
 
@@ -1502,6 +1449,7 @@ public partial interface IOrdinaryNameSyntax : IUnqualifiedNameSyntax
 {
     new OrdinaryName Name { get; }
     UnqualifiedName IUnqualifiedNameSyntax.Name => Name;
+    IFixedList<ITypeSyntax> GenericArguments { get; }
 }
 
 // [Closed(typeof(IdentifierNameSyntax))]
@@ -1511,6 +1459,9 @@ public partial interface IIdentifierNameSyntax : IOrdinaryNameSyntax
     new IdentifierName Name { get; }
     OrdinaryName IOrdinaryNameSyntax.Name => Name;
     UnqualifiedName IUnqualifiedNameSyntax.Name => Name;
+    new IFixedList<ITypeSyntax> GenericArguments
+        => [];
+    IFixedList<ITypeSyntax> IOrdinaryNameSyntax.GenericArguments => GenericArguments;
 
     public static IIdentifierNameSyntax Create(
         TextSpan span,
@@ -1525,7 +1476,6 @@ public partial interface IGenericNameSyntax : IOrdinaryNameSyntax
     new GenericName Name { get; }
     OrdinaryName IOrdinaryNameSyntax.Name => Name;
     UnqualifiedName IUnqualifiedNameSyntax.Name => Name;
-    IFixedList<ITypeSyntax> GenericArguments { get; }
 
     public static IGenericNameSyntax Create(
         TextSpan span,
@@ -3257,66 +3207,6 @@ file class MissingNameSyntax : IMissingNameSyntax
     public MissingNameSyntax(TextSpan span)
     {
         Span = span;
-    }
-}
-
-[GeneratedCode("AzothCompilerCodeGen", null)]
-file class BuiltInTypeNameExpressionSyntax : IBuiltInTypeNameExpressionSyntax
-{
-    private IBuiltInTypeNameExpressionSyntax Self { [Inline] get => this; }
-
-    public TextSpan Span { [DebuggerStepThrough] get; }
-    public BuiltInTypeName Name { [DebuggerStepThrough] get; }
-    public override string ToString()
-        => FormattingAspect.BuiltInTypeNameExpression_ToString(this);
-
-    public BuiltInTypeNameExpressionSyntax(
-        TextSpan span,
-        BuiltInTypeName name)
-    {
-        Span = span;
-        Name = name;
-    }
-}
-
-[GeneratedCode("AzothCompilerCodeGen", null)]
-file class IdentifierNameExpressionSyntax : IIdentifierNameExpressionSyntax
-{
-    private IIdentifierNameExpressionSyntax Self { [Inline] get => this; }
-
-    public TextSpan Span { [DebuggerStepThrough] get; }
-    public IdentifierName Name { [DebuggerStepThrough] get; }
-    public override string ToString()
-        => FormattingAspect.IdentifierNameExpression_ToString(this);
-
-    public IdentifierNameExpressionSyntax(
-        TextSpan span,
-        IdentifierName name)
-    {
-        Span = span;
-        Name = name;
-    }
-}
-
-[GeneratedCode("AzothCompilerCodeGen", null)]
-file class GenericNameExpressionSyntax : IGenericNameExpressionSyntax
-{
-    private IGenericNameExpressionSyntax Self { [Inline] get => this; }
-
-    public TextSpan Span { [DebuggerStepThrough] get; }
-    public GenericName Name { [DebuggerStepThrough] get; }
-    public IFixedList<ITypeSyntax> GenericArguments { [DebuggerStepThrough] get; }
-    public override string ToString()
-        => FormattingAspect.GenericNameExpression_ToString(this);
-
-    public GenericNameExpressionSyntax(
-        TextSpan span,
-        GenericName name,
-        IEnumerable<ITypeSyntax> genericArguments)
-    {
-        Span = span;
-        Name = name;
-        GenericArguments = genericArguments.ToFixedList();
     }
 }
 

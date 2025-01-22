@@ -6,14 +6,14 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing;
 
 public partial class Parser
 {
-    private IOrdinaryNameExpressionSyntax ParseOrdinaryName()
+    private IOrdinaryNameSyntax ParseOrdinaryName()
     {
         var identifier = Tokens.RequiredToken<IIdentifierToken>();
         var name = identifier.Value;
         if (AcceptGenericArguments() is not { } genericArguments)
-            return IIdentifierNameExpressionSyntax.Create(identifier.Span, name);
+            return IIdentifierNameSyntax.Create(identifier.Span, name);
 
         var span = TextSpan.Covering(identifier.Span, genericArguments.Span);
-        return IGenericNameExpressionSyntax.Create(span, name, genericArguments.Arguments);
+        return IGenericNameSyntax.Create(span, name, genericArguments.Arguments);
     }
 }

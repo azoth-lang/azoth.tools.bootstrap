@@ -134,12 +134,6 @@ internal static partial class FormattingAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial string MissingName_ToString(IMissingNameSyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial string BuiltInTypeNameExpression_ToString(IBuiltInTypeNameExpressionSyntax node);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial string IdentifierNameExpression_ToString(IIdentifierNameExpressionSyntax node);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial string GenericNameExpression_ToString(IGenericNameExpressionSyntax node);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial string BuiltInTypeName_ToString(IBuiltInTypeNameSyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial string IdentifierName_ToString(IIdentifierNameSyntax node);

@@ -291,14 +291,6 @@ public static class ISyntaxExtensions
                 yield break;
             case IMissingNameSyntax n:
                 yield break;
-            case IBuiltInTypeNameExpressionSyntax n:
-                yield break;
-            case IIdentifierNameExpressionSyntax n:
-                yield break;
-            case IGenericNameExpressionSyntax n:
-                foreach (var child in n.GenericArguments)
-                    yield return child;
-                yield break;
             case IBuiltInTypeNameSyntax n:
                 yield break;
             case IIdentifierNameSyntax n:

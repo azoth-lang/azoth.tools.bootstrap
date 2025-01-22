@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -11,7 +12,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.SyntaxBinding;
 /// Bind the syntax tree nodes to semantic tree nodes.
 /// </summary>
 /// <remarks>The method naming scheme in this class is that methods are named after the syntax node
-/// that they bind.</remarks>
+/// that they bind. There is one exception to this around types. In situations where a name must be
+/// a type, type semantic nodes are generated. In situations where a name is an expression,
+/// expression semantic nodes are generated. These methods have "Type" or "Expression" in their name
+/// to reflect that.</remarks>
 internal static class SyntaxBinder
 {
     public static IPackageNode Bind(IPackageSyntax syntax)
@@ -431,7 +435,7 @@ internal static class SyntaxBinder
         => syntax switch
         {
             null => null,
-            IIdentifierNameExpressionSyntax syn => IdentifierNameExpression(syn),
+            IIdentifierNameSyntax syn => IdentifierNameExpression(syn),
             IMemberAccessExpressionSyntax syn => MemberAccessExpression(syn),
             IMissingNameSyntax syn => MissingName(syn),
             IBlockExpressionSyntax syn => BlockExpression(syn),
@@ -457,8 +461,9 @@ internal static class SyntaxBinder
             IAsyncBlockExpressionSyntax syn => AsyncBlockExpression(syn),
             IAsyncStartExpressionSyntax syn => AsyncStartExpression(syn),
             IAwaitExpressionSyntax syn => AwaitExpression(syn),
-            IBuiltInTypeNameExpressionSyntax syn => SpecialTypeNameExpression(syn),
-            IGenericNameExpressionSyntax syn => GenericNameExpression(syn),
+            IBuiltInTypeNameSyntax syn => BuiltInTypeNameExpression(syn),
+            IGenericNameSyntax syn => GenericNameExpression(syn),
+            IQualifiedNameSyntax syn => throw new NotImplementedException(),
             _ => throw ExhaustiveMatch.Failed(syntax)
         };
 
@@ -544,13 +549,13 @@ internal static class SyntaxBinder
     #endregion
 
     #region Name Expressions
-    private static IIdentifierNameExpressionNode IdentifierNameExpression(IIdentifierNameExpressionSyntax syntax)
+    private static IIdentifierNameExpressionNode IdentifierNameExpression(IIdentifierNameSyntax syntax)
         => IIdentifierNameExpressionNode.Create(syntax);
 
-    private static IBuiltInTypeNameExpressionNode SpecialTypeNameExpression(IBuiltInTypeNameExpressionSyntax syntax)
+    private static IBuiltInTypeNameExpressionNode BuiltInTypeNameExpression(IBuiltInTypeNameSyntax syntax)
         => IBuiltInTypeNameExpressionNode.Create(syntax);
 
-    private static IGenericNameExpressionNode GenericNameExpression(IGenericNameExpressionSyntax syntax)
+    private static IGenericNameExpressionNode GenericNameExpression(IGenericNameSyntax syntax)
         => IGenericNameExpressionNode.Create(syntax, Types(syntax.GenericArguments));
 
     private static IUnresolvedMemberAccessExpressionNode MemberAccessExpression(IMemberAccessExpressionSyntax syntax)
