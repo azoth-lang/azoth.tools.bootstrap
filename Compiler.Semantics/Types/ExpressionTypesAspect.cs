@@ -33,8 +33,7 @@ internal static partial class ExpressionTypesAspect
 
     #region Unresolved Expressions
     public static partial IFlowState UnresolvedMemberAccessExpression_FlowStateAfter(IUnresolvedMemberAccessExpressionNode node)
-        => node.Context?.FlowStateAfter.Transform(node.Context.ValueId, node.ValueId, node.Type)
-           ?? IFlowState.Empty;
+        => node.Context?.FlowStateAfter.Transform(node.Context.ValueId, node.ValueId, node.Type) ?? IFlowState.Empty;
 
     /*
        public static partial IFlowState AmbiguousMemberAccessExpression_FlowStateAfter(IAmbiguousMemberAccessExpressionNode node)
@@ -905,5 +904,10 @@ internal static partial class ExpressionTypesAspect
     public static partial IFlowState UnknownNameExpression_FlowStateAfter(IUnknownNameExpressionNode node)
         // Things with unknown type are inherently untracked so there is no change to the flow state
         => node.FlowStateBefore().Alias(null, node.ValueId);
+    #endregion
+
+    #region Unresolved Name Expressions
+    public static partial IFlowState UnresolvedQualifiedNameExpression_FlowStateAfter(IUnresolvedQualifiedNameExpressionNode node)
+        => node.Context?.FlowStateAfter.Transform(node.Context.ValueId, node.ValueId, node.Type) ?? IFlowState.Empty;
     #endregion
 }

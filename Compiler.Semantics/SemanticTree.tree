@@ -224,7 +224,7 @@ NeverTypedExpression <: Expression;
 /// An unresolved expression is one that hasn't had name binding on it. Expressions where name
 /// binding fails can stay unresolved.
 UnresolvedExpression <: Expression;
-concrete UnresolvedMemberAccessExpression <: UnknownNameExpression
+concrete UnresolvedMemberAccessExpression <: UnresolvedExpression
     = Syntax:`IMemberAccessExpressionSyntax` Context:AmbiguousExpression TypeArguments:Type*;
 
 // ---------- Literal Expressions

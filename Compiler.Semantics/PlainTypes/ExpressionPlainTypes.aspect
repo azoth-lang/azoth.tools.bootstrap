@@ -41,6 +41,10 @@
     => ContextualizedCall?.ParameterTypes[index].Type.PlainType;
 = NeverTypedExpression.PlainType => AzothPlainType.Never;
 
+// ---------- Unresolved Expressions
+= UnresolvedMemberAccessExpression.PlainType => AzothPlainType.Unknown;
+= UnresolvedMemberAccessExpression.*.ExpectedPlainType => null;
+
 // ---------- Operator Expressions
 = AssignmentExpression.RightOperand.ExpectedPlainType => LeftOperand?.PlainType;
 ↑ BinaryOperatorExpression.NumericOperatorCommonPlainType: `PlainType`?;
@@ -79,7 +83,6 @@
 // ---------- Ambiguous Name Expressions
 
 // ---------- Name Expressions
-= UnresolvedMemberAccessExpression.*.ExpectedPlainType => null;
 = NamespaceName.PlainType => AzothPlainType.Unknown;
 = FunctionGroupName.PlainType => AzothPlainType.Unknown;
 = FunctionGroupName.*.ExpectedPlainType => null;
@@ -94,6 +97,9 @@
 = BuiltInTypeNameExpression.PlainType => AzothPlainType.Unknown;
 = MissingNameExpression.PlainType => AzothPlainType.Unknown;
 = UnknownNameExpression.PlainType => AzothPlainType.Unknown;
+
+// ---------- Unresolved Name Expressions
+= UnresolvedQualifiedNameExpression.PlainType => AzothPlainType.Unknown;
 
 // ---------- Capability Expressions
 = MoveExpression.PlainType => Referent.PlainType;

@@ -101,6 +101,7 @@
 ↑ NeverTypedExpression.Type: `NeverType` => AzothType.Never;
 
 // ---------- Unresolved Expressions
+↑ UnresolvedMemberAccessExpression.Type: `UnknownType` => AzothType.Unknown;
 = UnresolvedMemberAccessExpression.FlowStateAfter;
 
 // ---------- Literal Expressions
@@ -229,6 +230,9 @@
 ↑ MissingNameExpression.Type: `UnknownType` => AzothType.Unknown;
 ↑ UnknownNameExpression.Type: `UnknownType` => AzothType.Unknown;
 = UnknownNameExpression.FlowStateAfter;
+
+// ---------- Unresolved Name Expressions
+= UnresolvedQualifiedNameExpression.FlowStateAfter;
 
 // ---------- Capability Expressions
 = MoveExpression.Type;

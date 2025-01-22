@@ -2097,6 +2097,7 @@ public partial interface INeverTypedExpressionNode : IExpressionNode
 }
 
 [Closed(
+    typeof(IUnresolvedMemberAccessExpressionNode),
     typeof(IUnresolvedInvocationExpressionNode),
     typeof(IUnknownNameExpressionNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -2108,22 +2109,24 @@ public partial interface IUnresolvedExpressionNode : IExpressionNode
     typeof(UnresolvedMemberAccessExpressionNode),
     typeof(IUnresolvedQualifiedNameExpressionNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IUnresolvedMemberAccessExpressionNode : IUnknownNameExpressionNode
+public partial interface IUnresolvedMemberAccessExpressionNode : IUnresolvedExpressionNode
 {
     new IMemberAccessExpressionSyntax Syntax { get; }
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ICodeSyntax ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
     IAmbiguousExpressionNode TempContext { get; }
     IExpressionNode? Context { get; }
     IAmbiguousExpressionNode CurrentContext { get; }
     IFixedList<ITypeNode> TypeArguments { get; }
     PackageNameScope PackageNameScope();
+    new UnknownType Type
+        => AzothType.Unknown;
+    IMaybeType IExpressionNode.Type => Type;
     OrdinaryName MemberName
         => Syntax.MemberName;
-    IFlowState INameExpressionNode.FlowStateAfter
-        => ExpressionTypesAspect.UnresolvedMemberAccessExpression_FlowStateAfter(this);
+    IMaybePlainType IExpressionNode.PlainType
+        => AzothPlainType.Unknown;
 
     public static IUnresolvedMemberAccessExpressionNode Create(
         IMemberAccessExpressionSyntax syntax,
@@ -2899,8 +2902,8 @@ public partial interface INameExpressionNode : IExpressionNode, IAmbiguousNameEx
 }
 
 [Closed(
-    typeof(IUnresolvedMemberAccessExpressionNode),
-    typeof(IUnknownStandardNameExpressionNode))]
+    typeof(IUnknownStandardNameExpressionNode),
+    typeof(IUnresolvedQualifiedNameExpressionNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IUnknownNameExpressionNode : INameExpressionNode, IUnresolvedExpressionNode
 {
@@ -3404,14 +3407,23 @@ public partial interface IUnknownGenericNameExpressionNode : IUnknownStandardNam
 
 [Closed(typeof(UnresolvedQualifiedNameExpressionNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IUnresolvedQualifiedNameExpressionNode : IUnresolvedMemberAccessExpressionNode
+public partial interface IUnresolvedQualifiedNameExpressionNode : IUnknownNameExpressionNode, IUnresolvedMemberAccessExpressionNode
 {
     new IQualifiedNameSyntax Syntax { get; }
-    IMemberAccessExpressionSyntax IUnresolvedMemberAccessExpressionNode.Syntax => Syntax;
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ICodeSyntax ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
+    IMemberAccessExpressionSyntax IUnresolvedMemberAccessExpressionNode.Syntax => Syntax;
+    new UnknownType Type
+        => AzothType.Unknown;
+    UnknownType IUnknownNameExpressionNode.Type => Type;
+    IMaybeType IExpressionNode.Type => Type;
+    UnknownType IUnresolvedMemberAccessExpressionNode.Type => Type;
+    IFlowState INameExpressionNode.FlowStateAfter
+        => ExpressionTypesAspect.UnresolvedQualifiedNameExpression_FlowStateAfter(this);
+    IMaybePlainType IExpressionNode.PlainType
+        => AzothPlainType.Unknown;
 
     public static IUnresolvedQualifiedNameExpressionNode Create(
         IQualifiedNameSyntax syntax,
@@ -10215,8 +10227,6 @@ file class UnresolvedMemberAccessExpressionNode : SemanticNode, IUnresolvedMembe
                 Inherited_ExpectedPlainType);
     private IMaybePlainType? expectedPlainType;
     private bool expectedPlainTypeCached;
-    public IFlowState FlowStateBefore()
-        => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
     public PackageNameScope PackageNameScope()
         => Inherited_PackageNameScope(GrammarAttribute.CurrentInheritanceContext());
     public ControlFlowSet ControlFlowNext
@@ -10225,6 +10235,12 @@ file class UnresolvedMemberAccessExpressionNode : SemanticNode, IUnresolvedMembe
                 ControlFlowAspect.UnresolvedMemberAccessExpression_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
+    public IFlowState FlowStateAfter
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+                ExpressionTypesAspect.UnresolvedMemberAccessExpression_FlowStateAfter);
+    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private bool flowStateAfterCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -10295,8 +10311,8 @@ file class UnresolvedMemberAccessExpressionNode : SemanticNode, IUnresolvedMembe
     }
 
     protected override IChildTreeNode Rewrite()
-        => BindingAmbiguousNamesAspect.UnresolvedMemberAccessExpression_NamespaceNameContext_ReplaceWith_NameExpression(this)
-        ?? BindingAmbiguousNamesAspect.UnresolvedMemberAccessExpression_TypeNameExpressionContext_ReplaceWith_NameExpression(this)
+        => BindingAmbiguousNamesAspect.UnresolvedMemberAccessExpression_NamespaceNameContext_ReplaceWith_Expression(this)
+        ?? BindingAmbiguousNamesAspect.UnresolvedMemberAccessExpression_TypeNameExpressionContext_ReplaceWith_Expression(this)
         ?? BindingAmbiguousNamesAspect.UnresolvedMemberAccessExpression_ExpressionContext_ReplaceWith_NameExpression(this)
         ?? ExpressionTypesAspect.Expression_ImplicitMove_Insert(this)
         ?? ExpressionTypesAspect.Expression_ImplicitFreeze_Insert(this)
@@ -17372,13 +17388,13 @@ file class UnresolvedQualifiedNameExpressionNode : SemanticNode, IUnresolvedQual
     }
 
     protected override IChildTreeNode Rewrite()
-        => BindingAmbiguousNamesAspect.UnresolvedMemberAccessExpression_NamespaceNameContext_ReplaceWith_NameExpression(this)
-        ?? BindingAmbiguousNamesAspect.UnresolvedMemberAccessExpression_TypeNameExpressionContext_ReplaceWith_NameExpression(this)
-        ?? BindingAmbiguousNamesAspect.UnresolvedMemberAccessExpression_ExpressionContext_ReplaceWith_NameExpression(this)
-        ?? ExpressionTypesAspect.Expression_ImplicitMove_Insert(this)
+        => ExpressionTypesAspect.Expression_ImplicitMove_Insert(this)
         ?? ExpressionTypesAspect.Expression_ImplicitFreeze_Insert(this)
         ?? ExpressionTypesAspect.Expression_Insert_PrepareToReturnExpression(this)
         ?? ExpressionPlainTypesAspect.Expression_Insert_ImplicitConversionExpression(this)
+        ?? BindingAmbiguousNamesAspect.UnresolvedMemberAccessExpression_NamespaceNameContext_ReplaceWith_Expression(this)
+        ?? BindingAmbiguousNamesAspect.UnresolvedMemberAccessExpression_TypeNameExpressionContext_ReplaceWith_Expression(this)
+        ?? BindingAmbiguousNamesAspect.UnresolvedMemberAccessExpression_ExpressionContext_ReplaceWith_NameExpression(this)
         ?? base.Rewrite();
 }
 

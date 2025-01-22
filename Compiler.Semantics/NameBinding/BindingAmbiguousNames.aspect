@@ -9,8 +9,8 @@
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
 // ---------- Unresolved Expressions
-✎ UnresolvedMemberAccessExpression NamespaceNameContext replace_with NameExpression;
-✎ UnresolvedMemberAccessExpression TypeNameExpressionContext replace_with NameExpression;
+✎ UnresolvedMemberAccessExpression NamespaceNameContext replace_with Expression;
+✎ UnresolvedMemberAccessExpression TypeNameExpressionContext replace_with Expression;
 ✎ UnresolvedMemberAccessExpression ExpressionContext replace_with NameExpression;
 = UnresolvedMemberAccessExpression.↑.Diagnostics;
 
