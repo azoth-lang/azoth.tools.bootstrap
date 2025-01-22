@@ -157,10 +157,10 @@ public partial class Parser
                     {
                         // Member Access
                         Tokens.ConsumeToken<IAccessOperatorToken>();
-                        var nameSyntax = ParseOrdinaryName();
-                        var memberAccessSpan = TextSpan.Covering(expression.Span, nameSyntax.Span);
+                        var name = ParseOrdinaryName();
+                        var memberAccessSpan = TextSpan.Covering(expression.Span, name.Span);
                         expression = IMemberAccessExpressionSyntax.Create(memberAccessSpan,
-                            expression, nameSyntax.Name, nameSyntax.GenericArguments, nameSyntax.Span);
+                            expression, name);
                         continue;
                     }
                     break;

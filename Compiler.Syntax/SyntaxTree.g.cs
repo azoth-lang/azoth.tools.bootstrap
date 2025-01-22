@@ -1389,17 +1389,13 @@ public partial interface ISelfExpressionSyntax : IInstanceExpressionSyntax
 public partial interface IMemberAccessExpressionSyntax : INameExpressionSyntax
 {
     IExpressionSyntax Context { get; }
-    OrdinaryName MemberName { get; }
-    IFixedList<ITypeSyntax> GenericArguments { get; }
-    TextSpan MemberNameSpan { get; }
+    IOrdinaryNameSyntax QualifiedName { get; }
 
     public static IMemberAccessExpressionSyntax Create(
         TextSpan span,
         IExpressionSyntax context,
-        OrdinaryName memberName,
-        IEnumerable<ITypeSyntax> genericArguments,
-        TextSpan memberNameSpan)
-        => new MemberAccessExpressionSyntax(span, context, memberName, genericArguments, memberNameSpan);
+        IOrdinaryNameSyntax qualifiedName)
+        => new MemberAccessExpressionSyntax(span, context, qualifiedName);
 }
 
 // [Closed(typeof(MissingNameSyntax))]
@@ -3174,24 +3170,18 @@ file class MemberAccessExpressionSyntax : IMemberAccessExpressionSyntax
 
     public TextSpan Span { [DebuggerStepThrough] get; }
     public IExpressionSyntax Context { [DebuggerStepThrough] get; }
-    public OrdinaryName MemberName { [DebuggerStepThrough] get; }
-    public IFixedList<ITypeSyntax> GenericArguments { [DebuggerStepThrough] get; }
-    public TextSpan MemberNameSpan { [DebuggerStepThrough] get; }
+    public IOrdinaryNameSyntax QualifiedName { [DebuggerStepThrough] get; }
     public override string ToString()
         => FormattingAspect.MemberAccessExpression_ToString(this);
 
     public MemberAccessExpressionSyntax(
         TextSpan span,
         IExpressionSyntax context,
-        OrdinaryName memberName,
-        IEnumerable<ITypeSyntax> genericArguments,
-        TextSpan memberNameSpan)
+        IOrdinaryNameSyntax qualifiedName)
     {
         Span = span;
         Context = context;
-        MemberName = memberName;
-        GenericArguments = genericArguments.ToFixedList();
-        MemberNameSpan = memberNameSpan;
+        QualifiedName = qualifiedName;
     }
 }
 

@@ -2892,7 +2892,7 @@ public partial interface IUnresolvedMemberAccessExpressionNode : IUnknownNameExp
     IFixedList<ITypeNode> TypeArguments { get; }
     PackageNameScope PackageNameScope();
     OrdinaryName MemberName
-        => Syntax.MemberName;
+        => Syntax.QualifiedName.Name;
     IFlowState INameExpressionNode.FlowStateAfter
         => ExpressionTypesAspect.UnresolvedMemberAccessExpression_FlowStateAfter(this);
 
@@ -2956,7 +2956,7 @@ public partial interface IQualifiedNamespaceNameNode : INamespaceNameNode
     INamespaceNameNode Context { get; }
     INamespaceNameNode CurrentContext { get; }
     IdentifierName Name
-        => (IdentifierName)Syntax.MemberName;
+        => (IdentifierName)Syntax.QualifiedName.Name;
 
     public static IQualifiedNamespaceNameNode Create(
         IMemberAccessExpressionSyntax syntax,
@@ -3190,7 +3190,7 @@ public partial interface IQualifiedTypeNameExpressionNode : ITypeNameExpressionN
     INamespaceNameNode Context { get; }
     INamespaceNameNode CurrentContext { get; }
     OrdinaryName ITypeNameExpressionNode.Name
-        => Syntax.MemberName;
+        => Syntax.QualifiedName.Name;
 
     public static IQualifiedTypeNameExpressionNode Create(
         IMemberAccessExpressionSyntax syntax,
@@ -3406,7 +3406,7 @@ public partial interface IAmbiguousMemberAccessExpressionNode : IUnknownNameExpr
     IFixedList<ITypeNode> TypeArguments { get; }
     IFixedSet<IDeclarationNode> ReferencedMembers { get; }
     OrdinaryName MemberName
-        => Syntax.MemberName;
+        => Syntax.QualifiedName.Name;
     IFlowState INameExpressionNode.FlowStateAfter
         => ExpressionTypesAspect.AmbiguousMemberAccessExpression_FlowStateAfter(this);
 

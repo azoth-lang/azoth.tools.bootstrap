@@ -207,7 +207,7 @@ InstanceExpression <: NameExpression; // i.e. `self` or `base`
 SelfExpression <: InstanceExpression = IsImplicit:`bool`;
 // TODO should MemberAccessExpression really be a NameExpression once QualifiedName works properly?
 MemberAccessExpression <: NameExpression
-    = Context:Expression MemberName:`OrdinaryName` GenericArguments:Type* MemberNameSpan:`TextSpan`;
+    = Context:Expression QualifiedName:OrdinaryName;
 MissingName <: NameExpression;
 
 // ---------- Names

@@ -174,18 +174,18 @@
 ↑ GenericNameExpression.Name: `GenericName` => Syntax.Name;
 
 // ---------- Name Expressions
-↑ UnresolvedMemberAccessExpression.MemberName: `OrdinaryName` => Syntax.MemberName;
+↑ UnresolvedMemberAccessExpression.MemberName: `OrdinaryName` => Syntax.QualifiedName.Name;
 ↑ UnqualifiedNamespaceName.Name: `IdentifierName` => Syntax.Name;
-↑ QualifiedNamespaceName.Name: `IdentifierName` => (IdentifierName)Syntax.MemberName;
+↑ QualifiedNamespaceName.Name: `IdentifierName` => (IdentifierName)Syntax.QualifiedName.Name;
 ↑ VariableNameExpression.Name: `IdentifierName` => Syntax.Name;
 ↑ TypeNameExpression.Name: `OrdinaryName`;
 = OrdinaryTypeNameExpression.Name => Syntax.Name;
-= QualifiedTypeNameExpression.Name => Syntax.MemberName;
+= QualifiedTypeNameExpression.Name => Syntax.QualifiedName.Name;
 ↑ BuiltInTypeNameExpression.Name: `BuiltInTypeName` => Syntax.Name;
 ↑ SelfExpression.IsImplicit: `bool` => Syntax.IsImplicit;
 ↑ UnknownIdentifierNameExpression.Name: `IdentifierName` => Syntax.Name;
 ↑ UnknownGenericNameExpression.Name: `GenericName` => Syntax.Name;
-↑ AmbiguousMemberAccessExpression.MemberName: `OrdinaryName` => Syntax.MemberName;
+↑ AmbiguousMemberAccessExpression.MemberName: `OrdinaryName` => Syntax.QualifiedName.Name;
 
 // ---------- Capability Expressions
 ↑ PrepareToReturnExpression.Syntax: `IExpressionSyntax` => Value.Syntax;

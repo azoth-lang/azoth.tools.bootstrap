@@ -286,8 +286,7 @@ public static class ISyntaxExtensions
                 yield break;
             case IMemberAccessExpressionSyntax n:
                 yield return n.Context;
-                foreach (var child in n.GenericArguments)
-                    yield return child;
+                yield return n.QualifiedName;
                 yield break;
             case IMissingNameSyntax n:
                 yield break;

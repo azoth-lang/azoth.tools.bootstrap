@@ -324,7 +324,7 @@ internal static partial class FormattingAspect
         => node.IsImplicit ? "⟦self⟧" : "self";
 
     public static partial string MemberAccessExpression_ToString(IMemberAccessExpressionSyntax node)
-        => $"{node.Context.ToGroupedString(node.ExpressionPrecedence)}.{node.MemberName}";
+        => $"{node.Context.ToGroupedString(node.ExpressionPrecedence)}.{node.QualifiedName}";
 
     public static partial string MissingName_ToString(IMissingNameSyntax node) => "⧼unknown⧽";
     #endregion

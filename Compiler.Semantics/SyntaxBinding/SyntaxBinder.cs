@@ -559,7 +559,7 @@ internal static class SyntaxBinder
         => IGenericNameExpressionNode.Create(syntax, Types(syntax.GenericArguments));
 
     private static IUnresolvedMemberAccessExpressionNode MemberAccessExpression(IMemberAccessExpressionSyntax syntax)
-        => IUnresolvedMemberAccessExpressionNode.Create(syntax, Expression(syntax.Context), Types(syntax.GenericArguments));
+        => IUnresolvedMemberAccessExpressionNode.Create(syntax, Expression(syntax.Context), Types(syntax.QualifiedName.GenericArguments));
 
     private static ISelfExpressionNode SelfExpression(ISelfExpressionSyntax syntax)
         => ISelfExpressionNode.Create(syntax);

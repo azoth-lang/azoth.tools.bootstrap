@@ -256,7 +256,7 @@ internal static partial class BindingAmbiguousNamesAspect
                 break;
             case INamespaceNameNode:
             case ITypeNameExpressionNode:
-                diagnostics.Add(NameBindingError.CouldNotBindMember(node.File, node.Syntax.MemberNameSpan));
+                diagnostics.Add(NameBindingError.CouldNotBindMember(node.File, node.Syntax.QualifiedName.Span));
                 break;
             case IUnknownNameExpressionNode:
             case IUnresolvedInvocationExpressionNode:
@@ -279,7 +279,7 @@ internal static partial class BindingAmbiguousNamesAspect
             case INamespaceNameNode:
             case ITypeNameExpressionNode:
                 // TODO better errors explaining. For example, are they different kinds of declarations?
-                diagnostics.Add(NameBindingError.AmbiguousName(node.File, node.Syntax.MemberNameSpan));
+                diagnostics.Add(NameBindingError.AmbiguousName(node.File, node.Syntax.QualifiedName.Span));
                 break;
             case IUnknownNameExpressionNode:
             case IUnresolvedInvocationExpressionNode:
