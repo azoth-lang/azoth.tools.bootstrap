@@ -800,7 +800,7 @@ public partial interface ITypeSyntax : ICodeSyntax
 
 [Closed(
     typeof(IStandardTypeNameSyntax),
-    typeof(ISimpleTypeNameSyntax),
+    typeof(IBuiltInTypeNameSyntax),
     typeof(IQualifiedTypeNameSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface ITypeNameSyntax : ITypeSyntax
@@ -818,17 +818,9 @@ public partial interface IStandardTypeNameSyntax : ITypeNameSyntax
     TypeName ITypeNameSyntax.Name => Name;
 }
 
-[Closed(
-    typeof(IIdentifierTypeNameSyntax),
-    typeof(IBuiltInTypeNameSyntax))]
-[GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface ISimpleTypeNameSyntax : ITypeNameSyntax
-{
-}
-
 // [Closed(typeof(IdentifierTypeNameSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IIdentifierTypeNameSyntax : IStandardTypeNameSyntax, ISimpleTypeNameSyntax
+public partial interface IIdentifierTypeNameSyntax : IStandardTypeNameSyntax
 {
     new IdentifierName Name { get; }
     OrdinaryName IStandardTypeNameSyntax.Name => Name;
@@ -842,7 +834,7 @@ public partial interface IIdentifierTypeNameSyntax : IStandardTypeNameSyntax, IS
 
 // [Closed(typeof(BuiltInTypeNameSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IBuiltInTypeNameSyntax : ISimpleTypeNameSyntax
+public partial interface IBuiltInTypeNameSyntax : ITypeNameSyntax
 {
     new BuiltInTypeName Name { get; }
     TypeName ITypeNameSyntax.Name => Name;

@@ -1404,7 +1404,7 @@ public partial interface ITypeNode : ICodeNode
 
 [Closed(
     typeof(IStandardTypeNameNode),
-    typeof(ISimpleTypeNameNode),
+    typeof(IBuiltInTypeNameNode),
     typeof(IQualifiedTypeNameNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface ITypeNameNode : ITypeNode
@@ -1437,22 +1437,9 @@ public partial interface IStandardTypeNameNode : ITypeNameNode
     TypeName ITypeNameNode.Name => Name;
 }
 
-[Closed(
-    typeof(IIdentifierTypeNameNode),
-    typeof(IBuiltInTypeNameNode))]
-[GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface ISimpleTypeNameNode : ITypeNameNode
-{
-    new ISimpleTypeNameSyntax Syntax { get; }
-    ITypeNameSyntax ITypeNameNode.Syntax => Syntax;
-    ITypeSyntax ITypeNode.Syntax => Syntax;
-    ICodeSyntax ICodeNode.Syntax => Syntax;
-    ISyntax? ISemanticNode.Syntax => Syntax;
-}
-
 // [Closed(typeof(IdentifierTypeNameNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IIdentifierTypeNameNode : IStandardTypeNameNode, ISimpleTypeNameNode
+public partial interface IIdentifierTypeNameNode : IStandardTypeNameNode
 {
     new IIdentifierTypeNameSyntax Syntax { get; }
     IStandardTypeNameSyntax IStandardTypeNameNode.Syntax => Syntax;
@@ -1460,7 +1447,6 @@ public partial interface IIdentifierTypeNameNode : IStandardTypeNameNode, ISimpl
     ITypeSyntax ITypeNode.Syntax => Syntax;
     ICodeSyntax ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    ISimpleTypeNameSyntax ISimpleTypeNameNode.Syntax => Syntax;
     new IdentifierName Name
         => Syntax.Name;
     OrdinaryName IStandardTypeNameNode.Name => Name;
@@ -1472,10 +1458,9 @@ public partial interface IIdentifierTypeNameNode : IStandardTypeNameNode, ISimpl
 
 // [Closed(typeof(BuiltInTypeNameNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IBuiltInTypeNameNode : ISimpleTypeNameNode
+public partial interface IBuiltInTypeNameNode : ITypeNameNode
 {
     new IBuiltInTypeNameSyntax Syntax { get; }
-    ISimpleTypeNameSyntax ISimpleTypeNameNode.Syntax => Syntax;
     ITypeNameSyntax ITypeNameNode.Syntax => Syntax;
     ITypeSyntax ITypeNode.Syntax => Syntax;
     ICodeSyntax ICodeNode.Syntax => Syntax;

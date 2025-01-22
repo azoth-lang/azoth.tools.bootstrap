@@ -303,7 +303,7 @@ internal static class SyntaxBinder
         => syntax switch
         {
             IStandardTypeNameSyntax syn => StandardTypeName(syn),
-            ISimpleTypeNameSyntax syn => SimpleTypeName(syn),
+            IBuiltInTypeNameSyntax syn => BuiltInTypeName(syn),
             IQualifiedTypeNameSyntax syn => QualifiedTypeName(syn),
             _ => throw ExhaustiveMatch.Failed(syntax)
         };
@@ -323,14 +323,6 @@ internal static class SyntaxBinder
 
     private static IGenericTypeNameNode GenericTypeName(IGenericTypeNameSyntax syntax)
         => IGenericTypeNameNode.Create(syntax, Types(syntax.GenericArguments));
-
-    private static ISimpleTypeNameNode SimpleTypeName(ISimpleTypeNameSyntax syntax)
-        => syntax switch
-        {
-            IIdentifierTypeNameSyntax syn => IdentifierTypeName(syn),
-            IBuiltInTypeNameSyntax syn => BuiltInTypeName(syn),
-            _ => throw ExhaustiveMatch.Failed(syntax)
-        };
 
     private static IBuiltInTypeNameNode BuiltInTypeName(IBuiltInTypeNameSyntax syntax)
         => IBuiltInTypeNameNode.Create(syntax);

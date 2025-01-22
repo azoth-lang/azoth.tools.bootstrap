@@ -170,9 +170,8 @@ Type <: Code = Syntax:`ITypeSyntax`;
 // TODO start from generalized names in syntax and rewrite to type names
 TypeName <: Type = Syntax:`ITypeNameSyntax`;
 StandardTypeName <: TypeName = Syntax:`IStandardTypeNameSyntax`;
-SimpleTypeName <: TypeName = Syntax:`ISimpleTypeNameSyntax`;
-IdentifierTypeName <: StandardTypeName, SimpleTypeName = Syntax:`IIdentifierTypeNameSyntax`;
-BuiltInTypeName <: SimpleTypeName = Syntax:`IBuiltInTypeNameSyntax`;
+IdentifierTypeName <: StandardTypeName = Syntax:`IIdentifierTypeNameSyntax`;
+BuiltInTypeName <: TypeName = Syntax:`IBuiltInTypeNameSyntax`;
 GenericTypeName <: StandardTypeName = Syntax:`IGenericTypeNameSyntax` TypeArguments:Type*;
 QualifiedTypeName <: TypeName = Syntax:`IQualifiedTypeNameSyntax` Context:TypeName QualifiedName:StandardTypeName;
 OptionalType <: Type = Syntax:`IOptionalTypeSyntax` Referent:Type;
@@ -499,7 +498,7 @@ NonVariableTypeSymbol <: NonVariableTypeDeclaration, TypeSymbol;
 BuiltInTypeSymbol <: BuiltInTypeDeclaration, NonVariableTypeSymbol;
 VoidTypeSymbol <: TypeSymbol = Symbol:`VoidTypeSymbol`;
 NeverTypeSymbol <: TypeSymbol = Symbol:`NeverTypeSymbol`;
-// TODO rename to SimpleTypeSymbol?
+// TODO why is this needed separate from BuiltInTypeSymbol?
 PrimitiveTypeSymbol <: BuiltInTypeSymbol = Symbol:`BuiltInTypeSymbol`;
 OrdinaryTypeSymbol <: UserTypeDeclaration, NonVariableTypeSymbol, NamespaceMemberSymbol = Symbol:`OrdinaryTypeSymbol`;
 ClassSymbol <: ClassDeclaration, OrdinaryTypeSymbol = /GenericParameters/ /Members/;

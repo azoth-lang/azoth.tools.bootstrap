@@ -129,10 +129,8 @@ ExpressionBody <: Body = ResultStatement;
 Type <: Code;
 TypeName <: Type = Name:`TypeName`;
 StandardTypeName <: TypeName = Name:`OrdinaryName`;
-// TODO SimpleTypeName is a bad name because it sounds like it should refer to the simple types and it doesn't
-SimpleTypeName <: TypeName;
-IdentifierTypeName <: TypeName, StandardTypeName, SimpleTypeName = Name:`IdentifierName`;
-BuiltInTypeName <: SimpleTypeName = Name:`BuiltInTypeName`;
+IdentifierTypeName <: StandardTypeName = Name:`IdentifierName`;
+BuiltInTypeName <: TypeName = Name:`BuiltInTypeName`;
 GenericTypeName <: StandardTypeName = Name:`GenericName` GenericArguments:Type*;
 QualifiedTypeName <: TypeName = Context:TypeName QualifiedName:StandardTypeName;
 OptionalType <: Type = Referent:Type;
