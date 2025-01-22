@@ -215,9 +215,10 @@ GenericNameExpression <: OrdinaryNameExpression = Name:`GenericName` /GenericArg
 // At the syntax level, there is no distinction between names of types and other names, they all use
 // the same node types so that rewrites of the semantic tree can refer to them when it is realized a
 // name refers to a type. Thus names are both types and expressions.
-Name <: Type = Name:`TypeName`;
-BuiltInTypeName <: Name = Name:`BuiltInTypeName`;
-OrdinaryTypeName <: Name = Name:`OrdinaryName`;
+Name <: Type;
+UnqualifiedName <: Name = Name:`TypeName`;
+BuiltInTypeName <: UnqualifiedName = Name:`BuiltInTypeName`;
+OrdinaryTypeName <: UnqualifiedName = Name:`OrdinaryName`;
 IdentifierTypeName <: OrdinaryTypeName = Name:`IdentifierName`;
 GenericTypeName <: OrdinaryTypeName = Name:`GenericName` GenericArguments:Type*;
 QualifiedTypeName <: Name = Context:Name QualifiedName:OrdinaryTypeName;

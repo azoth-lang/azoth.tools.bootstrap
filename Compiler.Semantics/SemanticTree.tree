@@ -169,9 +169,10 @@ ExpressionBody <: Body = Syntax:`IExpressionBodySyntax` ResultStatement;
 Type <: Code = Syntax:`ITypeSyntax`;
 // TODO start from generalized names in syntax and rewrite to type names
 TypeName <: Type = Syntax:`INameSyntax`;
-OrdinaryTypeName <: TypeName = Syntax:`IOrdinaryTypeNameSyntax`;
+UnqualifiedTypeName <: TypeName = Syntax:`IUnqualifiedNameSyntax`;
+BuiltInTypeName <: UnqualifiedTypeName = Syntax:`IBuiltInTypeNameSyntax`;
+OrdinaryTypeName <: UnqualifiedTypeName = Syntax:`IOrdinaryTypeNameSyntax`;
 IdentifierTypeName <: OrdinaryTypeName = Syntax:`IIdentifierTypeNameSyntax`;
-BuiltInTypeName <: TypeName = Syntax:`IBuiltInTypeNameSyntax`;
 GenericTypeName <: OrdinaryTypeName = Syntax:`IGenericTypeNameSyntax` TypeArguments:Type*;
 QualifiedTypeName <: TypeName = Syntax:`IQualifiedTypeNameSyntax` Context:TypeName QualifiedName:OrdinaryTypeName;
 OptionalType <: Type = Syntax:`IOptionalTypeSyntax` Referent:Type;

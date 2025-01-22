@@ -117,10 +117,10 @@
 = BindingPattern.Name => Syntax.Name;
 
 // ---------- Types
-↑ TypeName.Name: `TypeName` => Syntax.Name;
+↑ UnqualifiedTypeName.Name: `TypeName` => Syntax.Name;
+↑ BuiltInTypeName.Name: `BuiltInTypeName` => Syntax.Name;
 ↑ OrdinaryTypeName.Name: `OrdinaryName` => Syntax.Name;
 ↑ IdentifierTypeName.Name: `IdentifierName` => Syntax.Name;
-↑ BuiltInTypeName.Name: `BuiltInTypeName` => Syntax.Name;
 ↑ GenericTypeName.Name: `GenericName` => Syntax.Name;
 ↑ ParameterType.IsLent: `bool` => Syntax.IsLent;
 

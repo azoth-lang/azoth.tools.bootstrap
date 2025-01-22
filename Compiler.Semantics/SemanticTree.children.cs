@@ -216,9 +216,9 @@ public static class ISemanticNodeExtensions
             case IExpressionBodyNode n:
                 yield return n.ResultStatement;
                 yield break;
-            case IIdentifierTypeNameNode n:
-                yield break;
             case IBuiltInTypeNameNode n:
+                yield break;
+            case IIdentifierTypeNameNode n:
                 yield break;
             case IGenericTypeNameNode n:
                 foreach (var child in n.TypeArguments)

@@ -1465,21 +1465,28 @@ public partial interface IGenericNameExpressionSyntax : IOrdinaryNameExpressionS
 }
 
 [Closed(
-    typeof(IBuiltInTypeNameSyntax),
-    typeof(IOrdinaryTypeNameSyntax),
+    typeof(IUnqualifiedNameSyntax),
     typeof(IQualifiedTypeNameSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface INameSyntax : ITypeSyntax
+{
+}
+
+[Closed(
+    typeof(IBuiltInTypeNameSyntax),
+    typeof(IOrdinaryTypeNameSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
+public partial interface IUnqualifiedNameSyntax : INameSyntax
 {
     TypeName Name { get; }
 }
 
 // [Closed(typeof(BuiltInTypeNameSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IBuiltInTypeNameSyntax : INameSyntax
+public partial interface IBuiltInTypeNameSyntax : IUnqualifiedNameSyntax
 {
     new BuiltInTypeName Name { get; }
-    TypeName INameSyntax.Name => Name;
+    TypeName IUnqualifiedNameSyntax.Name => Name;
 
     public static IBuiltInTypeNameSyntax Create(
         TextSpan span,
@@ -1491,10 +1498,10 @@ public partial interface IBuiltInTypeNameSyntax : INameSyntax
     typeof(IIdentifierTypeNameSyntax),
     typeof(IGenericTypeNameSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IOrdinaryTypeNameSyntax : INameSyntax
+public partial interface IOrdinaryTypeNameSyntax : IUnqualifiedNameSyntax
 {
     new OrdinaryName Name { get; }
-    TypeName INameSyntax.Name => Name;
+    TypeName IUnqualifiedNameSyntax.Name => Name;
 }
 
 // [Closed(typeof(IdentifierTypeNameSyntax))]
@@ -1503,7 +1510,7 @@ public partial interface IIdentifierTypeNameSyntax : IOrdinaryTypeNameSyntax
 {
     new IdentifierName Name { get; }
     OrdinaryName IOrdinaryTypeNameSyntax.Name => Name;
-    TypeName INameSyntax.Name => Name;
+    TypeName IUnqualifiedNameSyntax.Name => Name;
 
     public static IIdentifierTypeNameSyntax Create(
         TextSpan span,
@@ -1517,7 +1524,7 @@ public partial interface IGenericTypeNameSyntax : IOrdinaryTypeNameSyntax
 {
     new GenericName Name { get; }
     OrdinaryName IOrdinaryTypeNameSyntax.Name => Name;
-    TypeName INameSyntax.Name => Name;
+    TypeName IUnqualifiedNameSyntax.Name => Name;
     IFixedList<ITypeSyntax> GenericArguments { get; }
 
     public static IGenericTypeNameSyntax Create(
@@ -1536,10 +1543,9 @@ public partial interface IQualifiedTypeNameSyntax : INameSyntax
 
     public static IQualifiedTypeNameSyntax Create(
         TextSpan span,
-        TypeName name,
         INameSyntax context,
         IOrdinaryTypeNameSyntax qualifiedName)
-        => new QualifiedTypeNameSyntax(span, name, context, qualifiedName);
+        => new QualifiedTypeNameSyntax(span, context, qualifiedName);
 }
 
 // [Closed(typeof(MoveExpressionSyntax))]
@@ -3380,7 +3386,6 @@ file class QualifiedTypeNameSyntax : IQualifiedTypeNameSyntax
     private IQualifiedTypeNameSyntax Self { [Inline] get => this; }
 
     public TextSpan Span { [DebuggerStepThrough] get; }
-    public TypeName Name { [DebuggerStepThrough] get; }
     public INameSyntax Context { [DebuggerStepThrough] get; }
     public IOrdinaryTypeNameSyntax QualifiedName { [DebuggerStepThrough] get; }
     public override string ToString()
@@ -3388,12 +3393,10 @@ file class QualifiedTypeNameSyntax : IQualifiedTypeNameSyntax
 
     public QualifiedTypeNameSyntax(
         TextSpan span,
-        TypeName name,
         INameSyntax context,
         IOrdinaryTypeNameSyntax qualifiedName)
     {
         Span = span;
-        Name = name;
         Context = context;
         QualifiedName = qualifiedName;
     }
