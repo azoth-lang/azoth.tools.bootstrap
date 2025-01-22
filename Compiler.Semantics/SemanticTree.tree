@@ -495,11 +495,9 @@ FunctionSymbol <: FunctionDeclaration, NamespaceMemberSymbol = Symbol:`FunctionS
 // ---------- Type Symbol Nodes
 TypeSymbol <: TypeDeclaration, ChildSymbol = Symbol:`TypeSymbol`;
 NonVariableTypeSymbol <: NonVariableTypeDeclaration, TypeSymbol;
-BuiltInTypeSymbol <: BuiltInTypeDeclaration, NonVariableTypeSymbol;
+BuiltInTypeSymbol <: BuiltInTypeDeclaration, NonVariableTypeSymbol = Symbol:`BuiltInTypeSymbol`;
 VoidTypeSymbol <: TypeSymbol = Symbol:`VoidTypeSymbol`;
 NeverTypeSymbol <: TypeSymbol = Symbol:`NeverTypeSymbol`;
-// TODO why is this needed separate from BuiltInTypeSymbol?
-PrimitiveTypeSymbol <: BuiltInTypeSymbol = Symbol:`BuiltInTypeSymbol`;
 OrdinaryTypeSymbol <: UserTypeDeclaration, NonVariableTypeSymbol, NamespaceMemberSymbol = Symbol:`OrdinaryTypeSymbol`;
 ClassSymbol <: ClassDeclaration, OrdinaryTypeSymbol = /GenericParameters/ /Members/;
 StructSymbol <: StructDeclaration, OrdinaryTypeSymbol = /GenericParameters/ /Members/;

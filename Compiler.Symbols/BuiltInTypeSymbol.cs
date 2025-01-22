@@ -4,7 +4,6 @@ using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 
-// TODO BuiltInTypeSymbolNode is more inclusive, it includes `void` and `never`. Harmonize the names
 public sealed class BuiltInTypeSymbol : TypeSymbol
 {
     public override PackageSymbol? Package => null;

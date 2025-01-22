@@ -51,8 +51,8 @@ internal static class SymbolBinder
     private static INeverTypeSymbolNode NeverTypeSymbol(NeverTypeSymbol sym)
         => INeverTypeSymbolNode.Create(sym);
 
-    private static IPrimitiveTypeSymbolNode PrimitiveTypeSymbol(BuiltInTypeSymbol sym)
-        => IPrimitiveTypeSymbolNode.Create(sym);
+    private static IBuiltInTypeSymbolNode PrimitiveTypeSymbol(BuiltInTypeSymbol sym)
+        => IBuiltInTypeSymbolNode.Create(sym);
 
     private static IGenericParameterSymbolNode GenericParameterTypeSymbol(GenericParameterTypeSymbol sym)
         => IGenericParameterSymbolNode.Create(sym);

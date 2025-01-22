@@ -507,14 +507,14 @@ public static class ISemanticNodeExtensions
                 yield break;
             case IFunctionSymbolNode n:
                 yield break;
-            case IVoidTypeSymbolNode n:
-                yield break;
-            case INeverTypeSymbolNode n:
-                yield break;
-            case IPrimitiveTypeSymbolNode n:
+            case IBuiltInTypeSymbolNode n:
                 yield return n.ImplicitSelf;
                 foreach (var child in n.Members)
                     yield return child;
+                yield break;
+            case IVoidTypeSymbolNode n:
+                yield break;
+            case INeverTypeSymbolNode n:
                 yield break;
             case IClassSymbolNode n:
                 yield return n.ImplicitSelf;

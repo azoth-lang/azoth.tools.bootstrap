@@ -4309,25 +4309,35 @@ public partial interface INonVariableTypeSymbolNode : INonVariableTypeDeclaratio
     IImplicitSelfDeclarationNode INonVariableTypeDeclarationNode.ImplicitSelf => ImplicitSelf;
 }
 
-[Closed(
-    typeof(IPrimitiveTypeSymbolNode))]
+// [Closed(typeof(BuiltInTypeSymbolNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IBuiltInTypeSymbolNode : IBuiltInTypeDeclarationNode, INonVariableTypeSymbolNode
 {
+    new BuiltInTypeSymbol Symbol { get; }
+    TypeSymbol ITypeDeclarationNode.Symbol => Symbol;
+    Symbol? ISymbolDeclarationNode.Symbol => Symbol;
+    TypeSymbol ITypeSymbolNode.Symbol => Symbol;
+    Symbol IChildSymbolNode.Symbol => Symbol;
     new PrimitiveSymbolTree SymbolTree()
         => Primitive.SymbolTree;
     ISymbolTree IChildSymbolNode.SymbolTree() => SymbolTree();
-    new BuiltInTypeName Name { get; }
+    new BuiltInTypeName Name
+        => Symbol.Name;
     BuiltInTypeName IBuiltInTypeDeclarationNode.Name => Name;
     TypeName INamedDeclarationNode.Name => Name;
     new IFixedSet<ITypeMemberSymbolNode> Members { get; }
     IFixedSet<ITypeMemberDeclarationNode> IBuiltInTypeDeclarationNode.Members => Members;
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
     IFixedSet<ITypeMemberSymbolNode> ITypeSymbolNode.Members => Members;
+    BareTypeConstructor INonVariableTypeDeclarationNode.TypeConstructor
+        => Symbol.TypeConstructor;
     IFixedSet<BareType> ITypeDeclarationNode.Supertypes
         => Symbol.TryGetTypeConstructor()?.Supertypes ?? [];
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.InclusiveMembers
         => Members;
+
+    public static IBuiltInTypeSymbolNode Create(BuiltInTypeSymbol symbol)
+        => new BuiltInTypeSymbolNode(symbol);
 }
 
 // [Closed(typeof(VoidTypeSymbolNode))]
@@ -4384,24 +4394,6 @@ public partial interface INeverTypeSymbolNode : ITypeSymbolNode
 
     public static INeverTypeSymbolNode Create(NeverTypeSymbol symbol)
         => new NeverTypeSymbolNode(symbol);
-}
-
-// [Closed(typeof(PrimitiveTypeSymbolNode))]
-[GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IPrimitiveTypeSymbolNode : IBuiltInTypeSymbolNode
-{
-    new BuiltInTypeSymbol Symbol { get; }
-    TypeSymbol ITypeDeclarationNode.Symbol => Symbol;
-    Symbol? ISymbolDeclarationNode.Symbol => Symbol;
-    TypeSymbol ITypeSymbolNode.Symbol => Symbol;
-    Symbol IChildSymbolNode.Symbol => Symbol;
-    BuiltInTypeName IBuiltInTypeSymbolNode.Name
-        => Symbol.Name;
-    BareTypeConstructor INonVariableTypeDeclarationNode.TypeConstructor
-        => Symbol.TypeConstructor;
-
-    public static IPrimitiveTypeSymbolNode Create(BuiltInTypeSymbol symbol)
-        => new PrimitiveTypeSymbolNode(symbol);
 }
 
 [Closed(
@@ -18932,6 +18924,52 @@ file class FunctionSymbolNode : SemanticNode, IFunctionSymbolNode
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
+file class BuiltInTypeSymbolNode : SemanticNode, IBuiltInTypeSymbolNode
+{
+    private IBuiltInTypeSymbolNode Self { [Inline] get => this; }
+
+    public BuiltInTypeSymbol Symbol { [DebuggerStepThrough] get; }
+    public ISymbolDeclarationNode ContainingDeclaration
+        => Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
+    public IPackageDeclarationNode Package
+        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public FixedDictionary<OrdinaryName, IFixedSet<IAssociatedMemberDeclarationNode>> AssociatedMembersByName
+        => GrammarAttribute.IsCached(in associatedMembersByNameCached) ? associatedMembersByName!
+            : this.Synthetic(ref associatedMembersByNameCached, ref associatedMembersByName,
+                NameLookupAspect.BuiltInTypeDeclaration_AssociatedMembersByName);
+    private FixedDictionary<OrdinaryName, IFixedSet<IAssociatedMemberDeclarationNode>>? associatedMembersByName;
+    private bool associatedMembersByNameCached;
+    public ISelfSymbolNode ImplicitSelf
+        => GrammarAttribute.IsCached(in implicitSelfCached) ? implicitSelf!
+            : this.Synthetic(ref implicitSelfCached, ref implicitSelf,
+                n => Child.Attach(this, SymbolNodeAspect.NonVariableTypeSymbol_ImplicitSelf(n)));
+    private ISelfSymbolNode? implicitSelf;
+    private bool implicitSelfCached;
+    public FixedDictionary<OrdinaryName, IFixedSet<IInstanceMemberDeclarationNode>> InclusiveInstanceMembersByName
+        => GrammarAttribute.IsCached(in inclusiveInstanceMembersByNameCached) ? inclusiveInstanceMembersByName!
+            : this.Synthetic(ref inclusiveInstanceMembersByNameCached, ref inclusiveInstanceMembersByName,
+                NameLookupAspect.BuiltInTypeDeclaration_InclusiveInstanceMembersByName);
+    private FixedDictionary<OrdinaryName, IFixedSet<IInstanceMemberDeclarationNode>>? inclusiveInstanceMembersByName;
+    private bool inclusiveInstanceMembersByNameCached;
+    public IFixedSet<ITypeMemberSymbolNode> Members
+        => GrammarAttribute.IsCached(in membersCached) ? members!
+            : this.Synthetic(ref membersCached, ref members,
+                n => ChildSet.Attach(this, SymbolNodeAspect.BuiltInTypeSymbol_Members(n)));
+    private IFixedSet<ITypeMemberSymbolNode>? members;
+    private bool membersCached;
+
+    public BuiltInTypeSymbolNode(BuiltInTypeSymbol symbol)
+    {
+        Symbol = symbol;
+    }
+
+    internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return this;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
 file class VoidTypeSymbolNode : SemanticNode, IVoidTypeSymbolNode
 {
     private IVoidTypeSymbolNode Self { [Inline] get => this; }
@@ -18969,52 +19007,6 @@ file class NeverTypeSymbolNode : SemanticNode, INeverTypeSymbolNode
         => Inherited_SymbolTree(GrammarAttribute.CurrentInheritanceContext());
 
     public NeverTypeSymbolNode(NeverTypeSymbol symbol)
-    {
-        Symbol = symbol;
-    }
-
-    internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        return this;
-    }
-}
-
-[GeneratedCode("AzothCompilerCodeGen", null)]
-file class PrimitiveTypeSymbolNode : SemanticNode, IPrimitiveTypeSymbolNode
-{
-    private IPrimitiveTypeSymbolNode Self { [Inline] get => this; }
-
-    public BuiltInTypeSymbol Symbol { [DebuggerStepThrough] get; }
-    public ISymbolDeclarationNode ContainingDeclaration
-        => Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
-    public FixedDictionary<OrdinaryName, IFixedSet<IAssociatedMemberDeclarationNode>> AssociatedMembersByName
-        => GrammarAttribute.IsCached(in associatedMembersByNameCached) ? associatedMembersByName!
-            : this.Synthetic(ref associatedMembersByNameCached, ref associatedMembersByName,
-                NameLookupAspect.BuiltInTypeDeclaration_AssociatedMembersByName);
-    private FixedDictionary<OrdinaryName, IFixedSet<IAssociatedMemberDeclarationNode>>? associatedMembersByName;
-    private bool associatedMembersByNameCached;
-    public ISelfSymbolNode ImplicitSelf
-        => GrammarAttribute.IsCached(in implicitSelfCached) ? implicitSelf!
-            : this.Synthetic(ref implicitSelfCached, ref implicitSelf,
-                n => Child.Attach(this, SymbolNodeAspect.NonVariableTypeSymbol_ImplicitSelf(n)));
-    private ISelfSymbolNode? implicitSelf;
-    private bool implicitSelfCached;
-    public FixedDictionary<OrdinaryName, IFixedSet<IInstanceMemberDeclarationNode>> InclusiveInstanceMembersByName
-        => GrammarAttribute.IsCached(in inclusiveInstanceMembersByNameCached) ? inclusiveInstanceMembersByName!
-            : this.Synthetic(ref inclusiveInstanceMembersByNameCached, ref inclusiveInstanceMembersByName,
-                NameLookupAspect.BuiltInTypeDeclaration_InclusiveInstanceMembersByName);
-    private FixedDictionary<OrdinaryName, IFixedSet<IInstanceMemberDeclarationNode>>? inclusiveInstanceMembersByName;
-    private bool inclusiveInstanceMembersByNameCached;
-    public IFixedSet<ITypeMemberSymbolNode> Members
-        => GrammarAttribute.IsCached(in membersCached) ? members!
-            : this.Synthetic(ref membersCached, ref members,
-                n => ChildSet.Attach(this, SymbolNodeAspect.BuiltInTypeSymbol_Members(n)));
-    private IFixedSet<ITypeMemberSymbolNode>? members;
-    private bool membersCached;
-
-    public PrimitiveTypeSymbolNode(BuiltInTypeSymbol symbol)
     {
         Symbol = symbol;
     }
