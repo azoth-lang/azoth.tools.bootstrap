@@ -1454,7 +1454,7 @@ public partial interface IInvocationExpressionSyntax : IExpressionSyntax
 
 [Closed(
     typeof(ISimpleNameSyntax),
-    typeof(IStandardNameExpressionSyntax),
+    typeof(IOrdinaryNameExpressionSyntax),
     typeof(IBuiltInTypeNameExpressionSyntax),
     typeof(ISelfExpressionSyntax),
     typeof(IMemberAccessExpressionSyntax))]
@@ -1478,7 +1478,7 @@ public partial interface ISimpleNameSyntax : INameExpressionSyntax
     typeof(IIdentifierNameExpressionSyntax),
     typeof(IGenericNameExpressionSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IStandardNameExpressionSyntax : INameExpressionSyntax
+public partial interface IOrdinaryNameExpressionSyntax : INameExpressionSyntax
 {
     OrdinaryName Name { get; }
     IFixedList<ITypeSyntax> GenericArguments { get; }
@@ -1486,13 +1486,13 @@ public partial interface IStandardNameExpressionSyntax : INameExpressionSyntax
 
 // [Closed(typeof(IdentifierNameExpressionSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IIdentifierNameExpressionSyntax : IStandardNameExpressionSyntax, ISimpleNameSyntax
+public partial interface IIdentifierNameExpressionSyntax : IOrdinaryNameExpressionSyntax, ISimpleNameSyntax
 {
     new IdentifierName Name { get; }
-    OrdinaryName IStandardNameExpressionSyntax.Name => Name;
+    OrdinaryName IOrdinaryNameExpressionSyntax.Name => Name;
     new IFixedList<ITypeSyntax> GenericArguments
         => [];
-    IFixedList<ITypeSyntax> IStandardNameExpressionSyntax.GenericArguments => GenericArguments;
+    IFixedList<ITypeSyntax> IOrdinaryNameExpressionSyntax.GenericArguments => GenericArguments;
 
     public static IIdentifierNameExpressionSyntax Create(
         TextSpan span,
@@ -1514,10 +1514,10 @@ public partial interface IBuiltInTypeNameExpressionSyntax : INameExpressionSynta
 
 // [Closed(typeof(GenericNameExpressionSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IGenericNameExpressionSyntax : IStandardNameExpressionSyntax
+public partial interface IGenericNameExpressionSyntax : IOrdinaryNameExpressionSyntax
 {
     new GenericName Name { get; }
-    OrdinaryName IStandardNameExpressionSyntax.Name => Name;
+    OrdinaryName IOrdinaryNameExpressionSyntax.Name => Name;
 
     public static IGenericNameExpressionSyntax Create(
         TextSpan span,

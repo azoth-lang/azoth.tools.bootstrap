@@ -22,7 +22,7 @@ internal static partial class BindingAmbiguousNamesAspect
         IEnumerable<ITypeNode> typeArguments,
         IEnumerable<IFunctionInvocableDeclarationNode> referencedDeclarations);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IFixedList<IDeclarationNode> StandardNameExpression_ReferencedDeclarations(IStandardNameExpressionNode node);
+    public static partial IFixedList<IDeclarationNode> OrdinaryNameExpression_ReferencedDeclarations(IOrdinaryNameExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial void UnresolvedMemberAccessExpression_Contribute_Diagnostics(IUnresolvedMemberAccessExpressionNode node, DiagnosticCollectionBuilder diagnostics);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

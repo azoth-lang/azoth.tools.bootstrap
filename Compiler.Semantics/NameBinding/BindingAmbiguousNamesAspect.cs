@@ -12,7 +12,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.NameBinding;
 
 internal static partial class BindingAmbiguousNamesAspect
 {
-    public static partial IFixedList<IDeclarationNode> StandardNameExpression_ReferencedDeclarations(IStandardNameExpressionNode node)
+    public static partial IFixedList<IDeclarationNode> OrdinaryNameExpression_ReferencedDeclarations(IOrdinaryNameExpressionNode node)
         => node.ContainingLexicalScope.Lookup(node.Name).ToFixedList();
 
     public static partial INameExpressionNode? IdentifierNameExpression_ReplaceWith_NameExpression(IIdentifierNameExpressionNode node)

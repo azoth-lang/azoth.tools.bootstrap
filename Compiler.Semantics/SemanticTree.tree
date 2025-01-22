@@ -281,10 +281,10 @@ NonInvocableInvocationExpression <: InvocationExpression = Syntax:`IInvocationEx
 temp AmbiguousNameExpression <: AmbiguousExpression = Syntax:`INameExpressionSyntax`;
 temp AmbiguousName <: AmbiguousNameExpression;
 temp UnresolvedSimpleName <: AmbiguousName = Syntax:`ISimpleNameSyntax`;
-temp StandardNameExpression <: AmbiguousName = Syntax:`IStandardNameExpressionSyntax`;
-temp IdentifierNameExpression <: AmbiguousName, StandardNameExpression, UnresolvedSimpleName
+temp OrdinaryNameExpression <: AmbiguousName = Syntax:`IOrdinaryNameExpressionSyntax`;
+temp IdentifierNameExpression <: AmbiguousName, OrdinaryNameExpression, UnresolvedSimpleName
     = Syntax:`IIdentifierNameExpressionSyntax`;
-temp GenericNameExpression <: AmbiguousName, StandardNameExpression
+temp GenericNameExpression <: AmbiguousName, OrdinaryNameExpression
     = Syntax:`IGenericNameExpressionSyntax` TypeArguments:Type*;
 
 // ---------- Name Expressions
@@ -334,7 +334,7 @@ TypeNameExpression <: NameExpression = Syntax:`INameExpressionSyntax`
     TypeArguments:Type* ReferencedDeclaration:`ITypeDeclarationNode`;
 // TODO rename to UnqualifiedTypeNameExpression
 StandardTypeNameExpression <: TypeNameExpression
-    = Syntax:`IStandardNameExpressionSyntax` /TypeArguments/ /ReferencedDeclaration/;
+    = Syntax:`IOrdinaryNameExpressionSyntax` /TypeArguments/ /ReferencedDeclaration/;
 QualifiedTypeNameExpression <: TypeNameExpression = Syntax:`IMemberAccessExpressionSyntax`
     Context:NamespaceName /TypeArguments/ /ReferencedDeclaration/;
 InitializerGroupName <: NameExpression = Syntax:`INameExpressionSyntax`
@@ -358,7 +358,7 @@ SelfExpression <: InstanceExpression, LocalBindingNameExpression
 MissingNameExpression <: NameExpression, SimpleNameExpression
     = Syntax:`IMissingNameSyntax`;
 UnknownStandardNameExpression <: UnknownNameExpression
-    = Syntax:`IStandardNameExpressionSyntax` Name:`OrdinaryName` ReferencedDeclarations:{`IDeclarationNode`};
+    = Syntax:`IOrdinaryNameExpressionSyntax` Name:`OrdinaryName` ReferencedDeclarations:{`IDeclarationNode`};
 UnknownIdentifierNameExpression <: UnknownStandardNameExpression, SimpleNameExpression
     = Syntax:`IIdentifierNameExpressionSyntax` /ReferencedDeclarations/;
 UnknownGenericNameExpression <: UnknownStandardNameExpression

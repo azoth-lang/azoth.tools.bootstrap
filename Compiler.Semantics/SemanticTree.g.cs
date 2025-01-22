@@ -2773,7 +2773,7 @@ public partial interface IAmbiguousNameExpressionNode : IAmbiguousExpressionNode
 
 [Closed(
     typeof(IUnresolvedSimpleNameNode),
-    typeof(IStandardNameExpressionNode))]
+    typeof(IOrdinaryNameExpressionNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IAmbiguousNameNode : IAmbiguousNameExpressionNode
 {
@@ -2796,9 +2796,9 @@ public partial interface IUnresolvedSimpleNameNode : IAmbiguousNameNode
     typeof(IIdentifierNameExpressionNode),
     typeof(IGenericNameExpressionNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IStandardNameExpressionNode : IAmbiguousNameNode
+public partial interface IOrdinaryNameExpressionNode : IAmbiguousNameNode
 {
-    new IStandardNameExpressionSyntax Syntax { get; }
+    new IOrdinaryNameExpressionSyntax Syntax { get; }
     INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ICodeSyntax ICodeNode.Syntax => Syntax;
@@ -2812,10 +2812,10 @@ public partial interface IStandardNameExpressionNode : IAmbiguousNameNode
 
 // [Closed(typeof(IdentifierNameExpressionNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IIdentifierNameExpressionNode : IStandardNameExpressionNode, IUnresolvedSimpleNameNode
+public partial interface IIdentifierNameExpressionNode : IOrdinaryNameExpressionNode, IUnresolvedSimpleNameNode
 {
     new IIdentifierNameExpressionSyntax Syntax { get; }
-    IStandardNameExpressionSyntax IStandardNameExpressionNode.Syntax => Syntax;
+    IOrdinaryNameExpressionSyntax IOrdinaryNameExpressionNode.Syntax => Syntax;
     INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ICodeSyntax ICodeNode.Syntax => Syntax;
@@ -2823,7 +2823,7 @@ public partial interface IIdentifierNameExpressionNode : IStandardNameExpression
     ISimpleNameSyntax IUnresolvedSimpleNameNode.Syntax => Syntax;
     new IdentifierName Name
         => Syntax.Name;
-    OrdinaryName IStandardNameExpressionNode.Name => Name;
+    OrdinaryName IOrdinaryNameExpressionNode.Name => Name;
 
     public static IIdentifierNameExpressionNode Create(IIdentifierNameExpressionSyntax syntax)
         => new IdentifierNameExpressionNode(syntax);
@@ -2831,10 +2831,10 @@ public partial interface IIdentifierNameExpressionNode : IStandardNameExpression
 
 // [Closed(typeof(GenericNameExpressionNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IGenericNameExpressionNode : IStandardNameExpressionNode
+public partial interface IGenericNameExpressionNode : IOrdinaryNameExpressionNode
 {
     new IGenericNameExpressionSyntax Syntax { get; }
-    IStandardNameExpressionSyntax IStandardNameExpressionNode.Syntax => Syntax;
+    IOrdinaryNameExpressionSyntax IOrdinaryNameExpressionNode.Syntax => Syntax;
     INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ICodeSyntax ICodeNode.Syntax => Syntax;
@@ -2842,7 +2842,7 @@ public partial interface IGenericNameExpressionNode : IStandardNameExpressionNod
     IFixedList<ITypeNode> TypeArguments { get; }
     new GenericName Name
         => Syntax.Name;
-    OrdinaryName IStandardNameExpressionNode.Name => Name;
+    OrdinaryName IOrdinaryNameExpressionNode.Name => Name;
 
     public static IGenericNameExpressionNode Create(
         IGenericNameExpressionSyntax syntax,
@@ -3189,7 +3189,7 @@ public partial interface ITypeNameExpressionNode : INameExpressionNode
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IStandardTypeNameExpressionNode : ITypeNameExpressionNode
 {
-    new IStandardNameExpressionSyntax Syntax { get; }
+    new IOrdinaryNameExpressionSyntax Syntax { get; }
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ICodeSyntax ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
@@ -3198,7 +3198,7 @@ public partial interface IStandardTypeNameExpressionNode : ITypeNameExpressionNo
         => Syntax.Name;
 
     public static IStandardTypeNameExpressionNode Create(
-        IStandardNameExpressionSyntax syntax,
+        IOrdinaryNameExpressionSyntax syntax,
         IEnumerable<ITypeNode> typeArguments,
         ITypeDeclarationNode referencedDeclaration)
         => new StandardTypeNameExpressionNode(syntax, typeArguments, referencedDeclaration);
@@ -3370,7 +3370,7 @@ public partial interface IMissingNameExpressionNode : ISimpleNameExpressionNode
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IUnknownStandardNameExpressionNode : IUnknownNameExpressionNode
 {
-    new IStandardNameExpressionSyntax Syntax { get; }
+    new IOrdinaryNameExpressionSyntax Syntax { get; }
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ICodeSyntax ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
@@ -3384,7 +3384,7 @@ public partial interface IUnknownStandardNameExpressionNode : IUnknownNameExpres
 public partial interface IUnknownIdentifierNameExpressionNode : IUnknownStandardNameExpressionNode, ISimpleNameExpressionNode
 {
     new IIdentifierNameExpressionSyntax Syntax { get; }
-    IStandardNameExpressionSyntax IUnknownStandardNameExpressionNode.Syntax => Syntax;
+    IOrdinaryNameExpressionSyntax IUnknownStandardNameExpressionNode.Syntax => Syntax;
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ICodeSyntax ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
@@ -3405,7 +3405,7 @@ public partial interface IUnknownIdentifierNameExpressionNode : IUnknownStandard
 public partial interface IUnknownGenericNameExpressionNode : IUnknownStandardNameExpressionNode
 {
     new IGenericNameExpressionSyntax Syntax { get; }
-    IStandardNameExpressionSyntax IUnknownStandardNameExpressionNode.Syntax => Syntax;
+    IOrdinaryNameExpressionSyntax IUnknownStandardNameExpressionNode.Syntax => Syntax;
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ICodeSyntax ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
@@ -14510,7 +14510,7 @@ file class IdentifierNameExpressionNode : SemanticNode, IIdentifierNameExpressio
     public IFixedList<IDeclarationNode> ReferencedDeclarations
         => GrammarAttribute.IsCached(in referencedDeclarationsCached) ? referencedDeclarations!
             : this.Synthetic(ref referencedDeclarationsCached, ref referencedDeclarations,
-                BindingAmbiguousNamesAspect.StandardNameExpression_ReferencedDeclarations);
+                BindingAmbiguousNamesAspect.OrdinaryNameExpression_ReferencedDeclarations);
     private IFixedList<IDeclarationNode>? referencedDeclarations;
     private bool referencedDeclarationsCached;
     public ValueId ValueId
@@ -14582,7 +14582,7 @@ file class GenericNameExpressionNode : SemanticNode, IGenericNameExpressionNode
     public IFixedList<IDeclarationNode> ReferencedDeclarations
         => GrammarAttribute.IsCached(in referencedDeclarationsCached) ? referencedDeclarations!
             : this.Synthetic(ref referencedDeclarationsCached, ref referencedDeclarations,
-                BindingAmbiguousNamesAspect.StandardNameExpression_ReferencedDeclarations);
+                BindingAmbiguousNamesAspect.OrdinaryNameExpression_ReferencedDeclarations);
     private IFixedList<IDeclarationNode>? referencedDeclarations;
     private bool referencedDeclarationsCached;
     public ValueId ValueId
@@ -15996,7 +15996,7 @@ file class StandardTypeNameExpressionNode : SemanticNode, IStandardTypeNameExpre
     private AttributeLock syncLock;
     protected override bool MayHaveRewrite => true;
 
-    public IStandardNameExpressionSyntax Syntax { [DebuggerStepThrough] get; }
+    public IOrdinaryNameExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     public IFixedList<ITypeNode> TypeArguments { [DebuggerStepThrough] get; }
     public ITypeDeclarationNode ReferencedDeclaration { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
@@ -16062,7 +16062,7 @@ file class StandardTypeNameExpressionNode : SemanticNode, IStandardTypeNameExpre
     private bool valueIdCached;
 
     public StandardTypeNameExpressionNode(
-        IStandardNameExpressionSyntax syntax,
+        IOrdinaryNameExpressionSyntax syntax,
         IEnumerable<ITypeNode> typeArguments,
         ITypeDeclarationNode referencedDeclaration)
     {

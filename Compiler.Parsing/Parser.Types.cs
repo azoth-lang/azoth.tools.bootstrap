@@ -136,7 +136,7 @@ public partial class Parser
     {
         var identifier = Tokens.RequiredToken<IIdentifierToken>();
         var name = identifier.Value;
-        var optionalGenerics = AcceptGenericTypeArguments();
+        var optionalGenerics = AcceptGenericArguments();
         if (optionalGenerics is { } generics)
             return IGenericTypeNameSyntax.Create(TextSpan.Covering(identifier.Span, generics.Span),
                 name, generics.Arguments);
@@ -144,7 +144,7 @@ public partial class Parser
         return IIdentifierTypeNameSyntax.Create(identifier.Span, name);
     }
 
-    private (IFixedList<ITypeSyntax> Arguments, TextSpan Span)? AcceptGenericTypeArguments()
+    private (IFixedList<ITypeSyntax> Arguments, TextSpan Span)? AcceptGenericArguments()
     {
         var openBracket = Tokens.AcceptToken<IOpenBracketToken>();
         if (openBracket is null) return null;

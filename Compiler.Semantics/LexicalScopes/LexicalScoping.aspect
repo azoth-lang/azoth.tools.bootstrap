@@ -127,7 +127,7 @@ type `NamespaceSearchScope` <: `LexicalScope`;
     => TempArguments[argumentIndex - 1].FlowLexicalScope().True;
 
 // ---------- Ambiguous Name Expressions
-↓ StandardNameExpression.ContainingLexicalScope: `LexicalScope`;
+↓ OrdinaryNameExpression.ContainingLexicalScope: `LexicalScope`;
 ↓ BuiltInTypeNameExpression.ContainingLexicalScope: `LexicalScope`;
 
 // ---------- Name Expressions

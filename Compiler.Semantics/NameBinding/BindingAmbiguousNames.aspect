@@ -12,8 +12,8 @@
 ✎ AssignmentExpression PropertyNameLeftOperand rewrite;
 
 // ---------- Ambiguous Name Expressions
-↑ StandardNameExpression.ReferencedDeclarations: Declaration*;
-= StandardNameExpression.ReferencedDeclarations;
+↑ OrdinaryNameExpression.ReferencedDeclarations: Declaration*;
+= OrdinaryNameExpression.ReferencedDeclarations;
 ✎ IdentifierNameExpression replace_with NameExpression;
 ✎ GenericNameExpression replace_with NameExpression;
 

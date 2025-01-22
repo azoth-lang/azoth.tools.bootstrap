@@ -207,11 +207,11 @@ InvocationExpression <: Expression = Expression Arguments:Expression*;
 // ---------- Name Expressions
 NameExpression <: Expression;
 SimpleName <: NameExpression;
-StandardNameExpression <: NameExpression = Name:`OrdinaryName` GenericArguments:Type*;
-IdentifierNameExpression <: NameExpression, StandardNameExpression, SimpleName
+OrdinaryNameExpression <: NameExpression = Name:`OrdinaryName` GenericArguments:Type*;
+IdentifierNameExpression <: NameExpression, OrdinaryNameExpression, SimpleName
     = Name:`IdentifierName`;
 BuiltInTypeNameExpression <: NameExpression, Expression = Name:`BuiltInTypeName`;
-GenericNameExpression <: NameExpression, StandardNameExpression = Name:`GenericName` /GenericArguments/;
+GenericNameExpression <: NameExpression, OrdinaryNameExpression = Name:`GenericName` /GenericArguments/;
 InstanceExpression <: SimpleName; // i.e. `self` or `base`
 SelfExpression <: NameExpression, InstanceExpression = IsImplicit:`bool`;
 MemberAccessExpression <: NameExpression

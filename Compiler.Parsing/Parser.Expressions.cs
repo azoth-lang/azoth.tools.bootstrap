@@ -158,7 +158,7 @@ public partial class Parser
                     {
                         // Member Access
                         Tokens.ConsumeToken<IAccessOperatorToken>();
-                        var nameSyntax = ParseStandardName();
+                        var nameSyntax = ParseOrdinaryName();
                         var memberAccessSpan = TextSpan.Covering(expression.Span, nameSyntax.Span);
                         expression = IMemberAccessExpressionSyntax.Create(memberAccessSpan,
                             expression, nameSyntax.Name, nameSyntax.GenericArguments, nameSyntax.Span);
@@ -320,7 +320,7 @@ public partial class Parser
                 return INoneLiteralExpressionSyntax.Create(literal);
             }
             case IIdentifierToken _:
-                return ParseStandardName();
+                return ParseOrdinaryName();
             case IForeachKeywordToken _:
                 return ParseForeach();
             case IWhileKeywordToken _:
