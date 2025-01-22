@@ -15,7 +15,7 @@ public sealed class GenericName : OrdinaryName
     }
 
     #region Equals
-    public override bool Equals(TypeName? other)
+    public override bool Equals(UnqualifiedName? other)
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;

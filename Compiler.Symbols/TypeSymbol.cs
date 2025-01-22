@@ -14,11 +14,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
     typeof(AssociatedTypeSymbol))]
 public abstract class TypeSymbol : Symbol
 {
-    public override TypeName Name { get; }
+    public override UnqualifiedName Name { get; }
 
     public bool IsGlobal => ContainingSymbol == Package;
 
-    protected TypeSymbol(TypeName name)
+    protected TypeSymbol(UnqualifiedName name)
     {
         Name = name;
     }

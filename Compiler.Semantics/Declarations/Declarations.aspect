@@ -7,7 +7,7 @@
 
 // TODO move symbol related attributes out of here and into a symbols aspect
 
-↑ NamedDeclaration.Name: `TypeName`;
+↑ NamedDeclaration.Name: `UnqualifiedName`;
 ↑ SymbolDeclaration.Symbol: `Symbol`?;
 
 // ---------- Bindings

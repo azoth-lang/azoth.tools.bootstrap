@@ -11,7 +11,7 @@ public sealed class IdentifierName : OrdinaryName
         : base(text, 0) { }
 
     #region Equals
-    public override bool Equals(TypeName? other)
+    public override bool Equals(UnqualifiedName? other)
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;

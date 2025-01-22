@@ -172,7 +172,7 @@ public partial interface IPackageReferenceSyntax : ISyntax
 public partial interface IDefinitionSyntax : ICodeSyntax
 {
     CodeFile File { get; }
-    TypeName? Name { get; }
+    UnqualifiedName? Name { get; }
     TextSpan NameSpan { get; }
 }
 
@@ -210,7 +210,7 @@ public partial interface INamespaceBlockDefinitionSyntax : INamespaceBlockMember
     public static INamespaceBlockDefinitionSyntax Create(
         TextSpan span,
         CodeFile file,
-        TypeName? name,
+        UnqualifiedName? name,
         TextSpan nameSpan,
         bool isGlobalQualified,
         NamespaceName declaredNames,
@@ -234,7 +234,7 @@ public partial interface IFunctionDefinitionSyntax : IInvocableDefinitionSyntax,
 {
     IFixedList<IAttributeSyntax> Attributes { get; }
     new IdentifierName Name { get; }
-    TypeName? IDefinitionSyntax.Name => Name;
+    UnqualifiedName? IDefinitionSyntax.Name => Name;
     new IFixedList<INamedParameterSyntax> Parameters { get; }
     IFixedList<IConstructorOrInitializerParameterSyntax> IInvocableDefinitionSyntax.Parameters => Parameters;
     IReturnSyntax? Return { get; }
@@ -264,7 +264,7 @@ public partial interface ITypeDefinitionSyntax : INamespaceBlockMemberDefinition
     IConstKeywordToken? ConstModifier { get; }
     IMoveKeywordToken? MoveModifier { get; }
     new OrdinaryName Name { get; }
-    TypeName? IDefinitionSyntax.Name => Name;
+    UnqualifiedName? IDefinitionSyntax.Name => Name;
     IFixedList<IGenericParameterSyntax> GenericParameters { get; }
     IFixedList<IOrdinaryNameSyntax> SupertypeNames { get; }
     IFixedList<ITypeMemberDefinitionSyntax> Members { get; }
@@ -405,7 +405,7 @@ public partial interface IStructMemberDefinitionSyntax : ITypeMemberDefinitionSy
 public partial interface IMethodDefinitionSyntax : IClassMemberDefinitionSyntax, ITraitMemberDefinitionSyntax, IStructMemberDefinitionSyntax, IInvocableDefinitionSyntax
 {
     new IdentifierName Name { get; }
-    TypeName? IDefinitionSyntax.Name => Name;
+    UnqualifiedName? IDefinitionSyntax.Name => Name;
     IMethodSelfParameterSyntax SelfParameter { get; }
     new IFixedList<INamedParameterSyntax> Parameters { get; }
     IFixedList<IConstructorOrInitializerParameterSyntax> IInvocableDefinitionSyntax.Parameters => Parameters;
@@ -502,7 +502,7 @@ public partial interface ISetterMethodDefinitionSyntax : IMethodDefinitionSyntax
 public partial interface IConstructorDefinitionSyntax : IInvocableDefinitionSyntax, IClassMemberDefinitionSyntax
 {
     new IdentifierName? Name { get; }
-    TypeName? IDefinitionSyntax.Name => Name;
+    UnqualifiedName? IDefinitionSyntax.Name => Name;
     IConstructorSelfParameterSyntax SelfParameter { get; }
     new IBlockBodySyntax Body { get; }
     IBodySyntax? IInvocableDefinitionSyntax.Body => Body;
@@ -524,7 +524,7 @@ public partial interface IConstructorDefinitionSyntax : IInvocableDefinitionSynt
 public partial interface IInitializerDefinitionSyntax : IInvocableDefinitionSyntax, IStructMemberDefinitionSyntax, IClassMemberDefinitionSyntax
 {
     new IdentifierName? Name { get; }
-    TypeName? IDefinitionSyntax.Name => Name;
+    UnqualifiedName? IDefinitionSyntax.Name => Name;
     IInitializerSelfParameterSyntax SelfParameter { get; }
     new IBlockBodySyntax Body { get; }
     IBodySyntax? IInvocableDefinitionSyntax.Body => Body;
@@ -546,7 +546,7 @@ public partial interface IInitializerDefinitionSyntax : IInvocableDefinitionSynt
 public partial interface IFieldDefinitionSyntax : IClassMemberDefinitionSyntax, IStructMemberDefinitionSyntax, IBindingSyntax
 {
     new IdentifierName Name { get; }
-    TypeName? IDefinitionSyntax.Name => Name;
+    UnqualifiedName? IDefinitionSyntax.Name => Name;
     ITypeSyntax Type { get; }
     IExpressionSyntax? Initializer { get; }
 
@@ -567,7 +567,7 @@ public partial interface IFieldDefinitionSyntax : IClassMemberDefinitionSyntax, 
 public partial interface IAssociatedFunctionDefinitionSyntax : IClassMemberDefinitionSyntax, ITraitMemberDefinitionSyntax, IStructMemberDefinitionSyntax, IInvocableDefinitionSyntax
 {
     new IdentifierName Name { get; }
-    TypeName? IDefinitionSyntax.Name => Name;
+    UnqualifiedName? IDefinitionSyntax.Name => Name;
     new IFixedList<INamedParameterSyntax> Parameters { get; }
     IFixedList<IConstructorOrInitializerParameterSyntax> IInvocableDefinitionSyntax.Parameters => Parameters;
     IReturnSyntax? Return { get; }
@@ -1478,7 +1478,7 @@ public partial interface INameSyntax : ITypeSyntax
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IUnqualifiedNameSyntax : INameSyntax
 {
-    TypeName Name { get; }
+    UnqualifiedName Name { get; }
 }
 
 // [Closed(typeof(BuiltInTypeNameSyntax))]
@@ -1486,7 +1486,7 @@ public partial interface IUnqualifiedNameSyntax : INameSyntax
 public partial interface IBuiltInTypeNameSyntax : IUnqualifiedNameSyntax
 {
     new BuiltInTypeName Name { get; }
-    TypeName IUnqualifiedNameSyntax.Name => Name;
+    UnqualifiedName IUnqualifiedNameSyntax.Name => Name;
 
     public static IBuiltInTypeNameSyntax Create(
         TextSpan span,
@@ -1501,7 +1501,7 @@ public partial interface IBuiltInTypeNameSyntax : IUnqualifiedNameSyntax
 public partial interface IOrdinaryNameSyntax : IUnqualifiedNameSyntax
 {
     new OrdinaryName Name { get; }
-    TypeName IUnqualifiedNameSyntax.Name => Name;
+    UnqualifiedName IUnqualifiedNameSyntax.Name => Name;
 }
 
 // [Closed(typeof(IdentifierNameSyntax))]
@@ -1510,7 +1510,7 @@ public partial interface IIdentifierNameSyntax : IOrdinaryNameSyntax
 {
     new IdentifierName Name { get; }
     OrdinaryName IOrdinaryNameSyntax.Name => Name;
-    TypeName IUnqualifiedNameSyntax.Name => Name;
+    UnqualifiedName IUnqualifiedNameSyntax.Name => Name;
 
     public static IIdentifierNameSyntax Create(
         TextSpan span,
@@ -1524,7 +1524,7 @@ public partial interface IGenericNameSyntax : IOrdinaryNameSyntax
 {
     new GenericName Name { get; }
     OrdinaryName IOrdinaryNameSyntax.Name => Name;
-    TypeName IUnqualifiedNameSyntax.Name => Name;
+    UnqualifiedName IUnqualifiedNameSyntax.Name => Name;
     IFixedList<ITypeSyntax> GenericArguments { get; }
 
     public static IGenericNameSyntax Create(
@@ -1726,7 +1726,7 @@ file class NamespaceBlockDefinitionSyntax : INamespaceBlockDefinitionSyntax
 
     public TextSpan Span { [DebuggerStepThrough] get; }
     public CodeFile File { [DebuggerStepThrough] get; }
-    public TypeName? Name { [DebuggerStepThrough] get; }
+    public UnqualifiedName? Name { [DebuggerStepThrough] get; }
     public TextSpan NameSpan { [DebuggerStepThrough] get; }
     public bool IsGlobalQualified { [DebuggerStepThrough] get; }
     public NamespaceName DeclaredNames { [DebuggerStepThrough] get; }
@@ -1738,7 +1738,7 @@ file class NamespaceBlockDefinitionSyntax : INamespaceBlockDefinitionSyntax
     public NamespaceBlockDefinitionSyntax(
         TextSpan span,
         CodeFile file,
-        TypeName? name,
+        UnqualifiedName? name,
         TextSpan nameSpan,
         bool isGlobalQualified,
         NamespaceName declaredNames,

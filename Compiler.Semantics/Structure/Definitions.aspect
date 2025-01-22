@@ -117,7 +117,7 @@
 = BindingPattern.Name => Syntax.Name;
 
 // ---------- Types
-↑ UnqualifiedTypeName.Name: `TypeName` => Syntax.Name;
+↑ UnqualifiedTypeName.Name: `UnqualifiedName` => Syntax.Name;
 ↑ BuiltInTypeName.Name: `BuiltInTypeName` => Syntax.Name;
 ↑ OrdinaryTypeName.Name: `OrdinaryName` => Syntax.Name;
 ↑ IdentifierTypeName.Name: `IdentifierName` => Syntax.Name;

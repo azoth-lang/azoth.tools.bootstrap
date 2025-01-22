@@ -180,7 +180,7 @@ public abstract class BareTypeConstructor : BareTypeConstructorContext, IEquatab
     /// </summary>
     public abstract TypeSemantics? Semantics { get; }
 
-    public abstract TypeName Name { get; }
+    public abstract UnqualifiedName Name { get; }
 
     public bool HasParameters => !Parameters.IsEmpty;
     public abstract IFixedList<TypeConstructorParameter> Parameters { get; }

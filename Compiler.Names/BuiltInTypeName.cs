@@ -9,7 +9,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Names;
 /// keywords, they are distinct from an identifier with the same letters. For
 /// example, `bool` is a keyword distinct from the identifier `\bool`.
 /// </summary>
-public sealed class BuiltInTypeName : TypeName
+public sealed class BuiltInTypeName : UnqualifiedName
 {
     #region Instances
     public static readonly BuiltInTypeName Void = new("void");
@@ -37,7 +37,7 @@ public sealed class BuiltInTypeName : TypeName
         : base(text, 0) { }
 
     #region Equality
-    public override bool Equals(TypeName? other)
+    public override bool Equals(UnqualifiedName? other)
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;

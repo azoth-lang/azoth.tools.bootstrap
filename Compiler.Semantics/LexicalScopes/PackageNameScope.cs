@@ -32,7 +32,7 @@ public sealed class PackageNameScope
     /// </summary>
     private readonly FixedDictionary<IdentifierName, NamespaceScope> packageGlobalScopes;
 
-    private readonly FixedDictionary<TypeName, ITypeDeclarationNode> builtIns;
+    private readonly FixedDictionary<UnqualifiedName, ITypeDeclarationNode> builtIns;
 
     internal PackageNameScope(
         IEnumerable<IPackageFacetNode> packageFacets,

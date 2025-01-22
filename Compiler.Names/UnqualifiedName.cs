@@ -8,11 +8,10 @@ using ExhaustiveMatching;
 namespace Azoth.Tools.Bootstrap.Compiler.Names;
 
 /// <summary>
-/// A name that could be the name of a type.
+/// A name that is not qualified. That is it has no context preceding it with a dot.
 /// </summary>
-// TODO consider renaming to just Name since it is confusing that it may not actually be the name of a type
 [Closed(typeof(OrdinaryName), typeof(BuiltInTypeName))]
-public abstract partial class TypeName : IEquatable<TypeName>
+public abstract partial class UnqualifiedName : IEquatable<UnqualifiedName>
 {
     public string Text { get; }
 
@@ -21,7 +20,7 @@ public abstract partial class TypeName : IEquatable<TypeName>
     /// </summary>
     public int GenericParameterCount { get; }
 
-    private protected TypeName(string text, int genericParameterCount)
+    private protected UnqualifiedName(string text, int genericParameterCount)
     {
         Requires.That(!string.IsNullOrEmpty(text), nameof(text), "cannot be null or empty");
         Text = text;
@@ -37,20 +36,20 @@ public abstract partial class TypeName : IEquatable<TypeName>
     }
 
     #region Equals
-    public abstract bool Equals(TypeName? other);
+    public abstract bool Equals(UnqualifiedName? other);
 
     public sealed override bool Equals(object? other)
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
-        return other is TypeName otherTypeName && Equals(otherTypeName);
+        return other is UnqualifiedName otherTypeName && Equals(otherTypeName);
     }
 
     public abstract override int GetHashCode();
 
-    public static bool operator ==(TypeName? left, TypeName? right) => Equals(left, right);
+    public static bool operator ==(UnqualifiedName? left, UnqualifiedName? right) => Equals(left, right);
 
-    public static bool operator !=(TypeName? left, TypeName? right) => !Equals(left, right);
+    public static bool operator !=(UnqualifiedName? left, UnqualifiedName? right) => !Equals(left, right);
     #endregion
 
     public abstract OrdinaryName? WithAttributeSuffix();
@@ -62,7 +61,7 @@ public abstract partial class TypeName : IEquatable<TypeName>
 
     public abstract override string ToString();
 
-    public static implicit operator TypeName(string text) => new IdentifierName(text);
+    public static implicit operator UnqualifiedName(string text) => new IdentifierName(text);
 
     protected string QuotedText { get; }
 

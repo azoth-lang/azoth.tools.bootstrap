@@ -15,7 +15,7 @@ public sealed class BarePlainType : NonVoidPlainType
     public BareTypeConstructor TypeConstructor { [DebuggerStepThrough] get; }
     public BarePlainType? ContainingType { [DebuggerStepThrough] get; }
     public override TypeSemantics? Semantics => TypeConstructor.Semantics;
-    public TypeName Name => TypeConstructor.Name;
+    public UnqualifiedName Name => TypeConstructor.Name;
     public bool AllowsVariance => TypeConstructor.AllowsVariance;
     public IFixedList<PlainType> Arguments { [DebuggerStepThrough] get; }
     public IFixedSet<BarePlainType> Supertypes

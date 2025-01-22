@@ -378,7 +378,7 @@ public partial interface IConcreteFunctionInvocableDefinitionNode : ICodeNode, I
     IDefinitionSyntax? IDefinitionNode.Syntax => Syntax;
     new IdentifierName Name { get; }
     OrdinaryName? IPackageFacetChildDeclarationNode.Name => Name;
-    TypeName INamedDeclarationNode.Name => Name;
+    UnqualifiedName INamedDeclarationNode.Name => Name;
     new IFixedList<INamedParameterNode> Parameters { get; }
     IFixedList<IConstructorOrInitializerParameterNode> IInvocableDefinitionNode.Parameters => Parameters;
     ITypeNode? Return { get; }
@@ -477,7 +477,7 @@ public partial interface IFunctionDefinitionNode : IFacetMemberDefinitionNode, I
         => Syntax.Name;
     OrdinaryName? IPackageFacetChildDeclarationNode.Name => Name;
     OrdinaryName INamespaceMemberDeclarationNode.Name => Name;
-    TypeName INamedDeclarationNode.Name => Name;
+    UnqualifiedName INamedDeclarationNode.Name => Name;
     IdentifierName IConcreteFunctionInvocableDefinitionNode.Name => Name;
     new NamespaceSymbol ContainingSymbol
         => ContainingDeclaration.Symbol;
@@ -516,7 +516,7 @@ public partial interface ITypeDefinitionNode : ICodeNode, IFacetMemberDefinition
         => Syntax.Name;
     OrdinaryName? IPackageFacetChildDeclarationNode.Name => Name;
     OrdinaryName INamespaceMemberDeclarationNode.Name => Name;
-    TypeName INamedDeclarationNode.Name => Name;
+    UnqualifiedName INamedDeclarationNode.Name => Name;
     OrdinaryName IAssociatedMemberDefinitionNode.Name => Name;
     new Symbol ContainingSymbol
         => ContainingDeclaration.Symbol!;
@@ -633,7 +633,7 @@ public partial interface IGenericParameterNode : ICodeNode, IGenericParameterDec
     new IdentifierName Name
         => Syntax.Name;
     IdentifierName IGenericParameterDeclarationNode.Name => Name;
-    TypeName INamedDeclarationNode.Name => Name;
+    UnqualifiedName INamedDeclarationNode.Name => Name;
     OrdinaryName? IPackageFacetChildDeclarationNode.Name => Name;
     TypeParameterIndependence Independence
         => Syntax.Independence;
@@ -741,7 +741,7 @@ public partial interface IAssociatedMemberDefinitionNode : IClassMemberDefinitio
 {
     new OrdinaryName Name { get; }
     OrdinaryName? IPackageFacetChildDeclarationNode.Name => Name;
-    TypeName INamedDeclarationNode.Name => Name;
+    UnqualifiedName INamedDeclarationNode.Name => Name;
 }
 
 [Closed(
@@ -765,7 +765,7 @@ public partial interface IMethodDefinitionNode : ICodeNode, IAlwaysTypeMemberDef
         => Syntax.Name;
     OrdinaryName? IPackageFacetChildDeclarationNode.Name => Name;
     IdentifierName IMethodDeclarationNode.Name => Name;
-    TypeName INamedDeclarationNode.Name => Name;
+    UnqualifiedName INamedDeclarationNode.Name => Name;
     MethodKind Kind { get; }
     IMaybeNonVoidType IMethodDeclarationNode.SelfParameterType
         => SelfParameter.ParameterType;
@@ -1057,7 +1057,7 @@ public partial interface IFieldDefinitionNode : ICodeNode, IAlwaysTypeMemberDefi
         => Syntax.Name;
     OrdinaryName? IPackageFacetChildDeclarationNode.Name => Name;
     IdentifierName INamedBindingDeclarationNode.Name => Name;
-    TypeName INamedDeclarationNode.Name => Name;
+    UnqualifiedName INamedDeclarationNode.Name => Name;
     IdentifierName IFieldDeclarationNode.Name => Name;
     LexicalScope IDefinitionNode.LexicalScope
         => ContainingLexicalScope;
@@ -1085,7 +1085,7 @@ public partial interface IAssociatedFunctionDefinitionNode : IConcreteFunctionIn
         => Syntax.Name;
     IdentifierName IConcreteFunctionInvocableDefinitionNode.Name => Name;
     OrdinaryName? IPackageFacetChildDeclarationNode.Name => Name;
-    TypeName INamedDeclarationNode.Name => Name;
+    UnqualifiedName INamedDeclarationNode.Name => Name;
     OrdinaryName IAssociatedMemberDefinitionNode.Name => Name;
     OrdinaryName IAssociatedFunctionDeclarationNode.Name => Name;
 
@@ -1205,7 +1205,7 @@ public partial interface INamedParameterNode : IConstructorOrInitializerParamete
     IdentifierName IConstructorOrInitializerParameterNode.Name => Name;
     IdentifierName? IParameterNode.Name => Name;
     IdentifierName INamedBindingDeclarationNode.Name => Name;
-    TypeName INamedDeclarationNode.Name => Name;
+    UnqualifiedName INamedDeclarationNode.Name => Name;
     new ValueId BindingValueId { get; }
     ValueId IParameterNode.BindingValueId => BindingValueId;
     ValueId IBindingNode.BindingValueId => BindingValueId;
@@ -1428,7 +1428,7 @@ public partial interface IUnqualifiedTypeNameNode : ITypeNameNode
     ITypeSyntax ITypeNode.Syntax => Syntax;
     ICodeSyntax ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    TypeName Name
+    UnqualifiedName Name
         => Syntax.Name;
 }
 
@@ -1444,7 +1444,7 @@ public partial interface IBuiltInTypeNameNode : IUnqualifiedTypeNameNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     new BuiltInTypeName Name
         => Syntax.Name;
-    TypeName IUnqualifiedTypeNameNode.Name => Name;
+    UnqualifiedName IUnqualifiedTypeNameNode.Name => Name;
 
     public static IBuiltInTypeNameNode Create(IBuiltInTypeNameSyntax syntax)
         => new BuiltInTypeNameNode(syntax);
@@ -1465,7 +1465,7 @@ public partial interface IOrdinaryTypeNameNode : IUnqualifiedTypeNameNode
     bool IsAttributeType { get; }
     new OrdinaryName Name
         => Syntax.Name;
-    TypeName IUnqualifiedTypeNameNode.Name => Name;
+    UnqualifiedName IUnqualifiedTypeNameNode.Name => Name;
 }
 
 // [Closed(typeof(IdentifierTypeNameNode))]
@@ -1482,7 +1482,7 @@ public partial interface IIdentifierTypeNameNode : IOrdinaryTypeNameNode
     new IdentifierName Name
         => Syntax.Name;
     OrdinaryName IOrdinaryTypeNameNode.Name => Name;
-    TypeName IUnqualifiedTypeNameNode.Name => Name;
+    UnqualifiedName IUnqualifiedTypeNameNode.Name => Name;
 
     public static IIdentifierTypeNameNode Create(IIdentifierNameSyntax syntax)
         => new IdentifierTypeNameNode(syntax);
@@ -1503,7 +1503,7 @@ public partial interface IGenericTypeNameNode : IOrdinaryTypeNameNode
     new GenericName Name
         => Syntax.Name;
     OrdinaryName IOrdinaryTypeNameNode.Name => Name;
-    TypeName IUnqualifiedTypeNameNode.Name => Name;
+    UnqualifiedName IUnqualifiedTypeNameNode.Name => Name;
 
     public static IGenericTypeNameNode Create(
         IGenericNameSyntax syntax,
@@ -3674,7 +3674,7 @@ public partial interface IChildDeclarationNode : IDeclarationNode, IChildNode
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface INamedDeclarationNode : IChildDeclarationNode
 {
-    TypeName Name { get; }
+    UnqualifiedName Name { get; }
 }
 
 [Closed(
@@ -3708,7 +3708,7 @@ public partial interface IBindingDeclarationNode : IChildDeclarationNode
 public partial interface INamedBindingDeclarationNode : IBindingDeclarationNode, INamedDeclarationNode
 {
     new IdentifierName Name { get; }
-    TypeName INamedDeclarationNode.Name => Name;
+    UnqualifiedName INamedDeclarationNode.Name => Name;
 }
 
 [Closed(
@@ -3799,7 +3799,7 @@ public partial interface INamespaceDeclarationNode : INamespaceMemberDeclaration
         => Symbol.Name;
     OrdinaryName INamespaceMemberDeclarationNode.Name => Name;
     OrdinaryName? IPackageFacetChildDeclarationNode.Name => Name;
-    TypeName INamedDeclarationNode.Name => Name;
+    UnqualifiedName INamedDeclarationNode.Name => Name;
     new NamespaceSymbol Symbol { get; }
     Symbol? ISymbolDeclarationNode.Symbol => Symbol;
     IFixedList<INamespaceMemberDeclarationNode> Members { get; }
@@ -3817,7 +3817,7 @@ public partial interface INamespaceMemberDeclarationNode : IPackageFacetChildDec
 {
     new OrdinaryName Name { get; }
     OrdinaryName? IPackageFacetChildDeclarationNode.Name => Name;
-    TypeName INamedDeclarationNode.Name => Name;
+    UnqualifiedName INamedDeclarationNode.Name => Name;
 }
 
 [Closed(
@@ -3866,7 +3866,7 @@ public partial interface INonVariableTypeDeclarationNode : ITypeDeclarationNode
 public partial interface IBuiltInTypeDeclarationNode : INonVariableTypeDeclarationNode
 {
     new BuiltInTypeName Name { get; }
-    TypeName INamedDeclarationNode.Name => Name;
+    UnqualifiedName INamedDeclarationNode.Name => Name;
     new IFixedSet<ITypeMemberDeclarationNode> Members { get; }
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
     FixedDictionary<OrdinaryName, IFixedSet<IInstanceMemberDeclarationNode>> InclusiveInstanceMembersByName { get; }
@@ -3946,7 +3946,7 @@ public partial interface ITraitDeclarationNode : IUserTypeDeclarationNode
 public partial interface IGenericParameterDeclarationNode : ITypeDeclarationNode, IAssociatedMemberDeclarationNode
 {
     new IdentifierName Name { get; }
-    TypeName INamedDeclarationNode.Name => Name;
+    UnqualifiedName INamedDeclarationNode.Name => Name;
     OrdinaryName? IPackageFacetChildDeclarationNode.Name => Name;
     new IFixedSet<ITypeMemberDeclarationNode> Members { get; }
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
@@ -3974,7 +3974,7 @@ public partial interface IImplicitSelfDeclarationNode : ITypeDeclarationNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     new BuiltInTypeName Name
         => BuiltInTypeName.Self;
-    TypeName INamedDeclarationNode.Name => Name;
+    UnqualifiedName INamedDeclarationNode.Name => Name;
     new AssociatedTypeConstructor TypeConstructor { get; }
     ITypeConstructor ITypeDeclarationNode.TypeConstructor => TypeConstructor;
     new AssociatedTypeSymbol Symbol { get; }
@@ -4083,7 +4083,7 @@ public partial interface IMethodDeclarationNode : IClassMemberDeclarationNode, I
 {
     new IdentifierName Name { get; }
     OrdinaryName? IPackageFacetChildDeclarationNode.Name => Name;
-    TypeName INamedDeclarationNode.Name => Name;
+    UnqualifiedName INamedDeclarationNode.Name => Name;
     IMaybeNonVoidPlainType SelfParameterPlainType { get; }
     IMaybeNonVoidType SelfParameterType { get; }
     new MethodSymbol? Symbol { get; }
@@ -4166,7 +4166,7 @@ public partial interface IFieldDeclarationNode : IClassMemberDeclarationNode, IS
     new IdentifierName Name { get; }
     OrdinaryName? IPackageFacetChildDeclarationNode.Name => Name;
     IdentifierName INamedBindingDeclarationNode.Name => Name;
-    TypeName INamedDeclarationNode.Name => Name;
+    UnqualifiedName INamedDeclarationNode.Name => Name;
     bool IsMutableBinding { get; }
     IMaybeNonVoidType BindingType { get; }
     new FieldSymbol? Symbol { get; }
@@ -4181,7 +4181,7 @@ public partial interface IAssociatedFunctionDeclarationNode : IAssociatedMemberD
 {
     new OrdinaryName Name { get; }
     OrdinaryName? IPackageFacetChildDeclarationNode.Name => Name;
-    TypeName INamedDeclarationNode.Name => Name;
+    UnqualifiedName INamedDeclarationNode.Name => Name;
 }
 
 [Closed(
@@ -4281,7 +4281,7 @@ public partial interface IFunctionSymbolNode : IFunctionDeclarationNode, INamesp
         => Symbol.Name;
     OrdinaryName INamespaceMemberDeclarationNode.Name => Name;
     OrdinaryName? IPackageFacetChildDeclarationNode.Name => Name;
-    TypeName INamedDeclarationNode.Name => Name;
+    UnqualifiedName INamedDeclarationNode.Name => Name;
     IFixedList<IMaybeNonVoidPlainType> IInvocableDeclarationNode.ParameterPlainTypes
         => Symbol.Type.Parameters.ToPlainTypes();
     IFixedList<IMaybeParameterType> IInvocableDeclarationNode.ParameterTypes
@@ -4340,7 +4340,7 @@ public partial interface IBuiltInTypeSymbolNode : IBuiltInTypeDeclarationNode, I
     new BuiltInTypeName Name
         => Symbol.Name;
     BuiltInTypeName IBuiltInTypeDeclarationNode.Name => Name;
-    TypeName INamedDeclarationNode.Name => Name;
+    UnqualifiedName INamedDeclarationNode.Name => Name;
     new IFixedSet<ITypeMemberSymbolNode> Members { get; }
     IFixedSet<ITypeMemberDeclarationNode> IBuiltInTypeDeclarationNode.Members => Members;
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
@@ -4365,7 +4365,7 @@ public partial interface IVoidTypeSymbolNode : ITypeSymbolNode
     TypeSymbol ITypeDeclarationNode.Symbol => Symbol;
     Symbol? ISymbolDeclarationNode.Symbol => Symbol;
     Symbol IChildSymbolNode.Symbol => Symbol;
-    TypeName INamedDeclarationNode.Name
+    UnqualifiedName INamedDeclarationNode.Name
         => Symbol.Name;
     ITypeConstructor ITypeDeclarationNode.TypeConstructor
         => ITypeConstructor.Void;
@@ -4393,7 +4393,7 @@ public partial interface INeverTypeSymbolNode : ITypeSymbolNode
     TypeSymbol ITypeDeclarationNode.Symbol => Symbol;
     Symbol? ISymbolDeclarationNode.Symbol => Symbol;
     Symbol IChildSymbolNode.Symbol => Symbol;
-    TypeName INamedDeclarationNode.Name
+    UnqualifiedName INamedDeclarationNode.Name
         => Symbol.Name;
     ITypeConstructor ITypeDeclarationNode.TypeConstructor
         => ITypeConstructor.Never;
@@ -4429,7 +4429,7 @@ public partial interface IOrdinaryTypeSymbolNode : IUserTypeDeclarationNode, INo
         => Symbol.Name;
     OrdinaryName INamespaceMemberDeclarationNode.Name => Name;
     OrdinaryName? IPackageFacetChildDeclarationNode.Name => Name;
-    TypeName INamedDeclarationNode.Name => Name;
+    UnqualifiedName INamedDeclarationNode.Name => Name;
     new IFixedList<IGenericParameterSymbolNode> GenericParameters { get; }
     IFixedList<IGenericParameterDeclarationNode> IUserTypeDeclarationNode.GenericParameters => GenericParameters;
     new IFixedSet<ITypeMemberSymbolNode> Members { get; }
@@ -4506,7 +4506,7 @@ public partial interface IGenericParameterSymbolNode : IGenericParameterDeclarat
     new IdentifierName Name
         => Symbol.Name;
     IdentifierName IGenericParameterDeclarationNode.Name => Name;
-    TypeName INamedDeclarationNode.Name => Name;
+    UnqualifiedName INamedDeclarationNode.Name => Name;
     OrdinaryName? IPackageFacetChildDeclarationNode.Name => Name;
     new IFixedSet<ITypeMemberSymbolNode> Members
         => [];
@@ -4605,7 +4605,7 @@ public partial interface IMethodSymbolNode : IMethodDeclarationNode, IClassMembe
         => Symbol.Name;
     IdentifierName IMethodDeclarationNode.Name => Name;
     OrdinaryName? IPackageFacetChildDeclarationNode.Name => Name;
-    TypeName INamedDeclarationNode.Name => Name;
+    UnqualifiedName INamedDeclarationNode.Name => Name;
     IMaybeNonVoidPlainType IMethodDeclarationNode.SelfParameterPlainType
         => Symbol.SelfParameterType.PlainType;
     IMaybeNonVoidType IMethodDeclarationNode.SelfParameterType
@@ -4726,7 +4726,7 @@ public partial interface IFieldSymbolNode : IFieldDeclarationNode, IClassMemberS
     IdentifierName IFieldDeclarationNode.Name => Name;
     OrdinaryName? IPackageFacetChildDeclarationNode.Name => Name;
     IdentifierName INamedBindingDeclarationNode.Name => Name;
-    TypeName INamedDeclarationNode.Name => Name;
+    UnqualifiedName INamedDeclarationNode.Name => Name;
     bool IFieldDeclarationNode.IsMutableBinding
         => Symbol.IsMutableBinding;
     IMaybeNonVoidType IFieldDeclarationNode.BindingType

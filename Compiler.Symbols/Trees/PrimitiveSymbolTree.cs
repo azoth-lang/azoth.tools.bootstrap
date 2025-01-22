@@ -16,7 +16,7 @@ public sealed class PrimitiveSymbolTree : ISymbolTree
     public IFixedSet<Symbol> GlobalSymbols { get; }
     private readonly FixedDictionary<Symbol, IFixedSet<Symbol>> symbolChildren;
     public IEnumerable<Symbol> Symbols => symbolChildren.Keys;
-    private readonly FixedDictionary<TypeName, TypeSymbol> symbolNameLookup;
+    private readonly FixedDictionary<UnqualifiedName, TypeSymbol> symbolNameLookup;
 
     public PrimitiveSymbolTree(FixedDictionary<Symbol, IFixedSet<Symbol>> symbolChildren)
     {

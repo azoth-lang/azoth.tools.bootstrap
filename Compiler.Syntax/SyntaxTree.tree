@@ -45,7 +45,7 @@ Package = Name:`IdentifierName` CompilationUnits:{CompilationUnit} TestingCompil
 PackageReference = AliasOrName:`IdentifierName` Package:`IPackageSymbols` IsTrusted:`bool`;
 
 // ---------- Definitions
-Definition <: Code = File:`CodeFile` Name:`TypeName`? NameSpan:`TextSpan`;
+Definition <: Code = File:`CodeFile` Name:`UnqualifiedName`? NameSpan:`TextSpan`;
 /// All top-level non-namespace definitions since a namespace doesn't really create a thing, it just
 /// defines a group of names.
 // TODO give a better name to this (the semantic tree has moved away from "entity")
@@ -199,10 +199,13 @@ ReturnExpression <: Expression = Value:Expression?;
 InvocationExpression <: Expression = Expression Arguments:Expression*;
 
 // ---------- Name Expressions
+// Name expressions are more inclusive than just names since there are names that can occur in an
+// expression that don't occur in type names.
 NameExpression <: Expression;
 // See the names section for more nodes that are name expressions
 InstanceExpression <: NameExpression; // i.e. `self` or `base`
 SelfExpression <: InstanceExpression = IsImplicit:`bool`;
+// TODO should MemberAccessExpression really be a NameExpression once QualifiedName works properly?
 MemberAccessExpression <: NameExpression
     = Context:Expression MemberName:`OrdinaryName` GenericArguments:Type* MemberNameSpan:`TextSpan`;
 MissingName <: NameExpression;
@@ -216,9 +219,9 @@ GenericNameExpression <: OrdinaryNameExpression = Name:`GenericName` /GenericArg
 // ---------- Names
 // At the syntax level, there is no distinction between names of types and other names, they all use
 // the same node types so that rewrites of the semantic tree can refer to them when it is realized a
-// name refers to a type. Thus names are both types and expressions.
+// name refers to a type. Thus names are both types and name expressions.
 Name <: Type;
-UnqualifiedName <: Name = Name:`TypeName`;
+UnqualifiedName <: Name = Name:`UnqualifiedName`;
 BuiltInTypeName <: UnqualifiedName = Name:`BuiltInTypeName`;
 OrdinaryName <: UnqualifiedName = Name:`OrdinaryName`;
 IdentifierName <: OrdinaryName = Name:`IdentifierName`;

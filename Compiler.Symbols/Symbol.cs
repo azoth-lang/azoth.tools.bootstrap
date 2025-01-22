@@ -26,7 +26,7 @@ public abstract class Symbol : IEquatable<Symbol>
     /// The type symbol, if any, that acts as the context for this symbol.
     /// </summary>
     public abstract TypeSymbol? ContextTypeSymbol { get; }
-    public abstract TypeName? Name { get; }
+    public abstract UnqualifiedName? Name { get; }
 
     private protected Symbol()
     {
