@@ -64,14 +64,6 @@ internal static partial class FormattingAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial string ExpressionBody_ToString(IExpressionBodySyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial string BuiltInTypeName_ToString(IBuiltInTypeNameSyntax node);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial string IdentifierTypeName_ToString(IIdentifierTypeNameSyntax node);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial string GenericTypeName_ToString(IGenericTypeNameSyntax node);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial string QualifiedTypeName_ToString(IQualifiedTypeNameSyntax node);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial string OptionalType_ToString(IOptionalTypeSyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial string CapabilityType_ToString(ICapabilityTypeSyntax node);
@@ -99,6 +91,12 @@ internal static partial class FormattingAspect
     public static partial string BlockExpression_ToString(IBlockExpressionSyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial string NewObjectExpression_ToString(INewObjectExpressionSyntax node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial string SelfExpression_ToString(ISelfExpressionSyntax node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial string MemberAccessExpression_ToString(IMemberAccessExpressionSyntax node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial string MissingName_ToString(IMissingNameSyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial string UnsafeExpression_ToString(IUnsafeExpressionSyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -142,11 +140,13 @@ internal static partial class FormattingAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial string GenericNameExpression_ToString(IGenericNameExpressionSyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial string SelfExpression_ToString(ISelfExpressionSyntax node);
+    public static partial string BuiltInTypeName_ToString(IBuiltInTypeNameSyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial string MemberAccessExpression_ToString(IMemberAccessExpressionSyntax node);
+    public static partial string IdentifierTypeName_ToString(IIdentifierTypeNameSyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial string MissingName_ToString(IMissingNameSyntax node);
+    public static partial string GenericTypeName_ToString(IGenericTypeNameSyntax node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial string QualifiedTypeName_ToString(IQualifiedTypeNameSyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial string MoveExpression_ToString(IMoveExpressionSyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

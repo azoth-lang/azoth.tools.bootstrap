@@ -163,18 +163,6 @@ public static class ISyntaxExtensions
             case IExpressionBodySyntax n:
                 yield return n.ResultStatement;
                 yield break;
-            case IBuiltInTypeNameSyntax n:
-                yield break;
-            case IIdentifierTypeNameSyntax n:
-                yield break;
-            case IGenericTypeNameSyntax n:
-                foreach (var child in n.GenericArguments)
-                    yield return child;
-                yield break;
-            case IQualifiedTypeNameSyntax n:
-                yield return n.Context;
-                yield return n.QualifiedName;
-                yield break;
             case IOptionalTypeSyntax n:
                 yield return n.Referent;
                 yield break;
@@ -229,6 +217,15 @@ public static class ISyntaxExtensions
                 yield return n.Type;
                 foreach (var child in n.Arguments)
                     yield return child;
+                yield break;
+            case ISelfExpressionSyntax n:
+                yield break;
+            case IMemberAccessExpressionSyntax n:
+                yield return n.Context;
+                foreach (var child in n.GenericArguments)
+                    yield return child;
+                yield break;
+            case IMissingNameSyntax n:
                 yield break;
             case IUnsafeExpressionSyntax n:
                 yield return n.Expression;
@@ -302,14 +299,17 @@ public static class ISyntaxExtensions
                 foreach (var child in n.GenericArguments)
                     yield return child;
                 yield break;
-            case ISelfExpressionSyntax n:
+            case IBuiltInTypeNameSyntax n:
                 yield break;
-            case IMemberAccessExpressionSyntax n:
-                yield return n.Context;
+            case IIdentifierTypeNameSyntax n:
+                yield break;
+            case IGenericTypeNameSyntax n:
                 foreach (var child in n.GenericArguments)
                     yield return child;
                 yield break;
-            case IMissingNameSyntax n:
+            case IQualifiedTypeNameSyntax n:
+                yield return n.Context;
+                yield return n.QualifiedName;
                 yield break;
             case IMoveExpressionSyntax n:
                 yield return n.Referent;

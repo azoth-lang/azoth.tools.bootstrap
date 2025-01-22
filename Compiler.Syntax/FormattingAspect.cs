@@ -178,18 +178,6 @@ internal static partial class FormattingAspect
     #endregion
 
     #region Types
-    public static partial string BuiltInTypeName_ToString(IBuiltInTypeNameSyntax node)
-        => node.Name.ToString();
-
-    public static partial string IdentifierTypeName_ToString(IIdentifierTypeNameSyntax node)
-        => node.Name.ToString();
-
-    public static partial string GenericTypeName_ToString(IGenericTypeNameSyntax node)
-        => $"{node.Name.ToBareString()}[{string.Join(", ", node.GenericArguments)}]";
-
-    public static partial string QualifiedTypeName_ToString(IQualifiedTypeNameSyntax node)
-        => $"{node.Context}.{node.QualifiedName}";
-
     public static partial string OptionalType_ToString(IOptionalTypeSyntax node)
         => $"{node.Referent}?";
 
@@ -250,6 +238,14 @@ internal static partial class FormattingAspect
         var name = node.ConstructorName is not null ? "." + node.ConstructorName : "";
         return $"new {node.Type}{name}({string.Join(", ", node.Arguments)})";
     }
+
+    public static partial string SelfExpression_ToString(ISelfExpressionSyntax node)
+        => node.IsImplicit ? "⟦self⟧" : "self";
+
+    public static partial string MemberAccessExpression_ToString(IMemberAccessExpressionSyntax node)
+        => $"{node.Context.ToGroupedString(node.ExpressionPrecedence)}.{node.MemberName}";
+
+    public static partial string MissingName_ToString(IMissingNameSyntax node) => "⧼unknown⧽";
 
     public static partial string UnsafeExpression_ToString(IUnsafeExpressionSyntax node)
         => $"unsafe ({node.Expression})";
@@ -340,14 +336,20 @@ internal static partial class FormattingAspect
 
     public static partial string GenericNameExpression_ToString(IGenericNameExpressionSyntax node)
         => $"{node.Name.Text}[{string.Join(',', node.GenericArguments)}]";
+    #endregion
 
-    public static partial string SelfExpression_ToString(ISelfExpressionSyntax node)
-        => node.IsImplicit ? "⟦self⟧" : "self";
+    #region Names
+    public static partial string BuiltInTypeName_ToString(IBuiltInTypeNameSyntax node)
+        => node.Name.ToString();
 
-    public static partial string MemberAccessExpression_ToString(IMemberAccessExpressionSyntax node)
-        => $"{node.Context.ToGroupedString(node.ExpressionPrecedence)}.{node.MemberName}";
+    public static partial string IdentifierTypeName_ToString(IIdentifierTypeNameSyntax node)
+        => node.Name.ToString();
 
-    public static partial string MissingName_ToString(IMissingNameSyntax node) => "⧼unknown⧽";
+    public static partial string GenericTypeName_ToString(IGenericTypeNameSyntax node)
+        => $"{node.Name.ToBareString()}[{string.Join(", ", node.GenericArguments)}]";
+
+    public static partial string QualifiedTypeName_ToString(IQualifiedTypeNameSyntax node)
+        => $"{node.Context}.{node.QualifiedName}";
     #endregion
 
     #region Capability Expressions

@@ -127,12 +127,7 @@ ExpressionBody <: Body = ResultStatement;
 
 // ---------- Types
 Type <: Code;
-TypeName <: Type = Name:`TypeName`;
-BuiltInTypeName <: TypeName = Name:`BuiltInTypeName`;
-OrdinaryTypeName <: TypeName = Name:`OrdinaryName`;
-IdentifierTypeName <: OrdinaryTypeName = Name:`IdentifierName`;
-GenericTypeName <: OrdinaryTypeName = Name:`GenericName` GenericArguments:Type*;
-QualifiedTypeName <: TypeName = Context:TypeName QualifiedName:OrdinaryTypeName;
+// See the names section for more nodes that are types
 OptionalType <: Type = Referent:Type;
 CapabilityType <: Type = Capability Referent:Type;
 FunctionType <: Type = Parameters:ParameterType* Return:Type;
@@ -172,6 +167,11 @@ BlockExpression <: Expression, BlockOrResult, BodyOrBlock = Statements:Statement
 /// </summary>
 NewObjectExpression <: Expression
     = Type:TypeName ConstructorName:`IdentifierName`? ConstructorNameSpan:`TextSpan`? Arguments:Expression*;
+InstanceExpression <: NameExpression; // i.e. `self` or `base`
+SelfExpression <: InstanceExpression = IsImplicit:`bool`;
+MemberAccessExpression <: NameExpression
+    = Context:Expression MemberName:`OrdinaryName` GenericArguments:Type* MemberNameSpan:`TextSpan`;
+MissingName <: NameExpression;
 UnsafeExpression <: Expression = Expression;
 
 // ---------- Literal Expressions
@@ -207,11 +207,17 @@ BuiltInTypeNameExpression <: NameExpression = Name:`BuiltInTypeName`;
 OrdinaryNameExpression <: NameExpression = Name:`OrdinaryName` GenericArguments:Type*;
 IdentifierNameExpression <: OrdinaryNameExpression = Name:`IdentifierName`;
 GenericNameExpression <: OrdinaryNameExpression = Name:`GenericName` /GenericArguments/;
-InstanceExpression <: NameExpression; // i.e. `self` or `base`
-SelfExpression <: InstanceExpression = IsImplicit:`bool`;
-MemberAccessExpression <: NameExpression
-    = Context:Expression MemberName:`OrdinaryName` GenericArguments:Type* MemberNameSpan:`TextSpan`;
-MissingName <: NameExpression;
+
+// ---------- Names
+// At the syntax level, there is no distinction between names of types and other names, they all use
+// the same node types so that rewrites of the semantic tree can refer to them when it is realized a
+// name refers to a type. Thus names are both types and expressions.
+TypeName <: Type = Name:`TypeName`;
+BuiltInTypeName <: TypeName = Name:`BuiltInTypeName`;
+OrdinaryTypeName <: TypeName = Name:`OrdinaryName`;
+IdentifierTypeName <: OrdinaryTypeName = Name:`IdentifierName`;
+GenericTypeName <: OrdinaryTypeName = Name:`GenericName` GenericArguments:Type*;
+QualifiedTypeName <: TypeName = Context:TypeName QualifiedName:OrdinaryTypeName;
 
 // ---------- Capability Expressions
 /// i.e. `move name`. A move takes ownership of something from a variable or expression.

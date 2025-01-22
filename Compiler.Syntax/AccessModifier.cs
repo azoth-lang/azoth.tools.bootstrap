@@ -10,7 +10,6 @@ public enum AccessModifier
     Published,
 }
 
-
 public static class AccessModifierExtensions
 {
     public static AccessModifier ToAccessModifier(this IAccessModifierToken? accessModifier)
