@@ -80,7 +80,8 @@ internal static partial class BindingAmbiguousNamesAspect
 
         var members = context.ReferencedDeclarations.SelectMany(d => d.MembersNamed(node.MemberName)).ToFixedSet();
         if (members.Count == 0)
-            return null;
+            // definitely namespace member access, no need to process other rewrites
+            return node;
 
         if (members.TryAllOfType<INamespaceDeclarationNode>(out var referencedNamespaces))
             return IQualifiedNamespaceNameNode.Create(node.Syntax, context, referencedNamespaces);
@@ -100,9 +101,12 @@ internal static partial class BindingAmbiguousNamesAspect
         if (node.Context is not ITypeNameExpressionNode context)
             return null;
 
+        // TODO metatypes would change this into an ordinary expression
+
         var members = context.ReferencedDeclaration.AssociatedMembersNamed(node.MemberName).ToFixedSet();
         if (members.Count == 0)
-            return null;
+            // definitely associated member access, no need to process other rewrites
+            return node;
 
         if (members.TryAllOfType<IAssociatedFunctionDeclarationNode>(out var referencedFunctions))
             return IFunctionGroupNameNode.Create(node.Syntax, context, node.MemberName, node.TypeArguments,
@@ -120,10 +124,8 @@ internal static partial class BindingAmbiguousNamesAspect
         if (node.Context is not { } context)
             return null;
 
-        // TODO a better way to express the condition for this rewrite. Introduce a new node type?
-        // Ignore contexts that have special handling for member access (i.e. separate rewrite rules)
-        if (node.Context is INamespaceNameNode or ITypeNameExpressionNode)
-            return null;
+        // No need to check if context is INamespaceNameNode or ITypeNameExpressionNode because
+        // those rewrites have already run and stop rewriting in those cases.
 
         // Ignore names that never have members
         if (context is IFunctionGroupNameNode
