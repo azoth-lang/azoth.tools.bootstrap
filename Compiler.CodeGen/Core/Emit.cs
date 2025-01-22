@@ -20,7 +20,7 @@ internal static class Emit
     public static string ClosedAttribute(TreeNodeModel node, string indent = "")
     {
         var children = node.ChildNodes;
-        if (children.IsEmpty) return $"// [Closed(typeof({node.Defines.ClassName}))]{Environment.NewLine}";
+        if (children.IsEmpty) return $"[Closed(typeof({node.Defines.ClassName}))]{Environment.NewLine}";
         var builder = new StringBuilder();
         builder.Append(indent);
         builder.AppendLine("[Closed(");
