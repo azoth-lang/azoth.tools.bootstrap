@@ -30,7 +30,7 @@ internal static partial class BindingUnresolvedNamesAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFixedList<IDeclarationNode> UnresolvedOrdinaryNameExpression_ReferencedDeclarations(IUnresolvedOrdinaryNameExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial void UnresolvedIdentifierNameExpression_Contribute_Diagnostics(IUnresolvedIdentifierNameExpressionNode node, DiagnosticCollectionBuilder diagnostics);
+    public static partial void UnresolvedOrdinaryNameExpression_Contribute_Diagnostics(IUnresolvedOrdinaryNameExpressionNode node, DiagnosticCollectionBuilder diagnostics);
     public static partial IExpressionNode? UnresolvedMemberAccessExpression_NamespaceNameContext_ReplaceWith_Expression(IUnresolvedMemberAccessExpressionNode node);
     public static partial IExpressionNode? UnresolvedMemberAccessExpression_TypeNameExpressionContext_ReplaceWith_Expression(IUnresolvedMemberAccessExpressionNode node);
     public static partial INameExpressionNode? UnresolvedMemberAccessExpression_ExpressionContext_ReplaceWith_NameExpression(IUnresolvedMemberAccessExpressionNode node);

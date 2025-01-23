@@ -244,6 +244,23 @@ internal static partial class BindingUnresolvedNamesAspect
     public static partial IFixedList<IDeclarationNode> UnresolvedOrdinaryNameExpression_ReferencedDeclarations(IUnresolvedOrdinaryNameExpressionNode node)
         => node.ContainingLexicalScope.Lookup(node.Name).ToFixedList();
 
+    public static partial void UnresolvedOrdinaryNameExpression_Contribute_Diagnostics(IUnresolvedOrdinaryNameExpressionNode node, DiagnosticCollectionBuilder diagnostics)
+    {
+        switch (node.ReferencedDeclarations.Count)
+        {
+            case 0:
+                diagnostics.Add(NameBindingError.CouldNotBindName(node.File, node.Syntax.Span));
+                break;
+            case 1:
+                // If there is only one match, then ReferencedSymbol is not null
+                throw new UnreachableException();
+            default:
+                // TODO better errors explaining. For example, are they different kinds of declarations?
+                diagnostics.Add(NameBindingError.AmbiguousName(node.File, node.Syntax.Span));
+                break;
+        }
+    }
+
     public static partial INameExpressionNode? UnresolvedIdentifierNameExpression_ReplaceWith_NameExpression(IUnresolvedIdentifierNameExpressionNode node)
     {
         var referencedDeclarations = node.ReferencedDeclarations;
@@ -267,23 +284,6 @@ internal static partial class BindingUnresolvedNamesAspect
             }
 
         return null;
-    }
-
-    public static partial void UnresolvedIdentifierNameExpression_Contribute_Diagnostics(IUnresolvedIdentifierNameExpressionNode node, DiagnosticCollectionBuilder diagnostics)
-    {
-        switch (node.ReferencedDeclarations.Count)
-        {
-            case 0:
-                diagnostics.Add(NameBindingError.CouldNotBindName(node.File, node.Syntax.Span));
-                break;
-            case 1:
-                // If there is only one match, then ReferencedSymbol is not null
-                throw new UnreachableException();
-            default:
-                // TODO better errors explaining. For example, are they different kinds of declarations?
-                diagnostics.Add(NameBindingError.AmbiguousName(node.File, node.Syntax.Span));
-                break;
-        }
     }
 
     public static partial INameExpressionNode? UnresolvedGenericNameExpression_ReplaceWith_NameExpression(IUnresolvedGenericNameExpressionNode node)

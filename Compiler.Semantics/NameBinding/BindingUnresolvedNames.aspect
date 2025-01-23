@@ -28,6 +28,6 @@
 // ---------- Unresolved Name Expressions
 ↑ UnresolvedOrdinaryNameExpression.ReferencedDeclarations: Declaration*;
 = UnresolvedOrdinaryNameExpression.ReferencedDeclarations;
+= UnresolvedOrdinaryNameExpression.↑.Diagnostics;
 ✎ UnresolvedIdentifierNameExpression replace_with NameExpression;
-= UnresolvedIdentifierNameExpression.↑.Diagnostics;
 ✎ UnresolvedGenericNameExpression replace_with NameExpression;

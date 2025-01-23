@@ -16891,7 +16891,7 @@ file class UnresolvedIdentifierNameExpressionNode : SemanticNode, IUnresolvedIde
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
     {
         ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
-        BindingUnresolvedNamesAspect.UnresolvedIdentifierNameExpression_Contribute_Diagnostics(this, builder);
+        BindingUnresolvedNamesAspect.UnresolvedOrdinaryNameExpression_Contribute_Diagnostics(this, builder);
     }
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
@@ -17029,6 +17029,7 @@ file class UnresolvedGenericNameExpressionNode : SemanticNode, IUnresolvedGeneri
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
     {
         ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
+        BindingUnresolvedNamesAspect.UnresolvedOrdinaryNameExpression_Contribute_Diagnostics(this, builder);
     }
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
