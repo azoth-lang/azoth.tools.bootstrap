@@ -169,21 +169,8 @@ internal static partial class BindingAmbiguousNamesAspect
         => IUnresolvedIdentifierNameExpressionNode.Create(node.Syntax);
 
     public static partial INameExpressionNode? GenericNameExpression_ReplaceWith_NameExpression(IGenericNameExpressionNode node)
-    {
-        // TODO rename TypeArguments to GenericArguments
-        if (node.ReferencedDeclarations.TryAllOfType<IFunctionInvocableDeclarationNode>(out var referencedFunctions))
-            return IFunctionGroupNameNode.Create(node.Syntax, null, node.Name, node.TypeArguments, referencedFunctions);
-
-        if (node.ReferencedDeclarations.TrySingle() is not null and var referencedDeclaration)
-            switch (referencedDeclaration)
-            {
-                case ITypeDeclarationNode referencedType:
-                    return IOrdinaryTypeNameExpressionNode.Create(node.Syntax, node.TypeArguments, referencedType);
-            }
-
-        // TODO theoretically, this has the same problem where uncached ReferencedDeclarations could cause premature rewrite to UnknownNameExpression
-        return IUnresolvedGenericNameExpressionNode.Create(node.Syntax, node.TypeArguments);
-    }
+        // In prep for removing GenericNameExpression, always immediately rewrite to UnresolvedGenericNameExpression
+        => IUnresolvedGenericNameExpressionNode.Create(node.Syntax, node.TypeArguments);
 
     #region Name Expressions
     public static partial void Validate_FunctionGroupNameNode(
@@ -306,6 +293,24 @@ internal static partial class BindingAmbiguousNamesAspect
                 diagnostics.Add(NameBindingError.AmbiguousName(node.File, node.Syntax.Span));
                 break;
         }
+    }
+
+    public static partial INameExpressionNode? UnresolvedGenericNameExpression_ReplaceWith_NameExpression(IUnresolvedGenericNameExpressionNode node)
+    {
+        var referencedDeclarations = node.ReferencedDeclarations;
+
+        // TODO rename TypeArguments to GenericArguments
+        if (referencedDeclarations.TryAllOfType<IFunctionInvocableDeclarationNode>(out var referencedFunctions))
+            return IFunctionGroupNameNode.Create(node.Syntax, null, node.Name, node.TypeArguments, referencedFunctions);
+
+        if (referencedDeclarations.TrySingle() is not null and var referencedDeclaration)
+            switch (referencedDeclaration)
+            {
+                case ITypeDeclarationNode referencedType:
+                    return IOrdinaryTypeNameExpressionNode.Create(node.Syntax, node.TypeArguments, referencedType);
+            }
+
+        return null;
     }
     #endregion
 

@@ -36,3 +36,4 @@
 = UnresolvedOrdinaryNameExpression.ReferencedDeclarations;
 ✎ UnresolvedIdentifierNameExpression replace_with NameExpression;
 = UnresolvedIdentifierNameExpression.↑.Diagnostics;
+✎ UnresolvedGenericNameExpression replace_with NameExpression;

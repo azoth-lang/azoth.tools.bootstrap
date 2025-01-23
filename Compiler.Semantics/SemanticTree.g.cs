@@ -17263,7 +17263,8 @@ file class UnresolvedGenericNameExpressionNode : SemanticNode, IUnresolvedGeneri
     }
 
     protected override IChildTreeNode Rewrite()
-        => ExpressionTypesAspect.Expression_ImplicitMove_Insert(this)
+        => BindingAmbiguousNamesAspect.UnresolvedGenericNameExpression_ReplaceWith_NameExpression(this)
+        ?? ExpressionTypesAspect.Expression_ImplicitMove_Insert(this)
         ?? ExpressionTypesAspect.Expression_ImplicitFreeze_Insert(this)
         ?? ExpressionTypesAspect.Expression_Insert_PrepareToReturnExpression(this)
         ?? ExpressionPlainTypesAspect.Expression_Insert_ImplicitConversionExpression(this)
