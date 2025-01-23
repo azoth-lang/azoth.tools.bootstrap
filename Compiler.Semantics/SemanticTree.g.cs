@@ -3339,6 +3339,8 @@ public partial interface IMissingNameExpressionNode : INameExpressionNode
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IUnresolvedNameExpressionNode : INameExpressionNode, IUnresolvedExpressionNode
 {
+    new LexicalScope ContainingLexicalScope { get; }
+    LexicalScope IAmbiguousExpressionNode.ContainingLexicalScope() => ContainingLexicalScope;
     new UnknownType Type
         => AzothType.Unknown;
     IMaybeType IExpressionNode.Type => Type;
@@ -3360,7 +3362,7 @@ public partial interface IUnresolvedOrdinaryNameExpressionNode : IUnresolvedName
     ISyntax? ISemanticNode.Syntax => Syntax;
     INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
     OrdinaryName Name { get; }
-    IFixedSet<IDeclarationNode> ReferencedDeclarations { get; }
+    IFixedList<IDeclarationNode> ReferencedDeclarations { get; }
 }
 
 [Closed(typeof(UnresolvedIdentifierNameExpressionNode))]
@@ -3377,10 +3379,8 @@ public partial interface IUnresolvedIdentifierNameExpressionNode : IUnresolvedOr
         => Syntax.Name;
     OrdinaryName IUnresolvedOrdinaryNameExpressionNode.Name => Name;
 
-    public static IUnresolvedIdentifierNameExpressionNode Create(
-        IIdentifierNameSyntax syntax,
-        IEnumerable<IDeclarationNode> referencedDeclarations)
-        => new UnresolvedIdentifierNameExpressionNode(syntax, referencedDeclarations);
+    public static IUnresolvedIdentifierNameExpressionNode Create(IIdentifierNameSyntax syntax)
+        => new UnresolvedIdentifierNameExpressionNode(syntax);
 }
 
 [Closed(typeof(UnresolvedGenericNameExpressionNode))]
@@ -3400,9 +3400,8 @@ public partial interface IUnresolvedGenericNameExpressionNode : IUnresolvedOrdin
 
     public static IUnresolvedGenericNameExpressionNode Create(
         IGenericNameSyntax syntax,
-        IEnumerable<ITypeNode> typeArguments,
-        IEnumerable<IDeclarationNode> referencedDeclarations)
-        => new UnresolvedGenericNameExpressionNode(syntax, typeArguments, referencedDeclarations);
+        IEnumerable<ITypeNode> typeArguments)
+        => new UnresolvedGenericNameExpressionNode(syntax, typeArguments);
 }
 
 [Closed(typeof(UnresolvedQualifiedNameExpressionNode))]
@@ -17009,13 +17008,10 @@ file class UnresolvedIdentifierNameExpressionNode : SemanticNode, IUnresolvedIde
     protected override bool MayHaveRewrite => true;
 
     public IIdentifierNameSyntax Syntax { [DebuggerStepThrough] get; }
-    public IFixedSet<IDeclarationNode> ReferencedDeclarations { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
-    public LexicalScope ContainingLexicalScope()
-        => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
     public ValueIdScope ValueIdScope
         => Inherited_ValueIdScope(GrammarAttribute.CurrentInheritanceContext());
     public IEntryNode ControlFlowEntry()
@@ -17047,12 +17043,24 @@ file class UnresolvedIdentifierNameExpressionNode : SemanticNode, IUnresolvedIde
     private bool expectedPlainTypeCached;
     public IFlowState FlowStateBefore()
         => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
+    public LexicalScope ContainingLexicalScope
+        => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
+            : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
+                Inherited_ContainingLexicalScope);
+    private LexicalScope? containingLexicalScope;
+    private bool containingLexicalScopeCached;
     public ControlFlowSet ControlFlowNext
         => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
             : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
                 ControlFlowAspect.Expression_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
+    public IFixedList<IDeclarationNode> ReferencedDeclarations
+        => GrammarAttribute.IsCached(in referencedDeclarationsCached) ? referencedDeclarations!
+            : this.Synthetic(ref referencedDeclarationsCached, ref referencedDeclarations,
+                BindingAmbiguousNamesAspect.UnresolvedOrdinaryNameExpression_ReferencedDeclarations);
+    private IFixedList<IDeclarationNode>? referencedDeclarations;
+    private bool referencedDeclarationsCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -17060,12 +17068,9 @@ file class UnresolvedIdentifierNameExpressionNode : SemanticNode, IUnresolvedIde
     private ValueId valueId;
     private bool valueIdCached;
 
-    public UnresolvedIdentifierNameExpressionNode(
-        IIdentifierNameSyntax syntax,
-        IEnumerable<IDeclarationNode> referencedDeclarations)
+    public UnresolvedIdentifierNameExpressionNode(IIdentifierNameSyntax syntax)
     {
         Syntax = syntax;
-        ReferencedDeclarations = referencedDeclarations.ToFixedSet();
     }
 
     internal override IMaybePlainType? Inherited_ExpectedPlainType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -17121,7 +17126,8 @@ file class UnresolvedIdentifierNameExpressionNode : SemanticNode, IUnresolvedIde
     }
 
     protected override IChildTreeNode Rewrite()
-        => ExpressionTypesAspect.Expression_ImplicitMove_Insert(this)
+        => BindingAmbiguousNamesAspect.UnresolvedIdentifierNameExpression_ReplaceWith_NameExpression(this)
+        ?? ExpressionTypesAspect.Expression_ImplicitMove_Insert(this)
         ?? ExpressionTypesAspect.Expression_ImplicitFreeze_Insert(this)
         ?? ExpressionTypesAspect.Expression_Insert_PrepareToReturnExpression(this)
         ?? ExpressionPlainTypesAspect.Expression_Insert_ImplicitConversionExpression(this)
@@ -17137,13 +17143,10 @@ file class UnresolvedGenericNameExpressionNode : SemanticNode, IUnresolvedGeneri
 
     public IGenericNameSyntax Syntax { [DebuggerStepThrough] get; }
     public IFixedList<ITypeNode> TypeArguments { [DebuggerStepThrough] get; }
-    public IFixedSet<IDeclarationNode> ReferencedDeclarations { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
-    public LexicalScope ContainingLexicalScope()
-        => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
     public ValueIdScope ValueIdScope
         => Inherited_ValueIdScope(GrammarAttribute.CurrentInheritanceContext());
     public IEntryNode ControlFlowEntry()
@@ -17175,12 +17178,24 @@ file class UnresolvedGenericNameExpressionNode : SemanticNode, IUnresolvedGeneri
     private bool expectedPlainTypeCached;
     public IFlowState FlowStateBefore()
         => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
+    public LexicalScope ContainingLexicalScope
+        => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
+            : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
+                Inherited_ContainingLexicalScope);
+    private LexicalScope? containingLexicalScope;
+    private bool containingLexicalScopeCached;
     public ControlFlowSet ControlFlowNext
         => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
             : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
                 ControlFlowAspect.Expression_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
+    public IFixedList<IDeclarationNode> ReferencedDeclarations
+        => GrammarAttribute.IsCached(in referencedDeclarationsCached) ? referencedDeclarations!
+            : this.Synthetic(ref referencedDeclarationsCached, ref referencedDeclarations,
+                BindingAmbiguousNamesAspect.UnresolvedOrdinaryNameExpression_ReferencedDeclarations);
+    private IFixedList<IDeclarationNode>? referencedDeclarations;
+    private bool referencedDeclarationsCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -17190,12 +17205,10 @@ file class UnresolvedGenericNameExpressionNode : SemanticNode, IUnresolvedGeneri
 
     public UnresolvedGenericNameExpressionNode(
         IGenericNameSyntax syntax,
-        IEnumerable<ITypeNode> typeArguments,
-        IEnumerable<IDeclarationNode> referencedDeclarations)
+        IEnumerable<ITypeNode> typeArguments)
     {
         Syntax = syntax;
         TypeArguments = ChildList.Attach(this, typeArguments);
-        ReferencedDeclarations = referencedDeclarations.ToFixedSet();
     }
 
     internal override IMaybePlainType? Inherited_ExpectedPlainType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -17277,8 +17290,6 @@ file class UnresolvedQualifiedNameExpressionNode : SemanticNode, IUnresolvedQual
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
-    public LexicalScope ContainingLexicalScope()
-        => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
     public ValueIdScope ValueIdScope
         => Inherited_ValueIdScope(GrammarAttribute.CurrentInheritanceContext());
     public IEntryNode ControlFlowEntry()
@@ -17310,6 +17321,12 @@ file class UnresolvedQualifiedNameExpressionNode : SemanticNode, IUnresolvedQual
     private bool expectedPlainTypeCached;
     public IFlowState FlowStateBefore()
         => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
+    public LexicalScope ContainingLexicalScope
+        => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
+            : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
+                Inherited_ContainingLexicalScope);
+    private LexicalScope? containingLexicalScope;
+    private bool containingLexicalScopeCached;
     public PackageNameScope PackageNameScope()
         => Inherited_PackageNameScope(GrammarAttribute.CurrentInheritanceContext());
     public ControlFlowSet ControlFlowNext

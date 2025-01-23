@@ -148,30 +148,25 @@ internal static partial class BindingAmbiguousNamesAspect
     }*/
     #endregion
 
+    #region Operator Expressions
+    public static partial IExpressionNode? AssignmentExpression_PropertyNameLeftOperand_Rewrite(IAssignmentExpressionNode node)
+    {
+        // TODO refactor to a replacement of the getter node based on an inherited attribute. That
+        // should allow optimization of caching compared to a full rewrite.
+
+        if (node.TempLeftOperand is not IGetterInvocationExpressionNode getterInvocation) return null;
+
+        return ISetterInvocationExpressionNode.Create(node.Syntax, getterInvocation.Context,
+            getterInvocation.PropertyName, node.CurrentRightOperand, getterInvocation.ReferencedDeclarations);
+    }
+    #endregion
+
     public static partial IFixedList<IDeclarationNode> OrdinaryNameExpression_ReferencedDeclarations(IOrdinaryNameExpressionNode node)
         => node.ContainingLexicalScope.Lookup(node.Name).ToFixedList();
 
     public static partial INameExpressionNode? IdentifierNameExpression_ReplaceWith_NameExpression(IIdentifierNameExpressionNode node)
-    {
-        // If not all referenced declarations are namespaces, then this is not a namespace name.
-        if (node.ReferencedDeclarations.TryAllOfType<INamespaceDeclarationNode>(out var referencedNamespaces))
-            return IUnqualifiedNamespaceNameNode.Create(node.Syntax, referencedNamespaces);
-
-        if (node.ReferencedDeclarations.TryAllOfType<IFunctionInvocableDeclarationNode>(out var referencedFunctions))
-            return IFunctionGroupNameNode.Create(node.Syntax, null, node.Name, FixedList.Empty<ITypeNode>(), referencedFunctions);
-
-        if (node.ReferencedDeclarations.TrySingle() is not null and var referencedDeclaration)
-            switch (referencedDeclaration)
-            {
-                case ILocalBindingNode referencedVariable:
-                    return IVariableNameExpressionNode.Create(node.Syntax, referencedVariable);
-                case ITypeDeclarationNode referencedType:
-                    return IOrdinaryTypeNameExpressionNode.Create(node.Syntax, FixedList.Empty<ITypeNode>(), referencedType);
-            }
-
-        // TODO theoretically, this has the same problem where uncached ReferencedDeclarations could cause premature rewrite to UnknownNameExpression
-        return IUnresolvedIdentifierNameExpressionNode.Create(node.Syntax, node.ReferencedDeclarations);
-    }
+        // In prep for removing IdentifierNameExpression, always immediately rewrite to UnresolvedIdentifierNameExpression
+        => IUnresolvedIdentifierNameExpressionNode.Create(node.Syntax);
 
     public static partial INameExpressionNode? GenericNameExpression_ReplaceWith_NameExpression(IGenericNameExpressionNode node)
     {
@@ -187,42 +182,10 @@ internal static partial class BindingAmbiguousNamesAspect
             }
 
         // TODO theoretically, this has the same problem where uncached ReferencedDeclarations could cause premature rewrite to UnknownNameExpression
-        return IUnresolvedGenericNameExpressionNode.Create(node.Syntax, node.TypeArguments, node.ReferencedDeclarations);
+        return IUnresolvedGenericNameExpressionNode.Create(node.Syntax, node.TypeArguments);
     }
 
-    public static partial void UnresolvedIdentifierNameExpression_Contribute_Diagnostics(
-        IUnresolvedIdentifierNameExpressionNode node,
-        DiagnosticCollectionBuilder diagnostics)
-    {
-        switch (node.ReferencedDeclarations.Count)
-        {
-            case 0:
-                diagnostics.Add(NameBindingError.CouldNotBindName(node.File, node.Syntax.Span));
-                break;
-            case 1:
-                // If there is only one match, then ReferencedSymbol is not null
-                throw new UnreachableException();
-            default:
-                // TODO better errors explaining. For example, are they different kinds of declarations?
-                diagnostics.Add(NameBindingError.AmbiguousName(node.File, node.Syntax.Span));
-                break;
-        }
-    }
-
-
-    public static partial IExpressionNode? AssignmentExpression_PropertyNameLeftOperand_Rewrite(IAssignmentExpressionNode node)
-    {
-        // TODO refactor to a replacement of the getter node based on an inherited attribute. That
-        // should allow optimization of caching compared to a full rewrite.
-
-        if (node.TempLeftOperand is not IGetterInvocationExpressionNode getterInvocation)
-            return null;
-
-        return ISetterInvocationExpressionNode.Create(node.Syntax, getterInvocation.Context,
-            getterInvocation.PropertyName, node.CurrentRightOperand,
-            getterInvocation.ReferencedDeclarations);
-    }
-
+    #region Name Expressions
     public static partial void Validate_FunctionGroupNameNode(
         INameExpressionSyntax syntax,
         INameExpressionNode? context,
@@ -297,6 +260,54 @@ internal static partial class BindingAmbiguousNamesAspect
             node.ReferencedDeclarations, node.CallCandidates, node.CompatibleCallCandidates, node.SelectedCallCandidate,
             node.ReferencedDeclaration);
     }
+    #endregion
+
+    #region Unresolved Name Expressions
+    public static partial IFixedList<IDeclarationNode> UnresolvedOrdinaryNameExpression_ReferencedDeclarations(IUnresolvedOrdinaryNameExpressionNode node)
+        => node.ContainingLexicalScope.Lookup(node.Name).ToFixedList();
+
+    public static partial INameExpressionNode? UnresolvedIdentifierNameExpression_ReplaceWith_NameExpression(IUnresolvedIdentifierNameExpressionNode node)
+    {
+        var referencedDeclarations = node.ReferencedDeclarations;
+
+        // If not all referenced declarations are namespaces, then this is not a namespace name.
+        if (referencedDeclarations.TryAllOfType<INamespaceDeclarationNode>(out var referencedNamespaces))
+            return IUnqualifiedNamespaceNameNode.Create(node.Syntax, referencedNamespaces);
+
+        if (referencedDeclarations.TryAllOfType<IFunctionInvocableDeclarationNode>(out var referencedFunctions))
+            return IFunctionGroupNameNode.Create(node.Syntax, null, node.Name, FixedList.Empty<ITypeNode>(),
+                referencedFunctions);
+
+        if (referencedDeclarations.TrySingle() is not null and var referencedDeclaration)
+            switch (referencedDeclaration)
+            {
+                case ILocalBindingNode referencedVariable:
+                    return IVariableNameExpressionNode.Create(node.Syntax, referencedVariable);
+                case ITypeDeclarationNode referencedType:
+                    return IOrdinaryTypeNameExpressionNode.Create(node.Syntax, FixedList.Empty<ITypeNode>(),
+                        referencedType);
+            }
+
+        return null;
+    }
+
+    public static partial void UnresolvedIdentifierNameExpression_Contribute_Diagnostics(IUnresolvedIdentifierNameExpressionNode node, DiagnosticCollectionBuilder diagnostics)
+    {
+        switch (node.ReferencedDeclarations.Count)
+        {
+            case 0:
+                diagnostics.Add(NameBindingError.CouldNotBindName(node.File, node.Syntax.Span));
+                break;
+            case 1:
+                // If there is only one match, then ReferencedSymbol is not null
+                throw new UnreachableException();
+            default:
+                // TODO better errors explaining. For example, are they different kinds of declarations?
+                diagnostics.Add(NameBindingError.AmbiguousName(node.File, node.Syntax.Span));
+                break;
+        }
+    }
+    #endregion
 
     private static bool TryAllOfType<T>(
         this IReadOnlyCollection<IDeclarationNode> declarations,

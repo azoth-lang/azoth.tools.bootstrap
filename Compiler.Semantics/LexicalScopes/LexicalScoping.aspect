@@ -75,6 +75,9 @@ type `NamespaceSearchScope` <: `LexicalScope`;
     => TempArguments[index - 1].FlowLexicalScope().True;
 = UnsafeExpression.FlowLexicalScope() => TempExpression.FlowLexicalScope();
 
+// ---------- Unresolved Expressions
+↓ UnresolvedMemberAccessExpression.PackageNameScope(): `PackageNameScope`;
+
 // ---------- Patterns
 ↓ BindingPattern.ContainingLexicalScope: `LexicalScope`;
 ↑ Pattern.FlowLexicalScope(): `ConditionalLexicalScope`;
@@ -131,7 +134,9 @@ type `NamespaceSearchScope` <: `LexicalScope`;
 ↓ BuiltInTypeNameExpression.ContainingLexicalScope: `LexicalScope`;
 
 // ---------- Name Expressions
-↓ UnresolvedMemberAccessExpression.PackageNameScope(): `PackageNameScope`;
+
+// ---------- Unresolved Name Expressions
+↓ UnresolvedNameExpression.ContainingLexicalScope: `LexicalScope`;
 
 // ---------- Async Expressions
 = AwaitExpression.FlowLexicalScope() => TempExpression.FlowLexicalScope();

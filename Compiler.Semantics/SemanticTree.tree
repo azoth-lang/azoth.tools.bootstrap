@@ -363,11 +363,12 @@ MissingNameExpression <: NameExpression
 // ---------- Unresolved Name Expressions
 UnresolvedNameExpression <: NameExpression, UnresolvedExpression = Syntax:`INameExpressionSyntax`;
 UnresolvedOrdinaryNameExpression <: UnresolvedNameExpression
-    = Syntax:`IOrdinaryNameSyntax` Name:`OrdinaryName` ReferencedDeclarations:{`IDeclarationNode`};
+    = Syntax:`IOrdinaryNameSyntax` Name:`OrdinaryName`;
 UnresolvedIdentifierNameExpression <: UnresolvedOrdinaryNameExpression
-    = Syntax:`IIdentifierNameSyntax` /ReferencedDeclarations/;
+    = Syntax:`IIdentifierNameSyntax`;
 UnresolvedGenericNameExpression <: UnresolvedOrdinaryNameExpression
-    = Syntax:`IGenericNameSyntax` TypeArguments:Type* /ReferencedDeclarations/;
+    = Syntax:`IGenericNameSyntax` TypeArguments:Type*;
+// TODO Context should be a name
 UnresolvedQualifiedNameExpression <: UnresolvedNameExpression, UnresolvedMemberAccessExpression
     = Syntax:`IQualifiedNameSyntax` /Context/ /TypeArguments/;
 

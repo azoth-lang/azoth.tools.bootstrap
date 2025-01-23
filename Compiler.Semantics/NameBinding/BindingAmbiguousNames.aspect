@@ -32,4 +32,7 @@
 ✎ InitializerGroupName replace_with InitializerName;
 
 // ---------- Unresolved Name Expressions
+↑ UnresolvedOrdinaryNameExpression.ReferencedDeclarations: Declaration*;
+= UnresolvedOrdinaryNameExpression.ReferencedDeclarations;
+✎ UnresolvedIdentifierNameExpression replace_with NameExpression;
 = UnresolvedIdentifierNameExpression.↑.Diagnostics;
