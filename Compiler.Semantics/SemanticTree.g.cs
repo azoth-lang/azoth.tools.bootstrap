@@ -3123,9 +3123,7 @@ public partial interface IMissingNameExpressionNode : INameExpressionNode
 }
 
 [Closed(
-    typeof(INamespaceNameNode),
-    typeof(ITypeNameExpressionNode),
-    typeof(IBuiltInTypeNameExpressionNode),
+    typeof(IResolvedNameNode),
     typeof(IUnresolvedNameNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface INameNode : INameExpressionNode
@@ -3133,10 +3131,19 @@ public partial interface INameNode : INameExpressionNode
 }
 
 [Closed(
+    typeof(INamespaceNameNode),
+    typeof(ITypeNameExpressionNode),
+    typeof(IBuiltInTypeNameExpressionNode))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
+public partial interface IResolvedNameNode : INameNode
+{
+}
+
+[Closed(
     typeof(IUnqualifiedNamespaceNameNode),
     typeof(IQualifiedNamespaceNameNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface INamespaceNameNode : INameNode
+public partial interface INamespaceNameNode : IResolvedNameNode
 {
     IFixedList<INamespaceDeclarationNode> ReferencedDeclarations { get; }
     new UnknownType Type
@@ -3189,7 +3196,7 @@ public partial interface IQualifiedNamespaceNameNode : INamespaceNameNode
     typeof(IOrdinaryTypeNameExpressionNode),
     typeof(IQualifiedTypeNameExpressionNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface ITypeNameExpressionNode : INameNode
+public partial interface ITypeNameExpressionNode : IResolvedNameNode
 {
     IFixedList<ITypeNode> GenericArguments { get; }
     ITypeDeclarationNode ReferencedDeclaration { get; }
@@ -3204,7 +3211,7 @@ public partial interface ITypeNameExpressionNode : INameNode
 
 [Closed(typeof(BuiltInTypeNameExpressionNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IBuiltInTypeNameExpressionNode : INameNode
+public partial interface IBuiltInTypeNameExpressionNode : IResolvedNameNode
 {
     new IBuiltInTypeNameSyntax Syntax { get; }
     INameExpressionSyntax INameExpressionNode.Syntax => Syntax;
@@ -3254,14 +3261,14 @@ public partial interface IQualifiedTypeNameExpressionNode : ITypeNameExpressionN
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ICodeSyntax ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    INamespaceNameNode Context { get; }
-    INamespaceNameNode CurrentContext { get; }
+    IResolvedNameNode Context { get; }
+    IResolvedNameNode CurrentContext { get; }
     OrdinaryName ITypeNameExpressionNode.Name
         => Syntax.MemberName;
 
     public static IQualifiedTypeNameExpressionNode Create(
         IMemberAccessExpressionSyntax syntax,
-        INamespaceNameNode context,
+        IResolvedNameNode context,
         IEnumerable<ITypeNode> genericArguments,
         ITypeDeclarationNode referencedDeclaration)
         => new QualifiedTypeNameExpressionNode(syntax, context, genericArguments, referencedDeclaration);
@@ -16674,12 +16681,12 @@ file class QualifiedTypeNameExpressionNode : SemanticNode, IQualifiedTypeNameExp
     protected override bool MayHaveRewrite => true;
 
     public IMemberAccessExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    private RewritableChild<INamespaceNameNode> context;
+    private RewritableChild<IResolvedNameNode> context;
     private bool contextCached;
-    public INamespaceNameNode Context
+    public IResolvedNameNode Context
         => GrammarAttribute.IsCached(in contextCached) ? context.UnsafeValue
             : this.RewritableChild(ref contextCached, ref context);
-    public INamespaceNameNode CurrentContext => context.UnsafeValue;
+    public IResolvedNameNode CurrentContext => context.UnsafeValue;
     public IFixedList<ITypeNode> GenericArguments { [DebuggerStepThrough] get; }
     public ITypeDeclarationNode ReferencedDeclaration { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
@@ -16746,7 +16753,7 @@ file class QualifiedTypeNameExpressionNode : SemanticNode, IQualifiedTypeNameExp
 
     public QualifiedTypeNameExpressionNode(
         IMemberAccessExpressionSyntax syntax,
-        INamespaceNameNode context,
+        IResolvedNameNode context,
         IEnumerable<ITypeNode> genericArguments,
         ITypeDeclarationNode referencedDeclaration)
     {

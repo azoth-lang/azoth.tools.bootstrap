@@ -345,22 +345,23 @@ MissingNameExpression <: NameExpression
 // Resolution for type names needs to be applied the same way for types and expressions. As such
 // these nodes are both types and name expressions.
 Name <: NameExpression;
-NamespaceName <: Name = ReferencedDeclarations:`INamespaceDeclarationNode`*;
+/// A name that has been resolved and therefore cannot be rewritten to a NameExpression
+ResolvedName <: Name;
+NamespaceName <: ResolvedName = ReferencedDeclarations:`INamespaceDeclarationNode`*;
 UnqualifiedNamespaceName <: NamespaceName
     = Syntax:`IIdentifierNameSyntax` /ReferencedDeclarations/;
 QualifiedNamespaceName <: NamespaceName
     = Syntax:`IMemberAccessExpressionSyntax` Context:NamespaceName /ReferencedDeclarations/;
-TypeNameExpression <: Name = Syntax:`INameExpressionSyntax`
+TypeNameExpression <: ResolvedName = Syntax:`INameExpressionSyntax`
     GenericArguments:Type* ReferencedDeclaration:`ITypeDeclarationNode`;
 // TODO add to UnqualifiedTypeNameExpression
 // TODO merge with BuiltInTypeName and keep the name "BuiltInTypeName" because it really isn't an expression
-BuiltInTypeNameExpression <: Name
+BuiltInTypeNameExpression <: ResolvedName
     = Syntax:`IBuiltInTypeNameSyntax`;
 OrdinaryTypeNameExpression <: TypeNameExpression
     = Syntax:`IOrdinaryNameSyntax` /GenericArguments/ /ReferencedDeclaration/;
-// TODO Context could be another type so it should be `Name`
 QualifiedTypeNameExpression <: TypeNameExpression = Syntax:`IMemberAccessExpressionSyntax`
-    Context:NamespaceName /GenericArguments/ /ReferencedDeclaration/;
+    Context:ResolvedName /GenericArguments/ /ReferencedDeclaration/;
 
 // ---------- Unresolved Names
 // TODO use for both this and types so that type names can be qualified
