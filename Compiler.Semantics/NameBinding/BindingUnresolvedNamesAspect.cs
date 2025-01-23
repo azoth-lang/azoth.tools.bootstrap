@@ -114,7 +114,7 @@ internal static partial class BindingUnresolvedNamesAspect
     #region Name Expressions
     public static partial void Validate_FunctionGroupNameNode(
         INameExpressionSyntax syntax,
-        INameExpressionNode? context,
+        IResolvedNameNode? context,
         OrdinaryName functionName,
         IEnumerable<ITypeNode> genericArguments,
         IEnumerable<IFunctionInvocableDeclarationNode> referencedDeclarations)

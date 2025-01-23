@@ -217,9 +217,6 @@ BlockExpression <: Expression, BlockOrResult, BodyOrBlock
     = Syntax:`IBlockExpressionSyntax` Statements:Statement*;
 NewObjectExpression <: InvocationExpression = Syntax:`INewObjectExpressionSyntax`
     ConstructingType:TypeName Arguments:AmbiguousExpression*;
-// TODO FieldAccessExpression shouldn't be a name expression since the context is a full expression
-FieldAccessExpression <: NameExpression = Syntax:`IMemberAccessExpressionSyntax`
-    Context:Expression FieldName:`IdentifierName` ReferencedDeclaration:`IFieldDeclarationNode`;
 UnsafeExpression <: Expression = Syntax:`IUnsafeExpressionSyntax` Expression:AmbiguousExpression;
 NeverTypedExpression <: Expression;
 
@@ -231,6 +228,25 @@ NeverTypedExpression <: Expression;
 UnresolvedExpression <: Expression;
 concrete UnresolvedMemberAccessExpression <: UnresolvedExpression
     = Syntax:`IMemberAccessExpressionSyntax` Context:AmbiguousExpression GenericArguments:Type*;
+
+// ---------- Instance Member Expressions
+// Resolved expressions that are some form of instance member access (i.e. something that may not
+// be only a name syntatically).
+// TODO FieldAccessExpression shouldn't be a name expression since the context is a full expression
+FieldAccessExpression <: NameExpression = Syntax:`IMemberAccessExpressionSyntax`
+    Context:Expression FieldName:`IdentifierName` ReferencedDeclaration:`IFieldDeclarationNode`;
+// TODO should MethodGroupName be UnresolvedMethodName?
+MethodGroupName <: NameExpression = Syntax:`IMemberAccessExpressionSyntax`
+    Context:Expression MethodName:`OrdinaryName` GenericArguments:Type*
+    ReferencedDeclarations:{`IOrdinaryMethodDeclarationNode`};
+/// See comment on FunctionName for why this exists.
+MethodName <: NameExpression = Syntax:`IMemberAccessExpressionSyntax`
+    Context:Expression MethodName:`OrdinaryName` GenericArguments:Type*
+    ReferencedDeclarations:{`IOrdinaryMethodDeclarationNode`}
+    CallCandidates:{`ICallCandidate<IOrdinaryMethodDeclarationNode>`}
+    CompatibleCallCandidates:{`ICallCandidate<IOrdinaryMethodDeclarationNode>`}
+    SelectedCallCandidate:`ICallCandidate<IOrdinaryMethodDeclarationNode>`?
+    ReferencedDeclaration:`IOrdinaryMethodDeclarationNode`?;
 
 // ---------- Literal Expressions
 LiteralExpression <: Expression = Syntax:`ILiteralExpressionSyntax`;
@@ -316,37 +332,25 @@ UnqualifiedNamespaceName <: NamespaceName
 QualifiedNamespaceName <: NamespaceName
     = Syntax:`IMemberAccessExpressionSyntax` Context:NamespaceName /ReferencedDeclarations/;
 // TODO should FunctionGroupName be UnresolvedFunctionName?
-FunctionGroupName <: NameExpression
-    = Syntax:`INameExpressionSyntax` Context:NameExpression? FunctionName:`OrdinaryName` GenericArguments:Type*
+FunctionGroupName <: Name
+    = Syntax:`INameExpressionSyntax` Context:ResolvedName? FunctionName:`OrdinaryName` GenericArguments:Type*
     ReferencedDeclarations:{`IFunctionInvocableDeclarationNode`};
 /// Reifying to FunctionName controls the transition from UnresolvedInvocation to FunctionInvocation.
 /// The UnresolvedInvocation provides an expected type based on the arguments. Once the overload has
 /// been resolved, the FunctionInvocation provides expected types based on the function called.
-FunctionName <: NameExpression
-    = Syntax:`INameExpressionSyntax` Context:NameExpression?  FunctionName:`OrdinaryName` GenericArguments:Type*
+FunctionName <: Name
+    = Syntax:`INameExpressionSyntax` Context:ResolvedName?  FunctionName:`OrdinaryName` GenericArguments:Type*
     ReferencedDeclarations:{`IFunctionInvocableDeclarationNode`}
     CallCandidates:{`ICallCandidate<IFunctionInvocableDeclarationNode>`}
     CompatibleCallCandidates:{`ICallCandidate<IFunctionInvocableDeclarationNode>`}
     SelectedCallCandidate:`ICallCandidate<IFunctionInvocableDeclarationNode>`?
     ReferencedDeclaration:`IFunctionInvocableDeclarationNode`?;
-// TODO should MethodGroupName be UnresolvedMethodName?
-MethodGroupName <: NameExpression = Syntax:`IMemberAccessExpressionSyntax`
-    Context:Expression MethodName:`OrdinaryName` GenericArguments:Type*
-    ReferencedDeclarations:{`IOrdinaryMethodDeclarationNode`};
-/// See comment on FunctionName for why this exists.
-MethodName <: NameExpression = Syntax:`IMemberAccessExpressionSyntax`
-    Context:Expression MethodName:`OrdinaryName` GenericArguments:Type*
-    ReferencedDeclarations:{`IOrdinaryMethodDeclarationNode`}
-    CallCandidates:{`ICallCandidate<IOrdinaryMethodDeclarationNode>`}
-    CompatibleCallCandidates:{`ICallCandidate<IOrdinaryMethodDeclarationNode>`}
-    SelectedCallCandidate:`ICallCandidate<IOrdinaryMethodDeclarationNode>`?
-    ReferencedDeclaration:`IOrdinaryMethodDeclarationNode`?;
-// TODO should MethodGroupName be UnresolvedMethodName?
-InitializerGroupName <: NameExpression = Syntax:`INameExpressionSyntax`
+// TODO should InitializerGroupName be UnresolvedInitializerName?
+InitializerGroupName <: Name = Syntax:`INameExpressionSyntax`
     Context:TypeNameExpression InitializerName:`OrdinaryName`?
     ReferencedDeclarations:{`IInitializerDeclarationNode`};
 /// See comment on FunctionName for why this exists.
-InitializerName <: NameExpression = Syntax:`INameExpressionSyntax`
+InitializerName <: Name = Syntax:`INameExpressionSyntax`
     Context:TypeNameExpression InitializerName:`OrdinaryName`?
     ReferencedDeclarations:{`IInitializerDeclarationNode`}
     CallCandidates:{`ICallCandidate<IInitializerDeclarationNode>`}

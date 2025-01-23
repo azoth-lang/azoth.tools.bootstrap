@@ -96,11 +96,13 @@ internal static partial class ExpressionTypesAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial ContextualizedCall? NewObjectExpression_ContextualizedCall(INewObjectExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IMaybeType FieldAccessExpression_Type(IFieldAccessExpressionNode node);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IMaybeType UnsafeExpression_Type(IUnsafeExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFlowState UnsafeExpression_FlowStateAfter(IUnsafeExpressionNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial IMaybeType FieldAccessExpression_Type(IFieldAccessExpressionNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial IMaybeType MethodName_Type(IMethodNameNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial CapabilityType BoolLiteralExpression_Type(IBoolLiteralExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -193,8 +195,6 @@ internal static partial class ExpressionTypesAspect
     public static partial IMaybeType SelfExpression_Type(ISelfExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IMaybeType FunctionName_Type(IFunctionNameNode node);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IMaybeType MethodName_Type(IMethodNameNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IMaybeType InitializerName_Type(IInitializerNameNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

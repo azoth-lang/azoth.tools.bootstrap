@@ -27,9 +27,11 @@ internal static partial class ExpressionPlainTypesAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IMaybePlainType NewObjectExpression_PlainType(INewObjectExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial IMaybePlainType UnsafeExpression_PlainType(IUnsafeExpressionNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IMaybePlainType FieldAccessExpression_PlainType(IFieldAccessExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IMaybePlainType UnsafeExpression_PlainType(IUnsafeExpressionNode node);
+    public static partial IMaybePlainType MethodName_PlainType(IMethodNameNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IMaybePlainType BoolLiteralExpression_PlainType(IBoolLiteralExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -76,8 +78,6 @@ internal static partial class ExpressionPlainTypesAspect
     public static partial IMaybePlainType SelfExpression_PlainType(ISelfExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IMaybePlainType FunctionName_PlainType(IFunctionNameNode node);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IMaybePlainType MethodName_PlainType(IMethodNameNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IMaybePlainType InitializerName_PlainType(IInitializerNameNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

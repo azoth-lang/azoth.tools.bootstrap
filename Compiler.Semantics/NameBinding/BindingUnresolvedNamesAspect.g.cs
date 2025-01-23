@@ -17,7 +17,7 @@ internal static partial class BindingUnresolvedNamesAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial void Validate_FunctionGroupNameNode(
         INameExpressionSyntax syntax,
-        INameExpressionNode? context,
+        IResolvedNameNode? context,
         OrdinaryName functionName,
         IEnumerable<ITypeNode> genericArguments,
         IEnumerable<IFunctionInvocableDeclarationNode> referencedDeclarations);

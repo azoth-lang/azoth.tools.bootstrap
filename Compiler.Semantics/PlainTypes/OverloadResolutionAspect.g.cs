@@ -39,6 +39,12 @@ internal static partial class OverloadResolutionAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IConstructorDeclarationNode? NewObjectExpression_ReferencedConstructor(INewObjectExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial IFixedSet<ICallCandidate<IOrdinaryMethodDeclarationNode>> MethodGroupName_CallCandidates(IMethodGroupNameNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial IFixedSet<ICallCandidate<IOrdinaryMethodDeclarationNode>> MethodGroupName_CompatibleCallCandidates(IMethodGroupNameNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial ICallCandidate<IOrdinaryMethodDeclarationNode>? MethodGroupName_SelectedCallCandidate(IMethodGroupNameNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFixedSet<ICallCandidate<IPropertyAccessorDeclarationNode>> GetterInvocationExpression_CallCandidates(IGetterInvocationExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFixedSet<ICallCandidate<IGetterMethodDeclarationNode>> GetterInvocationExpression_CompatibleCallCandidates(IGetterInvocationExpressionNode node);
@@ -52,12 +58,6 @@ internal static partial class OverloadResolutionAspect
     public static partial IFixedSet<ICallCandidate<IFunctionInvocableDeclarationNode>> FunctionGroupName_CompatibleCallCandidates(IFunctionGroupNameNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial ICallCandidate<IFunctionInvocableDeclarationNode>? FunctionGroupName_SelectedCallCandidate(IFunctionGroupNameNode node);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IFixedSet<ICallCandidate<IOrdinaryMethodDeclarationNode>> MethodGroupName_CallCandidates(IMethodGroupNameNode node);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IFixedSet<ICallCandidate<IOrdinaryMethodDeclarationNode>> MethodGroupName_CompatibleCallCandidates(IMethodGroupNameNode node);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial ICallCandidate<IOrdinaryMethodDeclarationNode>? MethodGroupName_SelectedCallCandidate(IMethodGroupNameNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFixedSet<ICallCandidate<IInitializerDeclarationNode>> InitializerGroupName_CallCandidates(IInitializerGroupNameNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
