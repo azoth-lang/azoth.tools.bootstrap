@@ -284,14 +284,11 @@ NonInvocableInvocationExpression <: InvocationExpression = Syntax:`IInvocationEx
     Expression:AmbiguousExpression Arguments:AmbiguousExpression*;
 
 // ---------- Name Expressions
+// Name expressions are more inclusive than just names since there are names that can occur in an
+// expression that don't occur in type names.
 NameExpression <: Expression = Syntax:`INameExpressionSyntax`;
+// See the names section for more nodes that are name expressions
 LocalBindingNameExpression <: NameExpression = ReferencedDefinition:`IBindingNode`?;
-// TODO Name <: NameExpression
-NamespaceName <: NameExpression = ReferencedDeclarations:`INamespaceDeclarationNode`*;
-UnqualifiedNamespaceName <: NamespaceName
-    = Syntax:`IIdentifierNameSyntax` /ReferencedDeclarations/;
-QualifiedNamespaceName <: NamespaceName
-    = Syntax:`IMemberAccessExpressionSyntax` Context:NamespaceName /ReferencedDeclarations/;
 FunctionGroupName <: NameExpression
     = Syntax:`INameExpressionSyntax` Context:NameExpression? FunctionName:`OrdinaryName` TypeArguments:Type*
     ReferencedDeclarations:{`IFunctionInvocableDeclarationNode`};
@@ -320,13 +317,6 @@ FieldAccessExpression <: NameExpression = Syntax:`IMemberAccessExpressionSyntax`
     Context:Expression FieldName:`IdentifierName` ReferencedDeclaration:`IFieldDeclarationNode`;
 VariableNameExpression <: LocalBindingNameExpression, NameExpression
     = Syntax:`IIdentifierNameSyntax` ReferencedDefinition:`ILocalBindingNode`;
-TypeNameExpression <: NameExpression = Syntax:`INameExpressionSyntax`
-    TypeArguments:Type* ReferencedDeclaration:`ITypeDeclarationNode`;
-// TODO rename to UnqualifiedTypeNameExpression
-OrdinaryTypeNameExpression <: TypeNameExpression
-    = Syntax:`IOrdinaryNameSyntax` /TypeArguments/ /ReferencedDeclaration/;
-QualifiedTypeNameExpression <: TypeNameExpression = Syntax:`IMemberAccessExpressionSyntax`
-    Context:NamespaceName /TypeArguments/ /ReferencedDeclaration/;
 InitializerGroupName <: NameExpression = Syntax:`INameExpressionSyntax`
     Context:TypeNameExpression InitializerName:`OrdinaryName`?
     ReferencedDeclarations:{`IInitializerDeclarationNode`};
@@ -338,9 +328,6 @@ InitializerName <: NameExpression = Syntax:`INameExpressionSyntax`
     CompatibleCallCandidates:{`ICallCandidate<IInitializerDeclarationNode>`}
     SelectedCallCandidate:`ICallCandidate<IInitializerDeclarationNode>`?
     ReferencedDeclaration:`IInitializerDeclarationNode`?;
-// TODO merge with BuiltInTypeName and keep the name "BuiltInTypeName" because it really isn't an expression
-BuiltInTypeNameExpression <: NameExpression
-    = Syntax:`IBuiltInTypeNameSyntax`;
 InstanceExpression <: NameExpression = Syntax:`IInstanceExpressionSyntax`; // i.e. `self` or `base`
 // TODO BaseExpression <: InstanceExpression
 SelfExpression <: InstanceExpression, LocalBindingNameExpression
@@ -348,7 +335,29 @@ SelfExpression <: InstanceExpression, LocalBindingNameExpression
 MissingNameExpression <: NameExpression
     = Syntax:`IMissingNameSyntax`;
 
-// ---------- Unresolved Name Expressions
+// ---------- Names
+// Resolution for type names needs to be applied the same way for types and expressions. As such
+// these nodes are both types and name expressions.
+Name <: NameExpression;
+NamespaceName <: Name = ReferencedDeclarations:`INamespaceDeclarationNode`*;
+UnqualifiedNamespaceName <: NamespaceName
+    = Syntax:`IIdentifierNameSyntax` /ReferencedDeclarations/;
+QualifiedNamespaceName <: NamespaceName
+    = Syntax:`IMemberAccessExpressionSyntax` Context:NamespaceName /ReferencedDeclarations/;
+TypeNameExpression <: Name = Syntax:`INameExpressionSyntax`
+    TypeArguments:Type* ReferencedDeclaration:`ITypeDeclarationNode`;
+// TODO add to UnqualifiedTypeNameExpression
+// TODO merge with BuiltInTypeName and keep the name "BuiltInTypeName" because it really isn't an expression
+BuiltInTypeNameExpression <: Name
+    = Syntax:`IBuiltInTypeNameSyntax`;
+OrdinaryTypeNameExpression <: TypeNameExpression
+    = Syntax:`IOrdinaryNameSyntax` /TypeArguments/ /ReferencedDeclaration/;
+// TODO Context could be another type so it should be `Name`
+QualifiedTypeNameExpression <: TypeNameExpression = Syntax:`IMemberAccessExpressionSyntax`
+    Context:NamespaceName /TypeArguments/ /ReferencedDeclaration/;
+
+// ---------- Unresolved Names
+// TODO turn these into just "Name"s and use for both this and types so that type names can be qualified
 UnresolvedNameExpression <: NameExpression, UnresolvedExpression = Syntax:`INameExpressionSyntax`;
 UnresolvedOrdinaryNameExpression <: UnresolvedNameExpression
     = Syntax:`IOrdinaryNameSyntax` Name:`OrdinaryName`;
