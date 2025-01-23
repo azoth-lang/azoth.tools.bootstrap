@@ -1944,7 +1944,6 @@ public partial interface IOptionalPatternNode : IOptionalOrBindingPatternNode
 
 [Closed(
     typeof(IExpressionNode),
-    typeof(IAmbiguousNameExpressionNode),
     typeof(IAmbiguousMoveExpressionNode),
     typeof(IAmbiguousFreezeExpressionNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -2650,7 +2649,7 @@ public partial interface IGetterInvocationExpressionNode : IInvocationExpression
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ICodeSyntax ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
+    INameExpressionSyntax INameExpressionNode.Syntax => Syntax;
     IExpressionNode Context { get; }
     IExpressionNode CurrentContext { get; }
     OrdinaryName PropertyName { get; }
@@ -2801,82 +2800,6 @@ public partial interface INonInvocableInvocationExpressionNode : IInvocationExpr
 }
 
 [Closed(
-    typeof(IAmbiguousNameNode),
-    typeof(INameExpressionNode))]
-[GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IAmbiguousNameExpressionNode : IAmbiguousExpressionNode
-{
-    new INameExpressionSyntax Syntax { get; }
-    IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
-    ICodeSyntax ICodeNode.Syntax => Syntax;
-    ISyntax? ISemanticNode.Syntax => Syntax;
-}
-
-[Closed(
-    typeof(IOrdinaryNameExpressionNode))]
-[GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IAmbiguousNameNode : IAmbiguousNameExpressionNode
-{
-}
-
-[Closed(
-    typeof(IIdentifierNameExpressionNode),
-    typeof(IGenericNameExpressionNode))]
-[GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IOrdinaryNameExpressionNode : IAmbiguousNameNode
-{
-    new IOrdinaryNameSyntax Syntax { get; }
-    INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
-    IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
-    ICodeSyntax ICodeNode.Syntax => Syntax;
-    ISyntax? ISemanticNode.Syntax => Syntax;
-    new LexicalScope ContainingLexicalScope { get; }
-    LexicalScope IAmbiguousExpressionNode.ContainingLexicalScope() => ContainingLexicalScope;
-    OrdinaryName Name
-        => Syntax.Name;
-    IFixedList<IDeclarationNode> ReferencedDeclarations { get; }
-}
-
-[Closed(typeof(IdentifierNameExpressionNode))]
-[GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IIdentifierNameExpressionNode : IOrdinaryNameExpressionNode
-{
-    new IIdentifierNameSyntax Syntax { get; }
-    IOrdinaryNameSyntax IOrdinaryNameExpressionNode.Syntax => Syntax;
-    INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
-    IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
-    ICodeSyntax ICodeNode.Syntax => Syntax;
-    ISyntax? ISemanticNode.Syntax => Syntax;
-    new IdentifierName Name
-        => Syntax.Name;
-    OrdinaryName IOrdinaryNameExpressionNode.Name => Name;
-
-    public static IIdentifierNameExpressionNode Create(IIdentifierNameSyntax syntax)
-        => new IdentifierNameExpressionNode(syntax);
-}
-
-[Closed(typeof(GenericNameExpressionNode))]
-[GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IGenericNameExpressionNode : IOrdinaryNameExpressionNode
-{
-    new IGenericNameSyntax Syntax { get; }
-    IOrdinaryNameSyntax IOrdinaryNameExpressionNode.Syntax => Syntax;
-    INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
-    IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
-    ICodeSyntax ICodeNode.Syntax => Syntax;
-    ISyntax? ISemanticNode.Syntax => Syntax;
-    IFixedList<ITypeNode> TypeArguments { get; }
-    new GenericName Name
-        => Syntax.Name;
-    OrdinaryName IOrdinaryNameExpressionNode.Name => Name;
-
-    public static IGenericNameExpressionNode Create(
-        IGenericNameSyntax syntax,
-        IEnumerable<ITypeNode> typeArguments)
-        => new GenericNameExpressionNode(syntax, typeArguments);
-}
-
-[Closed(
     typeof(IGetterInvocationExpressionNode),
     typeof(ILocalBindingNameExpressionNode),
     typeof(INamespaceNameNode),
@@ -2893,8 +2816,12 @@ public partial interface IGenericNameExpressionNode : IOrdinaryNameExpressionNod
     typeof(IMissingNameExpressionNode),
     typeof(IUnresolvedNameExpressionNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface INameExpressionNode : IExpressionNode, IAmbiguousNameExpressionNode
+public partial interface INameExpressionNode : IExpressionNode
 {
+    new INameExpressionSyntax Syntax { get; }
+    IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
+    ICodeSyntax ICodeNode.Syntax => Syntax;
+    ISyntax? ISemanticNode.Syntax => Syntax;
     IFlowState FlowStateBefore();
     new IFlowState FlowStateAfter
         => throw new NotImplementedException($"{GetType().GetFriendlyName()}.{nameof(FlowStateAfter)} not implemented.");
@@ -2929,10 +2856,10 @@ public partial interface INamespaceNameNode : INameExpressionNode
 public partial interface IUnqualifiedNamespaceNameNode : INamespaceNameNode
 {
     new IIdentifierNameSyntax Syntax { get; }
+    INameExpressionSyntax INameExpressionNode.Syntax => Syntax;
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ICodeSyntax ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
     IdentifierName Name
         => Syntax.Name;
 
@@ -2947,10 +2874,10 @@ public partial interface IUnqualifiedNamespaceNameNode : INamespaceNameNode
 public partial interface IQualifiedNamespaceNameNode : INamespaceNameNode
 {
     new IMemberAccessExpressionSyntax Syntax { get; }
+    INameExpressionSyntax INameExpressionNode.Syntax => Syntax;
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ICodeSyntax ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
     INamespaceNameNode Context { get; }
     INamespaceNameNode CurrentContext { get; }
     IdentifierName Name
@@ -3028,10 +2955,10 @@ public partial interface IFunctionNameNode : INameExpressionNode
 public partial interface IMethodGroupNameNode : INameExpressionNode
 {
     new IMemberAccessExpressionSyntax Syntax { get; }
+    INameExpressionSyntax INameExpressionNode.Syntax => Syntax;
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ICodeSyntax ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
     IExpressionNode Context { get; }
     IExpressionNode CurrentContext { get; }
     OrdinaryName MethodName { get; }
@@ -3064,10 +2991,10 @@ public partial interface IMethodGroupNameNode : INameExpressionNode
 public partial interface IMethodNameNode : INameExpressionNode
 {
     new IMemberAccessExpressionSyntax Syntax { get; }
+    INameExpressionSyntax INameExpressionNode.Syntax => Syntax;
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ICodeSyntax ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
     IExpressionNode Context { get; }
     IExpressionNode CurrentContext { get; }
     OrdinaryName MethodName { get; }
@@ -3098,10 +3025,10 @@ public partial interface IMethodNameNode : INameExpressionNode
 public partial interface IFieldAccessExpressionNode : INameExpressionNode
 {
     new IMemberAccessExpressionSyntax Syntax { get; }
+    INameExpressionSyntax INameExpressionNode.Syntax => Syntax;
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ICodeSyntax ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
     IExpressionNode Context { get; }
     IExpressionNode CurrentContext { get; }
     IdentifierName FieldName { get; }
@@ -3122,10 +3049,10 @@ public partial interface IFieldAccessExpressionNode : INameExpressionNode
 public partial interface IVariableNameExpressionNode : ILocalBindingNameExpressionNode
 {
     new IIdentifierNameSyntax Syntax { get; }
+    INameExpressionSyntax INameExpressionNode.Syntax => Syntax;
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ICodeSyntax ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
     new ILocalBindingNode ReferencedDefinition { get; }
     IBindingNode? ILocalBindingNameExpressionNode.ReferencedDefinition => ReferencedDefinition;
     IdentifierName Name
@@ -3162,10 +3089,10 @@ public partial interface ITypeNameExpressionNode : INameExpressionNode
 public partial interface IOrdinaryTypeNameExpressionNode : ITypeNameExpressionNode
 {
     new IOrdinaryNameSyntax Syntax { get; }
+    INameExpressionSyntax INameExpressionNode.Syntax => Syntax;
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ICodeSyntax ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
     OrdinaryName ITypeNameExpressionNode.Name
         => Syntax.Name;
 
@@ -3181,10 +3108,10 @@ public partial interface IOrdinaryTypeNameExpressionNode : ITypeNameExpressionNo
 public partial interface IQualifiedTypeNameExpressionNode : ITypeNameExpressionNode
 {
     new IMemberAccessExpressionSyntax Syntax { get; }
+    INameExpressionSyntax INameExpressionNode.Syntax => Syntax;
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ICodeSyntax ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
     INamespaceNameNode Context { get; }
     INamespaceNameNode CurrentContext { get; }
     OrdinaryName ITypeNameExpressionNode.Name
@@ -3261,10 +3188,10 @@ public partial interface IInitializerNameNode : INameExpressionNode
 public partial interface IBuiltInTypeNameExpressionNode : INameExpressionNode
 {
     new IBuiltInTypeNameSyntax Syntax { get; }
+    INameExpressionSyntax INameExpressionNode.Syntax => Syntax;
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ICodeSyntax ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
     new LexicalScope ContainingLexicalScope { get; }
     LexicalScope IAmbiguousExpressionNode.ContainingLexicalScope() => ContainingLexicalScope;
     new UnknownType Type
@@ -3286,10 +3213,10 @@ public partial interface IBuiltInTypeNameExpressionNode : INameExpressionNode
 public partial interface IInstanceExpressionNode : INameExpressionNode
 {
     new IInstanceExpressionSyntax Syntax { get; }
+    INameExpressionSyntax INameExpressionNode.Syntax => Syntax;
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ICodeSyntax ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
 }
 
 [Closed(typeof(SelfExpressionNode))]
@@ -3298,10 +3225,10 @@ public partial interface ISelfExpressionNode : IInstanceExpressionNode, ILocalBi
 {
     new ISelfExpressionSyntax Syntax { get; }
     IInstanceExpressionSyntax IInstanceExpressionNode.Syntax => Syntax;
+    INameExpressionSyntax INameExpressionNode.Syntax => Syntax;
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ICodeSyntax ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
     IExecutableDefinitionNode ContainingDeclaration { get; }
     bool IsImplicit
         => Syntax.IsImplicit;
@@ -3319,10 +3246,10 @@ public partial interface ISelfExpressionNode : IInstanceExpressionNode, ILocalBi
 public partial interface IMissingNameExpressionNode : INameExpressionNode
 {
     new IMissingNameSyntax Syntax { get; }
+    INameExpressionSyntax INameExpressionNode.Syntax => Syntax;
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ICodeSyntax ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
     new UnknownType Type
         => AzothType.Unknown;
     IMaybeType IExpressionNode.Type => Type;
@@ -3357,10 +3284,10 @@ public partial interface IUnresolvedNameExpressionNode : INameExpressionNode, IU
 public partial interface IUnresolvedOrdinaryNameExpressionNode : IUnresolvedNameExpressionNode
 {
     new IOrdinaryNameSyntax Syntax { get; }
+    INameExpressionSyntax INameExpressionNode.Syntax => Syntax;
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ICodeSyntax ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
     OrdinaryName Name { get; }
     IFixedList<IDeclarationNode> ReferencedDeclarations { get; }
 }
@@ -3371,10 +3298,10 @@ public partial interface IUnresolvedIdentifierNameExpressionNode : IUnresolvedOr
 {
     new IIdentifierNameSyntax Syntax { get; }
     IOrdinaryNameSyntax IUnresolvedOrdinaryNameExpressionNode.Syntax => Syntax;
+    INameExpressionSyntax INameExpressionNode.Syntax => Syntax;
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ICodeSyntax ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
     new IdentifierName Name
         => Syntax.Name;
     OrdinaryName IUnresolvedOrdinaryNameExpressionNode.Name => Name;
@@ -3389,10 +3316,10 @@ public partial interface IUnresolvedGenericNameExpressionNode : IUnresolvedOrdin
 {
     new IGenericNameSyntax Syntax { get; }
     IOrdinaryNameSyntax IUnresolvedOrdinaryNameExpressionNode.Syntax => Syntax;
+    INameExpressionSyntax INameExpressionNode.Syntax => Syntax;
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ICodeSyntax ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
     IFixedList<ITypeNode> TypeArguments { get; }
     new GenericName Name
         => Syntax.Name;
@@ -3409,10 +3336,10 @@ public partial interface IUnresolvedGenericNameExpressionNode : IUnresolvedOrdin
 public partial interface IUnresolvedQualifiedNameExpressionNode : IUnresolvedNameExpressionNode, IUnresolvedMemberAccessExpressionNode
 {
     new IQualifiedNameSyntax Syntax { get; }
+    INameExpressionSyntax INameExpressionNode.Syntax => Syntax;
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ICodeSyntax ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
     IMemberAccessExpressionSyntax IUnresolvedMemberAccessExpressionNode.Syntax => Syntax;
     new UnknownType Type
         => AzothType.Unknown;
@@ -14625,152 +14552,6 @@ file class NonInvocableInvocationExpressionNode : SemanticNode, INonInvocableInv
         ?? ExpressionTypesAspect.Expression_ImplicitFreeze_Insert(this)
         ?? ExpressionTypesAspect.Expression_Insert_PrepareToReturnExpression(this)
         ?? ExpressionPlainTypesAspect.Expression_Insert_ImplicitConversionExpression(this)
-        ?? base.Rewrite();
-}
-
-[GeneratedCode("AzothCompilerCodeGen", null)]
-file class IdentifierNameExpressionNode : SemanticNode, IIdentifierNameExpressionNode
-{
-    private IIdentifierNameExpressionNode Self { [Inline] get => this; }
-    private AttributeLock syncLock;
-    protected override bool MayHaveRewrite => true;
-
-    public IIdentifierNameSyntax Syntax { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
-    public CodeFile File
-        => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
-    public ValueIdScope ValueIdScope
-        => Inherited_ValueIdScope(GrammarAttribute.CurrentInheritanceContext());
-    public LexicalScope ContainingLexicalScope
-        => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
-            : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
-                Inherited_ContainingLexicalScope);
-    private LexicalScope? containingLexicalScope;
-    private bool containingLexicalScopeCached;
-    public IFixedList<IDeclarationNode> ReferencedDeclarations
-        => GrammarAttribute.IsCached(in referencedDeclarationsCached) ? referencedDeclarations!
-            : this.Synthetic(ref referencedDeclarationsCached, ref referencedDeclarations,
-                BindingAmbiguousNamesAspect.OrdinaryNameExpression_ReferencedDeclarations);
-    private IFixedList<IDeclarationNode>? referencedDeclarations;
-    private bool referencedDeclarationsCached;
-    public ValueId ValueId
-        => GrammarAttribute.IsCached(in valueIdCached) ? valueId
-            : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
-                ValueIdsAspect.AmbiguousExpression_ValueId);
-    private ValueId valueId;
-    private bool valueIdCached;
-
-    public IdentifierNameExpressionNode(IIdentifierNameSyntax syntax)
-    {
-        Syntax = syntax;
-    }
-
-    internal override IMaybePlainType? Inherited_ExpectedPlainType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ReferenceEquals(child, descendant))
-            return null;
-        return base.Inherited_ExpectedPlainType(child, descendant, ctx);
-    }
-
-    internal override IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ReferenceEquals(child, descendant))
-            return null;
-        return base.Inherited_ExpectedType(child, descendant, ctx);
-    }
-
-    internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ReferenceEquals(child, descendant))
-            return false;
-        return base.Inherited_ImplicitRecoveryAllowed(child, descendant, ctx);
-    }
-
-    internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ReferenceEquals(child, descendant))
-            return false;
-        return base.Inherited_ShouldPrepareToReturn(child, descendant, ctx);
-    }
-
-    protected override IChildTreeNode Rewrite()
-        => BindingAmbiguousNamesAspect.IdentifierNameExpression_ReplaceWith_NameExpression(this)
-        ?? base.Rewrite();
-}
-
-[GeneratedCode("AzothCompilerCodeGen", null)]
-file class GenericNameExpressionNode : SemanticNode, IGenericNameExpressionNode
-{
-    private IGenericNameExpressionNode Self { [Inline] get => this; }
-    private AttributeLock syncLock;
-    protected override bool MayHaveRewrite => true;
-
-    public IGenericNameSyntax Syntax { [DebuggerStepThrough] get; }
-    public IFixedList<ITypeNode> TypeArguments { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
-    public CodeFile File
-        => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
-    public ValueIdScope ValueIdScope
-        => Inherited_ValueIdScope(GrammarAttribute.CurrentInheritanceContext());
-    public LexicalScope ContainingLexicalScope
-        => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
-            : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
-                Inherited_ContainingLexicalScope);
-    private LexicalScope? containingLexicalScope;
-    private bool containingLexicalScopeCached;
-    public IFixedList<IDeclarationNode> ReferencedDeclarations
-        => GrammarAttribute.IsCached(in referencedDeclarationsCached) ? referencedDeclarations!
-            : this.Synthetic(ref referencedDeclarationsCached, ref referencedDeclarations,
-                BindingAmbiguousNamesAspect.OrdinaryNameExpression_ReferencedDeclarations);
-    private IFixedList<IDeclarationNode>? referencedDeclarations;
-    private bool referencedDeclarationsCached;
-    public ValueId ValueId
-        => GrammarAttribute.IsCached(in valueIdCached) ? valueId
-            : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
-                ValueIdsAspect.AmbiguousExpression_ValueId);
-    private ValueId valueId;
-    private bool valueIdCached;
-
-    public GenericNameExpressionNode(
-        IGenericNameSyntax syntax,
-        IEnumerable<ITypeNode> typeArguments)
-    {
-        Syntax = syntax;
-        TypeArguments = ChildList.Attach(this, typeArguments);
-    }
-
-    internal override IMaybePlainType? Inherited_ExpectedPlainType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ReferenceEquals(child, descendant))
-            return null;
-        return base.Inherited_ExpectedPlainType(child, descendant, ctx);
-    }
-
-    internal override IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ReferenceEquals(child, descendant))
-            return null;
-        return base.Inherited_ExpectedType(child, descendant, ctx);
-    }
-
-    internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ReferenceEquals(child, descendant))
-            return false;
-        return base.Inherited_ImplicitRecoveryAllowed(child, descendant, ctx);
-    }
-
-    internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ReferenceEquals(child, descendant))
-            return false;
-        return base.Inherited_ShouldPrepareToReturn(child, descendant, ctx);
-    }
-
-    protected override IChildTreeNode Rewrite()
-        => BindingAmbiguousNamesAspect.GenericNameExpression_ReplaceWith_NameExpression(this)
         ?? base.Rewrite();
 }
 

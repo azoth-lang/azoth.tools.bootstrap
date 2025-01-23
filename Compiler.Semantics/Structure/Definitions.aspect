@@ -171,11 +171,6 @@
 = NonInvocableInvocationExpression.TempAllArguments => TempArguments;
 = NonInvocableInvocationExpression.AllArguments => Arguments;
 
-// ---------- Ambiguous Name Expressions
-↑ OrdinaryNameExpression.Name: `OrdinaryName` => Syntax.Name;
-↑ IdentifierNameExpression.Name: `IdentifierName` => Syntax.Name;
-↑ GenericNameExpression.Name: `GenericName` => Syntax.Name;
-
 // ---------- Name Expressions
 ↑ UnqualifiedNamespaceName.Name: `IdentifierName` => Syntax.Name;
 ↑ QualifiedNamespaceName.Name: `IdentifierName` => (IdentifierName)Syntax.MemberName;

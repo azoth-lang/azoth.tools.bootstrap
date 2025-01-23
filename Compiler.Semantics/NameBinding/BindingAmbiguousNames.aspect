@@ -17,12 +17,6 @@
 // ---------- Operator Expressions
 ✎ AssignmentExpression PropertyNameLeftOperand rewrite;
 
-// ---------- Ambiguous Name Expressions
-↑ OrdinaryNameExpression.ReferencedDeclarations: Declaration*;
-= OrdinaryNameExpression.ReferencedDeclarations;
-✎ IdentifierNameExpression replace_with NameExpression;
-✎ GenericNameExpression replace_with NameExpression;
-
 // ---------- Name Expressions
 + FunctionGroupName.new.Validate;
 ✎ FunctionGroupName replace_with FunctionName;

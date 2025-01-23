@@ -283,20 +283,8 @@ InitializerInvocationExpression <: InvocationExpression = Syntax:`IInvocationExp
 NonInvocableInvocationExpression <: InvocationExpression = Syntax:`IInvocationExpressionSyntax`
     Expression:AmbiguousExpression Arguments:AmbiguousExpression*;
 
-// ---------- Ambiguous Name Expressions
-// TODO consider renaming to `UnresolvedNameExpression` because the final tree could have a bound
-// name that is still ambiguous (e.g. could not determine what it refers to). However, perhaps another
-// name is needed to distinguish between unresolved nodes and temp nodes.
-temp AmbiguousNameExpression <: AmbiguousExpression = Syntax:`INameExpressionSyntax`;
-temp AmbiguousName <: AmbiguousNameExpression;
-temp OrdinaryNameExpression <: AmbiguousName = Syntax:`IOrdinaryNameSyntax`;
-temp IdentifierNameExpression <: AmbiguousName, OrdinaryNameExpression
-    = Syntax:`IIdentifierNameSyntax`;
-temp GenericNameExpression <: AmbiguousName, OrdinaryNameExpression
-    = Syntax:`IGenericNameSyntax` TypeArguments:Type*;
-
 // ---------- Name Expressions
-NameExpression <: Expression, AmbiguousNameExpression = Syntax:`INameExpressionSyntax`;
+NameExpression <: Expression = Syntax:`INameExpressionSyntax`;
 LocalBindingNameExpression <: NameExpression = ReferencedDefinition:`IBindingNode`?;
 // TODO Name <: NameExpression
 NamespaceName <: NameExpression = ReferencedDeclarations:`INamespaceDeclarationNode`*;

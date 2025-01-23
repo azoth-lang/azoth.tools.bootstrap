@@ -302,37 +302,6 @@ internal static class SyntaxBinder
             _ => throw ExhaustiveMatch.Failed(syntax)
         };
 
-    private static ITypeNameNode TypeName(INameSyntax syntax)
-        => syntax switch
-        {
-            IOrdinaryNameSyntax syn => OrdinaryTypeName(syn),
-            IBuiltInTypeNameSyntax syn => BuiltInTypeName(syn),
-            IQualifiedNameSyntax syn => QualifiedTypeName(syn),
-            _ => throw ExhaustiveMatch.Failed(syntax)
-        };
-
-    [return: NotNullIfNotNull(nameof(syntax))]
-    private static IOrdinaryTypeNameNode? OrdinaryTypeName(IOrdinaryNameSyntax? syntax)
-        => syntax switch
-        {
-            null => null,
-            IIdentifierNameSyntax syn => IdentifierTypeName(syn),
-            IGenericNameSyntax syn => GenericTypeName(syn),
-            _ => throw ExhaustiveMatch.Failed(syntax)
-        };
-
-    private static IIdentifierTypeNameNode IdentifierTypeName(IIdentifierNameSyntax syntax)
-        => IIdentifierTypeNameNode.Create(syntax);
-
-    private static IGenericTypeNameNode GenericTypeName(IGenericNameSyntax syntax)
-        => IGenericTypeNameNode.Create(syntax, Types(syntax.GenericArguments));
-
-    private static IBuiltInTypeNameNode BuiltInTypeName(IBuiltInTypeNameSyntax syntax)
-        => IBuiltInTypeNameNode.Create(syntax);
-
-    private static IQualifiedTypeNameNode QualifiedTypeName(IQualifiedNameSyntax syntax)
-        => IQualifiedTypeNameNode.Create(syntax, TypeName(syntax.Context), Types(syntax.GenericArguments));
-
     private static IOptionalTypeNode OptionalType(IOptionalTypeSyntax syntax)
         => IOptionalTypeNode.Create(syntax, Type(syntax.Referent));
 
@@ -559,14 +528,45 @@ internal static class SyntaxBinder
     #endregion
 
     #region Names
+    private static ITypeNameNode TypeName(INameSyntax syntax)
+        => syntax switch
+        {
+            IBuiltInTypeNameSyntax syn => BuiltInTypeName(syn),
+            IOrdinaryNameSyntax syn => OrdinaryTypeName(syn),
+            IQualifiedNameSyntax syn => QualifiedTypeName(syn),
+            _ => throw ExhaustiveMatch.Failed(syntax)
+        };
+
+    private static IBuiltInTypeNameNode BuiltInTypeName(IBuiltInTypeNameSyntax syntax)
+        => IBuiltInTypeNameNode.Create(syntax);
+
+    [return: NotNullIfNotNull(nameof(syntax))]
+    private static IOrdinaryTypeNameNode? OrdinaryTypeName(IOrdinaryNameSyntax? syntax)
+        => syntax switch
+        {
+            null => null,
+            IIdentifierNameSyntax syn => IdentifierTypeName(syn),
+            IGenericNameSyntax syn => GenericTypeName(syn),
+            _ => throw ExhaustiveMatch.Failed(syntax)
+        };
+
+    private static IIdentifierTypeNameNode IdentifierTypeName(IIdentifierNameSyntax syntax)
+        => IIdentifierTypeNameNode.Create(syntax);
+
+    private static IGenericTypeNameNode GenericTypeName(IGenericNameSyntax syntax)
+        => IGenericTypeNameNode.Create(syntax, Types(syntax.GenericArguments));
+
+    private static IQualifiedTypeNameNode QualifiedTypeName(IQualifiedNameSyntax syntax)
+        => IQualifiedTypeNameNode.Create(syntax, TypeName(syntax.Context), Types(syntax.GenericArguments));
+
     private static IBuiltInTypeNameExpressionNode BuiltInTypeNameExpression(IBuiltInTypeNameSyntax syntax)
         => IBuiltInTypeNameExpressionNode.Create(syntax);
 
-    private static IIdentifierNameExpressionNode IdentifierNameExpression(IIdentifierNameSyntax syntax)
-        => IIdentifierNameExpressionNode.Create(syntax);
+    private static IUnresolvedIdentifierNameExpressionNode IdentifierNameExpression(IIdentifierNameSyntax syntax)
+        => IUnresolvedIdentifierNameExpressionNode.Create(syntax);
 
-    private static IGenericNameExpressionNode GenericNameExpression(IGenericNameSyntax syntax)
-        => IGenericNameExpressionNode.Create(syntax, Types(syntax.GenericArguments));
+    private static IUnresolvedGenericNameExpressionNode GenericNameExpression(IGenericNameSyntax syntax)
+        => IUnresolvedGenericNameExpressionNode.Create(syntax, Types(syntax.GenericArguments));
 
     private static IUnresolvedQualifiedNameExpressionNode QualifiedNameExpression(IQualifiedNameSyntax syntax)
         => IUnresolvedQualifiedNameExpressionNode.Create(syntax, Expression(syntax.Context), Types(syntax.GenericArguments));

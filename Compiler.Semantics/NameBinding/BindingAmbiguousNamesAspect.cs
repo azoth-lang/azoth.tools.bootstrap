@@ -161,17 +161,6 @@ internal static partial class BindingAmbiguousNamesAspect
     }
     #endregion
 
-    public static partial IFixedList<IDeclarationNode> OrdinaryNameExpression_ReferencedDeclarations(IOrdinaryNameExpressionNode node)
-        => node.ContainingLexicalScope.Lookup(node.Name).ToFixedList();
-
-    public static partial INameExpressionNode? IdentifierNameExpression_ReplaceWith_NameExpression(IIdentifierNameExpressionNode node)
-        // In prep for removing IdentifierNameExpression, always immediately rewrite to UnresolvedIdentifierNameExpression
-        => IUnresolvedIdentifierNameExpressionNode.Create(node.Syntax);
-
-    public static partial INameExpressionNode? GenericNameExpression_ReplaceWith_NameExpression(IGenericNameExpressionNode node)
-        // In prep for removing GenericNameExpression, always immediately rewrite to UnresolvedGenericNameExpression
-        => IUnresolvedGenericNameExpressionNode.Create(node.Syntax, node.TypeArguments);
-
     #region Name Expressions
     public static partial void Validate_FunctionGroupNameNode(
         INameExpressionSyntax syntax,
@@ -247,6 +236,8 @@ internal static partial class BindingAmbiguousNamesAspect
             node.ReferencedDeclarations, node.CallCandidates, node.CompatibleCallCandidates, node.SelectedCallCandidate,
             node.ReferencedDeclaration);
     }
+
+    // TODO diagnostics for errors binding InitializerGroupName?
     #endregion
 
     #region Unresolved Name Expressions

@@ -226,10 +226,6 @@ public static class ISemanticNodeExtensions
                     yield return child;
                 yield return n.Return;
                 yield break;
-            case IGenericNameExpressionNode n:
-                foreach (var child in n.TypeArguments)
-                    yield return child;
-                yield break;
             case IGenericParameterNode n:
                 yield return n.Constraint;
                 yield break;
@@ -253,8 +249,6 @@ public static class ISemanticNodeExtensions
                 yield return n.Exit;
                 yield break;
             case IGetterMethodSymbolNode n:
-                yield break;
-            case IIdentifierNameExpressionNode n:
                 yield break;
             case IIdentifierTypeNameNode n:
                 yield break;

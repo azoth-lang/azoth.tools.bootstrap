@@ -1,5 +1,3 @@
-using System;
-
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Validation;
 
 internal class SemanticTreeValidator
@@ -106,10 +104,6 @@ internal class SemanticTreeValidator
                 _ = n.File;
                 _ = n.Type;
                 _ = n.Symbol;
-                break;
-            case IIdentifierNameExpressionNode n:
-                if (n.Name is null)
-                    throw new InvalidOperationException("Nodes with null name ought to be rewritten away");
                 break;
             case IMissingNameExpressionNode _:
                 break;
