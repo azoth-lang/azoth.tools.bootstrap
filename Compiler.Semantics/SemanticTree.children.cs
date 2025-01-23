@@ -522,7 +522,7 @@ public static class ISemanticNodeExtensions
                     yield return child;
                 yield break;
             case IUnresolvedQualifiedNameExpressionNode n:
-                yield return n.TempContext;
+                yield return n.Context;
                 foreach (var child in n.TypeArguments)
                     yield return child;
                 yield break;

@@ -356,9 +356,8 @@ UnresolvedIdentifierNameExpression <: UnresolvedOrdinaryNameExpression
     = Syntax:`IIdentifierNameSyntax`;
 UnresolvedGenericNameExpression <: UnresolvedOrdinaryNameExpression
     = Syntax:`IGenericNameSyntax` TypeArguments:Type*;
-// TODO Context should be a name
 UnresolvedQualifiedNameExpression <: UnresolvedNameExpression, UnresolvedMemberAccessExpression
-    = Syntax:`IQualifiedNameSyntax` /Context/ /TypeArguments/;
+    = Syntax:`IQualifiedNameSyntax` Context:NameExpression /TypeArguments/;
 
 // ---------- Capability Expressions
 temp AmbiguousMoveExpression <: AmbiguousExpression = Syntax:`IMoveExpressionSyntax` Referent:AmbiguousExpression;

@@ -3341,6 +3341,11 @@ public partial interface IUnresolvedQualifiedNameExpressionNode : IUnresolvedNam
     ICodeSyntax ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     IMemberAccessExpressionSyntax IUnresolvedMemberAccessExpressionNode.Syntax => Syntax;
+    new INameExpressionNode Context { get; }
+    new INameExpressionNode CurrentContext { get; }
+    IAmbiguousExpressionNode IUnresolvedMemberAccessExpressionNode.TempContext => Context;
+    IExpressionNode? IUnresolvedMemberAccessExpressionNode.Context => Context;
+    IAmbiguousExpressionNode IUnresolvedMemberAccessExpressionNode.CurrentContext => CurrentContext;
     new UnknownType Type
         => AzothType.Unknown;
     UnknownType IUnresolvedNameExpressionNode.Type => Type;
@@ -3353,7 +3358,7 @@ public partial interface IUnresolvedQualifiedNameExpressionNode : IUnresolvedNam
 
     public static IUnresolvedQualifiedNameExpressionNode Create(
         IQualifiedNameSyntax syntax,
-        IAmbiguousExpressionNode context,
+        INameExpressionNode context,
         IEnumerable<ITypeNode> typeArguments)
         => new UnresolvedQualifiedNameExpressionNode(syntax, context, typeArguments);
 }
@@ -17061,13 +17066,12 @@ file class UnresolvedQualifiedNameExpressionNode : SemanticNode, IUnresolvedQual
     protected override bool MayHaveRewrite => true;
 
     public IQualifiedNameSyntax Syntax { [DebuggerStepThrough] get; }
-    private RewritableChild<IAmbiguousExpressionNode> context;
+    private RewritableChild<INameExpressionNode> context;
     private bool contextCached;
-    public IAmbiguousExpressionNode TempContext
+    public INameExpressionNode Context
         => GrammarAttribute.IsCached(in contextCached) ? context.UnsafeValue
             : this.RewritableChild(ref contextCached, ref context);
-    public IExpressionNode? Context => TempContext as IExpressionNode;
-    public IAmbiguousExpressionNode CurrentContext => context.UnsafeValue;
+    public INameExpressionNode CurrentContext => context.UnsafeValue;
     public IFixedList<ITypeNode> TypeArguments { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
@@ -17127,7 +17131,7 @@ file class UnresolvedQualifiedNameExpressionNode : SemanticNode, IUnresolvedQual
 
     public UnresolvedQualifiedNameExpressionNode(
         IQualifiedNameSyntax syntax,
-        IAmbiguousExpressionNode context,
+        INameExpressionNode context,
         IEnumerable<ITypeNode> typeArguments)
     {
         Syntax = syntax;

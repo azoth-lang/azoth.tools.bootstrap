@@ -46,7 +46,10 @@ public partial interface <#= Emit.TypeName(node.Defines) #><#= Emit.BaseTypes(no
 <#                  break;#>
 <#          } #>
 <#          foreach (var baseAttribute in Build.BaseAttributes(node, attribute)) { #>
-    <#= Emit.Type(baseAttribute.Type) #> <#= Emit.TypeName(baseAttribute.Node.Defines) #>.<#= baseAttribute.Name #><#= Emit.Parameters(baseAttribute) #> => <#= attribute.Name #><#= Emit.Parameters(attribute) #>;
+<#              if (baseAttribute.IsTemp && !attribute.IsTemp) { #>
+    <#= Emit.Type(baseAttribute.Type) #> <#= Emit.TypeName(baseAttribute.Node.Defines) #>.<#= baseAttribute.TempName #><#= Emit.Parameters(baseAttribute) #> => <#= attribute.Name #><#= Emit.Parameters(attribute) #>;
+<#              } #>
+    <#= Emit.Type(baseAttribute.FinalType) #> <#= Emit.TypeName(baseAttribute.Node.Defines) #>.<#= baseAttribute.Name #><#= Emit.Parameters(baseAttribute) #> => <#= attribute.Name #><#= Emit.Parameters(attribute) #>;
 <#              if (baseAttribute.IsChild && baseAttribute.MayHaveRewrites) { #>
     <#= Emit.Type(baseAttribute.Type) #> <#= Emit.TypeName(baseAttribute.Node.Defines) #>.<#= baseAttribute.CurrentName #><#= Emit.Parameters(baseAttribute) #> => <#= attribute.CurrentName #><#= Emit.Parameters(attribute) #>;
 <#              } #>
