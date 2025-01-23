@@ -173,8 +173,8 @@ UnqualifiedTypeName <: TypeName = Syntax:`IUnqualifiedNameSyntax`;
 BuiltInTypeName <: UnqualifiedTypeName = Syntax:`IBuiltInTypeNameSyntax`;
 OrdinaryTypeName <: UnqualifiedTypeName = Syntax:`IOrdinaryNameSyntax`;
 IdentifierTypeName <: OrdinaryTypeName = Syntax:`IIdentifierNameSyntax`;
-GenericTypeName <: OrdinaryTypeName = Syntax:`IGenericNameSyntax` TypeArguments:Type*;
-QualifiedTypeName <: TypeName = Syntax:`IQualifiedNameSyntax` Context:TypeName TypeArguments:Type*;
+GenericTypeName <: OrdinaryTypeName = Syntax:`IGenericNameSyntax` GenericArguments:Type*;
+QualifiedTypeName <: TypeName = Syntax:`IQualifiedNameSyntax` Context:TypeName GenericArguments:Type*;
 OptionalType <: Type = Syntax:`IOptionalTypeSyntax` Referent:Type;
 CapabilityType <: Type = Syntax:`ICapabilityTypeSyntax` Capability Referent:Type;
 FunctionType <: Type = Syntax:`IFunctionTypeSyntax` Parameters:ParameterType* Return:Type;
@@ -225,7 +225,7 @@ NeverTypedExpression <: Expression;
 /// binding fails can stay unresolved.
 UnresolvedExpression <: Expression;
 concrete UnresolvedMemberAccessExpression <: UnresolvedExpression
-    = Syntax:`IMemberAccessExpressionSyntax` Context:AmbiguousExpression TypeArguments:Type*;
+    = Syntax:`IMemberAccessExpressionSyntax` Context:AmbiguousExpression GenericArguments:Type*;
 
 // ---------- Literal Expressions
 LiteralExpression <: Expression = Syntax:`ILiteralExpressionSyntax`;
@@ -291,14 +291,14 @@ NameExpression <: Expression = Syntax:`INameExpressionSyntax`;
 LocalBindingNameExpression <: NameExpression = ReferencedDefinition:`IBindingNode`?;
 // TODO rename to *NameExpression
 FunctionGroupName <: NameExpression
-    = Syntax:`INameExpressionSyntax` Context:NameExpression? FunctionName:`OrdinaryName` TypeArguments:Type*
+    = Syntax:`INameExpressionSyntax` Context:NameExpression? FunctionName:`OrdinaryName` GenericArguments:Type*
     ReferencedDeclarations:{`IFunctionInvocableDeclarationNode`};
 /// Reifying to FunctionName controls the transition from UnresolvedInvocation to FunctionInvocation.
 /// The UnresolvedInvocation provides an expected type based on the arguments. Once the overload has
 /// been resolved, the FunctionInvocation provides expected types based on the function called.
 // TODO rename to *NameExpression
 FunctionName <: NameExpression
-    = Syntax:`INameExpressionSyntax` Context:NameExpression?  FunctionName:`OrdinaryName` TypeArguments:Type*
+    = Syntax:`INameExpressionSyntax` Context:NameExpression?  FunctionName:`OrdinaryName` GenericArguments:Type*
     ReferencedDeclarations:{`IFunctionInvocableDeclarationNode`}
     CallCandidates:{`ICallCandidate<IFunctionInvocableDeclarationNode>`}
     CompatibleCallCandidates:{`ICallCandidate<IFunctionInvocableDeclarationNode>`}
@@ -306,12 +306,12 @@ FunctionName <: NameExpression
     ReferencedDeclaration:`IFunctionInvocableDeclarationNode`?;
 // TODO rename to *NameExpression
 MethodGroupName <: NameExpression = Syntax:`IMemberAccessExpressionSyntax`
-    Context:Expression MethodName:`OrdinaryName` TypeArguments:Type*
+    Context:Expression MethodName:`OrdinaryName` GenericArguments:Type*
     ReferencedDeclarations:{`IOrdinaryMethodDeclarationNode`};
 /// See comment on FunctionName for why this exists.
 // TODO rename to *NameExpression
 MethodName <: NameExpression = Syntax:`IMemberAccessExpressionSyntax`
-    Context:Expression MethodName:`OrdinaryName` TypeArguments:Type*
+    Context:Expression MethodName:`OrdinaryName` GenericArguments:Type*
     ReferencedDeclarations:{`IOrdinaryMethodDeclarationNode`}
     CallCandidates:{`ICallCandidate<IOrdinaryMethodDeclarationNode>`}
     CompatibleCallCandidates:{`ICallCandidate<IOrdinaryMethodDeclarationNode>`}
@@ -351,16 +351,16 @@ UnqualifiedNamespaceName <: NamespaceName
 QualifiedNamespaceName <: NamespaceName
     = Syntax:`IMemberAccessExpressionSyntax` Context:NamespaceName /ReferencedDeclarations/;
 TypeNameExpression <: Name = Syntax:`INameExpressionSyntax`
-    TypeArguments:Type* ReferencedDeclaration:`ITypeDeclarationNode`;
+    GenericArguments:Type* ReferencedDeclaration:`ITypeDeclarationNode`;
 // TODO add to UnqualifiedTypeNameExpression
 // TODO merge with BuiltInTypeName and keep the name "BuiltInTypeName" because it really isn't an expression
 BuiltInTypeNameExpression <: Name
     = Syntax:`IBuiltInTypeNameSyntax`;
 OrdinaryTypeNameExpression <: TypeNameExpression
-    = Syntax:`IOrdinaryNameSyntax` /TypeArguments/ /ReferencedDeclaration/;
+    = Syntax:`IOrdinaryNameSyntax` /GenericArguments/ /ReferencedDeclaration/;
 // TODO Context could be another type so it should be `Name`
 QualifiedTypeNameExpression <: TypeNameExpression = Syntax:`IMemberAccessExpressionSyntax`
-    Context:NamespaceName /TypeArguments/ /ReferencedDeclaration/;
+    Context:NamespaceName /GenericArguments/ /ReferencedDeclaration/;
 
 // ---------- Unresolved Names
 // TODO use for both this and types so that type names can be qualified
@@ -370,11 +370,11 @@ UnresolvedOrdinaryName <: UnresolvedName
 UnresolvedIdentifierName <: UnresolvedOrdinaryName
     = Syntax:`IIdentifierNameSyntax`;
 UnresolvedGenericName <: UnresolvedOrdinaryName
-    = Syntax:`IGenericNameSyntax` TypeArguments:Type*;
+    = Syntax:`IGenericNameSyntax` GenericArguments:Type*;
 concrete UnresolvedQualifiedName <: UnresolvedName, UnresolvedMemberAccessExpression
-    = Syntax:`IQualifiedNameSyntax` Context:NameExpression /TypeArguments/;
+    = Syntax:`IQualifiedNameSyntax` Context:NameExpression /GenericArguments/;
 UnresolvedNamespaceQualifiedName <: UnresolvedQualifiedName
-    = /Syntax/ Context:NamespaceName /TypeArguments/ ReferencedDeclarations:{`INamespaceMemberDeclarationNode`};
+    = /Syntax/ Context:NamespaceName /GenericArguments/ ReferencedDeclarations:{`INamespaceMemberDeclarationNode`};
 
 // ---------- Capability Expressions
 temp AmbiguousMoveExpression <: AmbiguousExpression = Syntax:`IMoveExpressionSyntax` Referent:AmbiguousExpression;

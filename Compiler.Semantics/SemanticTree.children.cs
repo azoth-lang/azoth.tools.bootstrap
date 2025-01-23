@@ -200,7 +200,7 @@ public static class ISemanticNodeExtensions
             case IFunctionGroupNameNode n:
                 if (n.Context is not null)
                     yield return n.Context;
-                foreach (var child in n.TypeArguments)
+                foreach (var child in n.GenericArguments)
                     yield return child;
                 yield break;
             case IFunctionInvocationExpressionNode n:
@@ -211,7 +211,7 @@ public static class ISemanticNodeExtensions
             case IFunctionNameNode n:
                 if (n.Context is not null)
                     yield return n.Context;
-                foreach (var child in n.TypeArguments)
+                foreach (var child in n.GenericArguments)
                     yield return child;
                 yield break;
             case IFunctionReferenceInvocationExpressionNode n:
@@ -232,7 +232,7 @@ public static class ISemanticNodeExtensions
             case IGenericParameterSymbolNode n:
                 yield break;
             case IGenericTypeNameNode n:
-                foreach (var child in n.TypeArguments)
+                foreach (var child in n.GenericArguments)
                     yield return child;
                 yield break;
             case IGetterInvocationExpressionNode n:
@@ -294,7 +294,7 @@ public static class ISemanticNodeExtensions
                 yield break;
             case IMethodGroupNameNode n:
                 yield return n.Context;
-                foreach (var child in n.TypeArguments)
+                foreach (var child in n.GenericArguments)
                     yield return child;
                 yield break;
             case IMethodInvocationExpressionNode n:
@@ -304,7 +304,7 @@ public static class ISemanticNodeExtensions
                 yield break;
             case IMethodNameNode n:
                 yield return n.Context;
-                foreach (var child in n.TypeArguments)
+                foreach (var child in n.GenericArguments)
                     yield return child;
                 yield break;
             case IMethodSelfParameterNode n:
@@ -386,7 +386,7 @@ public static class ISemanticNodeExtensions
             case IOrdinaryMethodSymbolNode n:
                 yield break;
             case IOrdinaryTypeNameExpressionNode n:
-                foreach (var child in n.TypeArguments)
+                foreach (var child in n.GenericArguments)
                     yield return child;
                 yield break;
             case IPackageFacetNode n:
@@ -424,12 +424,12 @@ public static class ISemanticNodeExtensions
                 yield break;
             case IQualifiedTypeNameExpressionNode n:
                 yield return n.Context;
-                foreach (var child in n.TypeArguments)
+                foreach (var child in n.GenericArguments)
                     yield return child;
                 yield break;
             case IQualifiedTypeNameNode n:
                 yield return n.Context;
-                foreach (var child in n.TypeArguments)
+                foreach (var child in n.GenericArguments)
                     yield return child;
                 yield break;
             case IResultStatementNode n:
@@ -511,7 +511,7 @@ public static class ISemanticNodeExtensions
             case IUnqualifiedNamespaceNameNode n:
                 yield break;
             case IUnresolvedGenericNameNode n:
-                foreach (var child in n.TypeArguments)
+                foreach (var child in n.GenericArguments)
                     yield return child;
                 yield break;
             case IUnresolvedIdentifierNameNode n:
@@ -523,17 +523,17 @@ public static class ISemanticNodeExtensions
                 yield break;
             case IUnresolvedNamespaceQualifiedNameNode n:
                 yield return n.Context;
-                foreach (var child in n.TypeArguments)
+                foreach (var child in n.GenericArguments)
                     yield return child;
                 yield break;
             case IUnresolvedQualifiedNameNode n:
                 yield return n.Context;
-                foreach (var child in n.TypeArguments)
+                foreach (var child in n.GenericArguments)
                     yield return child;
                 yield break;
             case IUnresolvedMemberAccessExpressionNode n:
                 yield return n.TempContext;
-                foreach (var child in n.TypeArguments)
+                foreach (var child in n.GenericArguments)
                     yield return child;
                 yield break;
             case IUnsafeExpressionNode n:

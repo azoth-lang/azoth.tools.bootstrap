@@ -100,7 +100,7 @@ internal static partial class TypeDefinitionsAspect
     {
         CheckSupertypesForCycle(node, diagnostics);
 
-        CheckTypeArgumentsAreConstructable(node, diagnostics);
+        CheckGenericArgumentsAreConstructable(node, diagnostics);
 
         CheckSupertypesMustBeClassOrTrait(node, diagnostics);
 
@@ -121,10 +121,10 @@ internal static partial class TypeDefinitionsAspect
     private static bool InheritsFrom(this IOrdinaryTypeNameNode node, OrdinaryTypeConstructor type)
         => node.ReferencedDeclaration?.Supertypes.Any(t => t.TypeConstructor.Equals(type)) ?? false;
 
-    private static void CheckTypeArgumentsAreConstructable(ITypeDefinitionNode node, DiagnosticCollectionBuilder diagnostics)
+    private static void CheckGenericArgumentsAreConstructable(ITypeDefinitionNode node, DiagnosticCollectionBuilder diagnostics)
     {
         foreach (IOrdinaryTypeNameNode supertypeName in node.SupertypeNames)
-            ExpressionTypesAspect.CheckTypeArgumentsAreConstructable(supertypeName, diagnostics);
+            ExpressionTypesAspect.CheckGenericArgumentsAreConstructable(supertypeName, diagnostics);
     }
 
     private static void CheckSupertypesMustBeClassOrTrait(ITypeDefinitionNode typeNode, DiagnosticCollectionBuilder diagnostics)

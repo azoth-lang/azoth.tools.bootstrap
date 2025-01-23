@@ -12,7 +12,7 @@ internal static partial class BareTypeAspect
         => BuildBareType(node.ReferencedDeclaration?.TypeConstructor, []);
 
     public static partial BareType? GenericTypeName_NamedBareType(IGenericTypeNameNode node)
-        => BuildBareType(node.ReferencedDeclaration?.TypeConstructor, node.TypeArguments.Select(t => t.NamedType).ToFixedList());
+        => BuildBareType(node.ReferencedDeclaration?.TypeConstructor, node.GenericArguments.Select(t => t.NamedType).ToFixedList());
 
     public static partial BareType? BuiltInTypeName_NamedBareType(IBuiltInTypeNameNode node)
         => BuildBareType(node.ReferencedDeclaration?.TypeConstructor, []);
@@ -24,9 +24,9 @@ internal static partial class BareTypeAspect
     public static partial BareType? TypeNameExpression_NamedBareType(ITypeNameExpressionNode node)
     {
         var typeFactory = node.ReferencedDeclaration.TypeConstructor;
-        var typeArguments = node.TypeArguments.Select(a => a.NamedType).ToFixedList();
-        if (typeArguments.Count != node.TypeArguments.Count)
+        var genericArguments = node.GenericArguments.Select(a => a.NamedType).ToFixedList();
+        if (genericArguments.Count != node.GenericArguments.Count)
             return null;
-        return typeFactory.TryConstruct(containingType: null, typeArguments);
+        return typeFactory.TryConstruct(containingType: null, genericArguments);
     }
 }

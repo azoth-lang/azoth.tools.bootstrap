@@ -1499,7 +1499,7 @@ public partial interface IGenericTypeNameNode : IOrdinaryTypeNameNode
     ITypeSyntax ITypeNode.Syntax => Syntax;
     ICodeSyntax ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    IFixedList<ITypeNode> TypeArguments { get; }
+    IFixedList<ITypeNode> GenericArguments { get; }
     new GenericName Name
         => Syntax.Name;
     OrdinaryName IOrdinaryTypeNameNode.Name => Name;
@@ -1507,8 +1507,8 @@ public partial interface IGenericTypeNameNode : IOrdinaryTypeNameNode
 
     public static IGenericTypeNameNode Create(
         IGenericNameSyntax syntax,
-        IEnumerable<ITypeNode> typeArguments)
-        => new GenericTypeNameNode(syntax, typeArguments);
+        IEnumerable<ITypeNode> genericArguments)
+        => new GenericTypeNameNode(syntax, genericArguments);
 }
 
 [Closed(typeof(QualifiedTypeNameNode))]
@@ -1521,7 +1521,7 @@ public partial interface IQualifiedTypeNameNode : ITypeNameNode
     ICodeSyntax ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     ITypeNameNode Context { get; }
-    IFixedList<ITypeNode> TypeArguments { get; }
+    IFixedList<ITypeNode> GenericArguments { get; }
     IMaybePlainType ITypeNode.NamedPlainType
         => throw new NotImplementedException();
     BareType? ITypeNameNode.NamedBareType
@@ -1530,8 +1530,8 @@ public partial interface IQualifiedTypeNameNode : ITypeNameNode
     public static IQualifiedTypeNameNode Create(
         IQualifiedNameSyntax syntax,
         ITypeNameNode context,
-        IEnumerable<ITypeNode> typeArguments)
-        => new QualifiedTypeNameNode(syntax, context, typeArguments);
+        IEnumerable<ITypeNode> genericArguments)
+        => new QualifiedTypeNameNode(syntax, context, genericArguments);
 }
 
 [Closed(typeof(OptionalTypeNode))]
@@ -2117,7 +2117,7 @@ public partial interface IUnresolvedMemberAccessExpressionNode : IUnresolvedExpr
     IAmbiguousExpressionNode TempContext { get; }
     IExpressionNode? Context { get; }
     IAmbiguousExpressionNode CurrentContext { get; }
-    IFixedList<ITypeNode> TypeArguments { get; }
+    IFixedList<ITypeNode> GenericArguments { get; }
     PackageNameScope PackageNameScope();
     new UnknownType Type
         => AzothType.Unknown;
@@ -2130,8 +2130,8 @@ public partial interface IUnresolvedMemberAccessExpressionNode : IUnresolvedExpr
     public static IUnresolvedMemberAccessExpressionNode Create(
         IMemberAccessExpressionSyntax syntax,
         IAmbiguousExpressionNode context,
-        IEnumerable<ITypeNode> typeArguments)
-        => new UnresolvedMemberAccessExpressionNode(syntax, context, typeArguments);
+        IEnumerable<ITypeNode> genericArguments)
+        => new UnresolvedMemberAccessExpressionNode(syntax, context, genericArguments);
 }
 
 [Closed(
@@ -2841,7 +2841,7 @@ public partial interface IFunctionGroupNameNode : INameExpressionNode
     INameExpressionNode? Context { get; }
     INameExpressionNode? CurrentContext { get; }
     OrdinaryName FunctionName { get; }
-    IFixedList<ITypeNode> TypeArguments { get; }
+    IFixedList<ITypeNode> GenericArguments { get; }
     IFixedSet<IFunctionInvocableDeclarationNode> ReferencedDeclarations { get; }
     new UnknownType Type
         => AzothType.Unknown;
@@ -2860,9 +2860,9 @@ public partial interface IFunctionGroupNameNode : INameExpressionNode
         INameExpressionSyntax syntax,
         INameExpressionNode? context,
         OrdinaryName functionName,
-        IEnumerable<ITypeNode> typeArguments,
+        IEnumerable<ITypeNode> genericArguments,
         IEnumerable<IFunctionInvocableDeclarationNode> referencedDeclarations)
-        => new FunctionGroupNameNode(syntax, context, functionName, typeArguments, referencedDeclarations);
+        => new FunctionGroupNameNode(syntax, context, functionName, genericArguments, referencedDeclarations);
 }
 
 [Closed(typeof(FunctionNameNode))]
@@ -2872,7 +2872,7 @@ public partial interface IFunctionNameNode : INameExpressionNode
     INameExpressionNode? Context { get; }
     INameExpressionNode? CurrentContext { get; }
     OrdinaryName FunctionName { get; }
-    IFixedList<ITypeNode> TypeArguments { get; }
+    IFixedList<ITypeNode> GenericArguments { get; }
     IFixedSet<IFunctionInvocableDeclarationNode> ReferencedDeclarations { get; }
     IFixedSet<ICallCandidate<IFunctionInvocableDeclarationNode>> CallCandidates { get; }
     IFixedSet<ICallCandidate<IFunctionInvocableDeclarationNode>> CompatibleCallCandidates { get; }
@@ -2885,13 +2885,13 @@ public partial interface IFunctionNameNode : INameExpressionNode
         INameExpressionSyntax syntax,
         INameExpressionNode? context,
         OrdinaryName functionName,
-        IEnumerable<ITypeNode> typeArguments,
+        IEnumerable<ITypeNode> genericArguments,
         IEnumerable<IFunctionInvocableDeclarationNode> referencedDeclarations,
         IEnumerable<ICallCandidate<IFunctionInvocableDeclarationNode>> callCandidates,
         IEnumerable<ICallCandidate<IFunctionInvocableDeclarationNode>> compatibleCallCandidates,
         ICallCandidate<IFunctionInvocableDeclarationNode>? selectedCallCandidate,
         IFunctionInvocableDeclarationNode? referencedDeclaration)
-        => new FunctionNameNode(syntax, context, functionName, typeArguments, referencedDeclarations, callCandidates, compatibleCallCandidates, selectedCallCandidate, referencedDeclaration);
+        => new FunctionNameNode(syntax, context, functionName, genericArguments, referencedDeclarations, callCandidates, compatibleCallCandidates, selectedCallCandidate, referencedDeclaration);
 }
 
 [Closed(typeof(MethodGroupNameNode))]
@@ -2906,7 +2906,7 @@ public partial interface IMethodGroupNameNode : INameExpressionNode
     IExpressionNode Context { get; }
     IExpressionNode CurrentContext { get; }
     OrdinaryName MethodName { get; }
-    IFixedList<ITypeNode> TypeArguments { get; }
+    IFixedList<ITypeNode> GenericArguments { get; }
     IFixedSet<IOrdinaryMethodDeclarationNode> ReferencedDeclarations { get; }
     new UnknownType Type
         => AzothType.Unknown;
@@ -2925,9 +2925,9 @@ public partial interface IMethodGroupNameNode : INameExpressionNode
         IMemberAccessExpressionSyntax syntax,
         IExpressionNode context,
         OrdinaryName methodName,
-        IEnumerable<ITypeNode> typeArguments,
+        IEnumerable<ITypeNode> genericArguments,
         IEnumerable<IOrdinaryMethodDeclarationNode> referencedDeclarations)
-        => new MethodGroupNameNode(syntax, context, methodName, typeArguments, referencedDeclarations);
+        => new MethodGroupNameNode(syntax, context, methodName, genericArguments, referencedDeclarations);
 }
 
 [Closed(typeof(MethodNameNode))]
@@ -2942,7 +2942,7 @@ public partial interface IMethodNameNode : INameExpressionNode
     IExpressionNode Context { get; }
     IExpressionNode CurrentContext { get; }
     OrdinaryName MethodName { get; }
-    IFixedList<ITypeNode> TypeArguments { get; }
+    IFixedList<ITypeNode> GenericArguments { get; }
     IFixedSet<IOrdinaryMethodDeclarationNode> ReferencedDeclarations { get; }
     IFixedSet<ICallCandidate<IOrdinaryMethodDeclarationNode>> CallCandidates { get; }
     IFixedSet<ICallCandidate<IOrdinaryMethodDeclarationNode>> CompatibleCallCandidates { get; }
@@ -2955,13 +2955,13 @@ public partial interface IMethodNameNode : INameExpressionNode
         IMemberAccessExpressionSyntax syntax,
         IExpressionNode context,
         OrdinaryName methodName,
-        IEnumerable<ITypeNode> typeArguments,
+        IEnumerable<ITypeNode> genericArguments,
         IEnumerable<IOrdinaryMethodDeclarationNode> referencedDeclarations,
         IEnumerable<ICallCandidate<IOrdinaryMethodDeclarationNode>> callCandidates,
         IEnumerable<ICallCandidate<IOrdinaryMethodDeclarationNode>> compatibleCallCandidates,
         ICallCandidate<IOrdinaryMethodDeclarationNode>? selectedCallCandidate,
         IOrdinaryMethodDeclarationNode? referencedDeclaration)
-        => new MethodNameNode(syntax, context, methodName, typeArguments, referencedDeclarations, callCandidates, compatibleCallCandidates, selectedCallCandidate, referencedDeclaration);
+        => new MethodNameNode(syntax, context, methodName, genericArguments, referencedDeclarations, callCandidates, compatibleCallCandidates, selectedCallCandidate, referencedDeclaration);
 }
 
 [Closed(typeof(FieldAccessExpressionNode))]
@@ -3191,7 +3191,7 @@ public partial interface IQualifiedNamespaceNameNode : INamespaceNameNode
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface ITypeNameExpressionNode : INameNode
 {
-    IFixedList<ITypeNode> TypeArguments { get; }
+    IFixedList<ITypeNode> GenericArguments { get; }
     ITypeDeclarationNode ReferencedDeclaration { get; }
     OrdinaryName Name { get; }
     IMaybePlainType NamedPlainType { get; }
@@ -3240,9 +3240,9 @@ public partial interface IOrdinaryTypeNameExpressionNode : ITypeNameExpressionNo
 
     public static IOrdinaryTypeNameExpressionNode Create(
         IOrdinaryNameSyntax syntax,
-        IEnumerable<ITypeNode> typeArguments,
+        IEnumerable<ITypeNode> genericArguments,
         ITypeDeclarationNode referencedDeclaration)
-        => new OrdinaryTypeNameExpressionNode(syntax, typeArguments, referencedDeclaration);
+        => new OrdinaryTypeNameExpressionNode(syntax, genericArguments, referencedDeclaration);
 }
 
 [Closed(typeof(QualifiedTypeNameExpressionNode))]
@@ -3262,9 +3262,9 @@ public partial interface IQualifiedTypeNameExpressionNode : ITypeNameExpressionN
     public static IQualifiedTypeNameExpressionNode Create(
         IMemberAccessExpressionSyntax syntax,
         INamespaceNameNode context,
-        IEnumerable<ITypeNode> typeArguments,
+        IEnumerable<ITypeNode> genericArguments,
         ITypeDeclarationNode referencedDeclaration)
-        => new QualifiedTypeNameExpressionNode(syntax, context, typeArguments, referencedDeclaration);
+        => new QualifiedTypeNameExpressionNode(syntax, context, genericArguments, referencedDeclaration);
 }
 
 [Closed(
@@ -3327,15 +3327,15 @@ public partial interface IUnresolvedGenericNameNode : IUnresolvedOrdinaryNameNod
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ICodeSyntax ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    IFixedList<ITypeNode> TypeArguments { get; }
+    IFixedList<ITypeNode> GenericArguments { get; }
     new GenericName Name
         => Syntax.Name;
     OrdinaryName IUnresolvedOrdinaryNameNode.Name => Name;
 
     public static IUnresolvedGenericNameNode Create(
         IGenericNameSyntax syntax,
-        IEnumerable<ITypeNode> typeArguments)
-        => new UnresolvedGenericNameNode(syntax, typeArguments);
+        IEnumerable<ITypeNode> genericArguments)
+        => new UnresolvedGenericNameNode(syntax, genericArguments);
 }
 
 [Closed(
@@ -3368,8 +3368,8 @@ public partial interface IUnresolvedQualifiedNameNode : IUnresolvedNameNode, IUn
     public static IUnresolvedQualifiedNameNode Create(
         IQualifiedNameSyntax syntax,
         INameExpressionNode context,
-        IEnumerable<ITypeNode> typeArguments)
-        => new UnresolvedQualifiedNameNode(syntax, context, typeArguments);
+        IEnumerable<ITypeNode> genericArguments)
+        => new UnresolvedQualifiedNameNode(syntax, context, genericArguments);
 }
 
 [Closed(typeof(UnresolvedNamespaceQualifiedNameNode))]
@@ -3388,9 +3388,9 @@ public partial interface IUnresolvedNamespaceQualifiedNameNode : IUnresolvedQual
     public static IUnresolvedNamespaceQualifiedNameNode Create(
         IQualifiedNameSyntax syntax,
         INamespaceNameNode context,
-        IEnumerable<ITypeNode> typeArguments,
+        IEnumerable<ITypeNode> genericArguments,
         IEnumerable<INamespaceMemberDeclarationNode> referencedDeclarations)
-        => new UnresolvedNamespaceQualifiedNameNode(syntax, context, typeArguments, referencedDeclarations);
+        => new UnresolvedNamespaceQualifiedNameNode(syntax, context, genericArguments, referencedDeclarations);
 }
 
 [Closed(typeof(AmbiguousMoveExpressionNode))]
@@ -8493,7 +8493,7 @@ file class GenericTypeNameNode : SemanticNode, IGenericTypeNameNode
     private AttributeLock syncLock;
 
     public IGenericNameSyntax Syntax { [DebuggerStepThrough] get; }
-    public IFixedList<ITypeNode> TypeArguments { [DebuggerStepThrough] get; }
+    public IFixedList<ITypeNode> GenericArguments { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -8537,10 +8537,10 @@ file class GenericTypeNameNode : SemanticNode, IGenericTypeNameNode
 
     public GenericTypeNameNode(
         IGenericNameSyntax syntax,
-        IEnumerable<ITypeNode> typeArguments)
+        IEnumerable<ITypeNode> genericArguments)
     {
         Syntax = syntax;
-        TypeArguments = ChildList.Attach(this, typeArguments);
+        GenericArguments = ChildList.Attach(this, genericArguments);
     }
 
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
@@ -8562,7 +8562,7 @@ file class QualifiedTypeNameNode : SemanticNode, IQualifiedTypeNameNode
 
     public IQualifiedNameSyntax Syntax { [DebuggerStepThrough] get; }
     public ITypeNameNode Context { [DebuggerStepThrough] get; }
-    public IFixedList<ITypeNode> TypeArguments { [DebuggerStepThrough] get; }
+    public IFixedList<ITypeNode> GenericArguments { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -8589,11 +8589,11 @@ file class QualifiedTypeNameNode : SemanticNode, IQualifiedTypeNameNode
     public QualifiedTypeNameNode(
         IQualifiedNameSyntax syntax,
         ITypeNameNode context,
-        IEnumerable<ITypeNode> typeArguments)
+        IEnumerable<ITypeNode> genericArguments)
     {
         Syntax = syntax;
         Context = Child.Attach(this, context);
-        TypeArguments = ChildList.Attach(this, typeArguments);
+        GenericArguments = ChildList.Attach(this, genericArguments);
     }
 }
 
@@ -10152,7 +10152,7 @@ file class UnresolvedMemberAccessExpressionNode : SemanticNode, IUnresolvedMembe
             : this.RewritableChild(ref contextCached, ref context);
     public IExpressionNode? Context => TempContext as IExpressionNode;
     public IAmbiguousExpressionNode CurrentContext => context.UnsafeValue;
-    public IFixedList<ITypeNode> TypeArguments { [DebuggerStepThrough] get; }
+    public IFixedList<ITypeNode> GenericArguments { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -10212,11 +10212,11 @@ file class UnresolvedMemberAccessExpressionNode : SemanticNode, IUnresolvedMembe
     public UnresolvedMemberAccessExpressionNode(
         IMemberAccessExpressionSyntax syntax,
         IAmbiguousExpressionNode context,
-        IEnumerable<ITypeNode> typeArguments)
+        IEnumerable<ITypeNode> genericArguments)
     {
         Syntax = syntax;
         this.context = Child.Create(this, context);
-        TypeArguments = ChildList.Attach(this, typeArguments);
+        GenericArguments = ChildList.Attach(this, genericArguments);
     }
 
     internal override IMaybePlainType? Inherited_ExpectedPlainType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -14604,7 +14604,7 @@ file class FunctionGroupNameNode : SemanticNode, IFunctionGroupNameNode
             : this.RewritableChild(ref contextCached, ref context);
     public INameExpressionNode? CurrentContext => context.UnsafeValue;
     public OrdinaryName FunctionName { [DebuggerStepThrough] get; }
-    public IFixedList<ITypeNode> TypeArguments { [DebuggerStepThrough] get; }
+    public IFixedList<ITypeNode> GenericArguments { [DebuggerStepThrough] get; }
     public IFixedSet<IFunctionInvocableDeclarationNode> ReferencedDeclarations { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
@@ -14678,14 +14678,14 @@ file class FunctionGroupNameNode : SemanticNode, IFunctionGroupNameNode
         INameExpressionSyntax syntax,
         INameExpressionNode? context,
         OrdinaryName functionName,
-        IEnumerable<ITypeNode> typeArguments,
+        IEnumerable<ITypeNode> genericArguments,
         IEnumerable<IFunctionInvocableDeclarationNode> referencedDeclarations)
     {
-        BindingUnresolvedNamesAspect.Validate_FunctionGroupNameNode(syntax, context, functionName, typeArguments, referencedDeclarations);
+        BindingUnresolvedNamesAspect.Validate_FunctionGroupNameNode(syntax, context, functionName, genericArguments, referencedDeclarations);
         Syntax = syntax;
         this.context = Child.Create(this, context);
         FunctionName = functionName;
-        TypeArguments = ChildList.Attach(this, typeArguments);
+        GenericArguments = ChildList.Attach(this, genericArguments);
         ReferencedDeclarations = referencedDeclarations.ToFixedSet();
     }
 
@@ -14766,7 +14766,7 @@ file class FunctionNameNode : SemanticNode, IFunctionNameNode
             : this.RewritableChild(ref contextCached, ref context);
     public INameExpressionNode? CurrentContext => context.UnsafeValue;
     public OrdinaryName FunctionName { [DebuggerStepThrough] get; }
-    public IFixedList<ITypeNode> TypeArguments { [DebuggerStepThrough] get; }
+    public IFixedList<ITypeNode> GenericArguments { [DebuggerStepThrough] get; }
     public IFixedSet<IFunctionInvocableDeclarationNode> ReferencedDeclarations { [DebuggerStepThrough] get; }
     public IFixedSet<ICallCandidate<IFunctionInvocableDeclarationNode>> CallCandidates { [DebuggerStepThrough] get; }
     public IFixedSet<ICallCandidate<IFunctionInvocableDeclarationNode>> CompatibleCallCandidates { [DebuggerStepThrough] get; }
@@ -14838,7 +14838,7 @@ file class FunctionNameNode : SemanticNode, IFunctionNameNode
         INameExpressionSyntax syntax,
         INameExpressionNode? context,
         OrdinaryName functionName,
-        IEnumerable<ITypeNode> typeArguments,
+        IEnumerable<ITypeNode> genericArguments,
         IEnumerable<IFunctionInvocableDeclarationNode> referencedDeclarations,
         IEnumerable<ICallCandidate<IFunctionInvocableDeclarationNode>> callCandidates,
         IEnumerable<ICallCandidate<IFunctionInvocableDeclarationNode>> compatibleCallCandidates,
@@ -14848,7 +14848,7 @@ file class FunctionNameNode : SemanticNode, IFunctionNameNode
         Syntax = syntax;
         this.context = Child.Create(this, context);
         FunctionName = functionName;
-        TypeArguments = ChildList.Attach(this, typeArguments);
+        GenericArguments = ChildList.Attach(this, genericArguments);
         ReferencedDeclarations = referencedDeclarations.ToFixedSet();
         CallCandidates = callCandidates.ToFixedSet();
         CompatibleCallCandidates = compatibleCallCandidates.ToFixedSet();
@@ -14931,7 +14931,7 @@ file class MethodGroupNameNode : SemanticNode, IMethodGroupNameNode
             : this.RewritableChild(ref contextCached, ref context);
     public IExpressionNode CurrentContext => context.UnsafeValue;
     public OrdinaryName MethodName { [DebuggerStepThrough] get; }
-    public IFixedList<ITypeNode> TypeArguments { [DebuggerStepThrough] get; }
+    public IFixedList<ITypeNode> GenericArguments { [DebuggerStepThrough] get; }
     public IFixedSet<IOrdinaryMethodDeclarationNode> ReferencedDeclarations { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
@@ -15005,13 +15005,13 @@ file class MethodGroupNameNode : SemanticNode, IMethodGroupNameNode
         IMemberAccessExpressionSyntax syntax,
         IExpressionNode context,
         OrdinaryName methodName,
-        IEnumerable<ITypeNode> typeArguments,
+        IEnumerable<ITypeNode> genericArguments,
         IEnumerable<IOrdinaryMethodDeclarationNode> referencedDeclarations)
     {
         Syntax = syntax;
         this.context = Child.Create(this, context);
         MethodName = methodName;
-        TypeArguments = ChildList.Attach(this, typeArguments);
+        GenericArguments = ChildList.Attach(this, genericArguments);
         ReferencedDeclarations = referencedDeclarations.ToFixedSet();
     }
 
@@ -15092,7 +15092,7 @@ file class MethodNameNode : SemanticNode, IMethodNameNode
             : this.RewritableChild(ref contextCached, ref context);
     public IExpressionNode CurrentContext => context.UnsafeValue;
     public OrdinaryName MethodName { [DebuggerStepThrough] get; }
-    public IFixedList<ITypeNode> TypeArguments { [DebuggerStepThrough] get; }
+    public IFixedList<ITypeNode> GenericArguments { [DebuggerStepThrough] get; }
     public IFixedSet<IOrdinaryMethodDeclarationNode> ReferencedDeclarations { [DebuggerStepThrough] get; }
     public IFixedSet<ICallCandidate<IOrdinaryMethodDeclarationNode>> CallCandidates { [DebuggerStepThrough] get; }
     public IFixedSet<ICallCandidate<IOrdinaryMethodDeclarationNode>> CompatibleCallCandidates { [DebuggerStepThrough] get; }
@@ -15164,7 +15164,7 @@ file class MethodNameNode : SemanticNode, IMethodNameNode
         IMemberAccessExpressionSyntax syntax,
         IExpressionNode context,
         OrdinaryName methodName,
-        IEnumerable<ITypeNode> typeArguments,
+        IEnumerable<ITypeNode> genericArguments,
         IEnumerable<IOrdinaryMethodDeclarationNode> referencedDeclarations,
         IEnumerable<ICallCandidate<IOrdinaryMethodDeclarationNode>> callCandidates,
         IEnumerable<ICallCandidate<IOrdinaryMethodDeclarationNode>> compatibleCallCandidates,
@@ -15174,7 +15174,7 @@ file class MethodNameNode : SemanticNode, IMethodNameNode
         Syntax = syntax;
         this.context = Child.Create(this, context);
         MethodName = methodName;
-        TypeArguments = ChildList.Attach(this, typeArguments);
+        GenericArguments = ChildList.Attach(this, genericArguments);
         ReferencedDeclarations = referencedDeclarations.ToFixedSet();
         CallCandidates = callCandidates.ToFixedSet();
         CompatibleCallCandidates = compatibleCallCandidates.ToFixedSet();
@@ -16533,7 +16533,7 @@ file class OrdinaryTypeNameExpressionNode : SemanticNode, IOrdinaryTypeNameExpre
     protected override bool MayHaveRewrite => true;
 
     public IOrdinaryNameSyntax Syntax { [DebuggerStepThrough] get; }
-    public IFixedList<ITypeNode> TypeArguments { [DebuggerStepThrough] get; }
+    public IFixedList<ITypeNode> GenericArguments { [DebuggerStepThrough] get; }
     public ITypeDeclarationNode ReferencedDeclaration { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
@@ -16599,11 +16599,11 @@ file class OrdinaryTypeNameExpressionNode : SemanticNode, IOrdinaryTypeNameExpre
 
     public OrdinaryTypeNameExpressionNode(
         IOrdinaryNameSyntax syntax,
-        IEnumerable<ITypeNode> typeArguments,
+        IEnumerable<ITypeNode> genericArguments,
         ITypeDeclarationNode referencedDeclaration)
     {
         Syntax = syntax;
-        TypeArguments = ChildList.Attach(this, typeArguments);
+        GenericArguments = ChildList.Attach(this, genericArguments);
         ReferencedDeclaration = referencedDeclaration;
     }
 
@@ -16680,7 +16680,7 @@ file class QualifiedTypeNameExpressionNode : SemanticNode, IQualifiedTypeNameExp
         => GrammarAttribute.IsCached(in contextCached) ? context.UnsafeValue
             : this.RewritableChild(ref contextCached, ref context);
     public INamespaceNameNode CurrentContext => context.UnsafeValue;
-    public IFixedList<ITypeNode> TypeArguments { [DebuggerStepThrough] get; }
+    public IFixedList<ITypeNode> GenericArguments { [DebuggerStepThrough] get; }
     public ITypeDeclarationNode ReferencedDeclaration { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
@@ -16747,12 +16747,12 @@ file class QualifiedTypeNameExpressionNode : SemanticNode, IQualifiedTypeNameExp
     public QualifiedTypeNameExpressionNode(
         IMemberAccessExpressionSyntax syntax,
         INamespaceNameNode context,
-        IEnumerable<ITypeNode> typeArguments,
+        IEnumerable<ITypeNode> genericArguments,
         ITypeDeclarationNode referencedDeclaration)
     {
         Syntax = syntax;
         this.context = Child.Create(this, context);
-        TypeArguments = ChildList.Attach(this, typeArguments);
+        GenericArguments = ChildList.Attach(this, genericArguments);
         ReferencedDeclaration = referencedDeclaration;
     }
 
@@ -16957,7 +16957,7 @@ file class UnresolvedGenericNameNode : SemanticNode, IUnresolvedGenericNameNode
     protected override bool MayHaveRewrite => true;
 
     public IGenericNameSyntax Syntax { [DebuggerStepThrough] get; }
-    public IFixedList<ITypeNode> TypeArguments { [DebuggerStepThrough] get; }
+    public IFixedList<ITypeNode> GenericArguments { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -17020,10 +17020,10 @@ file class UnresolvedGenericNameNode : SemanticNode, IUnresolvedGenericNameNode
 
     public UnresolvedGenericNameNode(
         IGenericNameSyntax syntax,
-        IEnumerable<ITypeNode> typeArguments)
+        IEnumerable<ITypeNode> genericArguments)
     {
         Syntax = syntax;
-        TypeArguments = ChildList.Attach(this, typeArguments);
+        GenericArguments = ChildList.Attach(this, genericArguments);
     }
 
     internal override IMaybePlainType? Inherited_ExpectedPlainType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -17101,7 +17101,7 @@ file class UnresolvedQualifiedNameNode : SemanticNode, IUnresolvedQualifiedNameN
         => GrammarAttribute.IsCached(in contextCached) ? context.UnsafeValue
             : this.RewritableChild(ref contextCached, ref context);
     public INameExpressionNode CurrentContext => context.UnsafeValue;
-    public IFixedList<ITypeNode> TypeArguments { [DebuggerStepThrough] get; }
+    public IFixedList<ITypeNode> GenericArguments { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -17161,11 +17161,11 @@ file class UnresolvedQualifiedNameNode : SemanticNode, IUnresolvedQualifiedNameN
     public UnresolvedQualifiedNameNode(
         IQualifiedNameSyntax syntax,
         INameExpressionNode context,
-        IEnumerable<ITypeNode> typeArguments)
+        IEnumerable<ITypeNode> genericArguments)
     {
         Syntax = syntax;
         this.context = Child.Create(this, context);
-        TypeArguments = ChildList.Attach(this, typeArguments);
+        GenericArguments = ChildList.Attach(this, genericArguments);
     }
 
     internal override IMaybePlainType? Inherited_ExpectedPlainType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -17245,7 +17245,7 @@ file class UnresolvedNamespaceQualifiedNameNode : SemanticNode, IUnresolvedNames
         => GrammarAttribute.IsCached(in contextCached) ? context.UnsafeValue
             : this.RewritableChild(ref contextCached, ref context);
     public INamespaceNameNode CurrentContext => context.UnsafeValue;
-    public IFixedList<ITypeNode> TypeArguments { [DebuggerStepThrough] get; }
+    public IFixedList<ITypeNode> GenericArguments { [DebuggerStepThrough] get; }
     public IFixedSet<INamespaceMemberDeclarationNode> ReferencedDeclarations { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
@@ -17306,12 +17306,12 @@ file class UnresolvedNamespaceQualifiedNameNode : SemanticNode, IUnresolvedNames
     public UnresolvedNamespaceQualifiedNameNode(
         IQualifiedNameSyntax syntax,
         INamespaceNameNode context,
-        IEnumerable<ITypeNode> typeArguments,
+        IEnumerable<ITypeNode> genericArguments,
         IEnumerable<INamespaceMemberDeclarationNode> referencedDeclarations)
     {
         Syntax = syntax;
         this.context = Child.Create(this, context);
-        TypeArguments = ChildList.Attach(this, typeArguments);
+        GenericArguments = ChildList.Attach(this, genericArguments);
         ReferencedDeclarations = referencedDeclarations.ToFixedSet();
     }
 

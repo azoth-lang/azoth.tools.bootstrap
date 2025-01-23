@@ -26,7 +26,7 @@ internal static partial class BindingUnresolvedNamesAspect
             return node;
 
         if (members.TryAllOfType<IAssociatedFunctionDeclarationNode>(out var referencedFunctions))
-            return IFunctionGroupNameNode.Create(node.Syntax, context, node.MemberName, node.TypeArguments,
+            return IFunctionGroupNameNode.Create(node.Syntax, context, node.MemberName, node.GenericArguments,
                 referencedFunctions);
 
         if (members.TryAllOfType<IInitializerDeclarationNode>(out var referencedInitializers))
@@ -57,10 +57,10 @@ internal static partial class BindingUnresolvedNamesAspect
             return null;
 
         if (members.TryAllOfType<IOrdinaryMethodDeclarationNode>(out var referencedMethods))
-            return IMethodGroupNameNode.Create(node.Syntax, context, node.MemberName, node.TypeArguments, referencedMethods);
+            return IMethodGroupNameNode.Create(node.Syntax, context, node.MemberName, node.GenericArguments, referencedMethods);
 
         if (members.TryAllOfType<IPropertyAccessorDeclarationNode>(out var referencedProperties)
-            && node.TypeArguments.Count == 0)
+            && node.GenericArguments.Count == 0)
             // We don't really know that it is a getter, but if it isn't then it will be rewritten to a setter
             return IGetterInvocationExpressionNode.Create(node.Syntax, context, node.MemberName, referencedProperties);
 
@@ -139,7 +139,7 @@ internal static partial class BindingUnresolvedNamesAspect
         INameExpressionSyntax syntax,
         INameExpressionNode? context,
         OrdinaryName functionName,
-        IEnumerable<ITypeNode> typeArguments,
+        IEnumerable<ITypeNode> genericArguments,
         IEnumerable<IFunctionInvocableDeclarationNode> referencedDeclarations)
     { }
     // TODO add this validation in somehow
@@ -154,7 +154,7 @@ internal static partial class BindingUnresolvedNamesAspect
             return null;
 
         // if there is only one declaration, then it isn't ambiguous
-        return IFunctionNameNode.Create(node.Syntax, node.Context, node.FunctionName, node.TypeArguments,
+        return IFunctionNameNode.Create(node.Syntax, node.Context, node.FunctionName, node.GenericArguments,
             node.ReferencedDeclarations, node.CallCandidates, node.CompatibleCallCandidates,
             node.SelectedCallCandidate, node.ReferencedDeclaration);
     }
@@ -180,7 +180,7 @@ internal static partial class BindingUnresolvedNamesAspect
             return null;
 
         // if there is aren't multiple declarations, then it isn't ambiguous (it may fail to reference if there are zero).
-        return IMethodNameNode.Create(node.Syntax, node.Context, node.MethodName, node.TypeArguments,
+        return IMethodNameNode.Create(node.Syntax, node.Context, node.MethodName, node.GenericArguments,
             node.ReferencedDeclarations, node.CallCandidates, node.CompatibleCallCandidates,
             node.SelectedCallCandidate, node.ReferencedDeclaration);
     }
@@ -263,15 +263,14 @@ internal static partial class BindingUnresolvedNamesAspect
     {
         var referencedDeclarations = node.ReferencedDeclarations;
 
-        // TODO rename TypeArguments to GenericArguments
         if (referencedDeclarations.TryAllOfType<IFunctionInvocableDeclarationNode>(out var referencedFunctions))
-            return IFunctionGroupNameNode.Create(node.Syntax, null, node.Name, node.TypeArguments, referencedFunctions);
+            return IFunctionGroupNameNode.Create(node.Syntax, null, node.Name, node.GenericArguments, referencedFunctions);
 
         if (referencedDeclarations.TrySingle() is not null and var referencedDeclaration)
             switch (referencedDeclaration)
             {
                 case ITypeDeclarationNode referencedType:
-                    return IOrdinaryTypeNameExpressionNode.Create(node.Syntax, node.TypeArguments, referencedType);
+                    return IOrdinaryTypeNameExpressionNode.Create(node.Syntax, node.GenericArguments, referencedType);
             }
 
         return null;
@@ -281,7 +280,7 @@ internal static partial class BindingUnresolvedNamesAspect
     {
         if (node.Context is not INamespaceNameNode context) return null;
         var referencedDeclarations = context.ReferencedDeclarations.SelectMany(d => d.MembersNamed(node.MemberName)).ToFixedSet();
-        return IUnresolvedNamespaceQualifiedNameNode.Create(node.Syntax, context, node.TypeArguments, referencedDeclarations);
+        return IUnresolvedNamespaceQualifiedNameNode.Create(node.Syntax, context, node.GenericArguments, referencedDeclarations);
     }
 
     public static partial INameExpressionNode? UnresolvedNamespaceQualifiedName_ReplaceWith_NameExpression(IUnresolvedNamespaceQualifiedNameNode node)
@@ -296,12 +295,12 @@ internal static partial class BindingUnresolvedNamesAspect
             return IQualifiedNamespaceNameNode.Create(node.Syntax, node.Context, referencedNamespaces);
 
         if (referencedDeclarations.TryAllOfType<IFunctionDeclarationNode>(out var referencedFunctions))
-            return IFunctionGroupNameNode.Create(node.Syntax, node.Context, node.MemberName, node.TypeArguments,
+            return IFunctionGroupNameNode.Create(node.Syntax, node.Context, node.MemberName, node.GenericArguments,
                 referencedFunctions);
 
         // TODO select correct type declaration based on generic arguments
         if (referencedDeclarations.TrySingle() is ITypeDeclarationNode referencedType)
-            return IQualifiedTypeNameExpressionNode.Create(node.Syntax, node.Context, node.TypeArguments,
+            return IQualifiedTypeNameExpressionNode.Create(node.Syntax, node.Context, node.GenericArguments,
                 referencedType);
 
         return null;

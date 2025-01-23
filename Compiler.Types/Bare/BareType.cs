@@ -43,7 +43,7 @@ public sealed class BareType : IEquatable<BareType>
     public IFixedSet<BareType> Supertypes
         => Lazy.Initialize(ref supertypes, TypeConstructor, TypeReplacements,
             static (constructor, replacements)
-                => constructor.Supertypes.Select(t => replacements.Apply(t)).ToFixedSet());
+                => constructor.Supertypes.Select(replacements.Apply).ToFixedSet());
     private IFixedSet<BareType>? supertypes;
 
     public BareType(BarePlainType plainType, BareType? containingType, IFixedList<Type> arguments)

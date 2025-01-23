@@ -19,7 +19,7 @@ internal static partial class BindingUnresolvedNamesAspect
         INameExpressionSyntax syntax,
         INameExpressionNode? context,
         OrdinaryName functionName,
-        IEnumerable<ITypeNode> typeArguments,
+        IEnumerable<ITypeNode> genericArguments,
         IEnumerable<IFunctionInvocableDeclarationNode> referencedDeclarations);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial void UnresolvedMemberAccessExpression_Contribute_Diagnostics(IUnresolvedMemberAccessExpressionNode node, DiagnosticCollectionBuilder diagnostics);

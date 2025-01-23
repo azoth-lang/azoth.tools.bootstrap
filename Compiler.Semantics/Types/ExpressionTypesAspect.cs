@@ -374,7 +374,7 @@ internal static partial class ExpressionTypesAspect
             default:
                 throw ExhaustiveMatch.Failed(node);
             case IOrdinaryTypeNameNode n:
-                CheckTypeArgumentsAreConstructable(n, diagnostics);
+                CheckGenericArgumentsAreConstructable(n, diagnostics);
                 break;
             case IBuiltInTypeNameNode n:
                 diagnostics.Add(TypeError.SpecialTypeCannotBeUsedHere(node.File, n.Syntax));
@@ -385,7 +385,7 @@ internal static partial class ExpressionTypesAspect
         }
     }
 
-    public static void CheckTypeArgumentsAreConstructable(IOrdinaryTypeNameNode node, DiagnosticCollectionBuilder diagnostics)
+    public static void CheckGenericArgumentsAreConstructable(IOrdinaryTypeNameNode node, DiagnosticCollectionBuilder diagnostics)
     {
         var bareType = node.NamedBareType;
         if (bareType is null) return;
@@ -429,7 +429,7 @@ internal static partial class ExpressionTypesAspect
             default:
                 throw ExhaustiveMatch.Failed(node);
             case IOrdinaryTypeNameExpressionNode n:
-                CheckTypeArgumentsAreConstructable(n, diagnostics);
+                CheckGenericArgumentsAreConstructable(n, diagnostics);
                 break;
             //case IBuiltInTypeNameNode n:
             //    diagnostics.Add(TypeError.SpecialTypeCannotBeUsedHere(node.File, n.Syntax));
@@ -440,7 +440,7 @@ internal static partial class ExpressionTypesAspect
         }
     }
 
-    public static void CheckTypeArgumentsAreConstructable(IOrdinaryTypeNameExpressionNode node, DiagnosticCollectionBuilder diagnostics)
+    public static void CheckGenericArgumentsAreConstructable(IOrdinaryTypeNameExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
         var bareType = node.NamedBareType;
         if (bareType is null) return;

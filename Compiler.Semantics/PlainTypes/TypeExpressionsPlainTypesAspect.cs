@@ -50,10 +50,10 @@ internal static partial class TypeExpressionsPlainTypesAspect
         var declaredPlainType = referencedSymbol?.TryGetTypeConstructor();
         if (declaredPlainType is null)
             return PlainType.Unknown;
-        var plainTypeArguments = node.TypeArguments.Select(a => a.NamedPlainType).OfType<PlainType>().ToFixedList();
-        if (plainTypeArguments.Count != node.TypeArguments.Count)
+        var genericArguments = node.GenericArguments.Select(a => a.NamedPlainType).OfType<PlainType>().ToFixedList();
+        if (genericArguments.Count != node.GenericArguments.Count)
             return PlainType.Unknown;
-        return declaredPlainType.Construct(containingType: null, plainTypeArguments);
+        return declaredPlainType.Construct(containingType: null, genericArguments);
     }
 
     public static partial IMaybePlainType TypeNameExpression_NamedPlainType(ITypeNameExpressionNode node)
@@ -63,9 +63,9 @@ internal static partial class TypeExpressionsPlainTypesAspect
         var declaredPlainType = referencedSymbol.TryGetTypeConstructor();
         if (declaredPlainType is null)
             return PlainType.Unknown;
-        var plainTypeArguments = node.TypeArguments.Select(a => a.NamedPlainType).OfType<PlainType>().ToFixedList();
-        if (plainTypeArguments.Count != node.TypeArguments.Count)
+        var genericArguments = node.GenericArguments.Select(a => a.NamedPlainType).OfType<PlainType>().ToFixedList();
+        if (genericArguments.Count != node.GenericArguments.Count)
             return PlainType.Unknown;
-        return declaredPlainType.Construct(containingType: null, plainTypeArguments);
+        return declaredPlainType.Construct(containingType: null, genericArguments);
     }
 }
