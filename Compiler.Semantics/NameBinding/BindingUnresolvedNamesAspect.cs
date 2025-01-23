@@ -10,7 +10,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.NameBinding;
 
-internal static partial class BindingAmbiguousNamesAspect
+internal static partial class BindingUnresolvedNamesAspect
 {
     #region Unresolved Expressions
     public static partial IExpressionNode? UnresolvedMemberAccessExpression_NamespaceNameContext_ReplaceWith_Expression(IUnresolvedMemberAccessExpressionNode node)

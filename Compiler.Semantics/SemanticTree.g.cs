@@ -10221,7 +10221,7 @@ file class UnresolvedMemberAccessExpressionNode : SemanticNode, IUnresolvedMembe
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
     {
         ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
-        BindingAmbiguousNamesAspect.UnresolvedMemberAccessExpression_Contribute_Diagnostics(this, builder);
+        BindingUnresolvedNamesAspect.UnresolvedMemberAccessExpression_Contribute_Diagnostics(this, builder);
     }
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
@@ -10237,9 +10237,9 @@ file class UnresolvedMemberAccessExpressionNode : SemanticNode, IUnresolvedMembe
     }
 
     protected override IChildTreeNode Rewrite()
-        => BindingAmbiguousNamesAspect.UnresolvedMemberAccessExpression_NamespaceNameContext_ReplaceWith_Expression(this)
-        ?? BindingAmbiguousNamesAspect.UnresolvedMemberAccessExpression_TypeNameExpressionContext_ReplaceWith_Expression(this)
-        ?? BindingAmbiguousNamesAspect.UnresolvedMemberAccessExpression_ExpressionContext_ReplaceWith_NameExpression(this)
+        => BindingUnresolvedNamesAspect.UnresolvedMemberAccessExpression_NamespaceNameContext_ReplaceWith_Expression(this)
+        ?? BindingUnresolvedNamesAspect.UnresolvedMemberAccessExpression_TypeNameExpressionContext_ReplaceWith_Expression(this)
+        ?? BindingUnresolvedNamesAspect.UnresolvedMemberAccessExpression_ExpressionContext_ReplaceWith_NameExpression(this)
         ?? ExpressionTypesAspect.Expression_ImplicitMove_Insert(this)
         ?? ExpressionTypesAspect.Expression_ImplicitFreeze_Insert(this)
         ?? ExpressionTypesAspect.Expression_Insert_PrepareToReturnExpression(this)
@@ -11001,7 +11001,7 @@ file class AssignmentExpressionNode : SemanticNode, IAssignmentExpressionNode
     }
 
     protected override IChildTreeNode Rewrite()
-        => BindingAmbiguousNamesAspect.AssignmentExpression_PropertyNameLeftOperand_Rewrite(this)
+        => BindingUnresolvedNamesAspect.AssignmentExpression_PropertyNameLeftOperand_Rewrite(this)
         ?? ExpressionTypesAspect.Expression_ImplicitMove_Insert(this)
         ?? ExpressionTypesAspect.Expression_ImplicitFreeze_Insert(this)
         ?? ExpressionTypesAspect.Expression_Insert_PrepareToReturnExpression(this)
@@ -14907,7 +14907,7 @@ file class FunctionGroupNameNode : SemanticNode, IFunctionGroupNameNode
         IEnumerable<ITypeNode> typeArguments,
         IEnumerable<IFunctionInvocableDeclarationNode> referencedDeclarations)
     {
-        BindingAmbiguousNamesAspect.Validate_FunctionGroupNameNode(syntax, context, functionName, typeArguments, referencedDeclarations);
+        BindingUnresolvedNamesAspect.Validate_FunctionGroupNameNode(syntax, context, functionName, typeArguments, referencedDeclarations);
         Syntax = syntax;
         this.context = Child.Create(this, context);
         FunctionName = functionName;
@@ -14953,7 +14953,7 @@ file class FunctionGroupNameNode : SemanticNode, IFunctionGroupNameNode
     {
         ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
         OverloadResolutionAspect.FunctionGroupName_Contribute_Diagnostics(this, builder);
-        BindingAmbiguousNamesAspect.FunctionGroupName_Contribute_Diagnostics(this, builder);
+        BindingUnresolvedNamesAspect.FunctionGroupName_Contribute_Diagnostics(this, builder);
     }
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
@@ -14969,7 +14969,7 @@ file class FunctionGroupNameNode : SemanticNode, IFunctionGroupNameNode
     }
 
     protected override IChildTreeNode Rewrite()
-        => BindingAmbiguousNamesAspect.FunctionGroupName_ReplaceWith_FunctionName(this)
+        => BindingUnresolvedNamesAspect.FunctionGroupName_ReplaceWith_FunctionName(this)
         ?? ExpressionTypesAspect.Expression_ImplicitMove_Insert(this)
         ?? ExpressionTypesAspect.Expression_ImplicitFreeze_Insert(this)
         ?? ExpressionTypesAspect.Expression_Insert_PrepareToReturnExpression(this)
@@ -15279,7 +15279,7 @@ file class MethodGroupNameNode : SemanticNode, IMethodGroupNameNode
     {
         ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
         OverloadResolutionAspect.MethodGroupName_Contribute_Diagnostics(this, builder);
-        BindingAmbiguousNamesAspect.MethodGroupName_Contribute_Diagnostics(this, builder);
+        BindingUnresolvedNamesAspect.MethodGroupName_Contribute_Diagnostics(this, builder);
     }
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
@@ -15295,7 +15295,7 @@ file class MethodGroupNameNode : SemanticNode, IMethodGroupNameNode
     }
 
     protected override IChildTreeNode Rewrite()
-        => BindingAmbiguousNamesAspect.MethodGroupName_ReplaceWith_MethodName(this)
+        => BindingUnresolvedNamesAspect.MethodGroupName_ReplaceWith_MethodName(this)
         ?? ExpressionTypesAspect.Expression_ImplicitMove_Insert(this)
         ?? ExpressionTypesAspect.Expression_ImplicitFreeze_Insert(this)
         ?? ExpressionTypesAspect.Expression_Insert_PrepareToReturnExpression(this)
@@ -16210,7 +16210,7 @@ file class InitializerGroupNameNode : SemanticNode, IInitializerGroupNameNode
     }
 
     protected override IChildTreeNode Rewrite()
-        => BindingAmbiguousNamesAspect.InitializerGroupName_ReplaceWith_InitializerName(this)
+        => BindingUnresolvedNamesAspect.InitializerGroupName_ReplaceWith_InitializerName(this)
         ?? ExpressionTypesAspect.Expression_ImplicitMove_Insert(this)
         ?? ExpressionTypesAspect.Expression_ImplicitFreeze_Insert(this)
         ?? ExpressionTypesAspect.Expression_Insert_PrepareToReturnExpression(this)
@@ -16839,7 +16839,7 @@ file class UnresolvedIdentifierNameExpressionNode : SemanticNode, IUnresolvedIde
     public IFixedList<IDeclarationNode> ReferencedDeclarations
         => GrammarAttribute.IsCached(in referencedDeclarationsCached) ? referencedDeclarations!
             : this.Synthetic(ref referencedDeclarationsCached, ref referencedDeclarations,
-                BindingAmbiguousNamesAspect.UnresolvedOrdinaryNameExpression_ReferencedDeclarations);
+                BindingUnresolvedNamesAspect.UnresolvedOrdinaryNameExpression_ReferencedDeclarations);
     private IFixedList<IDeclarationNode>? referencedDeclarations;
     private bool referencedDeclarationsCached;
     public ValueId ValueId
@@ -16891,7 +16891,7 @@ file class UnresolvedIdentifierNameExpressionNode : SemanticNode, IUnresolvedIde
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
     {
         ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
-        BindingAmbiguousNamesAspect.UnresolvedIdentifierNameExpression_Contribute_Diagnostics(this, builder);
+        BindingUnresolvedNamesAspect.UnresolvedIdentifierNameExpression_Contribute_Diagnostics(this, builder);
     }
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
@@ -16907,7 +16907,7 @@ file class UnresolvedIdentifierNameExpressionNode : SemanticNode, IUnresolvedIde
     }
 
     protected override IChildTreeNode Rewrite()
-        => BindingAmbiguousNamesAspect.UnresolvedIdentifierNameExpression_ReplaceWith_NameExpression(this)
+        => BindingUnresolvedNamesAspect.UnresolvedIdentifierNameExpression_ReplaceWith_NameExpression(this)
         ?? ExpressionTypesAspect.Expression_ImplicitMove_Insert(this)
         ?? ExpressionTypesAspect.Expression_ImplicitFreeze_Insert(this)
         ?? ExpressionTypesAspect.Expression_Insert_PrepareToReturnExpression(this)
@@ -16974,7 +16974,7 @@ file class UnresolvedGenericNameExpressionNode : SemanticNode, IUnresolvedGeneri
     public IFixedList<IDeclarationNode> ReferencedDeclarations
         => GrammarAttribute.IsCached(in referencedDeclarationsCached) ? referencedDeclarations!
             : this.Synthetic(ref referencedDeclarationsCached, ref referencedDeclarations,
-                BindingAmbiguousNamesAspect.UnresolvedOrdinaryNameExpression_ReferencedDeclarations);
+                BindingUnresolvedNamesAspect.UnresolvedOrdinaryNameExpression_ReferencedDeclarations);
     private IFixedList<IDeclarationNode>? referencedDeclarations;
     private bool referencedDeclarationsCached;
     public ValueId ValueId
@@ -17044,7 +17044,7 @@ file class UnresolvedGenericNameExpressionNode : SemanticNode, IUnresolvedGeneri
     }
 
     protected override IChildTreeNode Rewrite()
-        => BindingAmbiguousNamesAspect.UnresolvedGenericNameExpression_ReplaceWith_NameExpression(this)
+        => BindingUnresolvedNamesAspect.UnresolvedGenericNameExpression_ReplaceWith_NameExpression(this)
         ?? ExpressionTypesAspect.Expression_ImplicitMove_Insert(this)
         ?? ExpressionTypesAspect.Expression_ImplicitFreeze_Insert(this)
         ?? ExpressionTypesAspect.Expression_Insert_PrepareToReturnExpression(this)
@@ -17171,7 +17171,7 @@ file class UnresolvedQualifiedNameExpressionNode : SemanticNode, IUnresolvedQual
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
     {
         ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
-        BindingAmbiguousNamesAspect.UnresolvedMemberAccessExpression_Contribute_Diagnostics(this, builder);
+        BindingUnresolvedNamesAspect.UnresolvedMemberAccessExpression_Contribute_Diagnostics(this, builder);
     }
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
@@ -17191,9 +17191,9 @@ file class UnresolvedQualifiedNameExpressionNode : SemanticNode, IUnresolvedQual
         ?? ExpressionTypesAspect.Expression_ImplicitFreeze_Insert(this)
         ?? ExpressionTypesAspect.Expression_Insert_PrepareToReturnExpression(this)
         ?? ExpressionPlainTypesAspect.Expression_Insert_ImplicitConversionExpression(this)
-        ?? BindingAmbiguousNamesAspect.UnresolvedMemberAccessExpression_NamespaceNameContext_ReplaceWith_Expression(this)
-        ?? BindingAmbiguousNamesAspect.UnresolvedMemberAccessExpression_TypeNameExpressionContext_ReplaceWith_Expression(this)
-        ?? BindingAmbiguousNamesAspect.UnresolvedMemberAccessExpression_ExpressionContext_ReplaceWith_NameExpression(this)
+        ?? BindingUnresolvedNamesAspect.UnresolvedMemberAccessExpression_NamespaceNameContext_ReplaceWith_Expression(this)
+        ?? BindingUnresolvedNamesAspect.UnresolvedMemberAccessExpression_TypeNameExpressionContext_ReplaceWith_Expression(this)
+        ?? BindingUnresolvedNamesAspect.UnresolvedMemberAccessExpression_ExpressionContext_ReplaceWith_NameExpression(this)
         ?? base.Rewrite();
 }
 
