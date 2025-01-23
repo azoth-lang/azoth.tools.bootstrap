@@ -30,9 +30,9 @@ internal static partial class BindingNamesAspect
     public static partial ITypeDeclarationNode? OrdinaryTypeName_ReferencedDeclaration(IOrdinaryTypeNameNode node)
     {
         // TODO this prefers the non-suffixed name. Maybe it should be the other way around to avoid conflict
-        var symbolNode = LookupDeclarations(node).TrySingle();
-        if (node.IsAttributeType) symbolNode ??= LookupDeclarations(node, withAttributeSuffix: true).TrySingle();
-        return symbolNode;
+        var typeDeclaration = LookupDeclarations(node).TrySingle();
+        if (node.IsAttributeType) typeDeclaration ??= LookupDeclarations(node, withAttributeSuffix: true).TrySingle();
+        return typeDeclaration;
     }
 
     public static partial void OrdinaryTypeName_Contribute_Diagnostics(
@@ -93,6 +93,8 @@ internal static partial class BindingNamesAspect
         => node.ContainingLexicalScope.Lookup(node.Name);
 
     public static partial ISelfParameterNode? SelfExpression_ReferencedDefinition(ISelfExpressionNode node)
+        // TODO use a more specific inherited attribute? (e.g. SelfParameter)
+        // TODO or add `SelfParameter` to ExecutableDefinition and do node.ContainingDeclaration.SelfParameter?
         => node.ContainingDeclaration switch
         {
             IMethodDefinitionNode n => n.SelfParameter,
