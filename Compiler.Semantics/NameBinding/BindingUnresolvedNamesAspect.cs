@@ -13,29 +13,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.NameBinding;
 internal static partial class BindingUnresolvedNamesAspect
 {
     #region Unresolved Expressions
-    public static partial IExpressionNode? UnresolvedMemberAccessExpression_TypeNameExpressionContext_ReplaceWith_Expression(IUnresolvedMemberAccessExpressionNode node)
-    {
-        if (node.Context is not ITypeNameExpressionNode context)
-            return null;
-
-        // TODO metatypes would change this into an ordinary expression
-
-        var members = context.ReferencedDeclaration.AssociatedMembersNamed(node.MemberName).ToFixedSet();
-        if (members.Count == 0)
-            // definitely associated member access, no need to process other rewrites
-            return node;
-
-        if (members.TryAllOfType<IAssociatedFunctionDeclarationNode>(out var referencedFunctions))
-            return IFunctionGroupNameNode.Create(node.Syntax, context, node.MemberName, node.GenericArguments,
-                referencedFunctions);
-
-        if (members.TryAllOfType<IInitializerDeclarationNode>(out var referencedInitializers))
-            // TODO handle type arguments (which are not allowed for initializers)
-            return IInitializerGroupNameNode.Create(node.Syntax, context, context.Name, referencedInitializers);
-
-        return null;
-    }
-
     public static partial INameExpressionNode? UnresolvedMemberAccessExpression_ExpressionContext_ReplaceWith_NameExpression(IUnresolvedMemberAccessExpressionNode node)
     {
         if (node.Context is not { } context)
@@ -283,6 +260,13 @@ internal static partial class BindingUnresolvedNamesAspect
         return IUnresolvedNamespaceQualifiedNameNode.Create(node.Syntax, context, node.GenericArguments, referencedDeclarations);
     }
 
+    public static partial IUnresolvedTypeQualifiedNameNode? UnresolvedQualifiedName_ReplaceWith_UnresolvedTypeQualifiedName(IUnresolvedQualifiedNameNode node)
+    {
+        if (node.Context is not ITypeNameExpressionNode context) return null;
+        var referencedDeclarations = context.ReferencedDeclaration.AssociatedMembersNamed(node.MemberName).ToFixedSet();
+        return IUnresolvedTypeQualifiedNameNode.Create(node.Syntax, context, node.GenericArguments, referencedDeclarations);
+    }
+
     public static partial INameExpressionNode? UnresolvedNamespaceQualifiedName_ReplaceWith_NameExpression(IUnresolvedNamespaceQualifiedNameNode node)
     {
         var referencedDeclarations = node.ReferencedDeclarations;
@@ -307,6 +291,28 @@ internal static partial class BindingUnresolvedNamesAspect
     }
 
     // TODO diagnostics for UnresolvedNamespaceQualifiedName
+
+    public static partial INameExpressionNode? UnresolvedTypeQualifiedName_ReplaceWith_NameExpression(IUnresolvedTypeQualifiedNameNode node)
+    {
+        // TODO metatypes would change this into an ordinary expression
+
+        var referencedDeclarations = node.ReferencedDeclarations;
+        if (referencedDeclarations.Count == 0)
+            // Cannot resolve type associated member access, no need to process other rewrites
+            return node;
+
+        if (referencedDeclarations.TryAllOfType<IAssociatedFunctionDeclarationNode>(out var referencedFunctions))
+            return IFunctionGroupNameNode.Create(node.Syntax, node.Context, node.MemberName, node.GenericArguments,
+                referencedFunctions);
+
+        if (referencedDeclarations.TryAllOfType<IInitializerDeclarationNode>(out var referencedInitializers))
+            // TODO handle type arguments (which are not allowed for initializers)
+            return IInitializerGroupNameNode.Create(node.Syntax, node.Context, node.Context.Name, referencedInitializers);
+
+        return null;
+    }
+
+    // TODO diagnostics for UnresolvedTypeQualifiedName
     #endregion
 
     private static bool TryAllOfType<T>(

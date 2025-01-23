@@ -9,7 +9,6 @@
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
 // ---------- Unresolved Expressions
-✎ UnresolvedMemberAccessExpression TypeNameExpressionContext replace_with Expression;
 ✎ UnresolvedMemberAccessExpression ExpressionContext replace_with NameExpression;
 = UnresolvedMemberAccessExpression.↑.Diagnostics;
 
@@ -31,4 +30,6 @@
 ✎ UnresolvedIdentifierName replace_with NameExpression;
 ✎ UnresolvedGenericName replace_with NameExpression;
 ✎ UnresolvedQualifiedName replace_with UnresolvedNamespaceQualifiedName;
+✎ UnresolvedQualifiedName replace_with UnresolvedTypeQualifiedName;
 ✎ UnresolvedNamespaceQualifiedName replace_with NameExpression;
+✎ UnresolvedTypeQualifiedName replace_with NameExpression;

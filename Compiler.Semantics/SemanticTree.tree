@@ -374,8 +374,11 @@ UnresolvedGenericName <: UnresolvedOrdinaryName
     = Syntax:`IGenericNameSyntax` GenericArguments:Type*;
 concrete UnresolvedQualifiedName <: UnresolvedName, UnresolvedMemberAccessExpression
     = Syntax:`IQualifiedNameSyntax` Context:NameExpression /GenericArguments/;
+/// These reify the Context and ReferencedDeclarations to make diagnostic reporting eaiser
 UnresolvedNamespaceQualifiedName <: UnresolvedQualifiedName
     = /Syntax/ Context:NamespaceName /GenericArguments/ ReferencedDeclarations:{`INamespaceMemberDeclarationNode`};
+UnresolvedTypeQualifiedName <: UnresolvedQualifiedName
+    = /Syntax/ Context:TypeNameExpression /GenericArguments/ ReferencedDeclarations:{`IAssociatedMemberDeclarationNode`};
 
 // ---------- Capability Expressions
 temp AmbiguousMoveExpression <: AmbiguousExpression = Syntax:`IMoveExpressionSyntax` Referent:AmbiguousExpression;

@@ -31,7 +31,6 @@ internal static partial class BindingUnresolvedNamesAspect
     public static partial IFixedList<IDeclarationNode> UnresolvedOrdinaryName_ReferencedDeclarations(IUnresolvedOrdinaryNameNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial void UnresolvedOrdinaryName_Contribute_Diagnostics(IUnresolvedOrdinaryNameNode node, DiagnosticCollectionBuilder diagnostics);
-    public static partial IExpressionNode? UnresolvedMemberAccessExpression_TypeNameExpressionContext_ReplaceWith_Expression(IUnresolvedMemberAccessExpressionNode node);
     public static partial INameExpressionNode? UnresolvedMemberAccessExpression_ExpressionContext_ReplaceWith_NameExpression(IUnresolvedMemberAccessExpressionNode node);
     public static partial IExpressionNode? AssignmentExpression_PropertyNameLeftOperand_Rewrite(IAssignmentExpressionNode node);
     public static partial IFunctionNameNode? FunctionGroupName_ReplaceWith_FunctionName(IFunctionGroupNameNode node);
@@ -40,5 +39,7 @@ internal static partial class BindingUnresolvedNamesAspect
     public static partial INameExpressionNode? UnresolvedIdentifierName_ReplaceWith_NameExpression(IUnresolvedIdentifierNameNode node);
     public static partial INameExpressionNode? UnresolvedGenericName_ReplaceWith_NameExpression(IUnresolvedGenericNameNode node);
     public static partial IUnresolvedNamespaceQualifiedNameNode? UnresolvedQualifiedName_ReplaceWith_UnresolvedNamespaceQualifiedName(IUnresolvedQualifiedNameNode node);
+    public static partial IUnresolvedTypeQualifiedNameNode? UnresolvedQualifiedName_ReplaceWith_UnresolvedTypeQualifiedName(IUnresolvedQualifiedNameNode node);
     public static partial INameExpressionNode? UnresolvedNamespaceQualifiedName_ReplaceWith_NameExpression(IUnresolvedNamespaceQualifiedNameNode node);
+    public static partial INameExpressionNode? UnresolvedTypeQualifiedName_ReplaceWith_NameExpression(IUnresolvedTypeQualifiedNameNode node);
 }
