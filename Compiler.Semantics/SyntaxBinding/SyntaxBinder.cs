@@ -569,14 +569,14 @@ internal static class SyntaxBinder
     private static IBuiltInTypeNameExpressionNode BuiltInTypeNameExpression(IBuiltInTypeNameSyntax syntax)
         => IBuiltInTypeNameExpressionNode.Create(syntax);
 
-    private static IUnresolvedIdentifierNameExpressionNode IdentifierNameExpression(IIdentifierNameSyntax syntax)
-        => IUnresolvedIdentifierNameExpressionNode.Create(syntax);
+    private static IUnresolvedIdentifierNameNode IdentifierNameExpression(IIdentifierNameSyntax syntax)
+        => IUnresolvedIdentifierNameNode.Create(syntax);
 
-    private static IUnresolvedGenericNameExpressionNode GenericNameExpression(IGenericNameSyntax syntax)
-        => IUnresolvedGenericNameExpressionNode.Create(syntax, Types(syntax.GenericArguments));
+    private static IUnresolvedGenericNameNode GenericNameExpression(IGenericNameSyntax syntax)
+        => IUnresolvedGenericNameNode.Create(syntax, Types(syntax.GenericArguments));
 
-    private static IUnresolvedQualifiedNameExpressionNode QualifiedNameExpression(IQualifiedNameSyntax syntax)
-        => IUnresolvedQualifiedNameExpressionNode.Create(syntax, NameExpression(syntax.Context), Types(syntax.GenericArguments));
+    private static IUnresolvedQualifiedNameNode QualifiedNameExpression(IQualifiedNameSyntax syntax)
+        => IUnresolvedQualifiedNameNode.Create(syntax, NameExpression(syntax.Context), Types(syntax.GenericArguments));
     #endregion
 
     #region Capability Expressions

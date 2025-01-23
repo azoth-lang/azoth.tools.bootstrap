@@ -209,7 +209,6 @@
 // TODO delete once all name expressions implement FlowStateAfter
 ↑ NameExpression.FlowStateAfter: `IFlowState`
     => throw new NotImplementedException($"{GetType().GetFriendlyName()}.{nameof(FlowStateAfter)} not implemented.");
-↑ NamespaceName.Type: `UnknownType` => AzothType.Unknown;
 ↑ FunctionGroupName.Type: `UnknownType` => AzothType.Unknown;
 = FunctionGroupName.FlowStateAfter => FlowStateBefore();
 = FunctionName.FlowStateAfter;
@@ -222,17 +221,20 @@
 = FieldAccessExpression.FlowStateAfter;
 = FieldAccessExpression.↑.Diagnostics;
 = VariableNameExpression.FlowStateAfter;
-= TypeNameExpression.Type => AzothType.Unknown;
 ↑ InitializerGroupName.Type: `UnknownType` => AzothType.Unknown;
 = InitializerName.FlowStateAfter;
-↑ BuiltInTypeNameExpression.Type:`UnknownType` => AzothType.Unknown;
 = SelfExpression.FlowStateAfter;
 ↑ MissingNameExpression.Type: `UnknownType` => AzothType.Unknown;
 
-// ---------- Unresolved Name Expressions
-↑ UnresolvedNameExpression.Type: `UnknownType` => AzothType.Unknown;
-= UnresolvedNameExpression.FlowStateAfter;
-= UnresolvedQualifiedNameExpression.FlowStateAfter;
+// ---------- Names
+↑ NamespaceName.Type: `UnknownType` => AzothType.Unknown;
+= TypeNameExpression.Type => AzothType.Unknown;
+↑ BuiltInTypeNameExpression.Type:`UnknownType` => AzothType.Unknown;
+
+// ---------- Unresolved Names
+↑ UnresolvedName.Type: `UnknownType` => AzothType.Unknown;
+= UnresolvedName.FlowStateAfter;
+= UnresolvedQualifiedName.FlowStateAfter;
 
 // ---------- Capability Expressions
 = MoveExpression.Type;

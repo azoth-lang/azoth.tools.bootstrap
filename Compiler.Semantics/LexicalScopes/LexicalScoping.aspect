@@ -133,7 +133,7 @@ type `NamespaceSearchScope` <: `LexicalScope`;
 ↓ BuiltInTypeNameExpression.ContainingLexicalScope: `LexicalScope`;
 
 // ---------- Unresolved Name Expressions
-↓ UnresolvedNameExpression.ContainingLexicalScope: `LexicalScope`;
+↓ UnresolvedName.ContainingLexicalScope: `LexicalScope`;
 
 // ---------- Async Expressions
 = AwaitExpression.FlowLexicalScope() => TempExpression.FlowLexicalScope();

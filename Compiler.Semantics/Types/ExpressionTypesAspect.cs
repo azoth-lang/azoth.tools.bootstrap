@@ -497,7 +497,7 @@ internal static partial class ExpressionTypesAspect
             case IVariableNameExpressionNode:
                 // TODO fix this condition. It is really about LValues
                 break;
-            case IUnresolvedNameExpressionNode:
+            case IUnresolvedNameNode:
                 // Since it is unknown, we must assume that it can be assigned into
                 break;
             default:
@@ -902,12 +902,12 @@ internal static partial class ExpressionTypesAspect
         => node.FlowStateBefore().Constant(node.ValueId);
     #endregion
 
-    #region Unresolved Name Expressions
-    public static partial IFlowState UnresolvedNameExpression_FlowStateAfter(IUnresolvedNameExpressionNode node)
+    #region Unresolved Names
+    public static partial IFlowState UnresolvedName_FlowStateAfter(IUnresolvedNameNode node)
         // Things with unknown type are inherently untracked, this just adds it to the untracked list
         => node.FlowStateBefore().Alias(null, node.ValueId);
 
-    public static partial IFlowState UnresolvedQualifiedNameExpression_FlowStateAfter(IUnresolvedQualifiedNameExpressionNode node)
+    public static partial IFlowState UnresolvedQualifiedName_FlowStateAfter(IUnresolvedQualifiedNameNode node)
         => node.Context?.FlowStateAfter.Transform(node.Context.ValueId, node.ValueId, node.Type) ?? IFlowState.Empty;
     #endregion
 }

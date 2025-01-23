@@ -510,23 +510,23 @@ public static class ISemanticNodeExtensions
                 yield break;
             case IUnqualifiedNamespaceNameNode n:
                 yield break;
-            case IUnresolvedGenericNameExpressionNode n:
+            case IUnresolvedGenericNameNode n:
                 foreach (var child in n.TypeArguments)
                     yield return child;
                 yield break;
-            case IUnresolvedIdentifierNameExpressionNode n:
+            case IUnresolvedIdentifierNameNode n:
                 yield break;
             case IUnresolvedInvocationExpressionNode n:
                 yield return n.TempExpression;
                 foreach (var child in n.TempArguments)
                     yield return child;
                 yield break;
-            case IUnresolvedNamespaceQualifiedNameExpressionNode n:
+            case IUnresolvedNamespaceQualifiedNameNode n:
                 yield return n.Context;
                 foreach (var child in n.TypeArguments)
                     yield return child;
                 yield break;
-            case IUnresolvedQualifiedNameExpressionNode n:
+            case IUnresolvedQualifiedNameNode n:
                 yield return n.Context;
                 foreach (var child in n.TypeArguments)
                     yield return child;

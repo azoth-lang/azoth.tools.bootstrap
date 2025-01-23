@@ -2098,7 +2098,7 @@ public partial interface INeverTypedExpressionNode : IExpressionNode
 [Closed(
     typeof(IUnresolvedMemberAccessExpressionNode),
     typeof(IUnresolvedInvocationExpressionNode),
-    typeof(IUnresolvedNameExpressionNode))]
+    typeof(IUnresolvedNameNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IUnresolvedExpressionNode : IExpressionNode
 {
@@ -2106,7 +2106,7 @@ public partial interface IUnresolvedExpressionNode : IExpressionNode
 
 [Closed(
     typeof(UnresolvedMemberAccessExpressionNode),
-    typeof(IUnresolvedQualifiedNameExpressionNode))]
+    typeof(IUnresolvedQualifiedNameNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IUnresolvedMemberAccessExpressionNode : IUnresolvedExpressionNode
 {
@@ -2812,7 +2812,7 @@ public partial interface INonInvocableInvocationExpressionNode : IInvocationExpr
     typeof(IInstanceExpressionNode),
     typeof(IMissingNameExpressionNode),
     typeof(INameNode),
-    typeof(IUnresolvedNameExpressionNode))]
+    typeof(IUnresolvedNameNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface INameExpressionNode : IExpressionNode
 {
@@ -3268,10 +3268,10 @@ public partial interface IQualifiedTypeNameExpressionNode : ITypeNameExpressionN
 }
 
 [Closed(
-    typeof(IUnresolvedOrdinaryNameExpressionNode),
-    typeof(IUnresolvedQualifiedNameExpressionNode))]
+    typeof(IUnresolvedOrdinaryNameNode),
+    typeof(IUnresolvedQualifiedNameNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IUnresolvedNameExpressionNode : INameExpressionNode, IUnresolvedExpressionNode
+public partial interface IUnresolvedNameNode : INameExpressionNode, IUnresolvedExpressionNode
 {
     new LexicalScope ContainingLexicalScope { get; }
     LexicalScope IAmbiguousExpressionNode.ContainingLexicalScope() => ContainingLexicalScope;
@@ -3279,16 +3279,16 @@ public partial interface IUnresolvedNameExpressionNode : INameExpressionNode, IU
         => AzothType.Unknown;
     IMaybeType IExpressionNode.Type => Type;
     IFlowState INameExpressionNode.FlowStateAfter
-        => ExpressionTypesAspect.UnresolvedNameExpression_FlowStateAfter(this);
+        => ExpressionTypesAspect.UnresolvedName_FlowStateAfter(this);
     IMaybePlainType IExpressionNode.PlainType
         => AzothPlainType.Unknown;
 }
 
 [Closed(
-    typeof(IUnresolvedIdentifierNameExpressionNode),
-    typeof(IUnresolvedGenericNameExpressionNode))]
+    typeof(IUnresolvedIdentifierNameNode),
+    typeof(IUnresolvedGenericNameNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IUnresolvedOrdinaryNameExpressionNode : IUnresolvedNameExpressionNode
+public partial interface IUnresolvedOrdinaryNameNode : IUnresolvedNameNode
 {
     new IOrdinaryNameSyntax Syntax { get; }
     INameExpressionSyntax INameExpressionNode.Syntax => Syntax;
@@ -3299,30 +3299,30 @@ public partial interface IUnresolvedOrdinaryNameExpressionNode : IUnresolvedName
     IFixedList<IDeclarationNode> ReferencedDeclarations { get; }
 }
 
-[Closed(typeof(UnresolvedIdentifierNameExpressionNode))]
+[Closed(typeof(UnresolvedIdentifierNameNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IUnresolvedIdentifierNameExpressionNode : IUnresolvedOrdinaryNameExpressionNode
+public partial interface IUnresolvedIdentifierNameNode : IUnresolvedOrdinaryNameNode
 {
     new IIdentifierNameSyntax Syntax { get; }
-    IOrdinaryNameSyntax IUnresolvedOrdinaryNameExpressionNode.Syntax => Syntax;
+    IOrdinaryNameSyntax IUnresolvedOrdinaryNameNode.Syntax => Syntax;
     INameExpressionSyntax INameExpressionNode.Syntax => Syntax;
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ICodeSyntax ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     new IdentifierName Name
         => Syntax.Name;
-    OrdinaryName IUnresolvedOrdinaryNameExpressionNode.Name => Name;
+    OrdinaryName IUnresolvedOrdinaryNameNode.Name => Name;
 
-    public static IUnresolvedIdentifierNameExpressionNode Create(IIdentifierNameSyntax syntax)
-        => new UnresolvedIdentifierNameExpressionNode(syntax);
+    public static IUnresolvedIdentifierNameNode Create(IIdentifierNameSyntax syntax)
+        => new UnresolvedIdentifierNameNode(syntax);
 }
 
-[Closed(typeof(UnresolvedGenericNameExpressionNode))]
+[Closed(typeof(UnresolvedGenericNameNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IUnresolvedGenericNameExpressionNode : IUnresolvedOrdinaryNameExpressionNode
+public partial interface IUnresolvedGenericNameNode : IUnresolvedOrdinaryNameNode
 {
     new IGenericNameSyntax Syntax { get; }
-    IOrdinaryNameSyntax IUnresolvedOrdinaryNameExpressionNode.Syntax => Syntax;
+    IOrdinaryNameSyntax IUnresolvedOrdinaryNameNode.Syntax => Syntax;
     INameExpressionSyntax INameExpressionNode.Syntax => Syntax;
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ICodeSyntax ICodeNode.Syntax => Syntax;
@@ -3330,19 +3330,19 @@ public partial interface IUnresolvedGenericNameExpressionNode : IUnresolvedOrdin
     IFixedList<ITypeNode> TypeArguments { get; }
     new GenericName Name
         => Syntax.Name;
-    OrdinaryName IUnresolvedOrdinaryNameExpressionNode.Name => Name;
+    OrdinaryName IUnresolvedOrdinaryNameNode.Name => Name;
 
-    public static IUnresolvedGenericNameExpressionNode Create(
+    public static IUnresolvedGenericNameNode Create(
         IGenericNameSyntax syntax,
         IEnumerable<ITypeNode> typeArguments)
-        => new UnresolvedGenericNameExpressionNode(syntax, typeArguments);
+        => new UnresolvedGenericNameNode(syntax, typeArguments);
 }
 
 [Closed(
-    typeof(UnresolvedQualifiedNameExpressionNode),
-    typeof(IUnresolvedNamespaceQualifiedNameExpressionNode))]
+    typeof(UnresolvedQualifiedNameNode),
+    typeof(IUnresolvedNamespaceQualifiedNameNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IUnresolvedQualifiedNameExpressionNode : IUnresolvedNameExpressionNode, IUnresolvedMemberAccessExpressionNode
+public partial interface IUnresolvedQualifiedNameNode : IUnresolvedNameNode, IUnresolvedMemberAccessExpressionNode
 {
     new IQualifiedNameSyntax Syntax { get; }
     INameExpressionSyntax INameExpressionNode.Syntax => Syntax;
@@ -3357,40 +3357,40 @@ public partial interface IUnresolvedQualifiedNameExpressionNode : IUnresolvedNam
     IAmbiguousExpressionNode IUnresolvedMemberAccessExpressionNode.CurrentContext => CurrentContext;
     new UnknownType Type
         => AzothType.Unknown;
-    UnknownType IUnresolvedNameExpressionNode.Type => Type;
+    UnknownType IUnresolvedNameNode.Type => Type;
     IMaybeType IExpressionNode.Type => Type;
     UnknownType IUnresolvedMemberAccessExpressionNode.Type => Type;
     IFlowState INameExpressionNode.FlowStateAfter
-        => ExpressionTypesAspect.UnresolvedQualifiedNameExpression_FlowStateAfter(this);
+        => ExpressionTypesAspect.UnresolvedQualifiedName_FlowStateAfter(this);
     IMaybePlainType IExpressionNode.PlainType
         => AzothPlainType.Unknown;
 
-    public static IUnresolvedQualifiedNameExpressionNode Create(
+    public static IUnresolvedQualifiedNameNode Create(
         IQualifiedNameSyntax syntax,
         INameExpressionNode context,
         IEnumerable<ITypeNode> typeArguments)
-        => new UnresolvedQualifiedNameExpressionNode(syntax, context, typeArguments);
+        => new UnresolvedQualifiedNameNode(syntax, context, typeArguments);
 }
 
-[Closed(typeof(UnresolvedNamespaceQualifiedNameExpressionNode))]
+[Closed(typeof(UnresolvedNamespaceQualifiedNameNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IUnresolvedNamespaceQualifiedNameExpressionNode : IUnresolvedQualifiedNameExpressionNode
+public partial interface IUnresolvedNamespaceQualifiedNameNode : IUnresolvedQualifiedNameNode
 {
     new INamespaceNameNode Context { get; }
     new INamespaceNameNode CurrentContext { get; }
-    INameExpressionNode IUnresolvedQualifiedNameExpressionNode.Context => Context;
-    INameExpressionNode IUnresolvedQualifiedNameExpressionNode.CurrentContext => CurrentContext;
+    INameExpressionNode IUnresolvedQualifiedNameNode.Context => Context;
+    INameExpressionNode IUnresolvedQualifiedNameNode.CurrentContext => CurrentContext;
     IAmbiguousExpressionNode IUnresolvedMemberAccessExpressionNode.TempContext => Context;
     IExpressionNode? IUnresolvedMemberAccessExpressionNode.Context => Context;
     IAmbiguousExpressionNode IUnresolvedMemberAccessExpressionNode.CurrentContext => CurrentContext;
     IFixedSet<INamespaceMemberDeclarationNode> ReferencedDeclarations { get; }
 
-    public static IUnresolvedNamespaceQualifiedNameExpressionNode Create(
+    public static IUnresolvedNamespaceQualifiedNameNode Create(
         IQualifiedNameSyntax syntax,
         INamespaceNameNode context,
         IEnumerable<ITypeNode> typeArguments,
         IEnumerable<INamespaceMemberDeclarationNode> referencedDeclarations)
-        => new UnresolvedNamespaceQualifiedNameExpressionNode(syntax, context, typeArguments, referencedDeclarations);
+        => new UnresolvedNamespaceQualifiedNameNode(syntax, context, typeArguments, referencedDeclarations);
 }
 
 [Closed(typeof(AmbiguousMoveExpressionNode))]
@@ -16816,9 +16816,9 @@ file class QualifiedTypeNameExpressionNode : SemanticNode, IQualifiedTypeNameExp
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class UnresolvedIdentifierNameExpressionNode : SemanticNode, IUnresolvedIdentifierNameExpressionNode
+file class UnresolvedIdentifierNameNode : SemanticNode, IUnresolvedIdentifierNameNode
 {
-    private IUnresolvedIdentifierNameExpressionNode Self { [Inline] get => this; }
+    private IUnresolvedIdentifierNameNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
     protected override bool MayHaveRewrite => true;
 
@@ -16873,7 +16873,7 @@ file class UnresolvedIdentifierNameExpressionNode : SemanticNode, IUnresolvedIde
     public IFixedList<IDeclarationNode> ReferencedDeclarations
         => GrammarAttribute.IsCached(in referencedDeclarationsCached) ? referencedDeclarations!
             : this.Synthetic(ref referencedDeclarationsCached, ref referencedDeclarations,
-                BindingUnresolvedNamesAspect.UnresolvedOrdinaryNameExpression_ReferencedDeclarations);
+                BindingUnresolvedNamesAspect.UnresolvedOrdinaryName_ReferencedDeclarations);
     private IFixedList<IDeclarationNode>? referencedDeclarations;
     private bool referencedDeclarationsCached;
     public ValueId ValueId
@@ -16883,7 +16883,7 @@ file class UnresolvedIdentifierNameExpressionNode : SemanticNode, IUnresolvedIde
     private ValueId valueId;
     private bool valueIdCached;
 
-    public UnresolvedIdentifierNameExpressionNode(IIdentifierNameSyntax syntax)
+    public UnresolvedIdentifierNameNode(IIdentifierNameSyntax syntax)
     {
         Syntax = syntax;
     }
@@ -16925,7 +16925,7 @@ file class UnresolvedIdentifierNameExpressionNode : SemanticNode, IUnresolvedIde
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
     {
         ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
-        BindingUnresolvedNamesAspect.UnresolvedOrdinaryNameExpression_Contribute_Diagnostics(this, builder);
+        BindingUnresolvedNamesAspect.UnresolvedOrdinaryName_Contribute_Diagnostics(this, builder);
     }
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
@@ -16941,7 +16941,7 @@ file class UnresolvedIdentifierNameExpressionNode : SemanticNode, IUnresolvedIde
     }
 
     protected override IChildTreeNode Rewrite()
-        => BindingUnresolvedNamesAspect.UnresolvedIdentifierNameExpression_ReplaceWith_NameExpression(this)
+        => BindingUnresolvedNamesAspect.UnresolvedIdentifierName_ReplaceWith_NameExpression(this)
         ?? ExpressionTypesAspect.Expression_ImplicitMove_Insert(this)
         ?? ExpressionTypesAspect.Expression_ImplicitFreeze_Insert(this)
         ?? ExpressionTypesAspect.Expression_Insert_PrepareToReturnExpression(this)
@@ -16950,9 +16950,9 @@ file class UnresolvedIdentifierNameExpressionNode : SemanticNode, IUnresolvedIde
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class UnresolvedGenericNameExpressionNode : SemanticNode, IUnresolvedGenericNameExpressionNode
+file class UnresolvedGenericNameNode : SemanticNode, IUnresolvedGenericNameNode
 {
-    private IUnresolvedGenericNameExpressionNode Self { [Inline] get => this; }
+    private IUnresolvedGenericNameNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
     protected override bool MayHaveRewrite => true;
 
@@ -17008,7 +17008,7 @@ file class UnresolvedGenericNameExpressionNode : SemanticNode, IUnresolvedGeneri
     public IFixedList<IDeclarationNode> ReferencedDeclarations
         => GrammarAttribute.IsCached(in referencedDeclarationsCached) ? referencedDeclarations!
             : this.Synthetic(ref referencedDeclarationsCached, ref referencedDeclarations,
-                BindingUnresolvedNamesAspect.UnresolvedOrdinaryNameExpression_ReferencedDeclarations);
+                BindingUnresolvedNamesAspect.UnresolvedOrdinaryName_ReferencedDeclarations);
     private IFixedList<IDeclarationNode>? referencedDeclarations;
     private bool referencedDeclarationsCached;
     public ValueId ValueId
@@ -17018,7 +17018,7 @@ file class UnresolvedGenericNameExpressionNode : SemanticNode, IUnresolvedGeneri
     private ValueId valueId;
     private bool valueIdCached;
 
-    public UnresolvedGenericNameExpressionNode(
+    public UnresolvedGenericNameNode(
         IGenericNameSyntax syntax,
         IEnumerable<ITypeNode> typeArguments)
     {
@@ -17063,7 +17063,7 @@ file class UnresolvedGenericNameExpressionNode : SemanticNode, IUnresolvedGeneri
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
     {
         ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
-        BindingUnresolvedNamesAspect.UnresolvedOrdinaryNameExpression_Contribute_Diagnostics(this, builder);
+        BindingUnresolvedNamesAspect.UnresolvedOrdinaryName_Contribute_Diagnostics(this, builder);
     }
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
@@ -17079,7 +17079,7 @@ file class UnresolvedGenericNameExpressionNode : SemanticNode, IUnresolvedGeneri
     }
 
     protected override IChildTreeNode Rewrite()
-        => BindingUnresolvedNamesAspect.UnresolvedGenericNameExpression_ReplaceWith_NameExpression(this)
+        => BindingUnresolvedNamesAspect.UnresolvedGenericName_ReplaceWith_NameExpression(this)
         ?? ExpressionTypesAspect.Expression_ImplicitMove_Insert(this)
         ?? ExpressionTypesAspect.Expression_ImplicitFreeze_Insert(this)
         ?? ExpressionTypesAspect.Expression_Insert_PrepareToReturnExpression(this)
@@ -17088,9 +17088,9 @@ file class UnresolvedGenericNameExpressionNode : SemanticNode, IUnresolvedGeneri
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class UnresolvedQualifiedNameExpressionNode : SemanticNode, IUnresolvedQualifiedNameExpressionNode
+file class UnresolvedQualifiedNameNode : SemanticNode, IUnresolvedQualifiedNameNode
 {
-    private IUnresolvedQualifiedNameExpressionNode Self { [Inline] get => this; }
+    private IUnresolvedQualifiedNameNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
     protected override bool MayHaveRewrite => true;
 
@@ -17158,7 +17158,7 @@ file class UnresolvedQualifiedNameExpressionNode : SemanticNode, IUnresolvedQual
     private ValueId valueId;
     private bool valueIdCached;
 
-    public UnresolvedQualifiedNameExpressionNode(
+    public UnresolvedQualifiedNameNode(
         IQualifiedNameSyntax syntax,
         INameExpressionNode context,
         IEnumerable<ITypeNode> typeArguments)
@@ -17221,7 +17221,7 @@ file class UnresolvedQualifiedNameExpressionNode : SemanticNode, IUnresolvedQual
     }
 
     protected override IChildTreeNode Rewrite()
-        => BindingUnresolvedNamesAspect.UnresolvedQualifiedNameExpression_ReplaceWith_UnresolvedNamespaceQualifiedNameExpression(this)
+        => BindingUnresolvedNamesAspect.UnresolvedQualifiedName_ReplaceWith_UnresolvedNamespaceQualifiedName(this)
         ?? ExpressionTypesAspect.Expression_ImplicitMove_Insert(this)
         ?? ExpressionTypesAspect.Expression_ImplicitFreeze_Insert(this)
         ?? ExpressionTypesAspect.Expression_Insert_PrepareToReturnExpression(this)
@@ -17232,9 +17232,9 @@ file class UnresolvedQualifiedNameExpressionNode : SemanticNode, IUnresolvedQual
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class UnresolvedNamespaceQualifiedNameExpressionNode : SemanticNode, IUnresolvedNamespaceQualifiedNameExpressionNode
+file class UnresolvedNamespaceQualifiedNameNode : SemanticNode, IUnresolvedNamespaceQualifiedNameNode
 {
-    private IUnresolvedNamespaceQualifiedNameExpressionNode Self { [Inline] get => this; }
+    private IUnresolvedNamespaceQualifiedNameNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
     protected override bool MayHaveRewrite => true;
 
@@ -17303,7 +17303,7 @@ file class UnresolvedNamespaceQualifiedNameExpressionNode : SemanticNode, IUnres
     private ValueId valueId;
     private bool valueIdCached;
 
-    public UnresolvedNamespaceQualifiedNameExpressionNode(
+    public UnresolvedNamespaceQualifiedNameNode(
         IQualifiedNameSyntax syntax,
         INamespaceNameNode context,
         IEnumerable<ITypeNode> typeArguments,
@@ -17368,8 +17368,8 @@ file class UnresolvedNamespaceQualifiedNameExpressionNode : SemanticNode, IUnres
     }
 
     protected override IChildTreeNode Rewrite()
-        => BindingUnresolvedNamesAspect.UnresolvedNamespaceQualifiedNameExpression_ReplaceWith_NameExpression(this)
-        ?? BindingUnresolvedNamesAspect.UnresolvedQualifiedNameExpression_ReplaceWith_UnresolvedNamespaceQualifiedNameExpression(this)
+        => BindingUnresolvedNamesAspect.UnresolvedNamespaceQualifiedName_ReplaceWith_NameExpression(this)
+        ?? BindingUnresolvedNamesAspect.UnresolvedQualifiedName_ReplaceWith_UnresolvedNamespaceQualifiedName(this)
         ?? ExpressionTypesAspect.Expression_ImplicitMove_Insert(this)
         ?? ExpressionTypesAspect.Expression_ImplicitFreeze_Insert(this)
         ?? ExpressionTypesAspect.Expression_Insert_PrepareToReturnExpression(this)

@@ -172,18 +172,20 @@
 = NonInvocableInvocationExpression.AllArguments => Arguments;
 
 // ---------- Name Expressions
-↑ UnqualifiedNamespaceName.Name: `IdentifierName` => Syntax.Name;
-↑ QualifiedNamespaceName.Name: `IdentifierName` => (IdentifierName)Syntax.MemberName;
 ↑ VariableNameExpression.Name: `IdentifierName` => Syntax.Name;
 ↑ TypeNameExpression.Name: `OrdinaryName`;
-= OrdinaryTypeNameExpression.Name => Syntax.Name;
-= QualifiedTypeNameExpression.Name => Syntax.MemberName;
-↑ BuiltInTypeNameExpression.Name: `BuiltInTypeName` => Syntax.Name;
 ↑ SelfExpression.IsImplicit: `bool` => Syntax.IsImplicit;
 
+// ---------- Names
+↑ UnqualifiedNamespaceName.Name: `IdentifierName` => Syntax.Name;
+↑ QualifiedNamespaceName.Name: `IdentifierName` => (IdentifierName)Syntax.MemberName;
+↑ BuiltInTypeNameExpression.Name: `BuiltInTypeName` => Syntax.Name;
+= OrdinaryTypeNameExpression.Name => Syntax.Name;
+= QualifiedTypeNameExpression.Name => Syntax.MemberName;
+
 // ---------- Unresolved Name Expressions
-↑ UnresolvedIdentifierNameExpression.Name: `IdentifierName` => Syntax.Name;
-↑ UnresolvedGenericNameExpression.Name: `GenericName` => Syntax.Name;
+↑ UnresolvedIdentifierName.Name: `IdentifierName` => Syntax.Name;
+↑ UnresolvedGenericName.Name: `GenericName` => Syntax.Name;
 
 // ---------- Capability Expressions
 ↑ PrepareToReturnExpression.Syntax: `IExpressionSyntax` => Value.Syntax;
