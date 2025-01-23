@@ -364,8 +364,7 @@ QualifiedTypeNameExpression <: TypeNameExpression = Syntax:`IMemberAccessExpress
 
 // ---------- Unresolved Names
 // TODO use for both this and types so that type names can be qualified
-// TODO should inherit from Name instead of NameExpression
-UnresolvedName <: NameExpression, UnresolvedExpression = Syntax:`INameExpressionSyntax`;
+UnresolvedName <: Name, UnresolvedExpression = Syntax:`INameExpressionSyntax`;
 UnresolvedOrdinaryName <: UnresolvedName
     = Syntax:`IOrdinaryNameSyntax` Name:`OrdinaryName`;
 UnresolvedIdentifierName <: UnresolvedOrdinaryName
