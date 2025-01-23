@@ -13,31 +13,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.NameBinding;
 internal static partial class BindingUnresolvedNamesAspect
 {
     #region Unresolved Expressions
-    public static partial IExpressionNode? UnresolvedMemberAccessExpression_NamespaceNameContext_ReplaceWith_Expression(IUnresolvedMemberAccessExpressionNode node)
-    {
-        if (node.Context is not INamespaceNameNode context)
-            return null;
-
-        var members = context.ReferencedDeclarations.SelectMany(d => d.MembersNamed(node.MemberName)).ToFixedSet();
-        if (members.Count == 0)
-            // definitely namespace member access, no need to process other rewrites
-            return node;
-
-        if (members.TryAllOfType<INamespaceDeclarationNode>(out var referencedNamespaces))
-            return IQualifiedNamespaceNameNode.Create(node.Syntax, context, referencedNamespaces);
-
-        if (members.TryAllOfType<IFunctionDeclarationNode>(out var referencedFunctions))
-            return IFunctionGroupNameNode.Create(node.Syntax, context, node.MemberName, node.TypeArguments,
-                referencedFunctions);
-
-        // TODO select correct type declaration based on generic arguments
-        if (members.TrySingle() is ITypeDeclarationNode referencedType)
-            return IQualifiedTypeNameExpressionNode.Create(node.Syntax, context, node.TypeArguments, referencedType);
-
-        return null;
-        //return IAmbiguousMemberAccessExpressionNode.Create(node.Syntax, context, node.TypeArguments, members);
-    }
-
     public static partial IExpressionNode? UnresolvedMemberAccessExpression_TypeNameExpressionContext_ReplaceWith_Expression(IUnresolvedMemberAccessExpressionNode node)
     {
         if (node.Context is not ITypeNameExpressionNode context)
@@ -59,7 +34,6 @@ internal static partial class BindingUnresolvedNamesAspect
             return IInitializerGroupNameNode.Create(node.Syntax, context, context.Name, referencedInitializers);
 
         return null;
-        //return IAmbiguousMemberAccessExpressionNode.Create(node.Syntax, context, node.TypeArguments, members);
     }
 
     public static partial INameExpressionNode? UnresolvedMemberAccessExpression_ExpressionContext_ReplaceWith_NameExpression(IUnresolvedMemberAccessExpressionNode node)
@@ -96,7 +70,6 @@ internal static partial class BindingUnresolvedNamesAspect
             return IFieldAccessExpressionNode.Create(node.Syntax, context, fieldDeclaration.Name, fieldDeclaration);
 
         return null;
-        //return IAmbiguousMemberAccessExpressionNode.Create(node.Syntax, context, node.TypeArguments, members);
     }
 
     public static partial void UnresolvedMemberAccessExpression_Contribute_Diagnostics(IUnresolvedMemberAccessExpressionNode node, DiagnosticCollectionBuilder diagnostics)
@@ -303,6 +276,38 @@ internal static partial class BindingUnresolvedNamesAspect
 
         return null;
     }
+
+    public static partial IUnresolvedNamespaceQualifiedNameExpressionNode? UnresolvedQualifiedNameExpression_ReplaceWith_UnresolvedNamespaceQualifiedNameExpression(IUnresolvedQualifiedNameExpressionNode node)
+    {
+        if (node.Context is not INamespaceNameNode context) return null;
+        var referencedDeclarations = context.ReferencedDeclarations.SelectMany(d => d.MembersNamed(node.MemberName)).ToFixedSet();
+        return IUnresolvedNamespaceQualifiedNameExpressionNode.Create(node.Syntax, context, node.TypeArguments, referencedDeclarations);
+    }
+
+    public static partial INameExpressionNode? UnresolvedNamespaceQualifiedNameExpression_ReplaceWith_NameExpression(IUnresolvedNamespaceQualifiedNameExpressionNode node)
+    {
+        var referencedDeclarations = node.ReferencedDeclarations;
+
+        if (referencedDeclarations.Count == 0)
+            // Cannot resolve namespace member access, no need to process other rewrites
+            return node;
+
+        if (referencedDeclarations.TryAllOfType<INamespaceDeclarationNode>(out var referencedNamespaces))
+            return IQualifiedNamespaceNameNode.Create(node.Syntax, node.Context, referencedNamespaces);
+
+        if (referencedDeclarations.TryAllOfType<IFunctionDeclarationNode>(out var referencedFunctions))
+            return IFunctionGroupNameNode.Create(node.Syntax, node.Context, node.MemberName, node.TypeArguments,
+                referencedFunctions);
+
+        // TODO select correct type declaration based on generic arguments
+        if (referencedDeclarations.TrySingle() is ITypeDeclarationNode referencedType)
+            return IQualifiedTypeNameExpressionNode.Create(node.Syntax, node.Context, node.TypeArguments,
+                referencedType);
+
+        return null;
+    }
+
+    // TODO diagnostics for UnresolvedNamespaceQualifiedNameExpression
     #endregion
 
     private static bool TryAllOfType<T>(
