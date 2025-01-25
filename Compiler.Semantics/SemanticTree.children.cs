@@ -521,17 +521,17 @@ public static class ISemanticNodeExtensions
                 foreach (var child in n.TempArguments)
                     yield return child;
                 yield break;
-            case IUnresolvedNamespaceQualifiedNameNode n:
+            case IUnresolvedNamespaceQualifiedNameExpressionNode n:
                 yield return n.Context;
                 foreach (var child in n.GenericArguments)
                     yield return child;
                 yield break;
-            case IUnresolvedTypeQualifiedNameNode n:
+            case IUnresolvedTypeQualifiedNameExpressionNode n:
                 yield return n.Context;
                 foreach (var child in n.GenericArguments)
                     yield return child;
                 yield break;
-            case IUnresolvedQualifiedNameNode n:
+            case IUnresolvedQualifiedNameExpressionNode n:
                 yield return n.Context;
                 foreach (var child in n.GenericArguments)
                     yield return child;

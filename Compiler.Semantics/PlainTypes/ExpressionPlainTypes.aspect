@@ -97,7 +97,7 @@
 
 // ---------- Unresolved Name Expressions
 = UnresolvedNameExpression.PlainType => AzothPlainType.Unknown;
-= UnresolvedQualifiedName.PlainType => AzothPlainType.Unknown;
+= UnresolvedQualifiedNameExpression.PlainType => AzothPlainType.Unknown;
 
 // ---------- Capability Expressions
 = MoveExpression.PlainType => Referent.PlainType;

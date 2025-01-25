@@ -253,21 +253,21 @@ internal static partial class BindingUnresolvedNamesAspect
         return null;
     }
 
-    public static partial IUnresolvedNamespaceQualifiedNameNode? UnresolvedQualifiedName_ReplaceWith_UnresolvedNamespaceQualifiedName(IUnresolvedQualifiedNameNode node)
+    public static partial IUnresolvedNamespaceQualifiedNameExpressionNode? UnresolvedQualifiedNameExpression_ReplaceWith_UnresolvedNamespaceQualifiedNameExpression(IUnresolvedQualifiedNameExpressionNode node)
     {
         if (node.Context is not INamespaceNameNode context) return null;
         var referencedDeclarations = context.ReferencedDeclarations.SelectMany(d => d.MembersNamed(node.MemberName)).ToFixedSet();
-        return IUnresolvedNamespaceQualifiedNameNode.Create(node.Syntax, context, node.GenericArguments, referencedDeclarations);
+        return IUnresolvedNamespaceQualifiedNameExpressionNode.Create(node.Syntax, context, node.GenericArguments, referencedDeclarations);
     }
 
-    public static partial IUnresolvedTypeQualifiedNameNode? UnresolvedQualifiedName_ReplaceWith_UnresolvedTypeQualifiedName(IUnresolvedQualifiedNameNode node)
+    public static partial IUnresolvedTypeQualifiedNameExpressionNode? UnresolvedQualifiedNameExpression_ReplaceWith_UnresolvedTypeQualifiedNameExpression(IUnresolvedQualifiedNameExpressionNode node)
     {
         if (node.Context is not ITypeNameExpressionNode context) return null;
         var referencedDeclarations = context.ReferencedDeclaration.AssociatedMembersNamed(node.MemberName).ToFixedSet();
-        return IUnresolvedTypeQualifiedNameNode.Create(node.Syntax, context, node.GenericArguments, referencedDeclarations);
+        return IUnresolvedTypeQualifiedNameExpressionNode.Create(node.Syntax, context, node.GenericArguments, referencedDeclarations);
     }
 
-    public static partial INameExpressionNode? UnresolvedNamespaceQualifiedName_ReplaceWith_NameExpression(IUnresolvedNamespaceQualifiedNameNode node)
+    public static partial INameExpressionNode? UnresolvedNamespaceQualifiedNameExpression_ReplaceWith_NameExpression(IUnresolvedNamespaceQualifiedNameExpressionNode node)
     {
         var referencedDeclarations = node.ReferencedDeclarations;
 
@@ -292,7 +292,7 @@ internal static partial class BindingUnresolvedNamesAspect
 
     // TODO diagnostics for UnresolvedNamespaceQualifiedName
 
-    public static partial INameExpressionNode? UnresolvedTypeQualifiedName_ReplaceWith_NameExpression(IUnresolvedTypeQualifiedNameNode node)
+    public static partial INameExpressionNode? UnresolvedTypeQualifiedNameExpression_ReplaceWith_NameExpression(IUnresolvedTypeQualifiedNameExpressionNode node)
     {
         // TODO metatypes would change this into an ordinary expression
 

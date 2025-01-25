@@ -883,6 +883,9 @@ internal static partial class ExpressionTypesAspect
     public static partial IFlowState UnresolvedNameExpression_FlowStateAfter(IUnresolvedNameExpressionNode node)
         // Things with unknown type are inherently untracked, this just adds it to the untracked list
         => node.FlowStateBefore().Alias(null, node.ValueId);
+
+    public static partial IFlowState UnresolvedQualifiedNameExpression_FlowStateAfter(IUnresolvedQualifiedNameExpressionNode node)
+        => node.Context?.FlowStateAfter.Transform(node.Context.ValueId, node.ValueId, node.Type) ?? IFlowState.Empty;
     #endregion
 
     #region Name Expressions
@@ -906,10 +909,5 @@ internal static partial class ExpressionTypesAspect
 
     public static partial IFlowState InitializerName_FlowStateAfter(IInitializerNameNode node)
         => node.FlowStateBefore().Constant(node.ValueId);
-    #endregion
-
-    #region Unresolved Names
-    public static partial IFlowState UnresolvedQualifiedName_FlowStateAfter(IUnresolvedQualifiedNameNode node)
-        => node.Context?.FlowStateAfter.Transform(node.Context.ValueId, node.ValueId, node.Type) ?? IFlowState.Empty;
     #endregion
 }

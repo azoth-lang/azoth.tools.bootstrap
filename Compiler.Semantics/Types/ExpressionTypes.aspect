@@ -232,14 +232,12 @@
 // ---------- Unresolved Name Expressions
 ↑ UnresolvedNameExpression.Type: `UnknownType` => AzothType.Unknown;
 = UnresolvedNameExpression.FlowStateAfter;
+= UnresolvedQualifiedNameExpression.FlowStateAfter;
 
 // ---------- Names
 ↑ NamespaceName.Type: `UnknownType` => AzothType.Unknown;
 = TypeNameExpression.Type => AzothType.Unknown;
 ↑ BuiltInTypeNameExpression.Type:`UnknownType` => AzothType.Unknown;
-
-// ---------- Unresolved Names
-= UnresolvedQualifiedName.FlowStateAfter;
 
 // ---------- Capability Expressions
 = MoveExpression.Type;

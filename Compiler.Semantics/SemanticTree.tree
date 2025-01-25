@@ -310,6 +310,8 @@ NonInvocableInvocationExpression <: InvocationExpression = Syntax:`IInvocationEx
 // syntax that something is a name). However, in the semantic tree name nodes are for namespace and
 // type names. Name expressions are more inclusive than just names since there is name syntax that
 // can occur in an expression that don't occur in type and namespace names.
+// Note: a major part of the reason for name expressions is so that unresolved name expressions can
+// preserve the name syntax types and produce namespace and type names with proper syntax types.
 
 NameExpression <: Expression = Syntax:`INameExpressionSyntax`;
 // See the names section for more nodes that are name expressions
@@ -334,12 +336,12 @@ UnresolvedIdentifierNameExpression <: UnresolvedOrdinaryNameExpression
     = Syntax:`IIdentifierNameSyntax`;
 UnresolvedGenericNameExpression <: UnresolvedOrdinaryNameExpression
     = Syntax:`IGenericNameSyntax` GenericArguments:Type*;
-concrete UnresolvedQualifiedName <: UnresolvedNameExpression, UnresolvedMemberAccessExpression
+concrete UnresolvedQualifiedNameExpression <: UnresolvedNameExpression, UnresolvedMemberAccessExpression
     = Syntax:`IQualifiedNameSyntax` Context:NameExpression /GenericArguments/;
 /// These reify the Context and ReferencedDeclarations to make diagnostic reporting eaiser
-UnresolvedNamespaceQualifiedName <: UnresolvedQualifiedName
+UnresolvedNamespaceQualifiedNameExpression <: UnresolvedQualifiedNameExpression
     = /Syntax/ Context:NamespaceName /GenericArguments/ ReferencedDeclarations:{`INamespaceMemberDeclarationNode`};
-UnresolvedTypeQualifiedName <: UnresolvedQualifiedName
+UnresolvedTypeQualifiedNameExpression <: UnresolvedQualifiedNameExpression
     = /Syntax/ Context:TypeNameExpression /GenericArguments/ ReferencedDeclarations:{`IAssociatedMemberDeclarationNode`};
 
 // ---------- Names

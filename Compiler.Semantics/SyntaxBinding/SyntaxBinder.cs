@@ -575,8 +575,8 @@ internal static class SyntaxBinder
     private static IUnresolvedGenericNameExpressionNode GenericNameExpression(IGenericNameSyntax syntax)
         => IUnresolvedGenericNameExpressionNode.Create(syntax, Types(syntax.GenericArguments));
 
-    private static IUnresolvedQualifiedNameNode QualifiedNameExpression(IQualifiedNameSyntax syntax)
-        => IUnresolvedQualifiedNameNode.Create(syntax, NameExpression(syntax.Context), Types(syntax.GenericArguments));
+    private static IUnresolvedQualifiedNameExpressionNode QualifiedNameExpression(IQualifiedNameSyntax syntax)
+        => IUnresolvedQualifiedNameExpressionNode.Create(syntax, NameExpression(syntax.Context), Types(syntax.GenericArguments));
     #endregion
 
     #region Capability Expressions

@@ -68,7 +68,7 @@ internal static partial class ExpressionTypesAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFlowState UnresolvedNameExpression_FlowStateAfter(IUnresolvedNameExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IFlowState UnresolvedQualifiedName_FlowStateAfter(IUnresolvedQualifiedNameNode node);
+    public static partial IFlowState UnresolvedQualifiedNameExpression_FlowStateAfter(IUnresolvedQualifiedNameExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IMaybeType MoveExpression_Type(IMoveExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
