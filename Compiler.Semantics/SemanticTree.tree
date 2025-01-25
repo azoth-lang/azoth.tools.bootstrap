@@ -322,14 +322,14 @@ MissingNameExpression <: NameExpression
 
 // ---------- Unresolved Name Expressions
 // TODO use for both this and types so that type names can be qualified
-UnresolvedName <: NameExpression, UnresolvedExpression = Syntax:`INameExpressionSyntax`;
-UnresolvedOrdinaryName <: UnresolvedName
+UnresolvedNameExpression <: NameExpression, UnresolvedExpression = Syntax:`INameExpressionSyntax`;
+UnresolvedOrdinaryName <: UnresolvedNameExpression
     = Syntax:`IOrdinaryNameSyntax` Name:`OrdinaryName`;
 UnresolvedIdentifierName <: UnresolvedOrdinaryName
     = Syntax:`IIdentifierNameSyntax`;
 UnresolvedGenericName <: UnresolvedOrdinaryName
     = Syntax:`IGenericNameSyntax` GenericArguments:Type*;
-concrete UnresolvedQualifiedName <: UnresolvedName, UnresolvedMemberAccessExpression
+concrete UnresolvedQualifiedName <: UnresolvedNameExpression, UnresolvedMemberAccessExpression
     = Syntax:`IQualifiedNameSyntax` Context:NameExpression /GenericArguments/;
 /// These reify the Context and ReferencedDeclarations to make diagnostic reporting eaiser
 UnresolvedNamespaceQualifiedName <: UnresolvedQualifiedName

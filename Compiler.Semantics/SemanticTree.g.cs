@@ -2098,7 +2098,7 @@ public partial interface INeverTypedExpressionNode : IExpressionNode
 [Closed(
     typeof(IUnresolvedMemberAccessExpressionNode),
     typeof(IUnresolvedInvocationExpressionNode),
-    typeof(IUnresolvedNameNode))]
+    typeof(IUnresolvedNameExpressionNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IUnresolvedExpressionNode : IExpressionNode
 {
@@ -2901,7 +2901,7 @@ public partial interface INonInvocableInvocationExpressionNode : IInvocationExpr
     typeof(ILocalBindingNameExpressionNode),
     typeof(IInstanceExpressionNode),
     typeof(IMissingNameExpressionNode),
-    typeof(IUnresolvedNameNode),
+    typeof(IUnresolvedNameExpressionNode),
     typeof(INameNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface INameExpressionNode : IExpressionNode
@@ -3005,7 +3005,7 @@ public partial interface IMissingNameExpressionNode : INameExpressionNode
     typeof(IUnresolvedOrdinaryNameNode),
     typeof(IUnresolvedQualifiedNameNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IUnresolvedNameNode : INameExpressionNode, IUnresolvedExpressionNode
+public partial interface IUnresolvedNameExpressionNode : INameExpressionNode, IUnresolvedExpressionNode
 {
     new LexicalScope ContainingLexicalScope { get; }
     LexicalScope IAmbiguousExpressionNode.ContainingLexicalScope() => ContainingLexicalScope;
@@ -3013,7 +3013,7 @@ public partial interface IUnresolvedNameNode : INameExpressionNode, IUnresolvedE
         => AzothType.Unknown;
     IMaybeType IExpressionNode.Type => Type;
     IFlowState INameExpressionNode.FlowStateAfter
-        => ExpressionTypesAspect.UnresolvedName_FlowStateAfter(this);
+        => ExpressionTypesAspect.UnresolvedNameExpression_FlowStateAfter(this);
     IMaybePlainType IExpressionNode.PlainType
         => AzothPlainType.Unknown;
 }
@@ -3022,7 +3022,7 @@ public partial interface IUnresolvedNameNode : INameExpressionNode, IUnresolvedE
     typeof(IUnresolvedIdentifierNameNode),
     typeof(IUnresolvedGenericNameNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IUnresolvedOrdinaryNameNode : IUnresolvedNameNode
+public partial interface IUnresolvedOrdinaryNameNode : IUnresolvedNameExpressionNode
 {
     new IOrdinaryNameSyntax Syntax { get; }
     INameExpressionSyntax INameExpressionNode.Syntax => Syntax;
@@ -3077,7 +3077,7 @@ public partial interface IUnresolvedGenericNameNode : IUnresolvedOrdinaryNameNod
     typeof(IUnresolvedNamespaceQualifiedNameNode),
     typeof(IUnresolvedTypeQualifiedNameNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IUnresolvedQualifiedNameNode : IUnresolvedNameNode, IUnresolvedMemberAccessExpressionNode
+public partial interface IUnresolvedQualifiedNameNode : IUnresolvedNameExpressionNode, IUnresolvedMemberAccessExpressionNode
 {
     new IQualifiedNameSyntax Syntax { get; }
     INameExpressionSyntax INameExpressionNode.Syntax => Syntax;
@@ -3092,7 +3092,7 @@ public partial interface IUnresolvedQualifiedNameNode : IUnresolvedNameNode, IUn
     IAmbiguousExpressionNode IUnresolvedMemberAccessExpressionNode.CurrentContext => CurrentContext;
     new UnknownType Type
         => AzothType.Unknown;
-    UnknownType IUnresolvedNameNode.Type => Type;
+    UnknownType IUnresolvedNameExpressionNode.Type => Type;
     IMaybeType IExpressionNode.Type => Type;
     UnknownType IUnresolvedMemberAccessExpressionNode.Type => Type;
     IFlowState INameExpressionNode.FlowStateAfter

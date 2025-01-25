@@ -66,7 +66,7 @@ internal static partial class ExpressionTypesAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFlowState SelfExpression_FlowStateAfter(ISelfExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IFlowState UnresolvedName_FlowStateAfter(IUnresolvedNameNode node);
+    public static partial IFlowState UnresolvedNameExpression_FlowStateAfter(IUnresolvedNameExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFlowState UnresolvedQualifiedName_FlowStateAfter(IUnresolvedQualifiedNameNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
