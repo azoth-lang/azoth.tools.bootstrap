@@ -319,6 +319,23 @@ SelfExpression <: InstanceExpression, LocalBindingNameExpression
 MissingNameExpression <: NameExpression
     = Syntax:`IMissingNameSyntax`;
 
+// ---------- Unresolved Name Expressions
+// TODO use for both this and types so that type names can be qualified
+UnresolvedName <: Name, UnresolvedExpression = Syntax:`INameExpressionSyntax`;
+UnresolvedOrdinaryName <: UnresolvedName
+    = Syntax:`IOrdinaryNameSyntax` Name:`OrdinaryName`;
+UnresolvedIdentifierName <: UnresolvedOrdinaryName
+    = Syntax:`IIdentifierNameSyntax`;
+UnresolvedGenericName <: UnresolvedOrdinaryName
+    = Syntax:`IGenericNameSyntax` GenericArguments:Type*;
+concrete UnresolvedQualifiedName <: UnresolvedName, UnresolvedMemberAccessExpression
+    = Syntax:`IQualifiedNameSyntax` Context:NameExpression /GenericArguments/;
+/// These reify the Context and ReferencedDeclarations to make diagnostic reporting eaiser
+UnresolvedNamespaceQualifiedName <: UnresolvedQualifiedName
+    = /Syntax/ Context:NamespaceName /GenericArguments/ ReferencedDeclarations:{`INamespaceMemberDeclarationNode`};
+UnresolvedTypeQualifiedName <: UnresolvedQualifiedName
+    = /Syntax/ Context:TypeNameExpression /GenericArguments/ ReferencedDeclarations:{`IAssociatedMemberDeclarationNode`};
+
 // ---------- Names
 // Names are reserved for things that syntatically can only be names. They are used as part of the
 // resolution for type names since that needs to be applied the same way for types and expressions.
@@ -372,22 +389,6 @@ OrdinaryTypeNameExpression <: TypeNameExpression
 QualifiedTypeNameExpression <: TypeNameExpression = Syntax:`IQualifiedNameSyntax`
     Context:ResolvedName /GenericArguments/ /ReferencedDeclaration/;
 
-// ---------- Unresolved Names
-// TODO use for both this and types so that type names can be qualified
-UnresolvedName <: Name, UnresolvedExpression = Syntax:`INameExpressionSyntax`;
-UnresolvedOrdinaryName <: UnresolvedName
-    = Syntax:`IOrdinaryNameSyntax` Name:`OrdinaryName`;
-UnresolvedIdentifierName <: UnresolvedOrdinaryName
-    = Syntax:`IIdentifierNameSyntax`;
-UnresolvedGenericName <: UnresolvedOrdinaryName
-    = Syntax:`IGenericNameSyntax` GenericArguments:Type*;
-concrete UnresolvedQualifiedName <: UnresolvedName, UnresolvedMemberAccessExpression
-    = Syntax:`IQualifiedNameSyntax` Context:NameExpression /GenericArguments/;
-/// These reify the Context and ReferencedDeclarations to make diagnostic reporting eaiser
-UnresolvedNamespaceQualifiedName <: UnresolvedQualifiedName
-    = /Syntax/ Context:NamespaceName /GenericArguments/ ReferencedDeclarations:{`INamespaceMemberDeclarationNode`};
-UnresolvedTypeQualifiedName <: UnresolvedQualifiedName
-    = /Syntax/ Context:TypeNameExpression /GenericArguments/ ReferencedDeclarations:{`IAssociatedMemberDeclarationNode`};
 
 // ---------- Capability Expressions
 temp AmbiguousMoveExpression <: AmbiguousExpression = Syntax:`IMoveExpressionSyntax` Referent:AmbiguousExpression;
