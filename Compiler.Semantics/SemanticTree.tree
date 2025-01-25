@@ -369,7 +369,7 @@ BuiltInTypeNameExpression <: ResolvedName
     = Syntax:`IBuiltInTypeNameSyntax`;
 OrdinaryTypeNameExpression <: TypeNameExpression
     = Syntax:`IOrdinaryNameSyntax` /GenericArguments/ /ReferencedDeclaration/;
-QualifiedTypeNameExpression <: TypeNameExpression = Syntax:`IMemberAccessExpressionSyntax`
+QualifiedTypeNameExpression <: TypeNameExpression = Syntax:`IQualifiedNameSyntax`
     Context:ResolvedName /GenericArguments/ /ReferencedDeclaration/;
 
 // ---------- Unresolved Names

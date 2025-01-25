@@ -3256,7 +3256,7 @@ public partial interface IOrdinaryTypeNameExpressionNode : ITypeNameExpressionNo
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IQualifiedTypeNameExpressionNode : ITypeNameExpressionNode
 {
-    new IMemberAccessExpressionSyntax Syntax { get; }
+    new IQualifiedNameSyntax Syntax { get; }
     INameExpressionSyntax INameExpressionNode.Syntax => Syntax;
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ICodeSyntax ICodeNode.Syntax => Syntax;
@@ -3267,7 +3267,7 @@ public partial interface IQualifiedTypeNameExpressionNode : ITypeNameExpressionN
         => Syntax.MemberName;
 
     public static IQualifiedTypeNameExpressionNode Create(
-        IMemberAccessExpressionSyntax syntax,
+        IQualifiedNameSyntax syntax,
         IResolvedNameNode context,
         IEnumerable<ITypeNode> genericArguments,
         ITypeDeclarationNode referencedDeclaration)
@@ -16701,7 +16701,7 @@ file class QualifiedTypeNameExpressionNode : SemanticNode, IQualifiedTypeNameExp
     private AttributeLock syncLock;
     protected override bool MayHaveRewrite => true;
 
-    public IMemberAccessExpressionSyntax Syntax { [DebuggerStepThrough] get; }
+    public IQualifiedNameSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IResolvedNameNode> context;
     private bool contextCached;
     public IResolvedNameNode Context
@@ -16773,7 +16773,7 @@ file class QualifiedTypeNameExpressionNode : SemanticNode, IQualifiedTypeNameExp
     private bool valueIdCached;
 
     public QualifiedTypeNameExpressionNode(
-        IMemberAccessExpressionSyntax syntax,
+        IQualifiedNameSyntax syntax,
         IResolvedNameNode context,
         IEnumerable<ITypeNode> genericArguments,
         ITypeDeclarationNode referencedDeclaration)
