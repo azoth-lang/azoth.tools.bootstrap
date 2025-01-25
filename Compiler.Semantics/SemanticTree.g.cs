@@ -2901,6 +2901,7 @@ public partial interface INonInvocableInvocationExpressionNode : IInvocationExpr
     typeof(ILocalBindingNameExpressionNode),
     typeof(IInstanceExpressionNode),
     typeof(IMissingNameExpressionNode),
+    typeof(IUnresolvedNameNode),
     typeof(INameNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface INameExpressionNode : IExpressionNode
@@ -3004,7 +3005,7 @@ public partial interface IMissingNameExpressionNode : INameExpressionNode
     typeof(IUnresolvedOrdinaryNameNode),
     typeof(IUnresolvedQualifiedNameNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IUnresolvedNameNode : INameNode, IUnresolvedExpressionNode
+public partial interface IUnresolvedNameNode : INameExpressionNode, IUnresolvedExpressionNode
 {
     new LexicalScope ContainingLexicalScope { get; }
     LexicalScope IAmbiguousExpressionNode.ContainingLexicalScope() => ContainingLexicalScope;
@@ -3149,7 +3150,6 @@ public partial interface IUnresolvedTypeQualifiedNameNode : IUnresolvedQualified
 }
 
 [Closed(
-    typeof(IUnresolvedNameNode),
     typeof(IResolvedNameNode),
     typeof(IFunctionGroupNameNode),
     typeof(IFunctionNameNode),

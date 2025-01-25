@@ -229,17 +229,18 @@ UnresolvedExpression <: Expression;
 concrete UnresolvedMemberAccessExpression <: UnresolvedExpression
     = Syntax:`IMemberAccessExpressionSyntax` Context:AmbiguousExpression GenericArguments:Type*;
 
-// ---------- Instance Member Expressions
+// ---------- Instance Member Access Expressions
 // Resolved expressions that are some form of instance member access (i.e. something that may not
 // be only a name syntatically).
 // TODO FieldAccessExpression shouldn't be a name expression since the context is a full expression
 FieldAccessExpression <: NameExpression = Syntax:`IMemberAccessExpressionSyntax`
     Context:Expression FieldName:`IdentifierName` ReferencedDeclaration:`IFieldDeclarationNode`;
-// TODO should MethodGroupName be UnresolvedMethodName?
+// TODO should MethodGroupName be UnresolvedMethodName or Unresolved MethodAccessExpression?
 MethodGroupName <: NameExpression = Syntax:`IMemberAccessExpressionSyntax`
     Context:Expression MethodName:`OrdinaryName` GenericArguments:Type*
     ReferencedDeclarations:{`IOrdinaryMethodDeclarationNode`};
 /// See comment on FunctionName for why this exists.
+// TODO rename to MethodAccessExpression?
 MethodName <: NameExpression = Syntax:`IMemberAccessExpressionSyntax`
     Context:Expression MethodName:`OrdinaryName` GenericArguments:Type*
     ReferencedDeclarations:{`IOrdinaryMethodDeclarationNode`}
@@ -321,7 +322,7 @@ MissingNameExpression <: NameExpression
 
 // ---------- Unresolved Name Expressions
 // TODO use for both this and types so that type names can be qualified
-UnresolvedName <: Name, UnresolvedExpression = Syntax:`INameExpressionSyntax`;
+UnresolvedName <: NameExpression, UnresolvedExpression = Syntax:`INameExpressionSyntax`;
 UnresolvedOrdinaryName <: UnresolvedName
     = Syntax:`IOrdinaryNameSyntax` Name:`OrdinaryName`;
 UnresolvedIdentifierName <: UnresolvedOrdinaryName
@@ -337,6 +338,7 @@ UnresolvedTypeQualifiedName <: UnresolvedQualifiedName
     = /Syntax/ Context:TypeNameExpression /GenericArguments/ ReferencedDeclarations:{`IAssociatedMemberDeclarationNode`};
 
 // ---------- Names
+// TODO names should be for namespace and type names. Name expressions are for all other names
 // Names are reserved for things that syntatically can only be names. They are used as part of the
 // resolution for type names since that needs to be applied the same way for types and expressions.
 // As such these nodes are both types and name expressions.
@@ -388,7 +390,6 @@ OrdinaryTypeNameExpression <: TypeNameExpression
     = Syntax:`IOrdinaryNameSyntax` /GenericArguments/ /ReferencedDeclaration/;
 QualifiedTypeNameExpression <: TypeNameExpression = Syntax:`IQualifiedNameSyntax`
     Context:ResolvedName /GenericArguments/ /ReferencedDeclaration/;
-
 
 // ---------- Capability Expressions
 temp AmbiguousMoveExpression <: AmbiguousExpression = Syntax:`IMoveExpressionSyntax` Referent:AmbiguousExpression;
