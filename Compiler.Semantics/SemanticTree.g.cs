@@ -2688,8 +2688,8 @@ public partial interface IFunctionInvocationExpressionNode : IInvocationExpressi
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ICodeSyntax ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    IFunctionNameNode Function { get; }
-    IFunctionNameNode CurrentFunction { get; }
+    IFunctionNameExpressionNode Function { get; }
+    IFunctionNameExpressionNode CurrentFunction { get; }
     IFixedList<IAmbiguousExpressionNode> TempArguments { get; }
     IFixedList<IExpressionNode?> Arguments { get; }
     IFixedList<IAmbiguousExpressionNode> CurrentArguments { get; }
@@ -2704,7 +2704,7 @@ public partial interface IFunctionInvocationExpressionNode : IInvocationExpressi
 
     public static IFunctionInvocationExpressionNode Create(
         IInvocationExpressionSyntax syntax,
-        IFunctionNameNode function,
+        IFunctionNameExpressionNode function,
         IEnumerable<IAmbiguousExpressionNode> arguments)
         => new FunctionInvocationExpressionNode(syntax, function, arguments);
 }
@@ -2901,7 +2901,7 @@ public partial interface INonInvocableInvocationExpressionNode : IInvocationExpr
     typeof(ILocalBindingNameExpressionNode),
     typeof(IInstanceExpressionNode),
     typeof(IMissingNameExpressionNode),
-    typeof(IFunctionNameNode),
+    typeof(IFunctionNameExpressionNode),
     typeof(IInitializerNameNode),
     typeof(IUnresolvedNameExpressionNode),
     typeof(INameNode))]
@@ -3003,9 +3003,9 @@ public partial interface IMissingNameExpressionNode : INameExpressionNode
         => new MissingNameExpressionNode(syntax);
 }
 
-[Closed(typeof(FunctionNameNode))]
+[Closed(typeof(FunctionNameExpressionNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IFunctionNameNode : INameExpressionNode
+public partial interface IFunctionNameExpressionNode : INameExpressionNode
 {
     IResolvedNameNode? Context { get; }
     IResolvedNameNode? CurrentContext { get; }
@@ -3017,9 +3017,9 @@ public partial interface IFunctionNameNode : INameExpressionNode
     ICallCandidate<IFunctionInvocableDeclarationNode>? SelectedCallCandidate { get; }
     IFunctionInvocableDeclarationNode? ReferencedDeclaration { get; }
     IFlowState INameExpressionNode.FlowStateAfter
-        => ExpressionTypesAspect.FunctionName_FlowStateAfter(this);
+        => ExpressionTypesAspect.FunctionNameExpression_FlowStateAfter(this);
 
-    public static IFunctionNameNode Create(
+    public static IFunctionNameExpressionNode Create(
         INameExpressionSyntax syntax,
         IResolvedNameNode? context,
         OrdinaryName functionName,
@@ -3029,7 +3029,7 @@ public partial interface IFunctionNameNode : INameExpressionNode
         IEnumerable<ICallCandidate<IFunctionInvocableDeclarationNode>> compatibleCallCandidates,
         ICallCandidate<IFunctionInvocableDeclarationNode>? selectedCallCandidate,
         IFunctionInvocableDeclarationNode? referencedDeclaration)
-        => new FunctionNameNode(syntax, context, functionName, genericArguments, referencedDeclarations, callCandidates, compatibleCallCandidates, selectedCallCandidate, referencedDeclaration);
+        => new FunctionNameExpressionNode(syntax, context, functionName, genericArguments, referencedDeclarations, callCandidates, compatibleCallCandidates, selectedCallCandidate, referencedDeclaration);
 }
 
 [Closed(typeof(InitializerNameNode))]
@@ -13817,12 +13817,12 @@ file class FunctionInvocationExpressionNode : SemanticNode, IFunctionInvocationE
     protected override bool MayHaveRewrite => true;
 
     public IInvocationExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    private RewritableChild<IFunctionNameNode> function;
+    private RewritableChild<IFunctionNameExpressionNode> function;
     private bool functionCached;
-    public IFunctionNameNode Function
+    public IFunctionNameExpressionNode Function
         => GrammarAttribute.IsCached(in functionCached) ? function.UnsafeValue
             : this.RewritableChild(ref functionCached, ref function);
-    public IFunctionNameNode CurrentFunction => function.UnsafeValue;
+    public IFunctionNameExpressionNode CurrentFunction => function.UnsafeValue;
     private IRewritableChildList<IAmbiguousExpressionNode, IExpressionNode> arguments;
     public IFixedList<IAmbiguousExpressionNode> TempArguments => arguments;
     public IFixedList<IExpressionNode?> Arguments => arguments.AsFinalType;
@@ -13903,7 +13903,7 @@ file class FunctionInvocationExpressionNode : SemanticNode, IFunctionInvocationE
 
     public FunctionInvocationExpressionNode(
         IInvocationExpressionSyntax syntax,
-        IFunctionNameNode function,
+        IFunctionNameExpressionNode function,
         IEnumerable<IAmbiguousExpressionNode> arguments)
     {
         Syntax = syntax;
@@ -15512,9 +15512,9 @@ file class MissingNameExpressionNode : SemanticNode, IMissingNameExpressionNode
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class FunctionNameNode : SemanticNode, IFunctionNameNode
+file class FunctionNameExpressionNode : SemanticNode, IFunctionNameExpressionNode
 {
-    private IFunctionNameNode Self { [Inline] get => this; }
+    private IFunctionNameExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
     protected override bool MayHaveRewrite => true;
 
@@ -15578,13 +15578,13 @@ file class FunctionNameNode : SemanticNode, IFunctionNameNode
     public IMaybePlainType PlainType
         => GrammarAttribute.IsCached(in plainTypeCached) ? plainType!
             : this.Synthetic(ref plainTypeCached, ref plainType,
-                ExpressionPlainTypesAspect.FunctionName_PlainType);
+                ExpressionPlainTypesAspect.FunctionNameExpression_PlainType);
     private IMaybePlainType? plainType;
     private bool plainTypeCached;
     public IMaybeType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
             : this.Synthetic(ref typeCached, ref type,
-                ExpressionTypesAspect.FunctionName_Type);
+                ExpressionTypesAspect.FunctionNameExpression_Type);
     private IMaybeType? type;
     private bool typeCached;
     public ValueId ValueId
@@ -15594,7 +15594,7 @@ file class FunctionNameNode : SemanticNode, IFunctionNameNode
     private ValueId valueId;
     private bool valueIdCached;
 
-    public FunctionNameNode(
+    public FunctionNameExpressionNode(
         INameExpressionSyntax syntax,
         IResolvedNameNode? context,
         OrdinaryName functionName,
@@ -15653,7 +15653,7 @@ file class FunctionNameNode : SemanticNode, IFunctionNameNode
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
     {
         ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
-        OverloadResolutionAspect.FunctionName_Contribute_Diagnostics(this, builder);
+        OverloadResolutionAspect.FunctionNameExpression_Contribute_Diagnostics(this, builder);
     }
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
@@ -16704,7 +16704,7 @@ file class FunctionGroupNameNode : SemanticNode, IFunctionGroupNameNode
     }
 
     protected override IChildTreeNode Rewrite()
-        => BindingUnresolvedNamesAspect.FunctionGroupName_ReplaceWith_FunctionName(this)
+        => BindingUnresolvedNamesAspect.FunctionGroupName_ReplaceWith_FunctionNameExpression(this)
         ?? ExpressionTypesAspect.Expression_ImplicitMove_Insert(this)
         ?? ExpressionTypesAspect.Expression_ImplicitFreeze_Insert(this)
         ?? ExpressionTypesAspect.Expression_Insert_PrepareToReturnExpression(this)

@@ -343,7 +343,7 @@ internal static partial class ExpressionPlainTypesAspect
         return boundPlainType;
     }
 
-    public static partial IMaybePlainType FunctionName_PlainType(IFunctionNameNode node)
+    public static partial IMaybePlainType FunctionNameExpression_PlainType(IFunctionNameExpressionNode node)
         => node.ReferencedDeclaration?.PlainType ?? PlainType.Unknown;
 
     public static partial IMaybePlainType MethodName_PlainType(IMethodNameNode node)

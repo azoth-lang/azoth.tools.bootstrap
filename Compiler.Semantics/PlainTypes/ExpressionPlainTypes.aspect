@@ -84,7 +84,7 @@
 = NamespaceName.PlainType => AzothPlainType.Unknown;
 = FunctionGroupName.PlainType => AzothPlainType.Unknown;
 = FunctionGroupName.*.ExpectedPlainType => null;
-= FunctionName.*.ExpectedPlainType => null;
+= FunctionNameExpression.*.ExpectedPlainType => null;
 = MethodGroupName.PlainType => AzothPlainType.Unknown;
 = MethodGroupName.*.ExpectedPlainType => null;
 = MethodName.Context.ExpectedPlainType;

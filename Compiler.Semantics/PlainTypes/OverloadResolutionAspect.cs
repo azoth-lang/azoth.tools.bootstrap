@@ -91,7 +91,7 @@ internal static partial class OverloadResolutionAspect
 
     public static partial IFunctionInvocationExpressionNode? UnresolvedInvocationExpression_ReplaceWith_FunctionInvocationExpression(IUnresolvedInvocationExpressionNode node)
     {
-        if (node.Expression is not IFunctionNameNode function)
+        if (node.Expression is not IFunctionNameExpressionNode function)
             return null;
 
         return IFunctionInvocationExpressionNode.Create(node.Syntax, function, node.CurrentArguments);
@@ -164,7 +164,7 @@ internal static partial class OverloadResolutionAspect
                 ContributeFunctionBindingDiagnostics(functionGroup.ReferencedDeclaration,
                     functionGroup.CompatibleCallCandidates, node.File, node.Syntax, diagnostics);
                 break;
-            case IFunctionNameNode function:
+            case IFunctionNameExpressionNode function:
                 ContributeFunctionBindingDiagnostics(function.ReferencedDeclaration,
                     function.CompatibleCallCandidates, node.File, node.Syntax, diagnostics);
                 break;
@@ -279,8 +279,8 @@ internal static partial class OverloadResolutionAspect
     public static partial void FunctionGroupName_Contribute_Diagnostics(IFunctionGroupNameNode node, DiagnosticCollectionBuilder diagnostics)
         => ContributeFunctionNameBindingDiagnostics(node.ReferencedDeclaration, node.CompatibleCallCandidates, node, diagnostics);
 
-    public static partial void FunctionName_Contribute_Diagnostics(
-        IFunctionNameNode node,
+    public static partial void FunctionNameExpression_Contribute_Diagnostics(
+        IFunctionNameExpressionNode node,
         DiagnosticCollectionBuilder diagnostics)
         => ContributeFunctionNameBindingDiagnostics(node.ReferencedDeclaration, node.CompatibleCallCandidates, node, diagnostics);
 

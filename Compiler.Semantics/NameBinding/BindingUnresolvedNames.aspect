@@ -17,7 +17,7 @@
 
 // ---------- Name Expressions
 + FunctionGroupName.new.Validate;
-✎ FunctionGroupName replace_with FunctionName;
+✎ FunctionGroupName replace_with FunctionNameExpression;
 = FunctionGroupName.↑.Diagnostics;
 ✎ MethodGroupName replace_with MethodName;
 = MethodGroupName.↑.Diagnostics;

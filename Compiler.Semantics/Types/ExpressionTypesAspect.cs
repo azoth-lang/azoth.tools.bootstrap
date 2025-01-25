@@ -889,10 +889,10 @@ internal static partial class ExpressionTypesAspect
     #endregion
 
     #region Name Expressions
-    public static partial IMaybeType FunctionName_Type(IFunctionNameNode node)
+    public static partial IMaybeType FunctionNameExpression_Type(IFunctionNameExpressionNode node)
         => node.ReferencedDeclaration?.Type ?? IMaybeType.Unknown;
 
-    public static partial IFlowState FunctionName_FlowStateAfter(IFunctionNameNode node)
+    public static partial IFlowState FunctionNameExpression_FlowStateAfter(IFunctionNameExpressionNode node)
         => node.FlowStateBefore().Constant(node.ValueId);
 
     public static partial IMaybeType MethodName_Type(IMethodNameNode node)

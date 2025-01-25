@@ -208,7 +208,7 @@ public static class ISemanticNodeExtensions
                 foreach (var child in n.TempArguments)
                     yield return child;
                 yield break;
-            case IFunctionNameNode n:
+            case IFunctionNameExpressionNode n:
                 if (n.Context is not null)
                     yield return n.Context;
                 foreach (var child in n.GenericArguments)

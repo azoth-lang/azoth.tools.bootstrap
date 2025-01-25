@@ -239,7 +239,7 @@ FieldAccessExpression <: NameExpression = Syntax:`IMemberAccessExpressionSyntax`
 MethodGroupName <: UnresolvedExpression = Syntax:`IMemberAccessExpressionSyntax`
     Context:Expression MethodName:`OrdinaryName` GenericArguments:Type*
     ReferencedDeclarations:{`IOrdinaryMethodDeclarationNode`};
-/// See comment on FunctionName for why this exists.
+/// See comment on FunctionNameExpression for why this exists.
 // TODO rename to MethodAccessExpression?
 MethodName <: Expression = Syntax:`IMemberAccessExpressionSyntax`
     Context:Expression MethodName:`OrdinaryName` GenericArguments:Type*
@@ -289,7 +289,7 @@ UnresolvedInvocationExpression <: InvocationExpression, UnresolvedExpression
     = Syntax:`IInvocationExpressionSyntax`
     Expression:AmbiguousExpression Arguments:AmbiguousExpression*;
 FunctionInvocationExpression <: InvocationExpression = Syntax:`IInvocationExpressionSyntax`
-    Function:FunctionName Arguments:AmbiguousExpression*;
+    Function:FunctionNameExpression Arguments:AmbiguousExpression*;
 MethodInvocationExpression <: InvocationExpression = Syntax:`IInvocationExpressionSyntax`
     Method:MethodName Arguments:AmbiguousExpression*;
 GetterInvocationExpression <: InvocationExpression, NameExpression = Syntax:`IMemberAccessExpressionSyntax`
@@ -324,17 +324,17 @@ SelfExpression <: InstanceExpression, LocalBindingNameExpression
     = Syntax:`ISelfExpressionSyntax`;
 MissingNameExpression <: NameExpression
     = Syntax:`IMissingNameSyntax`;
-/// Reifying to FunctionName controls the transition from UnresolvedInvocation to FunctionInvocation.
-/// The UnresolvedInvocation provides an expected type based on the arguments. Once the overload has
-/// been resolved, the FunctionInvocation provides expected types based on the function called.
-FunctionName <: NameExpression
+/// Reifying to FunctionNameExpression controls the transition from UnresolvedInvocationExpression to FunctionInvocationExpression.
+/// The UnresolvedInvocationExpression provides an expected type based on the arguments. Once the overload has
+/// been resolved, the FunctionInvocationExpression provides expected types based on the function called.
+FunctionNameExpression <: NameExpression
     = Syntax:`INameExpressionSyntax` Context:ResolvedName?  FunctionName:`OrdinaryName` GenericArguments:Type*
     ReferencedDeclarations:{`IFunctionInvocableDeclarationNode`}
     CallCandidates:{`ICallCandidate<IFunctionInvocableDeclarationNode>`}
     CompatibleCallCandidates:{`ICallCandidate<IFunctionInvocableDeclarationNode>`}
     SelectedCallCandidate:`ICallCandidate<IFunctionInvocableDeclarationNode>`?
     ReferencedDeclaration:`IFunctionInvocableDeclarationNode`?;
-/// See comment on FunctionName for why this exists.
+/// See comment on FunctionNameExpression for why this exists.
 InitializerName <: NameExpression = Syntax:`INameExpressionSyntax`
     Context:TypeNameExpression InitializerName:`OrdinaryName`?
     ReferencedDeclarations:{`IInitializerDeclarationNode`}

@@ -220,8 +220,8 @@
     => throw new NotImplementedException($"{GetType().GetFriendlyName()}.{nameof(FlowStateAfter)} not implemented.");
 ↑ FunctionGroupName.Type: `UnknownType` => AzothType.Unknown;
 = FunctionGroupName.FlowStateAfter => FlowStateBefore();
-= FunctionName.FlowStateAfter;
-= FunctionName.*.ExpectedType => null;
+= FunctionNameExpression.FlowStateAfter;
+= FunctionNameExpression.*.ExpectedType => null;
 
 = VariableNameExpression.FlowStateAfter;
 ↑ InitializerGroupName.Type: `UnknownType` => AzothType.Unknown;

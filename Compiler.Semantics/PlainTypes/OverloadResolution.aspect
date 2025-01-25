@@ -53,7 +53,7 @@
 ↑ FunctionGroupName.ReferencedDeclaration: FunctionInvocableDeclaration?
     => SelectedCallCandidate?.Declaration;
 = FunctionGroupName.↑.Diagnostics;
-= FunctionName.↑.Diagnostics;
+= FunctionNameExpression.↑.Diagnostics;
 ↑ MethodGroupName.CallCandidates: {`ICallCandidate<IOrdinaryMethodDeclarationNode>`};
 ↑ MethodGroupName.CompatibleCallCandidates: {`ICallCandidate<IOrdinaryMethodDeclarationNode>`};
 ↑ MethodGroupName.SelectedCallCandidate: `ICallCandidate<IOrdinaryMethodDeclarationNode>`?;

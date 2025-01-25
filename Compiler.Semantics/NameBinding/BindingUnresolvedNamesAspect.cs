@@ -53,7 +53,7 @@ internal static partial class BindingUnresolvedNamesAspect
     {
         switch (node.Context)
         {
-            case IFunctionGroupNameNode or IFunctionNameNode or IMethodGroupNameNode:
+            case IFunctionGroupNameNode or IFunctionNameExpressionNode or IMethodGroupNameNode:
                 diagnostics.Add(TypeError.NotImplemented(node.File, node.Syntax.Span,
                     "No member accessible from function or method."));
                 break;
@@ -123,7 +123,7 @@ internal static partial class BindingUnresolvedNamesAspect
     //=> Requires.That(!ReferencedDeclarations.IsEmpty, nameof(referencedDeclarations),
     //    "Must be at least one referenced declaration");
 
-    public static partial IFunctionNameNode? FunctionGroupName_ReplaceWith_FunctionName(IFunctionGroupNameNode node)
+    public static partial IFunctionNameExpressionNode? FunctionGroupName_ReplaceWith_FunctionNameExpression(IFunctionGroupNameNode node)
     {
         if (node.CompatibleCallCandidates.Count > 1)
             // TODO should this be used instead?
@@ -131,7 +131,7 @@ internal static partial class BindingUnresolvedNamesAspect
             return null;
 
         // if there is only one declaration, then it isn't ambiguous
-        return IFunctionNameNode.Create(node.Syntax, node.Context, node.FunctionName, node.GenericArguments,
+        return IFunctionNameExpressionNode.Create(node.Syntax, node.Context, node.FunctionName, node.GenericArguments,
             node.ReferencedDeclarations, node.CallCandidates, node.CompatibleCallCandidates,
             node.SelectedCallCandidate, node.ReferencedDeclaration);
     }

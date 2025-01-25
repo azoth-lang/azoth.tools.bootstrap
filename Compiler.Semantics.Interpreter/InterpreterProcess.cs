@@ -600,7 +600,7 @@ public class InterpreterProcess
             }
             case IVariableNameExpressionNode exp:
                 return variables[exp.ReferencedDefinition];
-            case IFunctionNameNode exp:
+            case IFunctionNameExpressionNode exp:
                 return AzothValue.FunctionReference(new OrdinaryFunctionReference(this, exp.ReferencedDeclaration!.Symbol.Assigned()));
             case IMethodNameNode exp:
             {
