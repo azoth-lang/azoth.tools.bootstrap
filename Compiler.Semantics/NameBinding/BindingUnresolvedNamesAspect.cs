@@ -174,7 +174,7 @@ internal static partial class BindingUnresolvedNamesAspect
             diagnostics.Add(TypeError.AmbiguousMethodGroup(node.File, node.Syntax, Type.Unknown));
     }
 
-    public static partial IInitializerNameNode? InitializerGroupName_ReplaceWith_InitializerName(IInitializerGroupNameNode node)
+    public static partial IInitializerNameExpressionNode? InitializerGroupName_ReplaceWith_InitializerNameExpression(IInitializerGroupNameNode node)
     {
         if (node.CompatibleCallCandidates.Count > 1)
             // TODO should this be used instead?
@@ -182,7 +182,7 @@ internal static partial class BindingUnresolvedNamesAspect
             return null;
 
         // if there is aren't multiple declarations, then it isn't ambiguous (it may fail to reference if there are zero).
-        return IInitializerNameNode.Create(node.Syntax, node.Context, node.InitializerName,
+        return IInitializerNameExpressionNode.Create(node.Syntax, node.Context, node.InitializerName,
             node.ReferencedDeclarations, node.CallCandidates, node.CompatibleCallCandidates, node.SelectedCallCandidate,
             node.ReferencedDeclaration);
     }

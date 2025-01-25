@@ -301,7 +301,7 @@ SetterInvocationExpression <: InvocationExpression = Syntax:`IAssignmentExpressi
 FunctionReferenceInvocationExpression <: InvocationExpression = Syntax:`IInvocationExpressionSyntax`
     Expression:Expression Arguments:AmbiguousExpression*;
 InitializerInvocationExpression <: InvocationExpression = Syntax:`IInvocationExpressionSyntax`
-    Initializer:InitializerName Arguments:AmbiguousExpression*;
+    Initializer:InitializerNameExpression Arguments:AmbiguousExpression*;
 NonInvocableInvocationExpression <: InvocationExpression = Syntax:`IInvocationExpressionSyntax`
     Expression:AmbiguousExpression Arguments:AmbiguousExpression*;
 
@@ -335,7 +335,7 @@ FunctionNameExpression <: NameExpression
     SelectedCallCandidate:`ICallCandidate<IFunctionInvocableDeclarationNode>`?
     ReferencedDeclaration:`IFunctionInvocableDeclarationNode`?;
 /// See comment on FunctionNameExpression for why this exists.
-InitializerName <: NameExpression = Syntax:`INameExpressionSyntax`
+InitializerNameExpression <: NameExpression = Syntax:`INameExpressionSyntax`
     Context:TypeNameExpression InitializerName:`OrdinaryName`?
     ReferencedDeclarations:{`IInitializerDeclarationNode`}
     CallCandidates:{`ICallCandidate<IInitializerDeclarationNode>`}

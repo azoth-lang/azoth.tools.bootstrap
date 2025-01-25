@@ -21,7 +21,7 @@
 = FunctionGroupName.↑.Diagnostics;
 ✎ MethodGroupName replace_with MethodName;
 = MethodGroupName.↑.Diagnostics;
-✎ InitializerGroupName replace_with InitializerName;
+✎ InitializerGroupName replace_with InitializerNameExpression;
 
 // ---------- Unresolved Name Expressions
 ↑ UnresolvedOrdinaryNameExpression.ReferencedDeclarations: Declaration*;

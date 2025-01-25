@@ -33,7 +33,7 @@ internal static partial class OverloadResolutionAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial void InitializerGroupName_Contribute_Diagnostics(IInitializerGroupNameNode node, DiagnosticCollectionBuilder diagnostics);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial void InitializerName_Contribute_Diagnostics(IInitializerNameNode node, DiagnosticCollectionBuilder diagnostics);
+    public static partial void InitializerNameExpression_Contribute_Diagnostics(IInitializerNameExpressionNode node, DiagnosticCollectionBuilder diagnostics);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFixedSet<IConstructorDeclarationNode> NewObjectExpression_CompatibleConstructors(INewObjectExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

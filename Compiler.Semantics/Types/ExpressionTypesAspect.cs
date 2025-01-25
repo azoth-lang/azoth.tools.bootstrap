@@ -902,12 +902,12 @@ internal static partial class ExpressionTypesAspect
     public static partial IMaybeType? MethodName_Context_ExpectedType(IMethodNameNode node)
         => (node.Parent as IMethodInvocationExpressionNode)?.ContextualizedCall?.SelfParameterType?.ToUpperBound();
 
-    public static partial IMaybeType InitializerName_Type(IInitializerNameNode node)
+    public static partial IMaybeType InitializerNameExpression_Type(IInitializerNameExpressionNode node)
         // TODO proper type
         // => node.ReferencedDeclaration?.InitializerGroupType ?? IMaybeType.Unknown;
         => IMaybeType.Unknown;
 
-    public static partial IFlowState InitializerName_FlowStateAfter(IInitializerNameNode node)
+    public static partial IFlowState InitializerNameExpression_FlowStateAfter(IInitializerNameExpressionNode node)
         => node.FlowStateBefore().Constant(node.ValueId);
     #endregion
 }

@@ -225,7 +225,7 @@
 
 = VariableNameExpression.FlowStateAfter;
 ↑ InitializerGroupName.Type: `UnknownType` => AzothType.Unknown;
-= InitializerName.FlowStateAfter;
+= InitializerNameExpression.FlowStateAfter;
 = SelfExpression.FlowStateAfter;
 ↑ MissingNameExpression.Type: `UnknownType` => AzothType.Unknown;
 

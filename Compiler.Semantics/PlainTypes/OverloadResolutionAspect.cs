@@ -126,7 +126,7 @@ internal static partial class OverloadResolutionAspect
 
     public static partial IInitializerInvocationExpressionNode? UnresolvedInvocationExpression_ReplaceWith_InitializerInvocationExpression(IUnresolvedInvocationExpressionNode node)
     {
-        if (node.Expression is not IInitializerNameNode initializer)
+        if (node.Expression is not IInitializerNameExpressionNode initializer)
             return null;
 
         return IInitializerInvocationExpressionNode.Create(node.Syntax, initializer, node.CurrentArguments);
@@ -373,7 +373,7 @@ internal static partial class OverloadResolutionAspect
     public static partial void InitializerGroupName_Contribute_Diagnostics(IInitializerGroupNameNode node, DiagnosticCollectionBuilder diagnostics)
         => ContributeInitializerNameBindingDiagnostics(node.ReferencedDeclaration, node.CompatibleCallCandidates, node, diagnostics);
 
-    public static partial void InitializerName_Contribute_Diagnostics(IInitializerNameNode node, DiagnosticCollectionBuilder diagnostics)
+    public static partial void InitializerNameExpression_Contribute_Diagnostics(IInitializerNameExpressionNode node, DiagnosticCollectionBuilder diagnostics)
         => ContributeInitializerNameBindingDiagnostics(node.ReferencedDeclaration, node.CompatibleCallCandidates, node, diagnostics);
 
     private static void ContributeInitializerNameBindingDiagnostics(

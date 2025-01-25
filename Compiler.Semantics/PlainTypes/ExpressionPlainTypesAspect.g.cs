@@ -79,7 +79,7 @@ internal static partial class ExpressionPlainTypesAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IMaybePlainType FunctionNameExpression_PlainType(IFunctionNameExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IMaybePlainType InitializerName_PlainType(IInitializerNameNode node);
+    public static partial IMaybePlainType InitializerNameExpression_PlainType(IInitializerNameExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IMaybePlainType AsyncStartExpression_PlainType(IAsyncStartExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

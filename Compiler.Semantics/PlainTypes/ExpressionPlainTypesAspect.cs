@@ -355,7 +355,7 @@ internal static partial class ExpressionPlainTypesAspect
         => (node.Parent as IMethodInvocationExpressionNode)
            ?.SelectedCallCandidate?.SelfParameterPlainType;
 
-    public static partial IMaybePlainType InitializerName_PlainType(IInitializerNameNode node)
+    public static partial IMaybePlainType InitializerNameExpression_PlainType(IInitializerNameExpressionNode node)
         // TODO proper plain type
         // => node.ReferencedDeclaration?.InitializerGroupPlainType ?? PlainType.Unknown;
         => PlainType.Unknown;

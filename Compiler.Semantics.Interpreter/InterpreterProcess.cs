@@ -609,7 +609,7 @@ public class InterpreterProcess
                 var selfType = exp.Context.Type.Known();
                 return AzothValue.FunctionReference(new MethodReference(this, selfType, self, methodSymbol));
             }
-            case IInitializerNameNode exp:
+            case IInitializerNameExpressionNode exp:
             {
                 var initializerSymbol = exp.ReferencedDeclaration!.Symbol.Assigned();
                 return AzothValue.FunctionReference(new InitializerReference(this, initializerSymbol));

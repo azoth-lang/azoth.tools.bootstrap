@@ -2843,8 +2843,8 @@ public partial interface IInitializerInvocationExpressionNode : IInvocationExpre
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ICodeSyntax ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    IInitializerNameNode Initializer { get; }
-    IInitializerNameNode CurrentInitializer { get; }
+    IInitializerNameExpressionNode Initializer { get; }
+    IInitializerNameExpressionNode CurrentInitializer { get; }
     IFixedList<IAmbiguousExpressionNode> TempArguments { get; }
     IFixedList<IExpressionNode?> Arguments { get; }
     IFixedList<IAmbiguousExpressionNode> CurrentArguments { get; }
@@ -2859,7 +2859,7 @@ public partial interface IInitializerInvocationExpressionNode : IInvocationExpre
 
     public static IInitializerInvocationExpressionNode Create(
         IInvocationExpressionSyntax syntax,
-        IInitializerNameNode initializer,
+        IInitializerNameExpressionNode initializer,
         IEnumerable<IAmbiguousExpressionNode> arguments)
         => new InitializerInvocationExpressionNode(syntax, initializer, arguments);
 }
@@ -2902,7 +2902,7 @@ public partial interface INonInvocableInvocationExpressionNode : IInvocationExpr
     typeof(IInstanceExpressionNode),
     typeof(IMissingNameExpressionNode),
     typeof(IFunctionNameExpressionNode),
-    typeof(IInitializerNameNode),
+    typeof(IInitializerNameExpressionNode),
     typeof(IUnresolvedNameExpressionNode),
     typeof(INameNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -3032,9 +3032,9 @@ public partial interface IFunctionNameExpressionNode : INameExpressionNode
         => new FunctionNameExpressionNode(syntax, context, functionName, genericArguments, referencedDeclarations, callCandidates, compatibleCallCandidates, selectedCallCandidate, referencedDeclaration);
 }
 
-[Closed(typeof(InitializerNameNode))]
+[Closed(typeof(InitializerNameExpressionNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IInitializerNameNode : INameExpressionNode
+public partial interface IInitializerNameExpressionNode : INameExpressionNode
 {
     ITypeNameExpressionNode Context { get; }
     ITypeNameExpressionNode CurrentContext { get; }
@@ -3047,9 +3047,9 @@ public partial interface IInitializerNameNode : INameExpressionNode
     IMaybePlainType InitializingPlainType
         => Context.NamedPlainType;
     IFlowState INameExpressionNode.FlowStateAfter
-        => ExpressionTypesAspect.InitializerName_FlowStateAfter(this);
+        => ExpressionTypesAspect.InitializerNameExpression_FlowStateAfter(this);
 
-    public static IInitializerNameNode Create(
+    public static IInitializerNameExpressionNode Create(
         INameExpressionSyntax syntax,
         ITypeNameExpressionNode context,
         OrdinaryName? initializerName,
@@ -3058,7 +3058,7 @@ public partial interface IInitializerNameNode : INameExpressionNode
         IEnumerable<ICallCandidate<IInitializerDeclarationNode>> compatibleCallCandidates,
         ICallCandidate<IInitializerDeclarationNode>? selectedCallCandidate,
         IInitializerDeclarationNode? referencedDeclaration)
-        => new InitializerNameNode(syntax, context, initializerName, referencedDeclarations, callCandidates, compatibleCallCandidates, selectedCallCandidate, referencedDeclaration);
+        => new InitializerNameExpressionNode(syntax, context, initializerName, referencedDeclarations, callCandidates, compatibleCallCandidates, selectedCallCandidate, referencedDeclaration);
 }
 
 [Closed(
@@ -14754,12 +14754,12 @@ file class InitializerInvocationExpressionNode : SemanticNode, IInitializerInvoc
     protected override bool MayHaveRewrite => true;
 
     public IInvocationExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    private RewritableChild<IInitializerNameNode> initializer;
+    private RewritableChild<IInitializerNameExpressionNode> initializer;
     private bool initializerCached;
-    public IInitializerNameNode Initializer
+    public IInitializerNameExpressionNode Initializer
         => GrammarAttribute.IsCached(in initializerCached) ? initializer.UnsafeValue
             : this.RewritableChild(ref initializerCached, ref initializer);
-    public IInitializerNameNode CurrentInitializer => initializer.UnsafeValue;
+    public IInitializerNameExpressionNode CurrentInitializer => initializer.UnsafeValue;
     private IRewritableChildList<IAmbiguousExpressionNode, IExpressionNode> arguments;
     public IFixedList<IAmbiguousExpressionNode> TempArguments => arguments;
     public IFixedList<IExpressionNode?> Arguments => arguments.AsFinalType;
@@ -14840,7 +14840,7 @@ file class InitializerInvocationExpressionNode : SemanticNode, IInitializerInvoc
 
     public InitializerInvocationExpressionNode(
         IInvocationExpressionSyntax syntax,
-        IInitializerNameNode initializer,
+        IInitializerNameExpressionNode initializer,
         IEnumerable<IAmbiguousExpressionNode> arguments)
     {
         Syntax = syntax;
@@ -15677,9 +15677,9 @@ file class FunctionNameExpressionNode : SemanticNode, IFunctionNameExpressionNod
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class InitializerNameNode : SemanticNode, IInitializerNameNode
+file class InitializerNameExpressionNode : SemanticNode, IInitializerNameExpressionNode
 {
-    private IInitializerNameNode Self { [Inline] get => this; }
+    private IInitializerNameExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
     protected override bool MayHaveRewrite => true;
 
@@ -15742,13 +15742,13 @@ file class InitializerNameNode : SemanticNode, IInitializerNameNode
     public IMaybePlainType PlainType
         => GrammarAttribute.IsCached(in plainTypeCached) ? plainType!
             : this.Synthetic(ref plainTypeCached, ref plainType,
-                ExpressionPlainTypesAspect.InitializerName_PlainType);
+                ExpressionPlainTypesAspect.InitializerNameExpression_PlainType);
     private IMaybePlainType? plainType;
     private bool plainTypeCached;
     public IMaybeType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
             : this.Synthetic(ref typeCached, ref type,
-                ExpressionTypesAspect.InitializerName_Type);
+                ExpressionTypesAspect.InitializerNameExpression_Type);
     private IMaybeType? type;
     private bool typeCached;
     public ValueId ValueId
@@ -15758,7 +15758,7 @@ file class InitializerNameNode : SemanticNode, IInitializerNameNode
     private ValueId valueId;
     private bool valueIdCached;
 
-    public InitializerNameNode(
+    public InitializerNameExpressionNode(
         INameExpressionSyntax syntax,
         ITypeNameExpressionNode context,
         OrdinaryName? initializerName,
@@ -15815,7 +15815,7 @@ file class InitializerNameNode : SemanticNode, IInitializerNameNode
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
     {
         ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
-        OverloadResolutionAspect.InitializerName_Contribute_Diagnostics(this, builder);
+        OverloadResolutionAspect.InitializerNameExpression_Contribute_Diagnostics(this, builder);
     }
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
@@ -16861,7 +16861,7 @@ file class InitializerGroupNameNode : SemanticNode, IInitializerGroupNameNode
     }
 
     protected override IChildTreeNode Rewrite()
-        => BindingUnresolvedNamesAspect.InitializerGroupName_ReplaceWith_InitializerName(this)
+        => BindingUnresolvedNamesAspect.InitializerGroupName_ReplaceWith_InitializerNameExpression(this)
         ?? ExpressionTypesAspect.Expression_ImplicitMove_Insert(this)
         ?? ExpressionTypesAspect.Expression_ImplicitFreeze_Insert(this)
         ?? ExpressionTypesAspect.Expression_Insert_PrepareToReturnExpression(this)

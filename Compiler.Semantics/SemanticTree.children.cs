@@ -276,7 +276,7 @@ public static class ISemanticNodeExtensions
                 foreach (var child in n.TempArguments)
                     yield return child;
                 yield break;
-            case IInitializerNameNode n:
+            case IInitializerNameExpressionNode n:
                 yield return n.Context;
                 yield break;
             case IInitializerSelfParameterNode n:

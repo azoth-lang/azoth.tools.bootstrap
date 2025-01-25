@@ -67,4 +67,4 @@
 ↑ InitializerGroupName.ReferencedDeclaration: InitializerDeclaration?
     => SelectedCallCandidate?.Declaration;
 = InitializerGroupName.↑.Diagnostics;
-= InitializerName.↑.Diagnostics;
+= InitializerNameExpression.↑.Diagnostics;
