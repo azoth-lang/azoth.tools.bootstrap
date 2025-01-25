@@ -211,7 +211,7 @@ internal static partial class BindingUnresolvedNamesAspect
         }
     }
 
-    public static partial INameExpressionNode? UnresolvedIdentifierName_ReplaceWith_NameExpression(IUnresolvedIdentifierNameNode node)
+    public static partial INameExpressionNode? UnresolvedIdentifierNameExpression_ReplaceWith_NameExpression(IUnresolvedIdentifierNameExpressionNode node)
     {
         var referencedDeclarations = node.ReferencedDeclarations;
 
@@ -236,7 +236,7 @@ internal static partial class BindingUnresolvedNamesAspect
         return null;
     }
 
-    public static partial INameExpressionNode? UnresolvedGenericName_ReplaceWith_NameExpression(IUnresolvedGenericNameNode node)
+    public static partial INameExpressionNode? UnresolvedGenericNameExpression_ReplaceWith_NameExpression(IUnresolvedGenericNameExpressionNode node)
     {
         var referencedDeclarations = node.ReferencedDeclarations;
 

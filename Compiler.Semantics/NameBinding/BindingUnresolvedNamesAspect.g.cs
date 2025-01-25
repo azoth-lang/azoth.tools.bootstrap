@@ -36,8 +36,8 @@ internal static partial class BindingUnresolvedNamesAspect
     public static partial IFunctionNameNode? FunctionGroupName_ReplaceWith_FunctionName(IFunctionGroupNameNode node);
     public static partial IMethodNameNode? MethodGroupName_ReplaceWith_MethodName(IMethodGroupNameNode node);
     public static partial IInitializerNameNode? InitializerGroupName_ReplaceWith_InitializerName(IInitializerGroupNameNode node);
-    public static partial INameExpressionNode? UnresolvedIdentifierName_ReplaceWith_NameExpression(IUnresolvedIdentifierNameNode node);
-    public static partial INameExpressionNode? UnresolvedGenericName_ReplaceWith_NameExpression(IUnresolvedGenericNameNode node);
+    public static partial INameExpressionNode? UnresolvedIdentifierNameExpression_ReplaceWith_NameExpression(IUnresolvedIdentifierNameExpressionNode node);
+    public static partial INameExpressionNode? UnresolvedGenericNameExpression_ReplaceWith_NameExpression(IUnresolvedGenericNameExpressionNode node);
     public static partial IUnresolvedNamespaceQualifiedNameNode? UnresolvedQualifiedName_ReplaceWith_UnresolvedNamespaceQualifiedName(IUnresolvedQualifiedNameNode node);
     public static partial IUnresolvedTypeQualifiedNameNode? UnresolvedQualifiedName_ReplaceWith_UnresolvedTypeQualifiedName(IUnresolvedQualifiedNameNode node);
     public static partial INameExpressionNode? UnresolvedNamespaceQualifiedName_ReplaceWith_NameExpression(IUnresolvedNamespaceQualifiedNameNode node);

@@ -327,9 +327,9 @@ MissingNameExpression <: NameExpression
 UnresolvedNameExpression <: NameExpression, UnresolvedExpression = Syntax:`INameExpressionSyntax`;
 UnresolvedOrdinaryNameExpression <: UnresolvedNameExpression
     = Syntax:`IOrdinaryNameSyntax` Name:`OrdinaryName`;
-UnresolvedIdentifierName <: UnresolvedOrdinaryNameExpression
+UnresolvedIdentifierNameExpression <: UnresolvedOrdinaryNameExpression
     = Syntax:`IIdentifierNameSyntax`;
-UnresolvedGenericName <: UnresolvedOrdinaryNameExpression
+UnresolvedGenericNameExpression <: UnresolvedOrdinaryNameExpression
     = Syntax:`IGenericNameSyntax` GenericArguments:Type*;
 concrete UnresolvedQualifiedName <: UnresolvedNameExpression, UnresolvedMemberAccessExpression
     = Syntax:`IQualifiedNameSyntax` Context:NameExpression /GenericArguments/;
