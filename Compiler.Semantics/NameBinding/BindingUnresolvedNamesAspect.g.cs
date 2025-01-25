@@ -28,9 +28,9 @@ internal static partial class BindingUnresolvedNamesAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial void MethodGroupName_Contribute_Diagnostics(IMethodGroupNameNode node, DiagnosticCollectionBuilder diagnostics);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IFixedList<IDeclarationNode> UnresolvedOrdinaryName_ReferencedDeclarations(IUnresolvedOrdinaryNameNode node);
+    public static partial IFixedList<IDeclarationNode> UnresolvedOrdinaryNameExpression_ReferencedDeclarations(IUnresolvedOrdinaryNameExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial void UnresolvedOrdinaryName_Contribute_Diagnostics(IUnresolvedOrdinaryNameNode node, DiagnosticCollectionBuilder diagnostics);
+    public static partial void UnresolvedOrdinaryNameExpression_Contribute_Diagnostics(IUnresolvedOrdinaryNameExpressionNode node, DiagnosticCollectionBuilder diagnostics);
     public static partial INameExpressionNode? UnresolvedMemberAccessExpression_ExpressionContext_ReplaceWith_NameExpression(IUnresolvedMemberAccessExpressionNode node);
     public static partial IExpressionNode? AssignmentExpression_PropertyNameLeftOperand_Rewrite(IAssignmentExpressionNode node);
     public static partial IFunctionNameNode? FunctionGroupName_ReplaceWith_FunctionName(IFunctionGroupNameNode node);

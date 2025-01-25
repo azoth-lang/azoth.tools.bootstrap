@@ -190,11 +190,11 @@ internal static partial class BindingUnresolvedNamesAspect
     // TODO diagnostics for errors binding InitializerGroupName?
     #endregion
 
-    #region Unresolved Names
-    public static partial IFixedList<IDeclarationNode> UnresolvedOrdinaryName_ReferencedDeclarations(IUnresolvedOrdinaryNameNode node)
+    #region Unresolved Name Expressions
+    public static partial IFixedList<IDeclarationNode> UnresolvedOrdinaryNameExpression_ReferencedDeclarations(IUnresolvedOrdinaryNameExpressionNode node)
         => node.ContainingLexicalScope.Lookup(node.Name).ToFixedList();
 
-    public static partial void UnresolvedOrdinaryName_Contribute_Diagnostics(IUnresolvedOrdinaryNameNode node, DiagnosticCollectionBuilder diagnostics)
+    public static partial void UnresolvedOrdinaryNameExpression_Contribute_Diagnostics(IUnresolvedOrdinaryNameExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
         switch (node.ReferencedDeclarations.Count)
         {

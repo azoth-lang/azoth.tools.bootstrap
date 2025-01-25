@@ -23,10 +23,10 @@
 = MethodGroupName.↑.Diagnostics;
 ✎ InitializerGroupName replace_with InitializerName;
 
-// ---------- Unresolved Names
-↑ UnresolvedOrdinaryName.ReferencedDeclarations: Declaration*;
-= UnresolvedOrdinaryName.ReferencedDeclarations;
-= UnresolvedOrdinaryName.↑.Diagnostics;
+// ---------- Unresolved Name Expressions
+↑ UnresolvedOrdinaryNameExpression.ReferencedDeclarations: Declaration*;
+= UnresolvedOrdinaryNameExpression.ReferencedDeclarations;
+= UnresolvedOrdinaryNameExpression.↑.Diagnostics;
 ✎ UnresolvedIdentifierName replace_with NameExpression;
 ✎ UnresolvedGenericName replace_with NameExpression;
 ✎ UnresolvedQualifiedName replace_with UnresolvedNamespaceQualifiedName;

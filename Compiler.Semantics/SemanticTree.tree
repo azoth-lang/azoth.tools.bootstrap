@@ -306,8 +306,10 @@ NonInvocableInvocationExpression <: InvocationExpression = Syntax:`IInvocationEx
     Expression:AmbiguousExpression Arguments:AmbiguousExpression*;
 
 // ---------- Name Expressions
-// Name expressions are more inclusive than just names since there are names that can occur in an
-// expression that don't occur in type names.
+// Name expressions are expressions that correspond to name syntax (i.e. it is apparent from the
+// syntax that something is a name). However, in the semantic tree name nodes are for namespace and
+// type names. Name expressions are more inclusive than just names since there is name syntax that
+// can occur in an expression that don't occur in type and namespace names.
 NameExpression <: Expression = Syntax:`INameExpressionSyntax`;
 // See the names section for more nodes that are name expressions
 LocalBindingNameExpression <: NameExpression = ReferencedDefinition:`IBindingNode`?;
@@ -323,11 +325,11 @@ MissingNameExpression <: NameExpression
 // ---------- Unresolved Name Expressions
 // TODO use for both this and types so that type names can be qualified
 UnresolvedNameExpression <: NameExpression, UnresolvedExpression = Syntax:`INameExpressionSyntax`;
-UnresolvedOrdinaryName <: UnresolvedNameExpression
+UnresolvedOrdinaryNameExpression <: UnresolvedNameExpression
     = Syntax:`IOrdinaryNameSyntax` Name:`OrdinaryName`;
-UnresolvedIdentifierName <: UnresolvedOrdinaryName
+UnresolvedIdentifierName <: UnresolvedOrdinaryNameExpression
     = Syntax:`IIdentifierNameSyntax`;
-UnresolvedGenericName <: UnresolvedOrdinaryName
+UnresolvedGenericName <: UnresolvedOrdinaryNameExpression
     = Syntax:`IGenericNameSyntax` GenericArguments:Type*;
 concrete UnresolvedQualifiedName <: UnresolvedNameExpression, UnresolvedMemberAccessExpression
     = Syntax:`IQualifiedNameSyntax` Context:NameExpression /GenericArguments/;
