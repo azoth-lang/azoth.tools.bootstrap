@@ -12,7 +12,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.NameBinding;
 // ReSharper disable PartialTypeWithSinglePart
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-internal static partial class BindingUnresolvedNamesAspect
+internal static partial class NameResolutionAspect
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial void Validate_FunctionGroupNameNode(

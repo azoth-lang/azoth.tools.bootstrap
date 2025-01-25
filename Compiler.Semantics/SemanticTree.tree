@@ -375,7 +375,8 @@ InitializerGroupName <: UnresolvedNameExpression = Syntax:`INameExpressionSyntax
 // As such these nodes are both types and name expressions.
 // TODO use for both this and types so that type names can be qualified
 Name <: NameExpression;
-/// A name that has been resolved and therefore cannot be rewritten to a NameExpression
+/// A name that has been resolved and therefore cannot be rewritten
+// TODO is this still needed now that there are `UnresolvedName`s?
 ResolvedName <: Name;
 NamespaceName <: ResolvedName = ReferencedDeclarations:`INamespaceDeclarationNode`*;
 UnqualifiedNamespaceName <: NamespaceName
@@ -384,7 +385,10 @@ QualifiedNamespaceName <: NamespaceName
     = Syntax:`IMemberAccessExpressionSyntax` Context:NamespaceName /ReferencedDeclarations/;
 
 // ---------- Unresolved Names
-// Unresolved names are names that are known from context to only resolve to type or namespace names.
+// Unresolved names are names that are known from context to only resolve to type or namespace
+// names. These must be distinct from `UnresolvedNameExpression`s because those could resolve to
+// `Expression`s which would violate the requirement that a `Name` not be rewritten to an
+// `Expression`. On the other hand, `UnresolvedNameExpression`s can be rewritten to `Name`s.
 
 UnresolvedName <: Name, UnresolvedNameExpression = Syntax:`INameExpressionSyntax`;
 UnresolvedOrdinaryName <: UnresolvedName

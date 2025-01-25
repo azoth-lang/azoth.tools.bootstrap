@@ -10,7 +10,10 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.NameBinding;
 
-internal static partial class BindingUnresolvedNamesAspect
+/// <summary>
+/// Name resolution is the part of name binding that determines what kind of thing a name refers to.
+/// </summary>
+internal static partial class NameResolutionAspect
 {
     #region Unresolved Expressions
     public static partial IExpressionNode? UnresolvedMemberAccessExpression_ExpressionContext_ReplaceWith_Expression(IUnresolvedMemberAccessExpressionNode node)
