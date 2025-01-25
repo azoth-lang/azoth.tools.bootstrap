@@ -2901,6 +2901,8 @@ public partial interface INonInvocableInvocationExpressionNode : IInvocationExpr
     typeof(ILocalBindingNameExpressionNode),
     typeof(IInstanceExpressionNode),
     typeof(IMissingNameExpressionNode),
+    typeof(IFunctionNameNode),
+    typeof(IInitializerNameNode),
     typeof(IUnresolvedNameExpressionNode),
     typeof(INameNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -3003,7 +3005,7 @@ public partial interface IMissingNameExpressionNode : INameExpressionNode
 
 [Closed(typeof(FunctionNameNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IFunctionNameNode : INameNode
+public partial interface IFunctionNameNode : INameExpressionNode
 {
     IResolvedNameNode? Context { get; }
     IResolvedNameNode? CurrentContext { get; }
@@ -3032,7 +3034,7 @@ public partial interface IFunctionNameNode : INameNode
 
 [Closed(typeof(InitializerNameNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IInitializerNameNode : INameNode
+public partial interface IInitializerNameNode : INameExpressionNode
 {
     ITypeNameExpressionNode Context { get; }
     ITypeNameExpressionNode CurrentContext { get; }
@@ -3268,8 +3270,6 @@ public partial interface IInitializerGroupNameNode : INameNode
 }
 
 [Closed(
-    typeof(IFunctionNameNode),
-    typeof(IInitializerNameNode),
     typeof(IFunctionGroupNameNode),
     typeof(IInitializerGroupNameNode),
     typeof(IResolvedNameNode))]

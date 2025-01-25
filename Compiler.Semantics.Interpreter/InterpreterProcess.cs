@@ -226,7 +226,23 @@ public class InterpreterProcess
         }
     }
 
-    private async ValueTask<AzothValue> InitializeClass(
+    internal async ValueTask<AzothValue> CallInitializerAsync(InitializerSymbol initializerSymbol, IReadOnlyList<AzothValue> arguments)
+    {
+        if (initializerSymbol.Package == Intrinsic.SymbolTree.Package)
+            return await CallIntrinsicAsync(initializerSymbol, arguments).ConfigureAwait(false);
+        var typeDefinition = userTypes[initializerSymbol.ContextTypeSymbol];
+        return typeDefinition switch
+        {
+            IStructDefinitionNode @struct => await CallStructInitializerAsync(@struct, initializerSymbol, arguments)
+                .ConfigureAwait(false),
+            IClassDefinitionNode @class => await CallClassInitializerAsync(@class, initializerSymbol, arguments)
+                .ConfigureAwait(false),
+            ITraitDefinitionNode _ => throw new UnreachableException("Traits don't have initializers."),
+            _ => throw ExhaustiveMatch.Failed(typeDefinition)
+        };
+    }
+
+    private async ValueTask<AzothValue> CallClassInitializerAsync(
         IClassDefinitionNode @class,
         InitializerSymbol initializerSymbol,
         IEnumerable<AzothValue> arguments)
@@ -318,7 +334,7 @@ public class InterpreterProcess
                            .Single(c => c.Arity == 0);
     }
 
-    private async ValueTask<AzothValue> InitializeStruct(
+    private async ValueTask<AzothValue> CallStructInitializerAsync(
         IStructDefinitionNode @struct,
         InitializerSymbol initializerSymbol,
         IEnumerable<AzothValue> arguments)
@@ -569,18 +585,7 @@ public class InterpreterProcess
             {
                 var arguments = await ExecuteArgumentsAsync(exp.Arguments!, variables).ConfigureAwait(false);
                 var initializerSymbol = exp.Initializer.ReferencedDeclaration!.Symbol.Assigned();
-                if (initializerSymbol.Package == Intrinsic.SymbolTree.Package)
-                    return await CallIntrinsicAsync(initializerSymbol, arguments).ConfigureAwait(false);
-                var typeDefinition = userTypes[initializerSymbol.ContextTypeSymbol];
-                return typeDefinition switch
-                {
-                    IStructDefinitionNode @struct
-                        => await InitializeStruct(@struct, initializerSymbol, arguments).ConfigureAwait(false),
-                    IClassDefinitionNode @class
-                        => await InitializeClass(@class, initializerSymbol, arguments).ConfigureAwait(false),
-                    ITraitDefinitionNode _ => throw new UnreachableException("Traits don't have initializers."),
-                    _ => throw ExhaustiveMatch.Failed(typeDefinition)
-                };
+                return await CallInitializerAsync(initializerSymbol, arguments);
             }
             case IBoolLiteralExpressionNode exp:
                 return AzothValue.Bool(exp.Value);
@@ -596,7 +601,19 @@ public class InterpreterProcess
             case IVariableNameExpressionNode exp:
                 return variables[exp.ReferencedDefinition];
             case IFunctionNameNode exp:
-                return AzothValue.FunctionReference(new ConcreteFunctionReference(this, exp.ReferencedDeclaration!.Symbol.Assigned()));
+                return AzothValue.FunctionReference(new OrdinaryFunctionReference(this, exp.ReferencedDeclaration!.Symbol.Assigned()));
+            case IMethodNameNode exp:
+            {
+                var self = await ExecuteAsync(exp.Context, variables).ConfigureAwait(false);
+                var methodSymbol = exp.ReferencedDeclaration!.Symbol.Assigned();
+                var selfType = exp.Context.Type.Known();
+                return AzothValue.FunctionReference(new MethodReference(this, selfType, self, methodSymbol));
+            }
+            case IInitializerNameNode exp:
+            {
+                var initializerSymbol = exp.ReferencedDeclaration!.Symbol.Assigned();
+                return AzothValue.FunctionReference(new InitializerReference(this, initializerSymbol));
+            }
             case IBlockExpressionNode block:
             {
                 var blockVariables = new LocalVariableScope(variables);
@@ -732,7 +749,7 @@ public class InterpreterProcess
                         if (!exp.Operator.RangeInclusiveOfStart()) left = left.Increment(Type.Int);
                         var right = await ExecuteAsync(exp.RightOperand!, variables).ConfigureAwait(false);
                         if (exp.Operator.RangeInclusiveOfEnd()) right = right.Increment(Type.Int);
-                        return await InitializeStruct(rangeStruct!, rangeInitializer!, [left, right]);
+                        return await CallStructInitializerAsync(rangeStruct!, rangeInitializer!, [left, right]);
                     }
                     case BinaryOperator.QuestionQuestion:
                     {
@@ -882,13 +899,6 @@ public class InterpreterProcess
 
                 return await value.PromiseValue.ConfigureAwait(false);
             }
-            case IMethodNameNode exp:
-            {
-                var self = await ExecuteAsync(exp.Context, variables).ConfigureAwait(false);
-                var methodSymbol = exp.ReferencedDeclaration!.Symbol.Assigned();
-                var selfType = exp.Context.Type.Known();
-                return AzothValue.FunctionReference(new MethodReference(this, selfType, self, methodSymbol));
-            }
             case IUnresolvedExpressionNode _:
             case INonInvocableInvocationExpressionNode _:
             case IMissingNameExpressionNode _:
@@ -977,7 +987,7 @@ public class InterpreterProcess
         throw new NotImplementedException($"Intrinsic {constructor}");
     }
 
-    private static ValueTask<AzothValue> CallIntrinsicAsync(InitializerSymbol initializer, List<AzothValue> arguments)
+    private static ValueTask<AzothValue> CallIntrinsicAsync(InitializerSymbol initializer, IReadOnlyList<AzothValue> arguments)
     {
         if (initializer == Intrinsic.InitRawBoundedList)
         {
