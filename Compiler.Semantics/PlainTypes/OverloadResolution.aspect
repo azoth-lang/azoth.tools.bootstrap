@@ -11,6 +11,15 @@
 ↑ NewObjectExpression.ReferencedConstructor: ConstructorDeclaration?;
 = NewObjectExpression.↑.Diagnostics;
 
+// ---------- Instance Member Access Expressions
+↑ MethodGroupName.CallCandidates: {`ICallCandidate<IOrdinaryMethodDeclarationNode>`};
+↑ MethodGroupName.CompatibleCallCandidates: {`ICallCandidate<IOrdinaryMethodDeclarationNode>`};
+↑ MethodGroupName.SelectedCallCandidate: `ICallCandidate<IOrdinaryMethodDeclarationNode>`?;
+↑ MethodGroupName.ReferencedDeclaration: OrdinaryMethodDeclaration?
+    => SelectedCallCandidate?.Declaration;
+= MethodGroupName.↑.Diagnostics;
+= MethodAccessExpression.↑.Diagnostics;
+
 // ---------- Invocation Expressions
 = UnresolvedInvocationExpression.Expression.ExpectedPlainType;
 ✎ UnresolvedInvocationExpression replace_with FunctionInvocationExpression;
@@ -54,13 +63,7 @@
     => SelectedCallCandidate?.Declaration;
 = FunctionGroupName.↑.Diagnostics;
 = FunctionNameExpression.↑.Diagnostics;
-↑ MethodGroupName.CallCandidates: {`ICallCandidate<IOrdinaryMethodDeclarationNode>`};
-↑ MethodGroupName.CompatibleCallCandidates: {`ICallCandidate<IOrdinaryMethodDeclarationNode>`};
-↑ MethodGroupName.SelectedCallCandidate: `ICallCandidate<IOrdinaryMethodDeclarationNode>`?;
-↑ MethodGroupName.ReferencedDeclaration: OrdinaryMethodDeclaration?
-    => SelectedCallCandidate?.Declaration;
-= MethodGroupName.↑.Diagnostics;
-= MethodName.↑.Diagnostics;
+
 ↑ InitializerGroupName.CallCandidates: {`ICallCandidate<IInitializerDeclarationNode>`};
 ↑ InitializerGroupName.CompatibleCallCandidates: {`ICallCandidate<IInitializerDeclarationNode>`};
 ↑ InitializerGroupName.SelectedCallCandidate: `ICallCandidate<IInitializerDeclarationNode>`?;

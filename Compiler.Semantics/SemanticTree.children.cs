@@ -292,6 +292,11 @@ public static class ISemanticNodeExtensions
             case ILoopExpressionNode n:
                 yield return n.Block;
                 yield break;
+            case IMethodAccessExpressionNode n:
+                yield return n.Context;
+                foreach (var child in n.GenericArguments)
+                    yield return child;
+                yield break;
             case IMethodGroupNameNode n:
                 yield return n.Context;
                 foreach (var child in n.GenericArguments)
@@ -300,11 +305,6 @@ public static class ISemanticNodeExtensions
             case IMethodInvocationExpressionNode n:
                 yield return n.Method;
                 foreach (var child in n.TempArguments)
-                    yield return child;
-                yield break;
-            case IMethodNameNode n:
-                yield return n.Context;
-                foreach (var child in n.GenericArguments)
                     yield return child;
                 yield break;
             case IMethodSelfParameterNode n:

@@ -98,6 +98,35 @@ internal static partial class BindingUnresolvedNamesAspect
     }*/
     #endregion
 
+    #region Instance Member Access Expressions
+    public static partial IMethodAccessExpressionNode? MethodGroupName_ReplaceWith_MethodAccessExpression(IMethodGroupNameNode node)
+    {
+        if (node.CompatibleCallCandidates.Count > 1)
+            // TODO should this be used instead?
+            //if (node.ReferencedDeclaration is not null)
+            return null;
+
+        // if there is aren't multiple declarations, then it isn't ambiguous (it may fail to reference if there are zero).
+        return IMethodAccessExpressionNode.Create(node.Syntax, node.Context, node.MethodName, node.GenericArguments,
+            node.ReferencedDeclarations, node.CallCandidates, node.CompatibleCallCandidates, node.SelectedCallCandidate,
+            node.ReferencedDeclaration);
+    }
+
+    public static partial void MethodGroupName_Contribute_Diagnostics(
+        IMethodGroupNameNode node,
+        DiagnosticCollectionBuilder diagnostics)
+    {
+        // TODO develop a better check that this node is ambiguous
+        if (node.Parent is IUnresolvedInvocationExpressionNode) return;
+
+        if (node.CompatibleCallCandidates.Count == 0)
+            diagnostics.Add(NameBindingError.CouldNotBindName(node.File, node.Syntax.Span));
+        else if (node.CompatibleCallCandidates.Count > 1)
+            // TODO provide the expected method type that didn't match
+            diagnostics.Add(TypeError.AmbiguousMethodGroup(node.File, node.Syntax, Type.Unknown));
+    }
+    #endregion
+
     #region Operator Expressions
     public static partial IExpressionNode? AssignmentExpression_PropertyNameLeftOperand_Rewrite(IAssignmentExpressionNode node)
     {
@@ -147,31 +176,6 @@ internal static partial class BindingUnresolvedNamesAspect
         else if (node.CompatibleCallCandidates.Count > 1)
             // TODO provide the expected function type that didn't match
             diagnostics.Add(TypeError.AmbiguousFunctionGroup(node.File, node.Syntax, Type.Unknown));
-    }
-
-    public static partial IMethodNameNode? MethodGroupName_ReplaceWith_MethodName(IMethodGroupNameNode node)
-    {
-        if (node.CompatibleCallCandidates.Count > 1)
-            // TODO should this be used instead?
-            //if (node.ReferencedDeclaration is not null)
-            return null;
-
-        // if there is aren't multiple declarations, then it isn't ambiguous (it may fail to reference if there are zero).
-        return IMethodNameNode.Create(node.Syntax, node.Context, node.MethodName, node.GenericArguments,
-            node.ReferencedDeclarations, node.CallCandidates, node.CompatibleCallCandidates,
-            node.SelectedCallCandidate, node.ReferencedDeclaration);
-    }
-
-    public static partial void MethodGroupName_Contribute_Diagnostics(IMethodGroupNameNode node, DiagnosticCollectionBuilder diagnostics)
-    {
-        // TODO develop a better check that this node is ambiguous
-        if (node.Parent is IUnresolvedInvocationExpressionNode) return;
-
-        if (node.CompatibleCallCandidates.Count == 0)
-            diagnostics.Add(NameBindingError.CouldNotBindName(node.File, node.Syntax.Span));
-        else if (node.CompatibleCallCandidates.Count > 1)
-            // TODO provide the expected method type that didn't match
-            diagnostics.Add(TypeError.AmbiguousMethodGroup(node.File, node.Syntax, Type.Unknown));
     }
 
     public static partial IInitializerNameExpressionNode? InitializerGroupName_ReplaceWith_InitializerNameExpression(IInitializerGroupNameNode node)

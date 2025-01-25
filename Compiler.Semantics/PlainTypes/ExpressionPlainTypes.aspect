@@ -45,6 +45,11 @@
 = UnresolvedMemberAccessExpression.PlainType => AzothPlainType.Unknown;
 = UnresolvedMemberAccessExpression.*.ExpectedPlainType => null;
 
+// ---------- Instance Member Access Expressions
+= MethodGroupName.PlainType => AzothPlainType.Unknown;
+= MethodGroupName.*.ExpectedPlainType => null;
+= MethodAccessExpression.Context.ExpectedPlainType;
+
 // ---------- Operator Expressions
 = AssignmentExpression.RightOperand.ExpectedPlainType => LeftOperand?.PlainType;
 ↑ BinaryOperatorExpression.NumericOperatorCommonPlainType: `PlainType`?;
@@ -85,9 +90,6 @@
 = FunctionGroupName.PlainType => AzothPlainType.Unknown;
 = FunctionGroupName.*.ExpectedPlainType => null;
 = FunctionNameExpression.*.ExpectedPlainType => null;
-= MethodGroupName.PlainType => AzothPlainType.Unknown;
-= MethodGroupName.*.ExpectedPlainType => null;
-= MethodName.Context.ExpectedPlainType;
 = TypeNameExpression.PlainType => AzothPlainType.Unknown;
 = InitializerGroupName.PlainType => AzothPlainType.Unknown;
 ↑ InitializerGroupName.InitializingPlainType: `IMaybePlainType` => Context.NamedPlainType;

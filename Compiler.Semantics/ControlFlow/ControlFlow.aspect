@@ -62,6 +62,11 @@
 // ---------- Unresolved Expressions
 = UnresolvedMemberAccessExpression.ControlFlowNext;
 
+// ---------- Instance Member Access Expressions
+= FieldAccessExpression.ControlFlowNext;
+= MethodGroupName.ControlFlowNext;
+= MethodAccessExpression.ControlFlowNext;
+
 // ---------- Operator Expressions
 = AssignmentExpression.ControlFlowNext;
 = AssignmentExpression.LeftOperand.**.ControlFlowFollowing()
@@ -169,12 +174,6 @@
         ? ControlFlowSet.CreateNormal(Arguments[index + 1])
         : base.Inherited_ControlFlowFollowing(child, descendant, ctx);
 = NonInvocableInvocationExpression.ControlFlowNext;
-
-// ---------- Name Expressions
-
-= MethodGroupName.ControlFlowNext;
-= MethodName.ControlFlowNext;
-= FieldAccessExpression.ControlFlowNext;
 
 // ---------- Capability Expressions
 = RecoveryExpression.ControlFlowNext;

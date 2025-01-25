@@ -51,6 +51,17 @@ internal static partial class ControlFlowAspect
         => ControlFlowSet.CreateNormal(node.Context);
     #endregion
 
+    #region Instance Member Access Expressions
+    public static partial ControlFlowSet FieldAccessExpression_ControlFlowNext(IFieldAccessExpressionNode node)
+        => ControlFlowSet.CreateNormal(node.Context);
+
+    public static partial ControlFlowSet MethodGroupName_ControlFlowNext(IMethodGroupNameNode node)
+        => ControlFlowSet.CreateNormal(node.Context);
+
+    public static partial ControlFlowSet MethodAccessExpression_ControlFlowNext(IMethodAccessExpressionNode node)
+        => ControlFlowSet.CreateNormal(node.Context);
+    #endregion
+
     #region Invocation Expressions
     public static partial ControlFlowSet UnresolvedInvocationExpression_ControlFlowNext(IUnresolvedInvocationExpressionNode node)
         => ControlFlowSet.CreateNormal(node.Expression);
@@ -78,8 +89,7 @@ internal static partial class ControlFlowAspect
     #endregion
 
     #region Name Expressions
-    public static partial ControlFlowSet FieldAccessExpression_ControlFlowNext(IFieldAccessExpressionNode node)
-        => ControlFlowSet.CreateNormal(node.Context);
+
     #endregion
 
     public static partial ControlFlowSet AssignmentExpression_ControlFlowNext(IAssignmentExpressionNode node)
@@ -87,12 +97,6 @@ internal static partial class ControlFlowAspect
 
     public static partial ControlFlowSet UnsafeExpression_ControlFlowNext(IUnsafeExpressionNode node)
         => ControlFlowSet.CreateNormal(node.Expression);
-
-    public static partial ControlFlowSet MethodGroupName_ControlFlowNext(IMethodGroupNameNode node)
-        => ControlFlowSet.CreateNormal(node.Context);
-
-    public static partial ControlFlowSet MethodName_ControlFlowNext(IMethodNameNode node)
-        => ControlFlowSet.CreateNormal(node.Context);
 
     public static partial ControlFlowSet NewObjectExpression_ControlFlowNext(
         INewObjectExpressionNode node)

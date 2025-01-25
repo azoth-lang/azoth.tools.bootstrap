@@ -236,12 +236,12 @@ concrete UnresolvedMemberAccessExpression <: UnresolvedExpression
 FieldAccessExpression <: NameExpression = Syntax:`IMemberAccessExpressionSyntax`
     Context:Expression FieldName:`IdentifierName` ReferencedDeclaration:`IFieldDeclarationNode`;
 // TODO should MethodGroupName be UnresolvedMethodName or Unresolved MethodAccessExpression?
+// TODO merge with MethodAccessExpression?
 MethodGroupName <: UnresolvedExpression = Syntax:`IMemberAccessExpressionSyntax`
     Context:Expression MethodName:`OrdinaryName` GenericArguments:Type*
     ReferencedDeclarations:{`IOrdinaryMethodDeclarationNode`};
 /// See comment on FunctionNameExpression for why this exists.
-// TODO rename to MethodAccessExpression?
-MethodName <: Expression = Syntax:`IMemberAccessExpressionSyntax`
+MethodAccessExpression <: Expression = Syntax:`IMemberAccessExpressionSyntax`
     Context:Expression MethodName:`OrdinaryName` GenericArguments:Type*
     ReferencedDeclarations:{`IOrdinaryMethodDeclarationNode`}
     CallCandidates:{`ICallCandidate<IOrdinaryMethodDeclarationNode>`}
@@ -291,7 +291,7 @@ UnresolvedInvocationExpression <: InvocationExpression, UnresolvedExpression
 FunctionInvocationExpression <: InvocationExpression = Syntax:`IInvocationExpressionSyntax`
     Function:FunctionNameExpression Arguments:AmbiguousExpression*;
 MethodInvocationExpression <: InvocationExpression = Syntax:`IInvocationExpressionSyntax`
-    Method:MethodName Arguments:AmbiguousExpression*;
+    Method:MethodAccessExpression Arguments:AmbiguousExpression*;
 GetterInvocationExpression <: InvocationExpression, NameExpression = Syntax:`IMemberAccessExpressionSyntax`
     Context:Expression PropertyName:`OrdinaryName`
     ReferencedDeclarations:{`IPropertyAccessorDeclarationNode`};
@@ -356,17 +356,22 @@ UnresolvedGenericNameExpression <: UnresolvedOrdinaryNameExpression
     = Syntax:`IGenericNameSyntax` GenericArguments:Type*;
 UnresolvedQualifiedNameExpression <: UnresolvedNameExpression, UnresolvedMemberAccessExpression
     = Syntax:`IQualifiedNameSyntax` Context:NameExpression /GenericArguments/;
+/// This is distinct from UnresolvedQualifiedNameExpression because the rewrites on this should not
+/// be inherited by all UnresolvedQualifiedNameExpressions.
 concrete UnresolvedNameExpressionQualifiedNameExpression <: UnresolvedQualifiedNameExpression;
-/// These reify the Context and ReferencedDeclarations to make diagnostic reporting eaiser
+// These reify the Context and ReferencedDeclarations to make diagnostic reporting eaiser
 UnresolvedNamespaceQualifiedNameExpression <: UnresolvedQualifiedNameExpression
     = /Syntax/ Context:NamespaceName /GenericArguments/ ReferencedDeclarations:{`INamespaceMemberDeclarationNode`};
 UnresolvedTypeQualifiedNameExpression <: UnresolvedQualifiedNameExpression
     = /Syntax/ Context:TypeNameExpression /GenericArguments/ ReferencedDeclarations:{`IAssociatedMemberDeclarationNode`};
+// These reify that a function or initializer has been referenced
 // TODO should FunctionGroupName be UnresolvedFunctionName?
+// TODO merge with FunctionNameExpression?
 FunctionGroupName <: UnresolvedNameExpression
     = Syntax:`INameExpressionSyntax` Context:ResolvedName? FunctionName:`OrdinaryName` GenericArguments:Type*
     ReferencedDeclarations:{`IFunctionInvocableDeclarationNode`};
 // TODO should InitializerGroupName be UnresolvedInitializerName?
+// TODO merge with InitializerNameExpression?
 InitializerGroupName <: UnresolvedNameExpression = Syntax:`INameExpressionSyntax`
     Context:TypeNameExpression InitializerName:`OrdinaryName`?
     ReferencedDeclarations:{`IInitializerDeclarationNode`};

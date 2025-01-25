@@ -346,14 +346,16 @@ internal static partial class ExpressionPlainTypesAspect
     public static partial IMaybePlainType FunctionNameExpression_PlainType(IFunctionNameExpressionNode node)
         => node.ReferencedDeclaration?.PlainType ?? PlainType.Unknown;
 
-    public static partial IMaybePlainType MethodName_PlainType(IMethodNameNode node)
+    #region Instance Member Access Expressions
+    public static partial IMaybePlainType MethodAccessExpression_PlainType(IMethodAccessExpressionNode node)
         // TODO should MethodGroupPlainType be renamed to just MethodPlainType? The declaration is one method
         => node.ReferencedDeclaration?.MethodGroupPlainType ?? PlainType.Unknown;
 
     // TODO this is strange and maybe a hack
-    public static partial IMaybePlainType? MethodName_Context_ExpectedPlainType(IMethodNameNode node)
+    public static partial IMaybePlainType? MethodAccessExpression_Context_ExpectedPlainType(IMethodAccessExpressionNode node)
         => (node.Parent as IMethodInvocationExpressionNode)
            ?.SelectedCallCandidate?.SelfParameterPlainType;
+    #endregion
 
     public static partial IMaybePlainType InitializerNameExpression_PlainType(IInitializerNameExpressionNode node)
         // TODO proper plain type

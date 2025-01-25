@@ -1964,7 +1964,7 @@ public partial interface IAmbiguousExpressionNode : ICodeNode
     typeof(IUnsafeExpressionNode),
     typeof(INeverTypedExpressionNode),
     typeof(IUnresolvedExpressionNode),
-    typeof(IMethodNameNode),
+    typeof(IMethodAccessExpressionNode),
     typeof(ILiteralExpressionNode),
     typeof(IAssignmentExpressionNode),
     typeof(IBinaryOperatorExpressionNode),
@@ -2196,9 +2196,9 @@ public partial interface IMethodGroupNameNode : IUnresolvedExpressionNode
         => new MethodGroupNameNode(syntax, context, methodName, genericArguments, referencedDeclarations);
 }
 
-[Closed(typeof(MethodNameNode))]
+[Closed(typeof(MethodAccessExpressionNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IMethodNameNode : IExpressionNode
+public partial interface IMethodAccessExpressionNode : IExpressionNode
 {
     new IMemberAccessExpressionSyntax Syntax { get; }
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
@@ -2217,7 +2217,7 @@ public partial interface IMethodNameNode : IExpressionNode
         => Context.FlowStateAfter;
     IFlowState IExpressionNode.FlowStateAfter => FlowStateAfter;
 
-    public static IMethodNameNode Create(
+    public static IMethodAccessExpressionNode Create(
         IMemberAccessExpressionSyntax syntax,
         IExpressionNode context,
         OrdinaryName methodName,
@@ -2227,7 +2227,7 @@ public partial interface IMethodNameNode : IExpressionNode
         IEnumerable<ICallCandidate<IOrdinaryMethodDeclarationNode>> compatibleCallCandidates,
         ICallCandidate<IOrdinaryMethodDeclarationNode>? selectedCallCandidate,
         IOrdinaryMethodDeclarationNode? referencedDeclaration)
-        => new MethodNameNode(syntax, context, methodName, genericArguments, referencedDeclarations, callCandidates, compatibleCallCandidates, selectedCallCandidate, referencedDeclaration);
+        => new MethodAccessExpressionNode(syntax, context, methodName, genericArguments, referencedDeclarations, callCandidates, compatibleCallCandidates, selectedCallCandidate, referencedDeclaration);
 }
 
 [Closed(
@@ -2717,8 +2717,8 @@ public partial interface IMethodInvocationExpressionNode : IInvocationExpression
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ICodeSyntax ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    IMethodNameNode Method { get; }
-    IMethodNameNode CurrentMethod { get; }
+    IMethodAccessExpressionNode Method { get; }
+    IMethodAccessExpressionNode CurrentMethod { get; }
     IFixedList<IAmbiguousExpressionNode> TempArguments { get; }
     IFixedList<IExpressionNode?> Arguments { get; }
     IFixedList<IAmbiguousExpressionNode> CurrentArguments { get; }
@@ -2732,7 +2732,7 @@ public partial interface IMethodInvocationExpressionNode : IInvocationExpression
 
     public static IMethodInvocationExpressionNode Create(
         IInvocationExpressionSyntax syntax,
-        IMethodNameNode method,
+        IMethodAccessExpressionNode method,
         IEnumerable<IAmbiguousExpressionNode> arguments)
         => new MethodInvocationExpressionNode(syntax, method, arguments);
 }
@@ -10610,7 +10610,7 @@ file class MethodGroupNameNode : SemanticNode, IMethodGroupNameNode
     }
 
     protected override IChildTreeNode Rewrite()
-        => BindingUnresolvedNamesAspect.MethodGroupName_ReplaceWith_MethodName(this)
+        => BindingUnresolvedNamesAspect.MethodGroupName_ReplaceWith_MethodAccessExpression(this)
         ?? ExpressionTypesAspect.Expression_ImplicitMove_Insert(this)
         ?? ExpressionTypesAspect.Expression_ImplicitFreeze_Insert(this)
         ?? ExpressionTypesAspect.Expression_Insert_PrepareToReturnExpression(this)
@@ -10619,9 +10619,9 @@ file class MethodGroupNameNode : SemanticNode, IMethodGroupNameNode
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class MethodNameNode : SemanticNode, IMethodNameNode
+file class MethodAccessExpressionNode : SemanticNode, IMethodAccessExpressionNode
 {
-    private IMethodNameNode Self { [Inline] get => this; }
+    private IMethodAccessExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
     protected override bool MayHaveRewrite => true;
 
@@ -10677,19 +10677,19 @@ file class MethodNameNode : SemanticNode, IMethodNameNode
     public ControlFlowSet ControlFlowNext
         => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
             : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
-                ControlFlowAspect.MethodName_ControlFlowNext);
+                ControlFlowAspect.MethodAccessExpression_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
     public IMaybePlainType PlainType
         => GrammarAttribute.IsCached(in plainTypeCached) ? plainType!
             : this.Synthetic(ref plainTypeCached, ref plainType,
-                ExpressionPlainTypesAspect.MethodName_PlainType);
+                ExpressionPlainTypesAspect.MethodAccessExpression_PlainType);
     private IMaybePlainType? plainType;
     private bool plainTypeCached;
     public IMaybeType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
             : this.Synthetic(ref typeCached, ref type,
-                ExpressionTypesAspect.MethodName_Type);
+                ExpressionTypesAspect.MethodAccessExpression_Type);
     private IMaybeType? type;
     private bool typeCached;
     public ValueId ValueId
@@ -10699,7 +10699,7 @@ file class MethodNameNode : SemanticNode, IMethodNameNode
     private ValueId valueId;
     private bool valueIdCached;
 
-    public MethodNameNode(
+    public MethodAccessExpressionNode(
         IMemberAccessExpressionSyntax syntax,
         IExpressionNode context,
         OrdinaryName methodName,
@@ -10724,7 +10724,7 @@ file class MethodNameNode : SemanticNode, IMethodNameNode
     internal override IMaybePlainType? Inherited_ExpectedPlainType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.CurrentContext))
-            return ExpressionPlainTypesAspect.MethodName_Context_ExpectedPlainType(this);
+            return ExpressionPlainTypesAspect.MethodAccessExpression_Context_ExpectedPlainType(this);
         if (ReferenceEquals(child, descendant))
             return null;
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
@@ -10733,7 +10733,7 @@ file class MethodNameNode : SemanticNode, IMethodNameNode
     internal override IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.CurrentContext))
-            return ExpressionTypesAspect.MethodName_Context_ExpectedType(this);
+            return ExpressionTypesAspect.MethodAccessExpression_Context_ExpectedType(this);
         if (ReferenceEquals(child, descendant))
             return null;
         return base.Inherited_ExpectedType(child, descendant, ctx);
@@ -10764,7 +10764,7 @@ file class MethodNameNode : SemanticNode, IMethodNameNode
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
     {
         ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
-        OverloadResolutionAspect.MethodName_Contribute_Diagnostics(this, builder);
+        OverloadResolutionAspect.MethodAccessExpression_Contribute_Diagnostics(this, builder);
     }
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
@@ -14010,12 +14010,12 @@ file class MethodInvocationExpressionNode : SemanticNode, IMethodInvocationExpre
     protected override bool MayHaveRewrite => true;
 
     public IInvocationExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    private RewritableChild<IMethodNameNode> method;
+    private RewritableChild<IMethodAccessExpressionNode> method;
     private bool methodCached;
-    public IMethodNameNode Method
+    public IMethodAccessExpressionNode Method
         => GrammarAttribute.IsCached(in methodCached) ? method.UnsafeValue
             : this.RewritableChild(ref methodCached, ref method);
-    public IMethodNameNode CurrentMethod => method.UnsafeValue;
+    public IMethodAccessExpressionNode CurrentMethod => method.UnsafeValue;
     private IRewritableChildList<IAmbiguousExpressionNode, IExpressionNode> arguments;
     public IFixedList<IAmbiguousExpressionNode> TempArguments => arguments;
     public IFixedList<IExpressionNode?> Arguments => arguments.AsFinalType;
@@ -14094,7 +14094,7 @@ file class MethodInvocationExpressionNode : SemanticNode, IMethodInvocationExpre
 
     public MethodInvocationExpressionNode(
         IInvocationExpressionSyntax syntax,
-        IMethodNameNode method,
+        IMethodAccessExpressionNode method,
         IEnumerable<IAmbiguousExpressionNode> arguments)
     {
         Syntax = syntax;

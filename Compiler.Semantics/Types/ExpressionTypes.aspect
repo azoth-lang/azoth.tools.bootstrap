@@ -109,9 +109,9 @@
 = FieldAccessExpression.↑.Diagnostics;
 ↑ MethodGroupName.Type: `UnknownType` => AzothType.Unknown;
 ↑ MethodGroupName.FlowStateAfter: `IFlowState` => Context.FlowStateAfter;
-= MethodName.Context.ExpectedType;
-= MethodName.Context.ImplicitRecoveryAllowed() => true;
-↑ MethodName.FlowStateAfter: `IFlowState` => Context.FlowStateAfter;
+= MethodAccessExpression.Context.ExpectedType;
+= MethodAccessExpression.Context.ImplicitRecoveryAllowed() => true;
+↑ MethodAccessExpression.FlowStateAfter: `IFlowState` => Context.FlowStateAfter;
 
 // ---------- Literal Expressions
 ↓ LiteralExpression.FlowStateBefore(): `IFlowState`;

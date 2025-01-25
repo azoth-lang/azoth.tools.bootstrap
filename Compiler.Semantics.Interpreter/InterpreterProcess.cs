@@ -602,7 +602,7 @@ public class InterpreterProcess
                 return variables[exp.ReferencedDefinition];
             case IFunctionNameExpressionNode exp:
                 return AzothValue.FunctionReference(new OrdinaryFunctionReference(this, exp.ReferencedDeclaration!.Symbol.Assigned()));
-            case IMethodNameNode exp:
+            case IMethodAccessExpressionNode exp:
             {
                 var self = await ExecuteAsync(exp.Context, variables).ConfigureAwait(false);
                 var methodSymbol = exp.ReferencedDeclaration!.Symbol.Assigned();

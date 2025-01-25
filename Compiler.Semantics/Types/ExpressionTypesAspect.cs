@@ -303,37 +303,6 @@ internal static partial class ExpressionTypesAspect
                              .Select((p, a) => new ArgumentValueId(p.IsLent, a.ValueId));
     }
 
-    public static partial IMaybeType FieldAccessExpression_Type(IFieldAccessExpressionNode node)
-    {
-        var contextType = node.Context.Type;
-        var fieldType = node.ReferencedDeclaration.BindingType;
-        // Access must be applied first, so it can account for independent generic parameters.
-        var type = fieldType.AccessedVia(contextType);
-        // Then type parameters can be replaced now that they have the correct access
-        if (contextType is NonVoidType nonVoidContext)
-            // resolve generic type fields
-            type = nonVoidContext.TypeReplacements.Apply(type);
-
-        return type;
-    }
-
-    public static partial IFlowState FieldAccessExpression_FlowStateAfter(IFieldAccessExpressionNode node)
-        => node.Context.FlowStateAfter.AccessField(node);
-
-    public static partial void FieldAccessExpression_Contribute_Diagnostics(IFieldAccessExpressionNode node, DiagnosticCollectionBuilder diagnostics)
-    {
-        if (node.Parent is IAssignmentExpressionNode assignmentNode && assignmentNode.TempLeftOperand == node)
-            // In this case, a different error will be reported and CannotAccessMutableBindingFieldOfIdentityReference
-            // should not be reported.
-            return;
-
-        var fieldHasMutableBinding = node.ReferencedDeclaration.IsMutableBinding;
-        if (fieldHasMutableBinding
-            && node.Context.Type is CapabilityType { Capability: var contextCapability }
-            && contextCapability == Capability.Identity)
-            diagnostics.Add(TypeError.CannotAccessMutableBindingFieldOfIdentityReference(node.File, node.Syntax, node.Context.Type));
-    }
-
     public static partial IFlowState SelfExpression_FlowStateAfter(ISelfExpressionNode node)
         => node.FlowStateBefore().Alias(node.ReferencedDefinition, node.ValueId);
 
@@ -888,19 +857,54 @@ internal static partial class ExpressionTypesAspect
         => node.Context?.FlowStateAfter.Transform(node.Context.ValueId, node.ValueId, node.Type) ?? IFlowState.Empty;
     #endregion
 
+    #region Instance Member Access Expressions
+    public static partial IMaybeType FieldAccessExpression_Type(IFieldAccessExpressionNode node)
+    {
+        var contextType = node.Context.Type;
+        var fieldType = node.ReferencedDeclaration.BindingType;
+        // Access must be applied first, so it can account for independent generic parameters.
+        var type = fieldType.AccessedVia(contextType);
+        // Then type parameters can be replaced now that they have the correct access
+        if (contextType is NonVoidType nonVoidContext)
+            // resolve generic type fields
+            type = nonVoidContext.TypeReplacements.Apply(type);
+
+        return type;
+    }
+
+    public static partial IFlowState FieldAccessExpression_FlowStateAfter(IFieldAccessExpressionNode node)
+        => node.Context.FlowStateAfter.AccessField(node);
+
+    public static partial void FieldAccessExpression_Contribute_Diagnostics(
+        IFieldAccessExpressionNode node,
+        DiagnosticCollectionBuilder diagnostics)
+    {
+        if (node.Parent is IAssignmentExpressionNode assignmentNode && assignmentNode.TempLeftOperand == node)
+            // In this case, a different error will be reported and CannotAccessMutableBindingFieldOfIdentityReference
+            // should not be reported.
+            return;
+
+        var fieldHasMutableBinding = node.ReferencedDeclaration.IsMutableBinding;
+        if (fieldHasMutableBinding
+            && node.Context.Type is CapabilityType { Capability: var contextCapability }
+            && contextCapability == Capability.Identity)
+            diagnostics.Add(TypeError.CannotAccessMutableBindingFieldOfIdentityReference(node.File, node.Syntax, node.Context.Type));
+    }
+
+    public static partial IMaybeType MethodAccessExpression_Type(IMethodAccessExpressionNode node)
+        => node.ReferencedDeclaration?.MethodGroupType ?? IMaybeType.Unknown;
+
+    // TODO this is strange and maybe a hack
+    public static partial IMaybeType? MethodAccessExpression_Context_ExpectedType(IMethodAccessExpressionNode node)
+        => (node.Parent as IMethodInvocationExpressionNode)?.ContextualizedCall?.SelfParameterType?.ToUpperBound();
+    #endregion
+
     #region Name Expressions
     public static partial IMaybeType FunctionNameExpression_Type(IFunctionNameExpressionNode node)
         => node.ReferencedDeclaration?.Type ?? IMaybeType.Unknown;
 
     public static partial IFlowState FunctionNameExpression_FlowStateAfter(IFunctionNameExpressionNode node)
         => node.FlowStateBefore().Constant(node.ValueId);
-
-    public static partial IMaybeType MethodName_Type(IMethodNameNode node)
-        => node.ReferencedDeclaration?.MethodGroupType ?? IMaybeType.Unknown;
-
-    // TODO this is strange and maybe a hack
-    public static partial IMaybeType? MethodName_Context_ExpectedType(IMethodNameNode node)
-        => (node.Parent as IMethodInvocationExpressionNode)?.ContextualizedCall?.SelfParameterType?.ToUpperBound();
 
     public static partial IMaybeType InitializerNameExpression_Type(IInitializerNameExpressionNode node)
         // TODO proper type

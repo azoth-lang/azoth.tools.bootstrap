@@ -28,7 +28,7 @@ internal static partial class ExpressionTypesAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial void FieldAccessExpression_Contribute_Diagnostics(IFieldAccessExpressionNode node, DiagnosticCollectionBuilder diagnostics);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IMaybeType? MethodName_Context_ExpectedType(IMethodNameNode node);
+    public static partial IMaybeType? MethodAccessExpression_Context_ExpectedType(IMethodAccessExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFlowState LiteralExpression_FlowStateAfter(ILiteralExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -102,7 +102,7 @@ internal static partial class ExpressionTypesAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IMaybeType FieldAccessExpression_Type(IFieldAccessExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IMaybeType MethodName_Type(IMethodNameNode node);
+    public static partial IMaybeType MethodAccessExpression_Type(IMethodAccessExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial CapabilityType BoolLiteralExpression_Type(IBoolLiteralExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
