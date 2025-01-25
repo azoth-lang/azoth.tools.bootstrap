@@ -2933,7 +2933,8 @@ public partial interface IInitializerNameExpressionNode : INameExpressionNode
     typeof(IUnresolvedOrdinaryNameExpressionNode),
     typeof(IUnresolvedQualifiedNameExpressionNode),
     typeof(IFunctionGroupNameNode),
-    typeof(IInitializerGroupNameNode))]
+    typeof(IInitializerGroupNameNode),
+    typeof(IUnresolvedNameNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IUnresolvedNameExpressionNode : INameExpressionNode, IUnresolvedExpressionNode
 {
@@ -3140,7 +3141,8 @@ public partial interface IInitializerGroupNameNode : IUnresolvedNameExpressionNo
 }
 
 [Closed(
-    typeof(IResolvedNameNode))]
+    typeof(IResolvedNameNode),
+    typeof(IUnresolvedNameNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface INameNode : INameExpressionNode
 {
@@ -3206,6 +3208,129 @@ public partial interface IQualifiedNamespaceNameNode : INamespaceNameNode
         INamespaceNameNode context,
         IEnumerable<INamespaceDeclarationNode> referencedDeclarations)
         => new QualifiedNamespaceNameNode(syntax, context, referencedDeclarations);
+}
+
+[Closed(
+    typeof(IUnresolvedOrdinaryNameNode),
+    typeof(IUnresolvedQualifiedNameNode))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
+public partial interface IUnresolvedNameNode : INameNode, IUnresolvedNameExpressionNode
+{
+}
+
+[Closed(
+    typeof(IUnresolvedIdentifierNameNode),
+    typeof(IUnresolvedGenericNameNode))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
+public partial interface IUnresolvedOrdinaryNameNode : IUnresolvedNameNode
+{
+    new IOrdinaryNameSyntax Syntax { get; }
+    INameExpressionSyntax INameExpressionNode.Syntax => Syntax;
+    IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
+    ICodeSyntax ICodeNode.Syntax => Syntax;
+    ISyntax? ISemanticNode.Syntax => Syntax;
+    OrdinaryName Name { get; }
+}
+
+[Closed(typeof(UnresolvedIdentifierNameNode))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
+public partial interface IUnresolvedIdentifierNameNode : IUnresolvedOrdinaryNameNode
+{
+    new IIdentifierNameSyntax Syntax { get; }
+    IOrdinaryNameSyntax IUnresolvedOrdinaryNameNode.Syntax => Syntax;
+    INameExpressionSyntax INameExpressionNode.Syntax => Syntax;
+    IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
+    ICodeSyntax ICodeNode.Syntax => Syntax;
+    ISyntax? ISemanticNode.Syntax => Syntax;
+
+    public static IUnresolvedIdentifierNameNode Create(
+        OrdinaryName name,
+        IIdentifierNameSyntax syntax)
+        => new UnresolvedIdentifierNameNode(name, syntax);
+}
+
+[Closed(typeof(UnresolvedGenericNameNode))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
+public partial interface IUnresolvedGenericNameNode : IUnresolvedOrdinaryNameNode
+{
+    new IGenericNameSyntax Syntax { get; }
+    IOrdinaryNameSyntax IUnresolvedOrdinaryNameNode.Syntax => Syntax;
+    INameExpressionSyntax INameExpressionNode.Syntax => Syntax;
+    IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
+    ICodeSyntax ICodeNode.Syntax => Syntax;
+    ISyntax? ISemanticNode.Syntax => Syntax;
+    IFixedList<ITypeNode> GenericArguments { get; }
+
+    public static IUnresolvedGenericNameNode Create(
+        OrdinaryName name,
+        IGenericNameSyntax syntax,
+        IEnumerable<ITypeNode> genericArguments)
+        => new UnresolvedGenericNameNode(name, syntax, genericArguments);
+}
+
+[Closed(
+    typeof(IUnresolvedNameQualifiedNameNode),
+    typeof(IUnresolvedNamespaceQualifiedNameNode),
+    typeof(IUnresolvedTypeQualifiedNameNode))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
+public partial interface IUnresolvedQualifiedNameNode : IUnresolvedNameNode
+{
+    new IQualifiedNameSyntax Syntax { get; }
+    INameExpressionSyntax INameExpressionNode.Syntax => Syntax;
+    IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
+    ICodeSyntax ICodeNode.Syntax => Syntax;
+    ISyntax? ISemanticNode.Syntax => Syntax;
+    INameNode Context { get; }
+    INameNode CurrentContext { get; }
+    IFixedList<ITypeNode> GenericArguments { get; }
+}
+
+[Closed(typeof(UnresolvedNameQualifiedNameNode))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
+public partial interface IUnresolvedNameQualifiedNameNode : IUnresolvedQualifiedNameNode
+{
+
+    public static IUnresolvedNameQualifiedNameNode Create(
+        IQualifiedNameSyntax syntax,
+        INameNode context,
+        IEnumerable<ITypeNode> genericArguments)
+        => new UnresolvedNameQualifiedNameNode(syntax, context, genericArguments);
+}
+
+[Closed(typeof(UnresolvedNamespaceQualifiedNameNode))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
+public partial interface IUnresolvedNamespaceQualifiedNameNode : IUnresolvedQualifiedNameNode
+{
+    new INamespaceNameNode Context { get; }
+    new INamespaceNameNode CurrentContext { get; }
+    INameNode IUnresolvedQualifiedNameNode.Context => Context;
+    INameNode IUnresolvedQualifiedNameNode.CurrentContext => CurrentContext;
+    IFixedSet<INamespaceMemberDeclarationNode> ReferencedDeclarations { get; }
+
+    public static IUnresolvedNamespaceQualifiedNameNode Create(
+        IQualifiedNameSyntax syntax,
+        INamespaceNameNode context,
+        IEnumerable<ITypeNode> genericArguments,
+        IEnumerable<INamespaceMemberDeclarationNode> referencedDeclarations)
+        => new UnresolvedNamespaceQualifiedNameNode(syntax, context, genericArguments, referencedDeclarations);
+}
+
+[Closed(typeof(UnresolvedTypeQualifiedNameNode))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
+public partial interface IUnresolvedTypeQualifiedNameNode : IUnresolvedQualifiedNameNode
+{
+    new ITypeNameExpressionNode Context { get; }
+    new ITypeNameExpressionNode CurrentContext { get; }
+    INameNode IUnresolvedQualifiedNameNode.Context => Context;
+    INameNode IUnresolvedQualifiedNameNode.CurrentContext => CurrentContext;
+    IFixedSet<IAssociatedMemberDeclarationNode> ReferencedDeclarations { get; }
+
+    public static IUnresolvedTypeQualifiedNameNode Create(
+        IQualifiedNameSyntax syntax,
+        ITypeNameExpressionNode context,
+        IEnumerable<ITypeNode> genericArguments,
+        IEnumerable<IAssociatedMemberDeclarationNode> referencedDeclarations)
+        => new UnresolvedTypeQualifiedNameNode(syntax, context, genericArguments, referencedDeclarations);
 }
 
 [Closed(
@@ -16849,6 +16974,689 @@ file class QualifiedNamespaceNameNode : SemanticNode, IQualifiedNamespaceNameNod
         Syntax = syntax;
         this.context = Child.Create(this, context);
         ReferencedDeclarations = referencedDeclarations.ToFixedList();
+    }
+
+    internal override IMaybePlainType? Inherited_ExpectedPlainType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return null;
+        return base.Inherited_ExpectedPlainType(child, descendant, ctx);
+    }
+
+    internal override IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return null;
+        return base.Inherited_ExpectedType(child, descendant, ctx);
+    }
+
+    internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return false;
+        return base.Inherited_ImplicitRecoveryAllowed(child, descendant, ctx);
+    }
+
+    internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return false;
+        return base.Inherited_ShouldPrepareToReturn(child, descendant, ctx);
+    }
+
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+    {
+        contributors.Add(this);
+        base.CollectContributors_Diagnostics(contributors);
+    }
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
+    {
+        ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
+    }
+
+    internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
+    {
+        contributors.AddToRange(Self.ControlFlowNext.Keys.Cast<SemanticNode>(), this);
+        base.CollectContributors_ControlFlowPrevious(contributors);
+    }
+
+    internal override void Contribute_ControlFlowPrevious(SemanticNode target, Dictionary<IControlFlowNode, ControlFlowKind> builder)
+    {
+        if (target is IControlFlowNode t)
+            ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
+    }
+
+    protected override IChildTreeNode Rewrite()
+        => ExpressionTypesAspect.Expression_ImplicitMove_Insert(this)
+        ?? ExpressionTypesAspect.Expression_ImplicitFreeze_Insert(this)
+        ?? ExpressionTypesAspect.Expression_Insert_PrepareToReturnExpression(this)
+        ?? ExpressionPlainTypesAspect.Expression_Insert_ImplicitConversionExpression(this)
+        ?? base.Rewrite();
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class UnresolvedIdentifierNameNode : SemanticNode, IUnresolvedIdentifierNameNode
+{
+    private IUnresolvedIdentifierNameNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
+    protected override bool MayHaveRewrite => true;
+
+    public OrdinaryName Name { [DebuggerStepThrough] get; }
+    public IIdentifierNameSyntax Syntax { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package
+        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public CodeFile File
+        => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
+    public LexicalScope ContainingLexicalScope
+        => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
+            : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
+                Inherited_ContainingLexicalScope);
+    private LexicalScope? containingLexicalScope;
+    private bool containingLexicalScopeCached;
+    public ValueIdScope ValueIdScope
+        => Inherited_ValueIdScope(GrammarAttribute.CurrentInheritanceContext());
+    public IEntryNode ControlFlowEntry()
+        => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
+    public ControlFlowSet ControlFlowPrevious
+        => GrammarAttribute.IsCached(in controlFlowPreviousCached) ? controlFlowPrevious!
+            : this.Collection(ref controlFlowPreviousContributors, ref controlFlowPreviousCached, ref controlFlowPrevious,
+                CollectContributors_ControlFlowPrevious<IExecutableDefinitionNode>, Collect_ControlFlowPrevious);
+    private ControlFlowSet? controlFlowPrevious;
+    private bool controlFlowPreviousCached;
+    private IFixedSet<SemanticNode>? controlFlowPreviousContributors;
+    public ControlFlowSet ControlFlowFollowing()
+        => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
+    public IMaybeType? ExpectedType
+        => GrammarAttribute.IsCached(in expectedTypeCached) ? expectedType
+            : this.Inherited(ref expectedTypeCached, ref expectedType,
+                Inherited_ExpectedType);
+    private IMaybeType? expectedType;
+    private bool expectedTypeCached;
+    public bool ImplicitRecoveryAllowed()
+        => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
+    public bool ShouldPrepareToReturn()
+        => Inherited_ShouldPrepareToReturn(GrammarAttribute.CurrentInheritanceContext());
+    public IMaybePlainType? ExpectedPlainType
+        => GrammarAttribute.IsCached(in expectedPlainTypeCached) ? expectedPlainType
+            : this.Inherited(ref expectedPlainTypeCached, ref expectedPlainType,
+                Inherited_ExpectedPlainType);
+    private IMaybePlainType? expectedPlainType;
+    private bool expectedPlainTypeCached;
+    public IFlowState FlowStateBefore()
+        => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.Expression_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
+    public ValueId ValueId
+        => GrammarAttribute.IsCached(in valueIdCached) ? valueId
+            : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
+                ValueIdsAspect.AmbiguousExpression_ValueId);
+    private ValueId valueId;
+    private bool valueIdCached;
+
+    public UnresolvedIdentifierNameNode(
+        OrdinaryName name,
+        IIdentifierNameSyntax syntax)
+    {
+        Name = name;
+        Syntax = syntax;
+    }
+
+    internal override IMaybePlainType? Inherited_ExpectedPlainType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return null;
+        return base.Inherited_ExpectedPlainType(child, descendant, ctx);
+    }
+
+    internal override IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return null;
+        return base.Inherited_ExpectedType(child, descendant, ctx);
+    }
+
+    internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return false;
+        return base.Inherited_ImplicitRecoveryAllowed(child, descendant, ctx);
+    }
+
+    internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return false;
+        return base.Inherited_ShouldPrepareToReturn(child, descendant, ctx);
+    }
+
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+    {
+        contributors.Add(this);
+        base.CollectContributors_Diagnostics(contributors);
+    }
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
+    {
+        ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
+    }
+
+    internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
+    {
+        contributors.AddToRange(Self.ControlFlowNext.Keys.Cast<SemanticNode>(), this);
+        base.CollectContributors_ControlFlowPrevious(contributors);
+    }
+
+    internal override void Contribute_ControlFlowPrevious(SemanticNode target, Dictionary<IControlFlowNode, ControlFlowKind> builder)
+    {
+        if (target is IControlFlowNode t)
+            ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
+    }
+
+    protected override IChildTreeNode Rewrite()
+        => ExpressionTypesAspect.Expression_ImplicitMove_Insert(this)
+        ?? ExpressionTypesAspect.Expression_ImplicitFreeze_Insert(this)
+        ?? ExpressionTypesAspect.Expression_Insert_PrepareToReturnExpression(this)
+        ?? ExpressionPlainTypesAspect.Expression_Insert_ImplicitConversionExpression(this)
+        ?? base.Rewrite();
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class UnresolvedGenericNameNode : SemanticNode, IUnresolvedGenericNameNode
+{
+    private IUnresolvedGenericNameNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
+    protected override bool MayHaveRewrite => true;
+
+    public OrdinaryName Name { [DebuggerStepThrough] get; }
+    public IGenericNameSyntax Syntax { [DebuggerStepThrough] get; }
+    public IFixedList<ITypeNode> GenericArguments { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package
+        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public CodeFile File
+        => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
+    public LexicalScope ContainingLexicalScope
+        => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
+            : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
+                Inherited_ContainingLexicalScope);
+    private LexicalScope? containingLexicalScope;
+    private bool containingLexicalScopeCached;
+    public ValueIdScope ValueIdScope
+        => Inherited_ValueIdScope(GrammarAttribute.CurrentInheritanceContext());
+    public IEntryNode ControlFlowEntry()
+        => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
+    public ControlFlowSet ControlFlowPrevious
+        => GrammarAttribute.IsCached(in controlFlowPreviousCached) ? controlFlowPrevious!
+            : this.Collection(ref controlFlowPreviousContributors, ref controlFlowPreviousCached, ref controlFlowPrevious,
+                CollectContributors_ControlFlowPrevious<IExecutableDefinitionNode>, Collect_ControlFlowPrevious);
+    private ControlFlowSet? controlFlowPrevious;
+    private bool controlFlowPreviousCached;
+    private IFixedSet<SemanticNode>? controlFlowPreviousContributors;
+    public ControlFlowSet ControlFlowFollowing()
+        => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
+    public IMaybeType? ExpectedType
+        => GrammarAttribute.IsCached(in expectedTypeCached) ? expectedType
+            : this.Inherited(ref expectedTypeCached, ref expectedType,
+                Inherited_ExpectedType);
+    private IMaybeType? expectedType;
+    private bool expectedTypeCached;
+    public bool ImplicitRecoveryAllowed()
+        => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
+    public bool ShouldPrepareToReturn()
+        => Inherited_ShouldPrepareToReturn(GrammarAttribute.CurrentInheritanceContext());
+    public IMaybePlainType? ExpectedPlainType
+        => GrammarAttribute.IsCached(in expectedPlainTypeCached) ? expectedPlainType
+            : this.Inherited(ref expectedPlainTypeCached, ref expectedPlainType,
+                Inherited_ExpectedPlainType);
+    private IMaybePlainType? expectedPlainType;
+    private bool expectedPlainTypeCached;
+    public IFlowState FlowStateBefore()
+        => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.Expression_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
+    public ValueId ValueId
+        => GrammarAttribute.IsCached(in valueIdCached) ? valueId
+            : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
+                ValueIdsAspect.AmbiguousExpression_ValueId);
+    private ValueId valueId;
+    private bool valueIdCached;
+
+    public UnresolvedGenericNameNode(
+        OrdinaryName name,
+        IGenericNameSyntax syntax,
+        IEnumerable<ITypeNode> genericArguments)
+    {
+        Name = name;
+        Syntax = syntax;
+        GenericArguments = ChildList.Attach(this, genericArguments);
+    }
+
+    internal override IMaybePlainType? Inherited_ExpectedPlainType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return null;
+        return base.Inherited_ExpectedPlainType(child, descendant, ctx);
+    }
+
+    internal override IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return null;
+        return base.Inherited_ExpectedType(child, descendant, ctx);
+    }
+
+    internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return false;
+        return base.Inherited_ImplicitRecoveryAllowed(child, descendant, ctx);
+    }
+
+    internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return false;
+        return base.Inherited_ShouldPrepareToReturn(child, descendant, ctx);
+    }
+
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+    {
+        contributors.Add(this);
+        base.CollectContributors_Diagnostics(contributors);
+    }
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
+    {
+        ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
+    }
+
+    internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
+    {
+        contributors.AddToRange(Self.ControlFlowNext.Keys.Cast<SemanticNode>(), this);
+        base.CollectContributors_ControlFlowPrevious(contributors);
+    }
+
+    internal override void Contribute_ControlFlowPrevious(SemanticNode target, Dictionary<IControlFlowNode, ControlFlowKind> builder)
+    {
+        if (target is IControlFlowNode t)
+            ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
+    }
+
+    protected override IChildTreeNode Rewrite()
+        => ExpressionTypesAspect.Expression_ImplicitMove_Insert(this)
+        ?? ExpressionTypesAspect.Expression_ImplicitFreeze_Insert(this)
+        ?? ExpressionTypesAspect.Expression_Insert_PrepareToReturnExpression(this)
+        ?? ExpressionPlainTypesAspect.Expression_Insert_ImplicitConversionExpression(this)
+        ?? base.Rewrite();
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class UnresolvedNameQualifiedNameNode : SemanticNode, IUnresolvedNameQualifiedNameNode
+{
+    private IUnresolvedNameQualifiedNameNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
+    protected override bool MayHaveRewrite => true;
+
+    public IQualifiedNameSyntax Syntax { [DebuggerStepThrough] get; }
+    private RewritableChild<INameNode> context;
+    private bool contextCached;
+    public INameNode Context
+        => GrammarAttribute.IsCached(in contextCached) ? context.UnsafeValue
+            : this.RewritableChild(ref contextCached, ref context);
+    public INameNode CurrentContext => context.UnsafeValue;
+    public IFixedList<ITypeNode> GenericArguments { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package
+        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public CodeFile File
+        => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
+    public LexicalScope ContainingLexicalScope
+        => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
+            : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
+                Inherited_ContainingLexicalScope);
+    private LexicalScope? containingLexicalScope;
+    private bool containingLexicalScopeCached;
+    public ValueIdScope ValueIdScope
+        => Inherited_ValueIdScope(GrammarAttribute.CurrentInheritanceContext());
+    public IEntryNode ControlFlowEntry()
+        => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
+    public ControlFlowSet ControlFlowPrevious
+        => GrammarAttribute.IsCached(in controlFlowPreviousCached) ? controlFlowPrevious!
+            : this.Collection(ref controlFlowPreviousContributors, ref controlFlowPreviousCached, ref controlFlowPrevious,
+                CollectContributors_ControlFlowPrevious<IExecutableDefinitionNode>, Collect_ControlFlowPrevious);
+    private ControlFlowSet? controlFlowPrevious;
+    private bool controlFlowPreviousCached;
+    private IFixedSet<SemanticNode>? controlFlowPreviousContributors;
+    public ControlFlowSet ControlFlowFollowing()
+        => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
+    public IMaybeType? ExpectedType
+        => GrammarAttribute.IsCached(in expectedTypeCached) ? expectedType
+            : this.Inherited(ref expectedTypeCached, ref expectedType,
+                Inherited_ExpectedType);
+    private IMaybeType? expectedType;
+    private bool expectedTypeCached;
+    public bool ImplicitRecoveryAllowed()
+        => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
+    public bool ShouldPrepareToReturn()
+        => Inherited_ShouldPrepareToReturn(GrammarAttribute.CurrentInheritanceContext());
+    public IMaybePlainType? ExpectedPlainType
+        => GrammarAttribute.IsCached(in expectedPlainTypeCached) ? expectedPlainType
+            : this.Inherited(ref expectedPlainTypeCached, ref expectedPlainType,
+                Inherited_ExpectedPlainType);
+    private IMaybePlainType? expectedPlainType;
+    private bool expectedPlainTypeCached;
+    public IFlowState FlowStateBefore()
+        => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.Expression_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
+    public ValueId ValueId
+        => GrammarAttribute.IsCached(in valueIdCached) ? valueId
+            : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
+                ValueIdsAspect.AmbiguousExpression_ValueId);
+    private ValueId valueId;
+    private bool valueIdCached;
+
+    public UnresolvedNameQualifiedNameNode(
+        IQualifiedNameSyntax syntax,
+        INameNode context,
+        IEnumerable<ITypeNode> genericArguments)
+    {
+        Syntax = syntax;
+        this.context = Child.Create(this, context);
+        GenericArguments = ChildList.Attach(this, genericArguments);
+    }
+
+    internal override IMaybePlainType? Inherited_ExpectedPlainType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return null;
+        return base.Inherited_ExpectedPlainType(child, descendant, ctx);
+    }
+
+    internal override IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return null;
+        return base.Inherited_ExpectedType(child, descendant, ctx);
+    }
+
+    internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return false;
+        return base.Inherited_ImplicitRecoveryAllowed(child, descendant, ctx);
+    }
+
+    internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return false;
+        return base.Inherited_ShouldPrepareToReturn(child, descendant, ctx);
+    }
+
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+    {
+        contributors.Add(this);
+        base.CollectContributors_Diagnostics(contributors);
+    }
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
+    {
+        ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
+    }
+
+    internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
+    {
+        contributors.AddToRange(Self.ControlFlowNext.Keys.Cast<SemanticNode>(), this);
+        base.CollectContributors_ControlFlowPrevious(contributors);
+    }
+
+    internal override void Contribute_ControlFlowPrevious(SemanticNode target, Dictionary<IControlFlowNode, ControlFlowKind> builder)
+    {
+        if (target is IControlFlowNode t)
+            ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
+    }
+
+    protected override IChildTreeNode Rewrite()
+        => ExpressionTypesAspect.Expression_ImplicitMove_Insert(this)
+        ?? ExpressionTypesAspect.Expression_ImplicitFreeze_Insert(this)
+        ?? ExpressionTypesAspect.Expression_Insert_PrepareToReturnExpression(this)
+        ?? ExpressionPlainTypesAspect.Expression_Insert_ImplicitConversionExpression(this)
+        ?? base.Rewrite();
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class UnresolvedNamespaceQualifiedNameNode : SemanticNode, IUnresolvedNamespaceQualifiedNameNode
+{
+    private IUnresolvedNamespaceQualifiedNameNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
+    protected override bool MayHaveRewrite => true;
+
+    public IQualifiedNameSyntax Syntax { [DebuggerStepThrough] get; }
+    private RewritableChild<INamespaceNameNode> context;
+    private bool contextCached;
+    public INamespaceNameNode Context
+        => GrammarAttribute.IsCached(in contextCached) ? context.UnsafeValue
+            : this.RewritableChild(ref contextCached, ref context);
+    public INamespaceNameNode CurrentContext => context.UnsafeValue;
+    public IFixedList<ITypeNode> GenericArguments { [DebuggerStepThrough] get; }
+    public IFixedSet<INamespaceMemberDeclarationNode> ReferencedDeclarations { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package
+        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public CodeFile File
+        => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
+    public LexicalScope ContainingLexicalScope
+        => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
+            : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
+                Inherited_ContainingLexicalScope);
+    private LexicalScope? containingLexicalScope;
+    private bool containingLexicalScopeCached;
+    public ValueIdScope ValueIdScope
+        => Inherited_ValueIdScope(GrammarAttribute.CurrentInheritanceContext());
+    public IEntryNode ControlFlowEntry()
+        => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
+    public ControlFlowSet ControlFlowPrevious
+        => GrammarAttribute.IsCached(in controlFlowPreviousCached) ? controlFlowPrevious!
+            : this.Collection(ref controlFlowPreviousContributors, ref controlFlowPreviousCached, ref controlFlowPrevious,
+                CollectContributors_ControlFlowPrevious<IExecutableDefinitionNode>, Collect_ControlFlowPrevious);
+    private ControlFlowSet? controlFlowPrevious;
+    private bool controlFlowPreviousCached;
+    private IFixedSet<SemanticNode>? controlFlowPreviousContributors;
+    public ControlFlowSet ControlFlowFollowing()
+        => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
+    public IMaybeType? ExpectedType
+        => GrammarAttribute.IsCached(in expectedTypeCached) ? expectedType
+            : this.Inherited(ref expectedTypeCached, ref expectedType,
+                Inherited_ExpectedType);
+    private IMaybeType? expectedType;
+    private bool expectedTypeCached;
+    public bool ImplicitRecoveryAllowed()
+        => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
+    public bool ShouldPrepareToReturn()
+        => Inherited_ShouldPrepareToReturn(GrammarAttribute.CurrentInheritanceContext());
+    public IMaybePlainType? ExpectedPlainType
+        => GrammarAttribute.IsCached(in expectedPlainTypeCached) ? expectedPlainType
+            : this.Inherited(ref expectedPlainTypeCached, ref expectedPlainType,
+                Inherited_ExpectedPlainType);
+    private IMaybePlainType? expectedPlainType;
+    private bool expectedPlainTypeCached;
+    public IFlowState FlowStateBefore()
+        => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.Expression_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
+    public ValueId ValueId
+        => GrammarAttribute.IsCached(in valueIdCached) ? valueId
+            : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
+                ValueIdsAspect.AmbiguousExpression_ValueId);
+    private ValueId valueId;
+    private bool valueIdCached;
+
+    public UnresolvedNamespaceQualifiedNameNode(
+        IQualifiedNameSyntax syntax,
+        INamespaceNameNode context,
+        IEnumerable<ITypeNode> genericArguments,
+        IEnumerable<INamespaceMemberDeclarationNode> referencedDeclarations)
+    {
+        Syntax = syntax;
+        this.context = Child.Create(this, context);
+        GenericArguments = ChildList.Attach(this, genericArguments);
+        ReferencedDeclarations = referencedDeclarations.ToFixedSet();
+    }
+
+    internal override IMaybePlainType? Inherited_ExpectedPlainType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return null;
+        return base.Inherited_ExpectedPlainType(child, descendant, ctx);
+    }
+
+    internal override IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return null;
+        return base.Inherited_ExpectedType(child, descendant, ctx);
+    }
+
+    internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return false;
+        return base.Inherited_ImplicitRecoveryAllowed(child, descendant, ctx);
+    }
+
+    internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return false;
+        return base.Inherited_ShouldPrepareToReturn(child, descendant, ctx);
+    }
+
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+    {
+        contributors.Add(this);
+        base.CollectContributors_Diagnostics(contributors);
+    }
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
+    {
+        ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
+    }
+
+    internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
+    {
+        contributors.AddToRange(Self.ControlFlowNext.Keys.Cast<SemanticNode>(), this);
+        base.CollectContributors_ControlFlowPrevious(contributors);
+    }
+
+    internal override void Contribute_ControlFlowPrevious(SemanticNode target, Dictionary<IControlFlowNode, ControlFlowKind> builder)
+    {
+        if (target is IControlFlowNode t)
+            ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
+    }
+
+    protected override IChildTreeNode Rewrite()
+        => ExpressionTypesAspect.Expression_ImplicitMove_Insert(this)
+        ?? ExpressionTypesAspect.Expression_ImplicitFreeze_Insert(this)
+        ?? ExpressionTypesAspect.Expression_Insert_PrepareToReturnExpression(this)
+        ?? ExpressionPlainTypesAspect.Expression_Insert_ImplicitConversionExpression(this)
+        ?? base.Rewrite();
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class UnresolvedTypeQualifiedNameNode : SemanticNode, IUnresolvedTypeQualifiedNameNode
+{
+    private IUnresolvedTypeQualifiedNameNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
+    protected override bool MayHaveRewrite => true;
+
+    public IQualifiedNameSyntax Syntax { [DebuggerStepThrough] get; }
+    private RewritableChild<ITypeNameExpressionNode> context;
+    private bool contextCached;
+    public ITypeNameExpressionNode Context
+        => GrammarAttribute.IsCached(in contextCached) ? context.UnsafeValue
+            : this.RewritableChild(ref contextCached, ref context);
+    public ITypeNameExpressionNode CurrentContext => context.UnsafeValue;
+    public IFixedList<ITypeNode> GenericArguments { [DebuggerStepThrough] get; }
+    public IFixedSet<IAssociatedMemberDeclarationNode> ReferencedDeclarations { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package
+        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public CodeFile File
+        => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
+    public LexicalScope ContainingLexicalScope
+        => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
+            : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
+                Inherited_ContainingLexicalScope);
+    private LexicalScope? containingLexicalScope;
+    private bool containingLexicalScopeCached;
+    public ValueIdScope ValueIdScope
+        => Inherited_ValueIdScope(GrammarAttribute.CurrentInheritanceContext());
+    public IEntryNode ControlFlowEntry()
+        => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
+    public ControlFlowSet ControlFlowPrevious
+        => GrammarAttribute.IsCached(in controlFlowPreviousCached) ? controlFlowPrevious!
+            : this.Collection(ref controlFlowPreviousContributors, ref controlFlowPreviousCached, ref controlFlowPrevious,
+                CollectContributors_ControlFlowPrevious<IExecutableDefinitionNode>, Collect_ControlFlowPrevious);
+    private ControlFlowSet? controlFlowPrevious;
+    private bool controlFlowPreviousCached;
+    private IFixedSet<SemanticNode>? controlFlowPreviousContributors;
+    public ControlFlowSet ControlFlowFollowing()
+        => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
+    public IMaybeType? ExpectedType
+        => GrammarAttribute.IsCached(in expectedTypeCached) ? expectedType
+            : this.Inherited(ref expectedTypeCached, ref expectedType,
+                Inherited_ExpectedType);
+    private IMaybeType? expectedType;
+    private bool expectedTypeCached;
+    public bool ImplicitRecoveryAllowed()
+        => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
+    public bool ShouldPrepareToReturn()
+        => Inherited_ShouldPrepareToReturn(GrammarAttribute.CurrentInheritanceContext());
+    public IMaybePlainType? ExpectedPlainType
+        => GrammarAttribute.IsCached(in expectedPlainTypeCached) ? expectedPlainType
+            : this.Inherited(ref expectedPlainTypeCached, ref expectedPlainType,
+                Inherited_ExpectedPlainType);
+    private IMaybePlainType? expectedPlainType;
+    private bool expectedPlainTypeCached;
+    public IFlowState FlowStateBefore()
+        => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.Expression_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
+    public ValueId ValueId
+        => GrammarAttribute.IsCached(in valueIdCached) ? valueId
+            : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
+                ValueIdsAspect.AmbiguousExpression_ValueId);
+    private ValueId valueId;
+    private bool valueIdCached;
+
+    public UnresolvedTypeQualifiedNameNode(
+        IQualifiedNameSyntax syntax,
+        ITypeNameExpressionNode context,
+        IEnumerable<ITypeNode> genericArguments,
+        IEnumerable<IAssociatedMemberDeclarationNode> referencedDeclarations)
+    {
+        Syntax = syntax;
+        this.context = Child.Create(this, context);
+        GenericArguments = ChildList.Attach(this, genericArguments);
+        ReferencedDeclarations = referencedDeclarations.ToFixedSet();
     }
 
     internal override IMaybePlainType? Inherited_ExpectedPlainType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)

@@ -117,11 +117,6 @@
 = BindingPattern.Name => Syntax.Name;
 
 // ---------- Types
-↑ UnqualifiedTypeName.Name: `UnqualifiedName` => Syntax.Name;
-↑ BuiltInTypeName.Name: `BuiltInTypeName` => Syntax.Name;
-↑ OrdinaryTypeName.Name: `OrdinaryName` => Syntax.Name;
-↑ IdentifierTypeName.Name: `IdentifierName` => Syntax.Name;
-↑ GenericTypeName.Name: `GenericName` => Syntax.Name;
 ↑ ParameterType.IsLent: `bool` => Syntax.IsLent;
 
 // ---------- Control Flow Expressions
@@ -186,6 +181,13 @@
 ↑ BuiltInTypeNameExpression.Name: `BuiltInTypeName` => Syntax.Name;
 = OrdinaryTypeNameExpression.Name => Syntax.Name;
 = QualifiedTypeNameExpression.Name => Syntax.MemberName;
+
+// ---------- Type Names
+↑ UnqualifiedTypeName.Name: `UnqualifiedName` => Syntax.Name;
+↑ BuiltInTypeName.Name: `BuiltInTypeName` => Syntax.Name;
+↑ OrdinaryTypeName.Name: `OrdinaryName` => Syntax.Name;
+↑ IdentifierTypeName.Name: `IdentifierName` => Syntax.Name;
+↑ GenericTypeName.Name: `GenericName` => Syntax.Name;
 
 // ---------- Capability Expressions
 ↑ PrepareToReturnExpression.Syntax: `IExpressionSyntax` => Value.Syntax;

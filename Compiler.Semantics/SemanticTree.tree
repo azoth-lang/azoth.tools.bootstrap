@@ -384,6 +384,25 @@ QualifiedNamespaceName <: NamespaceName
     = Syntax:`IMemberAccessExpressionSyntax` Context:NamespaceName /ReferencedDeclarations/;
 
 // ---------- Unresolved Names
+// Unresolved names are names that are known from context to only resolve to type or namespace names.
+
+UnresolvedName <: Name, UnresolvedNameExpression = Syntax:`INameExpressionSyntax`;
+UnresolvedOrdinaryName <: UnresolvedName
+    = Syntax:`IOrdinaryNameSyntax` Name:`OrdinaryName`;
+UnresolvedIdentifierName <: UnresolvedOrdinaryName
+    = Syntax:`IIdentifierNameSyntax`;
+UnresolvedGenericName <: UnresolvedOrdinaryName
+    = Syntax:`IGenericNameSyntax` GenericArguments:Type*;
+UnresolvedQualifiedName <: UnresolvedName
+    = Syntax:`IQualifiedNameSyntax` Context:Name GenericArguments:Type*;
+/// This is distinct from UnresolvedQualifiedName because the rewrites on this should not
+/// be inherited by all UnresolvedQualifiedName.
+concrete UnresolvedNameQualifiedName <: UnresolvedQualifiedName;
+// These reify the Context and ReferencedDeclarations to make diagnostic reporting eaiser
+UnresolvedNamespaceQualifiedName <: UnresolvedQualifiedName
+    = /Syntax/ Context:NamespaceName /GenericArguments/ ReferencedDeclarations:{`INamespaceMemberDeclarationNode`};
+UnresolvedTypeQualifiedName <: UnresolvedQualifiedName
+    = /Syntax/ Context:TypeNameExpression /GenericArguments/ ReferencedDeclarations:{`IAssociatedMemberDeclarationNode`};
 
 // ---------- Type Names
 // Type names are both types and expressions since they can occur in both.

@@ -514,7 +514,13 @@ public static class ISemanticNodeExtensions
                 foreach (var child in n.GenericArguments)
                     yield return child;
                 yield break;
+            case IUnresolvedGenericNameNode n:
+                foreach (var child in n.GenericArguments)
+                    yield return child;
+                yield break;
             case IUnresolvedIdentifierNameExpressionNode n:
+                yield break;
+            case IUnresolvedIdentifierNameNode n:
                 yield break;
             case IUnresolvedInvocationExpressionNode n:
                 yield return n.TempExpression;
@@ -526,7 +532,17 @@ public static class ISemanticNodeExtensions
                 foreach (var child in n.GenericArguments)
                     yield return child;
                 yield break;
+            case IUnresolvedNameQualifiedNameNode n:
+                yield return n.Context;
+                foreach (var child in n.GenericArguments)
+                    yield return child;
+                yield break;
             case IUnresolvedNamespaceQualifiedNameExpressionNode n:
+                yield return n.Context;
+                foreach (var child in n.GenericArguments)
+                    yield return child;
+                yield break;
+            case IUnresolvedNamespaceQualifiedNameNode n:
                 yield return n.Context;
                 foreach (var child in n.GenericArguments)
                     yield return child;
@@ -538,6 +554,11 @@ public static class ISemanticNodeExtensions
                 yield break;
             case IUnresolvedMemberAccessExpressionNode n:
                 yield return n.TempContext;
+                foreach (var child in n.GenericArguments)
+                    yield return child;
+                yield break;
+            case IUnresolvedTypeQualifiedNameNode n:
+                yield return n.Context;
                 foreach (var child in n.GenericArguments)
                     yield return child;
                 yield break;
