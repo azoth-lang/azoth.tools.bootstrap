@@ -1387,11 +1387,11 @@ public partial interface IExpressionBodyNode : IBodyNode
 }
 
 [Closed(
-    typeof(ITypeNameNode),
     typeof(IOptionalTypeNode),
     typeof(ICapabilityTypeNode),
     typeof(IFunctionTypeNode),
-    typeof(IViewpointTypeNode))]
+    typeof(IViewpointTypeNode),
+    typeof(ITypeNameNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface ITypeNode : ICodeNode
 {
@@ -1400,138 +1400,6 @@ public partial interface ITypeNode : ICodeNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     IMaybeType NamedType { get; }
     IMaybePlainType NamedPlainType { get; }
-}
-
-[Closed(
-    typeof(IUnqualifiedTypeNameNode),
-    typeof(IQualifiedTypeNameNode))]
-[GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface ITypeNameNode : ITypeNode
-{
-    new INameSyntax Syntax { get; }
-    ITypeSyntax ITypeNode.Syntax => Syntax;
-    ICodeSyntax ICodeNode.Syntax => Syntax;
-    ISyntax? ISemanticNode.Syntax => Syntax;
-    LexicalScope ContainingLexicalScope { get; }
-    ITypeDeclarationNode? ReferencedDeclaration { get; }
-    BareType? NamedBareType { get; }
-}
-
-[Closed(
-    typeof(IBuiltInTypeNameNode),
-    typeof(IOrdinaryTypeNameNode))]
-[GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IUnqualifiedTypeNameNode : ITypeNameNode
-{
-    new IUnqualifiedNameSyntax Syntax { get; }
-    INameSyntax ITypeNameNode.Syntax => Syntax;
-    ITypeSyntax ITypeNode.Syntax => Syntax;
-    ICodeSyntax ICodeNode.Syntax => Syntax;
-    ISyntax? ISemanticNode.Syntax => Syntax;
-    UnqualifiedName Name
-        => Syntax.Name;
-}
-
-[Closed(typeof(BuiltInTypeNameNode))]
-[GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IBuiltInTypeNameNode : IUnqualifiedTypeNameNode
-{
-    new IBuiltInTypeNameSyntax Syntax { get; }
-    IUnqualifiedNameSyntax IUnqualifiedTypeNameNode.Syntax => Syntax;
-    INameSyntax ITypeNameNode.Syntax => Syntax;
-    ITypeSyntax ITypeNode.Syntax => Syntax;
-    ICodeSyntax ICodeNode.Syntax => Syntax;
-    ISyntax? ISemanticNode.Syntax => Syntax;
-    new BuiltInTypeName Name
-        => Syntax.Name;
-    UnqualifiedName IUnqualifiedTypeNameNode.Name => Name;
-
-    public static IBuiltInTypeNameNode Create(IBuiltInTypeNameSyntax syntax)
-        => new BuiltInTypeNameNode(syntax);
-}
-
-[Closed(
-    typeof(IIdentifierTypeNameNode),
-    typeof(IGenericTypeNameNode))]
-[GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IOrdinaryTypeNameNode : IUnqualifiedTypeNameNode
-{
-    new IOrdinaryNameSyntax Syntax { get; }
-    IUnqualifiedNameSyntax IUnqualifiedTypeNameNode.Syntax => Syntax;
-    INameSyntax ITypeNameNode.Syntax => Syntax;
-    ITypeSyntax ITypeNode.Syntax => Syntax;
-    ICodeSyntax ICodeNode.Syntax => Syntax;
-    ISyntax? ISemanticNode.Syntax => Syntax;
-    bool IsAttributeType { get; }
-    new OrdinaryName Name
-        => Syntax.Name;
-    UnqualifiedName IUnqualifiedTypeNameNode.Name => Name;
-}
-
-[Closed(typeof(IdentifierTypeNameNode))]
-[GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IIdentifierTypeNameNode : IOrdinaryTypeNameNode
-{
-    new IIdentifierNameSyntax Syntax { get; }
-    IOrdinaryNameSyntax IOrdinaryTypeNameNode.Syntax => Syntax;
-    IUnqualifiedNameSyntax IUnqualifiedTypeNameNode.Syntax => Syntax;
-    INameSyntax ITypeNameNode.Syntax => Syntax;
-    ITypeSyntax ITypeNode.Syntax => Syntax;
-    ICodeSyntax ICodeNode.Syntax => Syntax;
-    ISyntax? ISemanticNode.Syntax => Syntax;
-    new IdentifierName Name
-        => Syntax.Name;
-    OrdinaryName IOrdinaryTypeNameNode.Name => Name;
-    UnqualifiedName IUnqualifiedTypeNameNode.Name => Name;
-
-    public static IIdentifierTypeNameNode Create(IIdentifierNameSyntax syntax)
-        => new IdentifierTypeNameNode(syntax);
-}
-
-[Closed(typeof(GenericTypeNameNode))]
-[GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IGenericTypeNameNode : IOrdinaryTypeNameNode
-{
-    new IGenericNameSyntax Syntax { get; }
-    IOrdinaryNameSyntax IOrdinaryTypeNameNode.Syntax => Syntax;
-    IUnqualifiedNameSyntax IUnqualifiedTypeNameNode.Syntax => Syntax;
-    INameSyntax ITypeNameNode.Syntax => Syntax;
-    ITypeSyntax ITypeNode.Syntax => Syntax;
-    ICodeSyntax ICodeNode.Syntax => Syntax;
-    ISyntax? ISemanticNode.Syntax => Syntax;
-    IFixedList<ITypeNode> GenericArguments { get; }
-    new GenericName Name
-        => Syntax.Name;
-    OrdinaryName IOrdinaryTypeNameNode.Name => Name;
-    UnqualifiedName IUnqualifiedTypeNameNode.Name => Name;
-
-    public static IGenericTypeNameNode Create(
-        IGenericNameSyntax syntax,
-        IEnumerable<ITypeNode> genericArguments)
-        => new GenericTypeNameNode(syntax, genericArguments);
-}
-
-[Closed(typeof(QualifiedTypeNameNode))]
-[GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IQualifiedTypeNameNode : ITypeNameNode
-{
-    new IQualifiedNameSyntax Syntax { get; }
-    INameSyntax ITypeNameNode.Syntax => Syntax;
-    ITypeSyntax ITypeNode.Syntax => Syntax;
-    ICodeSyntax ICodeNode.Syntax => Syntax;
-    ISyntax? ISemanticNode.Syntax => Syntax;
-    ITypeNameNode Context { get; }
-    IFixedList<ITypeNode> GenericArguments { get; }
-    IMaybePlainType ITypeNode.NamedPlainType
-        => throw new NotImplementedException();
-    BareType? ITypeNameNode.NamedBareType
-        => throw new NotImplementedException();
-
-    public static IQualifiedTypeNameNode Create(
-        IQualifiedNameSyntax syntax,
-        ITypeNameNode context,
-        IEnumerable<ITypeNode> genericArguments)
-        => new QualifiedTypeNameNode(syntax, context, genericArguments);
 }
 
 [Closed(typeof(OptionalTypeNode))]
@@ -3341,6 +3209,138 @@ public partial interface IQualifiedNamespaceNameNode : INamespaceNameNode
 }
 
 [Closed(
+    typeof(IUnqualifiedTypeNameNode),
+    typeof(IQualifiedTypeNameNode))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
+public partial interface ITypeNameNode : ITypeNode
+{
+    new INameSyntax Syntax { get; }
+    ITypeSyntax ITypeNode.Syntax => Syntax;
+    ICodeSyntax ICodeNode.Syntax => Syntax;
+    ISyntax? ISemanticNode.Syntax => Syntax;
+    LexicalScope ContainingLexicalScope { get; }
+    ITypeDeclarationNode? ReferencedDeclaration { get; }
+    BareType? NamedBareType { get; }
+}
+
+[Closed(
+    typeof(IBuiltInTypeNameNode),
+    typeof(IOrdinaryTypeNameNode))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
+public partial interface IUnqualifiedTypeNameNode : ITypeNameNode
+{
+    new IUnqualifiedNameSyntax Syntax { get; }
+    INameSyntax ITypeNameNode.Syntax => Syntax;
+    ITypeSyntax ITypeNode.Syntax => Syntax;
+    ICodeSyntax ICodeNode.Syntax => Syntax;
+    ISyntax? ISemanticNode.Syntax => Syntax;
+    UnqualifiedName Name
+        => Syntax.Name;
+}
+
+[Closed(typeof(BuiltInTypeNameNode))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
+public partial interface IBuiltInTypeNameNode : IUnqualifiedTypeNameNode
+{
+    new IBuiltInTypeNameSyntax Syntax { get; }
+    IUnqualifiedNameSyntax IUnqualifiedTypeNameNode.Syntax => Syntax;
+    INameSyntax ITypeNameNode.Syntax => Syntax;
+    ITypeSyntax ITypeNode.Syntax => Syntax;
+    ICodeSyntax ICodeNode.Syntax => Syntax;
+    ISyntax? ISemanticNode.Syntax => Syntax;
+    new BuiltInTypeName Name
+        => Syntax.Name;
+    UnqualifiedName IUnqualifiedTypeNameNode.Name => Name;
+
+    public static IBuiltInTypeNameNode Create(IBuiltInTypeNameSyntax syntax)
+        => new BuiltInTypeNameNode(syntax);
+}
+
+[Closed(
+    typeof(IIdentifierTypeNameNode),
+    typeof(IGenericTypeNameNode))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
+public partial interface IOrdinaryTypeNameNode : IUnqualifiedTypeNameNode
+{
+    new IOrdinaryNameSyntax Syntax { get; }
+    IUnqualifiedNameSyntax IUnqualifiedTypeNameNode.Syntax => Syntax;
+    INameSyntax ITypeNameNode.Syntax => Syntax;
+    ITypeSyntax ITypeNode.Syntax => Syntax;
+    ICodeSyntax ICodeNode.Syntax => Syntax;
+    ISyntax? ISemanticNode.Syntax => Syntax;
+    bool IsAttributeType { get; }
+    new OrdinaryName Name
+        => Syntax.Name;
+    UnqualifiedName IUnqualifiedTypeNameNode.Name => Name;
+}
+
+[Closed(typeof(IdentifierTypeNameNode))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
+public partial interface IIdentifierTypeNameNode : IOrdinaryTypeNameNode
+{
+    new IIdentifierNameSyntax Syntax { get; }
+    IOrdinaryNameSyntax IOrdinaryTypeNameNode.Syntax => Syntax;
+    IUnqualifiedNameSyntax IUnqualifiedTypeNameNode.Syntax => Syntax;
+    INameSyntax ITypeNameNode.Syntax => Syntax;
+    ITypeSyntax ITypeNode.Syntax => Syntax;
+    ICodeSyntax ICodeNode.Syntax => Syntax;
+    ISyntax? ISemanticNode.Syntax => Syntax;
+    new IdentifierName Name
+        => Syntax.Name;
+    OrdinaryName IOrdinaryTypeNameNode.Name => Name;
+    UnqualifiedName IUnqualifiedTypeNameNode.Name => Name;
+
+    public static IIdentifierTypeNameNode Create(IIdentifierNameSyntax syntax)
+        => new IdentifierTypeNameNode(syntax);
+}
+
+[Closed(typeof(GenericTypeNameNode))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
+public partial interface IGenericTypeNameNode : IOrdinaryTypeNameNode
+{
+    new IGenericNameSyntax Syntax { get; }
+    IOrdinaryNameSyntax IOrdinaryTypeNameNode.Syntax => Syntax;
+    IUnqualifiedNameSyntax IUnqualifiedTypeNameNode.Syntax => Syntax;
+    INameSyntax ITypeNameNode.Syntax => Syntax;
+    ITypeSyntax ITypeNode.Syntax => Syntax;
+    ICodeSyntax ICodeNode.Syntax => Syntax;
+    ISyntax? ISemanticNode.Syntax => Syntax;
+    IFixedList<ITypeNode> GenericArguments { get; }
+    new GenericName Name
+        => Syntax.Name;
+    OrdinaryName IOrdinaryTypeNameNode.Name => Name;
+    UnqualifiedName IUnqualifiedTypeNameNode.Name => Name;
+
+    public static IGenericTypeNameNode Create(
+        IGenericNameSyntax syntax,
+        IEnumerable<ITypeNode> genericArguments)
+        => new GenericTypeNameNode(syntax, genericArguments);
+}
+
+[Closed(typeof(QualifiedTypeNameNode))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
+public partial interface IQualifiedTypeNameNode : ITypeNameNode
+{
+    new IQualifiedNameSyntax Syntax { get; }
+    INameSyntax ITypeNameNode.Syntax => Syntax;
+    ITypeSyntax ITypeNode.Syntax => Syntax;
+    ICodeSyntax ICodeNode.Syntax => Syntax;
+    ISyntax? ISemanticNode.Syntax => Syntax;
+    ITypeNameNode Context { get; }
+    IFixedList<ITypeNode> GenericArguments { get; }
+    IMaybePlainType ITypeNode.NamedPlainType
+        => throw new NotImplementedException();
+    BareType? ITypeNameNode.NamedBareType
+        => throw new NotImplementedException();
+
+    public static IQualifiedTypeNameNode Create(
+        IQualifiedNameSyntax syntax,
+        ITypeNameNode context,
+        IEnumerable<ITypeNode> genericArguments)
+        => new QualifiedTypeNameNode(syntax, context, genericArguments);
+}
+
+[Closed(
     typeof(IOrdinaryTypeNameExpressionNode),
     typeof(IQualifiedTypeNameExpressionNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -4939,11 +4939,6 @@ internal abstract partial class SemanticNode : TreeNode, IChildTreeNode<ISemanti
     protected IMaybePlainType? Inherited_ExpectedPlainType(IInheritanceContext ctx)
         => GetParent(ctx)!.Inherited_ExpectedPlainType(this, this, ctx);
 
-    internal virtual bool Inherited_IsAttributeType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-        => (GetParent(ctx) ?? throw Child.InheritFailed("IsAttributeType", child, descendant)).Inherited_IsAttributeType(this, descendant, ctx);
-    protected bool Inherited_IsAttributeType(IInheritanceContext ctx)
-        => GetParent(ctx)!.Inherited_IsAttributeType(this, this, ctx);
-
     internal virtual IMaybeType? Inherited_MethodSelfType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
         => (GetParent(ctx) ?? throw Child.InheritFailed("MethodSelfType", child, descendant)).Inherited_MethodSelfType(this, descendant, ctx);
     protected IMaybeType? Inherited_MethodSelfType(IInheritanceContext ctx)
@@ -5003,6 +4998,11 @@ internal abstract partial class SemanticNode : TreeNode, IChildTreeNode<ISemanti
         => (GetParent(ctx) ?? throw Child.InheritFailed("ExpectedReturnPlainType", child, descendant)).Inherited_ExpectedReturnPlainType(this, descendant, ctx);
     protected IMaybePlainType? Inherited_ExpectedReturnPlainType(IInheritanceContext ctx)
         => GetParent(ctx)!.Inherited_ExpectedReturnPlainType(this, this, ctx);
+
+    internal virtual bool Inherited_IsAttributeType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+        => (GetParent(ctx) ?? throw Child.InheritFailed("IsAttributeType", child, descendant)).Inherited_IsAttributeType(this, descendant, ctx);
+    protected bool Inherited_IsAttributeType(IInheritanceContext ctx)
+        => GetParent(ctx)!.Inherited_IsAttributeType(this, this, ctx);
 
     internal virtual ISymbolTree Inherited_SymbolTree(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
         => (GetParent(ctx) ?? throw Child.InheritFailed("SymbolTree", child, descendant)).Inherited_SymbolTree(this, descendant, ctx);
@@ -8400,229 +8400,6 @@ file class ExpressionBodyNode : SemanticNode, IExpressionBodyNode
         if (ReferenceEquals(descendant, Self.ResultStatement))
             return true;
         return base.Inherited_ShouldPrepareToReturn(child, descendant, ctx);
-    }
-}
-
-[GeneratedCode("AzothCompilerCodeGen", null)]
-file class BuiltInTypeNameNode : SemanticNode, IBuiltInTypeNameNode
-{
-    private IBuiltInTypeNameNode Self { [Inline] get => this; }
-
-    public IBuiltInTypeNameSyntax Syntax { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
-    public CodeFile File
-        => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
-    public LexicalScope ContainingLexicalScope
-        => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
-            : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
-                Inherited_ContainingLexicalScope);
-    private LexicalScope? containingLexicalScope;
-    private bool containingLexicalScopeCached;
-    public BareType? NamedBareType
-        => GrammarAttribute.IsCached(in namedBareTypeCached) ? namedBareType
-            : this.Synthetic(ref namedBareTypeCached, ref namedBareType,
-                BareTypeAspect.BuiltInTypeName_NamedBareType);
-    private BareType? namedBareType;
-    private bool namedBareTypeCached;
-    public IMaybePlainType NamedPlainType
-        => GrammarAttribute.IsCached(in namedPlainTypeCached) ? namedPlainType!
-            : this.Synthetic(ref namedPlainTypeCached, ref namedPlainType,
-                TypeExpressionsPlainTypesAspect.BuiltInTypeName_NamedPlainType);
-    private IMaybePlainType? namedPlainType;
-    private bool namedPlainTypeCached;
-    public IMaybeType NamedType
-        => GrammarAttribute.IsCached(in namedTypeCached) ? namedType!
-            : this.Synthetic(ref namedTypeCached, ref namedType,
-                TypeExpressionsAspect.BuiltInTypeName_NamedType);
-    private IMaybeType? namedType;
-    private bool namedTypeCached;
-    public ITypeDeclarationNode? ReferencedDeclaration
-        => GrammarAttribute.IsCached(in referencedDeclarationCached) ? referencedDeclaration
-            : this.Synthetic(ref referencedDeclarationCached, ref referencedDeclaration,
-                BindingNamesAspect.BuiltInTypeName_ReferencedDeclaration);
-    private ITypeDeclarationNode? referencedDeclaration;
-    private bool referencedDeclarationCached;
-
-    public BuiltInTypeNameNode(IBuiltInTypeNameSyntax syntax)
-    {
-        Syntax = syntax;
-    }
-}
-
-[GeneratedCode("AzothCompilerCodeGen", null)]
-file class IdentifierTypeNameNode : SemanticNode, IIdentifierTypeNameNode
-{
-    private IIdentifierTypeNameNode Self { [Inline] get => this; }
-    private AttributeLock syncLock;
-
-    public IIdentifierNameSyntax Syntax { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
-    public CodeFile File
-        => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
-    public LexicalScope ContainingLexicalScope
-        => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
-            : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
-                Inherited_ContainingLexicalScope);
-    private LexicalScope? containingLexicalScope;
-    private bool containingLexicalScopeCached;
-    public bool IsAttributeType
-        => GrammarAttribute.IsCached(in isAttributeTypeCached) ? isAttributeType
-            : this.Inherited(ref isAttributeTypeCached, ref isAttributeType, ref syncLock,
-                Inherited_IsAttributeType);
-    private bool isAttributeType;
-    private bool isAttributeTypeCached;
-    public BareType? NamedBareType
-        => GrammarAttribute.IsCached(in namedBareTypeCached) ? namedBareType
-            : this.Synthetic(ref namedBareTypeCached, ref namedBareType,
-                BareTypeAspect.IdentifierTypeName_NamedBareType);
-    private BareType? namedBareType;
-    private bool namedBareTypeCached;
-    public IMaybePlainType NamedPlainType
-        => GrammarAttribute.IsCached(in namedPlainTypeCached) ? namedPlainType!
-            : this.Synthetic(ref namedPlainTypeCached, ref namedPlainType,
-                TypeExpressionsPlainTypesAspect.IdentifierTypeName_NamedPlainType);
-    private IMaybePlainType? namedPlainType;
-    private bool namedPlainTypeCached;
-    public IMaybeType NamedType
-        => GrammarAttribute.IsCached(in namedTypeCached) ? namedType!
-            : this.Synthetic(ref namedTypeCached, ref namedType,
-                TypeExpressionsAspect.TypeName_NamedType);
-    private IMaybeType? namedType;
-    private bool namedTypeCached;
-    public ITypeDeclarationNode? ReferencedDeclaration
-        => GrammarAttribute.IsCached(in referencedDeclarationCached) ? referencedDeclaration
-            : this.Synthetic(ref referencedDeclarationCached, ref referencedDeclaration,
-                BindingNamesAspect.OrdinaryTypeName_ReferencedDeclaration);
-    private ITypeDeclarationNode? referencedDeclaration;
-    private bool referencedDeclarationCached;
-
-    public IdentifierTypeNameNode(IIdentifierNameSyntax syntax)
-    {
-        Syntax = syntax;
-    }
-
-    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
-    {
-        contributors.Add(this);
-        base.CollectContributors_Diagnostics(contributors);
-    }
-
-    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
-    {
-        BindingNamesAspect.OrdinaryTypeName_Contribute_Diagnostics(this, builder);
-    }
-}
-
-[GeneratedCode("AzothCompilerCodeGen", null)]
-file class GenericTypeNameNode : SemanticNode, IGenericTypeNameNode
-{
-    private IGenericTypeNameNode Self { [Inline] get => this; }
-    private AttributeLock syncLock;
-
-    public IGenericNameSyntax Syntax { [DebuggerStepThrough] get; }
-    public IFixedList<ITypeNode> GenericArguments { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
-    public CodeFile File
-        => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
-    public LexicalScope ContainingLexicalScope
-        => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
-            : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
-                Inherited_ContainingLexicalScope);
-    private LexicalScope? containingLexicalScope;
-    private bool containingLexicalScopeCached;
-    public bool IsAttributeType
-        => GrammarAttribute.IsCached(in isAttributeTypeCached) ? isAttributeType
-            : this.Inherited(ref isAttributeTypeCached, ref isAttributeType, ref syncLock,
-                Inherited_IsAttributeType);
-    private bool isAttributeType;
-    private bool isAttributeTypeCached;
-    public BareType? NamedBareType
-        => GrammarAttribute.IsCached(in namedBareTypeCached) ? namedBareType
-            : this.Synthetic(ref namedBareTypeCached, ref namedBareType,
-                BareTypeAspect.GenericTypeName_NamedBareType);
-    private BareType? namedBareType;
-    private bool namedBareTypeCached;
-    public IMaybePlainType NamedPlainType
-        => GrammarAttribute.IsCached(in namedPlainTypeCached) ? namedPlainType!
-            : this.Synthetic(ref namedPlainTypeCached, ref namedPlainType,
-                TypeExpressionsPlainTypesAspect.GenericTypeName_NamedPlainType);
-    private IMaybePlainType? namedPlainType;
-    private bool namedPlainTypeCached;
-    public IMaybeType NamedType
-        => GrammarAttribute.IsCached(in namedTypeCached) ? namedType!
-            : this.Synthetic(ref namedTypeCached, ref namedType,
-                TypeExpressionsAspect.TypeName_NamedType);
-    private IMaybeType? namedType;
-    private bool namedTypeCached;
-    public ITypeDeclarationNode? ReferencedDeclaration
-        => GrammarAttribute.IsCached(in referencedDeclarationCached) ? referencedDeclaration
-            : this.Synthetic(ref referencedDeclarationCached, ref referencedDeclaration,
-                BindingNamesAspect.OrdinaryTypeName_ReferencedDeclaration);
-    private ITypeDeclarationNode? referencedDeclaration;
-    private bool referencedDeclarationCached;
-
-    public GenericTypeNameNode(
-        IGenericNameSyntax syntax,
-        IEnumerable<ITypeNode> genericArguments)
-    {
-        Syntax = syntax;
-        GenericArguments = ChildList.Attach(this, genericArguments);
-    }
-
-    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
-    {
-        contributors.Add(this);
-        base.CollectContributors_Diagnostics(contributors);
-    }
-
-    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
-    {
-        BindingNamesAspect.OrdinaryTypeName_Contribute_Diagnostics(this, builder);
-    }
-}
-
-[GeneratedCode("AzothCompilerCodeGen", null)]
-file class QualifiedTypeNameNode : SemanticNode, IQualifiedTypeNameNode
-{
-    private IQualifiedTypeNameNode Self { [Inline] get => this; }
-
-    public IQualifiedNameSyntax Syntax { [DebuggerStepThrough] get; }
-    public ITypeNameNode Context { [DebuggerStepThrough] get; }
-    public IFixedList<ITypeNode> GenericArguments { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
-    public CodeFile File
-        => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
-    public LexicalScope ContainingLexicalScope
-        => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
-            : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
-                Inherited_ContainingLexicalScope);
-    private LexicalScope? containingLexicalScope;
-    private bool containingLexicalScopeCached;
-    public IMaybeType NamedType
-        => GrammarAttribute.IsCached(in namedTypeCached) ? namedType!
-            : this.Synthetic(ref namedTypeCached, ref namedType,
-                TypeExpressionsAspect.TypeName_NamedType);
-    private IMaybeType? namedType;
-    private bool namedTypeCached;
-    public ITypeDeclarationNode? ReferencedDeclaration
-        => GrammarAttribute.IsCached(in referencedDeclarationCached) ? referencedDeclaration
-            : this.Synthetic(ref referencedDeclarationCached, ref referencedDeclaration,
-                BindingNamesAspect.QualifiedTypeName_ReferencedDeclaration);
-    private ITypeDeclarationNode? referencedDeclaration;
-    private bool referencedDeclarationCached;
-
-    public QualifiedTypeNameNode(
-        IQualifiedNameSyntax syntax,
-        ITypeNameNode context,
-        IEnumerable<ITypeNode> genericArguments)
-    {
-        Syntax = syntax;
-        Context = Child.Attach(this, context);
-        GenericArguments = ChildList.Attach(this, genericArguments);
     }
 }
 
@@ -17131,6 +16908,229 @@ file class QualifiedNamespaceNameNode : SemanticNode, IQualifiedNamespaceNameNod
         ?? ExpressionTypesAspect.Expression_Insert_PrepareToReturnExpression(this)
         ?? ExpressionPlainTypesAspect.Expression_Insert_ImplicitConversionExpression(this)
         ?? base.Rewrite();
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class BuiltInTypeNameNode : SemanticNode, IBuiltInTypeNameNode
+{
+    private IBuiltInTypeNameNode Self { [Inline] get => this; }
+
+    public IBuiltInTypeNameSyntax Syntax { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package
+        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public CodeFile File
+        => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
+    public LexicalScope ContainingLexicalScope
+        => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
+            : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
+                Inherited_ContainingLexicalScope);
+    private LexicalScope? containingLexicalScope;
+    private bool containingLexicalScopeCached;
+    public BareType? NamedBareType
+        => GrammarAttribute.IsCached(in namedBareTypeCached) ? namedBareType
+            : this.Synthetic(ref namedBareTypeCached, ref namedBareType,
+                BareTypeAspect.BuiltInTypeName_NamedBareType);
+    private BareType? namedBareType;
+    private bool namedBareTypeCached;
+    public IMaybePlainType NamedPlainType
+        => GrammarAttribute.IsCached(in namedPlainTypeCached) ? namedPlainType!
+            : this.Synthetic(ref namedPlainTypeCached, ref namedPlainType,
+                TypeExpressionsPlainTypesAspect.BuiltInTypeName_NamedPlainType);
+    private IMaybePlainType? namedPlainType;
+    private bool namedPlainTypeCached;
+    public IMaybeType NamedType
+        => GrammarAttribute.IsCached(in namedTypeCached) ? namedType!
+            : this.Synthetic(ref namedTypeCached, ref namedType,
+                TypeExpressionsAspect.BuiltInTypeName_NamedType);
+    private IMaybeType? namedType;
+    private bool namedTypeCached;
+    public ITypeDeclarationNode? ReferencedDeclaration
+        => GrammarAttribute.IsCached(in referencedDeclarationCached) ? referencedDeclaration
+            : this.Synthetic(ref referencedDeclarationCached, ref referencedDeclaration,
+                BindingNamesAspect.BuiltInTypeName_ReferencedDeclaration);
+    private ITypeDeclarationNode? referencedDeclaration;
+    private bool referencedDeclarationCached;
+
+    public BuiltInTypeNameNode(IBuiltInTypeNameSyntax syntax)
+    {
+        Syntax = syntax;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class IdentifierTypeNameNode : SemanticNode, IIdentifierTypeNameNode
+{
+    private IIdentifierTypeNameNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
+
+    public IIdentifierNameSyntax Syntax { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package
+        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public CodeFile File
+        => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
+    public LexicalScope ContainingLexicalScope
+        => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
+            : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
+                Inherited_ContainingLexicalScope);
+    private LexicalScope? containingLexicalScope;
+    private bool containingLexicalScopeCached;
+    public bool IsAttributeType
+        => GrammarAttribute.IsCached(in isAttributeTypeCached) ? isAttributeType
+            : this.Inherited(ref isAttributeTypeCached, ref isAttributeType, ref syncLock,
+                Inherited_IsAttributeType);
+    private bool isAttributeType;
+    private bool isAttributeTypeCached;
+    public BareType? NamedBareType
+        => GrammarAttribute.IsCached(in namedBareTypeCached) ? namedBareType
+            : this.Synthetic(ref namedBareTypeCached, ref namedBareType,
+                BareTypeAspect.IdentifierTypeName_NamedBareType);
+    private BareType? namedBareType;
+    private bool namedBareTypeCached;
+    public IMaybePlainType NamedPlainType
+        => GrammarAttribute.IsCached(in namedPlainTypeCached) ? namedPlainType!
+            : this.Synthetic(ref namedPlainTypeCached, ref namedPlainType,
+                TypeExpressionsPlainTypesAspect.IdentifierTypeName_NamedPlainType);
+    private IMaybePlainType? namedPlainType;
+    private bool namedPlainTypeCached;
+    public IMaybeType NamedType
+        => GrammarAttribute.IsCached(in namedTypeCached) ? namedType!
+            : this.Synthetic(ref namedTypeCached, ref namedType,
+                TypeExpressionsAspect.TypeName_NamedType);
+    private IMaybeType? namedType;
+    private bool namedTypeCached;
+    public ITypeDeclarationNode? ReferencedDeclaration
+        => GrammarAttribute.IsCached(in referencedDeclarationCached) ? referencedDeclaration
+            : this.Synthetic(ref referencedDeclarationCached, ref referencedDeclaration,
+                BindingNamesAspect.OrdinaryTypeName_ReferencedDeclaration);
+    private ITypeDeclarationNode? referencedDeclaration;
+    private bool referencedDeclarationCached;
+
+    public IdentifierTypeNameNode(IIdentifierNameSyntax syntax)
+    {
+        Syntax = syntax;
+    }
+
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+    {
+        contributors.Add(this);
+        base.CollectContributors_Diagnostics(contributors);
+    }
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
+    {
+        BindingNamesAspect.OrdinaryTypeName_Contribute_Diagnostics(this, builder);
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class GenericTypeNameNode : SemanticNode, IGenericTypeNameNode
+{
+    private IGenericTypeNameNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
+
+    public IGenericNameSyntax Syntax { [DebuggerStepThrough] get; }
+    public IFixedList<ITypeNode> GenericArguments { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package
+        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public CodeFile File
+        => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
+    public LexicalScope ContainingLexicalScope
+        => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
+            : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
+                Inherited_ContainingLexicalScope);
+    private LexicalScope? containingLexicalScope;
+    private bool containingLexicalScopeCached;
+    public bool IsAttributeType
+        => GrammarAttribute.IsCached(in isAttributeTypeCached) ? isAttributeType
+            : this.Inherited(ref isAttributeTypeCached, ref isAttributeType, ref syncLock,
+                Inherited_IsAttributeType);
+    private bool isAttributeType;
+    private bool isAttributeTypeCached;
+    public BareType? NamedBareType
+        => GrammarAttribute.IsCached(in namedBareTypeCached) ? namedBareType
+            : this.Synthetic(ref namedBareTypeCached, ref namedBareType,
+                BareTypeAspect.GenericTypeName_NamedBareType);
+    private BareType? namedBareType;
+    private bool namedBareTypeCached;
+    public IMaybePlainType NamedPlainType
+        => GrammarAttribute.IsCached(in namedPlainTypeCached) ? namedPlainType!
+            : this.Synthetic(ref namedPlainTypeCached, ref namedPlainType,
+                TypeExpressionsPlainTypesAspect.GenericTypeName_NamedPlainType);
+    private IMaybePlainType? namedPlainType;
+    private bool namedPlainTypeCached;
+    public IMaybeType NamedType
+        => GrammarAttribute.IsCached(in namedTypeCached) ? namedType!
+            : this.Synthetic(ref namedTypeCached, ref namedType,
+                TypeExpressionsAspect.TypeName_NamedType);
+    private IMaybeType? namedType;
+    private bool namedTypeCached;
+    public ITypeDeclarationNode? ReferencedDeclaration
+        => GrammarAttribute.IsCached(in referencedDeclarationCached) ? referencedDeclaration
+            : this.Synthetic(ref referencedDeclarationCached, ref referencedDeclaration,
+                BindingNamesAspect.OrdinaryTypeName_ReferencedDeclaration);
+    private ITypeDeclarationNode? referencedDeclaration;
+    private bool referencedDeclarationCached;
+
+    public GenericTypeNameNode(
+        IGenericNameSyntax syntax,
+        IEnumerable<ITypeNode> genericArguments)
+    {
+        Syntax = syntax;
+        GenericArguments = ChildList.Attach(this, genericArguments);
+    }
+
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+    {
+        contributors.Add(this);
+        base.CollectContributors_Diagnostics(contributors);
+    }
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
+    {
+        BindingNamesAspect.OrdinaryTypeName_Contribute_Diagnostics(this, builder);
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class QualifiedTypeNameNode : SemanticNode, IQualifiedTypeNameNode
+{
+    private IQualifiedTypeNameNode Self { [Inline] get => this; }
+
+    public IQualifiedNameSyntax Syntax { [DebuggerStepThrough] get; }
+    public ITypeNameNode Context { [DebuggerStepThrough] get; }
+    public IFixedList<ITypeNode> GenericArguments { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package
+        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public CodeFile File
+        => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
+    public LexicalScope ContainingLexicalScope
+        => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
+            : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
+                Inherited_ContainingLexicalScope);
+    private LexicalScope? containingLexicalScope;
+    private bool containingLexicalScopeCached;
+    public IMaybeType NamedType
+        => GrammarAttribute.IsCached(in namedTypeCached) ? namedType!
+            : this.Synthetic(ref namedTypeCached, ref namedType,
+                TypeExpressionsAspect.TypeName_NamedType);
+    private IMaybeType? namedType;
+    private bool namedTypeCached;
+    public ITypeDeclarationNode? ReferencedDeclaration
+        => GrammarAttribute.IsCached(in referencedDeclarationCached) ? referencedDeclaration
+            : this.Synthetic(ref referencedDeclarationCached, ref referencedDeclaration,
+                BindingNamesAspect.QualifiedTypeName_ReferencedDeclaration);
+    private ITypeDeclarationNode? referencedDeclaration;
+    private bool referencedDeclarationCached;
+
+    public QualifiedTypeNameNode(
+        IQualifiedNameSyntax syntax,
+        ITypeNameNode context,
+        IEnumerable<ITypeNode> genericArguments)
+    {
+        Syntax = syntax;
+        Context = Child.Attach(this, context);
+        GenericArguments = ChildList.Attach(this, genericArguments);
+    }
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]

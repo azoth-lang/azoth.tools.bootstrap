@@ -167,14 +167,6 @@ ExpressionBody <: Body = Syntax:`IExpressionBodySyntax` ResultStatement;
 
 // ---------- Types
 Type <: Code = Syntax:`ITypeSyntax`;
-// TODO start from generalized names in syntax and rewrite to type names
-TypeName <: Type = Syntax:`INameSyntax`;
-UnqualifiedTypeName <: TypeName = Syntax:`IUnqualifiedNameSyntax`;
-BuiltInTypeName <: UnqualifiedTypeName = Syntax:`IBuiltInTypeNameSyntax`;
-OrdinaryTypeName <: UnqualifiedTypeName = Syntax:`IOrdinaryNameSyntax`;
-IdentifierTypeName <: OrdinaryTypeName = Syntax:`IIdentifierNameSyntax`;
-GenericTypeName <: OrdinaryTypeName = Syntax:`IGenericNameSyntax` GenericArguments:Type*;
-QualifiedTypeName <: TypeName = Syntax:`IQualifiedNameSyntax` Context:TypeName GenericArguments:Type*;
 OptionalType <: Type = Syntax:`IOptionalTypeSyntax` Referent:Type;
 CapabilityType <: Type = Syntax:`ICapabilityTypeSyntax` Capability Referent:Type;
 FunctionType <: Type = Syntax:`IFunctionTypeSyntax` Parameters:ParameterType* Return:Type;
@@ -395,6 +387,16 @@ QualifiedNamespaceName <: NamespaceName
 
 // ---------- Type Names
 // Type names are both types and expressions since they can occur in both.
+
+// TODO start from generalized names in syntax and rewrite to type names
+TypeName <: Type = Syntax:`INameSyntax`;
+UnqualifiedTypeName <: TypeName = Syntax:`IUnqualifiedNameSyntax`;
+BuiltInTypeName <: UnqualifiedTypeName = Syntax:`IBuiltInTypeNameSyntax`;
+OrdinaryTypeName <: UnqualifiedTypeName = Syntax:`IOrdinaryNameSyntax`;
+IdentifierTypeName <: OrdinaryTypeName = Syntax:`IIdentifierNameSyntax`;
+GenericTypeName <: OrdinaryTypeName = Syntax:`IGenericNameSyntax` GenericArguments:Type*;
+QualifiedTypeName <: TypeName = Syntax:`IQualifiedNameSyntax` Context:TypeName GenericArguments:Type*;
+
 // TODO maybe resolution picks what kind of name it is and binding means it has a specific referenced declaration.
 TypeNameExpression <: ResolvedName = Syntax:`INameExpressionSyntax`
     GenericArguments:Type* ReferencedDeclaration:`ITypeDeclarationNode`;
