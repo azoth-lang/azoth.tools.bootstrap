@@ -362,11 +362,11 @@ UnresolvedNamespaceQualifiedNameExpression <: UnresolvedQualifiedNameExpression
 UnresolvedTypeQualifiedNameExpression <: UnresolvedQualifiedNameExpression
     = /Syntax/ Context:TypeNameExpression /GenericArguments/ ReferencedDeclarations:{`IAssociatedMemberDeclarationNode`};
 // TODO should FunctionGroupName be UnresolvedFunctionName?
-FunctionGroupName <: Name
+FunctionGroupName <: UnresolvedNameExpression
     = Syntax:`INameExpressionSyntax` Context:ResolvedName? FunctionName:`OrdinaryName` GenericArguments:Type*
     ReferencedDeclarations:{`IFunctionInvocableDeclarationNode`};
 // TODO should InitializerGroupName be UnresolvedInitializerName?
-InitializerGroupName <: Name = Syntax:`INameExpressionSyntax`
+InitializerGroupName <: UnresolvedNameExpression = Syntax:`INameExpressionSyntax`
     Context:TypeNameExpression InitializerName:`OrdinaryName`?
     ReferencedDeclarations:{`IInitializerDeclarationNode`};
 

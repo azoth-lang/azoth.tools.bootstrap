@@ -3063,7 +3063,9 @@ public partial interface IInitializerNameExpressionNode : INameExpressionNode
 
 [Closed(
     typeof(IUnresolvedOrdinaryNameExpressionNode),
-    typeof(IUnresolvedQualifiedNameExpressionNode))]
+    typeof(IUnresolvedQualifiedNameExpressionNode),
+    typeof(IFunctionGroupNameNode),
+    typeof(IInitializerGroupNameNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IUnresolvedNameExpressionNode : INameExpressionNode, IUnresolvedExpressionNode
 {
@@ -3211,16 +3213,13 @@ public partial interface IUnresolvedTypeQualifiedNameExpressionNode : IUnresolve
 
 [Closed(typeof(FunctionGroupNameNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IFunctionGroupNameNode : INameNode
+public partial interface IFunctionGroupNameNode : IUnresolvedNameExpressionNode
 {
     IResolvedNameNode? Context { get; }
     IResolvedNameNode? CurrentContext { get; }
     OrdinaryName FunctionName { get; }
     IFixedList<ITypeNode> GenericArguments { get; }
     IFixedSet<IFunctionInvocableDeclarationNode> ReferencedDeclarations { get; }
-    new UnknownType Type
-        => AzothType.Unknown;
-    IMaybeType IExpressionNode.Type => Type;
     IFixedSet<ICallCandidate<IFunctionInvocableDeclarationNode>> CallCandidates { get; }
     IFixedSet<ICallCandidate<IFunctionInvocableDeclarationNode>> CompatibleCallCandidates { get; }
     ICallCandidate<IFunctionInvocableDeclarationNode>? SelectedCallCandidate { get; }
@@ -3242,15 +3241,12 @@ public partial interface IFunctionGroupNameNode : INameNode
 
 [Closed(typeof(InitializerGroupNameNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IInitializerGroupNameNode : INameNode
+public partial interface IInitializerGroupNameNode : IUnresolvedNameExpressionNode
 {
     ITypeNameExpressionNode Context { get; }
     ITypeNameExpressionNode CurrentContext { get; }
     OrdinaryName? InitializerName { get; }
     IFixedSet<IInitializerDeclarationNode> ReferencedDeclarations { get; }
-    new UnknownType Type
-        => AzothType.Unknown;
-    IMaybeType IExpressionNode.Type => Type;
     IFixedSet<ICallCandidate<IInitializerDeclarationNode>> CallCandidates { get; }
     IFixedSet<ICallCandidate<IInitializerDeclarationNode>> CompatibleCallCandidates { get; }
     ICallCandidate<IInitializerDeclarationNode>? SelectedCallCandidate { get; }
@@ -3270,8 +3266,6 @@ public partial interface IInitializerGroupNameNode : INameNode
 }
 
 [Closed(
-    typeof(IFunctionGroupNameNode),
-    typeof(IInitializerGroupNameNode),
     typeof(IResolvedNameNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface INameNode : INameExpressionNode
@@ -16571,8 +16565,6 @@ file class FunctionGroupNameNode : SemanticNode, IFunctionGroupNameNode
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
-    public LexicalScope ContainingLexicalScope()
-        => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
     public ValueIdScope ValueIdScope
         => Inherited_ValueIdScope(GrammarAttribute.CurrentInheritanceContext());
     public IEntryNode ControlFlowEntry()
@@ -16604,6 +16596,12 @@ file class FunctionGroupNameNode : SemanticNode, IFunctionGroupNameNode
     private bool expectedPlainTypeCached;
     public IFlowState FlowStateBefore()
         => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
+    public LexicalScope ContainingLexicalScope
+        => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
+            : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
+                Inherited_ContainingLexicalScope);
+    private LexicalScope? containingLexicalScope;
+    private bool containingLexicalScopeCached;
     public IFixedSet<ICallCandidate<IFunctionInvocableDeclarationNode>> CallCandidates
         => GrammarAttribute.IsCached(in callCandidatesCached) ? callCandidates!
             : this.Synthetic(ref callCandidatesCached, ref callCandidates,
@@ -16732,8 +16730,6 @@ file class InitializerGroupNameNode : SemanticNode, IInitializerGroupNameNode
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
-    public LexicalScope ContainingLexicalScope()
-        => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
     public ValueIdScope ValueIdScope
         => Inherited_ValueIdScope(GrammarAttribute.CurrentInheritanceContext());
     public IEntryNode ControlFlowEntry()
@@ -16765,6 +16761,12 @@ file class InitializerGroupNameNode : SemanticNode, IInitializerGroupNameNode
     private bool expectedPlainTypeCached;
     public IFlowState FlowStateBefore()
         => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
+    public LexicalScope ContainingLexicalScope
+        => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
+            : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
+                Inherited_ContainingLexicalScope);
+    private LexicalScope? containingLexicalScope;
+    private bool containingLexicalScopeCached;
     public IFixedSet<ICallCandidate<IInitializerDeclarationNode>> CallCandidates
         => GrammarAttribute.IsCached(in callCandidatesCached) ? callCandidates!
             : this.Synthetic(ref callCandidatesCached, ref callCandidates,
