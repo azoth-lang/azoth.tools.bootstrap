@@ -29,7 +29,7 @@
 = UnresolvedOrdinaryNameExpression.↑.Diagnostics;
 ✎ UnresolvedIdentifierNameExpression replace_with NameExpression;
 ✎ UnresolvedGenericNameExpression replace_with NameExpression;
-✎ UnresolvedQualifiedNameExpression replace_with UnresolvedNamespaceQualifiedNameExpression;
-✎ UnresolvedQualifiedNameExpression replace_with UnresolvedTypeQualifiedNameExpression;
+✎ UnresolvedNameExpressionQualifiedNameExpression replace_with UnresolvedNamespaceQualifiedNameExpression;
+✎ UnresolvedNameExpressionQualifiedNameExpression replace_with UnresolvedTypeQualifiedNameExpression;
 ✎ UnresolvedNamespaceQualifiedNameExpression replace_with NameExpression;
 ✎ UnresolvedTypeQualifiedNameExpression replace_with NameExpression;

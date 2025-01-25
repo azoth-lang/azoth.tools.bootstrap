@@ -354,8 +354,9 @@ UnresolvedIdentifierNameExpression <: UnresolvedOrdinaryNameExpression
     = Syntax:`IIdentifierNameSyntax`;
 UnresolvedGenericNameExpression <: UnresolvedOrdinaryNameExpression
     = Syntax:`IGenericNameSyntax` GenericArguments:Type*;
-concrete UnresolvedQualifiedNameExpression <: UnresolvedNameExpression, UnresolvedMemberAccessExpression
+UnresolvedQualifiedNameExpression <: UnresolvedNameExpression, UnresolvedMemberAccessExpression
     = Syntax:`IQualifiedNameSyntax` Context:NameExpression /GenericArguments/;
+concrete UnresolvedNameExpressionQualifiedNameExpression <: UnresolvedQualifiedNameExpression;
 /// These reify the Context and ReferencedDeclarations to make diagnostic reporting eaiser
 UnresolvedNamespaceQualifiedNameExpression <: UnresolvedQualifiedNameExpression
     = /Syntax/ Context:NamespaceName /GenericArguments/ ReferencedDeclarations:{`INamespaceMemberDeclarationNode`};

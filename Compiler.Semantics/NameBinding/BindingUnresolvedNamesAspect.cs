@@ -253,14 +253,14 @@ internal static partial class BindingUnresolvedNamesAspect
         return null;
     }
 
-    public static partial IUnresolvedNamespaceQualifiedNameExpressionNode? UnresolvedQualifiedNameExpression_ReplaceWith_UnresolvedNamespaceQualifiedNameExpression(IUnresolvedQualifiedNameExpressionNode node)
+    public static partial IUnresolvedNamespaceQualifiedNameExpressionNode? UnresolvedNameExpressionQualifiedNameExpression_ReplaceWith_UnresolvedNamespaceQualifiedNameExpression(IUnresolvedNameExpressionQualifiedNameExpressionNode node)
     {
         if (node.Context is not INamespaceNameNode context) return null;
         var referencedDeclarations = context.ReferencedDeclarations.SelectMany(d => d.MembersNamed(node.MemberName)).ToFixedSet();
         return IUnresolvedNamespaceQualifiedNameExpressionNode.Create(node.Syntax, context, node.GenericArguments, referencedDeclarations);
     }
 
-    public static partial IUnresolvedTypeQualifiedNameExpressionNode? UnresolvedQualifiedNameExpression_ReplaceWith_UnresolvedTypeQualifiedNameExpression(IUnresolvedQualifiedNameExpressionNode node)
+    public static partial IUnresolvedTypeQualifiedNameExpressionNode? UnresolvedNameExpressionQualifiedNameExpression_ReplaceWith_UnresolvedTypeQualifiedNameExpression(IUnresolvedNameExpressionQualifiedNameExpressionNode node)
     {
         if (node.Context is not ITypeNameExpressionNode context) return null;
         var referencedDeclarations = context.ReferencedDeclaration.AssociatedMembersNamed(node.MemberName).ToFixedSet();

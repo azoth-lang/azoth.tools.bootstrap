@@ -56,5 +56,14 @@ internal static class Build
         => node.ActualEquations.OfType<CollectionAttributeEquationModel>().Where(eq => eq.AttributeFamily == family);
 
     public static IEnumerable<TreeNodeModel> OrderedNodes(IEnumerable<TreeNodeModel> nodes)
-        => nodes.OrderTopologicallyBy(node => node.ChildNodes).ThenBy(node => node.Defines.FullName);
+    {
+        // This method is run on only the concrete nodes. OrderTopologicallyBy requires that all
+        // dependencies of an element be in the original collection. With the `concrete` keyword
+        // it is now possible to make concrete nodes with abstract direct children. Thus, the
+        // dependencies must instead be all concrete descendants.
+        return nodes.OrderTopologicallyBy(ConcreteDescendants).ThenBy(n => n.Defines.FullName);
+
+        static IEnumerable<TreeNodeModel> ConcreteDescendants(TreeNodeModel node)
+            => node.DescendantNodes.Where(n => !n.IsAbstract);
+    }
 }
