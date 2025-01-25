@@ -1964,6 +1964,7 @@ public partial interface IAmbiguousExpressionNode : ICodeNode
     typeof(IUnsafeExpressionNode),
     typeof(INeverTypedExpressionNode),
     typeof(IUnresolvedExpressionNode),
+    typeof(IMethodNameNode),
     typeof(ILiteralExpressionNode),
     typeof(IAssignmentExpressionNode),
     typeof(IBinaryOperatorExpressionNode),
@@ -2097,6 +2098,7 @@ public partial interface INeverTypedExpressionNode : IExpressionNode
 
 [Closed(
     typeof(IUnresolvedMemberAccessExpressionNode),
+    typeof(IMethodGroupNameNode),
     typeof(IUnresolvedInvocationExpressionNode),
     typeof(IUnresolvedNameExpressionNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -2160,10 +2162,9 @@ public partial interface IFieldAccessExpressionNode : INameExpressionNode
 
 [Closed(typeof(MethodGroupNameNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IMethodGroupNameNode : INameExpressionNode
+public partial interface IMethodGroupNameNode : IUnresolvedExpressionNode
 {
     new IMemberAccessExpressionSyntax Syntax { get; }
-    INameExpressionSyntax INameExpressionNode.Syntax => Syntax;
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ICodeSyntax ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
@@ -2175,13 +2176,14 @@ public partial interface IMethodGroupNameNode : INameExpressionNode
     new UnknownType Type
         => AzothType.Unknown;
     IMaybeType IExpressionNode.Type => Type;
+    new IFlowState FlowStateAfter
+        => Context.FlowStateAfter;
+    IFlowState IExpressionNode.FlowStateAfter => FlowStateAfter;
     IFixedSet<ICallCandidate<IOrdinaryMethodDeclarationNode>> CallCandidates { get; }
     IFixedSet<ICallCandidate<IOrdinaryMethodDeclarationNode>> CompatibleCallCandidates { get; }
     ICallCandidate<IOrdinaryMethodDeclarationNode>? SelectedCallCandidate { get; }
     IOrdinaryMethodDeclarationNode? ReferencedDeclaration
         => SelectedCallCandidate?.Declaration;
-    IFlowState INameExpressionNode.FlowStateAfter
-        => Context.FlowStateAfter;
     IMaybePlainType IExpressionNode.PlainType
         => AzothPlainType.Unknown;
 
@@ -2196,10 +2198,9 @@ public partial interface IMethodGroupNameNode : INameExpressionNode
 
 [Closed(typeof(MethodNameNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IMethodNameNode : INameExpressionNode
+public partial interface IMethodNameNode : IExpressionNode
 {
     new IMemberAccessExpressionSyntax Syntax { get; }
-    INameExpressionSyntax INameExpressionNode.Syntax => Syntax;
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ICodeSyntax ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
@@ -2212,8 +2213,9 @@ public partial interface IMethodNameNode : INameExpressionNode
     IFixedSet<ICallCandidate<IOrdinaryMethodDeclarationNode>> CompatibleCallCandidates { get; }
     ICallCandidate<IOrdinaryMethodDeclarationNode>? SelectedCallCandidate { get; }
     IOrdinaryMethodDeclarationNode? ReferencedDeclaration { get; }
-    IFlowState INameExpressionNode.FlowStateAfter
+    new IFlowState FlowStateAfter
         => Context.FlowStateAfter;
+    IFlowState IExpressionNode.FlowStateAfter => FlowStateAfter;
 
     public static IMethodNameNode Create(
         IMemberAccessExpressionSyntax syntax,
@@ -2895,8 +2897,6 @@ public partial interface INonInvocableInvocationExpressionNode : IInvocationExpr
 
 [Closed(
     typeof(IFieldAccessExpressionNode),
-    typeof(IMethodGroupNameNode),
-    typeof(IMethodNameNode),
     typeof(IGetterInvocationExpressionNode),
     typeof(ILocalBindingNameExpressionNode),
     typeof(IInstanceExpressionNode),
@@ -10301,7 +10301,7 @@ file class UnresolvedMemberAccessExpressionNode : SemanticNode, IUnresolvedMembe
     }
 
     protected override IChildTreeNode Rewrite()
-        => BindingUnresolvedNamesAspect.UnresolvedMemberAccessExpression_ExpressionContext_ReplaceWith_NameExpression(this)
+        => BindingUnresolvedNamesAspect.UnresolvedMemberAccessExpression_ExpressionContext_ReplaceWith_Expression(this)
         ?? ExpressionTypesAspect.Expression_ImplicitMove_Insert(this)
         ?? ExpressionTypesAspect.Expression_ImplicitFreeze_Insert(this)
         ?? ExpressionTypesAspect.Expression_Insert_PrepareToReturnExpression(this)
@@ -10511,8 +10511,6 @@ file class MethodGroupNameNode : SemanticNode, IMethodGroupNameNode
                 Inherited_ExpectedPlainType);
     private IMaybePlainType? expectedPlainType;
     private bool expectedPlainTypeCached;
-    public IFlowState FlowStateBefore()
-        => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
     public IFixedSet<ICallCandidate<IOrdinaryMethodDeclarationNode>> CallCandidates
         => GrammarAttribute.IsCached(in callCandidatesCached) ? callCandidates!
             : this.Synthetic(ref callCandidatesCached, ref callCandidates,
@@ -10676,8 +10674,6 @@ file class MethodNameNode : SemanticNode, IMethodNameNode
                 Inherited_ExpectedPlainType);
     private IMaybePlainType? expectedPlainType;
     private bool expectedPlainTypeCached;
-    public IFlowState FlowStateBefore()
-        => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
     public ControlFlowSet ControlFlowNext
         => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
             : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
@@ -15927,7 +15923,7 @@ file class UnresolvedQualifiedNameNode : SemanticNode, IUnresolvedQualifiedNameN
         ?? ExpressionTypesAspect.Expression_ImplicitFreeze_Insert(this)
         ?? ExpressionTypesAspect.Expression_Insert_PrepareToReturnExpression(this)
         ?? ExpressionPlainTypesAspect.Expression_Insert_ImplicitConversionExpression(this)
-        ?? BindingUnresolvedNamesAspect.UnresolvedMemberAccessExpression_ExpressionContext_ReplaceWith_NameExpression(this)
+        ?? BindingUnresolvedNamesAspect.UnresolvedMemberAccessExpression_ExpressionContext_ReplaceWith_Expression(this)
         ?? base.Rewrite();
 }
 
@@ -16075,7 +16071,7 @@ file class UnresolvedNamespaceQualifiedNameNode : SemanticNode, IUnresolvedNames
         ?? ExpressionTypesAspect.Expression_ImplicitFreeze_Insert(this)
         ?? ExpressionTypesAspect.Expression_Insert_PrepareToReturnExpression(this)
         ?? ExpressionPlainTypesAspect.Expression_Insert_ImplicitConversionExpression(this)
-        ?? BindingUnresolvedNamesAspect.UnresolvedMemberAccessExpression_ExpressionContext_ReplaceWith_NameExpression(this)
+        ?? BindingUnresolvedNamesAspect.UnresolvedMemberAccessExpression_ExpressionContext_ReplaceWith_Expression(this)
         ?? base.Rewrite();
 }
 
@@ -16223,7 +16219,7 @@ file class UnresolvedTypeQualifiedNameNode : SemanticNode, IUnresolvedTypeQualif
         ?? ExpressionTypesAspect.Expression_ImplicitFreeze_Insert(this)
         ?? ExpressionTypesAspect.Expression_Insert_PrepareToReturnExpression(this)
         ?? ExpressionPlainTypesAspect.Expression_Insert_ImplicitConversionExpression(this)
-        ?? BindingUnresolvedNamesAspect.UnresolvedMemberAccessExpression_ExpressionContext_ReplaceWith_NameExpression(this)
+        ?? BindingUnresolvedNamesAspect.UnresolvedMemberAccessExpression_ExpressionContext_ReplaceWith_Expression(this)
         ?? base.Rewrite();
 }
 

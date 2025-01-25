@@ -186,7 +186,7 @@ public class InterpreterProcess
     private static bool IsTestAttribute(IAttributeNode attribute)
         => attribute.TypeName.ReferencedDeclaration!.Name.Text == "Test_Attribute";
 
-    private async Task<AzothValue> ConstructMainParameterAsync(Type parameterType)
+    private async ValueTask<AzothValue> ConstructMainParameterAsync(Type parameterType)
     {
         if (parameterType is not CapabilityType { Arguments.Count: 0 } type)
             throw new InvalidOperationException(
@@ -201,7 +201,14 @@ public class InterpreterProcess
         return await ConstructClass(@class, constructorSymbol, []);
     }
 
-    internal async Task<AzothValue> CallFunctionAsync(
+    internal async ValueTask<AzothValue> CallFunctionAsync(FunctionSymbol functionSymbol, IReadOnlyList<AzothValue> arguments)
+    {
+        if (functionSymbol.Package == Intrinsic.SymbolTree.Package)
+            return await CallIntrinsicAsync(functionSymbol, arguments).ConfigureAwait(false);
+        return await CallFunctionAsync(functions[functionSymbol], arguments).ConfigureAwait(false);
+    }
+
+    private async ValueTask<AzothValue> CallFunctionAsync(
         IConcreteFunctionInvocableDefinitionNode function,
         IEnumerable<AzothValue> arguments)
     {
@@ -219,7 +226,7 @@ public class InterpreterProcess
         }
     }
 
-    private async Task<AzothValue> InitializeClass(
+    private async ValueTask<AzothValue> InitializeClass(
         IClassDefinitionNode @class,
         InitializerSymbol initializerSymbol,
         IEnumerable<AzothValue> arguments)
@@ -229,7 +236,7 @@ public class InterpreterProcess
         return await CallInitializerAsync(@class, initializerSymbol, self, arguments);
     }
 
-    private async Task<AzothValue> ConstructClass(
+    private async ValueTask<AzothValue> ConstructClass(
         IClassDefinitionNode @class,
         ConstructorSymbol constructorSymbol,
         IEnumerable<AzothValue> arguments)
@@ -239,7 +246,7 @@ public class InterpreterProcess
         return await CallConstructorAsync(@class, constructorSymbol, self, arguments);
     }
 
-    private async Task<AzothValue> CallConstructorAsync(
+    private async ValueTask<AzothValue> CallConstructorAsync(
         IClassDefinitionNode @class,
         ConstructorSymbol constructorSymbol,
         AzothValue self,
@@ -311,7 +318,7 @@ public class InterpreterProcess
                            .Single(c => c.Arity == 0);
     }
 
-    private async Task<AzothValue> InitializeStruct(
+    private async ValueTask<AzothValue> InitializeStruct(
         IStructDefinitionNode @struct,
         InitializerSymbol initializerSymbol,
         IEnumerable<AzothValue> arguments)
@@ -320,7 +327,7 @@ public class InterpreterProcess
         return await CallInitializerAsync(@struct, initializerSymbol, self, arguments).ConfigureAwait(false);
     }
 
-    private async Task<AzothValue> CallInitializerAsync(
+    private async ValueTask<AzothValue> CallInitializerAsync(
         ITypeDefinitionNode typeDefinition,
         InitializerSymbol initializerSymbol,
         AzothValue self,
@@ -379,12 +386,17 @@ public class InterpreterProcess
         return ValueTask.FromResult(self);
     }
 
-    private async ValueTask<AzothValue> CallMethodAsync(
+    internal async ValueTask<AzothValue> CallMethodAsync(
         MethodSymbol methodSymbol,
         Type selfType,
         AzothValue self,
-        IEnumerable<AzothValue> arguments)
+        IReadOnlyList<AzothValue> arguments)
     {
+        if (methodSymbol.Package == Intrinsic.SymbolTree.Package)
+            return await CallIntrinsicAsync(methodSymbol, self, arguments);
+        if (methodSymbol == Primitive.IdentityHash)
+            return IdentityHash(self);
+
         switch (selfType)
         {
             case VoidType _:
@@ -408,7 +420,7 @@ public class InterpreterProcess
         MethodSymbol methodSymbol,
         CapabilityType selfType,
         AzothValue self,
-        IEnumerable<AzothValue> arguments)
+        IReadOnlyList<AzothValue> arguments)
     {
         var referenceCall = selfType.TypeConstructor.Semantics switch
         {
@@ -472,7 +484,7 @@ public class InterpreterProcess
         }
     }
 
-    private async Task<AzothValue> ExecuteAsync(IFixedList<IStatementNode> statements, LocalVariableScope variables)
+    private async ValueTask<AzothValue> ExecuteAsync(IFixedList<IStatementNode> statements, LocalVariableScope variables)
     {
         foreach (var statement in statements)
             switch (statement)
@@ -545,9 +557,7 @@ public class InterpreterProcess
             {
                 var arguments = await ExecuteArgumentsAsync(exp.Arguments!, variables).ConfigureAwait(false);
                 var functionSymbol = exp.Function.ReferencedDeclaration!.Symbol.Assigned();
-                if (functionSymbol.Package == Intrinsic.SymbolTree.Package)
-                    return await CallIntrinsicAsync(functionSymbol, arguments).ConfigureAwait(false);
-                return await CallFunctionAsync(functions[functionSymbol], arguments).ConfigureAwait(false);
+                return await CallFunctionAsync(functionSymbol, arguments);
             }
             case IFunctionReferenceInvocationExpressionNode exp:
             {
@@ -586,7 +596,7 @@ public class InterpreterProcess
             case IVariableNameExpressionNode exp:
                 return variables[exp.ReferencedDefinition];
             case IFunctionNameNode exp:
-                return AzothValue.FunctionReference(new ConcreteFunctionReference(this, functions[exp.ReferencedDeclaration!.Symbol.Assigned()]));
+                return AzothValue.FunctionReference(new ConcreteFunctionReference(this, exp.ReferencedDeclaration!.Symbol.Assigned()));
             case IBlockExpressionNode block:
             {
                 var blockVariables = new LocalVariableScope(variables);
@@ -595,7 +605,7 @@ public class InterpreterProcess
             case ILoopExpressionNode exp:
                 try
                 {
-                    for (; ; )
+                    while (true)
                     {
                         try
                         {
@@ -745,11 +755,6 @@ public class InterpreterProcess
                 var self = await ExecuteAsync(exp.Method.Context, variables).ConfigureAwait(false);
                 var arguments = await ExecuteArgumentsAsync(exp.Arguments!, variables).ConfigureAwait(false);
                 var methodSymbol = exp.Method.ReferencedDeclaration!.Symbol.Assigned();
-                if (methodSymbol.Package == Intrinsic.SymbolTree.Package)
-                    return await CallIntrinsicAsync(methodSymbol, self, arguments);
-                if (methodSymbol == Primitive.IdentityHash)
-                    return IdentityHash(self);
-
                 var selfType = exp.Method.Context.Type.Known();
                 return await CallMethodAsync(methodSymbol, selfType, self, arguments);
             }
@@ -757,8 +762,6 @@ public class InterpreterProcess
             {
                 var self = await ExecuteAsync(exp.Context, variables).ConfigureAwait(false);
                 var getterSymbol = exp.ReferencedDeclaration!.Symbol.Assigned();
-                if (getterSymbol.Package == Intrinsic.SymbolTree.Package)
-                    return await CallIntrinsicAsync(getterSymbol, self, []);
                 var selfType = exp.Context.Type.Known();
                 return await CallMethodAsync(getterSymbol, selfType, self, []).ConfigureAwait(false);
             }
@@ -767,8 +770,6 @@ public class InterpreterProcess
                 var self = await ExecuteAsync(exp.Context, variables).ConfigureAwait(false);
                 var value = await ExecuteAsync(exp.Value!, variables).ConfigureAwait(false);
                 var setterSymbol = exp.ReferencedDeclaration!.Symbol.Assigned();
-                if (setterSymbol.Package == Intrinsic.SymbolTree.Package)
-                    return await CallIntrinsicAsync(setterSymbol, self, [value]);
                 var selfType = exp.Context.Type.Known();
                 return await CallMethodAsync(setterSymbol, selfType, self, [value]);
             }
@@ -881,11 +882,18 @@ public class InterpreterProcess
 
                 return await value.PromiseValue.ConfigureAwait(false);
             }
+            case IMethodNameNode exp:
+            {
+                var self = await ExecuteAsync(exp.Context, variables).ConfigureAwait(false);
+                var methodSymbol = exp.ReferencedDeclaration!.Symbol.Assigned();
+                var selfType = exp.Context.Type.Known();
+                return AzothValue.FunctionReference(new MethodReference(this, selfType, self, methodSymbol));
+            }
             case IUnresolvedExpressionNode _:
             case INonInvocableInvocationExpressionNode _:
             case IMissingNameExpressionNode _:
                 throw new UnreachableException($"Node type {expression.GetType().GetFriendlyName()} won't be in error free tree.");
-            case INameExpressionNode _:
+            case INameNode _:
                 throw new UnreachableException($"Name node type {expression.GetType().GetFriendlyName()} won't be traversed.");
         }
     }
@@ -927,7 +935,7 @@ public class InterpreterProcess
         return await CallInitializerAsync(stringInitializer, self, arguments).ConfigureAwait(false);
     }
 
-    private async ValueTask<AzothValue> CallIntrinsicAsync(FunctionSymbol function, List<AzothValue> arguments)
+    private async ValueTask<AzothValue> CallIntrinsicAsync(FunctionSymbol function, IReadOnlyList<AzothValue> arguments)
     {
         if (function == Intrinsic.PrintRawUtf8Bytes)
         {
@@ -943,7 +951,7 @@ public class InterpreterProcess
         throw new NotImplementedException($"Intrinsic {function}");
     }
 
-    private static string RawUtf8BytesToString(List<AzothValue> arguments)
+    private static string RawUtf8BytesToString(IReadOnlyList<AzothValue> arguments)
     {
         var bytes = (RawBoundedByteList)arguments[0].RawBoundedListValue;
         var start = arguments[1].SizeValue;
@@ -989,7 +997,7 @@ public class InterpreterProcess
     private static ValueTask<AzothValue> CallIntrinsicAsync(
         MethodSymbol method,
         AzothValue self,
-        List<AzothValue> arguments)
+        IReadOnlyList<AzothValue> arguments)
     {
         if (method == Intrinsic.GetRawBoundedListCapacity)
             return ValueTask.FromResult(AzothValue.Size(self.RawBoundedListValue.Capacity));

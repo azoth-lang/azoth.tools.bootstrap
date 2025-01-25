@@ -5,5 +5,5 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.MemoryLayout;
 
 internal abstract class FunctionReference
 {
-    public abstract Task<AzothValue> CallAsync(IEnumerable<AzothValue> arguments);
+    public abstract ValueTask<AzothValue> CallAsync(IReadOnlyList<AzothValue> arguments);
 }

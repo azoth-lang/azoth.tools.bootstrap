@@ -9,7 +9,7 @@
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
 // ---------- Unresolved Expressions
-✎ UnresolvedMemberAccessExpression ExpressionContext replace_with NameExpression;
+✎ UnresolvedMemberAccessExpression ExpressionContext replace_with Expression;
 = UnresolvedMemberAccessExpression.↑.Diagnostics;
 
 // ---------- Operator Expressions

@@ -104,6 +104,15 @@
 ↑ UnresolvedMemberAccessExpression.Type: `UnknownType` => AzothType.Unknown;
 = UnresolvedMemberAccessExpression.FlowStateAfter;
 
+// ---------- Instance Member Access Expressions
+= FieldAccessExpression.FlowStateAfter;
+= FieldAccessExpression.↑.Diagnostics;
+↑ MethodGroupName.Type: `UnknownType` => AzothType.Unknown;
+↑ MethodGroupName.FlowStateAfter: `IFlowState` => Context.FlowStateAfter;
+= MethodName.Context.ExpectedType;
+= MethodName.Context.ImplicitRecoveryAllowed() => true;
+↑ MethodName.FlowStateAfter: `IFlowState` => Context.FlowStateAfter;
+
 // ---------- Literal Expressions
 ↓ LiteralExpression.FlowStateBefore(): `IFlowState`;
 = LiteralExpression.FlowStateAfter;
@@ -213,13 +222,7 @@
 = FunctionGroupName.FlowStateAfter => FlowStateBefore();
 = FunctionName.FlowStateAfter;
 = FunctionName.*.ExpectedType => null;
-↑ MethodGroupName.Type: `UnknownType` => AzothType.Unknown;
-= MethodGroupName.FlowStateAfter => Context.FlowStateAfter;
-= MethodName.Context.ExpectedType;
-= MethodName.Context.ImplicitRecoveryAllowed() => true;
-= MethodName.FlowStateAfter => Context.FlowStateAfter;
-= FieldAccessExpression.FlowStateAfter;
-= FieldAccessExpression.↑.Diagnostics;
+
 = VariableNameExpression.FlowStateAfter;
 ↑ InitializerGroupName.Type: `UnknownType` => AzothType.Unknown;
 = InitializerName.FlowStateAfter;

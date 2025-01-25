@@ -324,15 +324,16 @@ internal static partial class OverloadResolutionAspect
         => node.CompatibleCallCandidates.TrySingle();
 
     public static partial void MethodGroupName_Contribute_Diagnostics(IMethodGroupNameNode node, DiagnosticCollectionBuilder diagnostics)
-        => ContributeMethodNameBindingDiagnostics(node.ReferencedDeclaration, node.CompatibleCallCandidates, node, diagnostics);
+        => ContributeMethodNameBindingDiagnostics(node.ReferencedDeclaration, node.CompatibleCallCandidates, node, node.Syntax, diagnostics);
 
     public static partial void MethodName_Contribute_Diagnostics(IMethodNameNode node, DiagnosticCollectionBuilder diagnostics)
-        => ContributeMethodNameBindingDiagnostics(node.ReferencedDeclaration, node.CompatibleCallCandidates, node, diagnostics);
+        => ContributeMethodNameBindingDiagnostics(node.ReferencedDeclaration, node.CompatibleCallCandidates, node, node.Syntax, diagnostics);
 
     private static void ContributeMethodNameBindingDiagnostics(
         IOrdinaryMethodDeclarationNode? referencedDeclaration,
         IFixedSet<ICallCandidate<IOrdinaryMethodDeclarationNode>> compatibleCallCandidates,
-        INameExpressionNode node,
+        IExpressionNode node,
+        IMemberAccessExpressionSyntax syntax,
         DiagnosticCollectionBuilder diagnostics)
     {
         if (referencedDeclaration is not null
@@ -343,12 +344,12 @@ internal static partial class OverloadResolutionAspect
         switch (compatibleCallCandidates.Count)
         {
             case 0:
-                diagnostics.Add(NameBindingError.CouldNotBindMethodName(node.File, node.Syntax));
+                diagnostics.Add(NameBindingError.CouldNotBindMethodName(node.File, syntax));
                 break;
             case 1:
                 throw new UnreachableException("ReferencedDeclaration would not be null");
             default:
-                diagnostics.Add(NameBindingError.AmbiguousMethodName(node.File, node.Syntax));
+                diagnostics.Add(NameBindingError.AmbiguousMethodName(node.File, syntax));
                 break;
         }
     }

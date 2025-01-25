@@ -221,10 +221,10 @@ UnsafeExpression <: Expression = Syntax:`IUnsafeExpressionSyntax` Expression:Amb
 NeverTypedExpression <: Expression;
 
 // ---------- Unresolved Expressions
-/// An unresolved expression is one that hasn't had name binding on it. Expressions where name
-/// binding fails can stay unresolved. This is termed "unresolved"/"resolved" instead of "unbound"/
-/// "bound" because the latter could lead to confusing names and resolving names involves lots of
-/// aspects beyond simple name binding.
+// An unresolved expression is one that hasn't yet or cannot have names or members resolved. Name
+// resolution is not the same as name binding. Name resolution determines what kind of thing a name
+// or member refers to. Name binding determines what specific thing a name refers to and associates
+// that to the name. The two are interrelated, but somewhat distinct.
 UnresolvedExpression <: Expression;
 concrete UnresolvedMemberAccessExpression <: UnresolvedExpression
     = Syntax:`IMemberAccessExpressionSyntax` Context:AmbiguousExpression GenericArguments:Type*;
@@ -236,12 +236,12 @@ concrete UnresolvedMemberAccessExpression <: UnresolvedExpression
 FieldAccessExpression <: NameExpression = Syntax:`IMemberAccessExpressionSyntax`
     Context:Expression FieldName:`IdentifierName` ReferencedDeclaration:`IFieldDeclarationNode`;
 // TODO should MethodGroupName be UnresolvedMethodName or Unresolved MethodAccessExpression?
-MethodGroupName <: NameExpression = Syntax:`IMemberAccessExpressionSyntax`
+MethodGroupName <: UnresolvedExpression = Syntax:`IMemberAccessExpressionSyntax`
     Context:Expression MethodName:`OrdinaryName` GenericArguments:Type*
     ReferencedDeclarations:{`IOrdinaryMethodDeclarationNode`};
 /// See comment on FunctionName for why this exists.
 // TODO rename to MethodAccessExpression?
-MethodName <: NameExpression = Syntax:`IMemberAccessExpressionSyntax`
+MethodName <: Expression = Syntax:`IMemberAccessExpressionSyntax`
     Context:Expression MethodName:`OrdinaryName` GenericArguments:Type*
     ReferencedDeclarations:{`IOrdinaryMethodDeclarationNode`}
     CallCandidates:{`ICallCandidate<IOrdinaryMethodDeclarationNode>`}
@@ -310,6 +310,7 @@ NonInvocableInvocationExpression <: InvocationExpression = Syntax:`IInvocationEx
 // syntax that something is a name). However, in the semantic tree name nodes are for namespace and
 // type names. Name expressions are more inclusive than just names since there is name syntax that
 // can occur in an expression that don't occur in type and namespace names.
+
 NameExpression <: Expression = Syntax:`INameExpressionSyntax`;
 // See the names section for more nodes that are name expressions
 LocalBindingNameExpression <: NameExpression = ReferencedDefinition:`IBindingNode`?;
@@ -323,6 +324,8 @@ MissingNameExpression <: NameExpression
     = Syntax:`IMissingNameSyntax`;
 
 // ---------- Unresolved Name Expressions
+// Unresolved name expressions are name expressions which have not yet or cannot be determined to be
+// a more specific kind of name expression (or name).
 // TODO use for both this and types so that type names can be qualified
 UnresolvedNameExpression <: NameExpression, UnresolvedExpression = Syntax:`INameExpressionSyntax`;
 UnresolvedOrdinaryNameExpression <: UnresolvedNameExpression

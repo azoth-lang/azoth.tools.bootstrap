@@ -1,19 +1,20 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Azoth.Tools.Bootstrap.Compiler.Symbols;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.MemoryLayout;
 
-internal class ConcreteFunctionReference : FunctionReference
+internal sealed class ConcreteFunctionReference : FunctionReference
 {
     private readonly InterpreterProcess interpreterProcess;
-    private readonly IConcreteFunctionInvocableDefinitionNode function;
+    private readonly FunctionSymbol functionSymbol;
 
-    public ConcreteFunctionReference(InterpreterProcess interpreterProcess, IConcreteFunctionInvocableDefinitionNode function)
+    public ConcreteFunctionReference(InterpreterProcess interpreterProcess, FunctionSymbol functionSymbol)
     {
         this.interpreterProcess = interpreterProcess;
-        this.function = function;
+        this.functionSymbol = functionSymbol;
     }
 
-    public override Task<AzothValue> CallAsync(IEnumerable<AzothValue> arguments)
-        => interpreterProcess.CallFunctionAsync(function, arguments);
+    public override ValueTask<AzothValue> CallAsync(IReadOnlyList<AzothValue> arguments)
+        => interpreterProcess.CallFunctionAsync(functionSymbol, arguments);
 }

@@ -13,7 +13,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.NameBinding;
 internal static partial class BindingUnresolvedNamesAspect
 {
     #region Unresolved Expressions
-    public static partial INameExpressionNode? UnresolvedMemberAccessExpression_ExpressionContext_ReplaceWith_NameExpression(IUnresolvedMemberAccessExpressionNode node)
+    public static partial IExpressionNode? UnresolvedMemberAccessExpression_ExpressionContext_ReplaceWith_Expression(IUnresolvedMemberAccessExpressionNode node)
     {
         if (node.Context is not { } context)
             return null;

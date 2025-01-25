@@ -24,6 +24,12 @@ internal static partial class ExpressionTypesAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFlowState UnresolvedMemberAccessExpression_FlowStateAfter(IUnresolvedMemberAccessExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial IFlowState FieldAccessExpression_FlowStateAfter(IFieldAccessExpressionNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial void FieldAccessExpression_Contribute_Diagnostics(IFieldAccessExpressionNode node, DiagnosticCollectionBuilder diagnostics);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial IMaybeType? MethodName_Context_ExpectedType(IMethodNameNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFlowState LiteralExpression_FlowStateAfter(ILiteralExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial void StringLiteralExpression_Contribute_Diagnostics(IStringLiteralExpressionNode node, DiagnosticCollectionBuilder diagnostics);
@@ -53,12 +59,6 @@ internal static partial class ExpressionTypesAspect
     public static partial void InitializerInvocationExpression_Contribute_Diagnostics(IInitializerInvocationExpressionNode node, DiagnosticCollectionBuilder diagnostics);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFlowState FunctionName_FlowStateAfter(IFunctionNameNode node);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IMaybeType? MethodName_Context_ExpectedType(IMethodNameNode node);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IFlowState FieldAccessExpression_FlowStateAfter(IFieldAccessExpressionNode node);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial void FieldAccessExpression_Contribute_Diagnostics(IFieldAccessExpressionNode node, DiagnosticCollectionBuilder diagnostics);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFlowState VariableNameExpression_FlowStateAfter(IVariableNameExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
