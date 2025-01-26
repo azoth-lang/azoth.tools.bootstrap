@@ -12,7 +12,18 @@ public abstract class LexicalScope
 
     private protected LexicalScope() { }
 
-    public abstract IEnumerable<IDeclarationNode> Lookup(OrdinaryName name);
+    /// <summary>
+    /// Lookup an <see cref="OrdinaryName"/> in the scope and find any matching declarations.
+    /// </summary>
+    public IEnumerable<IDeclarationNode> Lookup(OrdinaryName name)
+        => Lookup<IDeclarationNode>(name);
+
+    /// <summary>
+    /// Lookup an <see cref="OrdinaryName"/> in the scope and find matching declarations of the type
+    /// <typeparamref name="TDeclaration"/>.
+    /// </summary>
+    public abstract IEnumerable<TDeclaration> Lookup<TDeclaration>(OrdinaryName name)
+        where TDeclaration : IDeclarationNode;
 
     public virtual ITypeDeclarationNode? Lookup(BuiltInTypeName name)
         => PackageNames.Lookup(name);

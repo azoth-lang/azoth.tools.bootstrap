@@ -322,6 +322,11 @@ internal static partial class NameResolutionAspect
     // TODO diagnostics for UnresolvedTypeQualifiedName
     #endregion
 
+    #region Unresolved Names
+    public static partial IFixedList<INamespaceOrOrdinaryTypeDeclarationNode> UnresolvedOrdinaryName_ReferencedDeclarations(IUnresolvedOrdinaryNameNode node)
+        => node.ContainingLexicalScope.Lookup<INamespaceOrOrdinaryTypeDeclarationNode>(node.Name).ToFixedList();
+    #endregion
+
     private static bool TryAllOfType<T>(
         this IReadOnlyCollection<IDeclarationNode> declarations,
         out IFixedList<T> referencedNamespaces)

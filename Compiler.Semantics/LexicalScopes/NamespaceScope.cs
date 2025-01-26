@@ -54,16 +54,16 @@ public sealed class NamespaceScope : NamespaceSearchScope
         return childScope;
     }
 
-    public override IEnumerable<IDeclarationNode> Lookup(OrdinaryName name)
+    public override IEnumerable<TDeclaration> Lookup<TDeclaration>(OrdinaryName name)
     {
-        var symbolNodes = namespaceDeclarations
-            .SelectMany(ns => ns.MembersNamed(name)).SafeCast<IDeclarationNode>()
-            .FallbackIfEmpty(namespaceDeclarations.SelectMany(ns => ns.NestedMembersNamed(name)));
+        var symbolNodes = LookupInNamespaceOnly<TDeclaration>(name)
+            .FallbackIfEmpty(namespaceDeclarations.SelectMany(ns => ns.NestedMembersNamed(name)).OfType<TDeclaration>());
         if (parent is not null)
-            symbolNodes = symbolNodes.FallbackIfEmpty(() => parent.Lookup(name));
+            symbolNodes = symbolNodes.FallbackIfEmpty(() => parent.Lookup<TDeclaration>(name));
         return symbolNodes;
     }
 
-    public IEnumerable<IDeclarationNode> LookupInNamespaceOnly(OrdinaryName name)
-        => namespaceDeclarations.SelectMany(ns => ns.MembersNamed(name));
+    public IEnumerable<TDeclaration> LookupInNamespaceOnly<TDeclaration>(OrdinaryName name)
+        where TDeclaration : IDeclarationNode
+        => namespaceDeclarations.SelectMany(ns => ns.MembersNamed(name)).OfType<TDeclaration>();
 }

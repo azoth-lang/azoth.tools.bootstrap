@@ -461,9 +461,13 @@ AwaitExpression <: Expression = Syntax:`IAwaitExpressionSyntax` Expression:Ambig
 // TODO move into separate aspect
 
 Declaration;
-ChildDeclaration <: Declaration, Child;
-NamedDeclaration <: ChildDeclaration;
+/// A declaration that may have an associated symbol.
 SymbolDeclaration <: Declaration;
+/// A declaration that is definitly a child node.
+// TODO should this be a SymbolDeclaration?
+ChildDeclaration <: Declaration, Child;
+/// A declaration that has a name.
+NamedDeclaration <: ChildDeclaration;
 
 // ---------- Bindings
 BindingDeclaration <: ChildDeclaration;
@@ -483,11 +487,16 @@ PackageFacetDeclaration <: ChildDeclaration, SymbolDeclaration;
 PackageFacetChildDeclaration <: ChildDeclaration;
 
 // ---------- Declarations
+/// A declaration that can be invoked (e.g. a function, initializer etc.)
 InvocableDeclaration <: SymbolDeclaration, ChildDeclaration;
+/// A declaration that is some form of function (i.e. it is invocable and has a name).
 FunctionInvocableDeclaration <: NamedDeclaration, InvocableDeclaration;
+/// A declaration that is either a namespace or an ordinary type declaration. This is used as part
+/// of name resolution where it is known that certian names are either namespaces or ordinary types.
+NamespaceOrOrdinaryTypeDeclaration <: NamedDeclaration, SymbolDeclaration;
 
 // ---------- Namespace Declarations
-NamespaceDeclaration <: NamespaceMemberDeclaration;
+NamespaceDeclaration <: NamespaceMemberDeclaration, NamespaceOrOrdinaryTypeDeclaration;
 NamespaceMemberDeclaration <: PackageFacetChildDeclaration, NamedDeclaration, SymbolDeclaration
     = Name:`OrdinaryName`;
 
@@ -500,7 +509,7 @@ TypeDeclaration <: NamedDeclaration, SymbolDeclaration;
 NonVariableTypeDeclaration <: TypeDeclaration;
 BuiltInTypeDeclaration <: NonVariableTypeDeclaration = Name:`BuiltInTypeName` Members:{TypeMemberDeclaration};
 // TODO should this be renamed Ordinary?
-UserTypeDeclaration <: NamespaceMemberDeclaration, ClassMemberDeclaration, TraitMemberDeclaration, StructMemberDeclaration, NonVariableTypeDeclaration
+UserTypeDeclaration <: NamespaceMemberDeclaration, ClassMemberDeclaration, TraitMemberDeclaration, StructMemberDeclaration, NonVariableTypeDeclaration, NamespaceOrOrdinaryTypeDeclaration
     = Name:`OrdinaryName` GenericParameters:GenericParameterDeclaration* Members:{TypeMemberDeclaration};
 ClassDeclaration <: UserTypeDeclaration = Members:{ClassMemberDeclaration};
 StructDeclaration <: UserTypeDeclaration = Members:{StructMemberDeclaration};
@@ -533,7 +542,7 @@ InitializerDeclaration <: StructMemberDeclaration, ClassMemberDeclaration, Assoc
     = Name:`IdentifierName`?;
 FieldDeclaration <: NamedDeclaration, ClassMemberDeclaration, StructMemberDeclaration, InstanceMemberDeclaration, NamedBindingDeclaration, AlwaysTypeMemberDeclaration
     = Name:`IdentifierName`;
-AssociatedFunctionDeclaration <: AssociatedMemberDeclaration, FunctionInvocableDeclaration, InvocableDeclaration, AlwaysTypeMemberDeclaration
+AssociatedFunctionDeclaration <: AssociatedMemberDeclaration, FunctionInvocableDeclaration, AlwaysTypeMemberDeclaration
     = Name:`OrdinaryName`;
 
 // -------------------------------------------------------------------------------------------------

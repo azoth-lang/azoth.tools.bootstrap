@@ -3230,6 +3230,7 @@ public partial interface IUnresolvedOrdinaryNameNode : IUnresolvedNameNode
     ICodeSyntax ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     OrdinaryName Name { get; }
+    IFixedList<INamespaceOrOrdinaryTypeDeclarationNode> ReferencedDeclarations { get; }
 }
 
 [Closed(typeof(UnresolvedIdentifierNameNode))]
@@ -3773,12 +3774,29 @@ public partial interface IAwaitExpressionNode : IExpressionNode
 }
 
 [Closed(
-    typeof(IChildDeclarationNode),
-    typeof(ISymbolDeclarationNode))]
+    typeof(ISymbolDeclarationNode),
+    typeof(IChildDeclarationNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IDeclarationNode : ISemanticNode
 {
     ISymbolDeclarationNode ContainingDeclaration { get; }
+}
+
+[Closed(
+    typeof(IExecutableDefinitionNode),
+    typeof(IPackageDeclarationNode),
+    typeof(IPackageFacetDeclarationNode),
+    typeof(IInvocableDeclarationNode),
+    typeof(INamespaceOrOrdinaryTypeDeclarationNode),
+    typeof(INamespaceMemberDeclarationNode),
+    typeof(ITypeDeclarationNode),
+    typeof(ITypeMemberDeclarationNode),
+    typeof(IAssociatedMemberDeclarationNode),
+    typeof(IChildSymbolNode))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
+public partial interface ISymbolDeclarationNode : IDeclarationNode
+{
+    Symbol? Symbol { get; }
 }
 
 [Closed(
@@ -3797,6 +3815,7 @@ public partial interface IChildDeclarationNode : IDeclarationNode, IChildNode
     typeof(IAssociatedMemberDefinitionNode),
     typeof(INamedBindingDeclarationNode),
     typeof(IFunctionInvocableDeclarationNode),
+    typeof(INamespaceOrOrdinaryTypeDeclarationNode),
     typeof(INamespaceMemberDeclarationNode),
     typeof(ITypeDeclarationNode),
     typeof(IMethodDeclarationNode))]
@@ -3804,22 +3823,6 @@ public partial interface IChildDeclarationNode : IDeclarationNode, IChildNode
 public partial interface INamedDeclarationNode : IChildDeclarationNode
 {
     UnqualifiedName Name { get; }
-}
-
-[Closed(
-    typeof(IExecutableDefinitionNode),
-    typeof(IPackageDeclarationNode),
-    typeof(IPackageFacetDeclarationNode),
-    typeof(IInvocableDeclarationNode),
-    typeof(INamespaceMemberDeclarationNode),
-    typeof(ITypeDeclarationNode),
-    typeof(ITypeMemberDeclarationNode),
-    typeof(IAssociatedMemberDeclarationNode),
-    typeof(IChildSymbolNode))]
-[GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface ISymbolDeclarationNode : IDeclarationNode
-{
-    Symbol? Symbol { get; }
 }
 
 [Closed(
@@ -3913,10 +3916,18 @@ public partial interface IFunctionInvocableDeclarationNode : INamedDeclarationNo
 }
 
 [Closed(
+    typeof(INamespaceDeclarationNode),
+    typeof(IUserTypeDeclarationNode))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
+public partial interface INamespaceOrOrdinaryTypeDeclarationNode : INamedDeclarationNode, ISymbolDeclarationNode
+{
+}
+
+[Closed(
     typeof(INamespaceDefinitionNode),
     typeof(INamespaceSymbolNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface INamespaceDeclarationNode : INamespaceMemberDeclarationNode
+public partial interface INamespaceDeclarationNode : INamespaceMemberDeclarationNode, INamespaceOrOrdinaryTypeDeclarationNode
 {
     FixedDictionary<OrdinaryName, IFixedSet<INamespaceMemberDeclarationNode>> MembersByName { get; }
     FixedDictionary<OrdinaryName, IFixedSet<INamespaceMemberDeclarationNode>> NestedMembersByName { get; }
@@ -4013,7 +4024,7 @@ public partial interface IBuiltInTypeDeclarationNode : INonVariableTypeDeclarati
     typeof(ITraitDeclarationNode),
     typeof(IOrdinaryTypeSymbolNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IUserTypeDeclarationNode : INamespaceMemberDeclarationNode, IClassMemberDeclarationNode, ITraitMemberDeclarationNode, IStructMemberDeclarationNode, INonVariableTypeDeclarationNode
+public partial interface IUserTypeDeclarationNode : INamespaceMemberDeclarationNode, IClassMemberDeclarationNode, ITraitMemberDeclarationNode, IStructMemberDeclarationNode, INonVariableTypeDeclarationNode, INamespaceOrOrdinaryTypeDeclarationNode
 {
     IFixedList<IGenericParameterDeclarationNode> GenericParameters { get; }
     new IFixedSet<ITypeMemberDeclarationNode> Members { get; }
@@ -17091,6 +17102,12 @@ file class UnresolvedIdentifierNameNode : SemanticNode, IUnresolvedIdentifierNam
                 ControlFlowAspect.Expression_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
+    public IFixedList<INamespaceOrOrdinaryTypeDeclarationNode> ReferencedDeclarations
+        => GrammarAttribute.IsCached(in referencedDeclarationsCached) ? referencedDeclarations!
+            : this.Synthetic(ref referencedDeclarationsCached, ref referencedDeclarations,
+                NameResolutionAspect.UnresolvedOrdinaryName_ReferencedDeclarations);
+    private IFixedList<INamespaceOrOrdinaryTypeDeclarationNode>? referencedDeclarations;
+    private bool referencedDeclarationsCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -17222,6 +17239,12 @@ file class UnresolvedGenericNameNode : SemanticNode, IUnresolvedGenericNameNode
                 ControlFlowAspect.Expression_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
+    public IFixedList<INamespaceOrOrdinaryTypeDeclarationNode> ReferencedDeclarations
+        => GrammarAttribute.IsCached(in referencedDeclarationsCached) ? referencedDeclarations!
+            : this.Synthetic(ref referencedDeclarationsCached, ref referencedDeclarations,
+                NameResolutionAspect.UnresolvedOrdinaryName_ReferencedDeclarations);
+    private IFixedList<INamespaceOrOrdinaryTypeDeclarationNode>? referencedDeclarations;
+    private bool referencedDeclarationsCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,

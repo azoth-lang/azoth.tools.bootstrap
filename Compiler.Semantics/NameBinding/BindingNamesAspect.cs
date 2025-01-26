@@ -30,8 +30,8 @@ internal static partial class BindingNamesAspect
     public static partial ITypeDeclarationNode? OrdinaryTypeName_ReferencedDeclaration(IOrdinaryTypeNameNode node)
     {
         // TODO this prefers the non-suffixed name. Maybe it should be the other way around to avoid conflict
-        var typeDeclaration = LookupDeclarations(node).TrySingle();
-        if (node.IsAttributeType) typeDeclaration ??= LookupDeclarations(node, withAttributeSuffix: true).TrySingle();
+        var typeDeclaration = LookupTypeDeclarations(node).TrySingle();
+        if (node.IsAttributeType) typeDeclaration ??= LookupTypeDeclarations(node, withAttributeSuffix: true).TrySingle();
         return typeDeclaration;
     }
 
@@ -40,7 +40,7 @@ internal static partial class BindingNamesAspect
         DiagnosticCollectionBuilder diagnostics)
     {
         if (node.ReferencedDeclaration is not null) return;
-        var symbolNodes = LookupDeclarations(node);
+        var symbolNodes = LookupTypeDeclarations(node);
         switch (symbolNodes.Count)
         {
             case 0:
@@ -55,12 +55,12 @@ internal static partial class BindingNamesAspect
         }
     }
 
-    private static IFixedSet<ITypeDeclarationNode> LookupDeclarations(
+    private static IFixedSet<ITypeDeclarationNode> LookupTypeDeclarations(
         IOrdinaryTypeNameNode node,
         bool withAttributeSuffix = false)
     {
         var name = withAttributeSuffix ? node.Name.WithAttributeSuffix() : node.Name;
-        return node.ContainingLexicalScope.Lookup(name).OfType<ITypeDeclarationNode>().ToFixedSet();
+        return node.ContainingLexicalScope.Lookup<ITypeDeclarationNode>(name).ToFixedSet();
     }
 
     public static partial ITypeDeclarationNode? QualifiedTypeName_ReferencedDeclaration(IQualifiedTypeNameNode node)

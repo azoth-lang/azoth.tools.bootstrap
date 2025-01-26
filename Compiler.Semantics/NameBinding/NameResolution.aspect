@@ -35,3 +35,7 @@
 ✎ UnresolvedNameExpressionQualifiedNameExpression replace_with UnresolvedTypeQualifiedNameExpression;
 ✎ UnresolvedNamespaceQualifiedNameExpression replace_with NameExpression;
 ✎ UnresolvedTypeQualifiedNameExpression replace_with NameExpression;
+
+// ---------- Unresolved Names
+↑ UnresolvedOrdinaryName.ReferencedDeclarations: NamespaceOrOrdinaryTypeDeclaration*;
+= UnresolvedOrdinaryName.ReferencedDeclarations;

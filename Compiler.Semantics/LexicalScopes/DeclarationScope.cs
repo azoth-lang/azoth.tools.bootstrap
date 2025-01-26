@@ -27,11 +27,11 @@ internal class DeclarationScope : LexicalScope
     {
     }
 
-    public override IEnumerable<IDeclarationNode> Lookup(OrdinaryName name)
+    public override IEnumerable<TDeclaration> Lookup<TDeclaration>(OrdinaryName name)
     {
         if (declarations.TryGetValue(name, out var nodes))
-            return nodes;
-        return parent.Lookup(name);
+            return nodes.OfType<TDeclaration>();
+        return parent.Lookup<TDeclaration>(name);
     }
 
     /// <remarks>Declarations can contain the <see cref="BuiltInTypeName.Self"/> declaration.</remarks>
