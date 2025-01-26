@@ -109,7 +109,7 @@ Capability <: CapabilityConstraint = Tokens:`ICapabilityToken`* Capability:`Decl
 
 // ---------- Parameters and Return
 Parameter <: Code = Name:`IdentifierName`?;
-/// A non-self parameter that can be declared in a constructor
+/// A non-self parameter that can be declared in an initializer
 ConstructorOrInitializerParameter <: Parameter;
 NamedParameter <: ConstructorOrInitializerParameter, LocalBinding
     = IsMutableBinding:`bool` IsLentBinding:`bool` Name:`IdentifierName` Type DefaultValue:Expression?;
@@ -171,6 +171,14 @@ NewObjectExpression <: Expression
 
 UnsafeExpression <: Expression = Expression;
 
+// ---------- Instance Member Access Expressions
+// TODO MemberAccessExpression should be an Expression once QualifiedName works properly
+/// Note: this has MemberName and GenericArguments instead of a qualified UnqualifiedName name
+/// attribute because in the semantic model it becomes confusing to have that. It is too easy for
+/// the UnqualifiedName to be treated as a stand-alone name instead of binding it in context.
+concrete MemberAccessExpression <: NameExpression
+    = Context:Expression MemberNameSpan:`TextSpan` MemberName:`OrdinaryName` GenericArguments:Type*;
+
 // ---------- Literal Expressions
 LiteralExpression <: Expression;
 BoolLiteralExpression <: LiteralExpression = Value:`bool`;
@@ -205,12 +213,6 @@ NameExpression <: Expression;
 // See the names section for more nodes that are name expressions
 InstanceExpression <: NameExpression; // i.e. `self` or `base`
 SelfExpression <: InstanceExpression = IsImplicit:`bool`;
-// TODO should MemberAccessExpression really be a NameExpression once QualifiedName works properly?
-/// Note: this has MemberName and GenericArguments instead of a qualified UnqualifiedName name
-/// attribute because in the semantic model it becomes confusing to have that. It is too easy for
-/// the UnqualifiedName to be treated as a stand-alone name instead of binding it in context.
-concrete MemberAccessExpression <: NameExpression
-    = Context:Expression MemberNameSpan:`TextSpan` MemberName:`OrdinaryName` GenericArguments:Type*;
 MissingName <: NameExpression;
 
 // ---------- Names
