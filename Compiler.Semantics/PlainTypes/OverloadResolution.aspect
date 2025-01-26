@@ -53,7 +53,6 @@
 
 ↑ InitializerInvocationExpression.SelectedCallCandidate: `ICallCandidate<IInitializerDeclarationNode>`?
     => Initializer.SelectedCallCandidate;
-= InitializerInvocationExpression.↑.Diagnostics;
 
 // ---------- Name Expressions
 ↑ FunctionGroupName.CallCandidates: {`ICallCandidate<IFunctionInvocableDeclarationNode>`};

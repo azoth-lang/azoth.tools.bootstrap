@@ -274,24 +274,6 @@ internal static partial class OverloadResolutionAspect
         return node.CallCandidates.OfType<ICallCandidate<ISetterMethodDeclarationNode>>()
                    .Where(c => c.CompatibleWith(argumentPlainTypes)).ToFixedSet();
     }
-
-    public static partial void InitializerInvocationExpression_Contribute_Diagnostics(IInitializerInvocationExpressionNode node, DiagnosticCollectionBuilder diagnostics)
-    {
-        var initializer = node.Initializer;
-        switch (initializer.InitializingPlainType)
-        {
-            case UnknownPlainType:
-                // Error should be reported elsewhere
-                return;
-            case NeverPlainType:
-            case GenericParameterPlainType:
-            case BarePlainType { TypeConstructor.CanBeInstantiated: false }:
-                // TODO type variables, empty types and others also cannot be constructed. Report proper error message in that case
-                diagnostics.Add(
-                    OtherSemanticError.CannotInitializeAbstractType(node.File, initializer.Context.Syntax));
-                return;
-        }
-    }
     #endregion
 
     #region Name Expressions
@@ -356,8 +338,6 @@ internal static partial class OverloadResolutionAspect
     public static partial ICallCandidate<IOrdinaryMethodDeclarationNode>? MethodGroupName_SelectedCallCandidate(IMethodGroupNameNode node)
         => node.CompatibleCallCandidates.TrySingle();
 
-
-
     public static partial IFixedSet<ICallCandidate<IInitializerDeclarationNode>> InitializerGroupName_CallCandidates(IInitializerGroupNameNode node)
     {
         var initializingPlainType = node.InitializingPlainType;
@@ -375,20 +355,36 @@ internal static partial class OverloadResolutionAspect
         => node.CompatibleCallCandidates.TrySingle();
 
     public static partial void InitializerGroupName_Contribute_Diagnostics(IInitializerGroupNameNode node, DiagnosticCollectionBuilder diagnostics)
-        => ContributeInitializerNameBindingDiagnostics(node.ReferencedDeclaration, node.CompatibleCallCandidates, node, diagnostics);
+        => ContributeInitializerNameBindingDiagnostics(node.ReferencedDeclaration, node.InitializingPlainType, node.CompatibleCallCandidates, node, diagnostics);
 
     public static partial void InitializerNameExpression_Contribute_Diagnostics(IInitializerNameExpressionNode node, DiagnosticCollectionBuilder diagnostics)
-        => ContributeInitializerNameBindingDiagnostics(node.ReferencedDeclaration, node.CompatibleCallCandidates, node, diagnostics);
+        => ContributeInitializerNameBindingDiagnostics(node.ReferencedDeclaration, node.InitializingPlainType, node.CompatibleCallCandidates, node, diagnostics);
 
     private static void ContributeInitializerNameBindingDiagnostics(
-        IInitializerDeclarationNode? referencedDeclaration,
+        IInitializerDeclarationNode? referencedInitializer,
+        IMaybePlainType initializingPlainType,
         IFixedSet<ICallCandidate<IInitializerDeclarationNode>> compatibleCallCandidates,
         INameExpressionNode node,
         DiagnosticCollectionBuilder diagnostics)
     {
-        if (referencedDeclaration is not null
+        if (node.Parent is IUnresolvedInvocationExpressionNode)
             // errors will be reported by the parent in this case
-            || node.Parent is IUnresolvedInvocationExpressionNode)
+            return;
+
+        switch (initializingPlainType)
+        {
+            case UnknownPlainType:
+                // Error should be reported elsewhere
+                return;
+            case NeverPlainType:
+            case GenericParameterPlainType:
+            case BarePlainType { TypeConstructor.CanBeInstantiated: false }:
+                // TODO type variables, empty types and others also cannot be constructed. Report proper error message in that case
+                diagnostics.Add(OtherSemanticError.CannotInitializeAbstractType(node.File, node.Syntax));
+                return;
+        }
+
+        if (referencedInitializer is not null)
             return;
 
         switch (compatibleCallCandidates.Count)

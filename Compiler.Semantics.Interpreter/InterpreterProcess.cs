@@ -193,12 +193,10 @@ public class InterpreterProcess
                 $"Parameter to main of type {parameterType.ToILString()} not supported");
 
         // TODO further restrict what can be passed to main
-
+        // TODO support passing structs to main?
         var @class = userTypes.Values.OfType<IClassDefinitionNode>().Single(c => c.Symbol.TypeConstructor.Equals(type.TypeConstructor));
-        var constructorSymbol = @class.DefaultConstructor?.Symbol.Assigned()
-            ?? @class.Members.OfType<IConstructorDefinitionNode>().Select(c => c.Symbol.Assigned())
-                     .Single(c => c.Arity == 0);
-        return await ConstructClass(@class, constructorSymbol, []);
+        var initializerSymbol = NoArgInitializerSymbol(@class);
+        return await CallInitializerAsync(initializerSymbol, []);
     }
 
     internal async ValueTask<AzothValue> CallFunctionAsync(FunctionSymbol functionSymbol, IReadOnlyList<AzothValue> arguments)
@@ -330,8 +328,15 @@ public class InterpreterProcess
     private static ConstructorSymbol NoArgConstructorSymbol(IClassDefinitionNode baseClass)
     {
         return baseClass.DefaultConstructor?.Symbol
-               ?? baseClass.Members.OfType<IOrdinaryConstructorDefinitionNode>().Select(c => c.Symbol.Assigned())
-                           .Single(c => c.Arity == 0);
+               ?? baseClass.Members.OfType<IOrdinaryConstructorDefinitionNode>()
+                           .Select(c => c.Symbol.Assigned()).Single(c => c.Arity == 0);
+    }
+
+    private static InitializerSymbol NoArgInitializerSymbol(IClassDefinitionNode baseClass)
+    {
+        return baseClass.DefaultInitializer?.Symbol
+               ?? baseClass.Members.OfType<IInitializerDefinitionNode>()
+                           .Select(c => c.Symbol.Assigned()).Single(c => c.Arity == 0);
     }
 
     private async ValueTask<AzothValue> CallStructInitializerAsync(
@@ -391,7 +396,7 @@ public class InterpreterProcess
     /// <summary>
     /// Call the implicit default initializer for a type that has no initializers.
     /// </summary>
-    private static ValueTask<AzothValue> CallDefaultInitializerAsync(
+    private async ValueTask<AzothValue> CallDefaultInitializerAsync(
         ITypeDefinitionNode typeDefinition, AzothValue self)
     {
         // Initialize fields to default values
@@ -399,7 +404,18 @@ public class InterpreterProcess
         foreach (var field in fields)
             self.ObjectValue[field.Symbol.Assigned().Name] = new AzothValue();
 
-        return ValueTask.FromResult(self);
+        if (typeDefinition is IClassDefinitionNode
+            {
+                BaseTypeName.ReferencedDeclaration.Symbol: OrdinaryTypeSymbol
+                 baseClassSymbol
+            })
+        {
+            var baseClass = (IClassDefinitionNode)userTypes[baseClassSymbol];
+            var noArgConstructorSymbol = NoArgInitializerSymbol(baseClass);
+            await CallInitializerAsync(baseClass, noArgConstructorSymbol, self, []);
+        }
+
+        return self;
     }
 
     internal async ValueTask<AzothValue> CallMethodAsync(

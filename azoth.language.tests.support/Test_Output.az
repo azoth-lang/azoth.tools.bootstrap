@@ -2,11 +2,6 @@ published class Test_Output
 {
     let newline: const string;
 
-    public new(mut self)
-    {
-        .newline = "\n";
-    }
-
     public init(mut self)
     {
         .newline = "\n";
