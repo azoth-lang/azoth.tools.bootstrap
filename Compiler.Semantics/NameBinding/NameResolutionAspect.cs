@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -7,6 +8,7 @@ using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Compiler.Syntax;
 using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 using Azoth.Tools.Bootstrap.Framework;
+using Type = Azoth.Tools.Bootstrap.Compiler.Types.Decorated.Type;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.NameBinding;
 
@@ -297,7 +299,7 @@ internal static partial class NameResolutionAspect
         return null;
     }
 
-    // TODO diagnostics for UnresolvedNamespaceQualifiedName
+    // TODO diagnostics for UnresolvedNamespaceQualifiedNameExpression
 
     public static partial INameExpressionNode? UnresolvedTypeQualifiedNameExpression_ReplaceWith_NameExpression(IUnresolvedTypeQualifiedNameExpressionNode node)
     {
@@ -319,12 +321,120 @@ internal static partial class NameResolutionAspect
         return null;
     }
 
-    // TODO diagnostics for UnresolvedTypeQualifiedName
+    // TODO diagnostics for UnresolvedTypeQualifiedNameExpression
     #endregion
 
     #region Unresolved Names
     public static partial IFixedList<INamespaceOrOrdinaryTypeDeclarationNode> UnresolvedOrdinaryName_ReferencedDeclarations(IUnresolvedOrdinaryNameNode node)
         => node.ContainingLexicalScope.Lookup<INamespaceOrOrdinaryTypeDeclarationNode>(node.Name).ToFixedList();
+
+    public static partial void UnresolvedOrdinaryName_Contribute_Diagnostics(IUnresolvedOrdinaryNameNode node, DiagnosticCollectionBuilder diagnostics)
+    {
+        switch (node.ReferencedDeclarations.Count)
+        {
+            case 0:
+                // TODO replace with more specific error about failing to bind a namespace or type name
+                diagnostics.Add(NameBindingError.CouldNotBindName(node.File, node.Syntax.Span));
+                break;
+            case 1:
+                // If there is only one match, then ReferencedSymbol is not null
+                throw new UnreachableException();
+            default:
+                // TODO replace with more specific error about failing to bind a namespace or type name
+                // TODO better errors explaining. For example, are they different kinds of declarations?
+                diagnostics.Add(NameBindingError.AmbiguousName(node.File, node.Syntax.Span));
+                break;
+        }
+    }
+
+    public static partial INameNode? UnresolvedIdentifierName_ReplaceWith_Name(IUnresolvedIdentifierNameNode node)
+    {
+        var referencedDeclarations = node.ReferencedDeclarations;
+
+        // If not all referenced declarations are namespaces, then this is not a namespace name.
+        if (referencedDeclarations.TryAllOfType<INamespaceDeclarationNode>(out var referencedNamespaces))
+            return IUnqualifiedNamespaceNameNode.Create(node.Syntax, referencedNamespaces);
+
+
+        if (referencedDeclarations.TrySingle() is not null and var referencedDeclaration)
+            switch (referencedDeclaration)
+            {
+                case ITypeDeclarationNode referencedType:
+                    throw new NotImplementedException();
+                    // TODO a way to pass along referenced declarations rather than requiring they be figured out again?
+                    //return IIdentifierTypeNameNode.Create(node.Syntax);
+            }
+
+        return null;
+    }
+
+    public static partial INameNode? UnresolvedGenericName_ReplaceWith_Name(IUnresolvedGenericNameNode node)
+    {
+        var referencedDeclarations = node.ReferencedDeclarations;
+
+        if (referencedDeclarations.TrySingle() is not null and var referencedDeclaration)
+            switch (referencedDeclaration)
+            {
+                case ITypeDeclarationNode referencedType:
+                    throw new NotImplementedException();
+                    // TODO a way to pass along referenced declarations rather than requiring they be figured out again?
+                    //return IGenericTypeNameNode.Create(node.Syntax, node.GenericArguments);
+            }
+
+        return null;
+    }
+
+    public static partial IUnresolvedNamespaceQualifiedNameNode? UnresolvedNameQualifiedName_ReplaceWith_UnresolvedNamespaceQualifiedName(IUnresolvedNameQualifiedNameNode node)
+    {
+        if (node.Context is not INamespaceNameNode context) return null;
+        var referencedDeclarations = context.ReferencedDeclarations.SelectMany(d => d.MembersNamed(node.MemberName)).ToFixedSet();
+        return IUnresolvedNamespaceQualifiedNameNode.Create(node.Syntax, context, node.GenericArguments, referencedDeclarations);
+    }
+
+    public static partial IUnresolvedTypeQualifiedNameNode? UnresolvedNameQualifiedName_ReplaceWith_UnresolvedTypeQualifiedName(IUnresolvedNameQualifiedNameNode node)
+    {
+        if (node.Context is not ITypeNameExpressionNode context) return null;
+        var referencedDeclarations = context.ReferencedDeclaration.AssociatedMembersNamed(node.MemberName).ToFixedSet();
+        return IUnresolvedTypeQualifiedNameNode.Create(node.Syntax, context, node.GenericArguments, referencedDeclarations);
+    }
+
+    public static partial INameNode? UnresolvedNamespaceQualifiedName_ReplaceWith_Name(IUnresolvedNamespaceQualifiedNameNode node)
+    {
+        var referencedDeclarations = node.ReferencedDeclarations;
+
+        if (referencedDeclarations.Count == 0)
+            // Cannot resolve namespace member access, no need to process other rewrites
+            return node;
+
+        if (referencedDeclarations.TryAllOfType<INamespaceDeclarationNode>(out var referencedNamespaces))
+            return IQualifiedNamespaceNameNode.Create(node.Syntax, node.Context, referencedNamespaces);
+
+        // TODO select correct type declaration based on generic arguments
+        if (referencedDeclarations.TrySingle() is ITypeDeclarationNode referencedType)
+            throw new NotImplementedException();
+        // return IQualifiedTypeNameNode.Create(node.Syntax, node.Context, node.GenericArguments, referencedType);
+
+        return null;
+    }
+
+    // TODO diagnostics for UnresolvedNamespaceQualifiedName
+
+    public static partial INameNode? UnresolvedTypeQualifiedName_ReplaceWith_Name(IUnresolvedTypeQualifiedNameNode node)
+    {
+        var referencedDeclarations = node.ReferencedDeclarations;
+        if (referencedDeclarations.Count == 0)
+            // Cannot resolve type associated member access, no need to process other rewrites
+            return node;
+
+        // TODO select correct type declaration based on generic arguments
+        if (referencedDeclarations.TrySingle() is ITypeDeclarationNode referencedType)
+            throw new NotImplementedException();
+        // return IQualifiedTypeNameNode.Create(node.Syntax, node.Context, node.GenericArguments, referencedType);
+
+        return null;
+    }
+
+    // TODO diagnostics for UnresolvedTypeQualifiedName
     #endregion
 
     private static bool TryAllOfType<T>(

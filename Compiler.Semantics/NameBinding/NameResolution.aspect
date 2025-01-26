@@ -39,3 +39,10 @@
 // ---------- Unresolved Names
 ↑ UnresolvedOrdinaryName.ReferencedDeclarations: NamespaceOrOrdinaryTypeDeclaration*;
 = UnresolvedOrdinaryName.ReferencedDeclarations;
+= UnresolvedOrdinaryName.↑.Diagnostics;
+✎ UnresolvedIdentifierName replace_with Name;
+✎ UnresolvedGenericName replace_with Name;
+✎ UnresolvedNameQualifiedName replace_with UnresolvedNamespaceQualifiedName;
+✎ UnresolvedNameQualifiedName replace_with UnresolvedTypeQualifiedName;
+✎ UnresolvedNamespaceQualifiedName replace_with Name;
+✎ UnresolvedTypeQualifiedName replace_with Name;

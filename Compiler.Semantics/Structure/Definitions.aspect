@@ -182,6 +182,9 @@
 = OrdinaryTypeNameExpression.Name => Syntax.Name;
 = QualifiedTypeNameExpression.Name => Syntax.MemberName;
 
+// ---------- Unresolved Names
+↑ UnresolvedQualifiedName.MemberName: `OrdinaryName` => Syntax.MemberName;
+
 // ---------- Type Names
 ↑ UnqualifiedTypeName.Name: `UnqualifiedName` => Syntax.Name;
 ↑ BuiltInTypeName.Name: `BuiltInTypeName` => Syntax.Name;

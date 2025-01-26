@@ -33,6 +33,8 @@ internal static partial class NameResolutionAspect
     public static partial void UnresolvedOrdinaryNameExpression_Contribute_Diagnostics(IUnresolvedOrdinaryNameExpressionNode node, DiagnosticCollectionBuilder diagnostics);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFixedList<INamespaceOrOrdinaryTypeDeclarationNode> UnresolvedOrdinaryName_ReferencedDeclarations(IUnresolvedOrdinaryNameNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial void UnresolvedOrdinaryName_Contribute_Diagnostics(IUnresolvedOrdinaryNameNode node, DiagnosticCollectionBuilder diagnostics);
     public static partial IExpressionNode? UnresolvedMemberAccessExpression_ExpressionContext_ReplaceWith_Expression(IUnresolvedMemberAccessExpressionNode node);
     public static partial IMethodAccessExpressionNode? MethodGroupName_ReplaceWith_MethodAccessExpression(IMethodGroupNameNode node);
     public static partial IExpressionNode? AssignmentExpression_PropertyNameLeftOperand_Rewrite(IAssignmentExpressionNode node);
@@ -44,4 +46,10 @@ internal static partial class NameResolutionAspect
     public static partial IUnresolvedTypeQualifiedNameExpressionNode? UnresolvedNameExpressionQualifiedNameExpression_ReplaceWith_UnresolvedTypeQualifiedNameExpression(IUnresolvedNameExpressionQualifiedNameExpressionNode node);
     public static partial INameExpressionNode? UnresolvedNamespaceQualifiedNameExpression_ReplaceWith_NameExpression(IUnresolvedNamespaceQualifiedNameExpressionNode node);
     public static partial INameExpressionNode? UnresolvedTypeQualifiedNameExpression_ReplaceWith_NameExpression(IUnresolvedTypeQualifiedNameExpressionNode node);
+    public static partial INameNode? UnresolvedIdentifierName_ReplaceWith_Name(IUnresolvedIdentifierNameNode node);
+    public static partial INameNode? UnresolvedGenericName_ReplaceWith_Name(IUnresolvedGenericNameNode node);
+    public static partial IUnresolvedNamespaceQualifiedNameNode? UnresolvedNameQualifiedName_ReplaceWith_UnresolvedNamespaceQualifiedName(IUnresolvedNameQualifiedNameNode node);
+    public static partial IUnresolvedTypeQualifiedNameNode? UnresolvedNameQualifiedName_ReplaceWith_UnresolvedTypeQualifiedName(IUnresolvedNameQualifiedNameNode node);
+    public static partial INameNode? UnresolvedNamespaceQualifiedName_ReplaceWith_Name(IUnresolvedNamespaceQualifiedNameNode node);
+    public static partial INameNode? UnresolvedTypeQualifiedName_ReplaceWith_Name(IUnresolvedTypeQualifiedNameNode node);
 }

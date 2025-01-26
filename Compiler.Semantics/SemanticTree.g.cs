@@ -3284,6 +3284,8 @@ public partial interface IUnresolvedQualifiedNameNode : IUnresolvedNameNode
     INameNode Context { get; }
     INameNode CurrentContext { get; }
     IFixedList<ITypeNode> GenericArguments { get; }
+    OrdinaryName MemberName
+        => Syntax.MemberName;
 }
 
 [Closed(typeof(UnresolvedNameQualifiedNameNode))]
@@ -17160,6 +17162,7 @@ file class UnresolvedIdentifierNameNode : SemanticNode, IUnresolvedIdentifierNam
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
     {
         ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
+        NameResolutionAspect.UnresolvedOrdinaryName_Contribute_Diagnostics(this, builder);
     }
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
@@ -17175,7 +17178,8 @@ file class UnresolvedIdentifierNameNode : SemanticNode, IUnresolvedIdentifierNam
     }
 
     protected override IChildTreeNode Rewrite()
-        => ExpressionTypesAspect.Expression_ImplicitMove_Insert(this)
+        => NameResolutionAspect.UnresolvedIdentifierName_ReplaceWith_Name(this)
+        ?? ExpressionTypesAspect.Expression_ImplicitMove_Insert(this)
         ?? ExpressionTypesAspect.Expression_ImplicitFreeze_Insert(this)
         ?? ExpressionTypesAspect.Expression_Insert_PrepareToReturnExpression(this)
         ?? ExpressionPlainTypesAspect.Expression_Insert_ImplicitConversionExpression(this)
@@ -17299,6 +17303,7 @@ file class UnresolvedGenericNameNode : SemanticNode, IUnresolvedGenericNameNode
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
     {
         ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
+        NameResolutionAspect.UnresolvedOrdinaryName_Contribute_Diagnostics(this, builder);
     }
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
@@ -17314,7 +17319,8 @@ file class UnresolvedGenericNameNode : SemanticNode, IUnresolvedGenericNameNode
     }
 
     protected override IChildTreeNode Rewrite()
-        => ExpressionTypesAspect.Expression_ImplicitMove_Insert(this)
+        => NameResolutionAspect.UnresolvedGenericName_ReplaceWith_Name(this)
+        ?? ExpressionTypesAspect.Expression_ImplicitMove_Insert(this)
         ?? ExpressionTypesAspect.Expression_ImplicitFreeze_Insert(this)
         ?? ExpressionTypesAspect.Expression_Insert_PrepareToReturnExpression(this)
         ?? ExpressionPlainTypesAspect.Expression_Insert_ImplicitConversionExpression(this)
@@ -17452,7 +17458,9 @@ file class UnresolvedNameQualifiedNameNode : SemanticNode, IUnresolvedNameQualif
     }
 
     protected override IChildTreeNode Rewrite()
-        => ExpressionTypesAspect.Expression_ImplicitMove_Insert(this)
+        => NameResolutionAspect.UnresolvedNameQualifiedName_ReplaceWith_UnresolvedNamespaceQualifiedName(this)
+        ?? NameResolutionAspect.UnresolvedNameQualifiedName_ReplaceWith_UnresolvedTypeQualifiedName(this)
+        ?? ExpressionTypesAspect.Expression_ImplicitMove_Insert(this)
         ?? ExpressionTypesAspect.Expression_ImplicitFreeze_Insert(this)
         ?? ExpressionTypesAspect.Expression_Insert_PrepareToReturnExpression(this)
         ?? ExpressionPlainTypesAspect.Expression_Insert_ImplicitConversionExpression(this)
@@ -17593,7 +17601,8 @@ file class UnresolvedNamespaceQualifiedNameNode : SemanticNode, IUnresolvedNames
     }
 
     protected override IChildTreeNode Rewrite()
-        => ExpressionTypesAspect.Expression_ImplicitMove_Insert(this)
+        => NameResolutionAspect.UnresolvedNamespaceQualifiedName_ReplaceWith_Name(this)
+        ?? ExpressionTypesAspect.Expression_ImplicitMove_Insert(this)
         ?? ExpressionTypesAspect.Expression_ImplicitFreeze_Insert(this)
         ?? ExpressionTypesAspect.Expression_Insert_PrepareToReturnExpression(this)
         ?? ExpressionPlainTypesAspect.Expression_Insert_ImplicitConversionExpression(this)
@@ -17734,7 +17743,8 @@ file class UnresolvedTypeQualifiedNameNode : SemanticNode, IUnresolvedTypeQualif
     }
 
     protected override IChildTreeNode Rewrite()
-        => ExpressionTypesAspect.Expression_ImplicitMove_Insert(this)
+        => NameResolutionAspect.UnresolvedTypeQualifiedName_ReplaceWith_Name(this)
+        ?? ExpressionTypesAspect.Expression_ImplicitMove_Insert(this)
         ?? ExpressionTypesAspect.Expression_ImplicitFreeze_Insert(this)
         ?? ExpressionTypesAspect.Expression_Insert_PrepareToReturnExpression(this)
         ?? ExpressionPlainTypesAspect.Expression_Insert_ImplicitConversionExpression(this)
