@@ -33,10 +33,10 @@
 = TypeDefinition.*.**.ContainingTypeDefinition => this;
 
 // ---------- Type Definition Parts
-↓ computed GenericParameter.ContainingDeclaration: UserTypeDeclaration;
+↓ computed GenericParameter.ContainingDeclaration: OrdinaryTypeDeclaration;
 
 // ---------- Type Member Definitions
-↓ computed AlwaysTypeMemberDefinition.ContainingDeclaration: UserTypeDeclaration;
+↓ computed AlwaysTypeMemberDefinition.ContainingDeclaration: OrdinaryTypeDeclaration;
 
 // ---------- Member Definitions
 ↓ ConstructorDefinition.ContainingTypeDefinition: TypeDefinition;
@@ -70,7 +70,7 @@
 = TypeDeclaration.*.**.ContainingDeclaration => this;
 
 // ---------- Type Declaration Parts
-↓ computed GenericParameterDeclaration.ContainingDeclaration: UserTypeDeclaration;
+↓ computed GenericParameterDeclaration.ContainingDeclaration: OrdinaryTypeDeclaration;
 ↓ computed ImplicitSelfDeclaration.ContainingDeclaration: NonVariableTypeDeclaration;
 
 // ---------- Type Member Declarations

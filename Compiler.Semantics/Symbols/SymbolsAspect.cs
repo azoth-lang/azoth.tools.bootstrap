@@ -97,7 +97,7 @@ internal static partial class SymbolsAspect
     public static partial InvocableSymbol? Attribute_ReferencedSymbol(IAttributeNode node)
     {
         var referencedTypeSymbolNode = node.TypeName.ReferencedDeclaration;
-        if (referencedTypeSymbolNode is not IUserTypeDeclarationNode userTypeSymbolNode)
+        if (referencedTypeSymbolNode is not IOrdinaryTypeDeclarationNode userTypeSymbolNode)
             return null;
 
         // TODO there should be a cleaner way to do this

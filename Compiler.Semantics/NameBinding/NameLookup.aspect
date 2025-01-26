@@ -30,13 +30,13 @@
     => InclusiveInstanceMembersByName.GetValueOrDefault(name) ?? [];
 = BuiltInTypeDeclaration.AssociatedMembersNamed(OrdinaryName name)
     => AssociatedMembersByName.GetValueOrDefault(name) ?? [];
-↑ UserTypeDeclaration.InclusiveInstanceMembersByName: `FixedDictionary<OrdinaryName, IFixedSet<IInstanceMemberDeclarationNode>>`;
-= UserTypeDeclaration.InclusiveInstanceMembersByName;
-↑ UserTypeDeclaration.AssociatedMembersByName: `FixedDictionary<OrdinaryName, IFixedSet<IAssociatedMemberDeclarationNode>>`;
-= UserTypeDeclaration.AssociatedMembersByName;
-= UserTypeDeclaration.InclusiveInstanceMembersNamed(OrdinaryName name)
+↑ OrdinaryTypeDeclaration.InclusiveInstanceMembersByName: `FixedDictionary<OrdinaryName, IFixedSet<IInstanceMemberDeclarationNode>>`;
+= OrdinaryTypeDeclaration.InclusiveInstanceMembersByName;
+↑ OrdinaryTypeDeclaration.AssociatedMembersByName: `FixedDictionary<OrdinaryName, IFixedSet<IAssociatedMemberDeclarationNode>>`;
+= OrdinaryTypeDeclaration.AssociatedMembersByName;
+= OrdinaryTypeDeclaration.InclusiveInstanceMembersNamed(OrdinaryName name)
     => InclusiveInstanceMembersByName.GetValueOrDefault(name) ?? [];
-= UserTypeDeclaration.AssociatedMembersNamed(OrdinaryName name)
+= OrdinaryTypeDeclaration.AssociatedMembersNamed(OrdinaryName name)
     => AssociatedMembersByName.GetValueOrDefault(name) ?? [];
 
 // ---------- Type Declaration Parts

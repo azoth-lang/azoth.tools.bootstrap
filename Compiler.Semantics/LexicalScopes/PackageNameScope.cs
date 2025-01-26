@@ -109,7 +109,7 @@ public sealed class PackageNameScope
 
     public ITypeDeclarationNode Lookup(GenericParameterPlainType plainType)
     {
-        var declaringTypeNode = (IUserTypeDeclarationNode)Lookup(plainType.DeclaringTypeConstructor);
+        var declaringTypeNode = (IOrdinaryTypeDeclarationNode)Lookup(plainType.DeclaringTypeConstructor);
         return declaringTypeNode.GenericParameters.Single(p => p.Name == plainType.Name);
     }
     #endregion

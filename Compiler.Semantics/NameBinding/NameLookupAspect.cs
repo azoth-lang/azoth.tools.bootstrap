@@ -24,11 +24,11 @@ internal static partial class NameLookupAspect
         => node.Members.OfType<IAssociatedMemberDeclarationNode>().ToNameLookup();
 
     public static partial FixedDictionary<OrdinaryName, IFixedSet<IInstanceMemberDeclarationNode>>
-        UserTypeDeclaration_InclusiveInstanceMembersByName(IUserTypeDeclarationNode node)
+        OrdinaryTypeDeclaration_InclusiveInstanceMembersByName(IOrdinaryTypeDeclarationNode node)
         => node.InclusiveMembers.OfType<IInstanceMemberDeclarationNode>().ToNameLookup();
 
     public static partial FixedDictionary<OrdinaryName, IFixedSet<IAssociatedMemberDeclarationNode>>
-        UserTypeDeclaration_AssociatedMembersByName(IUserTypeDeclarationNode node)
+        OrdinaryTypeDeclaration_AssociatedMembersByName(IOrdinaryTypeDeclarationNode node)
         => node.Members.OfType<IAssociatedMemberDeclarationNode>().ToNameLookup();
 
     private static FixedDictionary<OrdinaryName, IFixedSet<T>> ToNameLookup<T>(this IEnumerable<T> members)

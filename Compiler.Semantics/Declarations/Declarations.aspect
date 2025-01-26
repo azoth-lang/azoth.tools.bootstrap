@@ -52,8 +52,8 @@
 ↑ TypeDeclaration.InclusiveMembers: {TypeMemberDeclaration};
 ↑ NonVariableTypeDeclaration.TypeConstructor: `BareTypeConstructor`;
 ↑ NonVariableTypeDeclaration.ImplicitSelf: ImplicitSelfDeclaration;
-↑ UserTypeDeclaration.Symbol: `OrdinaryTypeSymbol`;
-↑ UserTypeDeclaration.InclusiveMembers: {TypeMemberDeclaration};
+↑ OrdinaryTypeDeclaration.Symbol: `OrdinaryTypeSymbol`;
+↑ OrdinaryTypeDeclaration.InclusiveMembers: {TypeMemberDeclaration};
 ↑ ClassDeclaration.InclusiveMembers: {ClassMemberDeclaration};
 ↑ StructDeclaration.InclusiveMembers: {StructMemberDeclaration};
 ↑ TraitDeclaration.InclusiveMembers: {TraitMemberDeclaration};

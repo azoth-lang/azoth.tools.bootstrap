@@ -78,7 +78,7 @@ FunctionDefinition <: FacetMemberDefinition, FunctionDeclaration, ConcreteFuncti
     = Syntax:`IFunctionDefinitionSyntax` Attributes:Attribute* /Parameters/ /Return/ /Entry/ Body /Exit/;
 
 // ---------- Type Definitions
-TypeDefinition <: Code, FacetMemberDefinition, AssociatedMemberDefinition, UserTypeDeclaration
+TypeDefinition <: Code, FacetMemberDefinition, AssociatedMemberDefinition, OrdinaryTypeDeclaration
     = Syntax:`ITypeDefinitionSyntax`
     GenericParameters:GenericParameter*
     SupertypeNames:OrdinaryTypeName*;
@@ -463,8 +463,8 @@ AwaitExpression <: Expression = Syntax:`IAwaitExpressionSyntax` Expression:Ambig
 Declaration;
 /// A declaration that may have an associated symbol.
 SymbolDeclaration <: Declaration;
-/// A declaration that is definitly a child node.
-// TODO should this be a SymbolDeclaration?
+/// A declaration that is definitly a child node. Note, this is not a `SymbolDeclaration` because
+/// bindings don't have symbols.
 ChildDeclaration <: Declaration, Child;
 /// A declaration that has a name.
 NamedDeclaration <: ChildDeclaration;
@@ -508,12 +508,11 @@ TypeDeclaration <: NamedDeclaration, SymbolDeclaration;
 // TODO this needs a better name
 NonVariableTypeDeclaration <: TypeDeclaration;
 BuiltInTypeDeclaration <: NonVariableTypeDeclaration = Name:`BuiltInTypeName` Members:{TypeMemberDeclaration};
-// TODO should this be renamed Ordinary?
-UserTypeDeclaration <: NamespaceMemberDeclaration, ClassMemberDeclaration, TraitMemberDeclaration, StructMemberDeclaration, NonVariableTypeDeclaration, NamespaceOrOrdinaryTypeDeclaration
+OrdinaryTypeDeclaration <: NamespaceMemberDeclaration, ClassMemberDeclaration, TraitMemberDeclaration, StructMemberDeclaration, NonVariableTypeDeclaration, NamespaceOrOrdinaryTypeDeclaration
     = Name:`OrdinaryName` GenericParameters:GenericParameterDeclaration* Members:{TypeMemberDeclaration};
-ClassDeclaration <: UserTypeDeclaration = Members:{ClassMemberDeclaration};
-StructDeclaration <: UserTypeDeclaration = Members:{StructMemberDeclaration};
-TraitDeclaration <: UserTypeDeclaration = Members:{TraitMemberDeclaration};
+ClassDeclaration <: OrdinaryTypeDeclaration = Members:{ClassMemberDeclaration};
+StructDeclaration <: OrdinaryTypeDeclaration = Members:{StructMemberDeclaration};
+TraitDeclaration <: OrdinaryTypeDeclaration = Members:{TraitMemberDeclaration};
 
 // ---------- Type Declaration Parts
 GenericParameterDeclaration <: TypeDeclaration, AssociatedMemberDeclaration
@@ -576,7 +575,7 @@ NonVariableTypeSymbol <: NonVariableTypeDeclaration, TypeSymbol;
 BuiltInTypeSymbol <: BuiltInTypeDeclaration, NonVariableTypeSymbol = Symbol:`BuiltInTypeSymbol`;
 VoidTypeSymbol <: TypeSymbol = Symbol:`VoidTypeSymbol`;
 NeverTypeSymbol <: TypeSymbol = Symbol:`NeverTypeSymbol`;
-OrdinaryTypeSymbol <: UserTypeDeclaration, NonVariableTypeSymbol, NamespaceMemberSymbol = Symbol:`OrdinaryTypeSymbol`;
+OrdinaryTypeSymbol <: OrdinaryTypeDeclaration, NonVariableTypeSymbol, NamespaceMemberSymbol = Symbol:`OrdinaryTypeSymbol`;
 ClassSymbol <: ClassDeclaration, OrdinaryTypeSymbol = /GenericParameters/ /Members/;
 StructSymbol <: StructDeclaration, OrdinaryTypeSymbol = /GenericParameters/ /Members/;
 TraitSymbol <: TraitDeclaration, OrdinaryTypeSymbol = /GenericParameters/ /Members/;

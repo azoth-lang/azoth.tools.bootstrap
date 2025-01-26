@@ -20,7 +20,7 @@ internal static partial class NameLookupAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial FixedDictionary<OrdinaryName, IFixedSet<IAssociatedMemberDeclarationNode>> BuiltInTypeDeclaration_AssociatedMembersByName(IBuiltInTypeDeclarationNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial FixedDictionary<OrdinaryName, IFixedSet<IInstanceMemberDeclarationNode>> UserTypeDeclaration_InclusiveInstanceMembersByName(IUserTypeDeclarationNode node);
+    public static partial FixedDictionary<OrdinaryName, IFixedSet<IInstanceMemberDeclarationNode>> OrdinaryTypeDeclaration_InclusiveInstanceMembersByName(IOrdinaryTypeDeclarationNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial FixedDictionary<OrdinaryName, IFixedSet<IAssociatedMemberDeclarationNode>> UserTypeDeclaration_AssociatedMembersByName(IUserTypeDeclarationNode node);
+    public static partial FixedDictionary<OrdinaryName, IFixedSet<IAssociatedMemberDeclarationNode>> OrdinaryTypeDeclaration_AssociatedMembersByName(IOrdinaryTypeDeclarationNode node);
 }
