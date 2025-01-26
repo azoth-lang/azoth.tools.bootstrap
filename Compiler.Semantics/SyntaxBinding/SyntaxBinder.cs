@@ -554,6 +554,24 @@ internal static class SyntaxBinder
     #endregion
 
     #region Semantic Nodes: Names
+    private static INameNode Name(INameSyntax syntax)
+        => syntax switch
+        {
+            IBuiltInTypeNameSyntax syn => BuiltInTypeNameExpression(syn),
+            IIdentifierNameSyntax syn => IdentifierName(syn),
+            IGenericNameSyntax syn => GenericName(syn),
+            IQualifiedNameSyntax syn => QualifiedName(syn),
+            _ => throw ExhaustiveMatch.Failed(syntax),
+        };
+
+    private static IUnresolvedIdentifierNameNode IdentifierName(IIdentifierNameSyntax syntax)
+        => IUnresolvedIdentifierNameNode.Create(syntax);
+
+    private static IUnresolvedGenericNameNode GenericName(IGenericNameSyntax syntax)
+        => IUnresolvedGenericNameNode.Create(syntax, Types(syntax.GenericArguments));
+
+    private static IUnresolvedNameQualifiedNameNode QualifiedName(IQualifiedNameSyntax syntax)
+        => IUnresolvedNameQualifiedNameNode.Create(syntax, Name(syntax.Context), Types(syntax.GenericArguments));
     #endregion
 
     #region Semantic Nodes: Type Names
@@ -586,7 +604,7 @@ internal static class SyntaxBinder
         => IGenericTypeNameNode.Create(syntax, Types(syntax.GenericArguments));
 
     private static IQualifiedTypeNameNode QualifiedTypeName(IQualifiedNameSyntax syntax)
-        => IQualifiedTypeNameNode.Create(syntax, TypeName(syntax.Context), Types(syntax.GenericArguments));
+        => IQualifiedTypeNameNode.Create(syntax, Name(syntax.Context), Types(syntax.GenericArguments));
     #endregion
 
     #endregion

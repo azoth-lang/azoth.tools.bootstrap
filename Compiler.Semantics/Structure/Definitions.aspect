@@ -133,6 +133,11 @@
 // ---------- Unresolved Expressions
 ↑ UnresolvedMemberAccessExpression.MemberName: `OrdinaryName` => Syntax.MemberName;
 
+// ---------- Instance Member Access Expressions
+↑ FieldAccessExpression.FieldName: `IdentifierName` => (IdentifierName)Syntax.MemberName;
+↑ MethodGroupName.MethodName: `OrdinaryName` => Syntax.MemberName;
+↑ MethodAccessExpression.MethodName: `OrdinaryName` => Syntax.MemberName;
+
 // ---------- Literal Expressions
 ↑ BoolLiteralExpression.Value: `bool` => Syntax.Value;
 ↑ IntegerLiteralExpression.Value: `BigInteger` => Syntax.Value;
@@ -155,6 +160,7 @@
 = FunctionInvocationExpression.AllArguments => Arguments;
 = MethodInvocationExpression.TempAllArguments => TempArguments.Prepend(Method.Context);
 = MethodInvocationExpression.AllArguments => Arguments.Prepend(Method.Context);
+↑ GetterInvocationExpression.PropertyName: `OrdinaryName` => Syntax.MemberName;
 = GetterInvocationExpression.TempAllArguments => [Context];
 = GetterInvocationExpression.AllArguments => [Context];
 = SetterInvocationExpression.TempAllArguments => [Context, TempValue];
@@ -172,6 +178,7 @@
 ↑ SelfExpression.IsImplicit: `bool` => Syntax.IsImplicit;
 
 // ---------- Unresolved Name Expressions
+↑ UnresolvedOrdinaryNameExpression.Name: `OrdinaryName`;
 ↑ UnresolvedIdentifierNameExpression.Name: `IdentifierName` => Syntax.Name;
 ↑ UnresolvedGenericNameExpression.Name: `GenericName` => Syntax.Name;
 
@@ -183,6 +190,9 @@
 = QualifiedTypeNameExpression.Name => Syntax.MemberName;
 
 // ---------- Unresolved Names
+↑ UnresolvedOrdinaryName.Name: `OrdinaryName`;
+↑ UnresolvedIdentifierName.Name: `IdentifierName` => Syntax.Name;
+↑ UnresolvedGenericName.Name: `GenericName` => Syntax.Name;
 ↑ UnresolvedQualifiedName.MemberName: `OrdinaryName` => Syntax.MemberName;
 
 // ---------- Type Names

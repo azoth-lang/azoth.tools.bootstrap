@@ -39,17 +39,17 @@ internal static partial class NameResolutionAspect
             return null;
 
         if (members.TryAllOfType<IOrdinaryMethodDeclarationNode>(out var referencedMethods))
-            return IMethodGroupNameNode.Create(node.Syntax, context, node.MemberName, node.GenericArguments, referencedMethods);
+            return IMethodGroupNameNode.Create(node.Syntax, context, node.GenericArguments, referencedMethods);
 
         if (members.TryAllOfType<IPropertyAccessorDeclarationNode>(out var referencedProperties)
             && node.GenericArguments.Count == 0)
             // We don't really know that it is a getter, but if it isn't then it will be rewritten to a setter
-            return IGetterInvocationExpressionNode.Create(node.Syntax, context, node.MemberName, referencedProperties);
+            return IGetterInvocationExpressionNode.Create(node.Syntax, context, referencedProperties);
 
         // TODO does this need to change for get vs set?
         if (members.Where(m => m is not IPropertyAccessorDeclarationNode)
                    .TrySingle() is IFieldDeclarationNode fieldDeclaration)
-            return IFieldAccessExpressionNode.Create(node.Syntax, context, fieldDeclaration.Name, fieldDeclaration);
+            return IFieldAccessExpressionNode.Create(node.Syntax, context, fieldDeclaration);
 
         return null;
     }
@@ -112,7 +112,7 @@ internal static partial class NameResolutionAspect
             return null;
 
         // if there is aren't multiple declarations, then it isn't ambiguous (it may fail to reference if there are zero).
-        return IMethodAccessExpressionNode.Create(node.Syntax, node.Context, node.MethodName, node.GenericArguments,
+        return IMethodAccessExpressionNode.Create(node.Syntax, node.Context, node.GenericArguments,
             node.ReferencedDeclarations, node.CallCandidates, node.CompatibleCallCandidates, node.SelectedCallCandidate,
             node.ReferencedDeclaration);
     }

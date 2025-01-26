@@ -1084,6 +1084,26 @@ public partial interface IUnsafeExpressionSyntax : IExpressionSyntax
 }
 
 [Closed(
+    typeof(MemberAccessExpressionSyntax),
+    typeof(IQualifiedNameSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
+public partial interface IMemberAccessExpressionSyntax : INameExpressionSyntax
+{
+    IExpressionSyntax Context { get; }
+    TextSpan MemberNameSpan { get; }
+    OrdinaryName MemberName { get; }
+    IFixedList<ITypeSyntax> GenericArguments { get; }
+
+    public static IMemberAccessExpressionSyntax Create(
+        TextSpan span,
+        IExpressionSyntax context,
+        TextSpan memberNameSpan,
+        OrdinaryName memberName,
+        IEnumerable<ITypeSyntax> genericArguments)
+        => new MemberAccessExpressionSyntax(span, context, memberNameSpan, memberName, genericArguments);
+}
+
+[Closed(
     typeof(IBoolLiteralExpressionSyntax),
     typeof(IIntegerLiteralExpressionSyntax),
     typeof(INoneLiteralExpressionSyntax),
@@ -1354,8 +1374,8 @@ public partial interface IInvocationExpressionSyntax : IExpressionSyntax
 }
 
 [Closed(
-    typeof(IInstanceExpressionSyntax),
     typeof(IMemberAccessExpressionSyntax),
+    typeof(IInstanceExpressionSyntax),
     typeof(IMissingNameSyntax),
     typeof(INameSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -1382,26 +1402,6 @@ public partial interface ISelfExpressionSyntax : IInstanceExpressionSyntax
         TextSpan span,
         bool isImplicit)
         => new SelfExpressionSyntax(span, isImplicit);
-}
-
-[Closed(
-    typeof(MemberAccessExpressionSyntax),
-    typeof(IQualifiedNameSyntax))]
-[GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IMemberAccessExpressionSyntax : INameExpressionSyntax
-{
-    IExpressionSyntax Context { get; }
-    TextSpan MemberNameSpan { get; }
-    OrdinaryName MemberName { get; }
-    IFixedList<ITypeSyntax> GenericArguments { get; }
-
-    public static IMemberAccessExpressionSyntax Create(
-        TextSpan span,
-        IExpressionSyntax context,
-        TextSpan memberNameSpan,
-        OrdinaryName memberName,
-        IEnumerable<ITypeSyntax> genericArguments)
-        => new MemberAccessExpressionSyntax(span, context, memberNameSpan, memberName, genericArguments);
 }
 
 [Closed(typeof(MissingNameSyntax))]
@@ -2784,6 +2784,34 @@ file class UnsafeExpressionSyntax : IUnsafeExpressionSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
+file class MemberAccessExpressionSyntax : IMemberAccessExpressionSyntax
+{
+    private IMemberAccessExpressionSyntax Self { [Inline] get => this; }
+
+    public TextSpan Span { [DebuggerStepThrough] get; }
+    public IExpressionSyntax Context { [DebuggerStepThrough] get; }
+    public TextSpan MemberNameSpan { [DebuggerStepThrough] get; }
+    public OrdinaryName MemberName { [DebuggerStepThrough] get; }
+    public IFixedList<ITypeSyntax> GenericArguments { [DebuggerStepThrough] get; }
+    public override string ToString()
+        => FormattingAspect.MemberAccessExpression_ToString(this);
+
+    public MemberAccessExpressionSyntax(
+        TextSpan span,
+        IExpressionSyntax context,
+        TextSpan memberNameSpan,
+        OrdinaryName memberName,
+        IEnumerable<ITypeSyntax> genericArguments)
+    {
+        Span = span;
+        Context = context;
+        MemberNameSpan = memberNameSpan;
+        MemberName = memberName;
+        GenericArguments = genericArguments.ToFixedList();
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
 file class BoolLiteralExpressionSyntax : IBoolLiteralExpressionSyntax
 {
     private IBoolLiteralExpressionSyntax Self { [Inline] get => this; }
@@ -3168,34 +3196,6 @@ file class SelfExpressionSyntax : ISelfExpressionSyntax
     {
         Span = span;
         IsImplicit = isImplicit;
-    }
-}
-
-[GeneratedCode("AzothCompilerCodeGen", null)]
-file class MemberAccessExpressionSyntax : IMemberAccessExpressionSyntax
-{
-    private IMemberAccessExpressionSyntax Self { [Inline] get => this; }
-
-    public TextSpan Span { [DebuggerStepThrough] get; }
-    public IExpressionSyntax Context { [DebuggerStepThrough] get; }
-    public TextSpan MemberNameSpan { [DebuggerStepThrough] get; }
-    public OrdinaryName MemberName { [DebuggerStepThrough] get; }
-    public IFixedList<ITypeSyntax> GenericArguments { [DebuggerStepThrough] get; }
-    public override string ToString()
-        => FormattingAspect.MemberAccessExpression_ToString(this);
-
-    public MemberAccessExpressionSyntax(
-        TextSpan span,
-        IExpressionSyntax context,
-        TextSpan memberNameSpan,
-        OrdinaryName memberName,
-        IEnumerable<ITypeSyntax> genericArguments)
-    {
-        Span = span;
-        Context = context;
-        MemberNameSpan = memberNameSpan;
-        MemberName = memberName;
-        GenericArguments = genericArguments.ToFixedList();
     }
 }
 

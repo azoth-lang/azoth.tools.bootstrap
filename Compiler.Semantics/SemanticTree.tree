@@ -226,15 +226,15 @@ concrete UnresolvedMemberAccessExpression <: UnresolvedExpression
 // be only a name syntatically).
 // TODO FieldAccessExpression shouldn't be a name expression since the context is a full expression
 FieldAccessExpression <: NameExpression = Syntax:`IMemberAccessExpressionSyntax`
-    Context:Expression FieldName:`IdentifierName` ReferencedDeclaration:`IFieldDeclarationNode`;
+    Context:Expression ReferencedDeclaration:`IFieldDeclarationNode`;
 // TODO should MethodGroupName be UnresolvedMethodName or Unresolved MethodAccessExpression?
 // TODO merge with MethodAccessExpression?
 MethodGroupName <: UnresolvedExpression = Syntax:`IMemberAccessExpressionSyntax`
-    Context:Expression MethodName:`OrdinaryName` GenericArguments:Type*
+    Context:Expression GenericArguments:Type*
     ReferencedDeclarations:{`IOrdinaryMethodDeclarationNode`};
 /// See comment on FunctionNameExpression for why this exists.
 MethodAccessExpression <: Expression = Syntax:`IMemberAccessExpressionSyntax`
-    Context:Expression MethodName:`OrdinaryName` GenericArguments:Type*
+    Context:Expression GenericArguments:Type*
     ReferencedDeclarations:{`IOrdinaryMethodDeclarationNode`}
     CallCandidates:{`ICallCandidate<IOrdinaryMethodDeclarationNode>`}
     CompatibleCallCandidates:{`ICallCandidate<IOrdinaryMethodDeclarationNode>`}
@@ -284,8 +284,8 @@ FunctionInvocationExpression <: InvocationExpression = Syntax:`IInvocationExpres
     Function:FunctionNameExpression Arguments:AmbiguousExpression*;
 MethodInvocationExpression <: InvocationExpression = Syntax:`IInvocationExpressionSyntax`
     Method:MethodAccessExpression Arguments:AmbiguousExpression*;
-GetterInvocationExpression <: InvocationExpression, NameExpression = Syntax:`IMemberAccessExpressionSyntax`
-    Context:Expression PropertyName:`OrdinaryName`
+GetterInvocationExpression <: InvocationExpression, NameExpression
+    = Syntax:`IMemberAccessExpressionSyntax` Context:Expression
     ReferencedDeclarations:{`IPropertyAccessorDeclarationNode`};
 SetterInvocationExpression <: InvocationExpression = Syntax:`IAssignmentExpressionSyntax`
     Context:Expression PropertyName:`OrdinaryName` Value:AmbiguousExpression
@@ -320,7 +320,7 @@ MissingNameExpression <: NameExpression
 /// The UnresolvedInvocationExpression provides an expected type based on the arguments. Once the overload has
 /// been resolved, the FunctionInvocationExpression provides expected types based on the function called.
 FunctionNameExpression <: NameExpression
-    = Syntax:`INameExpressionSyntax` Context:ResolvedName?  FunctionName:`OrdinaryName` GenericArguments:Type*
+    = Syntax:`INameExpressionSyntax` Context:ResolvedName? FunctionName:`OrdinaryName` GenericArguments:Type*
     ReferencedDeclarations:{`IFunctionInvocableDeclarationNode`}
     CallCandidates:{`ICallCandidate<IFunctionInvocableDeclarationNode>`}
     CompatibleCallCandidates:{`ICallCandidate<IFunctionInvocableDeclarationNode>`}
@@ -341,7 +341,7 @@ InitializerNameExpression <: NameExpression = Syntax:`INameExpressionSyntax`
 
 UnresolvedNameExpression <: NameExpression, UnresolvedExpression = Syntax:`INameExpressionSyntax`;
 UnresolvedOrdinaryNameExpression <: UnresolvedNameExpression
-    = Syntax:`IOrdinaryNameSyntax` Name:`OrdinaryName`;
+    = Syntax:`IOrdinaryNameSyntax`;
 UnresolvedIdentifierNameExpression <: UnresolvedOrdinaryNameExpression
     = Syntax:`IIdentifierNameSyntax`;
 UnresolvedGenericNameExpression <: UnresolvedOrdinaryNameExpression
@@ -392,7 +392,7 @@ QualifiedNamespaceName <: NamespaceName
 
 UnresolvedName <: Name, UnresolvedNameExpression = Syntax:`INameExpressionSyntax`;
 UnresolvedOrdinaryName <: UnresolvedName
-    = Syntax:`IOrdinaryNameSyntax` Name:`OrdinaryName`;
+    = Syntax:`IOrdinaryNameSyntax`;
 UnresolvedIdentifierName <: UnresolvedOrdinaryName
     = Syntax:`IIdentifierNameSyntax`;
 UnresolvedGenericName <: UnresolvedOrdinaryName
@@ -418,7 +418,7 @@ BuiltInTypeName <: UnqualifiedTypeName = Syntax:`IBuiltInTypeNameSyntax`;
 OrdinaryTypeName <: UnqualifiedTypeName = Syntax:`IOrdinaryNameSyntax`;
 IdentifierTypeName <: OrdinaryTypeName = Syntax:`IIdentifierNameSyntax`;
 GenericTypeName <: OrdinaryTypeName = Syntax:`IGenericNameSyntax` GenericArguments:Type*;
-QualifiedTypeName <: TypeName = Syntax:`IQualifiedNameSyntax` Context:TypeName GenericArguments:Type*;
+QualifiedTypeName <: TypeName = Syntax:`IQualifiedNameSyntax` Context:Name GenericArguments:Type*;
 
 // TODO maybe resolution picks what kind of name it is and binding means it has a specific referenced declaration.
 TypeNameExpression <: ResolvedName = Syntax:`INameExpressionSyntax`

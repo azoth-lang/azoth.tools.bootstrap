@@ -94,6 +94,8 @@ internal static partial class FormattingAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial string UnsafeExpression_ToString(IUnsafeExpressionSyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial string MemberAccessExpression_ToString(IMemberAccessExpressionSyntax node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial string BoolLiteralExpression_ToString(IBoolLiteralExpressionSyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial string IntegerLiteralExpression_ToString(IIntegerLiteralExpressionSyntax node);
@@ -129,8 +131,6 @@ internal static partial class FormattingAspect
     public static partial string InvocationExpression_ToString(IInvocationExpressionSyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial string SelfExpression_ToString(ISelfExpressionSyntax node);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial string MemberAccessExpression_ToString(IMemberAccessExpressionSyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial string MissingName_ToString(IMissingNameSyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
