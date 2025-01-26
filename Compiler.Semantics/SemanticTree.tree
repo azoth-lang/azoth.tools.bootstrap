@@ -227,8 +227,7 @@ concrete UnresolvedMemberAccessExpression <: UnresolvedExpression
 // be only a name syntactically).
 
 // TODO should a MemberAccessExpression node be added?
-// TODO FieldAccessExpression shouldn't be a name expression since the context is a full expression
-FieldAccessExpression <: NameExpression, OrdinaryTypedExpression = Syntax:`IMemberAccessExpressionSyntax`
+FieldAccessExpression <: OrdinaryTypedExpression = Syntax:`IMemberAccessExpressionSyntax`
     Context:Expression ReferencedDeclaration:`IFieldDeclarationNode`;
 // TODO should MethodGroupName be UnresolvedMethodName or Unresolved MethodAccessExpression?
 // TODO merge with MethodAccessExpression?
@@ -352,8 +351,10 @@ UnresolvedIdentifierNameExpression <: UnresolvedOrdinaryNameExpression
     = Syntax:`IIdentifierNameSyntax`;
 UnresolvedGenericNameExpression <: UnresolvedOrdinaryNameExpression
     = Syntax:`IGenericNameSyntax` GenericArguments:Type*;
+/// Note: `Context` must be `Expression` instead of `NameExpression` because there are cases where a
+/// `NameExpression` can be rewritten to an `Expression`.
 UnresolvedQualifiedNameExpression <: UnresolvedNameExpression, UnresolvedMemberAccessExpression
-    = Syntax:`IQualifiedNameSyntax` Context:NameExpression /GenericArguments/;
+    = Syntax:`IQualifiedNameSyntax` Context:Expression /GenericArguments/;
 /// This is distinct from UnresolvedQualifiedNameExpression because the rewrites on this should not
 /// be inherited by all UnresolvedQualifiedNameExpressions.
 concrete UnresolvedNameExpressionQualifiedNameExpression <: UnresolvedQualifiedNameExpression;
