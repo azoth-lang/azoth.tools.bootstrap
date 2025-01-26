@@ -1,5 +1,4 @@
 using System;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 using Azoth.Tools.Bootstrap.Compiler.Types.Flow;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
@@ -8,6 +7,11 @@ internal static partial class ValueIdsAspect
 {
     #region Definitions
     public static partial ValueIdScope ExecutableDefinition_ValueIdScope(IExecutableDefinitionNode node)
+        => new ValueIdScope();
+    #endregion
+
+    #region Type Definitions
+    public static partial ValueIdScope TypeDefinition_ValueIdScope(ITypeDefinitionNode node)
         => new ValueIdScope();
     #endregion
 
@@ -32,7 +36,7 @@ internal static partial class ValueIdsAspect
     #endregion
 
     #region Expressions
-    public static partial ValueId AmbiguousExpression_ValueId(IAmbiguousExpressionNode node)
+    public static partial ValueId Expression_ValueId(IExpressionNode node)
         => node.ValueIdScope.CreateNext();
     #endregion
 

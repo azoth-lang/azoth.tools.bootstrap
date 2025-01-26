@@ -29,6 +29,4 @@ internal static partial class BindingNamesAspect
     public static partial ITypeDeclarationNode? BuiltInTypeName_ReferencedDeclaration(IBuiltInTypeNameNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial ITypeDeclarationNode? QualifiedTypeName_ReferencedDeclaration(IQualifiedTypeNameNode node);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial ITypeDeclarationNode? BuiltInTypeNameExpression_ReferencedDeclaration(IBuiltInTypeNameExpressionNode node);
 }

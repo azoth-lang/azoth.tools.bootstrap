@@ -56,9 +56,6 @@ type `NamespaceSearchScope` <: `LexicalScope`;
 // TODO does this need to make a new lexical scope?
 = FieldDefinition.LexicalScope => ContainingLexicalScope;
 
-// ---------- Types
-↓ TypeName.ContainingLexicalScope: `LexicalScope`;
-
 // ---------- Statements
 ↓ Statement.ContainingLexicalScope(): `LexicalScope`;
 ↑ Statement.LexicalScope(): `LexicalScope` => ContainingLexicalScope();
@@ -129,11 +126,11 @@ type `NamespaceSearchScope` <: `LexicalScope`;
 = FunctionInvocationExpression.Arguments[argumentIndex].**.ContainingLexicalScope
     => TempArguments[argumentIndex - 1].FlowLexicalScope().True;
 
-// ---------- Name Expressions
-↓ BuiltInTypeNameExpression.ContainingLexicalScope: `LexicalScope`;
-
 // ---------- Unresolved Name Expressions
 ↓ UnresolvedNameExpression.ContainingLexicalScope: `LexicalScope`;
+
+// ---------- Type Names
+↓ TypeName.ContainingLexicalScope: `LexicalScope`;
 
 // ---------- Async Expressions
 = AwaitExpression.FlowLexicalScope() => TempExpression.FlowLexicalScope();

@@ -18,7 +18,7 @@ internal static partial class ExpressionTypesAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IMaybeType ResultStatement_Type(IResultStatementNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial void Expression_Contribute_Diagnostics(IExpressionNode node, DiagnosticCollectionBuilder diagnostics);
+    public static partial void OrdinaryTypedExpression_Contribute_Diagnostics(IOrdinaryTypedExpressionNode node, DiagnosticCollectionBuilder diagnostics);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial void NewObjectExpression_Contribute_Diagnostics(INewObjectExpressionNode node, DiagnosticCollectionBuilder diagnostics);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -219,7 +219,7 @@ internal static partial class ExpressionTypesAspect
     public static partial IMaybeType AwaitExpression_Type(IAwaitExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFlowState AwaitExpression_FlowStateAfter(IAwaitExpressionNode node);
-    public static partial IExpressionNode? Expression_ImplicitMove_Insert(IExpressionNode node);
-    public static partial IExpressionNode? Expression_ImplicitFreeze_Insert(IExpressionNode node);
-    public static partial IPrepareToReturnExpressionNode? Expression_Insert_PrepareToReturnExpression(IExpressionNode node);
+    public static partial IExpressionNode? OrdinaryTypedExpression_ImplicitMove_Insert(IOrdinaryTypedExpressionNode node);
+    public static partial IExpressionNode? OrdinaryTypedExpression_ImplicitFreeze_Insert(IOrdinaryTypedExpressionNode node);
+    public static partial IPrepareToReturnExpressionNode? OrdinaryTypedExpression_Insert_PrepareToReturnExpression(IOrdinaryTypedExpressionNode node);
 }

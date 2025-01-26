@@ -21,7 +21,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 
 internal static partial class ExpressionTypesAspect
 {
-    public static partial void Expression_Contribute_Diagnostics(IExpressionNode node, DiagnosticCollectionBuilder diagnostics)
+    public static partial void OrdinaryTypedExpression_Contribute_Diagnostics(IOrdinaryTypedExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
         // Expected type can be void (e.g. when a function returns void)
         if (node.ExpectedType is not Type expectedType)
@@ -156,7 +156,7 @@ internal static partial class ExpressionTypesAspect
             ? ContextualizedCall.Create(node.Method.Context.Type, node.Method.ReferencedDeclaration)
             : null;
 
-    public static partial IExpressionNode? Expression_ImplicitMove_Insert(IExpressionNode node)
+    public static partial IExpressionNode? OrdinaryTypedExpression_ImplicitMove_Insert(IOrdinaryTypedExpressionNode node)
     {
         if (!node.ImplicitRecoveryAllowed())
             return null;
@@ -183,7 +183,7 @@ internal static partial class ExpressionTypesAspect
         return implicitMove;
     }
 
-    public static partial IExpressionNode? Expression_ImplicitFreeze_Insert(IExpressionNode node)
+    public static partial IExpressionNode? OrdinaryTypedExpression_ImplicitFreeze_Insert(IOrdinaryTypedExpressionNode node)
     {
         if (!node.ImplicitRecoveryAllowed())
             return null;
@@ -208,7 +208,7 @@ internal static partial class ExpressionTypesAspect
         return implicitFreeze;
     }
 
-    public static partial IPrepareToReturnExpressionNode? Expression_Insert_PrepareToReturnExpression(IExpressionNode node)
+    public static partial IPrepareToReturnExpressionNode? OrdinaryTypedExpression_Insert_PrepareToReturnExpression(IOrdinaryTypedExpressionNode node)
     {
         if (node is IRecoveryExpressionNode { IsImplicit: true } or IPrepareToReturnExpressionNode
             || !node.ShouldPrepareToReturn())
@@ -355,7 +355,7 @@ internal static partial class ExpressionTypesAspect
         }
     }
 
-    public static void CheckGenericArgumentsAreConstructable(IOrdinaryTypeNameNode node, DiagnosticCollectionBuilder diagnostics)
+    public static void CheckGenericArgumentsAreConstructable(ITypeNameNode node, DiagnosticCollectionBuilder diagnostics)
     {
         var bareType = node.NamedBareType;
         if (bareType is null) return;
@@ -390,34 +390,6 @@ internal static partial class ExpressionTypesAspect
         var flowStateBefore = node.Arguments.LastOrDefault()?.FlowStateAfter ?? node.FlowStateBefore();
         var argumentValueIds = ArgumentValueIds(node.ContextualizedCall, null, node.Arguments);
         ContributeCannotUnionDiagnostics(node, flowStateBefore, argumentValueIds, diagnostics);
-    }
-
-    private static void CheckConstructingType(ITypeNameExpressionNode node, DiagnosticCollectionBuilder diagnostics)
-    {
-        switch (node)
-        {
-            default:
-                throw ExhaustiveMatch.Failed(node);
-            case IOrdinaryTypeNameExpressionNode n:
-                CheckGenericArgumentsAreConstructable(n, diagnostics);
-                break;
-            //case IBuiltInTypeNameNode n:
-            //    diagnostics.Add(TypeError.SpecialTypeCannotBeUsedHere(node.File, n.Syntax));
-            //    break;
-            case IQualifiedTypeNameExpressionNode n:
-                diagnostics.Add(TypeError.TypeParameterCannotBeUsedHere(node.File, n.Syntax));
-                break;
-        }
-    }
-
-    public static void CheckGenericArgumentsAreConstructable(IOrdinaryTypeNameExpressionNode node, DiagnosticCollectionBuilder diagnostics)
-    {
-        var bareType = node.NamedBareType;
-        if (bareType is null) return;
-
-        foreach (TypeParameterArgument arg in bareType.TypeParameterArguments)
-            if (!arg.IsConstructable())
-                diagnostics.Add(TypeError.CapabilityNotCompatibleWithConstraint(node.File, node.Syntax, arg.Parameter, arg.Argument));
     }
 
     public static partial IFlowState UnresolvedInvocationExpression_FlowStateAfter(IUnresolvedInvocationExpressionNode node)

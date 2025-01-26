@@ -21,6 +21,16 @@ struct `ValueId`;
 = ExecutableDefinition.ValueIdScope;
 = ExecutableDefinition.*.**.ValueIdScope => ValueIdScope;
 
+// ---------- Type Definitions
+/// While type definitions don't truly have a `ValueIdScope`, one is needed for the type names
+↑ eager TypeDefinition.ValueIdScope: `ValueIdScope`;
+= TypeDefinition.ValueIdScope;
+= TypeDefinition.Attributes[*].**.ValueIdScope => ValueIdScope;
+= TypeDefinition.SupertypeNames[*].**.ValueIdScope => ValueIdScope;
+= ClassDefinition.BaseTypeName.**.ValueIdScope => ValueIdScope;
+// Do not inherit the value ValueIdScope to members to avoid a situation where the scope is
+// accidentally used when it shouldn't be.
+
 // ---------- Parameters
 // TODO inheriting this doesn't need to cause cycle with rewritten parent
 ↓ computed Parameter.ValueIdScope: `ValueIdScope`;
@@ -43,9 +53,9 @@ struct `ValueId`;
 
 // ---------- Expressions
 // TODO inheriting this doesn't need to cause cycle with rewritten parent
-↓ computed AmbiguousExpression.ValueIdScope: `ValueIdScope`;
-↑ AmbiguousExpression.ValueId: `ValueId`;
-= AmbiguousExpression.ValueId;
+↓ computed Expression.ValueIdScope: `ValueIdScope`;
+↑ Expression.ValueId: `ValueId`;
+= Expression.ValueId;
 
 // ---------- Operator Expressions
 = PatternMatchExpression.Pattern.**.MatchReferentValueId => Referent?.ValueId;

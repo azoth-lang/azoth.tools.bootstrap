@@ -24,7 +24,7 @@
 = UnresolvedInvocationExpression.Expression.ExpectedPlainType;
 ✎ UnresolvedInvocationExpression replace_with FunctionInvocationExpression;
 ✎ UnresolvedInvocationExpression replace_with MethodInvocationExpression;
-✎ UnresolvedInvocationExpression TypeNameExpression rewrite;
+✎ UnresolvedInvocationExpression TypeName rewrite;
 ✎ UnresolvedInvocationExpression replace_with InitializerInvocationExpression;
 ✎ UnresolvedInvocationExpression replace_with FunctionReferenceInvocationExpression;
 ✎ UnresolvedInvocationExpression replace_with NonInvocableInvocationExpression;

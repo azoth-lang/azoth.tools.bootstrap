@@ -140,18 +140,18 @@ internal static partial class OverloadResolutionAspect
         return IMethodInvocationExpressionNode.Create(node.Syntax, method, node.CurrentArguments);
     }
 
-    public static partial IExpressionNode? UnresolvedInvocationExpression_TypeNameExpression_Rewrite(IUnresolvedInvocationExpressionNode node)
+    public static partial IExpressionNode? UnresolvedInvocationExpression_TypeName_Rewrite(IUnresolvedInvocationExpressionNode node)
     {
         // TODO refactor to replacement of type name expression when used in invocation context
         // based on an inherited attribute. That should allow optimization of caching compared to a
         // full rewrite.
 
-        if (node.Expression is not ITypeNameExpressionNode context) return null;
+        if (node.Expression is not ITypeNameNode { ReferencedDeclaration: { } referencedDeclaration } context) return null;
 
         // Rewrite to insert an initializer group name node between the type name expression and the
         // invocation expression.
-        var referencedDeclarations = context.ReferencedDeclaration.Members.OfType<IInitializerDeclarationNode>()
-                                            .Where(c => c.Name is null).ToFixedSet();
+        var referencedDeclarations = referencedDeclaration.Members.OfType<IInitializerDeclarationNode>()
+                                                          .Where(c => c.Name is null).ToFixedSet();
 
         var initializerGroupName = IInitializerGroupNameNode.Create(context.Syntax, context, null, referencedDeclarations);
         return IUnresolvedInvocationExpressionNode.Create(node.Syntax, initializerGroupName, node.CurrentArguments);

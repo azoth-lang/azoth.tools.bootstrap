@@ -63,7 +63,7 @@ internal static partial class NameResolutionAspect
                     "No member accessible from function or method."));
                 break;
             case INamespaceNameNode:
-            case ITypeNameExpressionNode:
+            case ITypeNameNode:
                 diagnostics.Add(NameBindingError.CouldNotBindMember(node.File, node.Syntax.MemberNameSpan));
                 break;
             case IUnresolvedNameExpressionNode:
@@ -238,8 +238,8 @@ internal static partial class NameResolutionAspect
                 case ILocalBindingNode referencedVariable:
                     return IVariableNameExpressionNode.Create(node.Syntax, referencedVariable);
                 case ITypeDeclarationNode referencedType:
-                    return IOrdinaryTypeNameExpressionNode.Create(node.Syntax, FixedList.Empty<ITypeNode>(),
-                        referencedType);
+                    // TODO a way to pass along referenced declarations rather than requiring they be figured out again?
+                    return IIdentifierTypeNameNode.Create(node.Syntax);
             }
 
         return null;
@@ -256,7 +256,8 @@ internal static partial class NameResolutionAspect
             switch (referencedDeclaration)
             {
                 case ITypeDeclarationNode referencedType:
-                    return IOrdinaryTypeNameExpressionNode.Create(node.Syntax, node.GenericArguments, referencedType);
+                    // TODO a way to pass along referenced declarations rather than requiring they be figured out again?
+                    return IGenericTypeNameNode.Create(node.Syntax, node.GenericArguments);
             }
 
         return null;
@@ -264,6 +265,8 @@ internal static partial class NameResolutionAspect
 
     public static partial IUnresolvedNamespaceQualifiedNameExpressionNode? UnresolvedNameExpressionQualifiedNameExpression_ReplaceWith_UnresolvedNamespaceQualifiedNameExpression(IUnresolvedNameExpressionQualifiedNameExpressionNode node)
     {
+        // TODO remove this hack that somehow works around a bug in the rewrite or circular attribute framework
+        _ = node.Context;
         if (node.Context is not INamespaceNameNode context) return null;
         var referencedDeclarations = context.ReferencedDeclarations.SelectMany(d => d.MembersNamed(node.MemberName)).ToFixedSet();
         return IUnresolvedNamespaceQualifiedNameExpressionNode.Create(node.Syntax, context, node.GenericArguments, referencedDeclarations);
@@ -271,8 +274,8 @@ internal static partial class NameResolutionAspect
 
     public static partial IUnresolvedTypeQualifiedNameExpressionNode? UnresolvedNameExpressionQualifiedNameExpression_ReplaceWith_UnresolvedTypeQualifiedNameExpression(IUnresolvedNameExpressionQualifiedNameExpressionNode node)
     {
-        if (node.Context is not ITypeNameExpressionNode context) return null;
-        var referencedDeclarations = context.ReferencedDeclaration.AssociatedMembersNamed(node.MemberName).ToFixedSet();
+        if (node.Context is not ITypeNameNode { ReferencedDeclaration: { } referencedDeclaration } context) return null;
+        var referencedDeclarations = referencedDeclaration.AssociatedMembersNamed(node.MemberName).ToFixedSet();
         return IUnresolvedTypeQualifiedNameExpressionNode.Create(node.Syntax, context, node.GenericArguments, referencedDeclarations);
     }
 
@@ -293,8 +296,8 @@ internal static partial class NameResolutionAspect
 
         // TODO select correct type declaration based on generic arguments
         if (referencedDeclarations.TrySingle() is ITypeDeclarationNode referencedType)
-            return IQualifiedTypeNameExpressionNode.Create(node.Syntax, node.Context, node.GenericArguments,
-                referencedType);
+            // TODO a way to pass along referenced declarations rather than requiring they be figured out again?
+            return IQualifiedTypeNameNode.Create(node.Syntax, node.Context, node.GenericArguments);
 
         return null;
     }
@@ -316,7 +319,7 @@ internal static partial class NameResolutionAspect
 
         if (referencedDeclarations.TryAllOfType<IInitializerDeclarationNode>(out var referencedInitializers))
             // TODO handle type arguments (which are not allowed for initializers)
-            return IInitializerGroupNameNode.Create(node.Syntax, node.Context, node.Context.Name, referencedInitializers);
+            return IInitializerGroupNameNode.Create(node.Syntax, node.Context, node.MemberName, referencedInitializers);
 
         return null;
     }
@@ -360,9 +363,8 @@ internal static partial class NameResolutionAspect
             switch (referencedDeclaration)
             {
                 case ITypeDeclarationNode referencedType:
-                    throw new NotImplementedException();
                     // TODO a way to pass along referenced declarations rather than requiring they be figured out again?
-                    //return IIdentifierTypeNameNode.Create(node.Syntax);
+                    return IIdentifierTypeNameNode.Create(node.Syntax);
             }
 
         return null;
@@ -376,9 +378,8 @@ internal static partial class NameResolutionAspect
             switch (referencedDeclaration)
             {
                 case ITypeDeclarationNode referencedType:
-                    throw new NotImplementedException();
                     // TODO a way to pass along referenced declarations rather than requiring they be figured out again?
-                    //return IGenericTypeNameNode.Create(node.Syntax, node.GenericArguments);
+                    return IGenericTypeNameNode.Create(node.Syntax, node.GenericArguments);
             }
 
         return null;
@@ -393,8 +394,8 @@ internal static partial class NameResolutionAspect
 
     public static partial IUnresolvedTypeQualifiedNameNode? UnresolvedNameQualifiedName_ReplaceWith_UnresolvedTypeQualifiedName(IUnresolvedNameQualifiedNameNode node)
     {
-        if (node.Context is not ITypeNameExpressionNode context) return null;
-        var referencedDeclarations = context.ReferencedDeclaration.AssociatedMembersNamed(node.MemberName).ToFixedSet();
+        if (node.Context is not ITypeNameNode { ReferencedDeclaration: { } referencedDeclaration } context) return null;
+        var referencedDeclarations = referencedDeclaration.AssociatedMembersNamed(node.MemberName).ToFixedSet();
         return IUnresolvedTypeQualifiedNameNode.Create(node.Syntax, context, node.GenericArguments, referencedDeclarations);
     }
 

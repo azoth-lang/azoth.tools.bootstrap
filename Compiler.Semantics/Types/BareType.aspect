@@ -8,7 +8,3 @@
 // ---------- Types
 ↑ TypeName.NamedBareType: `BareType`?;
 = QualifiedTypeName.NamedBareType => throw new NotImplementedException();
-
-// ---------- Name Expressions
-↑ TypeNameExpression.NamedBareType: `BareType`?;
-= TypeNameExpression.NamedBareType;

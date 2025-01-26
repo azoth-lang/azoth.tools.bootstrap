@@ -174,7 +174,6 @@
 
 // ---------- Name Expressions
 ↑ VariableNameExpression.Name: `IdentifierName` => Syntax.Name;
-↑ TypeNameExpression.Name: `OrdinaryName`;
 ↑ SelfExpression.IsImplicit: `bool` => Syntax.IsImplicit;
 
 // ---------- Unresolved Name Expressions
@@ -185,9 +184,6 @@
 // ---------- Names
 ↑ UnqualifiedNamespaceName.Name: `IdentifierName` => Syntax.Name;
 ↑ QualifiedNamespaceName.Name: `IdentifierName` => (IdentifierName)Syntax.MemberName;
-↑ BuiltInTypeNameExpression.Name: `BuiltInTypeName` => Syntax.Name;
-= OrdinaryTypeNameExpression.Name => Syntax.Name;
-= QualifiedTypeNameExpression.Name => Syntax.MemberName;
 
 // ---------- Unresolved Names
 ↑ UnresolvedOrdinaryName.Name: `OrdinaryName`;

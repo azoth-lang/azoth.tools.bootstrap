@@ -63,22 +63,22 @@
 = AmbiguousExpression.*.ShouldPrepareToReturn() => false;
 // TODO remove once all nodes properly provide the expected type
 = AmbiguousExpression.*.ExpectedType => null;
-↓ Expression.ExpectedType:`IMaybeType`?;
+↑ Expression.Type: `IMaybeType`;
+⟳ Expression.FlowStateAfter: `IFlowState` initial => IFlowState.Empty;
+↓ OrdinaryTypedExpression.ExpectedType:`IMaybeType`?;
 /// <summary>
 /// Whether an implicit recovery (i.e. move or freeze) is allowed to convert this expression to
 /// the expected type.
 /// </summary>
-↓ Expression.ImplicitRecoveryAllowed(): `bool`;
+↓ OrdinaryTypedExpression.ImplicitRecoveryAllowed(): `bool`;
 /// <summary>
 /// Whether this expression should be prepared for return.
 /// </summary>
-↓ Expression.ShouldPrepareToReturn(): `bool`;
-↑ Expression.Type: `IMaybeType`;
-⟳ Expression.FlowStateAfter: `IFlowState` initial => IFlowState.Empty;
-= Expression.↑.Diagnostics;
-✎ Expression ImplicitMove insert;
-✎ Expression ImplicitFreeze insert;
-✎ Expression insert PrepareToReturnExpression;
+↓ OrdinaryTypedExpression.ShouldPrepareToReturn(): `bool`;
+✎ OrdinaryTypedExpression ImplicitMove insert;
+✎ OrdinaryTypedExpression ImplicitFreeze insert;
+✎ OrdinaryTypedExpression insert PrepareToReturnExpression;
+= OrdinaryTypedExpression.↑.Diagnostics;
 
 ↓ BlockExpression.FlowStateBefore(): `IFlowState`;
 // TODO it would be better to have a way to specify that this inherits and not emit any code
@@ -235,9 +235,7 @@
 = UnresolvedQualifiedNameExpression.FlowStateAfter;
 
 // ---------- Names
-↑ NamespaceName.Type: `UnknownType` => AzothType.Unknown;
-= TypeNameExpression.Type => AzothType.Unknown;
-↑ BuiltInTypeNameExpression.Type:`UnknownType` => AzothType.Unknown;
+↑ Name.Type: `UnknownType` => AzothType.Unknown;
 
 // ---------- Capability Expressions
 = MoveExpression.Type;

@@ -79,13 +79,15 @@ internal abstract partial class <#= Emit.BaseClassName(tree) #> : TreeNode, IChi
     [DebuggerStepThrough]
     protected sealed override SemanticNode? PeekParent()
         // Use volatile read to ensure order of operations as seen by other threads. If parent is
-        // null, report an error if not in final tree. Root nodes are always in the final tree.
-        => Volatile.Read(in parent) ?? (InFinalTree ? throw Child.ParentMissing(this) : null);
+        // null, report an error if not in final tree. It is assumed that a node in the final tree
+        // without a parent is a proper root of its tree. Whereas if the parent is missing from a
+        // node not in the final tree, then there is a bug where the parent wasn't set in time.
+        => Volatile.Read(in parent) ?? (InFinalTree ? null : throw Child.ParentMissing(this));
 
     private <#= Emit.BaseClassName(tree) #>? GetParent(IInheritanceContext ctx)
     {
         // Use volatile read to ensure order of operations as seen by other threads
-        var node = Volatile.Read(in parent) ?? (InFinalTree ? throw Child.ParentMissing(this) : null);
+        var node = Volatile.Read(in parent) ?? (InFinalTree ? null : throw Child.ParentMissing(this));
         ctx.AccessParentOf(this);
         return node;
     }

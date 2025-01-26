@@ -8,7 +8,3 @@
 ↑ Type.NamedPlainType: `IMaybePlainType`;
 = QualifiedTypeName.NamedPlainType => throw new NotImplementedException();
 = ViewpointType.NamedPlainType;
-
-// ---------- Name Expressions
-↑ TypeNameExpression.NamedPlainType: `IMaybePlainType`;
-= TypeNameExpression.NamedPlainType;

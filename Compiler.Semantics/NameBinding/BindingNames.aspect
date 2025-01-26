@@ -21,6 +21,5 @@
 ↑ NewObjectExpression.ReferencedConstructors: {ConstructorDeclaration};
 
 // ---------- Name Expressions
-↑ BuiltInTypeNameExpression.ReferencedDeclaration: TypeDeclaration?;
 ↑ SelfExpression.ReferencedDefinition: SelfParameter?;
 = SelfExpression.↑.Diagnostics;

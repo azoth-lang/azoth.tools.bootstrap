@@ -55,17 +55,4 @@ internal static partial class TypeExpressionsPlainTypesAspect
             return PlainType.Unknown;
         return declaredPlainType.Construct(containingType: null, genericArguments);
     }
-
-    public static partial IMaybePlainType TypeNameExpression_NamedPlainType(ITypeNameExpressionNode node)
-    {
-        // TODO do not use symbols at this stage of the compiler
-        var referencedSymbol = node.ReferencedDeclaration.Symbol;
-        var declaredPlainType = referencedSymbol.TryGetTypeConstructor();
-        if (declaredPlainType is null)
-            return PlainType.Unknown;
-        var genericArguments = node.GenericArguments.Select(a => a.NamedPlainType).OfType<PlainType>().ToFixedList();
-        if (genericArguments.Count != node.GenericArguments.Count)
-            return PlainType.Unknown;
-        return declaredPlainType.Construct(containingType: null, genericArguments);
-    }
 }

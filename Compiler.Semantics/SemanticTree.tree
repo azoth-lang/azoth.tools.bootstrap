@@ -80,19 +80,15 @@ FunctionDefinition <: FacetMemberDefinition, FunctionDeclaration, ConcreteFuncti
 // ---------- Type Definitions
 TypeDefinition <: Code, FacetMemberDefinition, AssociatedMemberDefinition, OrdinaryTypeDeclaration
     = Syntax:`ITypeDefinitionSyntax`
-    GenericParameters:GenericParameter*
-    SupertypeNames:OrdinaryTypeName*;
+    /Attributes/ GenericParameters:GenericParameter* SupertypeNames:TypeName*;
 ClassDefinition <: Code, TypeDefinition, ClassDeclaration = Syntax:`IClassDefinitionSyntax`
-    Attributes:Attribute* GenericParameters:GenericParameter*
-    BaseTypeName:OrdinaryTypeName? SupertypeNames:OrdinaryTypeName*
+    /Attributes/ /GenericParameters/ BaseTypeName:TypeName? /SupertypeNames/
     SourceMembers:ClassMemberDefinition*;
 StructDefinition <: Code, TypeDefinition, StructDeclaration = Syntax:`IStructDefinitionSyntax`
-    Attributes:Attribute* GenericParameters:GenericParameter*
-    SupertypeNames:OrdinaryTypeName*
+    /Attributes/ /GenericParameters/ /SupertypeNames/
     SourceMembers:StructMemberDefinition*;
 TraitDefinition <: Code, TypeDefinition, TraitDeclaration = Syntax:`ITraitDefinitionSyntax`
-    Attributes:Attribute* GenericParameters:GenericParameter*
-    SupertypeNames:OrdinaryTypeName*
+    /Attributes/ /GenericParameters/ /SupertypeNames/
     Members:{TraitMemberDefinition};
 
 // ---------- Type Definition Parts
@@ -141,7 +137,7 @@ AssociatedFunctionDefinition <: ConcreteFunctionInvocableDefinition, AlwaysTypeM
     = Syntax:`IAssociatedFunctionDefinitionSyntax` /Parameters/ /Return/ /Entry/ /Body/ /Exit/;
 
 // ---------- Attributes
-Attribute <: Code = Syntax:`IAttributeSyntax` TypeName:OrdinaryTypeName;
+Attribute <: Code = Syntax:`IAttributeSyntax` TypeName:TypeName;
 
 // ---------- Capabilities
 CapabilityConstraint <: Code = Syntax:`ICapabilityConstraintSyntax`;
@@ -205,11 +201,16 @@ OptionalPattern <: OptionalOrBindingPattern = Syntax:`IOptionalPatternSyntax` Pa
 /// existence.
 temp AmbiguousExpression <: Code = Syntax:`IExpressionSyntax`;
 Expression <: AmbiguousExpression, ControlFlow = Syntax:`IExpressionSyntax`;
-BlockExpression <: Expression, BlockOrResult, BodyOrBlock
+/// An expression whose type isn't an extrema type or always unknown. Used to restrict which
+/// expressions rewrites apply to to reduce rewrites and have more nodes that cannot be rewritten.
+/// Specifically, names and type names are not otherwise rewriteable and always have unknown type.
+/// So if this was not separate from `Expression` then all type names would be rewriteable.
+OrdinaryTypedExpression <: Expression;
+BlockExpression <: OrdinaryTypedExpression, BlockOrResult, BodyOrBlock
     = Syntax:`IBlockExpressionSyntax` Statements:Statement*;
 NewObjectExpression <: InvocationExpression = Syntax:`INewObjectExpressionSyntax`
     ConstructingType:TypeName Arguments:AmbiguousExpression*;
-UnsafeExpression <: Expression = Syntax:`IUnsafeExpressionSyntax` Expression:AmbiguousExpression;
+UnsafeExpression <: OrdinaryTypedExpression = Syntax:`IUnsafeExpressionSyntax` Expression:AmbiguousExpression;
 NeverTypedExpression <: Expression;
 
 // ---------- Unresolved Expressions
@@ -223,17 +224,19 @@ concrete UnresolvedMemberAccessExpression <: UnresolvedExpression
 
 // ---------- Instance Member Access Expressions
 // Resolved expressions that are some form of instance member access (i.e. something that may not
-// be only a name syntatically).
+// be only a name syntactically).
+
+// TODO should a MemberAccessExpression node be added?
 // TODO FieldAccessExpression shouldn't be a name expression since the context is a full expression
-FieldAccessExpression <: NameExpression = Syntax:`IMemberAccessExpressionSyntax`
+FieldAccessExpression <: NameExpression, OrdinaryTypedExpression = Syntax:`IMemberAccessExpressionSyntax`
     Context:Expression ReferencedDeclaration:`IFieldDeclarationNode`;
 // TODO should MethodGroupName be UnresolvedMethodName or Unresolved MethodAccessExpression?
 // TODO merge with MethodAccessExpression?
-MethodGroupName <: UnresolvedExpression = Syntax:`IMemberAccessExpressionSyntax`
+MethodGroupName <: UnresolvedExpression, OrdinaryTypedExpression = Syntax:`IMemberAccessExpressionSyntax`
     Context:Expression GenericArguments:Type*
     ReferencedDeclarations:{`IOrdinaryMethodDeclarationNode`};
 /// See comment on FunctionNameExpression for why this exists.
-MethodAccessExpression <: Expression = Syntax:`IMemberAccessExpressionSyntax`
+MethodAccessExpression <: OrdinaryTypedExpression = Syntax:`IMemberAccessExpressionSyntax`
     Context:Expression GenericArguments:Type*
     ReferencedDeclarations:{`IOrdinaryMethodDeclarationNode`}
     CallCandidates:{`ICallCandidate<IOrdinaryMethodDeclarationNode>`}
@@ -242,32 +245,32 @@ MethodAccessExpression <: Expression = Syntax:`IMemberAccessExpressionSyntax`
     ReferencedDeclaration:`IOrdinaryMethodDeclarationNode`?;
 
 // ---------- Literal Expressions
-LiteralExpression <: Expression = Syntax:`ILiteralExpressionSyntax`;
+LiteralExpression <: OrdinaryTypedExpression = Syntax:`ILiteralExpressionSyntax`;
 BoolLiteralExpression <: LiteralExpression = Syntax:`IBoolLiteralExpressionSyntax`;
 IntegerLiteralExpression <: LiteralExpression = Syntax:`IIntegerLiteralExpressionSyntax`;
 NoneLiteralExpression <: LiteralExpression = Syntax:`INoneLiteralExpressionSyntax`;
 StringLiteralExpression <: LiteralExpression = Syntax:`IStringLiteralExpressionSyntax`;
 
 // ---------- Operator Expressions
-AssignmentExpression <: Expression, DataFlow = Syntax:`IAssignmentExpressionSyntax`
+AssignmentExpression <: OrdinaryTypedExpression, DataFlow = Syntax:`IAssignmentExpressionSyntax`
     LeftOperand:AmbiguousExpression RightOperand:AmbiguousExpression;
-BinaryOperatorExpression <: Expression = Syntax:`IBinaryOperatorExpressionSyntax`
+BinaryOperatorExpression <: OrdinaryTypedExpression = Syntax:`IBinaryOperatorExpressionSyntax`
     LeftOperand:AmbiguousExpression RightOperand:AmbiguousExpression;
-UnaryOperatorExpression <: Expression = Syntax:`IUnaryOperatorExpressionSyntax`
+UnaryOperatorExpression <: OrdinaryTypedExpression = Syntax:`IUnaryOperatorExpressionSyntax`
      Operand:AmbiguousExpression;
-ConversionExpression <: Expression = Syntax:`IConversionExpressionSyntax`
+ConversionExpression <: OrdinaryTypedExpression = Syntax:`IConversionExpressionSyntax`
     Referent:AmbiguousExpression ConvertToType:Type;
-ImplicitConversionExpression <: Expression = Referent:Expression PlainType:`BarePlainType`;
-PatternMatchExpression <: Expression
+ImplicitConversionExpression <: OrdinaryTypedExpression = Referent:Expression PlainType:`BarePlainType`;
+PatternMatchExpression <: OrdinaryTypedExpression
     = Syntax:`IPatternMatchExpressionSyntax` Referent:AmbiguousExpression Pattern;
 
 // ---------- Control Flow Expressions
-IfExpression <: Expression, ElseClause = Syntax:`IIfExpressionSyntax`
+IfExpression <: OrdinaryTypedExpression, ElseClause = Syntax:`IIfExpressionSyntax`
     Condition:AmbiguousExpression ThenBlock:BlockOrResult ElseClause?;
-LoopExpression <: Expression = Syntax:`ILoopExpressionSyntax` Block:BlockExpression;
-WhileExpression <: Expression = Syntax:`IWhileExpressionSyntax`
+LoopExpression <: OrdinaryTypedExpression = Syntax:`ILoopExpressionSyntax` Block:BlockExpression;
+WhileExpression <: OrdinaryTypedExpression = Syntax:`IWhileExpressionSyntax`
     Condition:AmbiguousExpression Block:BlockExpression;
-ForeachExpression <: Expression, VariableBinding = Syntax:`IForeachExpressionSyntax`
+ForeachExpression <: OrdinaryTypedExpression, VariableBinding = Syntax:`IForeachExpressionSyntax`
     InExpression:AmbiguousExpression DeclaredType:Type? Block:BlockExpression;
 BreakExpression <: NeverTypedExpression = Syntax:`IBreakExpressionSyntax`
     Value:AmbiguousExpression?;
@@ -276,7 +279,8 @@ ReturnExpression <: NeverTypedExpression
     = Syntax:`IReturnExpressionSyntax` Value:AmbiguousExpression?;
 
 // ---------- Invocation Expressions
-InvocationExpression <: Expression;
+InvocationExpression <: OrdinaryTypedExpression;
+// TODO maybe this shouldn't be an OrdinaryTypedExpression
 UnresolvedInvocationExpression <: InvocationExpression, UnresolvedExpression
     = Syntax:`IInvocationExpressionSyntax`
     Expression:AmbiguousExpression Arguments:AmbiguousExpression*;
@@ -294,6 +298,7 @@ FunctionReferenceInvocationExpression <: InvocationExpression = Syntax:`IInvocat
     Expression:Expression Arguments:AmbiguousExpression*;
 InitializerInvocationExpression <: InvocationExpression = Syntax:`IInvocationExpressionSyntax`
     Initializer:InitializerNameExpression Arguments:AmbiguousExpression*;
+// TODO maybe this shouldn't be an OrdinaryTypedExpression
 NonInvocableInvocationExpression <: InvocationExpression = Syntax:`IInvocationExpressionSyntax`
     Expression:AmbiguousExpression Arguments:AmbiguousExpression*;
 
@@ -306,11 +311,12 @@ NonInvocableInvocationExpression <: InvocationExpression = Syntax:`IInvocationEx
 // preserve the name syntax types and produce namespace and type names with proper syntax types.
 
 NameExpression <: Expression = Syntax:`INameExpressionSyntax`;
+OrdinaryTypedNameExpression <: NameExpression, OrdinaryTypedExpression;
 // See the names section for more nodes that are name expressions
-LocalBindingNameExpression <: NameExpression = ReferencedDefinition:`IBindingNode`?;
-VariableNameExpression <: LocalBindingNameExpression, NameExpression
+LocalBindingNameExpression <: OrdinaryTypedNameExpression = ReferencedDefinition:`IBindingNode`?;
+VariableNameExpression <: LocalBindingNameExpression, OrdinaryTypedNameExpression
     = Syntax:`IIdentifierNameSyntax` ReferencedDefinition:`ILocalBindingNode`;
-InstanceExpression <: NameExpression = Syntax:`IInstanceExpressionSyntax`; // i.e. `self` or `base`
+InstanceExpression <: OrdinaryTypedNameExpression = Syntax:`IInstanceExpressionSyntax`; // i.e. `self` or `base`
 // TODO BaseExpression <: InstanceExpression
 SelfExpression <: InstanceExpression, LocalBindingNameExpression
     = Syntax:`ISelfExpressionSyntax`;
@@ -319,7 +325,7 @@ MissingNameExpression <: NameExpression
 /// Reifying to FunctionNameExpression controls the transition from UnresolvedInvocationExpression to FunctionInvocationExpression.
 /// The UnresolvedInvocationExpression provides an expected type based on the arguments. Once the overload has
 /// been resolved, the FunctionInvocationExpression provides expected types based on the function called.
-FunctionNameExpression <: NameExpression
+FunctionNameExpression <: OrdinaryTypedNameExpression
     = Syntax:`INameExpressionSyntax` Context:ResolvedName? FunctionName:`OrdinaryName` GenericArguments:Type*
     ReferencedDeclarations:{`IFunctionInvocableDeclarationNode`}
     CallCandidates:{`ICallCandidate<IFunctionInvocableDeclarationNode>`}
@@ -327,8 +333,8 @@ FunctionNameExpression <: NameExpression
     SelectedCallCandidate:`ICallCandidate<IFunctionInvocableDeclarationNode>`?
     ReferencedDeclaration:`IFunctionInvocableDeclarationNode`?;
 /// See comment on FunctionNameExpression for why this exists.
-InitializerNameExpression <: NameExpression = Syntax:`INameExpressionSyntax`
-    Context:TypeNameExpression InitializerName:`OrdinaryName`?
+InitializerNameExpression <: OrdinaryTypedNameExpression = Syntax:`INameExpressionSyntax`
+    Context:TypeName InitializerName:`OrdinaryName`?
     ReferencedDeclarations:{`IInitializerDeclarationNode`}
     CallCandidates:{`ICallCandidate<IInitializerDeclarationNode>`}
     CompatibleCallCandidates:{`ICallCandidate<IInitializerDeclarationNode>`}
@@ -355,25 +361,24 @@ concrete UnresolvedNameExpressionQualifiedNameExpression <: UnresolvedQualifiedN
 UnresolvedNamespaceQualifiedNameExpression <: UnresolvedQualifiedNameExpression
     = /Syntax/ Context:NamespaceName /GenericArguments/ ReferencedDeclarations:{`INamespaceMemberDeclarationNode`};
 UnresolvedTypeQualifiedNameExpression <: UnresolvedQualifiedNameExpression
-    = /Syntax/ Context:TypeNameExpression /GenericArguments/ ReferencedDeclarations:{`IAssociatedMemberDeclarationNode`};
+    = /Syntax/ Context:TypeName /GenericArguments/ ReferencedDeclarations:{`IAssociatedMemberDeclarationNode`};
 // These reify that a function or initializer has been referenced
 // TODO should FunctionGroupName be UnresolvedFunctionName?
 // TODO merge with FunctionNameExpression?
-FunctionGroupName <: UnresolvedNameExpression
+FunctionGroupName <: UnresolvedNameExpression, OrdinaryTypedExpression
     = Syntax:`INameExpressionSyntax` Context:ResolvedName? FunctionName:`OrdinaryName` GenericArguments:Type*
     ReferencedDeclarations:{`IFunctionInvocableDeclarationNode`};
 // TODO should InitializerGroupName be UnresolvedInitializerName?
 // TODO merge with InitializerNameExpression?
-InitializerGroupName <: UnresolvedNameExpression = Syntax:`INameExpressionSyntax`
-    Context:TypeNameExpression InitializerName:`OrdinaryName`?
+InitializerGroupName <: UnresolvedNameExpression, OrdinaryTypedExpression = Syntax:`INameExpressionSyntax`
+    Context:TypeName InitializerName:`OrdinaryName`?
     ReferencedDeclarations:{`IInitializerDeclarationNode`};
 
 // ---------- Names
-// TODO names should be for namespace and type names. Name expressions are for all other names
-// Names are reserved for things that syntatically can only be names. They are used as part of the
+// Names are reserved for things that syntactically can only be names. They are used as part of the
 // resolution for type names since that needs to be applied the same way for types and expressions.
 // As such these nodes are both types and name expressions.
-// TODO use for both this and types so that type names can be qualified
+
 Name <: NameExpression;
 /// A name that has been resolved and therefore cannot be rewritten
 // TODO is this still needed now that there are `UnresolvedName`s?
@@ -406,13 +411,12 @@ concrete UnresolvedNameQualifiedName <: UnresolvedQualifiedName;
 UnresolvedNamespaceQualifiedName <: UnresolvedQualifiedName
     = /Syntax/ Context:NamespaceName /GenericArguments/ ReferencedDeclarations:{`INamespaceMemberDeclarationNode`};
 UnresolvedTypeQualifiedName <: UnresolvedQualifiedName
-    = /Syntax/ Context:TypeNameExpression /GenericArguments/ ReferencedDeclarations:{`IAssociatedMemberDeclarationNode`};
+    = /Syntax/ Context:TypeName /GenericArguments/ ReferencedDeclarations:{`IAssociatedMemberDeclarationNode`};
 
 // ---------- Type Names
 // Type names are both types and expressions since they can occur in both.
 
-// TODO start from generalized names in syntax and rewrite to type names
-TypeName <: Type = Syntax:`INameSyntax`;
+TypeName <: Type, ResolvedName = Syntax:`INameSyntax`;
 UnqualifiedTypeName <: TypeName = Syntax:`IUnqualifiedNameSyntax`;
 BuiltInTypeName <: UnqualifiedTypeName = Syntax:`IBuiltInTypeNameSyntax`;
 OrdinaryTypeName <: UnqualifiedTypeName = Syntax:`IOrdinaryNameSyntax`;
@@ -420,37 +424,25 @@ IdentifierTypeName <: OrdinaryTypeName = Syntax:`IIdentifierNameSyntax`;
 GenericTypeName <: OrdinaryTypeName = Syntax:`IGenericNameSyntax` GenericArguments:Type*;
 QualifiedTypeName <: TypeName = Syntax:`IQualifiedNameSyntax` Context:Name GenericArguments:Type*;
 
-// TODO maybe resolution picks what kind of name it is and binding means it has a specific referenced declaration.
-TypeNameExpression <: ResolvedName = Syntax:`INameExpressionSyntax`
-    GenericArguments:Type* ReferencedDeclaration:`ITypeDeclarationNode`;
-// TODO add to UnqualifiedTypeNameExpression
-// TODO merge with BuiltInTypeName and keep the name "BuiltInTypeName" because it really isn't an expression
-BuiltInTypeNameExpression <: ResolvedName
-    = Syntax:`IBuiltInTypeNameSyntax`;
-OrdinaryTypeNameExpression <: TypeNameExpression
-    = Syntax:`IOrdinaryNameSyntax` /GenericArguments/ /ReferencedDeclaration/;
-QualifiedTypeNameExpression <: TypeNameExpression = Syntax:`IQualifiedNameSyntax`
-    Context:ResolvedName /GenericArguments/ /ReferencedDeclaration/;
-
 // ---------- Capability Expressions
 temp AmbiguousMoveExpression <: AmbiguousExpression = Syntax:`IMoveExpressionSyntax` Referent:AmbiguousExpression;
-RecoveryExpression <: Expression = Referent:Expression IsImplicit:`bool`;
+RecoveryExpression <: OrdinaryTypedExpression = Referent:Expression IsImplicit:`bool`;
 MoveExpression <: RecoveryExpression = Referent:Expression;
 // TODO why is move variable expression needed? Shouldn't moving a value just change any variables in the sharing set to `id`?
 MoveVariableExpression <: MoveExpression = Referent:LocalBindingNameExpression /IsImplicit/;
 MoveValueExpression <: MoveExpression = /Referent/ /IsImplicit/;
-ImplicitTempMoveExpression <: Expression = Referent:Expression;
+ImplicitTempMoveExpression <: OrdinaryTypedExpression = Referent:Expression;
 temp AmbiguousFreezeExpression <: AmbiguousExpression = Syntax:`IFreezeExpressionSyntax` Referent:AmbiguousExpression;
 FreezeExpression <: RecoveryExpression = Referent:Expression IsTemporary:`bool`;
 FreezeVariableExpression <: FreezeExpression = Referent:LocalBindingNameExpression /IsTemporary/ /IsImplicit/;
 FreezeValueExpression <: FreezeExpression = /Referent/ /IsTemporary/ /IsImplicit/;
-PrepareToReturnExpression <: Expression = Value:Expression;
+PrepareToReturnExpression <: OrdinaryTypedExpression = Value:Expression;
 
 // ---------- Async Expressions
-AsyncBlockExpression <: Expression = Syntax:`IAsyncBlockExpressionSyntax` Block:BlockExpression;
-AsyncStartExpression <: Expression
+AsyncBlockExpression <: OrdinaryTypedExpression = Syntax:`IAsyncBlockExpressionSyntax` Block:BlockExpression;
+AsyncStartExpression <: OrdinaryTypedExpression
     = Syntax:`IAsyncStartExpressionSyntax` Expression:AmbiguousExpression;
-AwaitExpression <: Expression = Syntax:`IAwaitExpressionSyntax` Expression:AmbiguousExpression;
+AwaitExpression <: OrdinaryTypedExpression = Syntax:`IAwaitExpressionSyntax` Expression:AmbiguousExpression;
 
 // -------------------------------------------------------------------------------------------------
 // Declarations

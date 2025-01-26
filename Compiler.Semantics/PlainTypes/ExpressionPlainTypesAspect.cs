@@ -363,8 +363,9 @@ internal static partial class ExpressionPlainTypesAspect
         // => node.ReferencedDeclaration?.InitializerGroupPlainType ?? PlainType.Unknown;
         => PlainType.Unknown;
 
-    public static partial IImplicitConversionExpressionNode? Expression_Insert_ImplicitConversionExpression(IExpressionNode node)
+    public static partial IImplicitConversionExpressionNode? OrdinaryTypedExpression_Insert_ImplicitConversionExpression(IOrdinaryTypedExpressionNode node)
     {
+        // TODO can this be dropped? All those things should have an unknown plain type and so be skipped
         if (node.ShouldNotBeExpression()) return null;
 
         // To minimize outstanding rewrites, first check whether node.PlainType could possibly

@@ -118,12 +118,12 @@ internal static partial class TypeDefinitionsAspect
                 diagnostics.Add(OtherSemanticError.CircularDefinitionInSupertype(node.File, supertypeName.Syntax));
     }
 
-    private static bool InheritsFrom(this IOrdinaryTypeNameNode node, OrdinaryTypeConstructor type)
+    private static bool InheritsFrom(this ITypeNameNode node, OrdinaryTypeConstructor type)
         => node.ReferencedDeclaration?.Supertypes.Any(t => t.TypeConstructor.Equals(type)) ?? false;
 
     private static void CheckGenericArgumentsAreConstructable(ITypeDefinitionNode node, DiagnosticCollectionBuilder diagnostics)
     {
-        foreach (IOrdinaryTypeNameNode supertypeName in node.SupertypeNames)
+        foreach (var supertypeName in node.SupertypeNames)
             ExpressionTypesAspect.CheckGenericArgumentsAreConstructable(supertypeName, diagnostics);
     }
 

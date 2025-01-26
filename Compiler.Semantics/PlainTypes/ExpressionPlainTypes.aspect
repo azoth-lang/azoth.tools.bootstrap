@@ -31,9 +31,9 @@
 // ---------- Expressions
 // TODO remove once all nodes properly provide the expected plain type
 = AmbiguousExpression.*.ExpectedPlainType => null;
-↓ Expression.ExpectedPlainType: `IMaybePlainType`?;
 ↑ Expression.PlainType: `IMaybePlainType`;
-✎ Expression insert ImplicitConversionExpression;
+↓ OrdinaryTypedExpression.ExpectedPlainType: `IMaybePlainType`?;
+✎ OrdinaryTypedExpression insert ImplicitConversionExpression;
 ↑ BlockExpression.PlainType: `IMaybePlainType`;
 // TODO it would be better if this didn't depend on types, but only on plain types
 // However, it needs to be contextualized with the generic arguments and currently there isn't another way to do that.
@@ -90,16 +90,20 @@
 = FunctionGroupName.PlainType => AzothPlainType.Unknown;
 = FunctionGroupName.*.ExpectedPlainType => null;
 = FunctionNameExpression.*.ExpectedPlainType => null;
-= TypeNameExpression.PlainType => AzothPlainType.Unknown;
 = InitializerGroupName.PlainType => AzothPlainType.Unknown;
 ↑ InitializerGroupName.InitializingPlainType: `IMaybePlainType` => Context.NamedPlainType;
 ↑ InitializerNameExpression.InitializingPlainType: `IMaybePlainType` => Context.NamedPlainType;
-= BuiltInTypeNameExpression.PlainType => AzothPlainType.Unknown;
 = MissingNameExpression.PlainType => AzothPlainType.Unknown;
 
 // ---------- Unresolved Name Expressions
 = UnresolvedNameExpression.PlainType => AzothPlainType.Unknown;
 = UnresolvedQualifiedNameExpression.PlainType => AzothPlainType.Unknown;
+
+// ---------- Names
+= Name.PlainType => AzothPlainType.Unknown;
+
+// ---------- Unresolved Names
+= UnresolvedName.PlainType => AzothPlainType.Unknown;
 
 // ---------- Capability Expressions
 = MoveExpression.PlainType => Referent.PlainType;

@@ -82,8 +82,6 @@ public static class ISemanticNodeExtensions
                 if (n.TempValue is not null)
                     yield return n.TempValue;
                 yield break;
-            case IBuiltInTypeNameExpressionNode n:
-                yield break;
             case IBuiltInTypeNameNode n:
                 yield break;
             case IBuiltInTypeSymbolNode n:
@@ -385,10 +383,6 @@ public static class ISemanticNodeExtensions
                 yield break;
             case IOrdinaryMethodSymbolNode n:
                 yield break;
-            case IOrdinaryTypeNameExpressionNode n:
-                foreach (var child in n.GenericArguments)
-                    yield return child;
-                yield break;
             case IPackageFacetNode n:
                 foreach (var child in n.CompilationUnits)
                     yield return child;
@@ -421,11 +415,6 @@ public static class ISemanticNodeExtensions
                 yield break;
             case IQualifiedNamespaceNameNode n:
                 yield return n.Context;
-                yield break;
-            case IQualifiedTypeNameExpressionNode n:
-                yield return n.Context;
-                foreach (var child in n.GenericArguments)
-                    yield return child;
                 yield break;
             case IQualifiedTypeNameNode n:
                 yield return n.Context;

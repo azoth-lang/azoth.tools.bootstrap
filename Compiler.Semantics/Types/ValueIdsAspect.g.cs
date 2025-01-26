@@ -13,9 +13,11 @@ internal static partial class ValueIdsAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial ValueIdScope ExecutableDefinition_ValueIdScope(IExecutableDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial ValueIdScope TypeDefinition_ValueIdScope(ITypeDefinitionNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial ValueId Parameter_BindingValueId(IParameterNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial ValueId AmbiguousExpression_ValueId(IAmbiguousExpressionNode node);
+    public static partial ValueId Expression_ValueId(IExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial ValueId FieldDefinition_BindingValueId(IFieldDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -88,10 +88,6 @@ internal static partial class BindingNamesAspect
     #endregion
 
     #region Name Expressions
-    public static partial ITypeDeclarationNode? BuiltInTypeNameExpression_ReferencedDeclaration(IBuiltInTypeNameExpressionNode node)
-        // TODO report error for use of `Self` outside of a type
-        => node.ContainingLexicalScope.Lookup(node.Name);
-
     public static partial ISelfParameterNode? SelfExpression_ReferencedDefinition(ISelfExpressionNode node)
         // TODO use a more specific inherited attribute? (e.g. SelfParameter)
         // TODO or add `SelfParameter` to ExecutableDefinition and do node.ContainingDeclaration.SelfParameter?

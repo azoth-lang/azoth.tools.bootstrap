@@ -13,8 +13,6 @@ internal static partial class TypeExpressionsPlainTypesAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IMaybePlainType ViewpointType_NamedPlainType(IViewpointTypeNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IMaybePlainType TypeNameExpression_NamedPlainType(ITypeNameExpressionNode node);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IMaybePlainType OptionalType_NamedPlainType(IOptionalTypeNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IMaybePlainType CapabilityType_NamedPlainType(ICapabilityTypeNode node);
