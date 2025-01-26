@@ -326,7 +326,7 @@ MissingNameExpression <: NameExpression
 /// The UnresolvedInvocationExpression provides an expected type based on the arguments. Once the overload has
 /// been resolved, the FunctionInvocationExpression provides expected types based on the function called.
 FunctionNameExpression <: OrdinaryTypedNameExpression
-    = Syntax:`INameExpressionSyntax` Context:ResolvedName? FunctionName:`OrdinaryName` GenericArguments:Type*
+    = Syntax:`INameExpressionSyntax` Context:Name? FunctionName:`OrdinaryName` GenericArguments:Type*
     ReferencedDeclarations:{`IFunctionInvocableDeclarationNode`}
     CallCandidates:{`ICallCandidate<IFunctionInvocableDeclarationNode>`}
     CompatibleCallCandidates:{`ICallCandidate<IFunctionInvocableDeclarationNode>`}
@@ -366,7 +366,7 @@ UnresolvedTypeQualifiedNameExpression <: UnresolvedQualifiedNameExpression
 // TODO should FunctionGroupName be UnresolvedFunctionName?
 // TODO merge with FunctionNameExpression?
 FunctionGroupName <: UnresolvedNameExpression, OrdinaryTypedExpression
-    = Syntax:`INameExpressionSyntax` Context:ResolvedName? FunctionName:`OrdinaryName` GenericArguments:Type*
+    = Syntax:`INameExpressionSyntax` Context:Name? FunctionName:`OrdinaryName` GenericArguments:Type*
     ReferencedDeclarations:{`IFunctionInvocableDeclarationNode`};
 // TODO should InitializerGroupName be UnresolvedInitializerName?
 // TODO merge with InitializerNameExpression?
@@ -380,10 +380,7 @@ InitializerGroupName <: UnresolvedNameExpression, OrdinaryTypedExpression = Synt
 // As such these nodes are both types and name expressions.
 
 Name <: NameExpression;
-/// A name that has been resolved and therefore cannot be rewritten
-// TODO is this still needed now that there are `UnresolvedName`s?
-ResolvedName <: Name;
-NamespaceName <: ResolvedName = ReferencedDeclarations:`INamespaceDeclarationNode`*;
+NamespaceName <: Name = ReferencedDeclarations:`INamespaceDeclarationNode`*;
 UnqualifiedNamespaceName <: NamespaceName
     = Syntax:`IIdentifierNameSyntax` /ReferencedDeclarations/;
 QualifiedNamespaceName <: NamespaceName
@@ -416,7 +413,7 @@ UnresolvedTypeQualifiedName <: UnresolvedQualifiedName
 // ---------- Type Names
 // Type names are both types and expressions since they can occur in both.
 
-TypeName <: Type, ResolvedName = Syntax:`INameSyntax`;
+TypeName <: Type, Name = Syntax:`INameSyntax`;
 UnqualifiedTypeName <: TypeName = Syntax:`IUnqualifiedNameSyntax`;
 BuiltInTypeName <: UnqualifiedTypeName = Syntax:`IBuiltInTypeNameSyntax`;
 OrdinaryTypeName <: UnqualifiedTypeName = Syntax:`IOrdinaryNameSyntax`;

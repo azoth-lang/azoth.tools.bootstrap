@@ -2895,7 +2895,8 @@ public partial interface IMissingNameExpressionNode : INameExpressionNode
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IFunctionNameExpressionNode : IOrdinaryTypedNameExpressionNode
 {
-    IResolvedNameNode? Context { get; }
+    INameNode? Context { get; }
+    INameNode? CurrentContext { get; }
     OrdinaryName FunctionName { get; }
     IFixedList<ITypeNode> GenericArguments { get; }
     IFixedSet<IFunctionInvocableDeclarationNode> ReferencedDeclarations { get; }
@@ -2908,7 +2909,7 @@ public partial interface IFunctionNameExpressionNode : IOrdinaryTypedNameExpress
 
     public static IFunctionNameExpressionNode Create(
         INameExpressionSyntax syntax,
-        IResolvedNameNode? context,
+        INameNode? context,
         OrdinaryName functionName,
         IEnumerable<ITypeNode> genericArguments,
         IEnumerable<IFunctionInvocableDeclarationNode> referencedDeclarations,
@@ -3106,7 +3107,8 @@ public partial interface IUnresolvedTypeQualifiedNameExpressionNode : IUnresolve
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IFunctionGroupNameNode : IUnresolvedNameExpressionNode, IOrdinaryTypedExpressionNode
 {
-    IResolvedNameNode? Context { get; }
+    INameNode? Context { get; }
+    INameNode? CurrentContext { get; }
     OrdinaryName FunctionName { get; }
     IFixedList<ITypeNode> GenericArguments { get; }
     IFixedSet<IFunctionInvocableDeclarationNode> ReferencedDeclarations { get; }
@@ -3122,7 +3124,7 @@ public partial interface IFunctionGroupNameNode : IUnresolvedNameExpressionNode,
 
     public static IFunctionGroupNameNode Create(
         INameExpressionSyntax syntax,
-        IResolvedNameNode? context,
+        INameNode? context,
         OrdinaryName functionName,
         IEnumerable<ITypeNode> genericArguments,
         IEnumerable<IFunctionInvocableDeclarationNode> referencedDeclarations)
@@ -3155,8 +3157,9 @@ public partial interface IInitializerGroupNameNode : IUnresolvedNameExpressionNo
 }
 
 [Closed(
-    typeof(IResolvedNameNode),
-    typeof(IUnresolvedNameNode))]
+    typeof(INamespaceNameNode),
+    typeof(IUnresolvedNameNode),
+    typeof(ITypeNameNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface INameNode : INameExpressionNode
 {
@@ -3168,18 +3171,10 @@ public partial interface INameNode : INameExpressionNode
 }
 
 [Closed(
-    typeof(INamespaceNameNode),
-    typeof(ITypeNameNode))]
-[GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IResolvedNameNode : INameNode
-{
-}
-
-[Closed(
     typeof(IUnqualifiedNamespaceNameNode),
     typeof(IQualifiedNamespaceNameNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface INamespaceNameNode : IResolvedNameNode
+public partial interface INamespaceNameNode : INameNode
 {
     IFixedList<INamespaceDeclarationNode> ReferencedDeclarations { get; }
     IMaybePlainType IExpressionNode.PlainType
@@ -3362,7 +3357,7 @@ public partial interface IUnresolvedTypeQualifiedNameNode : IUnresolvedQualified
     typeof(IUnqualifiedTypeNameNode),
     typeof(IQualifiedTypeNameNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface ITypeNameNode : ITypeNode, IResolvedNameNode
+public partial interface ITypeNameNode : ITypeNode, INameNode
 {
     new INameSyntax Syntax { get; }
     ITypeSyntax ITypeNode.Syntax => Syntax;
@@ -15357,7 +15352,12 @@ file class FunctionNameExpressionNode : SemanticNode, IFunctionNameExpressionNod
     protected override bool MayHaveRewrite => true;
 
     public INameExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    public IResolvedNameNode? Context { [DebuggerStepThrough] get; }
+    private RewritableChild<INameNode?> context;
+    private bool contextCached;
+    public INameNode? Context
+        => GrammarAttribute.IsCached(in contextCached) ? context.UnsafeValue
+            : this.RewritableChild(ref contextCached, ref context);
+    public INameNode? CurrentContext => context.UnsafeValue;
     public OrdinaryName FunctionName { [DebuggerStepThrough] get; }
     public IFixedList<ITypeNode> GenericArguments { [DebuggerStepThrough] get; }
     public IFixedSet<IFunctionInvocableDeclarationNode> ReferencedDeclarations { [DebuggerStepThrough] get; }
@@ -15429,7 +15429,7 @@ file class FunctionNameExpressionNode : SemanticNode, IFunctionNameExpressionNod
 
     public FunctionNameExpressionNode(
         INameExpressionSyntax syntax,
-        IResolvedNameNode? context,
+        INameNode? context,
         OrdinaryName functionName,
         IEnumerable<ITypeNode> genericArguments,
         IEnumerable<IFunctionInvocableDeclarationNode> referencedDeclarations,
@@ -15439,7 +15439,7 @@ file class FunctionNameExpressionNode : SemanticNode, IFunctionNameExpressionNod
         IFunctionInvocableDeclarationNode? referencedDeclaration)
     {
         Syntax = syntax;
-        Context = Child.Attach(this, context);
+        this.context = Child.Create(this, context);
         FunctionName = functionName;
         GenericArguments = ChildList.Attach(this, genericArguments);
         ReferencedDeclarations = referencedDeclarations.ToFixedSet();
@@ -16267,7 +16267,12 @@ file class FunctionGroupNameNode : SemanticNode, IFunctionGroupNameNode
     protected override bool MayHaveRewrite => true;
 
     public INameExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    public IResolvedNameNode? Context { [DebuggerStepThrough] get; }
+    private RewritableChild<INameNode?> context;
+    private bool contextCached;
+    public INameNode? Context
+        => GrammarAttribute.IsCached(in contextCached) ? context.UnsafeValue
+            : this.RewritableChild(ref contextCached, ref context);
+    public INameNode? CurrentContext => context.UnsafeValue;
     public OrdinaryName FunctionName { [DebuggerStepThrough] get; }
     public IFixedList<ITypeNode> GenericArguments { [DebuggerStepThrough] get; }
     public IFixedSet<IFunctionInvocableDeclarationNode> ReferencedDeclarations { [DebuggerStepThrough] get; }
@@ -16345,14 +16350,14 @@ file class FunctionGroupNameNode : SemanticNode, IFunctionGroupNameNode
 
     public FunctionGroupNameNode(
         INameExpressionSyntax syntax,
-        IResolvedNameNode? context,
+        INameNode? context,
         OrdinaryName functionName,
         IEnumerable<ITypeNode> genericArguments,
         IEnumerable<IFunctionInvocableDeclarationNode> referencedDeclarations)
     {
         NameResolutionAspect.Validate_FunctionGroupNameNode(syntax, context, functionName, genericArguments, referencedDeclarations);
         Syntax = syntax;
-        Context = Child.Attach(this, context);
+        this.context = Child.Create(this, context);
         FunctionName = functionName;
         GenericArguments = ChildList.Attach(this, genericArguments);
         ReferencedDeclarations = referencedDeclarations.ToFixedSet();
