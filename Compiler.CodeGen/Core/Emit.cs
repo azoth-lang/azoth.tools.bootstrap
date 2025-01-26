@@ -150,7 +150,7 @@ internal static class Emit
                 var finalElementType = ((CollectionTypeModel)property.FinalType).ElementType.ToNonOptional();
                 return property.IsTemp
                     ? $"IRewritableChildList<{Type(collectionType.ElementType)}, {Type(finalElementType)}>"
-                    : $"IRewritableChildList<{Type(property.Type)}>";
+                    : $"IRewritableChildList<{Type(collectionType.ElementType)}>";
             case OptionalTypeModel _:
             case SymbolTypeModel _:
                 return $"RewritableChild<{Type(property.Type)}>";
