@@ -17,9 +17,6 @@
 // ---------- Parameters
 ↑ FieldParameter.ReferencedField: FieldDefinition?;
 
-// ---------- Expressions
-↑ NewObjectExpression.ReferencedConstructors: {ConstructorDeclaration};
-
 // ---------- Name Expressions
 ↑ SelfExpression.ReferencedDefinition: SelfParameter?;
 = SelfExpression.↑.Diagnostics;

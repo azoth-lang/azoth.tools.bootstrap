@@ -212,11 +212,6 @@ public static class ISyntaxExtensions
                 foreach (var child in n.Definitions)
                     yield return child;
                 yield break;
-            case INewObjectExpressionSyntax n:
-                yield return n.Type;
-                foreach (var child in n.Arguments)
-                    yield return child;
-                yield break;
             case INextExpressionSyntax n:
                 yield break;
             case INoneLiteralExpressionSyntax n:

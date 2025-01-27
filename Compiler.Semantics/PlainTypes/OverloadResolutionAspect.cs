@@ -18,57 +18,6 @@ internal static partial class OverloadResolutionAspect
         return PlainType.Unknown;
     }
 
-    #region Expressions
-    public static partial IFixedSet<IConstructorDeclarationNode> NewObjectExpression_CompatibleConstructors(
-        INewObjectExpressionNode node)
-    {
-        var constructingPlainType = node.ConstructingPlainType;
-        var arguments = node.Arguments.Select(PlainTypeIfKnown);
-        var argumentPlainTypes = ArgumentPlainTypes.ForConstructor(arguments);
-        return node.ReferencedConstructors
-                   .Select(d => CallCandidate.Create(constructingPlainType, d))
-                   .Where(o => o.CompatibleWith(argumentPlainTypes))
-                   .Select(o => o.Declaration).ToFixedSet();
-    }
-
-    public static partial IConstructorDeclarationNode? NewObjectExpression_ReferencedConstructor(INewObjectExpressionNode node)
-        => node.CompatibleConstructors.TrySingle();
-
-    public static partial void NewObjectExpression_Contribute_Diagnostics(
-        INewObjectExpressionNode node,
-        DiagnosticCollectionBuilder diagnostics)
-    {
-        switch (node.ConstructingPlainType)
-        {
-            case UnknownPlainType:
-                // Error should be reported elsewhere
-                return;
-            case NeverPlainType:
-            case GenericParameterPlainType:
-            case BarePlainType { TypeConstructor.CanBeInstantiated: false }:
-                // TODO type variables, empty types and others also cannot be constructed. Report proper error message in that case
-                diagnostics.Add(
-                    OtherSemanticError.CannotConstructAbstractType(node.File, node.ConstructingType.Syntax));
-                return;
-        }
-
-        if (node.ReferencedConstructor is not null)
-            return;
-
-        switch (node.CompatibleConstructors.Count)
-        {
-            case 0:
-                diagnostics.Add(NameBindingError.CouldNotBindInitializer(node.File, node.Syntax.Span));
-                break;
-            case 1:
-                throw new UnreachableException("ReferencedConstructor would not be null");
-            default:
-                diagnostics.Add(NameBindingError.AmbiguousInitializerCall(node.File, node.Syntax.Span));
-                break;
-        }
-    }
-    #endregion
-
     #region Instance Member Access Expressions
     public static partial void MethodGroupName_Contribute_Diagnostics(IMethodGroupNameNode node, DiagnosticCollectionBuilder diagnostics)
         => ContributeMethodNameBindingDiagnostics(node.ReferencedDeclaration, node.CompatibleCallCandidates, node, node.Syntax, diagnostics);

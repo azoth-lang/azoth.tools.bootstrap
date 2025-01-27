@@ -310,33 +310,6 @@ internal static partial class ExpressionTypesAspect
     public static partial IMaybeType SelfExpression_Type(ISelfExpressionNode node)
         => node.FlowStateAfter.AliasType(node.ReferencedDefinition);
 
-    public static partial ContextualizedCall? NewObjectExpression_ContextualizedCall(
-        INewObjectExpressionNode node)
-        => node.ReferencedConstructor is not null
-            ? ContextualizedCall.Create(node.ConstructingType.NamedType, node.ReferencedConstructor)
-            : null;
-
-    public static partial IMaybeType NewObjectExpression_Type(INewObjectExpressionNode node)
-        // TODO does this need to be modified by flow typing?
-        => node.ContextualizedCall?.ReturnType ?? IMaybeType.Unknown;
-
-    public static partial IFlowState NewObjectExpression_FlowStateAfter(INewObjectExpressionNode node)
-    {
-        // The flow state just before the constructor is called is the state after all arguments have evaluated
-        var flowStateBefore = node.Arguments.LastOrDefault()?.FlowStateAfter ?? node.FlowStateBefore();
-        var argumentValueIds = ArgumentValueIds(node.ContextualizedCall, null, node.Arguments);
-        return flowStateBefore.CombineArguments(argumentValueIds, node.ValueId, node.Type);
-    }
-
-    public static partial void NewObjectExpression_Contribute_Diagnostics(INewObjectExpressionNode node, DiagnosticCollectionBuilder diagnostics)
-    {
-        CheckConstructingType(node.ConstructingType, diagnostics);
-
-        var flowStateBefore = node.Arguments.LastOrDefault()?.FlowStateAfter ?? node.FlowStateBefore();
-        var argumentValueIds = ArgumentValueIds(node.ContextualizedCall, null, node.Arguments);
-        ContributeCannotUnionDiagnostics(node, flowStateBefore, argumentValueIds, diagnostics);
-    }
-
     private static void CheckConstructingType(ITypeNameNode node, DiagnosticCollectionBuilder diagnostics)
     {
         switch (node)

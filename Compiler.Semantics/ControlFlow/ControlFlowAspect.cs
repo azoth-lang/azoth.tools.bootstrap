@@ -98,14 +98,6 @@ internal static partial class ControlFlowAspect
     public static partial ControlFlowSet UnsafeExpression_ControlFlowNext(IUnsafeExpressionNode node)
         => ControlFlowSet.CreateNormal(node.Expression);
 
-    public static partial ControlFlowSet NewObjectExpression_ControlFlowNext(
-        INewObjectExpressionNode node)
-    {
-        if (!node.TempArguments.IsEmpty)
-            return ControlFlowSet.CreateNormal(node.Arguments[0]);
-        return node.ControlFlowFollowing();
-    }
-
     public static partial ControlFlowSet IfExpression_ControlFlowNext(
         IIfExpressionNode node)
         => ControlFlowSet.CreateNormal(node.Condition);

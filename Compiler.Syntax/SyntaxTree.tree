@@ -160,15 +160,6 @@ Expression <: Code;
 /// A block expression. Not to be used to represent function or type bodies.
 BlockExpression <: Expression, BlockOrResult, BodyOrBlock = Statements:Statement*;
 
-/// <summary>
-/// Note that this could represent a named or unnamed constructor. So
-/// for an unnamed constructor, it is really the type name. Conceptually
-/// though, the type name is the name of the unnamed constructor. Thus,
-/// this expression's type could be either an object type, or member type.
-/// </summary>
-NewObjectExpression <: Expression
-    = Type:Name ConstructorName:`IdentifierName`? ConstructorNameSpan:`TextSpan`? Arguments:Expression*;
-
 UnsafeExpression <: Expression = Expression;
 
 // ---------- Instance Member Access Expressions

@@ -90,8 +90,6 @@ internal static partial class FormattingAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial string BlockExpression_ToString(IBlockExpressionSyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial string NewObjectExpression_ToString(INewObjectExpressionSyntax node);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial string UnsafeExpression_ToString(IUnsafeExpressionSyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial string MemberAccessExpression_ToString(IMemberAccessExpressionSyntax node);

@@ -125,11 +125,6 @@
 = ForeachExpression.Name => VariableName;
 ↑ ForeachExpression.VariableName: `IdentifierName` => Syntax.VariableName;
 
-// ---------- Expressions
-↑ NewObjectExpression.ConstructorName: `IdentifierName`? => Syntax.ConstructorName;
-= NewObjectExpression.TempAllArguments => TempArguments;
-= NewObjectExpression.AllArguments => Arguments;
-
 // ---------- Unresolved Expressions
 ↑ UnresolvedMemberAccessExpression.MemberName: `OrdinaryName` => Syntax.MemberName;
 

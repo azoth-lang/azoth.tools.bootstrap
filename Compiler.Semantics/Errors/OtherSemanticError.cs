@@ -95,13 +95,6 @@ public static class OtherSemanticError
             6016, $"Type `{typeName}` cannot have super type `{superTypeName}` because it is not a trait or class.");
     }
 
-    // TODO remove overload when no longer needed for constructor calls
-    public static Diagnostic CannotConstructAbstractType(CodeFile file, INameSyntax typeName)
-    {
-        return new(file, typeName.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
-            6017, $"Type `{typeName}` cannot be constructed because it is abstract.");
-    }
-
     public static Diagnostic CannotInitializeAbstractType(CodeFile file, INameExpressionSyntax typeName)
     {
         return new(file, typeName.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,

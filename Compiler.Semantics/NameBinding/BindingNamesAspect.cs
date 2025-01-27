@@ -71,22 +71,6 @@ internal static partial class BindingNamesAspect
         => node.ContainingLexicalScope.Lookup(node.Name);
     #endregion
 
-    #region Expressions
-    public static partial IFixedSet<IConstructorDeclarationNode> NewObjectExpression_ReferencedConstructors(INewObjectExpressionNode node)
-    {
-        var typeDeclarationNode = node.PackageNameScope().Lookup(node.ConstructingPlainType);
-        if (typeDeclarationNode is null)
-            return FixedSet.Empty<IConstructorDeclarationNode>();
-
-        if (node.ConstructorName is null)
-            return typeDeclarationNode.Members.OfType<IConstructorDeclarationNode>()
-                                      .Where(c => c.Name is null).ToFixedSet();
-
-        return typeDeclarationNode.AssociatedMembersNamed(node.ConstructorName)
-                                  .OfType<IConstructorDeclarationNode>().ToFixedSet();
-    }
-    #endregion
-
     #region Name Expressions
     public static partial ISelfParameterNode? SelfExpression_ReferencedDefinition(ISelfExpressionNode node)
         // TODO use a more specific inherited attribute? (e.g. SelfParameter)

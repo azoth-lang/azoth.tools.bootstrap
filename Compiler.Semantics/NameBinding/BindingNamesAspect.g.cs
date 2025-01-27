@@ -22,8 +22,6 @@ internal static partial class BindingNamesAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFieldDefinitionNode? FieldParameter_ReferencedField(IFieldParameterNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IFixedSet<IConstructorDeclarationNode> NewObjectExpression_ReferencedConstructors(INewObjectExpressionNode node);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial ISelfParameterNode? SelfExpression_ReferencedDefinition(ISelfExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial ITypeDeclarationNode? BuiltInTypeName_ReferencedDeclaration(IBuiltInTypeNameNode node);

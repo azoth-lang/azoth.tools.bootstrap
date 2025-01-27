@@ -6,11 +6,6 @@
 
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
-// ---------- Expressions
-↑ NewObjectExpression.CompatibleConstructors: {ConstructorDeclaration};
-↑ NewObjectExpression.ReferencedConstructor: ConstructorDeclaration?;
-= NewObjectExpression.↑.Diagnostics;
-
 // ---------- Instance Member Access Expressions
 ↑ MethodGroupName.CallCandidates: {`ICallCandidate<IOrdinaryMethodDeclarationNode>`};
 ↑ MethodGroupName.CompatibleCallCandidates: {`ICallCandidate<IOrdinaryMethodDeclarationNode>`};

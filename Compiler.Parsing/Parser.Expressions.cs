@@ -274,17 +274,6 @@ public partial class Parser
                 throw ExhaustiveMatch.Failed(Tokens.Current);
             case ISelfKeywordToken _:
                 return ParseSelfExpression();
-            case INewKeywordToken _:
-            {
-                var newKeyword = Tokens.Consume<INewKeywordToken>();
-                var type = ParseOrdinaryTypeName();
-                Tokens.Expect<IOpenParenToken>();
-                var arguments = ParseArguments();
-                var closeParen = Tokens.Expect<ICloseParenToken>();
-                var span = TextSpan.Covering(newKeyword, closeParen);
-                // TODO if we can never parse a constructor name, then change the syntax tree to reflect that
-                return INewObjectExpressionSyntax.Create(span, type, null, null, arguments);
-            }
             case IReturnKeywordToken _:
             {
                 var returnKeyword = Tokens.Consume<IReturnKeywordToken>();

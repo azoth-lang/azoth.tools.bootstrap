@@ -233,12 +233,6 @@ internal static partial class FormattingAspect
     public static partial string BlockExpression_ToString(IBlockExpressionSyntax node)
         => node.Statements.IsEmpty ? "{ }" : $"{{ {node.Statements.Count} Statements }}";
 
-    public static partial string NewObjectExpression_ToString(INewObjectExpressionSyntax node)
-    {
-        var name = node.ConstructorName is not null ? "." + node.ConstructorName : "";
-        return $"new {node.Type}{name}({string.Join(", ", node.Arguments)})";
-    }
-
     public static partial string UnsafeExpression_ToString(IUnsafeExpressionSyntax node)
         => $"unsafe ({node.Expression})";
     #endregion

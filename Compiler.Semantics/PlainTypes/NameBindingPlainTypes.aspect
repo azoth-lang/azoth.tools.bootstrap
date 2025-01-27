@@ -21,8 +21,5 @@
 = BindingContextPattern.Pattern.ContextBindingPlainType();
 = OptionalPattern.Pattern.ContextBindingPlainType();
 
-// ---------- Expressions
-↑ NewObjectExpression.ConstructingPlainType: `IMaybeNonVoidPlainType`;
-
 // ---------- Operator Expressions
 = PatternMatchExpression.Pattern.ContextBindingPlainType();

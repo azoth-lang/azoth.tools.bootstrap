@@ -12,7 +12,6 @@
     => surroundingPrecedence > ExpressionPrecedence ? $"({this})" : ToString();
 ↑ Expression.ExpressionPrecedence:`OperatorPrecedence`;
 = BlockExpression.ExpressionPrecedence => OperatorPrecedence.Primary;
-= NewObjectExpression.ExpressionPrecedence => OperatorPrecedence.Min;
 = UnsafeExpression.ExpressionPrecedence => OperatorPrecedence.Primary;
 
 // ---------- Literal Expressions

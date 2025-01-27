@@ -66,10 +66,6 @@ type `NamespaceSearchScope` <: `LexicalScope`;
 // TODO it is strange that this is always a conditional scope. Instead, use conditional only where it makes sense?
 ↑ AmbiguousExpression.FlowLexicalScope(): `ConditionalLexicalScope`;
 = AmbiguousExpression.FlowLexicalScope();
-= NewObjectExpression.ConstructingType.**.ContainingLexicalScope => ContainingLexicalScope();
-= NewObjectExpression.Arguments[0].**.ContainingLexicalScope => ContainingLexicalScope();
-= NewObjectExpression.Arguments[index].**.ContainingLexicalScope
-    => TempArguments[index - 1].FlowLexicalScope().True;
 = UnsafeExpression.FlowLexicalScope() => TempExpression.FlowLexicalScope();
 
 // ---------- Unresolved Expressions

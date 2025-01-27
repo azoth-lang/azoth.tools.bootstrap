@@ -1006,7 +1006,6 @@ public partial interface IOptionalPatternSyntax : IOptionalOrBindingPatternSynta
 
 [Closed(
     typeof(IBlockExpressionSyntax),
-    typeof(INewObjectExpressionSyntax),
     typeof(IUnsafeExpressionSyntax),
     typeof(ILiteralExpressionSyntax),
     typeof(IAssignmentExpressionSyntax),
@@ -1047,26 +1046,6 @@ public partial interface IBlockExpressionSyntax : IExpressionSyntax, IBlockOrRes
         TextSpan span,
         IEnumerable<IStatementSyntax> statements)
         => new BlockExpressionSyntax(span, statements);
-}
-
-[Closed(typeof(NewObjectExpressionSyntax))]
-[GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface INewObjectExpressionSyntax : IExpressionSyntax
-{
-    INameSyntax Type { get; }
-    IdentifierName? ConstructorName { get; }
-    TextSpan? ConstructorNameSpan { get; }
-    IFixedList<IExpressionSyntax> Arguments { get; }
-    OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
-        => OperatorPrecedence.Min;
-
-    public static INewObjectExpressionSyntax Create(
-        TextSpan span,
-        INameSyntax type,
-        IdentifierName? constructorName,
-        TextSpan? constructorNameSpan,
-        IEnumerable<IExpressionSyntax> arguments)
-        => new NewObjectExpressionSyntax(span, type, constructorName, constructorNameSpan, arguments);
 }
 
 [Closed(typeof(UnsafeExpressionSyntax))]
@@ -2733,34 +2712,6 @@ file class BlockExpressionSyntax : IBlockExpressionSyntax
     {
         Span = span;
         Statements = statements.ToFixedList();
-    }
-}
-
-[GeneratedCode("AzothCompilerCodeGen", null)]
-file class NewObjectExpressionSyntax : INewObjectExpressionSyntax
-{
-    private INewObjectExpressionSyntax Self { [Inline] get => this; }
-
-    public TextSpan Span { [DebuggerStepThrough] get; }
-    public INameSyntax Type { [DebuggerStepThrough] get; }
-    public IdentifierName? ConstructorName { [DebuggerStepThrough] get; }
-    public TextSpan? ConstructorNameSpan { [DebuggerStepThrough] get; }
-    public IFixedList<IExpressionSyntax> Arguments { [DebuggerStepThrough] get; }
-    public override string ToString()
-        => FormattingAspect.NewObjectExpression_ToString(this);
-
-    public NewObjectExpressionSyntax(
-        TextSpan span,
-        INameSyntax type,
-        IdentifierName? constructorName,
-        TextSpan? constructorNameSpan,
-        IEnumerable<IExpressionSyntax> arguments)
-    {
-        Span = span;
-        Type = type;
-        ConstructorName = constructorName;
-        ConstructorNameSpan = constructorNameSpan;
-        Arguments = arguments.ToFixedList();
     }
 }
 

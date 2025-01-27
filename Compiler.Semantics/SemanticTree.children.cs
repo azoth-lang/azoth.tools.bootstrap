@@ -335,11 +335,6 @@ public static class ISemanticNodeExtensions
                 yield break;
             case INeverTypeSymbolNode n:
                 yield break;
-            case INewObjectExpressionNode n:
-                yield return n.ConstructingType;
-                foreach (var child in n.TempArguments)
-                    yield return child;
-                yield break;
             case INextExpressionNode n:
                 yield break;
             case INoneLiteralExpressionNode n:

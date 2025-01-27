@@ -408,7 +408,6 @@ internal static class SyntaxBinder
             IMemberAccessExpressionSyntax syn => MemberAccessExpression(syn),
             IMissingNameSyntax syn => MissingName(syn),
             IBlockExpressionSyntax syn => BlockExpression(syn),
-            INewObjectExpressionSyntax syn => NewObjectExpression(syn),
             IUnsafeExpressionSyntax syn => UnsafeExpression(syn),
             ILiteralExpressionSyntax syn => LiteralExpression(syn),
             IAssignmentExpressionSyntax syn => AssignmentExpression(syn),
@@ -435,9 +434,6 @@ internal static class SyntaxBinder
 
     private static IBlockExpressionNode BlockExpression(IBlockExpressionSyntax syntax)
         => IBlockExpressionNode.Create(syntax, Statements(syntax.Statements));
-
-    private static INewObjectExpressionNode NewObjectExpression(INewObjectExpressionSyntax syntax)
-        => INewObjectExpressionNode.Create(syntax, TypeName(syntax.Type), Expressions(syntax.Arguments));
 
     private static IUnsafeExpressionNode UnsafeExpression(IUnsafeExpressionSyntax syntax)
         => IUnsafeExpressionNode.Create(syntax, Expression(syntax.Expression));

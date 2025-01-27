@@ -43,13 +43,6 @@ internal static partial class ExpressionPlainTypesAspect
         return boundPlainType;
     }
 
-    public static partial IMaybePlainType NewObjectExpression_PlainType(INewObjectExpressionNode node)
-    {
-        var unboundPlainType = node.ReferencedConstructor?.ReturnPlainType ?? PlainType.Unknown;
-        var boundPlainType = node.ConstructingPlainType.TypeReplacements.Apply(unboundPlainType);
-        return boundPlainType;
-    }
-
     public static partial IMaybePlainType AssignmentExpression_PlainType(IAssignmentExpressionNode node)
         => node.LeftOperand?.PlainType ?? PlainType.Unknown;
 

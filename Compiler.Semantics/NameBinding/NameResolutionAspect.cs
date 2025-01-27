@@ -196,7 +196,19 @@ internal static partial class NameResolutionAspect
             node.ReferencedDeclaration);
     }
 
-    // TODO diagnostics for errors binding InitializerGroupName?
+    public static partial void InitializerGroupName_Contribute_Diagnostics(IInitializerGroupNameNode node, DiagnosticCollectionBuilder diagnostics)
+    {
+        // TODO develop a better check that this node is ambiguous
+        if (node.Parent is IUnresolvedInvocationExpressionNode)
+            return;
+
+        if (node.CompatibleCallCandidates.Count == 0)
+            diagnostics.Add(NameBindingError.CouldNotBindName(node.File, node.Syntax.Span));
+        else if (node.CompatibleCallCandidates.Count > 1)
+            // TODO use error specific to initializers
+            // TODO provide the expected function type that didn't match
+            diagnostics.Add(TypeError.AmbiguousFunctionGroup(node.File, node.Syntax, Type.Unknown));
+    }
     #endregion
 
     #region Unresolved Name Expressions

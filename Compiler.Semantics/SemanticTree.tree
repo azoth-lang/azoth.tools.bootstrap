@@ -208,8 +208,6 @@ Expression <: AmbiguousExpression, ControlFlow = Syntax:`IExpressionSyntax`;
 OrdinaryTypedExpression <: Expression;
 BlockExpression <: OrdinaryTypedExpression, BlockOrResult, BodyOrBlock
     = Syntax:`IBlockExpressionSyntax` Statements:Statement*;
-NewObjectExpression <: InvocationExpression = Syntax:`INewObjectExpressionSyntax`
-    ConstructingType:TypeName Arguments:AmbiguousExpression*;
 UnsafeExpression <: OrdinaryTypedExpression = Syntax:`IUnsafeExpressionSyntax` Expression:AmbiguousExpression;
 NeverTypedExpression <: Expression;
 

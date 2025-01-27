@@ -250,88 +250,6 @@ public class InterpreterProcess
         return await CallInitializerAsync(@class, initializerSymbol, self, arguments);
     }
 
-    private async ValueTask<AzothValue> ConstructClass(
-        IClassDefinitionNode @class,
-        ConstructorSymbol constructorSymbol,
-        IEnumerable<AzothValue> arguments)
-    {
-        var vTable = vTables.GetOrAdd(@class, CreateVTable);
-        var self = AzothValue.Object(new AzothObject(vTable));
-        return await CallConstructorAsync(@class, constructorSymbol, self, arguments);
-    }
-
-    private async ValueTask<AzothValue> CallConstructorAsync(
-        IClassDefinitionNode @class,
-        ConstructorSymbol constructorSymbol,
-        AzothValue self,
-        IEnumerable<AzothValue> arguments)
-    {
-        // TODO run field initializers
-        var constructor = constructors[constructorSymbol];
-        // Default constructor is null
-        if (constructor is null) return await CallDefaultConstructorAsync(@class, self);
-        return await CallConstructorAsync(constructor, self, arguments).ConfigureAwait(false);
-    }
-
-    private async ValueTask<AzothValue> CallConstructorAsync(
-        IOrdinaryConstructorDefinitionNode constructor,
-        AzothValue self,
-        IEnumerable<AzothValue> arguments)
-    {
-        try
-        {
-            var variables = new LocalVariableScope();
-            variables.Add(constructor.SelfParameter, self);
-            foreach (var (arg, parameter) in arguments.EquiZip(constructor.Parameters))
-                switch (parameter)
-                {
-                    default:
-                        throw ExhaustiveMatch.Failed(parameter);
-                    case IFieldParameterNode fieldParameter:
-                        self.ObjectValue[fieldParameter.ReferencedField!.Symbol.Assigned().Name] = arg;
-                        break;
-                    case INamedParameterNode p:
-                        variables.Add(p, arg);
-                        break;
-                }
-
-            foreach (var statement in constructor.Body.Statements)
-                await ExecuteAsync(statement, variables).ConfigureAwait(false);
-            return self;
-        }
-        catch (Return)
-        {
-            return self;
-        }
-    }
-
-    /// <summary>
-    /// Call the implicit default constructor for a type that has no constructors.
-    /// </summary>
-    private async ValueTask<AzothValue> CallDefaultConstructorAsync(IClassDefinitionNode @class, AzothValue self)
-    {
-        // Initialize fields to default values
-        var fields = @class.Members.OfType<IFieldDefinitionNode>();
-        foreach (var field in fields)
-            self.ObjectValue[field.Symbol.Assigned().Name] = new AzothValue();
-
-        if (@class.BaseTypeName?.ReferencedDeclaration!.Symbol is OrdinaryTypeSymbol baseClassSymbol)
-        {
-            var baseClass = (IClassDefinitionNode)userTypes[baseClassSymbol];
-            var noArgConstructorSymbol = NoArgConstructorSymbol(baseClass);
-            await CallConstructorAsync(baseClass, noArgConstructorSymbol, self, []);
-        }
-
-        return self;
-    }
-
-    private static ConstructorSymbol NoArgConstructorSymbol(IClassDefinitionNode baseClass)
-    {
-        return baseClass.DefaultConstructor?.Symbol
-               ?? baseClass.Members.OfType<IOrdinaryConstructorDefinitionNode>()
-                           .Select(c => c.Symbol.Assigned()).Single(c => c.Arity == 0);
-    }
-
     private static InitializerSymbol NoArgInitializerSymbol(IClassDefinitionNode baseClass)
     {
         return baseClass.DefaultInitializer?.Symbol
@@ -806,16 +724,6 @@ public class InterpreterProcess
                 var selfType = exp.Context.Type.Known();
                 return await CallMethodAsync(setterSymbol, selfType, self, [value]);
             }
-            case INewObjectExpressionNode exp:
-            {
-                var arguments = await ExecuteArgumentsAsync(exp.Arguments!, variables).ConfigureAwait(false);
-                var constructorSymbol = exp.ReferencedConstructor!.Symbol.Assigned();
-                var objectTypeSymbol = constructorSymbol.ContainingSymbol;
-                if (objectTypeSymbol.Package == Intrinsic.SymbolTree.Package)
-                    return await CallIntrinsicAsync(constructorSymbol, arguments).ConfigureAwait(false);
-                var @class = (IClassDefinitionNode)userTypes[objectTypeSymbol];
-                return await ConstructClass(@class, constructorSymbol, arguments);
-            }
             case IPrepareToReturnExpressionNode exp:
                 return await ExecuteAsync(exp.Value, variables).ConfigureAwait(false);
             case ISelfExpressionNode exp:
@@ -984,23 +892,6 @@ public class InterpreterProcess
         var byteCount = arguments[2].SizeValue;
         var message = bytes.Utf8GetString(start, byteCount);
         return message;
-    }
-
-    private static ValueTask<AzothValue> CallIntrinsicAsync(ConstructorSymbol constructor, List<AzothValue> arguments)
-    {
-        if (constructor == Intrinsic.NewRawBoundedList)
-        {
-            var listType = constructor.ContainingSymbol.TypeConstructor.ParameterTypes[0];
-            nuint capacity = arguments[0].SizeValue;
-            IRawBoundedList list;
-            if (listType.Equals(Type.Byte))
-                list = new RawBoundedByteList(capacity);
-            else
-                list = new RawBoundedList(capacity);
-            return ValueTask.FromResult(AzothValue.RawBoundedList(list));
-        }
-
-        throw new NotImplementedException($"Intrinsic {constructor}");
     }
 
     private static ValueTask<AzothValue> CallIntrinsicAsync(InitializerSymbol initializer, IReadOnlyList<AzothValue> arguments)
