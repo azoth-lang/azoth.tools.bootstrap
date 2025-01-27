@@ -194,7 +194,7 @@ public partial interface IEntityDefinitionSyntax : IDefinitionSyntax
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IInvocableDefinitionSyntax : IEntityDefinitionSyntax
 {
-    IFixedList<IConstructorOrInitializerParameterSyntax> Parameters { get; }
+    IFixedList<IInitializerParameterSyntax> Parameters { get; }
     IBodySyntax? Body { get; }
 }
 
@@ -236,7 +236,7 @@ public partial interface IFunctionDefinitionSyntax : IInvocableDefinitionSyntax,
     new IdentifierName Name { get; }
     UnqualifiedName? IDefinitionSyntax.Name => Name;
     new IFixedList<INamedParameterSyntax> Parameters { get; }
-    IFixedList<IConstructorOrInitializerParameterSyntax> IInvocableDefinitionSyntax.Parameters => Parameters;
+    IFixedList<IInitializerParameterSyntax> IInvocableDefinitionSyntax.Parameters => Parameters;
     IReturnSyntax? Return { get; }
     new IBodySyntax Body { get; }
     IBodySyntax? IInvocableDefinitionSyntax.Body => Body;
@@ -408,7 +408,7 @@ public partial interface IMethodDefinitionSyntax : IClassMemberDefinitionSyntax,
     UnqualifiedName? IDefinitionSyntax.Name => Name;
     IMethodSelfParameterSyntax SelfParameter { get; }
     new IFixedList<INamedParameterSyntax> Parameters { get; }
-    IFixedList<IConstructorOrInitializerParameterSyntax> IInvocableDefinitionSyntax.Parameters => Parameters;
+    IFixedList<IInitializerParameterSyntax> IInvocableDefinitionSyntax.Parameters => Parameters;
     IReturnSyntax? Return { get; }
 }
 
@@ -461,7 +461,7 @@ public partial interface IGetterMethodDefinitionSyntax : IMethodDefinitionSyntax
     new IFixedList<INamedParameterSyntax> Parameters
         => [];
     IFixedList<INamedParameterSyntax> IMethodDefinitionSyntax.Parameters => Parameters;
-    IFixedList<IConstructorOrInitializerParameterSyntax> IInvocableDefinitionSyntax.Parameters => Parameters;
+    IFixedList<IInitializerParameterSyntax> IInvocableDefinitionSyntax.Parameters => Parameters;
 
     public static IGetterMethodDefinitionSyntax Create(
         TextSpan span,
@@ -514,7 +514,7 @@ public partial interface IConstructorDefinitionSyntax : IInvocableDefinitionSynt
         IAccessModifierToken? accessModifier,
         IdentifierName? name,
         IConstructorSelfParameterSyntax selfParameter,
-        IEnumerable<IConstructorOrInitializerParameterSyntax> parameters,
+        IEnumerable<IInitializerParameterSyntax> parameters,
         IBlockBodySyntax body)
         => new ConstructorDefinitionSyntax(span, file, nameSpan, accessModifier, name, selfParameter, parameters, body);
 }
@@ -536,7 +536,7 @@ public partial interface IInitializerDefinitionSyntax : IInvocableDefinitionSynt
         IAccessModifierToken? accessModifier,
         IdentifierName? name,
         IInitializerSelfParameterSyntax selfParameter,
-        IEnumerable<IConstructorOrInitializerParameterSyntax> parameters,
+        IEnumerable<IInitializerParameterSyntax> parameters,
         IBlockBodySyntax body)
         => new InitializerDefinitionSyntax(span, file, nameSpan, accessModifier, name, selfParameter, parameters, body);
 }
@@ -569,7 +569,7 @@ public partial interface IAssociatedFunctionDefinitionSyntax : IClassMemberDefin
     new IdentifierName Name { get; }
     UnqualifiedName? IDefinitionSyntax.Name => Name;
     new IFixedList<INamedParameterSyntax> Parameters { get; }
-    IFixedList<IConstructorOrInitializerParameterSyntax> IInvocableDefinitionSyntax.Parameters => Parameters;
+    IFixedList<IInitializerParameterSyntax> IInvocableDefinitionSyntax.Parameters => Parameters;
     IReturnSyntax? Return { get; }
     new IBodySyntax Body { get; }
     IBodySyntax? IInvocableDefinitionSyntax.Body => Body;
@@ -633,7 +633,7 @@ public partial interface ICapabilitySyntax : ICapabilityConstraintSyntax
 }
 
 [Closed(
-    typeof(IConstructorOrInitializerParameterSyntax),
+    typeof(IInitializerParameterSyntax),
     typeof(ISelfParameterSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IParameterSyntax : ICodeSyntax
@@ -645,13 +645,13 @@ public partial interface IParameterSyntax : ICodeSyntax
     typeof(INamedParameterSyntax),
     typeof(IFieldParameterSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IConstructorOrInitializerParameterSyntax : IParameterSyntax
+public partial interface IInitializerParameterSyntax : IParameterSyntax
 {
 }
 
 [Closed(typeof(NamedParameterSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface INamedParameterSyntax : IConstructorOrInitializerParameterSyntax, ILocalBindingSyntax
+public partial interface INamedParameterSyntax : IInitializerParameterSyntax, ILocalBindingSyntax
 {
     bool IsLentBinding { get; }
     new IdentifierName Name { get; }
@@ -726,7 +726,7 @@ public partial interface IMethodSelfParameterSyntax : ISelfParameterSyntax
 
 [Closed(typeof(FieldParameterSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IFieldParameterSyntax : IConstructorOrInitializerParameterSyntax
+public partial interface IFieldParameterSyntax : IInitializerParameterSyntax
 {
     new IdentifierName Name { get; }
     IdentifierName? IParameterSyntax.Name => Name;
@@ -2054,7 +2054,7 @@ file class ConstructorDefinitionSyntax : IConstructorDefinitionSyntax
     public IAccessModifierToken? AccessModifier { [DebuggerStepThrough] get; }
     public IdentifierName? Name { [DebuggerStepThrough] get; }
     public IConstructorSelfParameterSyntax SelfParameter { [DebuggerStepThrough] get; }
-    public IFixedList<IConstructorOrInitializerParameterSyntax> Parameters { [DebuggerStepThrough] get; }
+    public IFixedList<IInitializerParameterSyntax> Parameters { [DebuggerStepThrough] get; }
     public IBlockBodySyntax Body { [DebuggerStepThrough] get; }
     public override string ToString()
         => FormattingAspect.ConstructorDefinition_ToString(this);
@@ -2066,7 +2066,7 @@ file class ConstructorDefinitionSyntax : IConstructorDefinitionSyntax
         IAccessModifierToken? accessModifier,
         IdentifierName? name,
         IConstructorSelfParameterSyntax selfParameter,
-        IEnumerable<IConstructorOrInitializerParameterSyntax> parameters,
+        IEnumerable<IInitializerParameterSyntax> parameters,
         IBlockBodySyntax body)
     {
         Span = span;
@@ -2091,7 +2091,7 @@ file class InitializerDefinitionSyntax : IInitializerDefinitionSyntax
     public IAccessModifierToken? AccessModifier { [DebuggerStepThrough] get; }
     public IdentifierName? Name { [DebuggerStepThrough] get; }
     public IInitializerSelfParameterSyntax SelfParameter { [DebuggerStepThrough] get; }
-    public IFixedList<IConstructorOrInitializerParameterSyntax> Parameters { [DebuggerStepThrough] get; }
+    public IFixedList<IInitializerParameterSyntax> Parameters { [DebuggerStepThrough] get; }
     public IBlockBodySyntax Body { [DebuggerStepThrough] get; }
     public override string ToString()
         => FormattingAspect.InitializerDefinition_ToString(this);
@@ -2103,7 +2103,7 @@ file class InitializerDefinitionSyntax : IInitializerDefinitionSyntax
         IAccessModifierToken? accessModifier,
         IdentifierName? name,
         IInitializerSelfParameterSyntax selfParameter,
-        IEnumerable<IConstructorOrInitializerParameterSyntax> parameters,
+        IEnumerable<IInitializerParameterSyntax> parameters,
         IBlockBodySyntax body)
     {
         Span = span;

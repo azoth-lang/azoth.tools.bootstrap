@@ -360,7 +360,7 @@ public partial interface IExecutableDefinitionNode : IDefinitionNode, ISymbolDec
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IInvocableDefinitionNode : IExecutableDefinitionNode, IInvocableDeclarationNode
 {
-    IFixedList<IConstructorOrInitializerParameterNode> Parameters { get; }
+    IFixedList<IInitializerParameterNode> Parameters { get; }
     IBodyNode? Body { get; }
     IFlowState FlowStateBefore()
         => TypeMemberDeclarationsAspect.InvocableDefinition_FlowStateBefore(this);
@@ -380,7 +380,7 @@ public partial interface IConcreteFunctionInvocableDefinitionNode : ICodeNode, I
     OrdinaryName? IPackageFacetChildDeclarationNode.Name => Name;
     UnqualifiedName INamedDeclarationNode.Name => Name;
     new IFixedList<INamedParameterNode> Parameters { get; }
-    IFixedList<IConstructorOrInitializerParameterNode> IInvocableDefinitionNode.Parameters => Parameters;
+    IFixedList<IInitializerParameterNode> IInvocableDefinitionNode.Parameters => Parameters;
     ITypeNode? Return { get; }
     new IBodyNode Body { get; }
     IBodyNode? IInvocableDefinitionNode.Body => Body;
@@ -760,7 +760,7 @@ public partial interface IMethodDefinitionNode : ICodeNode, IAlwaysTypeMemberDef
     IDefinitionSyntax? IDefinitionNode.Syntax => Syntax;
     IMethodSelfParameterNode SelfParameter { get; }
     new IFixedList<INamedParameterNode> Parameters { get; }
-    IFixedList<IConstructorOrInitializerParameterNode> IInvocableDefinitionNode.Parameters => Parameters;
+    IFixedList<IInitializerParameterNode> IInvocableDefinitionNode.Parameters => Parameters;
     ITypeNode? Return { get; }
     new IdentifierName Name
         => Syntax.Name;
@@ -918,9 +918,9 @@ public partial interface IDefaultConstructorDefinitionNode : IConstructorDefinit
     IDefinitionSyntax? IDefinitionNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     ITypeMemberDefinitionSyntax? ITypeMemberDefinitionNode.Syntax => Syntax;
-    new IFixedList<IConstructorOrInitializerParameterNode> Parameters
-        => FixedList.Empty<IConstructorOrInitializerParameterNode>();
-    IFixedList<IConstructorOrInitializerParameterNode> IInvocableDefinitionNode.Parameters => Parameters;
+    new IFixedList<IInitializerParameterNode> Parameters
+        => FixedList.Empty<IInitializerParameterNode>();
+    IFixedList<IInitializerParameterNode> IInvocableDefinitionNode.Parameters => Parameters;
     new IBodyNode? Body
         => null;
     IBodyNode? IInvocableDefinitionNode.Body => Body;
@@ -954,7 +954,7 @@ public partial interface IOrdinaryConstructorDefinitionNode : ICodeNode, IConstr
     public static IOrdinaryConstructorDefinitionNode Create(
         IConstructorDefinitionSyntax syntax,
         IConstructorSelfParameterNode selfParameter,
-        IEnumerable<IConstructorOrInitializerParameterNode> parameters,
+        IEnumerable<IInitializerParameterNode> parameters,
         IBlockBodyNode body)
         => new OrdinaryConstructorDefinitionNode(syntax, selfParameter, parameters, body);
 }
@@ -990,9 +990,9 @@ public partial interface IDefaultInitializerDefinitionNode : IInitializerDefinit
     IDefinitionSyntax? IDefinitionNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     ITypeMemberDefinitionSyntax? ITypeMemberDefinitionNode.Syntax => Syntax;
-    new IFixedList<IConstructorOrInitializerParameterNode> Parameters
-        => FixedList.Empty<IConstructorOrInitializerParameterNode>();
-    IFixedList<IConstructorOrInitializerParameterNode> IInvocableDefinitionNode.Parameters => Parameters;
+    new IFixedList<IInitializerParameterNode> Parameters
+        => FixedList.Empty<IInitializerParameterNode>();
+    IFixedList<IInitializerParameterNode> IInvocableDefinitionNode.Parameters => Parameters;
     new IBodyNode? Body
         => null;
     IBodyNode? IInvocableDefinitionNode.Body => Body;
@@ -1026,7 +1026,7 @@ public partial interface IOrdinaryInitializerDefinitionNode : ICodeNode, IInitia
     public static IOrdinaryInitializerDefinitionNode Create(
         IInitializerDefinitionSyntax syntax,
         IInitializerSelfParameterNode selfParameter,
-        IEnumerable<IConstructorOrInitializerParameterNode> parameters,
+        IEnumerable<IInitializerParameterNode> parameters,
         IBlockBodyNode body)
         => new OrdinaryInitializerDefinitionNode(syntax, selfParameter, parameters, body);
 }
@@ -1156,7 +1156,7 @@ public partial interface ICapabilityNode : ICapabilityConstraintNode
 }
 
 [Closed(
-    typeof(IConstructorOrInitializerParameterNode),
+    typeof(IInitializerParameterNode),
     typeof(ISelfParameterNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IParameterNode : ICodeNode
@@ -1179,9 +1179,9 @@ public partial interface IParameterNode : ICodeNode
     typeof(INamedParameterNode),
     typeof(IFieldParameterNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IConstructorOrInitializerParameterNode : IParameterNode
+public partial interface IInitializerParameterNode : IParameterNode
 {
-    new IConstructorOrInitializerParameterSyntax Syntax { get; }
+    new IInitializerParameterSyntax Syntax { get; }
     IParameterSyntax IParameterNode.Syntax => Syntax;
     ICodeSyntax ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
@@ -1192,10 +1192,10 @@ public partial interface IConstructorOrInitializerParameterNode : IParameterNode
 
 [Closed(typeof(NamedParameterNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface INamedParameterNode : IConstructorOrInitializerParameterNode, ILocalBindingNode
+public partial interface INamedParameterNode : IInitializerParameterNode, ILocalBindingNode
 {
     new INamedParameterSyntax Syntax { get; }
-    IConstructorOrInitializerParameterSyntax IConstructorOrInitializerParameterNode.Syntax => Syntax;
+    IInitializerParameterSyntax IInitializerParameterNode.Syntax => Syntax;
     IParameterSyntax IParameterNode.Syntax => Syntax;
     ICodeSyntax ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
@@ -1203,7 +1203,7 @@ public partial interface INamedParameterNode : IConstructorOrInitializerParamete
     ITypeNode TypeNode { get; }
     new IdentifierName Name
         => Syntax.Name;
-    IdentifierName IConstructorOrInitializerParameterNode.Name => Name;
+    IdentifierName IInitializerParameterNode.Name => Name;
     IdentifierName? IParameterNode.Name => Name;
     IdentifierName INamedBindingDeclarationNode.Name => Name;
     UnqualifiedName INamedDeclarationNode.Name => Name;
@@ -1318,10 +1318,10 @@ public partial interface IMethodSelfParameterNode : ISelfParameterNode
 
 [Closed(typeof(FieldParameterNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IFieldParameterNode : IConstructorOrInitializerParameterNode
+public partial interface IFieldParameterNode : IInitializerParameterNode
 {
     new IFieldParameterSyntax Syntax { get; }
-    IConstructorOrInitializerParameterSyntax IConstructorOrInitializerParameterNode.Syntax => Syntax;
+    IInitializerParameterSyntax IInitializerParameterNode.Syntax => Syntax;
     IParameterSyntax IParameterNode.Syntax => Syntax;
     ICodeSyntax ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
@@ -1330,7 +1330,7 @@ public partial interface IFieldParameterNode : IConstructorOrInitializerParamete
     IFlowState IParameterNode.FlowStateAfter => FlowStateAfter;
     ITypeDefinitionNode ContainingTypeDefinition { get; }
     IFieldDefinitionNode? ReferencedField { get; }
-    IdentifierName IConstructorOrInitializerParameterNode.Name
+    IdentifierName IInitializerParameterNode.Name
         => Syntax.Name;
 
     public static IFieldParameterNode Create(IFieldParameterSyntax syntax)
@@ -7188,7 +7188,7 @@ file class OrdinaryConstructorDefinitionNode : SemanticNode, IOrdinaryConstructo
 
     public IConstructorDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
     public IConstructorSelfParameterNode SelfParameter { [DebuggerStepThrough] get; }
-    public IFixedList<IConstructorOrInitializerParameterNode> Parameters { [DebuggerStepThrough] get; }
+    public IFixedList<IInitializerParameterNode> Parameters { [DebuggerStepThrough] get; }
     public IBlockBodyNode Body { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
@@ -7257,7 +7257,7 @@ file class OrdinaryConstructorDefinitionNode : SemanticNode, IOrdinaryConstructo
     public OrdinaryConstructorDefinitionNode(
         IConstructorDefinitionSyntax syntax,
         IConstructorSelfParameterNode selfParameter,
-        IEnumerable<IConstructorOrInitializerParameterNode> parameters,
+        IEnumerable<IInitializerParameterNode> parameters,
         IBlockBodyNode body)
     {
         Syntax = syntax;
@@ -7467,7 +7467,7 @@ file class OrdinaryInitializerDefinitionNode : SemanticNode, IOrdinaryInitialize
 
     public IInitializerDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
     public IInitializerSelfParameterNode SelfParameter { [DebuggerStepThrough] get; }
-    public IFixedList<IConstructorOrInitializerParameterNode> Parameters { [DebuggerStepThrough] get; }
+    public IFixedList<IInitializerParameterNode> Parameters { [DebuggerStepThrough] get; }
     public IBlockBodyNode Body { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
@@ -7536,7 +7536,7 @@ file class OrdinaryInitializerDefinitionNode : SemanticNode, IOrdinaryInitialize
     public OrdinaryInitializerDefinitionNode(
         IInitializerDefinitionSyntax syntax,
         IInitializerSelfParameterNode selfParameter,
-        IEnumerable<IConstructorOrInitializerParameterNode> parameters,
+        IEnumerable<IInitializerParameterNode> parameters,
         IBlockBodyNode body)
     {
         Syntax = syntax;

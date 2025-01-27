@@ -49,8 +49,8 @@ Definition <: Code = File:`CodeFile` Name:`UnqualifiedName`? NameSpan:`TextSpan`
 /// defines a group of names.
 // TODO give a better name to this (the semantic tree has moved away from "entity")
 EntityDefinition <: Definition = AccessModifier:`IAccessModifierToken`?;
-/// Base type for any declaration that declares a callable thing (i.e. function, method, getter, setter, constructor, or initializer).
-InvocableDefinition <: EntityDefinition = Parameters:ConstructorOrInitializerParameter* Body?;
+/// Base type for any declaration that declares a callable thing (i.e. function, method, getter, setter, or initializer).
+InvocableDefinition <: EntityDefinition = Parameters:InitializerParameter* Body?;
 
 // ---------- Namespace Definitions
 NamespaceBlockDefinition <: NamespaceBlockMemberDefinition
@@ -90,9 +90,9 @@ OrdinaryMethodDefinition <: MethodDefinition = SelfParameter:MethodSelfParameter
 GetterMethodDefinition <: MethodDefinition = SelfParameter:MethodSelfParameter Return Body?;
 SetterMethodDefinition <: MethodDefinition = SelfParameter:MethodSelfParameter Parameters:NamedParameter* Body;
 ConstructorDefinition <: InvocableDefinition, ClassMemberDefinition
-    = Name:`IdentifierName`? SelfParameter:ConstructorSelfParameter Parameters:ConstructorOrInitializerParameter* Body:BlockBody;
+    = Name:`IdentifierName`? SelfParameter:ConstructorSelfParameter Parameters:InitializerParameter* Body:BlockBody;
 InitializerDefinition <: InvocableDefinition, StructMemberDefinition, ClassMemberDefinition
-    = Name:`IdentifierName`? SelfParameter:InitializerSelfParameter Parameters:ConstructorOrInitializerParameter* Body:BlockBody;
+    = Name:`IdentifierName`? SelfParameter:InitializerSelfParameter Parameters:InitializerParameter* Body:BlockBody;
 FieldDefinition <: TypeMemberDefinition, ClassMemberDefinition, StructMemberDefinition, Binding
     = Name:`IdentifierName` Type Initializer:Expression?;
 AssociatedFunctionDefinition <: TypeMemberDefinition, ClassMemberDefinition, TraitMemberDefinition, StructMemberDefinition, InvocableDefinition
@@ -110,15 +110,15 @@ Capability <: CapabilityConstraint = Tokens:`ICapabilityToken`* Capability:`Decl
 // ---------- Parameters and Return
 Parameter <: Code = Name:`IdentifierName`?;
 /// A non-self parameter that can be declared in an initializer
-ConstructorOrInitializerParameter <: Parameter;
-NamedParameter <: ConstructorOrInitializerParameter, LocalBinding
+InitializerParameter <: Parameter;
+NamedParameter <: InitializerParameter, LocalBinding
     = IsMutableBinding:`bool` IsLentBinding:`bool` Name:`IdentifierName` Type DefaultValue:Expression?;
 SelfParameter <: Parameter = IsLentBinding:`bool` Constraint:CapabilityConstraint;
 // TODO support renaming base Constraint property to Capability
 ConstructorSelfParameter <: SelfParameter = Constraint:Capability;
 InitializerSelfParameter <: SelfParameter = Constraint:Capability;
 MethodSelfParameter <: SelfParameter;
-FieldParameter <: ConstructorOrInitializerParameter = Name:`IdentifierName` DefaultValue:Expression?;
+FieldParameter <: InitializerParameter = Name:`IdentifierName` DefaultValue:Expression?;
 Return <: Code = Type; // Return syntax of a function or method (i.e. ``)
 
 // ---------- Function Parts

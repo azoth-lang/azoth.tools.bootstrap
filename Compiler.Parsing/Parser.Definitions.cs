@@ -667,7 +667,7 @@ public partial class Parser
 
         var selfParameter = parameters.OfType<IConstructorSelfParameterSyntax>().FirstOrDefault();
         var constructorParameters = parameters.Except(parameters.OfType<ISelfParameterSyntax>())
-                                              .Cast<IConstructorOrInitializerParameterSyntax>()
+                                              .Cast<IInitializerParameterSyntax>()
                                         .ToFixedList();
 
         if (selfParameter is null)
@@ -705,7 +705,7 @@ public partial class Parser
 
         var selfParameter = parameters.OfType<IInitializerSelfParameterSyntax>().FirstOrDefault();
         var constructorParameters = parameters.Except(parameters.OfType<ISelfParameterSyntax>())
-                                              .Cast<IConstructorOrInitializerParameterSyntax>()
+                                              .Cast<IInitializerParameterSyntax>()
                                               .ToFixedList();
 
         if (selfParameter is null)

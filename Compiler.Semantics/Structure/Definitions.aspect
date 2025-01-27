@@ -69,13 +69,13 @@
 = SetterMethodDefinition.Kind => MethodKind.Setter;
 ↑ ConstructorDefinition.Name: `IdentifierName`? => Syntax?.Name;
 ↑ DefaultConstructorDefinition.Syntax: `IConstructorDefinitionSyntax`? => null;
-↑ DefaultConstructorDefinition.Parameters: ConstructorOrInitializerParameter*
-    => FixedList.Empty<IConstructorOrInitializerParameterNode>();
+↑ DefaultConstructorDefinition.Parameters: InitializerParameter*
+    => FixedList.Empty<IInitializerParameterNode>();
 ↑ DefaultConstructorDefinition.Body: Body? => null;
 ↑ InitializerDefinition.Name: `IdentifierName`? => Syntax?.Name;
 ↑ DefaultInitializerDefinition.Syntax: `IInitializerDefinitionSyntax`? => null;
-↑ DefaultInitializerDefinition.Parameters: ConstructorOrInitializerParameter*
-    => FixedList.Empty<IConstructorOrInitializerParameterNode>();
+↑ DefaultInitializerDefinition.Parameters: InitializerParameter*
+    => FixedList.Empty<IInitializerParameterNode>();
 ↑ DefaultInitializerDefinition.Body: Body? => null;
 = FieldDefinition.IsLentBinding => false;
 ↑ FieldDefinition.IsMutableBinding: `bool` => Syntax.IsMutableBinding;
@@ -89,7 +89,7 @@
 // ---------- Parameters
 ↑ Parameter.Name: `IdentifierName`?;
 ↑ Parameter.Unused: `bool` => Name?.Text.StartsWith('_') ?? false;
-↑ ConstructorOrInitializerParameter.Name: `IdentifierName`;
+↑ InitializerParameter.Name: `IdentifierName`;
 
 // TODO I don't think NamedParameter.Name should have to be an attribute, an equation should be enough
 //= NamedParameter.Name => Syntax.Name;

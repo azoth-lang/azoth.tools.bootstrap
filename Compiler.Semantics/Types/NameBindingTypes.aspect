@@ -17,8 +17,8 @@ struct `SelfParameterType`;
 
 // ---------- Parameters
 ↑ Parameter.BindingType: `IMaybeNonVoidType`;
-↑ ConstructorOrInitializerParameter.BindingType: `IMaybeNonVoidType`;
-↑ ConstructorOrInitializerParameter.ParameterType: `IMaybeParameterType`;
+↑ InitializerParameter.BindingType: `IMaybeNonVoidType`;
+↑ InitializerParameter.ParameterType: `IMaybeParameterType`;
 = NamedParameter.↑.Diagnostics;
 ↑ SelfParameter.ParameterType:`IMaybeNonVoidType`;
 = SelfParameter.ParameterType;

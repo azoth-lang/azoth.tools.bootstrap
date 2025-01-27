@@ -61,7 +61,7 @@ ImportDirective <: Code = Syntax:`IImportDirectiveSyntax`;
 Definition <: PackageFacetChildDeclaration = Syntax:`IDefinitionSyntax`?;
 ExecutableDefinition <: Definition, SymbolDeclaration = /Entry/ /Exit/;
 InvocableDefinition <: ExecutableDefinition, InvocableDeclaration
-    = Parameters:ConstructorOrInitializerParameter* /Entry/ Body? /Exit/;
+    = Parameters:InitializerParameter* /Entry/ Body? /Exit/;
 ConcreteFunctionInvocableDefinition <: Code, InvocableDefinition, FunctionInvocableDeclaration
     = Syntax:`IInvocableDefinitionSyntax` Name:`IdentifierName` Parameters:NamedParameter* Return:Type? Body;
 
@@ -119,14 +119,14 @@ GetterMethodDefinition <: MethodDefinition, GetterMethodDeclaration
 SetterMethodDefinition <: MethodDefinition, SetterMethodDeclaration
     = Syntax:`ISetterMethodDefinitionSyntax` /SelfParameter/ /Parameters/ /Return/ /Entry/ Body /Exit/;
 ConstructorDefinition <: InvocableDefinition, AlwaysTypeMemberDefinition, ClassMemberDefinition, ConstructorDeclaration
-    = Syntax:`IConstructorDefinitionSyntax`? Parameters:ConstructorOrInitializerParameter*;
+    = Syntax:`IConstructorDefinitionSyntax`? Parameters:InitializerParameter*;
 // TODO the term "default" can mean both generated and no-arg. Perhaps another term should be used?
 DefaultConstructorDefinition <: ConstructorDefinition;
 OrdinaryConstructorDefinition <: Code, ConstructorDefinition
     = Syntax:`IConstructorDefinitionSyntax`
     SelfParameter:ConstructorSelfParameter /Parameters/ /Entry/ Body:BlockBody /Exit/;
 InitializerDefinition <: InvocableDefinition, AlwaysTypeMemberDefinition, StructMemberDefinition, ClassMemberDefinition, InitializerDeclaration
-    = Syntax:`IInitializerDefinitionSyntax`? Name:`IdentifierName`? Parameters:ConstructorOrInitializerParameter*;
+    = Syntax:`IInitializerDefinitionSyntax`? Name:`IdentifierName`? Parameters:InitializerParameter*;
 DefaultInitializerDefinition <: InitializerDefinition;
 OrdinaryInitializerDefinition <: Code, InitializerDefinition
     = Syntax:`IInitializerDefinitionSyntax`
@@ -147,14 +147,14 @@ Capability <: CapabilityConstraint = Syntax:`ICapabilitySyntax`;
 // ---------- Parameters
 Parameter <: Code = Syntax:`IParameterSyntax`;
 /// A non-self parameter that can be declared in a constructor
-ConstructorOrInitializerParameter <: Parameter = Syntax:`IConstructorOrInitializerParameterSyntax`;
-NamedParameter <: ConstructorOrInitializerParameter, LocalBinding
+InitializerParameter <: Parameter = Syntax:`IInitializerParameterSyntax`;
+NamedParameter <: InitializerParameter, LocalBinding
     = Syntax:`INamedParameterSyntax` TypeNode:Type;
 SelfParameter <: Parameter, Binding = Syntax:`ISelfParameterSyntax`;
 ConstructorSelfParameter <: SelfParameter = Syntax:`IConstructorSelfParameterSyntax` Capability;
 InitializerSelfParameter <: SelfParameter = Syntax:`IInitializerSelfParameterSyntax` Capability;
 MethodSelfParameter <: SelfParameter = Syntax:`IMethodSelfParameterSyntax` Constraint:CapabilityConstraint;
-FieldParameter <: ConstructorOrInitializerParameter = Syntax:`IFieldParameterSyntax`;
+FieldParameter <: InitializerParameter = Syntax:`IFieldParameterSyntax`;
 
 // ---------- Function Parts
 Body <: BodyOrBlock;

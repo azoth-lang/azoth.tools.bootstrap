@@ -236,12 +236,12 @@ internal static class SyntaxBinder
     #endregion
 
     #region Parameters
-    private static IEnumerable<IConstructorOrInitializerParameterNode> ConstructorOrInitializerParameters(
-        IEnumerable<IConstructorOrInitializerParameterSyntax> syntax)
+    private static IEnumerable<IInitializerParameterNode> ConstructorOrInitializerParameters(
+        IEnumerable<IInitializerParameterSyntax> syntax)
         => syntax.Select(ConstructorOrInitializerParameter);
 
-    private static IConstructorOrInitializerParameterNode ConstructorOrInitializerParameter(
-        IConstructorOrInitializerParameterSyntax syntax)
+    private static IInitializerParameterNode ConstructorOrInitializerParameter(
+        IInitializerParameterSyntax syntax)
         => syntax switch
         {
             INamedParameterSyntax syn => NamedParameter(syn),
