@@ -22,8 +22,6 @@ struct `SelfParameterType`;
 = NamedParameter.↑.Diagnostics;
 ↑ SelfParameter.ParameterType:`IMaybeNonVoidType`;
 = SelfParameter.ParameterType;
-↑ ConstructorSelfParameter.BindingType: `CapabilityType`;
-= ConstructorSelfParameter.↑.Diagnostics;
 ↑ InitializerSelfParameter.BindingType: `CapabilityType`;
 = InitializerSelfParameter.↑.Diagnostics;
 = MethodSelfParameter.↑.Diagnostics;

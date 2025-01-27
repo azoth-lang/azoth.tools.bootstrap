@@ -118,13 +118,6 @@ GetterMethodDefinition <: MethodDefinition, GetterMethodDeclaration
     = Syntax:`IGetterMethodDefinitionSyntax` /SelfParameter/ /Parameters/ Return:Type /Entry/ Body? /Exit/;
 SetterMethodDefinition <: MethodDefinition, SetterMethodDeclaration
     = Syntax:`ISetterMethodDefinitionSyntax` /SelfParameter/ /Parameters/ /Return/ /Entry/ Body /Exit/;
-ConstructorDefinition <: InvocableDefinition, AlwaysTypeMemberDefinition, ClassMemberDefinition, ConstructorDeclaration
-    = Syntax:`IConstructorDefinitionSyntax`? Parameters:InitializerParameter*;
-// TODO the term "default" can mean both generated and no-arg. Perhaps another term should be used?
-DefaultConstructorDefinition <: ConstructorDefinition;
-OrdinaryConstructorDefinition <: Code, ConstructorDefinition
-    = Syntax:`IConstructorDefinitionSyntax`
-    SelfParameter:ConstructorSelfParameter /Parameters/ /Entry/ Body:BlockBody /Exit/;
 InitializerDefinition <: InvocableDefinition, AlwaysTypeMemberDefinition, StructMemberDefinition, ClassMemberDefinition, InitializerDeclaration
     = Syntax:`IInitializerDefinitionSyntax`? Name:`IdentifierName`? Parameters:InitializerParameter*;
 DefaultInitializerDefinition <: InitializerDefinition;
@@ -146,12 +139,11 @@ Capability <: CapabilityConstraint = Syntax:`ICapabilitySyntax`;
 
 // ---------- Parameters
 Parameter <: Code = Syntax:`IParameterSyntax`;
-/// A non-self parameter that can be declared in a constructor
+/// A non-self parameter that can be declared in an initalizer
 InitializerParameter <: Parameter = Syntax:`IInitializerParameterSyntax`;
 NamedParameter <: InitializerParameter, LocalBinding
     = Syntax:`INamedParameterSyntax` TypeNode:Type;
 SelfParameter <: Parameter, Binding = Syntax:`ISelfParameterSyntax`;
-ConstructorSelfParameter <: SelfParameter = Syntax:`IConstructorSelfParameterSyntax` Capability;
 InitializerSelfParameter <: SelfParameter = Syntax:`IInitializerSelfParameterSyntax` Capability;
 MethodSelfParameter <: SelfParameter = Syntax:`IMethodSelfParameterSyntax` Constraint:CapabilityConstraint;
 FieldParameter <: InitializerParameter = Syntax:`IFieldParameterSyntax`;
@@ -523,8 +515,6 @@ OrdinaryMethodDeclaration <: MethodDeclaration;
 PropertyAccessorDeclaration <: MethodDeclaration;
 GetterMethodDeclaration <: PropertyAccessorDeclaration;
 SetterMethodDeclaration <: PropertyAccessorDeclaration;
-ConstructorDeclaration <: ClassMemberDeclaration, AssociatedMemberDeclaration, InvocableDeclaration, AlwaysTypeMemberDeclaration
-    = Name:`IdentifierName`?;
 InitializerDeclaration <: StructMemberDeclaration, ClassMemberDeclaration, AssociatedMemberDeclaration, InvocableDeclaration, AlwaysTypeMemberDeclaration
     = Name:`IdentifierName`?;
 FieldDeclaration <: NamedDeclaration, ClassMemberDeclaration, StructMemberDeclaration, InstanceMemberDeclaration, NamedBindingDeclaration, AlwaysTypeMemberDeclaration
@@ -585,7 +575,6 @@ MethodSymbol <: MethodDeclaration, ClassMemberSymbol, TraitMemberSymbol, StructM
 OrdinaryMethodSymbol <: OrdinaryMethodDeclaration, MethodSymbol;
 GetterMethodSymbol <: GetterMethodDeclaration, MethodSymbol;
 SetterMethodSymbol <: SetterMethodDeclaration, MethodSymbol;
-ConstructorSymbol <: ConstructorDeclaration, ClassMemberSymbol = Symbol:`ConstructorSymbol`;
 InitializerSymbol <: InitializerDeclaration, StructMemberSymbol, ClassMemberSymbol = Symbol:`InitializerSymbol`;
 FieldSymbol <: FieldDeclaration, ClassMemberSymbol, StructMemberSymbol = Symbol:`FieldSymbol`;
 AssociatedFunctionSymbol <: AssociatedFunctionDeclaration, AssociatedMemberSymbol

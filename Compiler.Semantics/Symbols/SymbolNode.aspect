@@ -135,13 +135,6 @@
 = OrdinaryMethodSymbol.MethodGroupType => Symbol.MethodGroupType;
 + GetterMethodSymbol.new.Validate;
 + SetterMethodSymbol.new.Validate;
-↑ ConstructorSymbol.Name: `IdentifierName`? => Symbol.Name;
-= ConstructorSymbol.SelfParameterPlainType => Symbol.SelfParameterType.PlainType;
-= ConstructorSymbol.SelfParameterType => Symbol.SelfParameterType;
-= ConstructorSymbol.ParameterPlainTypes => Symbol.ParameterTypes.ToPlainTypes();
-= ConstructorSymbol.ParameterTypes => Symbol.ParameterTypes;
-= ConstructorSymbol.ReturnPlainType => Symbol.ReturnType.PlainType;
-= ConstructorSymbol.ReturnType => Symbol.ReturnType;
 ↑ InitializerSymbol.Name: `IdentifierName`? => Symbol.Name;
 = InitializerSymbol.SelfParameterPlainType => Symbol.SelfParameterType.PlainType;
 = InitializerSymbol.SelfParameterType => Symbol.SelfParameterType;

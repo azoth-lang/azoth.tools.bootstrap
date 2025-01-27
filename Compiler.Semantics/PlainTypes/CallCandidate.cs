@@ -93,11 +93,6 @@ internal static class CallCandidate
         return new CallCandidate<IFunctionInvocableDeclarationNode>(null, function, null, parameterPlainTypes, returnPlainType);
     }
 
-    public static ICallCandidate<IConstructorDeclarationNode> Create(
-        IMaybePlainType constructingPlainType,
-        IConstructorDeclarationNode constructor)
-        => Create(constructingPlainType, constructor, constructor.SelfParameterPlainType);
-
     public static ICallCandidate<IInitializerDeclarationNode> Create(
         IMaybePlainType initializingPlainType,
         IInitializerDeclarationNode initializer)

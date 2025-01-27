@@ -44,8 +44,6 @@
 
 // ---------- Member Definitions
 = MethodDefinition.Symbol;
-= DefaultConstructorDefinition.Symbol;
-= OrdinaryConstructorDefinition.Symbol;
 = DefaultInitializerDefinition.Symbol;
 = OrdinaryInitializerDefinition.Symbol;
 = FieldDefinition.Symbol;

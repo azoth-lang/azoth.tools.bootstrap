@@ -94,9 +94,6 @@ internal static partial class LexicalScopingAspect
         // TODO create a type parameter scope when type parameters are supported
         => new DeclarationScope(node.ContainingLexicalScope, node.Parameters);
 
-    public static partial LexicalScope ConstructorDefinition_LexicalScope(IConstructorDefinitionNode node)
-        => new DeclarationScope(node.ContainingLexicalScope, node.Parameters.OfType<INamedDeclarationNode>());
-
     public static partial LexicalScope InitializerDefinition_LexicalScope(IInitializerDefinitionNode node)
         => new DeclarationScope(node.ContainingLexicalScope, node.Parameters.OfType<INamedDeclarationNode>());
 

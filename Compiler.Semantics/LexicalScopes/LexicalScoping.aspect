@@ -50,7 +50,6 @@ type `NamespaceSearchScope` <: `LexicalScope`;
 
 // ---------- Member Definitions
 = MethodDefinition.LexicalScope;
-= ConstructorDefinition.LexicalScope;
 = InitializerDefinition.LexicalScope;
 ↓ FieldDefinition.ContainingLexicalScope: `LexicalScope`; // needed due to conflict between NamedBinding and Definition
 // TODO does this need to make a new lexical scope?

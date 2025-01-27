@@ -188,7 +188,6 @@ public partial interface IEntityDefinitionSyntax : IDefinitionSyntax
 [Closed(
     typeof(IFunctionDefinitionSyntax),
     typeof(IMethodDefinitionSyntax),
-    typeof(IConstructorDefinitionSyntax),
     typeof(IInitializerDefinitionSyntax),
     typeof(IAssociatedFunctionDefinitionSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -367,7 +366,6 @@ public partial interface ITypeMemberDefinitionSyntax : IEntityDefinitionSyntax
 [Closed(
     typeof(ITypeDefinitionSyntax),
     typeof(IMethodDefinitionSyntax),
-    typeof(IConstructorDefinitionSyntax),
     typeof(IInitializerDefinitionSyntax),
     typeof(IFieldDefinitionSyntax),
     typeof(IAssociatedFunctionDefinitionSyntax))]
@@ -495,28 +493,6 @@ public partial interface ISetterMethodDefinitionSyntax : IMethodDefinitionSyntax
         IEnumerable<INamedParameterSyntax> parameters,
         IBodySyntax body)
         => new SetterMethodDefinitionSyntax(span, file, nameSpan, accessModifier, name, selfParameter, parameters, body);
-}
-
-[Closed(typeof(ConstructorDefinitionSyntax))]
-[GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IConstructorDefinitionSyntax : IInvocableDefinitionSyntax, IClassMemberDefinitionSyntax
-{
-    new IdentifierName? Name { get; }
-    UnqualifiedName? IDefinitionSyntax.Name => Name;
-    IConstructorSelfParameterSyntax SelfParameter { get; }
-    new IBlockBodySyntax Body { get; }
-    IBodySyntax? IInvocableDefinitionSyntax.Body => Body;
-
-    public static IConstructorDefinitionSyntax Create(
-        TextSpan span,
-        CodeFile file,
-        TextSpan nameSpan,
-        IAccessModifierToken? accessModifier,
-        IdentifierName? name,
-        IConstructorSelfParameterSyntax selfParameter,
-        IEnumerable<IInitializerParameterSyntax> parameters,
-        IBlockBodySyntax body)
-        => new ConstructorDefinitionSyntax(span, file, nameSpan, accessModifier, name, selfParameter, parameters, body);
 }
 
 [Closed(typeof(InitializerDefinitionSyntax))]
@@ -671,7 +647,6 @@ public partial interface INamedParameterSyntax : IInitializerParameterSyntax, IL
 }
 
 [Closed(
-    typeof(IConstructorSelfParameterSyntax),
     typeof(IInitializerSelfParameterSyntax),
     typeof(IMethodSelfParameterSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -682,20 +657,6 @@ public partial interface ISelfParameterSyntax : IParameterSyntax
     new IdentifierName? Name
         => null;
     IdentifierName? IParameterSyntax.Name => Name;
-}
-
-[Closed(typeof(ConstructorSelfParameterSyntax))]
-[GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IConstructorSelfParameterSyntax : ISelfParameterSyntax
-{
-    new ICapabilitySyntax Constraint { get; }
-    ICapabilityConstraintSyntax ISelfParameterSyntax.Constraint => Constraint;
-
-    public static IConstructorSelfParameterSyntax Create(
-        TextSpan span,
-        bool isLentBinding,
-        ICapabilitySyntax constraint)
-        => new ConstructorSelfParameterSyntax(span, isLentBinding, constraint);
 }
 
 [Closed(typeof(InitializerSelfParameterSyntax))]
@@ -2044,43 +2005,6 @@ file class SetterMethodDefinitionSyntax : ISetterMethodDefinitionSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class ConstructorDefinitionSyntax : IConstructorDefinitionSyntax
-{
-    private IConstructorDefinitionSyntax Self { [Inline] get => this; }
-
-    public TextSpan Span { [DebuggerStepThrough] get; }
-    public CodeFile File { [DebuggerStepThrough] get; }
-    public TextSpan NameSpan { [DebuggerStepThrough] get; }
-    public IAccessModifierToken? AccessModifier { [DebuggerStepThrough] get; }
-    public IdentifierName? Name { [DebuggerStepThrough] get; }
-    public IConstructorSelfParameterSyntax SelfParameter { [DebuggerStepThrough] get; }
-    public IFixedList<IInitializerParameterSyntax> Parameters { [DebuggerStepThrough] get; }
-    public IBlockBodySyntax Body { [DebuggerStepThrough] get; }
-    public override string ToString()
-        => FormattingAspect.ConstructorDefinition_ToString(this);
-
-    public ConstructorDefinitionSyntax(
-        TextSpan span,
-        CodeFile file,
-        TextSpan nameSpan,
-        IAccessModifierToken? accessModifier,
-        IdentifierName? name,
-        IConstructorSelfParameterSyntax selfParameter,
-        IEnumerable<IInitializerParameterSyntax> parameters,
-        IBlockBodySyntax body)
-    {
-        Span = span;
-        File = file;
-        NameSpan = nameSpan;
-        AccessModifier = accessModifier;
-        Name = name;
-        SelfParameter = selfParameter;
-        Parameters = parameters.ToFixedList();
-        Body = body;
-    }
-}
-
-[GeneratedCode("AzothCompilerCodeGen", null)]
 file class InitializerDefinitionSyntax : IInitializerDefinitionSyntax
 {
     private IInitializerDefinitionSyntax Self { [Inline] get => this; }
@@ -2282,28 +2206,6 @@ file class NamedParameterSyntax : INamedParameterSyntax
         Name = name;
         Type = type;
         DefaultValue = defaultValue;
-    }
-}
-
-[GeneratedCode("AzothCompilerCodeGen", null)]
-file class ConstructorSelfParameterSyntax : IConstructorSelfParameterSyntax
-{
-    private IConstructorSelfParameterSyntax Self { [Inline] get => this; }
-
-    public TextSpan Span { [DebuggerStepThrough] get; }
-    public bool IsLentBinding { [DebuggerStepThrough] get; }
-    public ICapabilitySyntax Constraint { [DebuggerStepThrough] get; }
-    public override string ToString()
-        => FormattingAspect.SelfParameter_ToString(this);
-
-    public ConstructorSelfParameterSyntax(
-        TextSpan span,
-        bool isLentBinding,
-        ICapabilitySyntax constraint)
-    {
-        Span = span;
-        IsLentBinding = isLentBinding;
-        Constraint = constraint;
     }
 }
 

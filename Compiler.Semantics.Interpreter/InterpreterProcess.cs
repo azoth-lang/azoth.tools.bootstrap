@@ -42,7 +42,6 @@ public class InterpreterProcess
     private readonly Task executionTask;
     private readonly FixedDictionary<FunctionSymbol, IConcreteFunctionInvocableDefinitionNode> functions;
     private readonly FixedDictionary<MethodSymbol, IMethodDefinitionNode> structMethods;
-    private readonly FixedDictionary<ConstructorSymbol, IOrdinaryConstructorDefinitionNode?> constructors;
     private readonly FixedDictionary<InitializerSymbol, IOrdinaryInitializerDefinitionNode?> initializers;
     private readonly FixedDictionary<OrdinaryTypeSymbol, ITypeDefinitionNode> userTypes;
     private readonly IStructDefinitionNode stringStruct;
@@ -74,15 +73,6 @@ public class InterpreterProcess
         stringInitializer = stringStruct.Members.OfType<IOrdinaryInitializerDefinitionNode>().Single(c => c.Parameters.Count == 3);
         rangeStruct = userTypes.Values.OfType<IStructDefinitionNode>().SingleOrDefault(c => c.Symbol.Name == SpecialNames.RangeTypeName);
         rangeInitializer = rangeStruct?.Members.OfType<IInitializerDefinitionNode>().SingleOrDefault(c => c.Parameters.Count == 2)?.Symbol;
-        var defaultConstructorSymbols = allDefinitions
-                                        .OfType<IClassDefinitionNode>()
-                                        .Select(c => c.DefaultConstructor?.Symbol).WhereNotNull();
-        constructors = defaultConstructorSymbols
-                       .Select(c => (c, default(IOrdinaryConstructorDefinitionNode)))
-                       .Concat(allDefinitions
-                               .OfType<IOrdinaryConstructorDefinitionNode>()
-                               .Select(c => (c.Symbol.Assigned(), (IOrdinaryConstructorDefinitionNode?)c)))
-                       .ToFixedDictionary();
 
         var defaultInitializerSymbols = allDefinitions
                                        .OfType<IStructDefinitionNode>()

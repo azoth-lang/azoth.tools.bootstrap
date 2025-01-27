@@ -11,11 +11,6 @@ public sealed class ContextualizedCall : IEquatable<ContextualizedCall>
         => new(null, null, function.ParameterTypes, function.ReturnType);
 
     public static ContextualizedCall Create(
-        IMaybeType constructingType,
-        IConstructorDeclarationNode constructor)
-        => Create(constructingType, constructor, constructor.SelfParameterType);
-
-    public static ContextualizedCall Create(
         IMaybeType initializingType,
         IInitializerDeclarationNode initializer)
         => Create(initializingType, initializer, initializer.SelfParameterType);

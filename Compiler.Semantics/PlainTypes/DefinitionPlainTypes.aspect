@@ -36,12 +36,6 @@
 = AbstractMethodDefinition.MethodGroupPlainType => MethodGroupType.PlainType;
 // TODO it would be good to refactor to not depend on Type
 = OrdinaryMethodDefinition.MethodGroupPlainType => MethodGroupType.PlainType;
-= ConstructorDefinition.ReturnPlainType
-    => ContainingTypeDefinition.TypeConstructor.ConstructWithParameterPlainTypes();
-= DefaultConstructorDefinition.SelfParameterPlainType
-    => ContainingTypeDefinition.TypeConstructor.ConstructWithParameterPlainTypes();
-= OrdinaryConstructorDefinition.SelfParameterPlainType => SelfParameter.BindingPlainType;
-= OrdinaryConstructorDefinition.Body.**.ExpectedReturnPlainType => AzothPlainType.Void;
 = InitializerDefinition.ReturnPlainType
     => ContainingTypeDefinition.TypeConstructor.ConstructWithParameterPlainTypes();
 = DefaultInitializerDefinition.SelfParameterPlainType

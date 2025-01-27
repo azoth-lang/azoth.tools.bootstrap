@@ -39,7 +39,6 @@
 ↓ computed AlwaysTypeMemberDefinition.ContainingDeclaration: OrdinaryTypeDeclaration;
 
 // ---------- Member Definitions
-↓ ConstructorDefinition.ContainingTypeDefinition: TypeDefinition;
 ↓ InitializerDefinition.ContainingTypeDefinition: TypeDefinition;
 
 // ---------- Parameters
@@ -75,7 +74,6 @@
 
 // ---------- Type Member Declarations
 = MethodDeclaration.*.**.ContainingDeclaration => this;
-= ConstructorDeclaration.*.**.ContainingDeclaration => this;
 = InitializerDeclaration.*.**.ContainingDeclaration => this;
 ↓ FieldDeclaration.ContainingDeclaration: TypeDeclaration;
 ↓ computed AlwaysTypeMemberDeclaration.ContainingDeclaration: TypeDeclaration;

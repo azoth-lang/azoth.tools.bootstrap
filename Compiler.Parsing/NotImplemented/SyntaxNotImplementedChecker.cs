@@ -35,10 +35,6 @@ internal class SyntaxNotImplementedChecker
                 if (syn.DefaultValue is not null)
                     diagnostics.Add(ParseError.NotImplemented(file, syn.DefaultValue.Span, "Default values"));
                 break;
-            case IConstructorDefinitionSyntax syn:
-                if (syn.Name is not null)
-                    diagnostics.Add(ParseError.NotImplemented(file, syn.Span, "Named constructors"));
-                break;
             case IFieldDefinitionSyntax syn:
                 if (syn.Initializer is not null)
                     diagnostics.Add(ParseError.NotImplemented(file, syn.Initializer.Span, "Field initializers"));

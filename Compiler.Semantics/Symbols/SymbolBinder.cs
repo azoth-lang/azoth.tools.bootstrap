@@ -61,7 +61,6 @@ internal static class SymbolBinder
         => symbol switch
         {
             FunctionSymbol sym => FunctionSymbol(sym),
-            ConstructorSymbol sym => ConstructorSymbol(sym),
             InitializerSymbol sym => InitializerSymbol(sym),
             MethodSymbol sym => MethodSymbol(sym),
             _ => throw ExhaustiveMatch.Failed(symbol),
@@ -69,9 +68,6 @@ internal static class SymbolBinder
 
     private static IFunctionDeclarationNode FunctionSymbol(FunctionSymbol sym)
          => IFunctionSymbolNode.Create(sym);
-
-    private static IConstructorDeclarationNode ConstructorSymbol(ConstructorSymbol sym)
-        => IConstructorSymbolNode.Create(sym);
 
     private static IInitializerSymbolNode InitializerSymbol(InitializerSymbol sym)
         => IInitializerSymbolNode.Create(sym);

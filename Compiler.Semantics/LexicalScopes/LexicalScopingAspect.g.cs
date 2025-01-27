@@ -26,8 +26,6 @@ internal static partial class LexicalScopingAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial LexicalScope MethodDefinition_LexicalScope(IMethodDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial LexicalScope ConstructorDefinition_LexicalScope(IConstructorDefinitionNode node);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial LexicalScope InitializerDefinition_LexicalScope(IInitializerDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial ConditionalLexicalScope AmbiguousExpression_FlowLexicalScope(IAmbiguousExpressionNode node);

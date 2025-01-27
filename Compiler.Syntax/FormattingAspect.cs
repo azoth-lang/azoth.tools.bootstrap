@@ -105,12 +105,6 @@ internal static partial class FormattingAspect
     public static partial string SetterMethodDefinition_ToString(ISetterMethodDefinitionSyntax node)
         => $"set {node.Name}({string.Join(", ", node.Parameters.Prepend<IParameterSyntax>(node.SelfParameter))}) {node.Body}";
 
-    public static partial string ConstructorDefinition_ToString(IConstructorDefinitionSyntax node)
-    {
-        var parameters = string.Join(", ", node.Parameters.Prepend<IParameterSyntax>(node.SelfParameter));
-        return node.Name is null ? $"new({parameters})" : $"new {node.Name}({parameters})";
-    }
-
     public static partial string InitializerDefinition_ToString(IInitializerDefinitionSyntax node)
     {
         var parameters = string.Join(", ", node.Parameters.Prepend<IParameterSyntax>(node.SelfParameter));

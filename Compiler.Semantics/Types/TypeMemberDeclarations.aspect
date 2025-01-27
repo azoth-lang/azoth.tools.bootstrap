@@ -33,19 +33,6 @@
 = OrdinaryMethodDefinition.MethodGroupType => Symbol?.MethodGroupType ?? IMaybeFunctionType.Unknown;
 
 // TODO this shouldn't use Symbol
-= ConstructorDefinition.ReturnType => Symbol?.ReturnType ?? IMaybeType.Unknown;
-= DefaultConstructorDefinition.SelfParameterType => Symbol!.SelfParameterType;
-= OrdinaryConstructorDefinition.SelfParameterType => SelfParameter.ParameterType;
-= OrdinaryConstructorDefinition.SelfParameter.**.FlowStateBefore() => Self.FlowStateBefore();
-= OrdinaryConstructorDefinition.Parameters[0].**.FlowStateBefore()
-    => SelfParameter.FlowStateAfter;
-= OrdinaryConstructorDefinition.Parameters[index].**.FlowStateBefore()
-    => Parameters[index - 1].FlowStateAfter;
-= OrdinaryConstructorDefinition.Body.**.FlowStateBefore()
-    => Parameters.LastOrDefault()?.FlowStateAfter ?? SelfParameter.FlowStateAfter;
-= OrdinaryConstructorDefinition.Body.**.ExpectedReturnType => AzothType.Void;
-
-// TODO this shouldn't use Symbol
 = InitializerDefinition.ReturnType => Symbol?.ReturnType ?? IMaybeType.Unknown;
 = DefaultInitializerDefinition.SelfParameterType => Symbol!.SelfParameterType;
 = OrdinaryInitializerDefinition.SelfParameterType => SelfParameter.ParameterType;

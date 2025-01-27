@@ -89,8 +89,6 @@ AbstractMethodDefinition <: MethodDefinition = /SelfParameter/ /Parameters/ Retu
 OrdinaryMethodDefinition <: MethodDefinition = SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return? Body;
 GetterMethodDefinition <: MethodDefinition = SelfParameter:MethodSelfParameter Return Body?;
 SetterMethodDefinition <: MethodDefinition = SelfParameter:MethodSelfParameter Parameters:NamedParameter* Body;
-ConstructorDefinition <: InvocableDefinition, ClassMemberDefinition
-    = Name:`IdentifierName`? SelfParameter:ConstructorSelfParameter Parameters:InitializerParameter* Body:BlockBody;
 InitializerDefinition <: InvocableDefinition, StructMemberDefinition, ClassMemberDefinition
     = Name:`IdentifierName`? SelfParameter:InitializerSelfParameter Parameters:InitializerParameter* Body:BlockBody;
 FieldDefinition <: TypeMemberDefinition, ClassMemberDefinition, StructMemberDefinition, Binding
@@ -115,7 +113,6 @@ NamedParameter <: InitializerParameter, LocalBinding
     = IsMutableBinding:`bool` IsLentBinding:`bool` Name:`IdentifierName` Type DefaultValue:Expression?;
 SelfParameter <: Parameter = IsLentBinding:`bool` Constraint:CapabilityConstraint;
 // TODO support renaming base Constraint property to Capability
-ConstructorSelfParameter <: SelfParameter = Constraint:Capability;
 InitializerSelfParameter <: SelfParameter = Constraint:Capability;
 MethodSelfParameter <: SelfParameter;
 FieldParameter <: InitializerParameter = Name:`IdentifierName` DefaultValue:Expression?;

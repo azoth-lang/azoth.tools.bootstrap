@@ -106,13 +106,6 @@ internal static partial class NameBindingTypesAspect
             diagnostics.Add(TypeError.TypeCannotBeLent(node.File, node.Syntax.Span, selfType));
     }
 
-    public static partial CapabilityType ConstructorSelfParameter_BindingType(IConstructorSelfParameterNode node)
-    {
-        var bareType = node.ContainingSelfTypeConstructor.ConstructWithParameterTypes(node.BindingPlainType);
-        var capability = node.Capability.DeclaredCapability.ToSelfParameterCapability();
-        return bareType.With(capability);
-    }
-
     // TODO this is strange because a FieldParameter isn't a binding
     public static partial IMaybeNonVoidType FieldParameter_BindingType(IFieldParameterNode node)
         => node.ReferencedField?.BindingType ?? Type.Unknown;
@@ -124,7 +117,7 @@ internal static partial class NameBindingTypesAspect
         return bareType.With(capability);
     }
 
-    private static void CheckInvalidConstructorSelfParameterCapability(
+    private static void CheckInvalidInitializerSelfParameterCapability(
         ICapabilitySyntax capabilitySyntax,
         CodeFile file,
         DiagnosticCollectionBuilder diagnostics)
@@ -172,16 +165,6 @@ internal static partial class NameBindingTypesAspect
             diagnostics.Add(TypeError.ConstClassSelfParameterCannotHaveCapability(node.File, node.Syntax));
     }
 
-    public static partial void ConstructorSelfParameter_Contribute_Diagnostics(
-        IConstructorSelfParameterNode node,
-        DiagnosticCollectionBuilder diagnostics)
-    {
-        if (node.IsLentBinding)
-            diagnostics.Add(OtherSemanticError.LentConstructorOrInitializerSelf(node.File, node.Syntax));
-
-        CheckInvalidConstructorSelfParameterCapability(node.Capability.Syntax, node.File, diagnostics);
-    }
-
     public static partial IMaybeParameterType FieldParameter_ParameterType(IFieldParameterNode node)
         => ParameterType.Create(false, node.BindingType);
 
@@ -192,7 +175,7 @@ internal static partial class NameBindingTypesAspect
         if (node.IsLentBinding)
             diagnostics.Add(OtherSemanticError.LentConstructorOrInitializerSelf(node.File, node.Syntax));
 
-        CheckInvalidConstructorSelfParameterCapability(node.Capability.Syntax, node.File, diagnostics);
+        CheckInvalidInitializerSelfParameterCapability(node.Capability.Syntax, node.File, diagnostics);
     }
 
     public static partial void NamedParameter_Contribute_Diagnostics(INamedParameterNode node, DiagnosticCollectionBuilder diagnostics)

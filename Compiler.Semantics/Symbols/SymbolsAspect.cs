@@ -60,15 +60,6 @@ internal static partial class SymbolsAspect
         return new(node.ContainingSymbol, node.Kind, node.Name, selfParameterType, parameters, returnType);
     }
 
-    public static partial ConstructorSymbol? OrdinaryConstructorDefinition_Symbol(IOrdinaryConstructorDefinitionNode node)
-    {
-        if (node.ParameterTypes.AsKnownFixedList() is not { } parameters) return null;
-        return new(node.ContainingSymbol, node.Name, node.SelfParameter.BindingType, parameters);
-    }
-
-    public static partial ConstructorSymbol? DefaultConstructorDefinition_Symbol(IDefaultConstructorDefinitionNode node)
-        => ConstructorSymbol.CreateDefault(node.ContainingSymbol);
-
     public static partial InitializerSymbol? OrdinaryInitializerDefinition_Symbol(IOrdinaryInitializerDefinitionNode node)
     {
         if (node.ParameterTypes.AsKnownFixedList() is not { } parameters) return null;
@@ -100,16 +91,10 @@ internal static partial class SymbolsAspect
         if (referencedTypeSymbolNode is not IOrdinaryTypeDeclarationNode userTypeSymbolNode)
             return null;
 
-        // TODO there should be a cleaner way to do this
-        InvocableSymbol? symbol = userTypeSymbolNode.InclusiveMembers
-                                                    .OfType<IConstructorDeclarationNode>()
-                                                    .Where(c => c.ParameterTypes.IsEmpty)
-                                                    .Select(c => c.Symbol)
-                                                    .SingleOrDefault();
-        symbol ??= userTypeSymbolNode.InclusiveMembers.OfType<IInitializerDeclarationNode>()
-                                     .Where(c => c.ParameterTypes.IsEmpty)
-                                     .Select(c => c.Symbol)
-                                     .SingleOrDefault();
+        var symbol = userTypeSymbolNode.InclusiveMembers.OfType<IInitializerDeclarationNode>()
+                                       .Where(c => c.ParameterTypes.IsEmpty)
+                                       .Select(c => c.Symbol)
+                                       .SingleOrDefault();
         return symbol;
     }
     #endregion

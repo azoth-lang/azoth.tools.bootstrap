@@ -100,15 +100,6 @@ public static class ISyntaxExtensions
                 foreach (var child in n.Definitions)
                     yield return child;
                 yield break;
-            case IConstructorDefinitionSyntax n:
-                yield return n.SelfParameter;
-                foreach (var child in n.Parameters)
-                    yield return child;
-                yield return n.Body;
-                yield break;
-            case IConstructorSelfParameterSyntax n:
-                yield return n.Constraint;
-                yield break;
             case IConversionExpressionSyntax n:
                 yield return n.Referent;
                 yield return n.ConvertToType;

@@ -16,21 +16,10 @@ internal static partial class DefaultMembersAspect
     {
         var members = node.SourceMembers.AsEnumerable();
 
-        if (node.DefaultConstructor is { } defaultConstructor)
-            members = members.Append(defaultConstructor);
-
         if (node.DefaultInitializer is { } defaultInitializer)
             members = members.Append(defaultInitializer);
 
         return members.ToFixedSet();
-    }
-
-    public static partial IDefaultConstructorDefinitionNode? ClassDefinition_DefaultConstructor(IClassDefinitionNode node)
-    {
-        if (node.SourceMembers.Any(m => m is IConstructorDefinitionNode))
-            return null;
-
-        return Child.Attach(node, IDefaultConstructorDefinitionNode.Create());
     }
 
     public static partial IDefaultInitializerDefinitionNode? ClassDefinition_DefaultInitializer(IClassDefinitionNode node)

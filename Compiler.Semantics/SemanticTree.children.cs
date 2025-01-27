@@ -113,8 +113,6 @@ public static class ISemanticNodeExtensions
                     yield return child;
                 foreach (var child in n.SourceMembers)
                     yield return child;
-                if (n.DefaultConstructor is not null)
-                    yield return n.DefaultConstructor;
                 if (n.DefaultInitializer is not null)
                     yield return n.DefaultInitializer;
                 yield break;
@@ -131,18 +129,9 @@ public static class ISemanticNodeExtensions
                 foreach (var child in n.Definitions)
                     yield return child;
                 yield break;
-            case IConstructorSelfParameterNode n:
-                yield return n.Capability;
-                yield break;
-            case IConstructorSymbolNode n:
-                yield break;
             case IConversionExpressionNode n:
                 yield return n.TempReferent;
                 yield return n.ConvertToType;
-                yield break;
-            case IDefaultConstructorDefinitionNode n:
-                yield return n.Entry;
-                yield return n.Exit;
                 yield break;
             case IDefaultInitializerDefinitionNode n:
                 yield return n.Entry;
@@ -349,14 +338,6 @@ public static class ISemanticNodeExtensions
                 yield break;
             case IOptionalTypeNode n:
                 yield return n.Referent;
-                yield break;
-            case IOrdinaryConstructorDefinitionNode n:
-                yield return n.SelfParameter;
-                foreach (var child in n.Parameters)
-                    yield return child;
-                yield return n.Entry;
-                yield return n.Body;
-                yield return n.Exit;
                 yield break;
             case IOrdinaryInitializerDefinitionNode n:
                 yield return n.SelfParameter;

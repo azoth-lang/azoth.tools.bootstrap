@@ -128,7 +128,7 @@ internal sealed class PackageSymbolTreeBuilder
         var existingMembers = tree.GetChildrenOf(typeSymbol).ToFixedSet();
         foreach (var symbol in symbolTrees.Children(supertypeSymbol))
         {
-            if (symbol is ConstructorSymbol) continue;
+            if (symbol is InitializerSymbol) continue;
 
             // TODO don't inherit private symbols
 

@@ -259,7 +259,6 @@ public partial interface IFacetMemberDefinitionNode : INamespaceBlockMemberDefin
     typeof(ITypeDefinitionNode),
     typeof(IGenericParameterNode),
     typeof(IMethodDefinitionNode),
-    typeof(IOrdinaryConstructorDefinitionNode),
     typeof(IOrdinaryInitializerDefinitionNode),
     typeof(IFieldDefinitionNode),
     typeof(IAttributeNode),
@@ -355,7 +354,6 @@ public partial interface IExecutableDefinitionNode : IDefinitionNode, ISymbolDec
 [Closed(
     typeof(IConcreteFunctionInvocableDefinitionNode),
     typeof(IMethodDefinitionNode),
-    typeof(IConstructorDefinitionNode),
     typeof(IInitializerDefinitionNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IInvocableDefinitionNode : IExecutableDefinitionNode, IInvocableDeclarationNode
@@ -556,7 +554,6 @@ public partial interface IClassDefinitionNode : ITypeDefinitionNode, IClassDecla
     IFixedSet<ITypeMemberDeclarationNode> IOrdinaryTypeDeclarationNode.Members => Members;
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
     IFixedSet<IClassMemberDeclarationNode> IClassDeclarationNode.Members => Members;
-    IDefaultConstructorDefinitionNode? DefaultConstructor { get; }
     IDefaultInitializerDefinitionNode? DefaultInitializer { get; }
     IEnumerable<ITypeNameNode> ITypeDefinitionNode.AllSupertypeNames
         => BaseTypeName is null ? SupertypeNames : SupertypeNames.Prepend(BaseTypeName);
@@ -691,7 +688,6 @@ public partial interface ITypeMemberDefinitionNode : IDefinitionNode, ITypeMembe
 [Closed(
     typeof(IAssociatedMemberDefinitionNode),
     typeof(IMethodDefinitionNode),
-    typeof(IConstructorDefinitionNode),
     typeof(IInitializerDefinitionNode),
     typeof(IFieldDefinitionNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -719,7 +715,6 @@ public partial interface IStructMemberDefinitionNode : ITypeMemberDefinitionNode
 
 [Closed(
     typeof(IMethodDefinitionNode),
-    typeof(IConstructorDefinitionNode),
     typeof(IInitializerDefinitionNode),
     typeof(IFieldDefinitionNode),
     typeof(IAssociatedFunctionDefinitionNode))]
@@ -885,78 +880,6 @@ public partial interface ISetterMethodDefinitionNode : IMethodDefinitionNode, IS
         ITypeNode? @return,
         IBodyNode body)
         => new SetterMethodDefinitionNode(syntax, selfParameter, parameters, @return, body);
-}
-
-[Closed(
-    typeof(IDefaultConstructorDefinitionNode),
-    typeof(IOrdinaryConstructorDefinitionNode))]
-[GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IConstructorDefinitionNode : IInvocableDefinitionNode, IAlwaysTypeMemberDefinitionNode, IClassMemberDefinitionNode, IConstructorDeclarationNode
-{
-    new IConstructorDefinitionSyntax? Syntax { get; }
-    IDefinitionSyntax? IDefinitionNode.Syntax => Syntax;
-    ISyntax? ISemanticNode.Syntax => Syntax;
-    ITypeMemberDefinitionSyntax? ITypeMemberDefinitionNode.Syntax => Syntax;
-    ITypeDefinitionNode ContainingTypeDefinition { get; }
-    new IdentifierName? Name
-        => Syntax?.Name;
-    OrdinaryName? IPackageFacetChildDeclarationNode.Name => Name;
-    IdentifierName? IConstructorDeclarationNode.Name => Name;
-    IMaybeType IInvocableDeclarationNode.ReturnType
-        => Symbol?.ReturnType ?? IMaybeType.Unknown;
-    IMaybePlainType IInvocableDeclarationNode.ReturnPlainType
-        => ContainingTypeDefinition.TypeConstructor.ConstructWithParameterPlainTypes();
-}
-
-[Closed(typeof(DefaultConstructorDefinitionNode))]
-[GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IDefaultConstructorDefinitionNode : IConstructorDefinitionNode
-{
-    new IConstructorDefinitionSyntax? Syntax
-        => null;
-    IConstructorDefinitionSyntax? IConstructorDefinitionNode.Syntax => Syntax;
-    IDefinitionSyntax? IDefinitionNode.Syntax => Syntax;
-    ISyntax? ISemanticNode.Syntax => Syntax;
-    ITypeMemberDefinitionSyntax? ITypeMemberDefinitionNode.Syntax => Syntax;
-    new IFixedList<IInitializerParameterNode> Parameters
-        => FixedList.Empty<IInitializerParameterNode>();
-    IFixedList<IInitializerParameterNode> IInvocableDefinitionNode.Parameters => Parameters;
-    new IBodyNode? Body
-        => null;
-    IBodyNode? IInvocableDefinitionNode.Body => Body;
-    IMaybeNonVoidType IConstructorDeclarationNode.SelfParameterType
-        => Symbol!.SelfParameterType;
-    IMaybeNonVoidPlainType IConstructorDeclarationNode.SelfParameterPlainType
-        => ContainingTypeDefinition.TypeConstructor.ConstructWithParameterPlainTypes();
-
-    public static IDefaultConstructorDefinitionNode Create()
-        => new DefaultConstructorDefinitionNode();
-}
-
-[Closed(typeof(OrdinaryConstructorDefinitionNode))]
-[GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IOrdinaryConstructorDefinitionNode : ICodeNode, IConstructorDefinitionNode
-{
-    new IConstructorDefinitionSyntax Syntax { get; }
-    ICodeSyntax ICodeNode.Syntax => Syntax;
-    ISyntax? ISemanticNode.Syntax => Syntax;
-    IConstructorDefinitionSyntax? IConstructorDefinitionNode.Syntax => Syntax;
-    IDefinitionSyntax? IDefinitionNode.Syntax => Syntax;
-    ITypeMemberDefinitionSyntax? ITypeMemberDefinitionNode.Syntax => Syntax;
-    IConstructorSelfParameterNode SelfParameter { get; }
-    new IBlockBodyNode Body { get; }
-    IBodyNode? IInvocableDefinitionNode.Body => Body;
-    IMaybeNonVoidType IConstructorDeclarationNode.SelfParameterType
-        => SelfParameter.ParameterType;
-    IMaybeNonVoidPlainType IConstructorDeclarationNode.SelfParameterPlainType
-        => SelfParameter.BindingPlainType;
-
-    public static IOrdinaryConstructorDefinitionNode Create(
-        IConstructorDefinitionSyntax syntax,
-        IConstructorSelfParameterNode selfParameter,
-        IEnumerable<IInitializerParameterNode> parameters,
-        IBlockBodyNode body)
-        => new OrdinaryConstructorDefinitionNode(syntax, selfParameter, parameters, body);
 }
 
 [Closed(
@@ -1228,7 +1151,6 @@ public partial interface INamedParameterNode : IInitializerParameterNode, ILocal
 }
 
 [Closed(
-    typeof(IConstructorSelfParameterNode),
     typeof(IInitializerSelfParameterNode),
     typeof(IMethodSelfParameterNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -1255,27 +1177,6 @@ public partial interface ISelfParameterNode : IParameterNode, IBindingNode
         => null;
     bool IBindingNode.IsLentBinding
         => Syntax.IsLentBinding;
-}
-
-[Closed(typeof(ConstructorSelfParameterNode))]
-[GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IConstructorSelfParameterNode : ISelfParameterNode
-{
-    new IConstructorSelfParameterSyntax Syntax { get; }
-    ISelfParameterSyntax ISelfParameterNode.Syntax => Syntax;
-    IParameterSyntax IParameterNode.Syntax => Syntax;
-    ICodeSyntax ICodeNode.Syntax => Syntax;
-    ISyntax? ISemanticNode.Syntax => Syntax;
-    ICapabilityNode Capability { get; }
-    new CapabilityType BindingType { get; }
-    IMaybeNonVoidType ISelfParameterNode.BindingType => BindingType;
-    IMaybeNonVoidType IParameterNode.BindingType => BindingType;
-    IMaybeNonVoidType IBindingNode.BindingType => BindingType;
-
-    public static IConstructorSelfParameterNode Create(
-        IConstructorSelfParameterSyntax syntax,
-        ICapabilityNode capability)
-        => new ConstructorSelfParameterNode(syntax, capability);
 }
 
 [Closed(typeof(InitializerSelfParameterNode))]
@@ -3803,7 +3704,6 @@ public partial interface IPackageFacetChildDeclarationNode : IChildDeclarationNo
     typeof(IInvocableDefinitionNode),
     typeof(IFunctionInvocableDeclarationNode),
     typeof(IMethodDeclarationNode),
-    typeof(IConstructorDeclarationNode),
     typeof(IInitializerDeclarationNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IInvocableDeclarationNode : ISymbolDeclarationNode, IChildDeclarationNode
@@ -4098,7 +3998,6 @@ public partial interface IStructMemberDeclarationNode : ITypeMemberDeclarationNo
 [Closed(
     typeof(IAlwaysTypeMemberDefinitionNode),
     typeof(IMethodDeclarationNode),
-    typeof(IConstructorDeclarationNode),
     typeof(IInitializerDeclarationNode),
     typeof(IFieldDeclarationNode),
     typeof(IAssociatedFunctionDeclarationNode))]
@@ -4111,7 +4010,6 @@ public partial interface IAlwaysTypeMemberDeclarationNode : ITypeMemberDeclarati
 
 [Closed(
     typeof(IGenericParameterDeclarationNode),
-    typeof(IConstructorDeclarationNode),
     typeof(IInitializerDeclarationNode),
     typeof(IAssociatedFunctionDeclarationNode),
     typeof(IAssociatedMemberSymbolNode))]
@@ -4180,21 +4078,6 @@ public partial interface IGetterMethodDeclarationNode : IPropertyAccessorDeclara
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface ISetterMethodDeclarationNode : IPropertyAccessorDeclarationNode
 {
-}
-
-[Closed(
-    typeof(IConstructorDefinitionNode),
-    typeof(IConstructorSymbolNode))]
-[GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IConstructorDeclarationNode : IAssociatedMemberDeclarationNode, IInvocableDeclarationNode, IAlwaysTypeMemberDeclarationNode
-{
-    new IdentifierName? Name { get; }
-    OrdinaryName? IPackageFacetChildDeclarationNode.Name => Name;
-    IMaybeNonVoidPlainType SelfParameterPlainType { get; }
-    IMaybeNonVoidType SelfParameterType { get; }
-    new ConstructorSymbol? Symbol { get; }
-    Symbol? ISymbolDeclarationNode.Symbol => Symbol;
-    InvocableSymbol? IInvocableDeclarationNode.Symbol => Symbol;
 }
 
 [Closed(
@@ -4611,7 +4494,6 @@ public partial interface ITypeMemberSymbolNode : ITypeMemberDeclarationNode, ICh
 [Closed(
     typeof(IAssociatedMemberSymbolNode),
     typeof(IMethodSymbolNode),
-    typeof(IConstructorSymbolNode),
     typeof(IInitializerSymbolNode),
     typeof(IFieldSymbolNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -4706,36 +4588,6 @@ public partial interface ISetterMethodSymbolNode : ISetterMethodDeclarationNode,
 
     public static ISetterMethodSymbolNode Create(MethodSymbol symbol)
         => new SetterMethodSymbolNode(symbol);
-}
-
-[Closed(typeof(ConstructorSymbolNode))]
-[GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IConstructorSymbolNode : IConstructorDeclarationNode, IClassMemberSymbolNode
-{
-    new ConstructorSymbol Symbol { get; }
-    ConstructorSymbol? IConstructorDeclarationNode.Symbol => Symbol;
-    Symbol? ISymbolDeclarationNode.Symbol => Symbol;
-    InvocableSymbol? IInvocableDeclarationNode.Symbol => Symbol;
-    Symbol IChildSymbolNode.Symbol => Symbol;
-    new IdentifierName? Name
-        => Symbol.Name;
-    IdentifierName? IConstructorDeclarationNode.Name => Name;
-    OrdinaryName? IPackageFacetChildDeclarationNode.Name => Name;
-    IMaybeNonVoidPlainType IConstructorDeclarationNode.SelfParameterPlainType
-        => Symbol.SelfParameterType.PlainType;
-    IMaybeNonVoidType IConstructorDeclarationNode.SelfParameterType
-        => Symbol.SelfParameterType;
-    IFixedList<IMaybeNonVoidPlainType> IInvocableDeclarationNode.ParameterPlainTypes
-        => Symbol.ParameterTypes.ToPlainTypes();
-    IFixedList<IMaybeParameterType> IInvocableDeclarationNode.ParameterTypes
-        => Symbol.ParameterTypes;
-    IMaybePlainType IInvocableDeclarationNode.ReturnPlainType
-        => Symbol.ReturnType.PlainType;
-    IMaybeType IInvocableDeclarationNode.ReturnType
-        => Symbol.ReturnType;
-
-    public static IConstructorSymbolNode Create(ConstructorSymbol symbol)
-        => new ConstructorSymbolNode(symbol);
 }
 
 [Closed(typeof(InitializerSymbolNode))]
@@ -5703,12 +5555,6 @@ file class ClassDefinitionNode : SemanticNode, IClassDefinitionNode
                 NameLookupAspect.OrdinaryTypeDeclaration_AssociatedMembersByName);
     private FixedDictionary<OrdinaryName, IFixedSet<IAssociatedMemberDeclarationNode>>? associatedMembersByName;
     private bool associatedMembersByNameCached;
-    public IDefaultConstructorDefinitionNode? DefaultConstructor
-        => GrammarAttribute.IsCached(in defaultConstructorCached) ? defaultConstructor
-            : this.Synthetic(ref defaultConstructorCached, ref defaultConstructor,
-                n => Child.Attach(this, DefaultMembersAspect.ClassDefinition_DefaultConstructor(n)));
-    private IDefaultConstructorDefinitionNode? defaultConstructor;
-    private bool defaultConstructorCached;
     public IDefaultInitializerDefinitionNode? DefaultInitializer
         => GrammarAttribute.IsCached(in defaultInitializerCached) ? defaultInitializer
             : this.Synthetic(ref defaultInitializerCached, ref defaultInitializer,
@@ -7062,285 +6908,6 @@ file class SetterMethodDefinitionNode : SemanticNode, ISetterMethodDefinitionNod
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class DefaultConstructorDefinitionNode : SemanticNode, IDefaultConstructorDefinitionNode
-{
-    private IDefaultConstructorDefinitionNode Self { [Inline] get => this; }
-    private AttributeLock syncLock;
-
-    public IOrdinaryTypeDeclarationNode ContainingDeclaration
-        => (IOrdinaryTypeDeclarationNode)Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
-    public LexicalScope ContainingLexicalScope
-        => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
-            : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
-                Inherited_ContainingLexicalScope);
-    private LexicalScope? containingLexicalScope;
-    private bool containingLexicalScopeCached;
-    public IPackageFacetNode Facet
-        => GrammarAttribute.IsCached(in facetCached) ? facet!
-            : this.Inherited(ref facetCached, ref facet,
-                (ctx) => (IPackageFacetNode)Inherited_Facet(ctx));
-    private IPackageFacetNode? facet;
-    private bool facetCached;
-    public ITypeDefinitionNode ContainingTypeDefinition
-        => GrammarAttribute.IsCached(in containingTypeDefinitionCached) ? containingTypeDefinition!
-            : this.Inherited(ref containingTypeDefinitionCached, ref containingTypeDefinition,
-                Inherited_ContainingTypeDefinition);
-    private ITypeDefinitionNode? containingTypeDefinition;
-    private bool containingTypeDefinitionCached;
-    public AccessModifier AccessModifier
-        => GrammarAttribute.IsCached(in accessModifierCached) ? accessModifier
-            : this.Synthetic(ref accessModifierCached, ref accessModifier, ref syncLock,
-                TypeModifiersAspect.TypeMemberDefinition_AccessModifier);
-    private AccessModifier accessModifier;
-    private bool accessModifierCached;
-    public IEntryNode Entry { [DebuggerStepThrough] get; }
-    public IExitNode Exit { [DebuggerStepThrough] get; }
-    public LexicalScope LexicalScope
-        => GrammarAttribute.IsCached(in lexicalScopeCached) ? lexicalScope!
-            : this.Synthetic(ref lexicalScopeCached, ref lexicalScope,
-                LexicalScopingAspect.ConstructorDefinition_LexicalScope);
-    private LexicalScope? lexicalScope;
-    private bool lexicalScopeCached;
-    public IFixedList<IMaybeNonVoidPlainType> ParameterPlainTypes
-        => GrammarAttribute.IsCached(in parameterPlainTypesCached) ? parameterPlainTypes!
-            : this.Synthetic(ref parameterPlainTypesCached, ref parameterPlainTypes,
-                DefinitionPlainTypesAspect.InvocableDefinition_ParameterPlainTypes);
-    private IFixedList<IMaybeNonVoidPlainType>? parameterPlainTypes;
-    private bool parameterPlainTypesCached;
-    public IFixedList<IMaybeParameterType> ParameterTypes
-        => GrammarAttribute.IsCached(in parameterTypesCached) ? parameterTypes!
-            : this.Synthetic(ref parameterTypesCached, ref parameterTypes,
-                DefinitionTypesAspect.InvocableDefinition_ParameterTypes);
-    private IFixedList<IMaybeParameterType>? parameterTypes;
-    private bool parameterTypesCached;
-    public ConstructorSymbol? Symbol
-        => GrammarAttribute.IsCached(in symbolCached) ? symbol
-            : this.Synthetic(ref symbolCached, ref symbol,
-                SymbolsAspect.DefaultConstructorDefinition_Symbol);
-    private ConstructorSymbol? symbol;
-    private bool symbolCached;
-    public ValueIdScope ValueIdScope { [DebuggerStepThrough] get; }
-    public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap
-        => GrammarAttribute.IsCached(in variableBindingsMapCached) ? variableBindingsMap!
-            : this.Synthetic(ref variableBindingsMapCached, ref variableBindingsMap,
-                VariablesAspect.InvocableDefinition_VariableBindingsMap);
-    private FixedDictionary<IVariableBindingNode, int>? variableBindingsMap;
-    private bool variableBindingsMapCached;
-
-    public DefaultConstructorDefinitionNode()
-    {
-        Entry = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Entry(this));
-        Exit = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Exit(this));
-        ValueIdScope = ValueIdsAspect.ExecutableDefinition_ValueIdScope(this);
-    }
-
-    internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        return this;
-    }
-
-    internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ReferenceEquals(child, Self.Body))
-            return LexicalScope;
-        return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
-    }
-
-    internal override IEntryNode Inherited_ControlFlowEntry(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        return Entry;
-    }
-
-    internal override IExitNode Inherited_ControlFlowExit(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        return Exit;
-    }
-
-    internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ReferenceEquals(descendant, Self.Entry))
-            return ControlFlowAspect.InvocableDefinition_Entry_ControlFlowFollowing(this);
-        if (ReferenceEquals(child, Self.Body))
-            return ControlFlowSet.CreateNormal(Exit);
-        return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
-    }
-
-    internal override ValueIdScope Inherited_ValueIdScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        return ValueIdScope;
-    }
-
-    internal override FixedDictionary<IVariableBindingNode, int> Inherited_VariableBindingsMap(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ReferenceEquals(descendant, Self.Entry))
-            return VariableBindingsMap;
-        return base.Inherited_VariableBindingsMap(child, descendant, ctx);
-    }
-}
-
-[GeneratedCode("AzothCompilerCodeGen", null)]
-file class OrdinaryConstructorDefinitionNode : SemanticNode, IOrdinaryConstructorDefinitionNode
-{
-    private IOrdinaryConstructorDefinitionNode Self { [Inline] get => this; }
-    private AttributeLock syncLock;
-
-    public IConstructorDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
-    public IConstructorSelfParameterNode SelfParameter { [DebuggerStepThrough] get; }
-    public IFixedList<IInitializerParameterNode> Parameters { [DebuggerStepThrough] get; }
-    public IBlockBodyNode Body { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
-    public CodeFile File
-        => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
-    public IOrdinaryTypeDeclarationNode ContainingDeclaration
-        => (IOrdinaryTypeDeclarationNode)Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
-    public LexicalScope ContainingLexicalScope
-        => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
-            : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
-                Inherited_ContainingLexicalScope);
-    private LexicalScope? containingLexicalScope;
-    private bool containingLexicalScopeCached;
-    public IPackageFacetNode Facet
-        => GrammarAttribute.IsCached(in facetCached) ? facet!
-            : this.Inherited(ref facetCached, ref facet,
-                (ctx) => (IPackageFacetNode)Inherited_Facet(ctx));
-    private IPackageFacetNode? facet;
-    private bool facetCached;
-    public ITypeDefinitionNode ContainingTypeDefinition
-        => GrammarAttribute.IsCached(in containingTypeDefinitionCached) ? containingTypeDefinition!
-            : this.Inherited(ref containingTypeDefinitionCached, ref containingTypeDefinition,
-                Inherited_ContainingTypeDefinition);
-    private ITypeDefinitionNode? containingTypeDefinition;
-    private bool containingTypeDefinitionCached;
-    public AccessModifier AccessModifier
-        => GrammarAttribute.IsCached(in accessModifierCached) ? accessModifier
-            : this.Synthetic(ref accessModifierCached, ref accessModifier, ref syncLock,
-                TypeModifiersAspect.TypeMemberDefinition_AccessModifier);
-    private AccessModifier accessModifier;
-    private bool accessModifierCached;
-    public IEntryNode Entry { [DebuggerStepThrough] get; }
-    public IExitNode Exit { [DebuggerStepThrough] get; }
-    public LexicalScope LexicalScope
-        => GrammarAttribute.IsCached(in lexicalScopeCached) ? lexicalScope!
-            : this.Synthetic(ref lexicalScopeCached, ref lexicalScope,
-                LexicalScopingAspect.ConstructorDefinition_LexicalScope);
-    private LexicalScope? lexicalScope;
-    private bool lexicalScopeCached;
-    public IFixedList<IMaybeNonVoidPlainType> ParameterPlainTypes
-        => GrammarAttribute.IsCached(in parameterPlainTypesCached) ? parameterPlainTypes!
-            : this.Synthetic(ref parameterPlainTypesCached, ref parameterPlainTypes,
-                DefinitionPlainTypesAspect.InvocableDefinition_ParameterPlainTypes);
-    private IFixedList<IMaybeNonVoidPlainType>? parameterPlainTypes;
-    private bool parameterPlainTypesCached;
-    public IFixedList<IMaybeParameterType> ParameterTypes
-        => GrammarAttribute.IsCached(in parameterTypesCached) ? parameterTypes!
-            : this.Synthetic(ref parameterTypesCached, ref parameterTypes,
-                DefinitionTypesAspect.InvocableDefinition_ParameterTypes);
-    private IFixedList<IMaybeParameterType>? parameterTypes;
-    private bool parameterTypesCached;
-    public ConstructorSymbol? Symbol
-        => GrammarAttribute.IsCached(in symbolCached) ? symbol
-            : this.Synthetic(ref symbolCached, ref symbol,
-                SymbolsAspect.OrdinaryConstructorDefinition_Symbol);
-    private ConstructorSymbol? symbol;
-    private bool symbolCached;
-    public ValueIdScope ValueIdScope { [DebuggerStepThrough] get; }
-    public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap
-        => GrammarAttribute.IsCached(in variableBindingsMapCached) ? variableBindingsMap!
-            : this.Synthetic(ref variableBindingsMapCached, ref variableBindingsMap,
-                VariablesAspect.InvocableDefinition_VariableBindingsMap);
-    private FixedDictionary<IVariableBindingNode, int>? variableBindingsMap;
-    private bool variableBindingsMapCached;
-
-    public OrdinaryConstructorDefinitionNode(
-        IConstructorDefinitionSyntax syntax,
-        IConstructorSelfParameterNode selfParameter,
-        IEnumerable<IInitializerParameterNode> parameters,
-        IBlockBodyNode body)
-    {
-        Syntax = syntax;
-        SelfParameter = Child.Attach(this, selfParameter);
-        Parameters = ChildList.Attach(this, parameters);
-        Body = Child.Attach(this, body);
-        Entry = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Entry(this));
-        Exit = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Exit(this));
-        ValueIdScope = ValueIdsAspect.ExecutableDefinition_ValueIdScope(this);
-    }
-
-    internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        return this;
-    }
-
-    internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ReferenceEquals(child, Self.Body))
-            return LexicalScope;
-        return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
-    }
-
-    internal override IEntryNode Inherited_ControlFlowEntry(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        return Entry;
-    }
-
-    internal override IExitNode Inherited_ControlFlowExit(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        return Exit;
-    }
-
-    internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ReferenceEquals(descendant, Self.Entry))
-            return ControlFlowAspect.InvocableDefinition_Entry_ControlFlowFollowing(this);
-        if (ReferenceEquals(child, Self.Body))
-            return ControlFlowSet.CreateNormal(Exit);
-        return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
-    }
-
-    internal override IMaybePlainType? Inherited_ExpectedReturnPlainType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ReferenceEquals(child, Self.Body))
-            return AzothPlainType.Void;
-        return base.Inherited_ExpectedReturnPlainType(child, descendant, ctx);
-    }
-
-    internal override IMaybeType? Inherited_ExpectedReturnType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ReferenceEquals(child, Self.Body))
-            return AzothType.Void;
-        return base.Inherited_ExpectedReturnType(child, descendant, ctx);
-    }
-
-    internal override IFlowState Inherited_FlowStateBefore(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ReferenceEquals(child, Self.SelfParameter))
-            return Self.FlowStateBefore();
-        if (0 < Self.Parameters.Count && ReferenceEquals(child, Self.Parameters[0]))
-            return SelfParameter.FlowStateAfter;
-        if (IndexOfNode(Self.Parameters, child) is { } index)
-            return Parameters[index - 1].FlowStateAfter;
-        if (ReferenceEquals(child, Self.Body))
-            return Parameters.LastOrDefault()?.FlowStateAfter ?? SelfParameter.FlowStateAfter;
-        return base.Inherited_FlowStateBefore(child, descendant, ctx);
-    }
-
-    internal override ValueIdScope Inherited_ValueIdScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        return ValueIdScope;
-    }
-
-    internal override FixedDictionary<IVariableBindingNode, int> Inherited_VariableBindingsMap(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ReferenceEquals(descendant, Self.Entry))
-            return VariableBindingsMap;
-        return base.Inherited_VariableBindingsMap(child, descendant, ctx);
-    }
-}
-
-[GeneratedCode("AzothCompilerCodeGen", null)]
 file class DefaultInitializerDefinitionNode : SemanticNode, IDefaultInitializerDefinitionNode
 {
     private IDefaultInitializerDefinitionNode Self { [Inline] get => this; }
@@ -8104,93 +7671,6 @@ file class NamedParameterNode : SemanticNode, INamedParameterNode
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
     {
         NameBindingTypesAspect.NamedParameter_Contribute_Diagnostics(this, builder);
-    }
-}
-
-[GeneratedCode("AzothCompilerCodeGen", null)]
-file class ConstructorSelfParameterNode : SemanticNode, IConstructorSelfParameterNode
-{
-    private IConstructorSelfParameterNode Self { [Inline] get => this; }
-    private AttributeLock syncLock;
-
-    public IConstructorSelfParameterSyntax Syntax { [DebuggerStepThrough] get; }
-    public ICapabilityNode Capability { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
-    public CodeFile File
-        => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
-    public ValueIdScope ValueIdScope
-        => Inherited_ValueIdScope(GrammarAttribute.CurrentInheritanceContext());
-    public IFlowState FlowStateBefore()
-        => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
-    public ISymbolDeclarationNode ContainingDeclaration
-        => Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
-    public ITypeDefinitionNode ContainingTypeDefinition
-        => GrammarAttribute.IsCached(in containingTypeDefinitionCached) ? containingTypeDefinition!
-            : this.Inherited(ref containingTypeDefinitionCached, ref containingTypeDefinition,
-                Inherited_ContainingTypeDefinition);
-    private ITypeDefinitionNode? containingTypeDefinition;
-    private bool containingTypeDefinitionCached;
-    public OrdinaryTypeConstructor ContainingTypeConstructor
-        => GrammarAttribute.IsCached(in containingTypeConstructorCached) ? containingTypeConstructor!
-            : this.Inherited(ref containingTypeConstructorCached, ref containingTypeConstructor,
-                Inherited_ContainingTypeConstructor);
-    private OrdinaryTypeConstructor? containingTypeConstructor;
-    private bool containingTypeConstructorCached;
-    public SelfTypeConstructor ContainingSelfTypeConstructor
-        => GrammarAttribute.IsCached(in containingSelfTypeConstructorCached) ? containingSelfTypeConstructor!
-            : this.Inherited(ref containingSelfTypeConstructorCached, ref containingSelfTypeConstructor,
-                Inherited_ContainingSelfTypeConstructor);
-    private SelfTypeConstructor? containingSelfTypeConstructor;
-    private bool containingSelfTypeConstructorCached;
-    public BarePlainType BindingPlainType
-        => GrammarAttribute.IsCached(in bindingPlainTypeCached) ? bindingPlainType!
-            : this.Synthetic(ref bindingPlainTypeCached, ref bindingPlainType,
-                NameBindingPlainTypesAspect.SelfParameter_BindingPlainType);
-    private BarePlainType? bindingPlainType;
-    private bool bindingPlainTypeCached;
-    public CapabilityType BindingType
-        => GrammarAttribute.IsCached(in bindingTypeCached) ? bindingType!
-            : this.Synthetic(ref bindingTypeCached, ref bindingType,
-                NameBindingTypesAspect.ConstructorSelfParameter_BindingType);
-    private CapabilityType? bindingType;
-    private bool bindingTypeCached;
-    public ValueId BindingValueId
-        => GrammarAttribute.IsCached(in bindingValueIdCached) ? bindingValueId
-            : this.Synthetic(ref bindingValueIdCached, ref bindingValueId, ref syncLock,
-                ValueIdsAspect.Parameter_BindingValueId);
-    private ValueId bindingValueId;
-    private bool bindingValueIdCached;
-    public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
-                ExpressionTypesAspect.SelfParameter_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
-    private bool flowStateAfterCached;
-    public IMaybeNonVoidType ParameterType
-        => GrammarAttribute.IsCached(in parameterTypeCached) ? parameterType!
-            : this.Synthetic(ref parameterTypeCached, ref parameterType,
-                NameBindingTypesAspect.SelfParameter_ParameterType);
-    private IMaybeNonVoidType? parameterType;
-    private bool parameterTypeCached;
-
-    public ConstructorSelfParameterNode(
-        IConstructorSelfParameterSyntax syntax,
-        ICapabilityNode capability)
-    {
-        Syntax = syntax;
-        Capability = Child.Attach(this, capability);
-    }
-
-    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
-    {
-        contributors.Add(this);
-        base.CollectContributors_Diagnostics(contributors);
-    }
-
-    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
-    {
-        NameBindingTypesAspect.ConstructorSelfParameter_Contribute_Diagnostics(this, builder);
     }
 }
 
@@ -19529,32 +19009,6 @@ file class SetterMethodSymbolNode : SemanticNode, ISetterMethodSymbolNode
     public SetterMethodSymbolNode(MethodSymbol symbol)
     {
         SymbolNodeAspect.Validate_SetterMethodSymbolNode(symbol);
-        Symbol = symbol;
-    }
-
-    internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        return this;
-    }
-}
-
-[GeneratedCode("AzothCompilerCodeGen", null)]
-file class ConstructorSymbolNode : SemanticNode, IConstructorSymbolNode
-{
-    private IConstructorSymbolNode Self { [Inline] get => this; }
-
-    public ConstructorSymbol Symbol { [DebuggerStepThrough] get; }
-    public ITypeDeclarationNode ContainingDeclaration
-        => (ITypeDeclarationNode)Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
-    public IPackageFacetDeclarationNode Facet
-        => Inherited_Facet(GrammarAttribute.CurrentInheritanceContext());
-    public ISymbolTree SymbolTree()
-        => Inherited_SymbolTree(GrammarAttribute.CurrentInheritanceContext());
-
-    public ConstructorSymbolNode(ConstructorSymbol symbol)
-    {
         Symbol = symbol;
     }
 

@@ -7,8 +7,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 
 [Closed(
     typeof(FunctionOrInitializerSymbol),
-    typeof(MethodSymbol),
-    typeof(ConstructorSymbol))]
+    typeof(MethodSymbol))]
 public abstract class InvocableSymbol : Symbol
 {
     public override PackageSymbol? Package => ContainingSymbol.Package;

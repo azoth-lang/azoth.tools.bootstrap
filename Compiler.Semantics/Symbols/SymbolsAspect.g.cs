@@ -23,10 +23,6 @@ internal static partial class SymbolsAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial MethodSymbol? MethodDefinition_Symbol(IMethodDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial ConstructorSymbol? DefaultConstructorDefinition_Symbol(IDefaultConstructorDefinitionNode node);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial ConstructorSymbol? OrdinaryConstructorDefinition_Symbol(IOrdinaryConstructorDefinitionNode node);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial InitializerSymbol? DefaultInitializerDefinition_Symbol(IDefaultInitializerDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial InitializerSymbol? OrdinaryInitializerDefinition_Symbol(IOrdinaryInitializerDefinitionNode node);

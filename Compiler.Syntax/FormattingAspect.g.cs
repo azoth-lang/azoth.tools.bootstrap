@@ -40,8 +40,6 @@ internal static partial class FormattingAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial string SetterMethodDefinition_ToString(ISetterMethodDefinitionSyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial string ConstructorDefinition_ToString(IConstructorDefinitionSyntax node);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial string InitializerDefinition_ToString(IInitializerDefinitionSyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial string FieldDefinition_ToString(IFieldDefinitionSyntax node);

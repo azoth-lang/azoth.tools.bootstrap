@@ -78,9 +78,6 @@ internal static partial class BindingNamesAspect
         => node.ContainingDeclaration switch
         {
             IMethodDefinitionNode n => n.SelfParameter,
-            IOrdinaryConstructorDefinitionNode n => n.SelfParameter,
-            IDefaultConstructorDefinitionNode _
-                => throw new UnreachableException("A `self` expression cannot occur here because it has an empty body."),
             IOrdinaryInitializerDefinitionNode n => n.SelfParameter,
             IDefaultInitializerDefinitionNode _
                 => throw new UnreachableException("A `self` expression cannot occur here because it has an empty body."),
@@ -92,7 +89,7 @@ internal static partial class BindingNamesAspect
 
     public static partial void SelfExpression_Contribute_Diagnostics(ISelfExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
-        if (node.ContainingDeclaration is not (IMethodDefinitionNode or IOrdinaryConstructorDefinitionNode or IInitializerDeclarationNode))
+        if (node.ContainingDeclaration is not (IMethodDefinitionNode or IInitializerDeclarationNode))
             diagnostics.Add(node.IsImplicit
                 ? OtherSemanticError.ImplicitSelfOutsideMethod(node.File, node.Syntax.Span)
                 : OtherSemanticError.SelfOutsideMethod(node.File, node.Syntax.Span));

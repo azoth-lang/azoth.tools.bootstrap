@@ -17,8 +17,6 @@ internal static partial class NameBindingTypesAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IMaybeNonVoidType SelfParameter_ParameterType(ISelfParameterNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial void ConstructorSelfParameter_Contribute_Diagnostics(IConstructorSelfParameterNode node, DiagnosticCollectionBuilder diagnostics);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial void InitializerSelfParameter_Contribute_Diagnostics(IInitializerSelfParameterNode node, DiagnosticCollectionBuilder diagnostics);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial void MethodSelfParameter_Contribute_Diagnostics(IMethodSelfParameterNode node, DiagnosticCollectionBuilder diagnostics);
@@ -38,8 +36,6 @@ internal static partial class NameBindingTypesAspect
     public static partial IMaybeParameterType NamedParameter_ParameterType(INamedParameterNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IMaybeNonVoidType NamedParameter_BindingType(INamedParameterNode node);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial CapabilityType ConstructorSelfParameter_BindingType(IConstructorSelfParameterNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial CapabilityType InitializerSelfParameter_BindingType(IInitializerSelfParameterNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

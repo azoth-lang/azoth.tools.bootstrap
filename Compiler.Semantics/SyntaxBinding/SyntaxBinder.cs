@@ -133,7 +133,6 @@ internal static class SyntaxBinder
         {
             ITypeDefinitionSyntax syn => TypeDefinition(syn),
             IMethodDefinitionSyntax syn => MethodDefinition(syn),
-            IConstructorDefinitionSyntax syn => ConstructorDefinition(syn),
             IInitializerDefinitionSyntax syn => InitializerDefinition(syn),
             IFieldDefinitionSyntax syn => FieldDefinition(syn),
             IAssociatedFunctionDefinitionSyntax syn => AssociatedFunctionDefinition(syn),
@@ -194,10 +193,6 @@ internal static class SyntaxBinder
         => ISetterMethodDefinitionNode.Create(syntax, MethodSelfParameter(syntax.SelfParameter),
             NamedParameters(syntax.Parameters), Type(syntax.Return?.Type), Body(syntax.Body));
 
-    private static IConstructorDefinitionNode ConstructorDefinition(IConstructorDefinitionSyntax syntax)
-        => IOrdinaryConstructorDefinitionNode.Create(syntax, ConstructorSelfParameter(syntax.SelfParameter),
-            ConstructorOrInitializerParameters(syntax.Parameters), BlockBody(syntax.Body));
-
     private static IInitializerDefinitionNode InitializerDefinition(IInitializerDefinitionSyntax syntax)
         => IOrdinaryInitializerDefinitionNode.Create(syntax, InitializerSelfParameter(syntax.SelfParameter),
             ConstructorOrInitializerParameters(syntax.Parameters), BlockBody(syntax.Body));
@@ -254,9 +249,6 @@ internal static class SyntaxBinder
 
     private static INamedParameterNode NamedParameter(INamedParameterSyntax syntax)
         => INamedParameterNode.Create(syntax, Type(syntax.Type));
-
-    private static IConstructorSelfParameterNode ConstructorSelfParameter(IConstructorSelfParameterSyntax syntax)
-        => IConstructorSelfParameterNode.Create(syntax, Capability(syntax.Constraint));
 
     private static IInitializerSelfParameterNode InitializerSelfParameter(IInitializerSelfParameterSyntax syntax)
         => IInitializerSelfParameterNode.Create(syntax, Capability(syntax.Constraint));

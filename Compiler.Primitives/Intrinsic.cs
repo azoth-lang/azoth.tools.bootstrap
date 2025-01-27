@@ -29,9 +29,6 @@ public static class Intrinsic
     public static readonly OrdinaryTypeSymbol RawHybridBoundedList
         = Find<OrdinaryTypeSymbol>("Raw_Hybrid_Bounded_List");
 
-    public static readonly ConstructorSymbol NewRawBoundedList
-        = Find<ConstructorSymbol>(RawHybridBoundedList, null);
-
     public static readonly InitializerSymbol InitRawBoundedList
         = Find<InitializerSymbol>(RawHybridBoundedList, null);
 
@@ -144,10 +141,6 @@ public static class Intrinsic
         var itemType = typeConstructor.ParameterTypes[1];
         var classSymbol = new OrdinaryTypeSymbol(@namespace, typeConstructor);
         tree.Add(classSymbol);
-
-        // published new(.fixed, .capacity) {...}
-        var constructor = new ConstructorSymbol(classSymbol, null, mutType, Params(fixedType, Type.Size));
-        tree.Add(constructor);
 
         // published init(.fixed, .capacity) {...}
         var initializer = new InitializerSymbol(classSymbol, null, mutType, Params(fixedType, Type.Size));
