@@ -968,6 +968,7 @@ public partial interface IOptionalPatternSyntax : IOptionalOrBindingPatternSynta
 [Closed(
     typeof(IBlockExpressionSyntax),
     typeof(IUnsafeExpressionSyntax),
+    typeof(IMemberAccessExpressionSyntax),
     typeof(ILiteralExpressionSyntax),
     typeof(IAssignmentExpressionSyntax),
     typeof(IBinaryOperatorExpressionSyntax),
@@ -1027,12 +1028,14 @@ public partial interface IUnsafeExpressionSyntax : IExpressionSyntax
     typeof(MemberAccessExpressionSyntax),
     typeof(IQualifiedNameSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IMemberAccessExpressionSyntax : INameExpressionSyntax
+public partial interface IMemberAccessExpressionSyntax : IExpressionSyntax
 {
     IExpressionSyntax Context { get; }
     TextSpan MemberNameSpan { get; }
     OrdinaryName MemberName { get; }
     IFixedList<ITypeSyntax> GenericArguments { get; }
+    OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
+        => OperatorPrecedence.Primary;
 
     public static IMemberAccessExpressionSyntax Create(
         TextSpan span,
@@ -1314,7 +1317,6 @@ public partial interface IInvocationExpressionSyntax : IExpressionSyntax
 }
 
 [Closed(
-    typeof(IMemberAccessExpressionSyntax),
     typeof(IInstanceExpressionSyntax),
     typeof(IMissingNameSyntax),
     typeof(INameSyntax))]
@@ -1432,6 +1434,8 @@ public partial interface IQualifiedNameSyntax : INameSyntax, IMemberAccessExpres
 {
     new INameSyntax Context { get; }
     IExpressionSyntax IMemberAccessExpressionSyntax.Context => Context;
+    OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
+        => OperatorPrecedence.Primary;
 
     public static IQualifiedNameSyntax Create(
         TextSpan span,

@@ -87,13 +87,13 @@ public static class NameBindingError
             5012, $"Function name `{groupName}` is ambiguous.");
     }
 
-    public static Diagnostic CouldNotBindMethodName(CodeFile file, INameExpressionSyntax groupName)
+    public static Diagnostic CouldNotBindMethodName(CodeFile file, IMemberAccessExpressionSyntax groupName)
     {
         return new(file, groupName.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             5013, $"Could not find method with the name `{groupName}` and compatible arguments.");
     }
 
-    public static Diagnostic AmbiguousMethodName(CodeFile file, INameExpressionSyntax groupName)
+    public static Diagnostic AmbiguousMethodName(CodeFile file, IMemberAccessExpressionSyntax groupName)
     {
         return new(file, groupName.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             5014, $"Method name `{groupName}` is ambiguous.");

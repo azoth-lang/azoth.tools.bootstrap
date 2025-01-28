@@ -2484,13 +2484,12 @@ public partial interface IMethodInvocationExpressionNode : IInvocationExpression
 
 [Closed(typeof(GetterInvocationExpressionNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IGetterInvocationExpressionNode : IInvocationExpressionNode, INameExpressionNode
+public partial interface IGetterInvocationExpressionNode : IInvocationExpressionNode
 {
     new IMemberAccessExpressionSyntax Syntax { get; }
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ICodeSyntax ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    INameExpressionSyntax INameExpressionNode.Syntax => Syntax;
     IExpressionNode Context { get; }
     IExpressionNode CurrentContext { get; }
     IFixedSet<IPropertyAccessorDeclarationNode> ReferencedDeclarations { get; }
@@ -2503,8 +2502,6 @@ public partial interface IGetterInvocationExpressionNode : IInvocationExpression
         => SelectedCallCandidate?.Declaration;
     OrdinaryName PropertyName
         => Syntax.MemberName;
-    IFlowState INameExpressionNode.FlowStateAfter
-        => ExpressionTypesAspect.GetterInvocationExpression_FlowStateAfter(this);
     IEnumerable<IAmbiguousExpressionNode> IInvocationExpressionNode.TempAllArguments
         => [Context];
     IEnumerable<IExpressionNode?> IInvocationExpressionNode.AllArguments
@@ -2641,7 +2638,6 @@ public partial interface INonInvocableInvocationExpressionNode : IInvocationExpr
 }
 
 [Closed(
-    typeof(IGetterInvocationExpressionNode),
     typeof(IOrdinaryTypedNameExpressionNode),
     typeof(IMissingNameExpressionNode),
     typeof(IUnresolvedNameExpressionNode),
@@ -3066,7 +3062,7 @@ public partial interface IUnqualifiedNamespaceNameNode : INamespaceNameNode
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IQualifiedNamespaceNameNode : INamespaceNameNode
 {
-    new IMemberAccessExpressionSyntax Syntax { get; }
+    new IQualifiedNameSyntax Syntax { get; }
     INameExpressionSyntax INameExpressionNode.Syntax => Syntax;
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ICodeSyntax ICodeNode.Syntax => Syntax;
@@ -3076,7 +3072,7 @@ public partial interface IQualifiedNamespaceNameNode : INamespaceNameNode
         => (IdentifierName)Syntax.MemberName;
 
     public static IQualifiedNamespaceNameNode Create(
-        IMemberAccessExpressionSyntax syntax,
+        IQualifiedNameSyntax syntax,
         INamespaceNameNode context,
         IEnumerable<INamespaceDeclarationNode> referencedDeclarations)
         => new QualifiedNamespaceNameNode(syntax, context, referencedDeclarations);
@@ -13335,8 +13331,6 @@ file class GetterInvocationExpressionNode : SemanticNode, IGetterInvocationExpre
                 Inherited_ExpectedPlainType);
     private IMaybePlainType? expectedPlainType;
     private bool expectedPlainTypeCached;
-    public IFlowState FlowStateBefore()
-        => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
     public IFixedSet<ICallCandidate<IPropertyAccessorDeclarationNode>> CallCandidates
         => GrammarAttribute.IsCached(in callCandidatesCached) ? callCandidates!
             : this.Synthetic(ref callCandidatesCached, ref callCandidates,
@@ -13361,6 +13355,12 @@ file class GetterInvocationExpressionNode : SemanticNode, IGetterInvocationExpre
                 ControlFlowAspect.GetterInvocationExpression_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
+    public IFlowState FlowStateAfter
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+                ExpressionTypesAspect.GetterInvocationExpression_FlowStateAfter);
+    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private bool flowStateAfterCached;
     public IMaybePlainType PlainType
         => GrammarAttribute.IsCached(in plainTypeCached) ? plainType!
             : this.Synthetic(ref plainTypeCached, ref plainType,
@@ -15909,7 +15909,7 @@ file class QualifiedNamespaceNameNode : SemanticNode, IQualifiedNamespaceNameNod
     private IQualifiedNamespaceNameNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
-    public IMemberAccessExpressionSyntax Syntax { [DebuggerStepThrough] get; }
+    public IQualifiedNameSyntax Syntax { [DebuggerStepThrough] get; }
     public INamespaceNameNode Context { [DebuggerStepThrough] get; }
     public IFixedList<INamespaceDeclarationNode> ReferencedDeclarations { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
@@ -15947,7 +15947,7 @@ file class QualifiedNamespaceNameNode : SemanticNode, IQualifiedNamespaceNameNod
     private bool valueIdCached;
 
     public QualifiedNamespaceNameNode(
-        IMemberAccessExpressionSyntax syntax,
+        IQualifiedNameSyntax syntax,
         INamespaceNameNode context,
         IEnumerable<INamespaceDeclarationNode> referencedDeclarations)
     {

@@ -14,6 +14,9 @@
 = BlockExpression.ExpressionPrecedence => OperatorPrecedence.Primary;
 = UnsafeExpression.ExpressionPrecedence => OperatorPrecedence.Primary;
 
+// ---------- Instance Member Access Expressions
+= MemberAccessExpression.ExpressionPrecedence => OperatorPrecedence.Primary;
+
 // ---------- Literal Expressions
 = LiteralExpression.ExpressionPrecedence => OperatorPrecedence.Primary;
 
@@ -38,6 +41,7 @@
 
 // ---------- Name Expressions
 = NameExpression.ExpressionPrecedence => OperatorPrecedence.Primary;
+= QualifiedName.ExpressionPrecedence => OperatorPrecedence.Primary;
 
 // ---------- Capability Expressions
 = MoveExpression.ExpressionPrecedence => OperatorPrecedence.Min;
