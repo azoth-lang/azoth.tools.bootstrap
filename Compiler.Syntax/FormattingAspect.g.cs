@@ -12,13 +12,13 @@ internal static partial class FormattingAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial string SelfParameter_ToString(ISelfParameterSyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial string CompilationUnit_ToString(ICompilationUnitSyntax node);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial string ImportDirective_ToString(IImportDirectiveSyntax node);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial string Package_ToString(IPackageSyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial string PackageReference_ToString(IPackageReferenceSyntax node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial string CompilationUnit_ToString(ICompilationUnitSyntax node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial string ImportDirective_ToString(IImportDirectiveSyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial string NamespaceBlockDefinition_ToString(INamespaceBlockDefinitionSyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

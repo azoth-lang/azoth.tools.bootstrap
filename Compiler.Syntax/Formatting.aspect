@@ -5,6 +5,8 @@
 /// A developer/debugging friendly string representation of the syntax.
 /// </summary>
 ↑ <default>.ToString(): `string`;
+
+// ---------- Parameters and Return
 = SelfParameter.ToString();
 
 // ---------- Expressions
@@ -41,6 +43,8 @@
 
 // ---------- Name Expressions
 = NameExpression.ExpressionPrecedence => OperatorPrecedence.Primary;
+
+// ---------- Names
 = QualifiedName.ExpressionPrecedence => OperatorPrecedence.Primary;
 
 // ---------- Capability Expressions

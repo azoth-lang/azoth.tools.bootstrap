@@ -23,68 +23,13 @@ namespace Azoth.Tools.Bootstrap.Compiler.Syntax;
 // ReSharper disable ConvertToPrimaryConstructor
 
 [Closed(
-    typeof(ICodeSyntax),
     typeof(IPackageSyntax),
-    typeof(IPackageReferenceSyntax))]
+    typeof(IPackageReferenceSyntax),
+    typeof(ICodeSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface ISyntax
 {
     string ToString();
-}
-
-[Closed(
-    typeof(ICompilationUnitSyntax),
-    typeof(IImportDirectiveSyntax),
-    typeof(IBodyOrBlockSyntax),
-    typeof(IElseClauseSyntax),
-    typeof(IBindingSyntax),
-    typeof(IDefinitionSyntax),
-    typeof(IGenericParameterSyntax),
-    typeof(IAttributeSyntax),
-    typeof(ICapabilityConstraintSyntax),
-    typeof(IParameterSyntax),
-    typeof(IReturnSyntax),
-    typeof(ITypeSyntax),
-    typeof(IParameterTypeSyntax),
-    typeof(IStatementSyntax),
-    typeof(IPatternSyntax),
-    typeof(IExpressionSyntax))]
-[GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface ICodeSyntax : ISyntax
-{
-    TextSpan Span { get; }
-}
-
-[Closed(typeof(CompilationUnitSyntax))]
-[GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface ICompilationUnitSyntax : ICodeSyntax
-{
-    CodeFile File { get; }
-    NamespaceName ImplicitNamespaceName { get; }
-    DiagnosticCollection Diagnostics { get; }
-    IFixedList<IImportDirectiveSyntax> ImportDirectives { get; }
-    IFixedList<INamespaceBlockMemberDefinitionSyntax> Definitions { get; }
-
-    public static ICompilationUnitSyntax Create(
-        TextSpan span,
-        CodeFile file,
-        NamespaceName implicitNamespaceName,
-        DiagnosticCollection diagnostics,
-        IEnumerable<IImportDirectiveSyntax> importDirectives,
-        IEnumerable<INamespaceBlockMemberDefinitionSyntax> definitions)
-        => new CompilationUnitSyntax(span, file, implicitNamespaceName, diagnostics, importDirectives, definitions);
-}
-
-[Closed(typeof(ImportDirectiveSyntax))]
-[GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IImportDirectiveSyntax : ICodeSyntax
-{
-    NamespaceName Name { get; }
-
-    public static IImportDirectiveSyntax Create(
-        TextSpan span,
-        NamespaceName name)
-        => new ImportDirectiveSyntax(span, name);
 }
 
 [Closed(
@@ -166,14 +111,58 @@ public partial interface IPackageReferenceSyntax : ISyntax
 }
 
 [Closed(
-    typeof(IEntityDefinitionSyntax),
-    typeof(INamespaceBlockMemberDefinitionSyntax))]
+    typeof(IBodyOrBlockSyntax),
+    typeof(IElseClauseSyntax),
+    typeof(IBindingSyntax),
+    typeof(ICompilationUnitSyntax),
+    typeof(IImportDirectiveSyntax),
+    typeof(IDefinitionSyntax),
+    typeof(IGenericParameterSyntax),
+    typeof(IAttributeSyntax),
+    typeof(ICapabilityConstraintSyntax),
+    typeof(IParameterSyntax),
+    typeof(IReturnSyntax),
+    typeof(ITypeSyntax),
+    typeof(IParameterTypeSyntax),
+    typeof(IStatementSyntax),
+    typeof(IPatternSyntax),
+    typeof(IExpressionSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IDefinitionSyntax : ICodeSyntax
+public partial interface ICodeSyntax : ISyntax
+{
+    TextSpan Span { get; }
+}
+
+[Closed(typeof(CompilationUnitSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
+public partial interface ICompilationUnitSyntax : ICodeSyntax
 {
     CodeFile File { get; }
-    UnqualifiedName? Name { get; }
-    TextSpan NameSpan { get; }
+    NamespaceName ImplicitNamespaceName { get; }
+    DiagnosticCollection Diagnostics { get; }
+    IFixedList<IImportDirectiveSyntax> ImportDirectives { get; }
+    IFixedList<INamespaceBlockMemberDefinitionSyntax> Definitions { get; }
+
+    public static ICompilationUnitSyntax Create(
+        TextSpan span,
+        CodeFile file,
+        NamespaceName implicitNamespaceName,
+        DiagnosticCollection diagnostics,
+        IEnumerable<IImportDirectiveSyntax> importDirectives,
+        IEnumerable<INamespaceBlockMemberDefinitionSyntax> definitions)
+        => new CompilationUnitSyntax(span, file, implicitNamespaceName, diagnostics, importDirectives, definitions);
+}
+
+[Closed(typeof(ImportDirectiveSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
+public partial interface IImportDirectiveSyntax : ICodeSyntax
+{
+    NamespaceName Name { get; }
+
+    public static IImportDirectiveSyntax Create(
+        TextSpan span,
+        NamespaceName name)
+        => new ImportDirectiveSyntax(span, name);
 }
 
 [Closed(
@@ -183,6 +172,17 @@ public partial interface IDefinitionSyntax : ICodeSyntax
 public partial interface IEntityDefinitionSyntax : IDefinitionSyntax
 {
     IAccessModifierToken? AccessModifier { get; }
+}
+
+[Closed(
+    typeof(IEntityDefinitionSyntax),
+    typeof(INamespaceBlockMemberDefinitionSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
+public partial interface IDefinitionSyntax : ICodeSyntax
+{
+    CodeFile File { get; }
+    UnqualifiedName? Name { get; }
+    TextSpan NameSpan { get; }
 }
 
 [Closed(
@@ -1519,6 +1519,55 @@ public partial interface IAwaitExpressionSyntax : IExpressionSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
+file class PackageSyntax : IPackageSyntax
+{
+    private IPackageSyntax Self { [Inline] get => this; }
+
+    public IdentifierName Name { [DebuggerStepThrough] get; }
+    public IFixedSet<ICompilationUnitSyntax> CompilationUnits { [DebuggerStepThrough] get; }
+    public IFixedSet<ICompilationUnitSyntax> TestingCompilationUnits { [DebuggerStepThrough] get; }
+    public IFixedSet<IPackageReferenceSyntax> References { [DebuggerStepThrough] get; }
+    public DiagnosticCollection Diagnostics { [DebuggerStepThrough] get; }
+    public override string ToString()
+        => FormattingAspect.Package_ToString(this);
+
+    public PackageSyntax(
+        IdentifierName name,
+        IEnumerable<ICompilationUnitSyntax> compilationUnits,
+        IEnumerable<ICompilationUnitSyntax> testingCompilationUnits,
+        IEnumerable<IPackageReferenceSyntax> references)
+    {
+        Name = name;
+        CompilationUnits = compilationUnits.ToFixedSet();
+        TestingCompilationUnits = testingCompilationUnits.ToFixedSet();
+        References = references.ToFixedSet();
+        Diagnostics = ComputedAspect.Package_Diagnostics(this);
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class PackageReferenceSyntax : IPackageReferenceSyntax
+{
+    private IPackageReferenceSyntax Self { [Inline] get => this; }
+
+    public IdentifierName AliasOrName { [DebuggerStepThrough] get; }
+    public IPackageSymbols Package { [DebuggerStepThrough] get; }
+    public bool IsTrusted { [DebuggerStepThrough] get; }
+    public override string ToString()
+        => FormattingAspect.PackageReference_ToString(this);
+
+    public PackageReferenceSyntax(
+        IdentifierName aliasOrName,
+        IPackageSymbols package,
+        bool isTrusted)
+    {
+        AliasOrName = aliasOrName;
+        Package = package;
+        IsTrusted = isTrusted;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
 file class CompilationUnitSyntax : ICompilationUnitSyntax
 {
     private ICompilationUnitSyntax Self { [Inline] get => this; }
@@ -1565,55 +1614,6 @@ file class ImportDirectiveSyntax : IImportDirectiveSyntax
     {
         Span = span;
         Name = name;
-    }
-}
-
-[GeneratedCode("AzothCompilerCodeGen", null)]
-file class PackageSyntax : IPackageSyntax
-{
-    private IPackageSyntax Self { [Inline] get => this; }
-
-    public IdentifierName Name { [DebuggerStepThrough] get; }
-    public IFixedSet<ICompilationUnitSyntax> CompilationUnits { [DebuggerStepThrough] get; }
-    public IFixedSet<ICompilationUnitSyntax> TestingCompilationUnits { [DebuggerStepThrough] get; }
-    public IFixedSet<IPackageReferenceSyntax> References { [DebuggerStepThrough] get; }
-    public DiagnosticCollection Diagnostics { [DebuggerStepThrough] get; }
-    public override string ToString()
-        => FormattingAspect.Package_ToString(this);
-
-    public PackageSyntax(
-        IdentifierName name,
-        IEnumerable<ICompilationUnitSyntax> compilationUnits,
-        IEnumerable<ICompilationUnitSyntax> testingCompilationUnits,
-        IEnumerable<IPackageReferenceSyntax> references)
-    {
-        Name = name;
-        CompilationUnits = compilationUnits.ToFixedSet();
-        TestingCompilationUnits = testingCompilationUnits.ToFixedSet();
-        References = references.ToFixedSet();
-        Diagnostics = ComputedAspect.Package_Diagnostics(this);
-    }
-}
-
-[GeneratedCode("AzothCompilerCodeGen", null)]
-file class PackageReferenceSyntax : IPackageReferenceSyntax
-{
-    private IPackageReferenceSyntax Self { [Inline] get => this; }
-
-    public IdentifierName AliasOrName { [DebuggerStepThrough] get; }
-    public IPackageSymbols Package { [DebuggerStepThrough] get; }
-    public bool IsTrusted { [DebuggerStepThrough] get; }
-    public override string ToString()
-        => FormattingAspect.PackageReference_ToString(this);
-
-    public PackageReferenceSyntax(
-        IdentifierName aliasOrName,
-        IPackageSymbols package,
-        bool isTrusted)
-    {
-        AliasOrName = aliasOrName;
-        Package = package;
-        IsTrusted = isTrusted;
     }
 }
 

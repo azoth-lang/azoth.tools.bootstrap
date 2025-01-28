@@ -10,20 +10,20 @@ namespace Azoth.Tools.Bootstrap.Compiler.Syntax;
 
 internal static partial class FormattingAspect
 {
-    #region Top Level
-    public static partial string CompilationUnit_ToString(ICompilationUnitSyntax node)
-        => node.File.Reference.ToString();
-
-    public static partial string ImportDirective_ToString(IImportDirectiveSyntax node)
-        => $"using {node.Name};";
-    #endregion
-
     #region Packages
     public static partial string Package_ToString(IPackageSyntax node)
         => $"package {node.Name.Text}: {node.CompilationUnits.Count} Compilation Units";
 
     public static partial string PackageReference_ToString(IPackageReferenceSyntax node)
         => $"reference {node.AliasOrName}: {{ \"package\": \"{node.Package.PackageSymbol}\" \"trusted\": {node.IsTrusted} }}";
+    #endregion
+
+    #region Code Files
+    public static partial string CompilationUnit_ToString(ICompilationUnitSyntax node)
+        => node.File.Reference.ToString();
+
+    public static partial string ImportDirective_ToString(IImportDirectiveSyntax node)
+        => $"using {node.Name};";
     #endregion
 
     #region Namespace Definitions
@@ -231,6 +231,15 @@ internal static partial class FormattingAspect
         => $"unsafe ({node.Expression})";
     #endregion
 
+    #region Instance Member Access Expressions
+    public static partial string MemberAccessExpression_ToString(IMemberAccessExpressionSyntax node)
+    {
+        var genericArguments = node.GenericArguments.IsEmpty
+            ? $"[{string.Join(", ", node.GenericArguments)}]" : "";
+        return $"{node.Context.ToGroupedString(node.ExpressionPrecedence)}.{node.MemberName.ToBareString()}{genericArguments}";
+    }
+    #endregion
+
     #region Literal Expressions
     public static partial string BoolLiteralExpression_ToString(IBoolLiteralExpressionSyntax node)
         => node.Value.ToString(CultureInfo.InvariantCulture);
@@ -310,13 +319,6 @@ internal static partial class FormattingAspect
     #region Name Expressions
     public static partial string SelfExpression_ToString(ISelfExpressionSyntax node)
         => node.IsImplicit ? "⟦self⟧" : "self";
-
-    public static partial string MemberAccessExpression_ToString(IMemberAccessExpressionSyntax node)
-    {
-        var genericArguments = !node.GenericArguments.IsEmpty
-            ? $"[{string.Join(", ", node.GenericArguments)}]" : "";
-        return $"{node.Context.ToGroupedString(node.ExpressionPrecedence)}.{node.MemberName.ToBareString()}{genericArguments}";
-    }
 
     public static partial string MissingName_ToString(IMissingNameSyntax node) => "⧼unknown⧽";
     #endregion

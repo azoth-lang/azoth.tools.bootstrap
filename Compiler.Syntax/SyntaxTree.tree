@@ -15,19 +15,11 @@
 ◊using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 ◊using Azoth.Tools.Bootstrap.Framework;
 
-// TODO:
-//     The syntax tree ought to be independent of semantics. It should not try to enforce rules
-//     such as that certian kinds of expressions are expected in certian places. It should collapse
-//     node types even if they appear in different contexts.
+// The syntax tree ought to be independent of semantics. It should not try to enforce rules such as
+// that certian kinds of expressions are expected in certian places. It should collapse node types
+// even if they appear in different contexts.
 
 <default>;
-
-// ---------- Top Level
-/// Syntax that corresponds to Azoth code.
-Code = Span:`TextSpan`;
-CompilationUnit <: Code = File:`CodeFile` ImplicitNamespaceName:`NamespaceName` Diagnostics:`DiagnosticCollection`
-    ImportDirectives:ImportDirective* Definitions:NamespaceBlockMemberDefinition*;
-ImportDirective <: Code = Name:`NamespaceName`;
 
 // ---------- Special Parts
 BodyOrBlock <: Code = Statements:Statement*;
@@ -43,12 +35,21 @@ Package = Name:`IdentifierName` CompilationUnits:{CompilationUnit} TestingCompil
     References:{PackageReference};
 PackageReference = AliasOrName:`IdentifierName` Package:`IPackageSymbols` IsTrusted:`bool`;
 
-// ---------- Definitions
-Definition <: Code = File:`CodeFile` Name:`UnqualifiedName`? NameSpan:`TextSpan`;
+// ---------- Code Files
+/// Syntax that corresponds to Azoth code.
+Code = Span:`TextSpan`;
+CompilationUnit <: Code = File:`CodeFile` ImplicitNamespaceName:`NamespaceName` Diagnostics:`DiagnosticCollection`
+    ImportDirectives:ImportDirective* Definitions:NamespaceBlockMemberDefinition*;
+ImportDirective <: Code = Name:`NamespaceName`;
+
+// ---------- Facets
 /// All top-level non-namespace definitions since a namespace doesn't really create a thing, it just
 /// defines a group of names.
 // TODO give a better name to this (the semantic tree has moved away from "entity")
 EntityDefinition <: Definition = AccessModifier:`IAccessModifierToken`?;
+
+// ---------- Definitions
+Definition <: Code = File:`CodeFile` Name:`UnqualifiedName`? NameSpan:`TextSpan`;
 /// Base type for any declaration that declares a callable thing (i.e. function, method, getter, setter, or initializer).
 InvocableDefinition <: EntityDefinition = Parameters:InitializerParameter* Body?;
 
@@ -77,6 +78,7 @@ GenericParameter <: Code = Constraint:CapabilityConstraint Name:`IdentifierName`
 
 // ---------- Type Member Definitions (i.e. declarations that can be contained in a type)
 TypeMemberDefinition <: EntityDefinition;
+// TODO eliminate the syntax level restrictions on which members can occur in which definitions
 ClassMemberDefinition <: TypeMemberDefinition;
 TraitMemberDefinition <: TypeMemberDefinition;
 StructMemberDefinition <: TypeMemberDefinition;
@@ -198,6 +200,7 @@ NameExpression <: Expression;
 // See the names section for more nodes that are name expressions
 InstanceExpression <: NameExpression; // i.e. `self` or `base`
 SelfExpression <: InstanceExpression = IsImplicit:`bool`;
+// TODO rename to MissingNameExpression
 MissingName <: NameExpression;
 
 // ---------- Names
