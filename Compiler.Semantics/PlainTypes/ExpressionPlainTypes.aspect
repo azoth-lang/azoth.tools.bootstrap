@@ -42,8 +42,6 @@
 = UnresolvedMemberAccessExpression.*.ExpectedPlainType => null;
 
 // ---------- Instance Member Access Expressions
-= MethodGroupName.PlainType => AzothPlainType.Unknown;
-= MethodGroupName.*.ExpectedPlainType => null;
 = MethodAccessExpression.Context.ExpectedPlainType;
 
 // ---------- Operator Expressions

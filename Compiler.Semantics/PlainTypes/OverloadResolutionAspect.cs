@@ -14,38 +14,58 @@ internal static partial class OverloadResolutionAspect
 {
     private static IMaybePlainType PlainTypeIfKnown(IExpressionNode? node)
     {
+        // TODO is ShouldNotBeExpression() really needed here? Don't those nodes all give Unknown?
         if (node is not null && !node.ShouldNotBeExpression()) return node.PlainType;
         return PlainType.Unknown;
     }
 
+    private static FunctionPlainType InvocationTargetExpectedPlainType(IFixedList<IExpressionNode?> args)
+    {
+        // The return type won't be used for overload resolution. However, using `never` logically
+        // places no constraints on the expected return type.
+        return new(args.Select(ArgumentPlainTypeIfKnown), PlainType.Never);
+
+        static NonVoidPlainType ArgumentPlainTypeIfKnown(IExpressionNode? node)
+        {
+            if (PlainTypeIfKnown(node) is NonVoidPlainType plainType) return plainType;
+            // This is a little odd, but if the parameter type is not known, then using `never` will
+            // cause nothing to match except for `never` itself.
+            return PlainType.Never;
+        }
+    }
+
     #region Instance Member Access Expressions
-    public static partial void MethodGroupName_Contribute_Diagnostics(IMethodGroupNameNode node, DiagnosticCollectionBuilder diagnostics)
-        => ContributeMethodNameBindingDiagnostics(node.ReferencedDeclaration, node.CompatibleCallCandidates, node, node.Syntax, diagnostics);
+    public static partial IFixedSet<ICallCandidate<IOrdinaryMethodDeclarationNode>> MethodAccessExpression_CallCandidates(IMethodAccessExpressionNode node)
+        => node.ReferencedDeclarations.Select(m => CallCandidate.Create(node.Context.PlainType, m)).ToFixedSet();
+
+    public static partial IFixedSet<ICallCandidate<IOrdinaryMethodDeclarationNode>> MethodAccessExpression_CompatibleCallCandidates(IMethodAccessExpressionNode node)
+    {
+        if (node.ExpectedPlainType is not FunctionPlainType expectedPlainType) return [];
+
+        var contextPlainType = node.Context.PlainType;
+        var argumentPlainTypes = ArgumentPlainTypes.ForMethod(contextPlainType, expectedPlainType.Parameters);
+        return node.CallCandidates.Where(o => o.CompatibleWith(argumentPlainTypes)).ToFixedSet();
+    }
+
+    public static partial ICallCandidate<IOrdinaryMethodDeclarationNode>? MethodAccessExpression_SelectedCallCandidate(IMethodAccessExpressionNode node)
+        => node.CompatibleCallCandidates.TrySingle();
 
     public static partial void MethodAccessExpression_Contribute_Diagnostics(IMethodAccessExpressionNode node, DiagnosticCollectionBuilder diagnostics)
-        => ContributeMethodNameBindingDiagnostics(node.ReferencedDeclaration, node.CompatibleCallCandidates, node, node.Syntax, diagnostics);
-
-    private static void ContributeMethodNameBindingDiagnostics(
-        IOrdinaryMethodDeclarationNode? referencedDeclaration,
-        IFixedSet<ICallCandidate<IOrdinaryMethodDeclarationNode>> compatibleCallCandidates,
-        IExpressionNode node,
-        IMemberAccessExpressionSyntax syntax,
-        DiagnosticCollectionBuilder diagnostics)
     {
-        if (referencedDeclaration is not null
+        if (node.ReferencedDeclaration is not null
             // errors will be reported by the parent in this case
             || node.Parent is IUnresolvedInvocationExpressionNode)
             return;
 
-        switch (compatibleCallCandidates.Count)
+        switch (node.CompatibleCallCandidates.Count)
         {
             case 0:
-                diagnostics.Add(NameBindingError.CouldNotBindMethodName(node.File, syntax));
+                diagnostics.Add(NameBindingError.CouldNotBindMethodName(node.File, node.Syntax));
                 break;
             case 1:
                 throw new UnreachableException("ReferencedDeclaration would not be null");
             default:
-                diagnostics.Add(NameBindingError.AmbiguousMethodName(node.File, syntax));
+                diagnostics.Add(NameBindingError.AmbiguousMethodName(node.File, node.Syntax));
                 break;
         }
     }
@@ -53,28 +73,11 @@ internal static partial class OverloadResolutionAspect
 
     #region Invocation Expressions
     public static partial IMaybePlainType? UnresolvedInvocationExpression_Expression_ExpectedPlainType(IUnresolvedInvocationExpressionNode node)
-    {
-        var expectedReturnPlainType = node.ExpectedPlainType ?? PlainType.Unknown;
-        return new FunctionPlainType(node.Arguments.Select(NonVoidPlainTypeIfKnown),
-            // TODO this is odd, but the return plainType will be ignored
-            NonVoidPlainTypeIfKnown(expectedReturnPlainType));
-    }
-
-    private static NonVoidPlainType NonVoidPlainTypeIfKnown(IExpressionNode? node)
-        => NonVoidPlainTypeIfKnown(PlainTypeIfKnown(node));
-
-    private static NonVoidPlainType NonVoidPlainTypeIfKnown(IMaybePlainType maybeExpressionPlainType)
-    {
-        if (maybeExpressionPlainType is NonVoidPlainType plainType) return plainType;
-        // This is a little odd, but if the parameter type is not known, then using `never` will
-        // cause nothing to match except for `never` itself.
-        return PlainType.Never;
-    }
+        => InvocationTargetExpectedPlainType(node.Arguments);
 
     public static partial IFunctionInvocationExpressionNode? UnresolvedInvocationExpression_ReplaceWith_FunctionInvocationExpression(IUnresolvedInvocationExpressionNode node)
     {
-        if (node.Expression is not IFunctionNameExpressionNode function)
-            return null;
+        if (node.Expression is not IFunctionNameExpressionNode function) return null;
 
         return IFunctionInvocationExpressionNode.Create(node.Syntax, function, node.CurrentArguments);
     }
@@ -83,9 +86,6 @@ internal static partial class OverloadResolutionAspect
     {
         if (node.Expression is not IMethodAccessExpressionNode method) return null;
 
-        // TODO maybe the MethodInvocationExpression should not contain a MethodName. Instead, it
-        // could directly contain the context and the method name identifier. That way, weirdness
-        // about passing things through the MethodName layer could be avoided.
         return IMethodInvocationExpressionNode.Create(node.Syntax, method, node.CurrentArguments);
     }
 
@@ -103,21 +103,20 @@ internal static partial class OverloadResolutionAspect
                                                           .Where(c => c.Name is null).ToFixedSet();
 
         var initializerGroupName = IInitializerGroupNameNode.Create(context.Syntax, context, null, referencedDeclarations);
+        // TODO if IInitializerGroupNameNode and IInitializerNameExpressionNode merge, this can generate an IInitializerInvocationExpressionNode
         return IUnresolvedInvocationExpressionNode.Create(node.Syntax, initializerGroupName, node.CurrentArguments);
     }
 
     public static partial IInitializerInvocationExpressionNode? UnresolvedInvocationExpression_ReplaceWith_InitializerInvocationExpression(IUnresolvedInvocationExpressionNode node)
     {
-        if (node.Expression is not IInitializerNameExpressionNode initializer)
-            return null;
+        if (node.Expression is not IInitializerNameExpressionNode initializer) return null;
 
         return IInitializerInvocationExpressionNode.Create(node.Syntax, initializer, node.CurrentArguments);
     }
 
     public static partial IFunctionReferenceInvocationExpressionNode? UnresolvedInvocationExpression_ReplaceWith_FunctionReferenceInvocationExpression(IUnresolvedInvocationExpressionNode node)
     {
-        if (node.Expression is not { PlainType: FunctionPlainType } expression)
-            return null;
+        if (node.Expression is not { PlainType: FunctionPlainType } expression) return null;
 
         return IFunctionReferenceInvocationExpressionNode.Create(node.Syntax, expression, node.CurrentArguments);
     }
@@ -184,25 +183,8 @@ internal static partial class OverloadResolutionAspect
         }
     }
 
-    public static partial void MethodInvocationExpression_Contribute_Diagnostics(IMethodInvocationExpressionNode node, DiagnosticCollectionBuilder diagnostics)
-    {
-        var method = node.Method;
-        if (method.ReferencedDeclaration is not null)
-            return;
-
-        // TODO isn't this now a duplicate of the diagnostics on MethodName?
-        switch (method.CompatibleCallCandidates.Count)
-        {
-            case 0:
-                diagnostics.Add(NameBindingError.CouldNotBindMethod(node.File, node.Syntax));
-                break;
-            case 1:
-                throw new UnreachableException("ReferencedDeclaration would not be null");
-            default:
-                diagnostics.Add(NameBindingError.AmbiguousMethodCall(node.File, node.Syntax));
-                break;
-        }
-    }
+    public static partial IMaybePlainType? MethodInvocationExpression_Method_ExpectedPlainType(IMethodInvocationExpressionNode node)
+        => InvocationTargetExpectedPlainType(node.Arguments);
 
     public static partial IFixedSet<ICallCandidate<IPropertyAccessorDeclarationNode>> GetterInvocationExpression_CallCandidates(IGetterInvocationExpressionNode node)
         => node.ReferencedDeclarations.Select(p => CallCandidate.Create(node.Context.PlainType, p)).ToFixedSet();
@@ -219,6 +201,7 @@ internal static partial class OverloadResolutionAspect
 
     public static partial IFixedSet<ICallCandidate<ISetterMethodDeclarationNode>> SetterInvocationExpression_CompatibleCallCandidates(ISetterInvocationExpressionNode node)
     {
+        // TODO setters should have method names just like others so you can pass them as function references
         var argumentPlainTypes = ArgumentPlainTypes.ForMethod(node.Context.PlainType, PlainTypeIfKnown(node.Value).Yield());
         return node.CallCandidates.OfType<ICallCandidate<ISetterMethodDeclarationNode>>()
                    .Where(c => c.CompatibleWith(argumentPlainTypes)).ToFixedSet();
@@ -271,21 +254,6 @@ internal static partial class OverloadResolutionAspect
                 break;
         }
     }
-
-    public static partial IFixedSet<ICallCandidate<IOrdinaryMethodDeclarationNode>> MethodGroupName_CallCandidates(IMethodGroupNameNode node)
-        => node.ReferencedDeclarations.Select(m => CallCandidate.Create(node.Context.PlainType, m)).ToFixedSet();
-
-    public static partial IFixedSet<ICallCandidate<IOrdinaryMethodDeclarationNode>> MethodGroupName_CompatibleCallCandidates(IMethodGroupNameNode node)
-    {
-        if (node.ExpectedPlainType is not FunctionPlainType expectedPlainType) return [];
-
-        var contextPlainType = node.Context.PlainType;
-        var argumentPlainTypes = ArgumentPlainTypes.ForMethod(contextPlainType, expectedPlainType.Parameters);
-        return node.CallCandidates.Where(o => o.CompatibleWith(argumentPlainTypes)).ToFixedSet();
-    }
-
-    public static partial ICallCandidate<IOrdinaryMethodDeclarationNode>? MethodGroupName_SelectedCallCandidate(IMethodGroupNameNode node)
-        => node.CompatibleCallCandidates.TrySingle();
 
     public static partial IFixedSet<ICallCandidate<IInitializerDeclarationNode>> InitializerGroupName_CallCandidates(IInitializerGroupNameNode node)
     {

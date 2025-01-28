@@ -12,10 +12,6 @@
 ✎ UnresolvedMemberAccessExpression ExpressionContext replace_with Expression;
 = UnresolvedMemberAccessExpression.↑.Diagnostics;
 
-// ---------- Instance Member Access Expressions
-✎ MethodGroupName replace_with MethodAccessExpression;
-= MethodGroupName.↑.Diagnostics;
-
 // ---------- Operator Expressions
 ✎ AssignmentExpression PropertyNameLeftOperand rewrite;
 

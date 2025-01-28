@@ -97,8 +97,6 @@
 // ---------- Instance Member Access Expressions
 = FieldAccessExpression.FlowStateAfter;
 = FieldAccessExpression.↑.Diagnostics;
-↑ MethodGroupName.Type: `UnknownType` => AzothType.Unknown;
-↑ MethodGroupName.FlowStateAfter: `IFlowState` => Context.FlowStateAfter;
 = MethodAccessExpression.Context.ExpectedType;
 = MethodAccessExpression.Context.ImplicitRecoveryAllowed() => true;
 ↑ MethodAccessExpression.FlowStateAfter: `IFlowState` => Context.FlowStateAfter;

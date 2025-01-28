@@ -234,7 +234,7 @@ internal static partial class FormattingAspect
     #region Instance Member Access Expressions
     public static partial string MemberAccessExpression_ToString(IMemberAccessExpressionSyntax node)
     {
-        var genericArguments = node.GenericArguments.IsEmpty
+        var genericArguments = !node.GenericArguments.IsEmpty
             ? $"[{string.Join(", ", node.GenericArguments)}]" : "";
         return $"{node.Context.ToGroupedString(node.ExpressionPrecedence)}.{node.MemberName.ToBareString()}{genericArguments}";
     }

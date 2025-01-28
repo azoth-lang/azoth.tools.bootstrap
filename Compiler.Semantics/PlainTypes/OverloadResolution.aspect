@@ -7,12 +7,11 @@
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
 // ---------- Instance Member Access Expressions
-↑ MethodGroupName.CallCandidates: {`ICallCandidate<IOrdinaryMethodDeclarationNode>`};
-↑ MethodGroupName.CompatibleCallCandidates: {`ICallCandidate<IOrdinaryMethodDeclarationNode>`};
-↑ MethodGroupName.SelectedCallCandidate: `ICallCandidate<IOrdinaryMethodDeclarationNode>`?;
-↑ MethodGroupName.ReferencedDeclaration: OrdinaryMethodDeclaration?
+↑ MethodAccessExpression.CallCandidates: {`ICallCandidate<IOrdinaryMethodDeclarationNode>`};
+↑ MethodAccessExpression.CompatibleCallCandidates: {`ICallCandidate<IOrdinaryMethodDeclarationNode>`};
+↑ MethodAccessExpression.SelectedCallCandidate: `ICallCandidate<IOrdinaryMethodDeclarationNode>`?;
+↑ MethodAccessExpression.ReferencedDeclaration: OrdinaryMethodDeclaration?
     => SelectedCallCandidate?.Declaration;
-= MethodGroupName.↑.Diagnostics;
 = MethodAccessExpression.↑.Diagnostics;
 
 // ---------- Invocation Expressions
@@ -28,9 +27,9 @@
 ↑ FunctionInvocationExpression.SelectedCallCandidate: `ICallCandidate<IFunctionInvocableDeclarationNode>`?
     => Function.SelectedCallCandidate;
 
+= MethodInvocationExpression.Method.ExpectedPlainType;
 ↑ MethodInvocationExpression.SelectedCallCandidate: `ICallCandidate<IOrdinaryMethodDeclarationNode>`?
     => Method.SelectedCallCandidate;
-= MethodInvocationExpression.↑.Diagnostics;
 
 ↑ GetterInvocationExpression.CallCandidates: {`ICallCandidate<IPropertyAccessorDeclarationNode>`};
 ↑ GetterInvocationExpression.CompatibleCallCandidates: {`ICallCandidate<IGetterMethodDeclarationNode>`};

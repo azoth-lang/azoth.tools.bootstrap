@@ -24,8 +24,6 @@ internal static partial class NameResolutionAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial void UnresolvedMemberAccessExpression_Contribute_Diagnostics(IUnresolvedMemberAccessExpressionNode node, DiagnosticCollectionBuilder diagnostics);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial void MethodGroupName_Contribute_Diagnostics(IMethodGroupNameNode node, DiagnosticCollectionBuilder diagnostics);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial void FunctionGroupName_Contribute_Diagnostics(IFunctionGroupNameNode node, DiagnosticCollectionBuilder diagnostics);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial void InitializerGroupName_Contribute_Diagnostics(IInitializerGroupNameNode node, DiagnosticCollectionBuilder diagnostics);
@@ -38,7 +36,6 @@ internal static partial class NameResolutionAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial void UnresolvedOrdinaryName_Contribute_Diagnostics(IUnresolvedOrdinaryNameNode node, DiagnosticCollectionBuilder diagnostics);
     public static partial IExpressionNode? UnresolvedMemberAccessExpression_ExpressionContext_ReplaceWith_Expression(IUnresolvedMemberAccessExpressionNode node);
-    public static partial IMethodAccessExpressionNode? MethodGroupName_ReplaceWith_MethodAccessExpression(IMethodGroupNameNode node);
     public static partial IExpressionNode? AssignmentExpression_PropertyNameLeftOperand_Rewrite(IAssignmentExpressionNode node);
     public static partial IFunctionNameExpressionNode? FunctionGroupName_ReplaceWith_FunctionNameExpression(IFunctionGroupNameNode node);
     public static partial IInitializerNameExpressionNode? InitializerGroupName_ReplaceWith_InitializerNameExpression(IInitializerGroupNameNode node);

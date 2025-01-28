@@ -76,7 +76,6 @@
 
 // ---------- Instance Member Access Expressions
 = FieldAccessExpression.ControlFlowNext;
-= MethodGroupName.ControlFlowNext;
 = MethodAccessExpression.ControlFlowNext;
 
 // ---------- Operator Expressions

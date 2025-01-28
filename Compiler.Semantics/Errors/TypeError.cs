@@ -238,10 +238,4 @@ public static class TypeError
         return new(file, nameSyntax.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             3035, $"Function group `{nameSyntax}` has multiple functions that match the expected type `{functionType.ToSourceCodeString()}`.");
     }
-
-    public static Diagnostic AmbiguousMethodGroup(CodeFile file, IExpressionSyntax nameSyntax, IMaybeFunctionType functionType)
-    {
-        return new(file, nameSyntax.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
-            3036, $"Method group `{nameSyntax}` has multiple methods that match the expected type `{functionType.ToSourceCodeString()}`.");
-    }
 }

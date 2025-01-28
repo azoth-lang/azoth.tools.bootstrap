@@ -219,19 +219,9 @@ concrete UnresolvedMemberAccessExpression <: UnresolvedExpression
 // TODO should a MemberAccessExpression node be added?
 FieldAccessExpression <: OrdinaryTypedExpression = Syntax:`IMemberAccessExpressionSyntax`
     Context:Expression ReferencedDeclaration:`IFieldDeclarationNode`;
-// TODO should MethodGroupName be UnresolvedMethodName or Unresolved MethodAccessExpression?
-// TODO merge with MethodAccessExpression?
-MethodGroupName <: UnresolvedExpression, OrdinaryTypedExpression = Syntax:`IMemberAccessExpressionSyntax`
-    Context:Expression GenericArguments:Type*
-    ReferencedDeclarations:{`IOrdinaryMethodDeclarationNode`};
-/// See comment on FunctionNameExpression for why this exists.
 MethodAccessExpression <: OrdinaryTypedExpression = Syntax:`IMemberAccessExpressionSyntax`
     Context:Expression GenericArguments:Type*
-    ReferencedDeclarations:{`IOrdinaryMethodDeclarationNode`}
-    CallCandidates:{`ICallCandidate<IOrdinaryMethodDeclarationNode>`}
-    CompatibleCallCandidates:{`ICallCandidate<IOrdinaryMethodDeclarationNode>`}
-    SelectedCallCandidate:`ICallCandidate<IOrdinaryMethodDeclarationNode>`?
-    ReferencedDeclaration:`IOrdinaryMethodDeclarationNode`?;
+    ReferencedDeclarations:{`IOrdinaryMethodDeclarationNode`};
 
 // ---------- Literal Expressions
 LiteralExpression <: OrdinaryTypedExpression = Syntax:`ILiteralExpressionSyntax`;

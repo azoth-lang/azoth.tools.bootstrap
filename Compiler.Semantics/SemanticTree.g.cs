@@ -1746,7 +1746,6 @@ public partial interface IExpressionNode : IAmbiguousExpressionNode, IControlFlo
     typeof(IBlockExpressionNode),
     typeof(IUnsafeExpressionNode),
     typeof(IFieldAccessExpressionNode),
-    typeof(IMethodGroupNameNode),
     typeof(IMethodAccessExpressionNode),
     typeof(ILiteralExpressionNode),
     typeof(IAssignmentExpressionNode),
@@ -1847,7 +1846,6 @@ public partial interface INeverTypedExpressionNode : IExpressionNode
 
 [Closed(
     typeof(IUnresolvedMemberAccessExpressionNode),
-    typeof(IMethodGroupNameNode),
     typeof(IUnresolvedInvocationExpressionNode),
     typeof(IUnresolvedNameExpressionNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -1906,42 +1904,6 @@ public partial interface IFieldAccessExpressionNode : IOrdinaryTypedExpressionNo
         => new FieldAccessExpressionNode(syntax, context, referencedDeclaration);
 }
 
-[Closed(typeof(MethodGroupNameNode))]
-[GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IMethodGroupNameNode : IUnresolvedExpressionNode, IOrdinaryTypedExpressionNode
-{
-    new IMemberAccessExpressionSyntax Syntax { get; }
-    IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
-    ICodeSyntax ICodeNode.Syntax => Syntax;
-    ISyntax? ISemanticNode.Syntax => Syntax;
-    IExpressionNode Context { get; }
-    IExpressionNode CurrentContext { get; }
-    IFixedList<ITypeNode> GenericArguments { get; }
-    IFixedSet<IOrdinaryMethodDeclarationNode> ReferencedDeclarations { get; }
-    new UnknownType Type
-        => AzothType.Unknown;
-    IMaybeType IExpressionNode.Type => Type;
-    new IFlowState FlowStateAfter
-        => Context.FlowStateAfter;
-    IFlowState IExpressionNode.FlowStateAfter => FlowStateAfter;
-    IFixedSet<ICallCandidate<IOrdinaryMethodDeclarationNode>> CallCandidates { get; }
-    IFixedSet<ICallCandidate<IOrdinaryMethodDeclarationNode>> CompatibleCallCandidates { get; }
-    ICallCandidate<IOrdinaryMethodDeclarationNode>? SelectedCallCandidate { get; }
-    IOrdinaryMethodDeclarationNode? ReferencedDeclaration
-        => SelectedCallCandidate?.Declaration;
-    OrdinaryName MethodName
-        => Syntax.MemberName;
-    IMaybePlainType IExpressionNode.PlainType
-        => AzothPlainType.Unknown;
-
-    public static IMethodGroupNameNode Create(
-        IMemberAccessExpressionSyntax syntax,
-        IExpressionNode context,
-        IEnumerable<ITypeNode> genericArguments,
-        IEnumerable<IOrdinaryMethodDeclarationNode> referencedDeclarations)
-        => new MethodGroupNameNode(syntax, context, genericArguments, referencedDeclarations);
-}
-
 [Closed(typeof(MethodAccessExpressionNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IMethodAccessExpressionNode : IOrdinaryTypedExpressionNode
@@ -1954,13 +1916,14 @@ public partial interface IMethodAccessExpressionNode : IOrdinaryTypedExpressionN
     IExpressionNode CurrentContext { get; }
     IFixedList<ITypeNode> GenericArguments { get; }
     IFixedSet<IOrdinaryMethodDeclarationNode> ReferencedDeclarations { get; }
-    IFixedSet<ICallCandidate<IOrdinaryMethodDeclarationNode>> CallCandidates { get; }
-    IFixedSet<ICallCandidate<IOrdinaryMethodDeclarationNode>> CompatibleCallCandidates { get; }
-    ICallCandidate<IOrdinaryMethodDeclarationNode>? SelectedCallCandidate { get; }
-    IOrdinaryMethodDeclarationNode? ReferencedDeclaration { get; }
     new IFlowState FlowStateAfter
         => Context.FlowStateAfter;
     IFlowState IExpressionNode.FlowStateAfter => FlowStateAfter;
+    IFixedSet<ICallCandidate<IOrdinaryMethodDeclarationNode>> CallCandidates { get; }
+    IFixedSet<ICallCandidate<IOrdinaryMethodDeclarationNode>> CompatibleCallCandidates { get; }
+    ICallCandidate<IOrdinaryMethodDeclarationNode>? SelectedCallCandidate { get; }
+    IOrdinaryMethodDeclarationNode? ReferencedDeclaration
+        => SelectedCallCandidate?.Declaration;
     OrdinaryName MethodName
         => Syntax.MemberName;
 
@@ -1968,12 +1931,8 @@ public partial interface IMethodAccessExpressionNode : IOrdinaryTypedExpressionN
         IMemberAccessExpressionSyntax syntax,
         IExpressionNode context,
         IEnumerable<ITypeNode> genericArguments,
-        IEnumerable<IOrdinaryMethodDeclarationNode> referencedDeclarations,
-        IEnumerable<ICallCandidate<IOrdinaryMethodDeclarationNode>> callCandidates,
-        IEnumerable<ICallCandidate<IOrdinaryMethodDeclarationNode>> compatibleCallCandidates,
-        ICallCandidate<IOrdinaryMethodDeclarationNode>? selectedCallCandidate,
-        IOrdinaryMethodDeclarationNode? referencedDeclaration)
-        => new MethodAccessExpressionNode(syntax, context, genericArguments, referencedDeclarations, callCandidates, compatibleCallCandidates, selectedCallCandidate, referencedDeclaration);
+        IEnumerable<IOrdinaryMethodDeclarationNode> referencedDeclarations)
+        => new MethodAccessExpressionNode(syntax, context, genericArguments, referencedDeclarations);
 }
 
 [Closed(
@@ -9659,9 +9618,9 @@ file class FieldAccessExpressionNode : SemanticNode, IFieldAccessExpressionNode
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class MethodGroupNameNode : SemanticNode, IMethodGroupNameNode
+file class MethodAccessExpressionNode : SemanticNode, IMethodAccessExpressionNode
 {
-    private IMethodGroupNameNode Self { [Inline] get => this; }
+    private IMethodAccessExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
     protected override bool MayHaveRewrite => true;
 
@@ -9712,163 +9671,15 @@ file class MethodGroupNameNode : SemanticNode, IMethodGroupNameNode
     public IFixedSet<ICallCandidate<IOrdinaryMethodDeclarationNode>> CallCandidates
         => GrammarAttribute.IsCached(in callCandidatesCached) ? callCandidates!
             : this.Synthetic(ref callCandidatesCached, ref callCandidates,
-                OverloadResolutionAspect.MethodGroupName_CallCandidates);
+                OverloadResolutionAspect.MethodAccessExpression_CallCandidates);
     private IFixedSet<ICallCandidate<IOrdinaryMethodDeclarationNode>>? callCandidates;
     private bool callCandidatesCached;
     public IFixedSet<ICallCandidate<IOrdinaryMethodDeclarationNode>> CompatibleCallCandidates
         => GrammarAttribute.IsCached(in compatibleCallCandidatesCached) ? compatibleCallCandidates!
             : this.Synthetic(ref compatibleCallCandidatesCached, ref compatibleCallCandidates,
-                OverloadResolutionAspect.MethodGroupName_CompatibleCallCandidates);
+                OverloadResolutionAspect.MethodAccessExpression_CompatibleCallCandidates);
     private IFixedSet<ICallCandidate<IOrdinaryMethodDeclarationNode>>? compatibleCallCandidates;
     private bool compatibleCallCandidatesCached;
-    public ControlFlowSet ControlFlowNext
-        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
-            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
-                ControlFlowAspect.MethodGroupName_ControlFlowNext);
-    private ControlFlowSet? controlFlowNext;
-    private bool controlFlowNextCached;
-    public ICallCandidate<IOrdinaryMethodDeclarationNode>? SelectedCallCandidate
-        => GrammarAttribute.IsCached(in selectedCallCandidateCached) ? selectedCallCandidate
-            : this.Synthetic(ref selectedCallCandidateCached, ref selectedCallCandidate,
-                OverloadResolutionAspect.MethodGroupName_SelectedCallCandidate);
-    private ICallCandidate<IOrdinaryMethodDeclarationNode>? selectedCallCandidate;
-    private bool selectedCallCandidateCached;
-    public ValueId ValueId
-        => GrammarAttribute.IsCached(in valueIdCached) ? valueId
-            : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
-                ValueIdsAspect.Expression_ValueId);
-    private ValueId valueId;
-    private bool valueIdCached;
-
-    public MethodGroupNameNode(
-        IMemberAccessExpressionSyntax syntax,
-        IExpressionNode context,
-        IEnumerable<ITypeNode> genericArguments,
-        IEnumerable<IOrdinaryMethodDeclarationNode> referencedDeclarations)
-    {
-        Syntax = syntax;
-        this.context = Child.Create(this, context);
-        GenericArguments = ChildList.Attach(this, genericArguments);
-        ReferencedDeclarations = referencedDeclarations.ToFixedSet();
-    }
-
-    internal override IMaybePlainType? Inherited_ExpectedPlainType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ReferenceEquals(child, descendant))
-            return null;
-        return base.Inherited_ExpectedPlainType(child, descendant, ctx);
-    }
-
-    internal override IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ReferenceEquals(child, descendant))
-            return null;
-        return base.Inherited_ExpectedType(child, descendant, ctx);
-    }
-
-    internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ReferenceEquals(child, descendant))
-            return false;
-        return base.Inherited_ImplicitRecoveryAllowed(child, descendant, ctx);
-    }
-
-    internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ReferenceEquals(child, descendant))
-            return false;
-        return base.Inherited_ShouldPrepareToReturn(child, descendant, ctx);
-    }
-
-    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
-    {
-        contributors.Add(this);
-        base.CollectContributors_Diagnostics(contributors);
-    }
-
-    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
-    {
-        ExpressionTypesAspect.OrdinaryTypedExpression_Contribute_Diagnostics(this, builder);
-        OverloadResolutionAspect.MethodGroupName_Contribute_Diagnostics(this, builder);
-        NameResolutionAspect.MethodGroupName_Contribute_Diagnostics(this, builder);
-    }
-
-    internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
-    {
-        contributors.AddToRange(Self.ControlFlowNext.Keys.Cast<SemanticNode>(), this);
-        base.CollectContributors_ControlFlowPrevious(contributors);
-    }
-
-    internal override void Contribute_ControlFlowPrevious(SemanticNode target, Dictionary<IControlFlowNode, ControlFlowKind> builder)
-    {
-        if (target is IControlFlowNode t)
-            ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
-    }
-
-    protected override IChildTreeNode Rewrite()
-        => NameResolutionAspect.MethodGroupName_ReplaceWith_MethodAccessExpression(this)
-        ?? ExpressionTypesAspect.OrdinaryTypedExpression_ImplicitMove_Insert(this)
-        ?? ExpressionTypesAspect.OrdinaryTypedExpression_ImplicitFreeze_Insert(this)
-        ?? ExpressionTypesAspect.OrdinaryTypedExpression_Insert_PrepareToReturnExpression(this)
-        ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitConversionExpression(this)
-        ?? base.Rewrite();
-}
-
-[GeneratedCode("AzothCompilerCodeGen", null)]
-file class MethodAccessExpressionNode : SemanticNode, IMethodAccessExpressionNode
-{
-    private IMethodAccessExpressionNode Self { [Inline] get => this; }
-    private AttributeLock syncLock;
-    protected override bool MayHaveRewrite => true;
-
-    public IMemberAccessExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    private RewritableChild<IExpressionNode> context;
-    private bool contextCached;
-    public IExpressionNode Context
-        => GrammarAttribute.IsCached(in contextCached) ? context.UnsafeValue
-            : this.RewritableChild(ref contextCached, ref context);
-    public IExpressionNode CurrentContext => context.UnsafeValue;
-    public IFixedList<ITypeNode> GenericArguments { [DebuggerStepThrough] get; }
-    public IFixedSet<IOrdinaryMethodDeclarationNode> ReferencedDeclarations { [DebuggerStepThrough] get; }
-    public IFixedSet<ICallCandidate<IOrdinaryMethodDeclarationNode>> CallCandidates { [DebuggerStepThrough] get; }
-    public IFixedSet<ICallCandidate<IOrdinaryMethodDeclarationNode>> CompatibleCallCandidates { [DebuggerStepThrough] get; }
-    public ICallCandidate<IOrdinaryMethodDeclarationNode>? SelectedCallCandidate { [DebuggerStepThrough] get; }
-    public IOrdinaryMethodDeclarationNode? ReferencedDeclaration { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
-    public CodeFile File
-        => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
-    public LexicalScope ContainingLexicalScope()
-        => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
-    public IEntryNode ControlFlowEntry()
-        => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
-    public ControlFlowSet ControlFlowPrevious
-        => GrammarAttribute.IsCached(in controlFlowPreviousCached) ? controlFlowPrevious!
-            : this.Collection(ref controlFlowPreviousContributors, ref controlFlowPreviousCached, ref controlFlowPrevious,
-                CollectContributors_ControlFlowPrevious<IExecutableDefinitionNode>, Collect_ControlFlowPrevious);
-    private ControlFlowSet? controlFlowPrevious;
-    private bool controlFlowPreviousCached;
-    private IFixedSet<SemanticNode>? controlFlowPreviousContributors;
-    public ControlFlowSet ControlFlowFollowing()
-        => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
-    public ValueIdScope ValueIdScope
-        => Inherited_ValueIdScope(GrammarAttribute.CurrentInheritanceContext());
-    public IMaybeType? ExpectedType
-        => GrammarAttribute.IsCached(in expectedTypeCached) ? expectedType
-            : this.Inherited(ref expectedTypeCached, ref expectedType,
-                Inherited_ExpectedType);
-    private IMaybeType? expectedType;
-    private bool expectedTypeCached;
-    public bool ImplicitRecoveryAllowed()
-        => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
-    public bool ShouldPrepareToReturn()
-        => Inherited_ShouldPrepareToReturn(GrammarAttribute.CurrentInheritanceContext());
-    public IMaybePlainType? ExpectedPlainType
-        => GrammarAttribute.IsCached(in expectedPlainTypeCached) ? expectedPlainType
-            : this.Inherited(ref expectedPlainTypeCached, ref expectedPlainType,
-                Inherited_ExpectedPlainType);
-    private IMaybePlainType? expectedPlainType;
-    private bool expectedPlainTypeCached;
     public ControlFlowSet ControlFlowNext
         => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
             : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
@@ -9881,6 +9692,12 @@ file class MethodAccessExpressionNode : SemanticNode, IMethodAccessExpressionNod
                 ExpressionPlainTypesAspect.MethodAccessExpression_PlainType);
     private IMaybePlainType? plainType;
     private bool plainTypeCached;
+    public ICallCandidate<IOrdinaryMethodDeclarationNode>? SelectedCallCandidate
+        => GrammarAttribute.IsCached(in selectedCallCandidateCached) ? selectedCallCandidate
+            : this.Synthetic(ref selectedCallCandidateCached, ref selectedCallCandidate,
+                OverloadResolutionAspect.MethodAccessExpression_SelectedCallCandidate);
+    private ICallCandidate<IOrdinaryMethodDeclarationNode>? selectedCallCandidate;
+    private bool selectedCallCandidateCached;
     public IMaybeType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
             : this.Synthetic(ref typeCached, ref type,
@@ -9898,20 +9715,12 @@ file class MethodAccessExpressionNode : SemanticNode, IMethodAccessExpressionNod
         IMemberAccessExpressionSyntax syntax,
         IExpressionNode context,
         IEnumerable<ITypeNode> genericArguments,
-        IEnumerable<IOrdinaryMethodDeclarationNode> referencedDeclarations,
-        IEnumerable<ICallCandidate<IOrdinaryMethodDeclarationNode>> callCandidates,
-        IEnumerable<ICallCandidate<IOrdinaryMethodDeclarationNode>> compatibleCallCandidates,
-        ICallCandidate<IOrdinaryMethodDeclarationNode>? selectedCallCandidate,
-        IOrdinaryMethodDeclarationNode? referencedDeclaration)
+        IEnumerable<IOrdinaryMethodDeclarationNode> referencedDeclarations)
     {
         Syntax = syntax;
         this.context = Child.Create(this, context);
         GenericArguments = ChildList.Attach(this, genericArguments);
         ReferencedDeclarations = referencedDeclarations.ToFixedSet();
-        CallCandidates = callCandidates.ToFixedSet();
-        CompatibleCallCandidates = compatibleCallCandidates.ToFixedSet();
-        SelectedCallCandidate = selectedCallCandidate;
-        ReferencedDeclaration = referencedDeclaration;
     }
 
     internal override IMaybePlainType? Inherited_ExpectedPlainType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -13211,6 +13020,8 @@ file class MethodInvocationExpressionNode : SemanticNode, IMethodInvocationExpre
 
     internal override IMaybePlainType? Inherited_ExpectedPlainType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
+        if (ReferenceEquals(descendant, Self.CurrentMethod))
+            return OverloadResolutionAspect.MethodInvocationExpression_Method_ExpectedPlainType(this);
         if (IndexOfNode(Self.CurrentArguments, descendant) is { } index)
             return Self.SelectedCallCandidate?.ParameterPlainTypes[index];
         if (ReferenceEquals(child, descendant))
@@ -13258,7 +13069,6 @@ file class MethodInvocationExpressionNode : SemanticNode, IMethodInvocationExpre
     {
         ExpressionTypesAspect.OrdinaryTypedExpression_Contribute_Diagnostics(this, builder);
         ExpressionTypesAspect.MethodInvocationExpression_Contribute_Diagnostics(this, builder);
-        OverloadResolutionAspect.MethodInvocationExpression_Contribute_Diagnostics(this, builder);
     }
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)

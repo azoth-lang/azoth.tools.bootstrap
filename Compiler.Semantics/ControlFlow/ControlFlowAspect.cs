@@ -55,9 +55,6 @@ internal static partial class ControlFlowAspect
     public static partial ControlFlowSet FieldAccessExpression_ControlFlowNext(IFieldAccessExpressionNode node)
         => ControlFlowSet.CreateNormal(node.Context);
 
-    public static partial ControlFlowSet MethodGroupName_ControlFlowNext(IMethodGroupNameNode node)
-        => ControlFlowSet.CreateNormal(node.Context);
-
     public static partial ControlFlowSet MethodAccessExpression_ControlFlowNext(IMethodAccessExpressionNode node)
         => ControlFlowSet.CreateNormal(node.Context);
     #endregion

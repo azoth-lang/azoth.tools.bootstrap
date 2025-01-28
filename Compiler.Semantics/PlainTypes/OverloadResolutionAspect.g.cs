@@ -13,15 +13,13 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.PlainTypes;
 internal static partial class OverloadResolutionAspect
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial void MethodGroupName_Contribute_Diagnostics(IMethodGroupNameNode node, DiagnosticCollectionBuilder diagnostics);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial void MethodAccessExpression_Contribute_Diagnostics(IMethodAccessExpressionNode node, DiagnosticCollectionBuilder diagnostics);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IMaybePlainType? UnresolvedInvocationExpression_Expression_ExpectedPlainType(IUnresolvedInvocationExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial void UnresolvedInvocationExpression_Contribute_Diagnostics(IUnresolvedInvocationExpressionNode node, DiagnosticCollectionBuilder diagnostics);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial void MethodInvocationExpression_Contribute_Diagnostics(IMethodInvocationExpressionNode node, DiagnosticCollectionBuilder diagnostics);
+    public static partial IMaybePlainType? MethodInvocationExpression_Method_ExpectedPlainType(IMethodInvocationExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial void FunctionGroupName_Contribute_Diagnostics(IFunctionGroupNameNode node, DiagnosticCollectionBuilder diagnostics);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -31,11 +29,11 @@ internal static partial class OverloadResolutionAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial void InitializerNameExpression_Contribute_Diagnostics(IInitializerNameExpressionNode node, DiagnosticCollectionBuilder diagnostics);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IFixedSet<ICallCandidate<IOrdinaryMethodDeclarationNode>> MethodGroupName_CallCandidates(IMethodGroupNameNode node);
+    public static partial IFixedSet<ICallCandidate<IOrdinaryMethodDeclarationNode>> MethodAccessExpression_CallCandidates(IMethodAccessExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IFixedSet<ICallCandidate<IOrdinaryMethodDeclarationNode>> MethodGroupName_CompatibleCallCandidates(IMethodGroupNameNode node);
+    public static partial IFixedSet<ICallCandidate<IOrdinaryMethodDeclarationNode>> MethodAccessExpression_CompatibleCallCandidates(IMethodAccessExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial ICallCandidate<IOrdinaryMethodDeclarationNode>? MethodGroupName_SelectedCallCandidate(IMethodGroupNameNode node);
+    public static partial ICallCandidate<IOrdinaryMethodDeclarationNode>? MethodAccessExpression_SelectedCallCandidate(IMethodAccessExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFixedSet<ICallCandidate<IPropertyAccessorDeclarationNode>> GetterInvocationExpression_CallCandidates(IGetterInvocationExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

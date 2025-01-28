@@ -125,7 +125,6 @@
 
 // ---------- Instance Member Access Expressions
 ↑ FieldAccessExpression.FieldName: `IdentifierName` => (IdentifierName)Syntax.MemberName;
-↑ MethodGroupName.MethodName: `OrdinaryName` => Syntax.MemberName;
 ↑ MethodAccessExpression.MethodName: `OrdinaryName` => Syntax.MemberName;
 
 // ---------- Literal Expressions

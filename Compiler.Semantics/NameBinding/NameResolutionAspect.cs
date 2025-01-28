@@ -28,7 +28,7 @@ internal static partial class NameResolutionAspect
 
         // Ignore names that never have members
         if (context is IFunctionGroupNameNode
-            or IMethodGroupNameNode
+            or IMethodAccessExpressionNode
             or IInitializerGroupNameNode)
             return null;
 
@@ -39,7 +39,7 @@ internal static partial class NameResolutionAspect
             return null;
 
         if (members.TryAllOfType<IOrdinaryMethodDeclarationNode>(out var referencedMethods))
-            return IMethodGroupNameNode.Create(node.Syntax, context, node.GenericArguments, referencedMethods);
+            return IMethodAccessExpressionNode.Create(node.Syntax, context, node.GenericArguments, referencedMethods);
 
         if (members.TryAllOfType<IPropertyAccessorDeclarationNode>(out var referencedProperties)
             && node.GenericArguments.Count == 0)
@@ -58,9 +58,9 @@ internal static partial class NameResolutionAspect
     {
         switch (node.Context)
         {
-            case IFunctionGroupNameNode or IFunctionNameExpressionNode or IMethodGroupNameNode:
+            case IFunctionGroupNameNode or IFunctionNameExpressionNode or IMethodAccessExpressionNode or IInitializerNameExpressionNode:
                 diagnostics.Add(TypeError.NotImplemented(node.File, node.Syntax.Span,
-                    "No member accessible from function or method."));
+                    "No member accessible from function, method, or initializer."));
                 break;
             case INamespaceNameNode:
             case ITypeNameNode:
@@ -101,35 +101,6 @@ internal static partial class NameResolutionAspect
                 break;
         }
     }*/
-    #endregion
-
-    #region Instance Member Access Expressions
-    public static partial IMethodAccessExpressionNode? MethodGroupName_ReplaceWith_MethodAccessExpression(IMethodGroupNameNode node)
-    {
-        if (node.CompatibleCallCandidates.Count > 1)
-            // TODO should this be used instead?
-            //if (node.ReferencedDeclaration is not null)
-            return null;
-
-        // if there is aren't multiple declarations, then it isn't ambiguous (it may fail to reference if there are zero).
-        return IMethodAccessExpressionNode.Create(node.Syntax, node.Context, node.GenericArguments,
-            node.ReferencedDeclarations, node.CallCandidates, node.CompatibleCallCandidates, node.SelectedCallCandidate,
-            node.ReferencedDeclaration);
-    }
-
-    public static partial void MethodGroupName_Contribute_Diagnostics(
-        IMethodGroupNameNode node,
-        DiagnosticCollectionBuilder diagnostics)
-    {
-        // TODO develop a better check that this node is ambiguous
-        if (node.Parent is IUnresolvedInvocationExpressionNode) return;
-
-        if (node.CompatibleCallCandidates.Count == 0)
-            diagnostics.Add(NameBindingError.CouldNotBindName(node.File, node.Syntax.Span));
-        else if (node.CompatibleCallCandidates.Count > 1)
-            // TODO provide the expected method type that didn't match
-            diagnostics.Add(TypeError.AmbiguousMethodGroup(node.File, node.Syntax, Type.Unknown));
-    }
     #endregion
 
     #region Operator Expressions

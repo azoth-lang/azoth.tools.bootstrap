@@ -56,18 +56,6 @@ public static class NameBindingError
             5007, $"Function call `{invocation}` is ambiguous.");
     }
 
-    public static Diagnostic CouldNotBindMethod(CodeFile file, IInvocationExpressionSyntax invocation)
-    {
-        return new(file, invocation.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
-            5008, $"Could not find method with the name `{invocation.Expression}` and compatible arguments.");
-    }
-
-    public static Diagnostic AmbiguousMethodCall(CodeFile file, IInvocationExpressionSyntax invocation)
-    {
-        return new(file, invocation.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
-            5009, $"Method call `{invocation}` is ambiguous.");
-    }
-
     // TODO add check for this back
     public static Diagnostic ImportNonExistentNamespace(CodeFile file, TextSpan span, NamespaceName ns)
     {
