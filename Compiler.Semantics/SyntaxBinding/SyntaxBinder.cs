@@ -210,7 +210,7 @@ internal static class SyntaxBinder
         => syntax.Select(Attribute);
 
     private static IAttributeNode Attribute(IAttributeSyntax syntax)
-        => IAttributeNode.Create(syntax, OrdinaryTypeName(syntax.TypeName));
+        => IAttributeNode.Create(syntax, TypeName(syntax.TypeName));
     #endregion
 
     #region Capabilities

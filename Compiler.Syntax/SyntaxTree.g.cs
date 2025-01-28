@@ -566,11 +566,11 @@ public partial interface IAssociatedFunctionDefinitionSyntax : IClassMemberDefin
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IAttributeSyntax : ICodeSyntax
 {
-    IOrdinaryNameSyntax TypeName { get; }
+    INameSyntax TypeName { get; }
 
     public static IAttributeSyntax Create(
         TextSpan span,
-        IOrdinaryNameSyntax typeName)
+        INameSyntax typeName)
         => new AttributeSyntax(span, typeName);
 }
 
@@ -2121,13 +2121,13 @@ file class AttributeSyntax : IAttributeSyntax
     private IAttributeSyntax Self { [Inline] get => this; }
 
     public TextSpan Span { [DebuggerStepThrough] get; }
-    public IOrdinaryNameSyntax TypeName { [DebuggerStepThrough] get; }
+    public INameSyntax TypeName { [DebuggerStepThrough] get; }
     public override string ToString()
         => FormattingAspect.Attribute_ToString(this);
 
     public AttributeSyntax(
         TextSpan span,
-        IOrdinaryNameSyntax typeName)
+        INameSyntax typeName)
     {
         Span = span;
         TypeName = typeName;

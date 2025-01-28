@@ -96,8 +96,7 @@ AssociatedFunctionDefinition <: TypeMemberDefinition, ClassMemberDefinition, Tra
     = Name:`IdentifierName` Parameters:NamedParameter* Return? Body;
 
 // ---------- Attributes
-// TODO TypeName must be Name since they are allowed to be qualified
-Attribute <: Code = TypeName:OrdinaryName;
+Attribute <: Code = TypeName:Name;
 
 // ---------- Capabilities
 CapabilityConstraint <: Code;
