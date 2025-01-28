@@ -169,13 +169,13 @@ public partial interface IImportDirectiveSyntax : ICodeSyntax
     typeof(IInvocableDefinitionSyntax),
     typeof(ITypeMemberDefinitionSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IEntityDefinitionSyntax : IDefinitionSyntax
+public partial interface IFacetMemberDefinitionSyntax : IDefinitionSyntax
 {
     IAccessModifierToken? AccessModifier { get; }
 }
 
 [Closed(
-    typeof(IEntityDefinitionSyntax),
+    typeof(IFacetMemberDefinitionSyntax),
     typeof(INamespaceBlockMemberDefinitionSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IDefinitionSyntax : ICodeSyntax
@@ -191,7 +191,7 @@ public partial interface IDefinitionSyntax : ICodeSyntax
     typeof(IInitializerDefinitionSyntax),
     typeof(IAssociatedFunctionDefinitionSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IInvocableDefinitionSyntax : IEntityDefinitionSyntax
+public partial interface IInvocableDefinitionSyntax : IFacetMemberDefinitionSyntax
 {
     IFixedList<IInitializerParameterSyntax> Parameters { get; }
     IBodySyntax? Body { get; }
@@ -359,7 +359,7 @@ public partial interface IGenericParameterSyntax : ICodeSyntax
     typeof(ITraitMemberDefinitionSyntax),
     typeof(IStructMemberDefinitionSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface ITypeMemberDefinitionSyntax : IEntityDefinitionSyntax
+public partial interface ITypeMemberDefinitionSyntax : IFacetMemberDefinitionSyntax
 {
 }
 

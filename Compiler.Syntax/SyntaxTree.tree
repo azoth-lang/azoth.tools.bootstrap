@@ -45,13 +45,12 @@ ImportDirective <: Code = Name:`NamespaceName`;
 // ---------- Facets
 /// All top-level non-namespace definitions since a namespace doesn't really create a thing, it just
 /// defines a group of names.
-// TODO give a better name to this (the semantic tree has moved away from "entity")
-EntityDefinition <: Definition = AccessModifier:`IAccessModifierToken`?;
+FacetMemberDefinition <: Definition = AccessModifier:`IAccessModifierToken`?;
 
 // ---------- Definitions
 Definition <: Code = File:`CodeFile` Name:`UnqualifiedName`? NameSpan:`TextSpan`;
 /// Base type for any declaration that declares a callable thing (i.e. function, method, getter, setter, or initializer).
-InvocableDefinition <: EntityDefinition = Parameters:InitializerParameter* Body?;
+InvocableDefinition <: FacetMemberDefinition = Parameters:InitializerParameter* Body?;
 
 // ---------- Namespace Definitions
 NamespaceBlockDefinition <: NamespaceBlockMemberDefinition
@@ -77,7 +76,7 @@ TraitDefinition <: TypeDefinition
 GenericParameter <: Code = Constraint:CapabilityConstraint Name:`IdentifierName` Independence:`TypeParameterIndependence` Variance:`TypeParameterVariance`;
 
 // ---------- Type Member Definitions (i.e. declarations that can be contained in a type)
-TypeMemberDefinition <: EntityDefinition;
+TypeMemberDefinition <: FacetMemberDefinition;
 // TODO eliminate the syntax level restrictions on which members can occur in which definitions
 ClassMemberDefinition <: TypeMemberDefinition;
 TraitMemberDefinition <: TypeMemberDefinition;

@@ -19,7 +19,7 @@ internal static partial class TypeModifiersAspect
         // Default constructors and initializers don't have syntax and are always published.
         => node.Syntax is not null ? EntityDefinitionAccessModifier(node.Syntax) : AccessModifier.Published;
 
-    private static AccessModifier EntityDefinitionAccessModifier(IEntityDefinitionSyntax entityDefinitionSyntax)
+    private static AccessModifier EntityDefinitionAccessModifier(IFacetMemberDefinitionSyntax entityDefinitionSyntax)
         => entityDefinitionSyntax.AccessModifier?.ToAccessModifier() ?? AccessModifier.Private;
 
     public static partial void AbstractMethodDefinition_Contribute_Diagnostics(IAbstractMethodDefinitionNode node, DiagnosticCollectionBuilder diagnostics)
