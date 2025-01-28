@@ -23,11 +23,7 @@ internal static partial class ExpressionPlainTypesAspect
         => node.Function.SelectedCallCandidate?.ReturnPlainType ?? PlainType.Unknown;
 
     public static partial IMaybePlainType MethodInvocationExpression_PlainType(IMethodInvocationExpressionNode node)
-    {
-        var unboundPlainType = node.Method.SelectedCallCandidate?.ReturnPlainType ?? PlainType.Unknown;
-        var boundPlainType = node.Method.Context.PlainType.TypeReplacements.Apply(unboundPlainType);
-        return boundPlainType;
-    }
+        => node.Method.SelectedCallCandidate?.ReturnPlainType ?? PlainType.Unknown;
 
     public static partial IMaybePlainType VariableNameExpression_PlainType(IVariableNameExpressionNode node)
         => node.ReferencedDefinition.BindingPlainType;
@@ -331,11 +327,7 @@ internal static partial class ExpressionPlainTypesAspect
         => (FunctionPlainType)node.Expression.PlainType;
 
     public static partial IMaybePlainType InitializerInvocationExpression_PlainType(IInitializerInvocationExpressionNode node)
-    {
-        var unboundPlainType = node.SelectedCallCandidate?.ReturnPlainType ?? PlainType.Unknown;
-        var boundPlainType = node.Initializer.InitializingPlainType.TypeReplacements.Apply(unboundPlainType);
-        return boundPlainType;
-    }
+        => node.SelectedCallCandidate?.ReturnPlainType ?? PlainType.Unknown;
 
     public static partial IMaybePlainType FunctionNameExpression_PlainType(IFunctionNameExpressionNode node)
         => node.ReferencedDeclaration?.PlainType ?? PlainType.Unknown;
@@ -347,8 +339,7 @@ internal static partial class ExpressionPlainTypesAspect
 
     // TODO this is strange and maybe a hack
     public static partial IMaybePlainType? MethodAccessExpression_Context_ExpectedPlainType(IMethodAccessExpressionNode node)
-        => (node.Parent as IMethodInvocationExpressionNode)
-           ?.SelectedCallCandidate?.SelfParameterPlainType;
+        => (node.Parent as IMethodInvocationExpressionNode)?.SelectedCallCandidate?.SelfParameterPlainType;
     #endregion
 
     public static partial IMaybePlainType InitializerNameExpression_PlainType(IInitializerNameExpressionNode node)
