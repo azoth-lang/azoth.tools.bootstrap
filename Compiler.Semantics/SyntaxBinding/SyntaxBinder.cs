@@ -99,7 +99,7 @@ internal static class SyntaxBinder
     private static IClassDefinitionNode ClassDefinition(IClassDefinitionSyntax syntax)
         // TODO support attributes on class
         => IClassDefinitionNode.Create(syntax, [], GenericParameters(syntax.GenericParameters),
-            OrdinaryTypeName(syntax.BaseTypeName), SupertypeNames(syntax.SupertypeNames),
+            TypeName(syntax.BaseTypeName), SupertypeNames(syntax.SupertypeNames),
             ClassMemberDefinitions(syntax.Members));
 
     private static IStructDefinitionNode StructDefinition(IStructDefinitionSyntax syntax)
@@ -112,8 +112,8 @@ internal static class SyntaxBinder
         => ITraitDefinitionNode.Create(syntax, [], GenericParameters(syntax.GenericParameters),
             SupertypeNames(syntax.SupertypeNames), TraitMemberDefinitions(syntax.Members));
 
-    private static IEnumerable<IOrdinaryTypeNameNode> SupertypeNames(IEnumerable<IOrdinaryNameSyntax> syntax)
-        => syntax.Select(syn => OrdinaryTypeName(syn));
+    private static IEnumerable<ITypeNameNode> SupertypeNames(IEnumerable<INameSyntax> syntax)
+        => syntax.Select(syn => TypeName(syn));
     #endregion
 
     #region Type Definition Parts
@@ -560,9 +560,12 @@ internal static class SyntaxBinder
     #endregion
 
     #region Semantic Nodes: Type Names
-    private static ITypeNameNode TypeName(INameSyntax syntax)
+
+    [return: NotNullIfNotNull(nameof(syntax))]
+    private static ITypeNameNode? TypeName(INameSyntax? syntax)
         => syntax switch
         {
+            null => null,
             IBuiltInTypeNameSyntax syn => BuiltInTypeName(syn),
             IOrdinaryNameSyntax syn => OrdinaryTypeName(syn),
             IQualifiedNameSyntax syn => QualifiedTypeName(syn),
@@ -572,11 +575,9 @@ internal static class SyntaxBinder
     private static IBuiltInTypeNameNode BuiltInTypeName(IBuiltInTypeNameSyntax syntax)
         => IBuiltInTypeNameNode.Create(syntax);
 
-    [return: NotNullIfNotNull(nameof(syntax))]
-    private static IOrdinaryTypeNameNode? OrdinaryTypeName(IOrdinaryNameSyntax? syntax)
+    private static IOrdinaryTypeNameNode OrdinaryTypeName(IOrdinaryNameSyntax? syntax)
         => syntax switch
         {
-            null => null,
             IIdentifierNameSyntax syn => IdentifierTypeName(syn),
             IGenericNameSyntax syn => GenericTypeName(syn),
             _ => throw ExhaustiveMatch.Failed(syntax)

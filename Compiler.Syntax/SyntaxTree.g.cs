@@ -265,7 +265,7 @@ public partial interface ITypeDefinitionSyntax : INamespaceBlockMemberDefinition
     new OrdinaryName Name { get; }
     UnqualifiedName? IDefinitionSyntax.Name => Name;
     IFixedList<IGenericParameterSyntax> GenericParameters { get; }
-    IFixedList<IOrdinaryNameSyntax> SupertypeNames { get; }
+    IFixedList<INameSyntax> SupertypeNames { get; }
     IFixedList<ITypeMemberDefinitionSyntax> Members { get; }
 }
 
@@ -274,7 +274,7 @@ public partial interface ITypeDefinitionSyntax : INamespaceBlockMemberDefinition
 public partial interface IClassDefinitionSyntax : ITypeDefinitionSyntax
 {
     IAbstractKeywordToken? AbstractModifier { get; }
-    IOrdinaryNameSyntax? BaseTypeName { get; }
+    INameSyntax? BaseTypeName { get; }
     new IFixedList<IClassMemberDefinitionSyntax> Members { get; }
     IFixedList<ITypeMemberDefinitionSyntax> ITypeDefinitionSyntax.Members => Members;
 
@@ -288,8 +288,8 @@ public partial interface IClassDefinitionSyntax : ITypeDefinitionSyntax
         OrdinaryName name,
         IAbstractKeywordToken? abstractModifier,
         IEnumerable<IGenericParameterSyntax> genericParameters,
-        IOrdinaryNameSyntax? baseTypeName,
-        IEnumerable<IOrdinaryNameSyntax> supertypeNames,
+        INameSyntax? baseTypeName,
+        IEnumerable<INameSyntax> supertypeNames,
         IEnumerable<IClassMemberDefinitionSyntax> members)
         => new ClassDefinitionSyntax(span, file, nameSpan, accessModifier, constModifier, moveModifier, name, abstractModifier, genericParameters, baseTypeName, supertypeNames, members);
 }
@@ -310,7 +310,7 @@ public partial interface IStructDefinitionSyntax : ITypeDefinitionSyntax
         IMoveKeywordToken? moveModifier,
         OrdinaryName name,
         IEnumerable<IGenericParameterSyntax> genericParameters,
-        IEnumerable<IOrdinaryNameSyntax> supertypeNames,
+        IEnumerable<INameSyntax> supertypeNames,
         IEnumerable<IStructMemberDefinitionSyntax> members)
         => new StructDefinitionSyntax(span, file, nameSpan, accessModifier, constModifier, moveModifier, name, genericParameters, supertypeNames, members);
 }
@@ -331,7 +331,7 @@ public partial interface ITraitDefinitionSyntax : ITypeDefinitionSyntax
         IMoveKeywordToken? moveModifier,
         OrdinaryName name,
         IEnumerable<IGenericParameterSyntax> genericParameters,
-        IEnumerable<IOrdinaryNameSyntax> supertypeNames,
+        IEnumerable<INameSyntax> supertypeNames,
         IEnumerable<ITraitMemberDefinitionSyntax> members)
         => new TraitDefinitionSyntax(span, file, nameSpan, accessModifier, constModifier, moveModifier, name, genericParameters, supertypeNames, members);
 }
@@ -1704,8 +1704,8 @@ file class ClassDefinitionSyntax : IClassDefinitionSyntax
     public OrdinaryName Name { [DebuggerStepThrough] get; }
     public IAbstractKeywordToken? AbstractModifier { [DebuggerStepThrough] get; }
     public IFixedList<IGenericParameterSyntax> GenericParameters { [DebuggerStepThrough] get; }
-    public IOrdinaryNameSyntax? BaseTypeName { [DebuggerStepThrough] get; }
-    public IFixedList<IOrdinaryNameSyntax> SupertypeNames { [DebuggerStepThrough] get; }
+    public INameSyntax? BaseTypeName { [DebuggerStepThrough] get; }
+    public IFixedList<INameSyntax> SupertypeNames { [DebuggerStepThrough] get; }
     public IFixedList<IClassMemberDefinitionSyntax> Members { [DebuggerStepThrough] get; }
     public override string ToString()
         => FormattingAspect.ClassDefinition_ToString(this);
@@ -1720,8 +1720,8 @@ file class ClassDefinitionSyntax : IClassDefinitionSyntax
         OrdinaryName name,
         IAbstractKeywordToken? abstractModifier,
         IEnumerable<IGenericParameterSyntax> genericParameters,
-        IOrdinaryNameSyntax? baseTypeName,
-        IEnumerable<IOrdinaryNameSyntax> supertypeNames,
+        INameSyntax? baseTypeName,
+        IEnumerable<INameSyntax> supertypeNames,
         IEnumerable<IClassMemberDefinitionSyntax> members)
     {
         Span = span;
@@ -1752,7 +1752,7 @@ file class StructDefinitionSyntax : IStructDefinitionSyntax
     public IMoveKeywordToken? MoveModifier { [DebuggerStepThrough] get; }
     public OrdinaryName Name { [DebuggerStepThrough] get; }
     public IFixedList<IGenericParameterSyntax> GenericParameters { [DebuggerStepThrough] get; }
-    public IFixedList<IOrdinaryNameSyntax> SupertypeNames { [DebuggerStepThrough] get; }
+    public IFixedList<INameSyntax> SupertypeNames { [DebuggerStepThrough] get; }
     public IFixedList<IStructMemberDefinitionSyntax> Members { [DebuggerStepThrough] get; }
     public override string ToString()
         => FormattingAspect.StructDefinition_ToString(this);
@@ -1766,7 +1766,7 @@ file class StructDefinitionSyntax : IStructDefinitionSyntax
         IMoveKeywordToken? moveModifier,
         OrdinaryName name,
         IEnumerable<IGenericParameterSyntax> genericParameters,
-        IEnumerable<IOrdinaryNameSyntax> supertypeNames,
+        IEnumerable<INameSyntax> supertypeNames,
         IEnumerable<IStructMemberDefinitionSyntax> members)
     {
         Span = span;
@@ -1795,7 +1795,7 @@ file class TraitDefinitionSyntax : ITraitDefinitionSyntax
     public IMoveKeywordToken? MoveModifier { [DebuggerStepThrough] get; }
     public OrdinaryName Name { [DebuggerStepThrough] get; }
     public IFixedList<IGenericParameterSyntax> GenericParameters { [DebuggerStepThrough] get; }
-    public IFixedList<IOrdinaryNameSyntax> SupertypeNames { [DebuggerStepThrough] get; }
+    public IFixedList<INameSyntax> SupertypeNames { [DebuggerStepThrough] get; }
     public IFixedList<ITraitMemberDefinitionSyntax> Members { [DebuggerStepThrough] get; }
     public override string ToString()
         => FormattingAspect.TraitDefinition_ToString(this);
@@ -1809,7 +1809,7 @@ file class TraitDefinitionSyntax : ITraitDefinitionSyntax
         IMoveKeywordToken? moveModifier,
         OrdinaryName name,
         IEnumerable<IGenericParameterSyntax> genericParameters,
-        IEnumerable<IOrdinaryNameSyntax> supertypeNames,
+        IEnumerable<INameSyntax> supertypeNames,
         IEnumerable<ITraitMemberDefinitionSyntax> members)
     {
         Span = span;

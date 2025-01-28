@@ -63,15 +63,14 @@ FunctionDefinition <: InvocableDefinition, NamespaceBlockMemberDefinition
     = Attributes:Attribute* Name:`IdentifierName` Parameters:NamedParameter* Return? Body;
 
 // ---------- Type Definitions
-// TODO supertypes and base types must be Name since they are allowed to be qualified
 TypeDefinition <: NamespaceBlockMemberDefinition, ClassMemberDefinition, TraitMemberDefinition, StructMemberDefinition
-    = ConstModifier:`IConstKeywordToken`? MoveModifier:`IMoveKeywordToken`? Name:`OrdinaryName` GenericParameters:GenericParameter* SupertypeNames:OrdinaryName* Members:TypeMemberDefinition*;
+    = ConstModifier:`IConstKeywordToken`? MoveModifier:`IMoveKeywordToken`? Name:`OrdinaryName` GenericParameters:GenericParameter* SupertypeNames:Name* Members:TypeMemberDefinition*;
 ClassDefinition <: TypeDefinition
-    = AbstractModifier:`IAbstractKeywordToken`? GenericParameters:GenericParameter* BaseTypeName:OrdinaryName? SupertypeNames:OrdinaryName* Members:ClassMemberDefinition*;
+    = AbstractModifier:`IAbstractKeywordToken`? GenericParameters:GenericParameter* BaseTypeName:Name? SupertypeNames:Name* Members:ClassMemberDefinition*;
 StructDefinition <: TypeDefinition
-    = GenericParameters:GenericParameter* SupertypeNames:OrdinaryName* Members:StructMemberDefinition*;
+    = GenericParameters:GenericParameter* SupertypeNames:Name* Members:StructMemberDefinition*;
 TraitDefinition <: TypeDefinition
-    = GenericParameters:GenericParameter* SupertypeNames:OrdinaryName* Members:TraitMemberDefinition*;
+    = GenericParameters:GenericParameter* SupertypeNames:Name* Members:TraitMemberDefinition*;
 
 // ---------- Type Definition Parts
 GenericParameter <: Code = Constraint:CapabilityConstraint Name:`IdentifierName` Independence:`TypeParameterIndependence` Variance:`TypeParameterVariance`;

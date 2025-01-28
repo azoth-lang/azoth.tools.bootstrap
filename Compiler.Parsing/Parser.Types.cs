@@ -118,8 +118,7 @@ public partial class Parser
     /// Parse a bare type. That is a type that is expected to follow a reference capability.
     /// </summary>
     private ITypeSyntax ParseBareType()
-    {
-        return Tokens.Current switch
+        => Tokens.Current switch
         {
             IBuiltInTypeToken _ => ParseBuiltInType(),
             IOpenParenToken _ => ParseFunctionType(),
@@ -127,10 +126,18 @@ public partial class Parser
             // otherwise we want a type name
             _ => ParseOrdinaryTypeName()
         };
-    }
 
-    private IFixedList<IOrdinaryNameSyntax> ParseOrdinaryTypeNames()
-        => AcceptManySeparated<IOrdinaryNameSyntax, ICommaToken>(ParseOrdinaryTypeName);
+    private IFixedList<INameSyntax> ParseTypeNames()
+        => AcceptManySeparated<INameSyntax, ICommaToken>(ParseTypeName);
+
+    private INameSyntax ParseTypeName()
+        => Tokens.Current switch
+        {
+            IBuiltInTypeToken _ => ParseBuiltInType(),
+            ISelfTypeKeywordToken => ParseSelfType(),
+            // otherwise we want a type name
+            _ => ParseOrdinaryTypeName()
+        };
 
     private IOrdinaryNameSyntax ParseOrdinaryTypeName()
     {
