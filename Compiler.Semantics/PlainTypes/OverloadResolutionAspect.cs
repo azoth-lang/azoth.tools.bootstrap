@@ -12,13 +12,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.PlainTypes;
 // TODO there are a lot of places where binding errors need to be reported. It seems like that should be consolidated
 internal static partial class OverloadResolutionAspect
 {
-    private static IMaybePlainType PlainTypeIfKnown(IExpressionNode? node)
-    {
-        // TODO is ShouldNotBeExpression() really needed here? Don't those nodes all give Unknown?
-        if (node is not null && !node.ShouldNotBeExpression()) return node.PlainType;
-        return PlainType.Unknown;
-    }
-
     private static FunctionPlainType InvocationTargetExpectedPlainType(IFixedList<IExpressionNode?> args)
     {
         // The return type won't be used for overload resolution. However, using `never` logically
@@ -27,7 +20,7 @@ internal static partial class OverloadResolutionAspect
 
         static NonVoidPlainType ArgumentPlainTypeIfKnown(IExpressionNode? node)
         {
-            if (PlainTypeIfKnown(node) is NonVoidPlainType plainType) return plainType;
+            if (node?.PlainType is NonVoidPlainType plainType) return plainType;
             // This is a little odd, but if the parameter type is not known, then using `never` will
             // cause nothing to match except for `never` itself.
             return PlainType.Never;
@@ -202,7 +195,8 @@ internal static partial class OverloadResolutionAspect
     public static partial IFixedSet<ICallCandidate<ISetterMethodDeclarationNode>> SetterInvocationExpression_CompatibleCallCandidates(ISetterInvocationExpressionNode node)
     {
         // TODO setters should have method names just like others so you can pass them as function references
-        var argumentPlainTypes = ArgumentPlainTypes.ForMethod(node.Context.PlainType, PlainTypeIfKnown(node.Value).Yield());
+        var parameterPlainType = node.Value?.PlainType ?? PlainType.Unknown;
+        var argumentPlainTypes = ArgumentPlainTypes.ForMethod(node.Context.PlainType, parameterPlainType.Yield());
         return node.CallCandidates.OfType<ICallCandidate<ISetterMethodDeclarationNode>>()
                    .Where(c => c.CompatibleWith(argumentPlainTypes)).ToFixedSet();
     }
