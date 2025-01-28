@@ -310,7 +310,7 @@ InstanceExpression <: OrdinaryTypedNameExpression = Syntax:`IInstanceExpressionS
 SelfExpression <: InstanceExpression, LocalBindingNameExpression
     = Syntax:`ISelfExpressionSyntax`;
 MissingNameExpression <: NameExpression
-    = Syntax:`IMissingNameSyntax`;
+    = Syntax:`IMissingNameExpressionSyntax`;
 /// Reifying to FunctionNameExpression controls the transition from UnresolvedInvocationExpression to FunctionInvocationExpression.
 /// The UnresolvedInvocationExpression provides an expected type based on the arguments. Once the overload has
 /// been resolved, the FunctionInvocationExpression provides expected types based on the function called.

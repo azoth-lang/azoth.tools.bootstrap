@@ -320,7 +320,8 @@ internal static partial class FormattingAspect
     public static partial string SelfExpression_ToString(ISelfExpressionSyntax node)
         => node.IsImplicit ? "⟦self⟧" : "self";
 
-    public static partial string MissingName_ToString(IMissingNameSyntax node) => "⧼unknown⧽";
+    public static partial string MissingNameExpression_ToString(IMissingNameExpressionSyntax node)
+        => "⧼unknown⧽";
     #endregion
 
     #region Names

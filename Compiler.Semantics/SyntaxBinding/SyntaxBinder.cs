@@ -398,7 +398,7 @@ internal static class SyntaxBinder
             null => null,
             INameSyntax syn => NameExpression(syn),
             IMemberAccessExpressionSyntax syn => MemberAccessExpression(syn),
-            IMissingNameSyntax syn => MissingName(syn),
+            IMissingNameExpressionSyntax syn => MissingNameExpression(syn),
             IBlockExpressionSyntax syn => BlockExpression(syn),
             IUnsafeExpressionSyntax syn => UnsafeExpression(syn),
             ILiteralExpressionSyntax syn => LiteralExpression(syn),
@@ -511,7 +511,7 @@ internal static class SyntaxBinder
     private static ISelfExpressionNode SelfExpression(ISelfExpressionSyntax syntax)
         => ISelfExpressionNode.Create(syntax);
 
-    private static IMissingNameExpressionNode MissingName(IMissingNameSyntax syn)
+    private static IMissingNameExpressionNode MissingNameExpression(IMissingNameExpressionSyntax syn)
         => IMissingNameExpressionNode.Create(syn);
     #endregion
 

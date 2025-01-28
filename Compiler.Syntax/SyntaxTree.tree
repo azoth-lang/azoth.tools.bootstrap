@@ -200,8 +200,7 @@ NameExpression <: Expression;
 // See the names section for more nodes that are name expressions
 InstanceExpression <: NameExpression; // i.e. `self` or `base`
 SelfExpression <: InstanceExpression = IsImplicit:`bool`;
-// TODO rename to MissingNameExpression
-MissingName <: NameExpression;
+MissingNameExpression <: NameExpression;
 
 // ---------- Names
 // At the syntax level, there is no distinction between names of types and other names, they all use

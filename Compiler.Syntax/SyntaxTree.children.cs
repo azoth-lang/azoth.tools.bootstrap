@@ -187,7 +187,7 @@ public static class ISyntaxExtensions
             case IMethodSelfParameterSyntax n:
                 yield return n.Constraint;
                 yield break;
-            case IMissingNameSyntax n:
+            case IMissingNameExpressionSyntax n:
                 yield break;
             case IMoveExpressionSyntax n:
                 yield return n.Referent;

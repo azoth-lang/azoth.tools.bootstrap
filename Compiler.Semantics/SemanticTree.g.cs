@@ -2735,7 +2735,7 @@ public partial interface ISelfExpressionNode : IInstanceExpressionNode, ILocalBi
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IMissingNameExpressionNode : INameExpressionNode
 {
-    new IMissingNameSyntax Syntax { get; }
+    new IMissingNameExpressionSyntax Syntax { get; }
     INameExpressionSyntax INameExpressionNode.Syntax => Syntax;
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ICodeSyntax ICodeNode.Syntax => Syntax;
@@ -2746,7 +2746,7 @@ public partial interface IMissingNameExpressionNode : INameExpressionNode
     IMaybePlainType IExpressionNode.PlainType
         => AzothPlainType.Unknown;
 
-    public static IMissingNameExpressionNode Create(IMissingNameSyntax syntax)
+    public static IMissingNameExpressionNode Create(IMissingNameExpressionSyntax syntax)
         => new MissingNameExpressionNode(syntax);
 }
 
@@ -14493,7 +14493,7 @@ file class MissingNameExpressionNode : SemanticNode, IMissingNameExpressionNode
     private IMissingNameExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
-    public IMissingNameSyntax Syntax { [DebuggerStepThrough] get; }
+    public IMissingNameExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -14528,7 +14528,7 @@ file class MissingNameExpressionNode : SemanticNode, IMissingNameExpressionNode
     private ValueId valueId;
     private bool valueIdCached;
 
-    public MissingNameExpressionNode(IMissingNameSyntax syntax)
+    public MissingNameExpressionNode(IMissingNameExpressionSyntax syntax)
     {
         Syntax = syntax;
     }

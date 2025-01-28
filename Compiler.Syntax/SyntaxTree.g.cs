@@ -1318,7 +1318,7 @@ public partial interface IInvocationExpressionSyntax : IExpressionSyntax
 
 [Closed(
     typeof(IInstanceExpressionSyntax),
-    typeof(IMissingNameSyntax),
+    typeof(IMissingNameExpressionSyntax),
     typeof(INameSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface INameExpressionSyntax : IExpressionSyntax
@@ -1346,13 +1346,13 @@ public partial interface ISelfExpressionSyntax : IInstanceExpressionSyntax
         => new SelfExpressionSyntax(span, isImplicit);
 }
 
-[Closed(typeof(MissingNameSyntax))]
+[Closed(typeof(MissingNameExpressionSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IMissingNameSyntax : INameExpressionSyntax
+public partial interface IMissingNameExpressionSyntax : INameExpressionSyntax
 {
 
-    public static IMissingNameSyntax Create(TextSpan span)
-        => new MissingNameSyntax(span);
+    public static IMissingNameExpressionSyntax Create(TextSpan span)
+        => new MissingNameExpressionSyntax(span);
 }
 
 [Closed(
@@ -3057,15 +3057,15 @@ file class SelfExpressionSyntax : ISelfExpressionSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class MissingNameSyntax : IMissingNameSyntax
+file class MissingNameExpressionSyntax : IMissingNameExpressionSyntax
 {
-    private IMissingNameSyntax Self { [Inline] get => this; }
+    private IMissingNameExpressionSyntax Self { [Inline] get => this; }
 
     public TextSpan Span { [DebuggerStepThrough] get; }
     public override string ToString()
-        => FormattingAspect.MissingName_ToString(this);
+        => FormattingAspect.MissingNameExpression_ToString(this);
 
-    public MissingNameSyntax(TextSpan span)
+    public MissingNameExpressionSyntax(TextSpan span)
     {
         Span = span;
     }

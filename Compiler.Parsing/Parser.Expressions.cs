@@ -183,7 +183,7 @@ public partial class Parser
                     // These terminating tokens should be safe to return the atom even if it is a missing identifier
                     return expression;
                 default:
-                    if (expression is IMissingNameSyntax)
+                    if (expression is IMissingNameExpressionSyntax)
                     {
                         // Weren't able to parse an atom nor find an operator. There is a risk of
                         // not making progress. Mark the next token as unexpected.
@@ -372,7 +372,7 @@ public partial class Parser
             case ISemicolonToken _:
             case ICloseParenToken _:
                 // If it is one of these, we assume there is a missing identifier
-                return ParseMissingName();
+                return ParseMissingNameExpression();
             case ICloseBraceToken _:
             case IColonToken _:
             case IColonColonToken _:
@@ -400,10 +400,10 @@ public partial class Parser
         return ISelfExpressionSyntax.Create(selfKeyword, false);
     }
 
-    private IMissingNameSyntax ParseMissingName()
+    private IMissingNameExpressionSyntax ParseMissingNameExpression()
     {
         var identifierSpan = Tokens.Expect<IIdentifierToken>();
-        return IMissingNameSyntax.Create(identifierSpan);
+        return IMissingNameExpressionSyntax.Create(identifierSpan);
     }
 
     private IUnsafeExpressionSyntax ParseUnsafeExpression()

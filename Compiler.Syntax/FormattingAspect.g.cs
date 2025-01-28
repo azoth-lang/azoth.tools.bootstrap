@@ -128,7 +128,7 @@ internal static partial class FormattingAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial string SelfExpression_ToString(ISelfExpressionSyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial string MissingName_ToString(IMissingNameSyntax node);
+    public static partial string MissingNameExpression_ToString(IMissingNameExpressionSyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial string BuiltInTypeName_ToString(IBuiltInTypeNameSyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
