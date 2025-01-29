@@ -23,9 +23,9 @@ internal static partial class OverloadResolutionAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IMaybePlainType? MethodInvocationExpression_Method_ExpectedPlainType(IMethodInvocationExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial void FunctionNameExpression_Contribute_Diagnostics(IFunctionNameExpressionNode node, DiagnosticCollectionBuilder diagnostics);
+    public static partial IMaybePlainType? InitializerInvocationExpression_Initializer_ExpectedPlainType(IInitializerInvocationExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial void InitializerGroupName_Contribute_Diagnostics(IInitializerGroupNameNode node, DiagnosticCollectionBuilder diagnostics);
+    public static partial void FunctionNameExpression_Contribute_Diagnostics(IFunctionNameExpressionNode node, DiagnosticCollectionBuilder diagnostics);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial void InitializerNameExpression_Contribute_Diagnostics(IInitializerNameExpressionNode node, DiagnosticCollectionBuilder diagnostics);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -49,11 +49,11 @@ internal static partial class OverloadResolutionAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial ICallCandidate<IFunctionInvocableDeclarationNode>? FunctionNameExpression_SelectedCallCandidate(IFunctionNameExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IFixedSet<ICallCandidate<IInitializerDeclarationNode>> InitializerGroupName_CallCandidates(IInitializerGroupNameNode node);
+    public static partial IFixedSet<ICallCandidate<IInitializerDeclarationNode>> InitializerNameExpression_CallCandidates(IInitializerNameExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IFixedSet<ICallCandidate<IInitializerDeclarationNode>> InitializerGroupName_CompatibleCallCandidates(IInitializerGroupNameNode node);
+    public static partial IFixedSet<ICallCandidate<IInitializerDeclarationNode>> InitializerNameExpression_CompatibleCallCandidates(IInitializerNameExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial ICallCandidate<IInitializerDeclarationNode>? InitializerGroupName_SelectedCallCandidate(IInitializerGroupNameNode node);
+    public static partial ICallCandidate<IInitializerDeclarationNode>? InitializerNameExpression_SelectedCallCandidate(IInitializerNameExpressionNode node);
     public static partial IFunctionInvocationExpressionNode? UnresolvedInvocationExpression_ReplaceWith_FunctionInvocationExpression(IUnresolvedInvocationExpressionNode node);
     public static partial IMethodInvocationExpressionNode? UnresolvedInvocationExpression_ReplaceWith_MethodInvocationExpression(IUnresolvedInvocationExpressionNode node);
     public static partial IExpressionNode? UnresolvedInvocationExpression_TypeName_Rewrite(IUnresolvedInvocationExpressionNode node);

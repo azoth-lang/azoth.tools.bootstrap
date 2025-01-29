@@ -232,10 +232,4 @@ public static class TypeError
         return new(file, typeSyntax.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             3034, $"Supertype `{typeSyntax}` does not maintain independence.");
     }
-
-    public static Diagnostic AmbiguousFunctionGroup(CodeFile file, INameExpressionSyntax nameSyntax, IMaybeFunctionType functionType)
-    {
-        return new(file, nameSyntax.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
-            3035, $"Function group `{nameSyntax}` has multiple functions that match the expected type `{functionType.ToSourceCodeString()}`.");
-    }
 }

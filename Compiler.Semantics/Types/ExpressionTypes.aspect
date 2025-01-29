@@ -206,13 +206,11 @@
 // TODO delete once all name expressions implement FlowStateAfter
 ↑ NameExpression.FlowStateAfter: `IFlowState`
     => throw new NotImplementedException($"{GetType().GetFriendlyName()}.{nameof(FlowStateAfter)} not implemented.");
+= VariableNameExpression.FlowStateAfter;
+= SelfExpression.FlowStateAfter;
 = FunctionNameExpression.FlowStateAfter;
 = FunctionNameExpression.*.ExpectedType => null;
-
-= VariableNameExpression.FlowStateAfter;
-↑ InitializerGroupName.Type: `UnknownType` => AzothType.Unknown;
 = InitializerNameExpression.FlowStateAfter;
-= SelfExpression.FlowStateAfter;
 ↑ MissingNameExpression.Type: `UnknownType` => AzothType.Unknown;
 
 // ---------- Unresolved Name Expressions

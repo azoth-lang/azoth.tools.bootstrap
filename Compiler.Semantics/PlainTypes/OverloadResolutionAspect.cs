@@ -96,9 +96,8 @@ internal static partial class OverloadResolutionAspect
         var referencedDeclarations = referencedDeclaration.Members.OfType<IInitializerDeclarationNode>()
                                                           .Where(c => c.Name is null).ToFixedSet();
 
-        var initializerGroupName = IInitializerGroupNameNode.Create(context.Syntax, context, null, referencedDeclarations);
-        // TODO if IInitializerGroupNameNode and IInitializerNameExpressionNode merge, this can generate an IInitializerInvocationExpressionNode
-        return IUnresolvedInvocationExpressionNode.Create(node.Syntax, initializerGroupName, node.CurrentArguments);
+        var initializer = IInitializerNameExpressionNode.Create(context.Syntax, context, null, referencedDeclarations);
+        return IInitializerInvocationExpressionNode.Create(node.Syntax, initializer, node.CurrentArguments);
     }
 
     public static partial IInitializerInvocationExpressionNode? UnresolvedInvocationExpression_ReplaceWith_InitializerInvocationExpression(IUnresolvedInvocationExpressionNode node)
@@ -200,6 +199,9 @@ internal static partial class OverloadResolutionAspect
         return node.CallCandidates.OfType<ICallCandidate<ISetterMethodDeclarationNode>>()
                    .Where(c => c.CompatibleWith(argumentPlainTypes)).ToFixedSet();
     }
+
+    public static partial IMaybePlainType? InitializerInvocationExpression_Initializer_ExpectedPlainType(IInitializerInvocationExpressionNode node)
+        => InvocationTargetExpectedPlainType(node.Arguments);
     #endregion
 
     #region Name Expressions
@@ -240,13 +242,13 @@ internal static partial class OverloadResolutionAspect
         }
     }
 
-    public static partial IFixedSet<ICallCandidate<IInitializerDeclarationNode>> InitializerGroupName_CallCandidates(IInitializerGroupNameNode node)
+    public static partial IFixedSet<ICallCandidate<IInitializerDeclarationNode>> InitializerNameExpression_CallCandidates(IInitializerNameExpressionNode node)
     {
         var initializingPlainType = node.InitializingPlainType;
         return node.ReferencedDeclarations.Select(i => CallCandidate.Create(initializingPlainType, i)).ToFixedSet();
     }
 
-    public static partial IFixedSet<ICallCandidate<IInitializerDeclarationNode>> InitializerGroupName_CompatibleCallCandidates(IInitializerGroupNameNode node)
+    public static partial IFixedSet<ICallCandidate<IInitializerDeclarationNode>> InitializerNameExpression_CompatibleCallCandidates(IInitializerNameExpressionNode node)
     {
         if (node.ExpectedPlainType is null or UnknownPlainType) return node.CallCandidates;
         if (node.ExpectedPlainType is not FunctionPlainType expectedPlainType) return [];
@@ -254,27 +256,16 @@ internal static partial class OverloadResolutionAspect
         return node.CallCandidates.Where(o => o.CompatibleWith(argumentPlainTypes)).ToFixedSet();
     }
 
-    public static partial ICallCandidate<IInitializerDeclarationNode>? InitializerGroupName_SelectedCallCandidate(IInitializerGroupNameNode node)
+    public static partial ICallCandidate<IInitializerDeclarationNode>? InitializerNameExpression_SelectedCallCandidate(IInitializerNameExpressionNode node)
         => node.CompatibleCallCandidates.TrySingle();
 
-    public static partial void InitializerGroupName_Contribute_Diagnostics(IInitializerGroupNameNode node, DiagnosticCollectionBuilder diagnostics)
-        => ContributeInitializerNameBindingDiagnostics(node.ReferencedDeclaration, node.InitializingPlainType, node.CompatibleCallCandidates, node, diagnostics);
-
     public static partial void InitializerNameExpression_Contribute_Diagnostics(IInitializerNameExpressionNode node, DiagnosticCollectionBuilder diagnostics)
-        => ContributeInitializerNameBindingDiagnostics(node.ReferencedDeclaration, node.InitializingPlainType, node.CompatibleCallCandidates, node, diagnostics);
-
-    private static void ContributeInitializerNameBindingDiagnostics(
-        IInitializerDeclarationNode? referencedInitializer,
-        IMaybePlainType initializingPlainType,
-        IFixedSet<ICallCandidate<IInitializerDeclarationNode>> compatibleCallCandidates,
-        INameExpressionNode node,
-        DiagnosticCollectionBuilder diagnostics)
     {
         if (node.Parent is IUnresolvedInvocationExpressionNode)
             // errors will be reported by the parent in this case
             return;
 
-        switch (initializingPlainType)
+        switch (node.InitializingPlainType)
         {
             case UnknownPlainType:
                 // Error should be reported elsewhere
@@ -287,10 +278,10 @@ internal static partial class OverloadResolutionAspect
                 return;
         }
 
-        if (referencedInitializer is not null)
+        if (node.ReferencedDeclaration is not null)
             return;
 
-        switch (compatibleCallCandidates.Count)
+        switch (node.CompatibleCallCandidates.Count)
         {
             case 0:
                 diagnostics.Add(NameBindingError.CouldNotBindInitializer(node.File, node.Syntax.Span));

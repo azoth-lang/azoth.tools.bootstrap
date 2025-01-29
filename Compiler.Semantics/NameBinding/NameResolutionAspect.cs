@@ -8,7 +8,6 @@ using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Compiler.Syntax;
 using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 using Azoth.Tools.Bootstrap.Framework;
-using Type = Azoth.Tools.Bootstrap.Compiler.Types.Decorated.Type;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.NameBinding;
 
@@ -29,7 +28,7 @@ internal static partial class NameResolutionAspect
         // Ignore names that never have members
         if (context is IFunctionNameExpressionNode
             or IMethodAccessExpressionNode
-            or IInitializerGroupNameNode)
+            or IInitializerNameExpressionNode)
             return null;
 
         var contextTypeDeclaration = node.PackageNameScope().Lookup(context.PlainType);
@@ -127,33 +126,6 @@ internal static partial class NameResolutionAspect
     // TODO add this validation in somehow
     //=> Requires.That(!ReferencedDeclarations.IsEmpty, nameof(referencedDeclarations),
     //    "Must be at least one referenced declaration");
-
-    public static partial IInitializerNameExpressionNode? InitializerGroupName_ReplaceWith_InitializerNameExpression(IInitializerGroupNameNode node)
-    {
-        if (node.CompatibleCallCandidates.Count > 1)
-            // TODO should this be used instead?
-            //if (node.ReferencedDeclaration is not null)
-            return null;
-
-        // if there is aren't multiple declarations, then it isn't ambiguous (it may fail to reference if there are zero).
-        return IInitializerNameExpressionNode.Create(node.Syntax, node.Context, node.InitializerName,
-            node.ReferencedDeclarations, node.CallCandidates, node.CompatibleCallCandidates, node.SelectedCallCandidate,
-            node.ReferencedDeclaration);
-    }
-
-    public static partial void InitializerGroupName_Contribute_Diagnostics(IInitializerGroupNameNode node, DiagnosticCollectionBuilder diagnostics)
-    {
-        // TODO develop a better check that this node is ambiguous
-        if (node.Parent is IUnresolvedInvocationExpressionNode)
-            return;
-
-        if (node.CompatibleCallCandidates.Count == 0)
-            diagnostics.Add(NameBindingError.CouldNotBindName(node.File, node.Syntax.Span));
-        else if (node.CompatibleCallCandidates.Count > 1)
-            // TODO use error specific to initializers
-            // TODO provide the expected function type that didn't match
-            diagnostics.Add(TypeError.AmbiguousFunctionGroup(node.File, node.Syntax, Type.Unknown));
-    }
     #endregion
 
     #region Unresolved Name Expressions
@@ -274,7 +246,7 @@ internal static partial class NameResolutionAspect
 
         if (referencedDeclarations.TryAllOfType<IInitializerDeclarationNode>(out var referencedInitializers))
             // TODO handle type arguments (which are not allowed for initializers)
-            return IInitializerGroupNameNode.Create(node.Syntax, node.Context, node.MemberName, referencedInitializers);
+            return IInitializerNameExpressionNode.Create(node.Syntax, node.Context, node.MemberName, referencedInitializers);
 
         return null;
     }

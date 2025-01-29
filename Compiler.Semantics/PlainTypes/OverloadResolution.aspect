@@ -52,6 +52,7 @@
 ↑ SetterInvocationExpression.ReferencedDeclaration: SetterMethodDeclaration?
     => SelectedCallCandidate?.Declaration;
 
+= InitializerInvocationExpression.Initializer.ExpectedPlainType;
 ↑ InitializerInvocationExpression.SelectedCallCandidate: `ICallCandidate<IInitializerDeclarationNode>`?
     => Initializer.SelectedCallCandidate;
 
@@ -64,11 +65,10 @@
     => SelectedCallCandidate?.Declaration;
 = FunctionNameExpression.↑.Diagnostics;
 
-↑ InitializerGroupName.CallCandidates: {`ICallCandidate<IInitializerDeclarationNode>`};
-⟳ InitializerGroupName.CompatibleCallCandidates: {`ICallCandidate<IInitializerDeclarationNode>`}
+↑ InitializerNameExpression.CallCandidates: {`ICallCandidate<IInitializerDeclarationNode>`};
+⟳ InitializerNameExpression.CompatibleCallCandidates: {`ICallCandidate<IInitializerDeclarationNode>`}
     initial => [];
-↑ InitializerGroupName.SelectedCallCandidate: `ICallCandidate<IInitializerDeclarationNode>`?;
-↑ InitializerGroupName.ReferencedDeclaration: InitializerDeclaration?
+↑ InitializerNameExpression.SelectedCallCandidate: `ICallCandidate<IInitializerDeclarationNode>`?;
+↑ InitializerNameExpression.ReferencedDeclaration: InitializerDeclaration?
     => SelectedCallCandidate?.Declaration;
-= InitializerGroupName.↑.Diagnostics;
 = InitializerNameExpression.↑.Diagnostics;

@@ -249,9 +249,6 @@ public static class ISemanticNodeExtensions
                 yield break;
             case IImportDirectiveNode n:
                 yield break;
-            case IInitializerGroupNameNode n:
-                yield return n.Context;
-                yield break;
             case IInitializerInvocationExpressionNode n:
                 yield return n.Initializer;
                 foreach (var child in n.TempArguments)

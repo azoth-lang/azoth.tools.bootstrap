@@ -80,10 +80,7 @@
 = NonInvocableInvocationExpression.PlainType => AzothPlainType.Unknown;
 
 // ---------- Name Expressions
-= NamespaceName.PlainType => AzothPlainType.Unknown;
 = FunctionNameExpression.*.ExpectedPlainType => null;
-= InitializerGroupName.PlainType => AzothPlainType.Unknown;
-↑ InitializerGroupName.InitializingPlainType: `IMaybePlainType` => Context.NamedPlainType;
 ↑ InitializerNameExpression.InitializingPlainType: `IMaybePlainType` => Context.NamedPlainType;
 = MissingNameExpression.PlainType => AzothPlainType.Unknown;
 
@@ -93,6 +90,7 @@
 
 // ---------- Names
 = Name.PlainType => AzothPlainType.Unknown;
+= NamespaceName.PlainType => AzothPlainType.Unknown;
 
 // ---------- Unresolved Names
 = UnresolvedName.PlainType => AzothPlainType.Unknown;

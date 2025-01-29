@@ -304,11 +304,7 @@ FunctionNameExpression <: OrdinaryTypedNameExpression
     ReferencedDeclarations:{`IFunctionInvocableDeclarationNode`};
 InitializerNameExpression <: OrdinaryTypedNameExpression = Syntax:`INameExpressionSyntax`
     Context:TypeName InitializerName:`OrdinaryName`?
-    ReferencedDeclarations:{`IInitializerDeclarationNode`}
-    CallCandidates:{`ICallCandidate<IInitializerDeclarationNode>`}
-    CompatibleCallCandidates:{`ICallCandidate<IInitializerDeclarationNode>`}
-    SelectedCallCandidate:`ICallCandidate<IInitializerDeclarationNode>`?
-    ReferencedDeclaration:`IInitializerDeclarationNode`?;
+    ReferencedDeclarations:{`IInitializerDeclarationNode`};
 MissingNameExpression <: NameExpression
     = Syntax:`IMissingNameExpressionSyntax`;
 
@@ -335,12 +331,6 @@ UnresolvedNamespaceQualifiedNameExpression <: UnresolvedQualifiedNameExpression
     = /Syntax/ Context:NamespaceName /GenericArguments/ ReferencedDeclarations:{`INamespaceMemberDeclarationNode`};
 UnresolvedTypeQualifiedNameExpression <: UnresolvedQualifiedNameExpression
     = /Syntax/ Context:TypeName /GenericArguments/ ReferencedDeclarations:{`IAssociatedMemberDeclarationNode`};
-// These reify that a function or initializer has been referenced
-// TODO should InitializerGroupName be UnresolvedInitializerName?
-// TODO merge with InitializerNameExpression?
-InitializerGroupName <: UnresolvedNameExpression, OrdinaryTypedExpression = Syntax:`INameExpressionSyntax`
-    Context:TypeName InitializerName:`OrdinaryName`?
-    ReferencedDeclarations:{`IInitializerDeclarationNode`};
 
 // ---------- Names
 // Names are reserved for things that syntactically can only be names. They are used as part of the
