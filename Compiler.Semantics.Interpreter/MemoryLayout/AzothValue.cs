@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
@@ -20,15 +21,20 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.MemoryLayout;
 [StructLayout(LayoutKind.Explicit)]
 internal readonly struct AzothValue
 {
+    public static AzothValue True = new(true);
+    public static AzothValue False = new(false);
+
     private static readonly object NoneFlag = new();
 
     [FieldOffset(0)] public readonly AzothObject ObjectValue;
     [FieldOffset(0)] public readonly AzothStruct StructValue;
     [FieldOffset(0)] public readonly BigInteger IntValue;
     [FieldOffset(0)] public readonly IRawBoundedList RawBoundedListValue;
-    [FieldOffset(0)] public readonly Task<AzothValue> PromiseValue;
+    [FieldOffset(0)] public readonly Task<AzothResult> PromiseValue;
     [FieldOffset(0)] public readonly FunctionReference FunctionReferenceValue;
     [FieldOffset(0)] private readonly SimpleValueType value;
+    // This isn't used as a true value, this is only so AzothResult can contain arguments
+    [FieldOffset(0)] public readonly List<AzothValue> ArgumentsValue;
 
     public bool IsNone => ReferenceEquals(value.Reference, NoneFlag);
     public bool IsObject => value.Reference is AzothObject;
@@ -53,8 +59,9 @@ internal readonly struct AzothValue
     public static AzothValue Struct(AzothStruct value) => new(value);
     public static AzothValue Int(BigInteger value) => new(value);
     public static AzothValue RawBoundedList(IRawBoundedList value) => new(value);
-    public static AzothValue Promise(Task<AzothValue> value) => new(value);
+    public static AzothValue Promise(Task<AzothResult> value) => new(value);
     public static AzothValue FunctionReference(FunctionReference value) => new(value);
+    public static AzothValue Arguments(List<AzothValue> value) => new(value);
     public static AzothValue Bool(bool value) => new(value);
     public static AzothValue I8(sbyte value) => new(value);
     public static AzothValue Byte(byte value) => new(value);
@@ -92,13 +99,17 @@ internal readonly struct AzothValue
     {
         RawBoundedListValue = value;
     }
-    private AzothValue(Task<AzothValue> value)
+    private AzothValue(Task<AzothResult> value)
     {
         PromiseValue = value;
     }
     private AzothValue(FunctionReference value)
     {
         FunctionReferenceValue = value;
+    }
+    private AzothValue(List<AzothValue> value)
+    {
+        ArgumentsValue = value;
     }
     private AzothValue(bool value)
     {
