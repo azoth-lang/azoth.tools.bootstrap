@@ -190,7 +190,7 @@ public sealed class InterpreterProcess
     private static bool IsTestAttribute(IAttributeNode attribute)
         => attribute.TypeName.ReferencedDeclaration!.Name.Text == "Test_Attribute";
 
-    private async ValueTask<AzothValue> InitializeMainParameterAsync(Type parameterType)
+    private ValueTask<AzothValue> InitializeMainParameterAsync(Type parameterType)
     {
         if (parameterType is not CapabilityType { Arguments.Count: 0 } type)
             throw new InvalidOperationException(
@@ -200,14 +200,14 @@ public sealed class InterpreterProcess
         // TODO support passing structs to main?
         var @class = userTypes.Values.OfType<IClassDefinitionNode>().Single(c => c.Symbol.TypeConstructor.Equals(type.TypeConstructor));
         var initializerSymbol = NoArgInitializerSymbol(@class);
-        return await CallInitializerAsync(initializerSymbol, []);
+        return CallInitializerAsync(initializerSymbol, []);
     }
 
-    internal async ValueTask<AzothValue> CallFunctionAsync(FunctionSymbol functionSymbol, IReadOnlyList<AzothValue> arguments)
+    internal ValueTask<AzothValue> CallFunctionAsync(FunctionSymbol functionSymbol, IReadOnlyList<AzothValue> arguments)
     {
         if (ReferenceEquals(functionSymbol.Package, Intrinsic.SymbolTree.Package))
-            return await CallIntrinsicAsync(functionSymbol, arguments).ConfigureAwait(false);
-        return await CallFunctionAsync(functions[functionSymbol], arguments).ConfigureAwait(false);
+            return CallIntrinsicAsync(functionSymbol, arguments);
+        return CallFunctionAsync(functions[functionSymbol], arguments);
     }
 
     private async ValueTask<AzothValue> CallFunctionAsync(
@@ -224,49 +224,45 @@ public sealed class InterpreterProcess
         return result.ReturnValue;
     }
 
-    internal async ValueTask<AzothValue> CallInitializerAsync(InitializerSymbol initializerSymbol, IReadOnlyList<AzothValue> arguments)
+    internal ValueTask<AzothValue> CallInitializerAsync(InitializerSymbol initializerSymbol, IReadOnlyList<AzothValue> arguments)
     {
         if (ReferenceEquals(initializerSymbol.Package, Intrinsic.SymbolTree.Package))
-            return await CallIntrinsicAsync(initializerSymbol, arguments).ConfigureAwait(false);
+            return CallIntrinsicAsync(initializerSymbol, arguments);
         var typeDefinition = userTypes[initializerSymbol.ContextTypeSymbol];
         return typeDefinition switch
         {
-            IClassDefinitionNode @class => await CallClassInitializerAsync(@class, initializerSymbol, arguments)
-                .ConfigureAwait(false),
-            IStructDefinitionNode @struct => await CallStructInitializerAsync(@struct, initializerSymbol, arguments)
-                .ConfigureAwait(false),
+            IClassDefinitionNode @class => CallClassInitializerAsync(@class, initializerSymbol, arguments),
+            IStructDefinitionNode @struct => CallStructInitializerAsync(@struct, initializerSymbol, arguments),
             ITraitDefinitionNode _ => throw new UnreachableException("Traits don't have initializers."),
             _ => throw ExhaustiveMatch.Failed(typeDefinition)
         };
     }
 
-    private async ValueTask<AzothValue> CallClassInitializerAsync(
+    private ValueTask<AzothValue> CallClassInitializerAsync(
         IClassDefinitionNode @class,
         InitializerSymbol initializerSymbol,
         IReadOnlyList<AzothValue> arguments)
     {
         var vTable = vTables.GetOrAdd(@class, CreateVTable);
         var self = AzothValue.Object(new(vTable));
-        return await CallInitializerAsync(@class, initializerSymbol, self, arguments);
+        return CallInitializerAsync(@class, initializerSymbol, self, arguments);
     }
 
     private static InitializerSymbol NoArgInitializerSymbol(IClassDefinitionNode baseClass)
-    {
-        return baseClass.DefaultInitializer?.Symbol
-               ?? baseClass.Members.OfType<IInitializerDefinitionNode>()
-                           .Select(c => c.Symbol.Assigned()).Single(c => c.Arity == 0);
-    }
+        => baseClass.DefaultInitializer?.Symbol
+           ?? baseClass.Members.OfType<IInitializerDefinitionNode>()
+                       .Select(c => c.Symbol.Assigned()).Single(c => c.Arity == 0);
 
-    private async ValueTask<AzothValue> CallStructInitializerAsync(
+    private ValueTask<AzothValue> CallStructInitializerAsync(
         IStructDefinitionNode @struct,
         InitializerSymbol initializerSymbol,
         IReadOnlyList<AzothValue> arguments)
     {
         var self = AzothValue.Struct(new());
-        return await CallInitializerAsync(@struct, initializerSymbol, self, arguments).ConfigureAwait(false);
+        return CallInitializerAsync(@struct, initializerSymbol, self, arguments);
     }
 
-    private async ValueTask<AzothValue> CallInitializerAsync(
+    private ValueTask<AzothValue> CallInitializerAsync(
         ITypeDefinitionNode typeDefinition,
         InitializerSymbol initializerSymbol,
         AzothValue self,
@@ -275,8 +271,8 @@ public sealed class InterpreterProcess
         // TODO run field initializers
         var initializer = initializers[initializerSymbol];
         // Default initializer is null
-        if (initializer is null) return await CallDefaultInitializerAsync(typeDefinition, self);
-        return await CallInitializerAsync(initializer, self, arguments).ConfigureAwait(false);
+        if (initializer is null) return CallDefaultInitializerAsync(typeDefinition, self);
+        return CallInitializerAsync(initializer, self, arguments);
     }
 
     private async ValueTask<AzothValue> CallInitializerAsync(
@@ -335,21 +331,21 @@ public sealed class InterpreterProcess
         return self;
     }
 
-    internal async ValueTask<AzothValue> CallMethodAsync(
+    internal ValueTask<AzothValue> CallMethodAsync(
         MethodSymbol methodSymbol,
         Type selfType,
         AzothValue self,
         IReadOnlyList<AzothValue> arguments)
     {
         if (ReferenceEquals(methodSymbol.Package, Intrinsic.SymbolTree.Package))
-            return await CallIntrinsicAsync(methodSymbol, self, arguments);
+            return CallIntrinsicAsync(methodSymbol, self, arguments);
         if (ReferenceEquals(methodSymbol, Primitive.IdentityHash))
-            return IdentityHash(self);
+            return ValueTask.FromResult(IdentityHash(self));
 
         switch (selfType)
         {
             case CapabilityType capabilityType:
-                return await CallMethodAsync(methodSymbol, capabilityType, self, arguments);
+                return CallMethodAsync(methodSymbol, capabilityType, self, arguments);
             case VoidType _:
             case NeverType _:
             case OptionalType _:
@@ -365,7 +361,7 @@ public sealed class InterpreterProcess
         }
     }
 
-    private async ValueTask<AzothValue> CallMethodAsync(
+    private ValueTask<AzothValue> CallMethodAsync(
         MethodSymbol methodSymbol,
         CapabilityType selfType,
         AzothValue self,
@@ -381,11 +377,11 @@ public sealed class InterpreterProcess
         };
 
         return referenceCall
-            ? await CallClassMethodAsync(methodSymbol, self, arguments)
-            : await CallStructMethod(methodSymbol, selfType, self, arguments);
+            ? CallClassMethodAsync(methodSymbol, self, arguments)
+            : CallStructMethod(methodSymbol, selfType, self, arguments);
     }
 
-    private async ValueTask<AzothValue> CallClassMethodAsync(
+    private ValueTask<AzothValue> CallClassMethodAsync(
         MethodSymbol methodSymbol,
         AzothValue self,
         IReadOnlyList<AzothValue> arguments)
@@ -393,10 +389,10 @@ public sealed class InterpreterProcess
         var methodSignature = methodSignatures[methodSymbol];
         var vtable = self.ObjectValue.VTable;
         var method = vtable[methodSignature];
-        return await CallMethodAsync(method, self, arguments).ConfigureAwait(false);
+        return CallMethodAsync(method, self, arguments);
     }
 
-    private async ValueTask<AzothValue> CallStructMethod(
+    private ValueTask<AzothValue> CallStructMethod(
         MethodSymbol methodSymbol,
         CapabilityType selfType,
         AzothValue self,
@@ -404,9 +400,9 @@ public sealed class InterpreterProcess
     {
         return methodSymbol.Name.Text switch
         {
-            "remainder" => Remainder(self, arguments.Single(), selfType),
-            "to_display_string" => await ToDisplayStringAsync(self, selfType),
-            _ => await CallMethodAsync(structMethods[methodSymbol], self, arguments),
+            "remainder" => ValueTask.FromResult(Remainder(self, arguments.Single(), selfType)),
+            "to_display_string" => ToDisplayStringAsync(self, selfType),
+            _ => CallMethodAsync(structMethods[methodSymbol], self, arguments),
         };
     }
 
