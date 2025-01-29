@@ -81,8 +81,6 @@
 
 // ---------- Name Expressions
 = NamespaceName.PlainType => AzothPlainType.Unknown;
-= FunctionGroupName.PlainType => AzothPlainType.Unknown;
-= FunctionGroupName.*.ExpectedPlainType => null;
 = FunctionNameExpression.*.ExpectedPlainType => null;
 = InitializerGroupName.PlainType => AzothPlainType.Unknown;
 ↑ InitializerGroupName.InitializingPlainType: `IMaybePlainType` => Context.NamedPlainType;
@@ -103,6 +101,7 @@
 = MoveExpression.PlainType => Referent.PlainType;
 = ImplicitTempMoveExpression.PlainType => Referent.PlainType;
 = FreezeExpression.PlainType => Referent.PlainType;
+= PrepareToReturnExpression.Value.ExpectedPlainType => ExpectedPlainType;
 = PrepareToReturnExpression.PlainType => Value.PlainType;
 
 // ---------- Async Expressions

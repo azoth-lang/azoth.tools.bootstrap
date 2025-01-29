@@ -1812,7 +1812,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees
             this.Write(".Validate_");
             
             #line 287 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.ClassName(node.Defines)));
+            this.Write(this.ToStringHelper.ToStringWithCulture(node.Defines));
             
             #line default
             #line hidden

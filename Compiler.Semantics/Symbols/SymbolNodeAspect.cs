@@ -46,21 +46,21 @@ internal static partial class SymbolNodeAspect
     public static partial IFixedSet<ITypeMemberSymbolNode> BuiltInTypeSymbol_Members(IBuiltInTypeSymbolNode node)
         => GetMembers<ITypeMemberSymbolNode>(node);
 
-    public static partial void Validate_ClassSymbolNode(OrdinaryTypeSymbol symbol)
+    public static partial void Validate_ClassSymbol(OrdinaryTypeSymbol symbol)
         => Requires.That(symbol.TypeConstructor is { Kind: TypeKind.Class }, nameof(symbol),
             "Symbol must be for an class type.");
 
     public static partial IFixedSet<IClassMemberSymbolNode> ClassSymbol_Members(IClassSymbolNode node)
         => GetMembers<IClassMemberSymbolNode>(node);
 
-    public static partial void Validate_StructSymbolNode(OrdinaryTypeSymbol symbol)
+    public static partial void Validate_StructSymbol(OrdinaryTypeSymbol symbol)
         => Requires.That(symbol.TypeConstructor is { Kind: TypeKind.Struct }, nameof(symbol),
             "Symbol must be for a struct type.");
 
     public static partial IFixedSet<IStructMemberSymbolNode> StructSymbol_Members(IStructSymbolNode node)
         => GetMembers<IStructMemberSymbolNode>(node);
 
-    public static partial void Validate_TraitSymbolNode(OrdinaryTypeSymbol symbol)
+    public static partial void Validate_TraitSymbol(OrdinaryTypeSymbol symbol)
         => Requires.That(symbol.TypeConstructor is { Kind: TypeKind.Trait }, nameof(symbol),
             "Symbol must be for an trait type.");
 
@@ -74,14 +74,14 @@ internal static partial class SymbolNodeAspect
     #endregion
 
     #region Member Symbol Nodes
-    public static partial void Validate_OrdinaryMethodSymbolNode(MethodSymbol symbol)
+    public static partial void Validate_OrdinaryMethodSymbol(MethodSymbol symbol)
         => Requires.That(symbol.Kind == MethodKind.Standard, nameof(symbol),
             "Must be a standard method symbol.");
 
-    public static partial void Validate_GetterMethodSymbolNode(MethodSymbol symbol)
+    public static partial void Validate_GetterMethodSymbol(MethodSymbol symbol)
         => Requires.That(symbol.Kind == MethodKind.Getter, nameof(symbol), "Must be a getter symbol.");
 
-    public static partial void Validate_SetterMethodSymbolNode(MethodSymbol symbol)
+    public static partial void Validate_SetterMethodSymbol(MethodSymbol symbol)
         => Requires.That(symbol.Kind == MethodKind.Setter, nameof(symbol), "Must be a standard method symbol.");
     #endregion
 }

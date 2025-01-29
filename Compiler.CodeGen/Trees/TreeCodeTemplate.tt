@@ -284,7 +284,7 @@ file class <#= Emit.ClassName(node.Defines) #> : <#= Emit.BaseClass(tree) #><#= 
 <#     } #>
     {
 <#          foreach (var valid in node.Snippets.OfType<ConstructorArgumentValidationModel>()) { #>
-        <#= valid.Aspect.Name #>.Validate_<#= Emit.ClassName(node.Defines) #>(<#= Emit.Arguments(Build.PropertiesForClass(node)) #>);
+        <#= valid.Aspect.Name #>.Validate_<#= node.Defines #>(<#= Emit.Arguments(Build.PropertiesForClass(node)) #>);
 <#          } #>
 <#      foreach (var property in Build.PropertiesForClass(node)) { #>
 <#          if (!tree.SimplifiedTree && property.IsChild) { #>

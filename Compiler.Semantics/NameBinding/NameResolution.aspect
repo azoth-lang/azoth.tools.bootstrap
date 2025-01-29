@@ -16,9 +16,7 @@
 ✎ AssignmentExpression PropertyNameLeftOperand rewrite;
 
 // ---------- Name Expressions
-+ FunctionGroupName.new.Validate;
-✎ FunctionGroupName replace_with FunctionNameExpression;
-= FunctionGroupName.↑.Diagnostics;
++ FunctionNameExpression.new.Validate;
 ✎ InitializerGroupName replace_with InitializerNameExpression;
 = InitializerGroupName.↑.Diagnostics;
 

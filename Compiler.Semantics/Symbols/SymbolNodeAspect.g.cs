@@ -15,17 +15,17 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 internal static partial class SymbolNodeAspect
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial void Validate_ClassSymbolNode(OrdinaryTypeSymbol symbol);
+    public static partial void Validate_ClassSymbol(OrdinaryTypeSymbol symbol);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial void Validate_StructSymbolNode(OrdinaryTypeSymbol symbol);
+    public static partial void Validate_StructSymbol(OrdinaryTypeSymbol symbol);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial void Validate_TraitSymbolNode(OrdinaryTypeSymbol symbol);
+    public static partial void Validate_TraitSymbol(OrdinaryTypeSymbol symbol);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial void Validate_OrdinaryMethodSymbolNode(MethodSymbol symbol);
+    public static partial void Validate_OrdinaryMethodSymbol(MethodSymbol symbol);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial void Validate_GetterMethodSymbolNode(MethodSymbol symbol);
+    public static partial void Validate_GetterMethodSymbol(MethodSymbol symbol);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial void Validate_SetterMethodSymbolNode(MethodSymbol symbol);
+    public static partial void Validate_SetterMethodSymbol(MethodSymbol symbol);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IPackageSymbolNode PackageReference_SymbolNode(IPackageReferenceNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

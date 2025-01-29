@@ -27,7 +27,7 @@ internal static partial class NameResolutionAspect
         // those rewrites have already run and stop rewriting in those cases.
 
         // Ignore names that never have members
-        if (context is IFunctionGroupNameNode
+        if (context is IFunctionNameExpressionNode
             or IMethodAccessExpressionNode
             or IInitializerGroupNameNode)
             return null;
@@ -58,7 +58,7 @@ internal static partial class NameResolutionAspect
     {
         switch (node.Context)
         {
-            case IFunctionGroupNameNode or IFunctionNameExpressionNode or IMethodAccessExpressionNode or IInitializerNameExpressionNode:
+            case IFunctionNameExpressionNode or IMethodAccessExpressionNode or IInitializerNameExpressionNode:
                 diagnostics.Add(TypeError.NotImplemented(node.File, node.Syntax.Span,
                     "No member accessible from function, method, or initializer."));
                 break;
@@ -117,7 +117,7 @@ internal static partial class NameResolutionAspect
     #endregion
 
     #region Name Expressions
-    public static partial void Validate_FunctionGroupNameNode(
+    public static partial void Validate_FunctionNameExpression(
         INameExpressionSyntax syntax,
         INameNode? context,
         OrdinaryName functionName,
@@ -127,32 +127,6 @@ internal static partial class NameResolutionAspect
     // TODO add this validation in somehow
     //=> Requires.That(!ReferencedDeclarations.IsEmpty, nameof(referencedDeclarations),
     //    "Must be at least one referenced declaration");
-
-    public static partial IFunctionNameExpressionNode? FunctionGroupName_ReplaceWith_FunctionNameExpression(IFunctionGroupNameNode node)
-    {
-        if (node.CompatibleCallCandidates.Count > 1)
-            // TODO should this be used instead?
-            //if (node.ReferencedDeclaration is not null)
-            return null;
-
-        // if there is only one declaration, then it isn't ambiguous
-        return IFunctionNameExpressionNode.Create(node.Syntax, node.Context, node.FunctionName, node.GenericArguments,
-            node.ReferencedDeclarations, node.CallCandidates, node.CompatibleCallCandidates,
-            node.SelectedCallCandidate, node.ReferencedDeclaration);
-    }
-
-    public static partial void FunctionGroupName_Contribute_Diagnostics(IFunctionGroupNameNode node, DiagnosticCollectionBuilder diagnostics)
-    {
-        // TODO develop a better check that this node is ambiguous
-        if (node.Parent is IUnresolvedInvocationExpressionNode)
-            return;
-
-        if (node.CompatibleCallCandidates.Count == 0)
-            diagnostics.Add(NameBindingError.CouldNotBindName(node.File, node.Syntax.Span));
-        else if (node.CompatibleCallCandidates.Count > 1)
-            // TODO provide the expected function type that didn't match
-            diagnostics.Add(TypeError.AmbiguousFunctionGroup(node.File, node.Syntax, Type.Unknown));
-    }
 
     public static partial IInitializerNameExpressionNode? InitializerGroupName_ReplaceWith_InitializerNameExpression(IInitializerGroupNameNode node)
     {
@@ -212,8 +186,7 @@ internal static partial class NameResolutionAspect
             return IUnqualifiedNamespaceNameNode.Create(node.Syntax, referencedNamespaces);
 
         if (referencedDeclarations.TryAllOfType<IFunctionInvocableDeclarationNode>(out var referencedFunctions))
-            return IFunctionGroupNameNode.Create(node.Syntax, null, node.Name, FixedList.Empty<ITypeNode>(),
-                referencedFunctions);
+            return IFunctionNameExpressionNode.Create(node.Syntax, null, node.Name, FixedList.Empty<ITypeNode>(), referencedFunctions);
 
         if (referencedDeclarations.TrySingle() is not null and var referencedDeclaration)
             switch (referencedDeclaration)
@@ -233,7 +206,7 @@ internal static partial class NameResolutionAspect
         var referencedDeclarations = node.ReferencedDeclarations;
 
         if (referencedDeclarations.TryAllOfType<IFunctionInvocableDeclarationNode>(out var referencedFunctions))
-            return IFunctionGroupNameNode.Create(node.Syntax, null, node.Name, node.GenericArguments, referencedFunctions);
+            return IFunctionNameExpressionNode.Create(node.Syntax, null, node.Name, node.GenericArguments, referencedFunctions);
 
         if (referencedDeclarations.TrySingle() is not null and var referencedDeclaration)
             switch (referencedDeclaration)
@@ -274,7 +247,7 @@ internal static partial class NameResolutionAspect
             return IQualifiedNamespaceNameNode.Create(node.Syntax, node.Context, referencedNamespaces);
 
         if (referencedDeclarations.TryAllOfType<IFunctionDeclarationNode>(out var referencedFunctions))
-            return IFunctionGroupNameNode.Create(node.Syntax, node.Context, node.MemberName, node.GenericArguments,
+            return IFunctionNameExpressionNode.Create(node.Syntax, node.Context, node.MemberName, node.GenericArguments,
                 referencedFunctions);
 
         // TODO select correct type declaration based on generic arguments
@@ -297,8 +270,7 @@ internal static partial class NameResolutionAspect
             return node;
 
         if (referencedDeclarations.TryAllOfType<IAssociatedFunctionDeclarationNode>(out var referencedFunctions))
-            return IFunctionGroupNameNode.Create(node.Syntax, node.Context, node.MemberName, node.GenericArguments,
-                referencedFunctions);
+            return IFunctionNameExpressionNode.Create(node.Syntax, node.Context, node.MemberName, node.GenericArguments, referencedFunctions);
 
         if (referencedDeclarations.TryAllOfType<IInitializerDeclarationNode>(out var referencedInitializers))
             // TODO handle type arguments (which are not allowed for initializers)

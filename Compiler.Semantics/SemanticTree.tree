@@ -299,19 +299,9 @@ InstanceExpression <: OrdinaryTypedNameExpression = Syntax:`IInstanceExpressionS
 // TODO BaseExpression <: InstanceExpression
 SelfExpression <: InstanceExpression, LocalBindingNameExpression
     = Syntax:`ISelfExpressionSyntax`;
-MissingNameExpression <: NameExpression
-    = Syntax:`IMissingNameExpressionSyntax`;
-/// Reifying to FunctionNameExpression controls the transition from UnresolvedInvocationExpression to FunctionInvocationExpression.
-/// The UnresolvedInvocationExpression provides an expected type based on the arguments. Once the overload has
-/// been resolved, the FunctionInvocationExpression provides expected types based on the function called.
 FunctionNameExpression <: OrdinaryTypedNameExpression
     = Syntax:`INameExpressionSyntax` Context:Name? FunctionName:`OrdinaryName` GenericArguments:Type*
-    ReferencedDeclarations:{`IFunctionInvocableDeclarationNode`}
-    CallCandidates:{`ICallCandidate<IFunctionInvocableDeclarationNode>`}
-    CompatibleCallCandidates:{`ICallCandidate<IFunctionInvocableDeclarationNode>`}
-    SelectedCallCandidate:`ICallCandidate<IFunctionInvocableDeclarationNode>`?
-    ReferencedDeclaration:`IFunctionInvocableDeclarationNode`?;
-/// See comment on FunctionNameExpression for why this exists.
+    ReferencedDeclarations:{`IFunctionInvocableDeclarationNode`};
 InitializerNameExpression <: OrdinaryTypedNameExpression = Syntax:`INameExpressionSyntax`
     Context:TypeName InitializerName:`OrdinaryName`?
     ReferencedDeclarations:{`IInitializerDeclarationNode`}
@@ -319,6 +309,8 @@ InitializerNameExpression <: OrdinaryTypedNameExpression = Syntax:`INameExpressi
     CompatibleCallCandidates:{`ICallCandidate<IInitializerDeclarationNode>`}
     SelectedCallCandidate:`ICallCandidate<IInitializerDeclarationNode>`?
     ReferencedDeclaration:`IInitializerDeclarationNode`?;
+MissingNameExpression <: NameExpression
+    = Syntax:`IMissingNameExpressionSyntax`;
 
 // ---------- Unresolved Name Expressions
 // Unresolved name expressions are name expressions which have not yet or cannot be determined to be
@@ -344,11 +336,6 @@ UnresolvedNamespaceQualifiedNameExpression <: UnresolvedQualifiedNameExpression
 UnresolvedTypeQualifiedNameExpression <: UnresolvedQualifiedNameExpression
     = /Syntax/ Context:TypeName /GenericArguments/ ReferencedDeclarations:{`IAssociatedMemberDeclarationNode`};
 // These reify that a function or initializer has been referenced
-// TODO should FunctionGroupName be UnresolvedFunctionName?
-// TODO merge with FunctionNameExpression?
-FunctionGroupName <: UnresolvedNameExpression, OrdinaryTypedExpression
-    = Syntax:`INameExpressionSyntax` Context:Name? FunctionName:`OrdinaryName` GenericArguments:Type*
-    ReferencedDeclarations:{`IFunctionInvocableDeclarationNode`};
 // TODO should InitializerGroupName be UnresolvedInitializerName?
 // TODO merge with InitializerNameExpression?
 InitializerGroupName <: UnresolvedNameExpression, OrdinaryTypedExpression = Syntax:`INameExpressionSyntax`

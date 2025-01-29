@@ -206,8 +206,6 @@
 // TODO delete once all name expressions implement FlowStateAfter
 ↑ NameExpression.FlowStateAfter: `IFlowState`
     => throw new NotImplementedException($"{GetType().GetFriendlyName()}.{nameof(FlowStateAfter)} not implemented.");
-↑ FunctionGroupName.Type: `UnknownType` => AzothType.Unknown;
-= FunctionGroupName.FlowStateAfter => FlowStateBefore();
 = FunctionNameExpression.FlowStateAfter;
 = FunctionNameExpression.*.ExpectedType => null;
 

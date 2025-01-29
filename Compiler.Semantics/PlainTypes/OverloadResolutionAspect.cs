@@ -33,6 +33,7 @@ internal static partial class OverloadResolutionAspect
 
     public static partial IFixedSet<ICallCandidate<IOrdinaryMethodDeclarationNode>> MethodAccessExpression_CompatibleCallCandidates(IMethodAccessExpressionNode node)
     {
+        if (node.ExpectedPlainType is null or UnknownPlainType) return node.CallCandidates;
         if (node.ExpectedPlainType is not FunctionPlainType expectedPlainType) return [];
 
         var contextPlainType = node.Context.PlainType;
@@ -134,10 +135,6 @@ internal static partial class OverloadResolutionAspect
     {
         switch (node.Expression)
         {
-            case IFunctionGroupNameNode functionGroup:
-                ContributeFunctionBindingDiagnostics(functionGroup.ReferencedDeclaration,
-                    functionGroup.CompatibleCallCandidates, node.File, node.Syntax, diagnostics);
-                break;
             case IFunctionNameExpressionNode function:
                 ContributeFunctionBindingDiagnostics(function.ReferencedDeclaration,
                     function.CompatibleCallCandidates, node.File, node.Syntax, diagnostics);
@@ -176,6 +173,9 @@ internal static partial class OverloadResolutionAspect
         }
     }
 
+    public static partial IMaybePlainType? FunctionInvocationExpression_Function_ExpectedPlainType(IFunctionInvocationExpressionNode node)
+        => InvocationTargetExpectedPlainType(node.Arguments);
+
     public static partial IMaybePlainType? MethodInvocationExpression_Method_ExpectedPlainType(IMethodInvocationExpressionNode node)
         => InvocationTargetExpectedPlainType(node.Arguments);
 
@@ -203,40 +203,31 @@ internal static partial class OverloadResolutionAspect
     #endregion
 
     #region Name Expressions
-    public static partial IFixedSet<ICallCandidate<IFunctionInvocableDeclarationNode>> FunctionGroupName_CallCandidates(IFunctionGroupNameNode node)
+    public static partial IFixedSet<ICallCandidate<IFunctionInvocableDeclarationNode>> FunctionNameExpression_CallCandidates(IFunctionNameExpressionNode node)
         => node.ReferencedDeclarations.Select(CallCandidate.Create).ToFixedSet();
 
-    public static partial IFixedSet<ICallCandidate<IFunctionInvocableDeclarationNode>> FunctionGroupName_CompatibleCallCandidates(IFunctionGroupNameNode node)
+    public static partial IFixedSet<ICallCandidate<IFunctionInvocableDeclarationNode>> FunctionNameExpression_CompatibleCallCandidates(IFunctionNameExpressionNode node)
     {
+        if (node.ExpectedPlainType is null or UnknownPlainType) return node.CallCandidates;
         if (node.ExpectedPlainType is not FunctionPlainType expectedPlainType) return [];
 
         var argumentPlainTypes = ArgumentPlainTypes.ForFunction(expectedPlainType.Parameters);
         return node.CallCandidates.Where(o => o.CompatibleWith(argumentPlainTypes)).ToFixedSet();
     }
 
-    public static partial ICallCandidate<IFunctionInvocableDeclarationNode>? FunctionGroupName_SelectedCallCandidate(IFunctionGroupNameNode node)
+    public static partial ICallCandidate<IFunctionInvocableDeclarationNode>? FunctionNameExpression_SelectedCallCandidate(IFunctionNameExpressionNode node)
         => node.CompatibleCallCandidates.TrySingle();
-
-    public static partial void FunctionGroupName_Contribute_Diagnostics(IFunctionGroupNameNode node, DiagnosticCollectionBuilder diagnostics)
-        => ContributeFunctionNameBindingDiagnostics(node.ReferencedDeclaration, node.CompatibleCallCandidates, node, diagnostics);
 
     public static partial void FunctionNameExpression_Contribute_Diagnostics(
         IFunctionNameExpressionNode node,
         DiagnosticCollectionBuilder diagnostics)
-        => ContributeFunctionNameBindingDiagnostics(node.ReferencedDeclaration, node.CompatibleCallCandidates, node, diagnostics);
-
-    private static void ContributeFunctionNameBindingDiagnostics(
-        IFunctionInvocableDeclarationNode? referencedDeclaration,
-        IFixedSet<ICallCandidate<IFunctionInvocableDeclarationNode>> compatibleCallCandidates,
-        INameExpressionNode node,
-        DiagnosticCollectionBuilder diagnostics)
     {
-        if (referencedDeclaration is not null
+        if (node.ReferencedDeclaration is not null
             // errors will be reported by the parent in this case
             || node.Parent is IUnresolvedInvocationExpressionNode)
             return;
 
-        switch (compatibleCallCandidates.Count)
+        switch (node.CompatibleCallCandidates.Count)
         {
             case 0:
                 diagnostics.Add(NameBindingError.CouldNotBindFunctionName(node.File, node.Syntax));
@@ -257,6 +248,7 @@ internal static partial class OverloadResolutionAspect
 
     public static partial IFixedSet<ICallCandidate<IInitializerDeclarationNode>> InitializerGroupName_CompatibleCallCandidates(IInitializerGroupNameNode node)
     {
+        if (node.ExpectedPlainType is null or UnknownPlainType) return node.CallCandidates;
         if (node.ExpectedPlainType is not FunctionPlainType expectedPlainType) return [];
         var argumentPlainTypes = ArgumentPlainTypes.ForInitializer(expectedPlainType.Parameters);
         return node.CallCandidates.Where(o => o.CompatibleWith(argumentPlainTypes)).ToFixedSet();

@@ -6,9 +6,15 @@
 
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
+// Note: `CompatibleCallCandidates` attributes are circular because they can have circular
+// dependencies when passing a method/function/initializer group to an invocation. (e.g.
+// `a.method(b.other_method)` resolving overloads of `a.method` and `b.method` has a circualr
+// dependency). This is the apropriate attribute to make circular since it is a set the constricts.
+
 // ---------- Instance Member Access Expressions
 ↑ MethodAccessExpression.CallCandidates: {`ICallCandidate<IOrdinaryMethodDeclarationNode>`};
-↑ MethodAccessExpression.CompatibleCallCandidates: {`ICallCandidate<IOrdinaryMethodDeclarationNode>`};
+⟳ MethodAccessExpression.CompatibleCallCandidates: {`ICallCandidate<IOrdinaryMethodDeclarationNode>`}
+    initial => [];
 ↑ MethodAccessExpression.SelectedCallCandidate: `ICallCandidate<IOrdinaryMethodDeclarationNode>`?;
 ↑ MethodAccessExpression.ReferencedDeclaration: OrdinaryMethodDeclaration?
     => SelectedCallCandidate?.Declaration;
@@ -24,6 +30,7 @@
 ✎ UnresolvedInvocationExpression replace_with NonInvocableInvocationExpression;
 = UnresolvedInvocationExpression.↑.Diagnostics;
 
+= FunctionInvocationExpression.Function.ExpectedPlainType;
 ↑ FunctionInvocationExpression.SelectedCallCandidate: `ICallCandidate<IFunctionInvocableDeclarationNode>`?
     => Function.SelectedCallCandidate;
 
@@ -49,16 +56,17 @@
     => Initializer.SelectedCallCandidate;
 
 // ---------- Name Expressions
-↑ FunctionGroupName.CallCandidates: {`ICallCandidate<IFunctionInvocableDeclarationNode>`};
-↑ FunctionGroupName.CompatibleCallCandidates: {`ICallCandidate<IFunctionInvocableDeclarationNode>`};
-↑ FunctionGroupName.SelectedCallCandidate: `ICallCandidate<IFunctionInvocableDeclarationNode>`?;
-↑ FunctionGroupName.ReferencedDeclaration: FunctionInvocableDeclaration?
+↑ FunctionNameExpression.CallCandidates: {`ICallCandidate<IFunctionInvocableDeclarationNode>`};
+⟳ FunctionNameExpression.CompatibleCallCandidates: {`ICallCandidate<IFunctionInvocableDeclarationNode>`}
+    initial => [];
+↑ FunctionNameExpression.SelectedCallCandidate: `ICallCandidate<IFunctionInvocableDeclarationNode>`?;
+↑ FunctionNameExpression.ReferencedDeclaration: FunctionInvocableDeclaration?
     => SelectedCallCandidate?.Declaration;
-= FunctionGroupName.↑.Diagnostics;
 = FunctionNameExpression.↑.Diagnostics;
 
 ↑ InitializerGroupName.CallCandidates: {`ICallCandidate<IInitializerDeclarationNode>`};
-↑ InitializerGroupName.CompatibleCallCandidates: {`ICallCandidate<IInitializerDeclarationNode>`};
+⟳ InitializerGroupName.CompatibleCallCandidates: {`ICallCandidate<IInitializerDeclarationNode>`}
+    initial => [];
 ↑ InitializerGroupName.SelectedCallCandidate: `ICallCandidate<IInitializerDeclarationNode>`?;
 ↑ InitializerGroupName.ReferencedDeclaration: InitializerDeclaration?
     => SelectedCallCandidate?.Declaration;

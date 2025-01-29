@@ -9,9 +9,6 @@ public readonly record struct ArgumentPlainTypes
     public static ArgumentPlainTypes ForFunction(IEnumerable<IMaybePlainType> arguments)
         => new(null, arguments);
 
-    public static ArgumentPlainTypes ForConstructor(IEnumerable<IMaybePlainType> arguments)
-        => new(null, arguments);
-
     public static ArgumentPlainTypes ForInitializer(IEnumerable<IMaybePlainType> arguments)
         => new(null, arguments);
 

@@ -22,7 +22,7 @@ internal static partial class <#= aspect.Name #>
 {
 <#  foreach (var valid in aspect.Snippets.OfType<ConstructorArgumentValidationModel>()) { #>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial void Validate_<#= Emit.ClassName(valid.Node.Defines) #>(<#= Emit.Parameters(Build.PropertiesForClass(valid.Node)) #>);
+    public static partial void Validate_<#= valid.Node.Defines #>(<#= Emit.Parameters(Build.PropertiesForClass(valid.Node)) #>);
 <#  } #>
 <#  foreach (var attr in aspect.DeclaredAttributes.OfType<CircularAttributeModel>().Where(ShouldEmit.Initial)) { #>
     public static partial <#= Emit.Type(attr.Type) #> <#= Emit.InitialMethod(attr) #>(<#= Emit.TypeName(attr.Node.Defines) #> node);

@@ -26,7 +26,6 @@ public partial interface IExpressionNode
     /// </summary>
     // TODO change inheritance so these are not expressions?
     public bool ShouldNotBeExpression()
-        => this is INamespaceNameNode or IFunctionGroupNameNode
-            or IInitializerGroupNameNode or ITypeNameNode;
+        => this is INamespaceNameNode or IInitializerGroupNameNode or ITypeNameNode;
 }
 #endregion

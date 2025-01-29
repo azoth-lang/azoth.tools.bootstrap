@@ -184,12 +184,6 @@ public static class ISemanticNodeExtensions
                 yield return n.Body;
                 yield return n.Exit;
                 yield break;
-            case IFunctionGroupNameNode n:
-                if (n.Context is not null)
-                    yield return n.Context;
-                foreach (var child in n.GenericArguments)
-                    yield return child;
-                yield break;
             case IFunctionInvocationExpressionNode n:
                 yield return n.Function;
                 foreach (var child in n.TempArguments)

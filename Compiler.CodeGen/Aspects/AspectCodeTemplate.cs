@@ -79,7 +79,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Aspects
                     " void Validate_");
             
             #line 25 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Aspects\AspectCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.ClassName(valid.Node.Defines)));
+            this.Write(this.ToStringHelper.ToStringWithCulture(valid.Node.Defines));
             
             #line default
             #line hidden
