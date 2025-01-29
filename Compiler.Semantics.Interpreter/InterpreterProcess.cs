@@ -778,14 +778,14 @@ public sealed class InterpreterProcess
                     case IReturnExpressionNode exp:
                     {
                         var value = exp.Value;
-                        if (value is null) return AzothResult.Return();
+                        if (value is null) return AzothResult.ReturnVoid;
                         var result = await ExecuteAsync(value, variables).ConfigureAwait(false);
                         if (result.ShouldExit(out var returnValue)) return result;
                         return AzothResult.Return(returnValue);
                     }
                     case IBreakExpressionNode exp:
                     {
-                        if (exp.Value is null) return AzothResult.Break();
+                        if (exp.Value is null) return AzothResult.BreakWithoutValue;
                         var result = await ExecuteAsync(exp.Value, variables).ConfigureAwait(false);
                         if (result.ShouldExit(out var value)) return result;
                         return AzothResult.Break(value);

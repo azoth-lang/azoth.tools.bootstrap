@@ -6,6 +6,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.MemoryLayout;
 internal readonly struct AzothResult
 {
     public static readonly AzothResult Next = new(AzothValue.None, AzothResultType.Next);
+    public static readonly AzothResult ReturnVoid = new(AzothValue.None, AzothResultType.Return);
+    public static readonly AzothResult BreakWithoutValue = new(AzothValue.None, AzothResultType.Break);
 
     public readonly AzothValue Value;
     public readonly AzothResultType Type;
@@ -25,6 +27,7 @@ internal readonly struct AzothResult
 
     public AzothValue ReturnValue
     {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         get
         {
             if (Type is not (AzothResultType.Return or AzothResultType.Ordinary))
@@ -33,21 +36,19 @@ internal readonly struct AzothResult
         }
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static implicit operator AzothResult(AzothValue value)
         => new(value, AzothResultType.Ordinary);
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static AzothResult Return(AzothValue value)
         => new(value, AzothResultType.Return);
 
-    public static AzothResult Return()
-        => new(AzothValue.None, AzothResultType.Return);
-
-    public static AzothResult Break()
-        => new(AzothValue.None, AzothResultType.Break);
-
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static AzothResult Break(AzothValue value)
         => new(value, AzothResultType.Break);
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private AzothResult(AzothValue value, AzothResultType type)
     {
         Value = value;
