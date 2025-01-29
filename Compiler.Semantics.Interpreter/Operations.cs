@@ -3,6 +3,7 @@ using System.Numerics;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.MemoryLayout;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
+using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using Type = Azoth.Tools.Bootstrap.Compiler.Types.Decorated.Type;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter;
@@ -11,78 +12,82 @@ internal static class Operations
 {
     public static AzothValue Convert(this AzothValue value, Type from, CapabilityType to, bool isOptional)
     {
+        var fromPlainType = from.PlainType;
+        var toPlainType = to.PlainType;
+
         if (from is CapabilityType { TypeConstructor: IntegerLiteralTypeConstructor })
         {
-            if (to.Equals(Type.Int)) return AzothValue.Int(value.IntValue);
-            if (to.Equals(Type.UInt)) return AzothValue.Int(value.IntValue);
-            if (to.Equals(Type.Int8)) return AzothValue.I8((sbyte)value.IntValue);
-            if (to.Equals(Type.Byte)) return AzothValue.Byte((byte)value.IntValue);
-            if (to.Equals(Type.Int16)) return AzothValue.I16((short)value.IntValue);
-            if (to.Equals(Type.UInt16)) return AzothValue.U16((ushort)value.IntValue);
-            if (to.Equals(Type.Int32)) return AzothValue.I32((int)value.IntValue);
-            if (to.Equals(Type.UInt32)) return AzothValue.U32((uint)value.IntValue);
-            if (to.Equals(Type.Int64)) return AzothValue.I64((long)value.IntValue);
-            if (to.Equals(Type.UInt64)) return AzothValue.U64((ulong)value.IntValue);
-            if (to.Equals(Type.Offset)) return AzothValue.Offset((nint)(long)value.IntValue);
-            if (to.Equals(Type.Size)) return AzothValue.Size((nuint)(ulong)value.IntValue);
-            if (to.Equals(Type.NInt)) return AzothValue.NInt((nint)(long)value.IntValue);
-            if (to.Equals(Type.NUInt)) return AzothValue.NUInt((nuint)(ulong)value.IntValue);
+            if (ReferenceEquals(toPlainType, PlainType.Int)) return AzothValue.Int(value.IntValue);
+            if (ReferenceEquals(toPlainType, PlainType.UInt)) return AzothValue.Int(value.IntValue);
+            if (ReferenceEquals(toPlainType, PlainType.Int8)) return AzothValue.I8((sbyte)value.IntValue);
+            if (ReferenceEquals(toPlainType, PlainType.Byte)) return AzothValue.Byte((byte)value.IntValue);
+            if (ReferenceEquals(toPlainType, PlainType.Int16)) return AzothValue.I16((short)value.IntValue);
+            if (ReferenceEquals(toPlainType, PlainType.UInt16)) return AzothValue.U16((ushort)value.IntValue);
+            if (ReferenceEquals(toPlainType, PlainType.Int32)) return AzothValue.I32((int)value.IntValue);
+            if (ReferenceEquals(toPlainType, PlainType.UInt32)) return AzothValue.U32((uint)value.IntValue);
+            if (ReferenceEquals(toPlainType, PlainType.Int64)) return AzothValue.I64((long)value.IntValue);
+            if (ReferenceEquals(toPlainType, PlainType.UInt64)) return AzothValue.U64((ulong)value.IntValue);
+            if (ReferenceEquals(toPlainType, PlainType.Offset)) return AzothValue.Offset((nint)(long)value.IntValue);
+            if (ReferenceEquals(toPlainType, PlainType.Size)) return AzothValue.Size((nuint)(ulong)value.IntValue);
+            if (ReferenceEquals(toPlainType, PlainType.NInt)) return AzothValue.NInt((nint)(long)value.IntValue);
+            if (ReferenceEquals(toPlainType, PlainType.NUInt)) return AzothValue.NUInt((nuint)(ulong)value.IntValue);
         }
 
         if (from is CapabilityType { TypeConstructor: BoolTypeConstructor or BoolLiteralTypeConstructor })
         {
-            if (to.Equals(Type.Int8)) return AzothValue.I8((sbyte)(value.BoolValue ? 1 : 0));
-            if (to.Equals(Type.Byte)) return AzothValue.Byte((byte)(value.BoolValue ? 1 : 0));
-            if (to.Equals(Type.Int16)) return AzothValue.I16((short)(value.BoolValue ? 1 : 0));
-            if (to.Equals(Type.UInt16)) return AzothValue.U16((ushort)(value.BoolValue ? 1 : 0));
-            if (to.Equals(Type.Int32)) return AzothValue.I32(value.BoolValue ? 1 : 0);
-            if (to.Equals(Type.UInt32)) return AzothValue.U32((uint)(value.BoolValue ? 1 : 0));
-            if (to.Equals(Type.Int64)) return AzothValue.I64(value.BoolValue ? 1 : 0);
-            if (to.Equals(Type.UInt64)) return AzothValue.U64((uint)(value.BoolValue ? 1 : 0));
-            if (to.Equals(Type.Offset)) return AzothValue.Offset(value.BoolValue ? 1 : 0);
-            if (to.Equals(Type.Size)) return AzothValue.Size((nuint)(value.BoolValue ? 1 : 0));
-            if (to.Equals(Type.NInt)) return AzothValue.NInt(value.BoolValue ? 1 : 0);
-            if (to.Equals(Type.NUInt)) return AzothValue.NUInt((nuint)(value.BoolValue ? 1 : 0));
-            if (to.Equals(Type.Int)) return AzothValue.Int(value.BoolValue ? BigInteger.One : BigInteger.Zero);
-            if (to.Equals(Type.UInt)) return AzothValue.Int(value.BoolValue ? BigInteger.One : BigInteger.Zero);
-            if (to.Equals(Type.Bool)) return value;
+            if (ReferenceEquals(toPlainType, PlainType.Int8)) return AzothValue.I8((sbyte)(value.BoolValue ? 1 : 0));
+            if (ReferenceEquals(toPlainType, PlainType.Byte)) return AzothValue.Byte((byte)(value.BoolValue ? 1 : 0));
+            if (ReferenceEquals(toPlainType, PlainType.Int16)) return AzothValue.I16((short)(value.BoolValue ? 1 : 0));
+            if (ReferenceEquals(toPlainType, PlainType.UInt16)) return AzothValue.U16((ushort)(value.BoolValue ? 1 : 0));
+            if (ReferenceEquals(toPlainType, PlainType.Int32)) return AzothValue.I32(value.BoolValue ? 1 : 0);
+            if (ReferenceEquals(toPlainType, PlainType.UInt32)) return AzothValue.U32((uint)(value.BoolValue ? 1 : 0));
+            if (ReferenceEquals(toPlainType, PlainType.Int64)) return AzothValue.I64(value.BoolValue ? 1 : 0);
+            if (ReferenceEquals(toPlainType, PlainType.UInt64)) return AzothValue.U64((uint)(value.BoolValue ? 1 : 0));
+            if (ReferenceEquals(toPlainType, PlainType.Offset)) return AzothValue.Offset(value.BoolValue ? 1 : 0);
+            if (ReferenceEquals(toPlainType, PlainType.Size)) return AzothValue.Size((nuint)(value.BoolValue ? 1 : 0));
+            if (ReferenceEquals(toPlainType, PlainType.NInt)) return AzothValue.NInt(value.BoolValue ? 1 : 0);
+            if (ReferenceEquals(toPlainType, PlainType.NUInt)) return AzothValue.NUInt((nuint)(value.BoolValue ? 1 : 0));
+            if (ReferenceEquals(toPlainType, PlainType.Int)) return AzothValue.Int(value.BoolValue ? BigInteger.One : BigInteger.Zero);
+            if (ReferenceEquals(toPlainType, PlainType.UInt)) return AzothValue.Int(value.BoolValue ? BigInteger.One : BigInteger.Zero);
+            if (ReferenceEquals(toPlainType, PlainType.Bool)) return value;
         }
 
-        if (from.Equals(Type.Byte))
+        if (ReferenceEquals(fromPlainType, PlainType.Byte))
         {
-            if (to.Equals(Type.Int16)) return AzothValue.I16(value.ByteValue);
-            if (to.Equals(Type.UInt16)) return AzothValue.U16(value.ByteValue);
-            if (to.Equals(Type.Int32)) return AzothValue.I32(value.ByteValue);
-            if (to.Equals(Type.UInt32)) return AzothValue.U32(value.ByteValue);
-            if (to.Equals(Type.Offset)) return AzothValue.Offset(value.ByteValue);
-            if (to.Equals(Type.Size)) return AzothValue.Size(value.ByteValue);
-            if (to.Equals(Type.NInt)) return AzothValue.NInt(value.ByteValue);
-            if (to.Equals(Type.NUInt)) return AzothValue.NUInt(value.ByteValue);
-            if (to.Equals(Type.Int)) return AzothValue.Int(value.ByteValue);
-            if (to.Equals(Type.UInt)) return AzothValue.Int(value.ByteValue);
+            if (ReferenceEquals(toPlainType, PlainType.Int16)) return AzothValue.I16(value.ByteValue);
+            if (ReferenceEquals(toPlainType, PlainType.UInt16)) return AzothValue.U16(value.ByteValue);
+            if (ReferenceEquals(toPlainType, PlainType.Int32)) return AzothValue.I32(value.ByteValue);
+            if (ReferenceEquals(toPlainType, PlainType.UInt32)) return AzothValue.U32(value.ByteValue);
+            if (ReferenceEquals(toPlainType, PlainType.Offset)) return AzothValue.Offset(value.ByteValue);
+            if (ReferenceEquals(toPlainType, PlainType.Size)) return AzothValue.Size(value.ByteValue);
+            if (ReferenceEquals(toPlainType, PlainType.NInt)) return AzothValue.NInt(value.ByteValue);
+            if (ReferenceEquals(toPlainType, PlainType.NUInt)) return AzothValue.NUInt(value.ByteValue);
+            if (ReferenceEquals(toPlainType, PlainType.Int)) return AzothValue.Int(value.ByteValue);
+            if (ReferenceEquals(toPlainType, PlainType.UInt)) return AzothValue.Int(value.ByteValue);
         }
 
-        if (from.Equals(Type.Size))
+        if (ReferenceEquals(fromPlainType, PlainType.Size))
         {
-            if (to.Equals(Type.Offset)) return AzothValue.Offset((nint)value.SizeValue);
-            if (to.Equals(Type.Size)) return AzothValue.Size(value.SizeValue);
-            if (to.Equals(Type.NInt)) return AzothValue.NInt((nint)value.SizeValue);
-            if (to.Equals(Type.NUInt)) return AzothValue.NUInt(value.SizeValue);
-            if (to.Equals(Type.Int)) return AzothValue.Int(value.SizeValue);
-            if (to.Equals(Type.UInt)) return AzothValue.Int(value.SizeValue);
+            if (ReferenceEquals(toPlainType, PlainType.Offset)) return AzothValue.Offset((nint)value.SizeValue);
+            if (ReferenceEquals(toPlainType, PlainType.Size)) return AzothValue.Size(value.SizeValue);
+            if (ReferenceEquals(toPlainType, PlainType.NInt)) return AzothValue.NInt((nint)value.SizeValue);
+            if (ReferenceEquals(toPlainType, PlainType.NUInt)) return AzothValue.NUInt(value.SizeValue);
+            if (ReferenceEquals(toPlainType, PlainType.Int)) return AzothValue.Int(value.SizeValue);
+            if (ReferenceEquals(toPlainType, PlainType.UInt)) return AzothValue.Int(value.SizeValue);
         }
 
-        if (from.Equals(Type.Offset))
+        if (ReferenceEquals(fromPlainType, PlainType.Offset))
         {
-            if (to.Equals(Type.NInt)) return AzothValue.NInt((nint)value.SizeValue);
-            if (to.Equals(Type.Int)) return AzothValue.Int(value.OffsetValue);
+            if (ReferenceEquals(toPlainType, PlainType.NInt)) return AzothValue.NInt((nint)value.SizeValue);
+            if (ReferenceEquals(toPlainType, PlainType.Int)) return AzothValue.Int(value.OffsetValue);
         }
 
-        if (from.Equals(Type.Int) || from.Equals(Type.UInt))
+        if (ReferenceEquals(fromPlainType, PlainType.Int)
+            || ReferenceEquals(fromPlainType, PlainType.UInt))
         {
-            if (to.Equals(Type.Int)) return value;
+            if (ReferenceEquals(toPlainType, PlainType.Int)) return value;
             var fromValue = value.IntValue;
-            if (to.Equals(Type.UInt))
+            if (ReferenceEquals(toPlainType, PlainType.UInt))
             {
                 var isSigned = fromValue.Sign < 0;
                 if (isSigned)
@@ -104,18 +109,18 @@ internal static class Operations
                 }
             }
 
-            if (to.Equals(Type.Int8)) return AzothValue.I8((sbyte)fromValue);
-            if (to.Equals(Type.Byte)) return AzothValue.Byte((byte)fromValue);
-            if (to.Equals(Type.Int16)) return AzothValue.I16((short)fromValue);
-            if (to.Equals(Type.UInt16)) return AzothValue.U16((ushort)fromValue);
-            if (to.Equals(Type.Int32)) return AzothValue.I32((int)fromValue);
-            if (to.Equals(Type.UInt32)) return AzothValue.U32((uint)fromValue);
-            if (to.Equals(Type.Int64)) return AzothValue.I64((long)fromValue);
-            if (to.Equals(Type.UInt64)) return AzothValue.U64((ulong)fromValue);
-            if (to.Equals(Type.Offset)) return AzothValue.Offset((nint)(long)fromValue);
-            if (to.Equals(Type.Size)) return AzothValue.Size((nuint)(ulong)fromValue);
-            if (to.Equals(Type.NInt)) return AzothValue.NInt((nint)(long)fromValue);
-            if (to.Equals(Type.NUInt)) return AzothValue.NUInt((nuint)(ulong)fromValue);
+            if (ReferenceEquals(toPlainType, PlainType.Int8)) return AzothValue.I8((sbyte)fromValue);
+            if (ReferenceEquals(toPlainType, PlainType.Byte)) return AzothValue.Byte((byte)fromValue);
+            if (ReferenceEquals(toPlainType, PlainType.Int16)) return AzothValue.I16((short)fromValue);
+            if (ReferenceEquals(toPlainType, PlainType.UInt16)) return AzothValue.U16((ushort)fromValue);
+            if (ReferenceEquals(toPlainType, PlainType.Int32)) return AzothValue.I32((int)fromValue);
+            if (ReferenceEquals(toPlainType, PlainType.UInt32)) return AzothValue.U32((uint)fromValue);
+            if (ReferenceEquals(toPlainType, PlainType.Int64)) return AzothValue.I64((long)fromValue);
+            if (ReferenceEquals(toPlainType, PlainType.UInt64)) return AzothValue.U64((ulong)fromValue);
+            if (ReferenceEquals(toPlainType, PlainType.Offset)) return AzothValue.Offset((nint)(long)fromValue);
+            if (ReferenceEquals(toPlainType, PlainType.Size)) return AzothValue.Size((nuint)(ulong)fromValue);
+            if (ReferenceEquals(toPlainType, PlainType.NInt)) return AzothValue.NInt((nint)(long)fromValue);
+            if (ReferenceEquals(toPlainType, PlainType.NUInt)) return AzothValue.NUInt((nuint)(ulong)fromValue);
         }
 
         throw new NotImplementedException($"Conversion from {from.ToILString()} to {to.ToILString()}");

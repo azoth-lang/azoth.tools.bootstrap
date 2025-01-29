@@ -1,11 +1,12 @@
 using System.Collections.Concurrent;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.MemoryLayout;
 using Void = Azoth.Tools.Bootstrap.Framework.Void;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.Async;
 
-internal class AsyncScope
+internal sealed class AsyncScope
 {
     private readonly ConcurrentDictionary<Task<AzothValue>, Void> tasks = new();
 
@@ -21,5 +22,6 @@ internal class AsyncScope
         task.ContinueWith(t => tasks.TryRemove(t, out _), TaskContinuationOptions.ExecuteSynchronously);
     }
 
-    public async ValueTask ExitAsync() => await Task.WhenAll(tasks.Keys);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Task ExitAsync() => Task.WhenAll(tasks.Keys);
 }

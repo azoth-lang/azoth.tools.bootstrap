@@ -3,7 +3,7 @@ using Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.MemoryLayout;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.ControlFlow;
 
-internal class Break : Exception
+internal sealed class Break : Exception
 {
     public AzothValue Value { get; }
 

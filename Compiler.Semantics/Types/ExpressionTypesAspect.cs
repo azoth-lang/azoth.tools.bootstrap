@@ -34,11 +34,6 @@ internal static partial class ExpressionTypesAspect
     #region Unresolved Expressions
     public static partial IFlowState UnresolvedMemberAccessExpression_FlowStateAfter(IUnresolvedMemberAccessExpressionNode node)
         => node.Context?.FlowStateAfter.Transform(node.Context.ValueId, node.ValueId, node.Type) ?? IFlowState.Empty;
-
-    /*
-       public static partial IFlowState AmbiguousMemberAccessExpression_FlowStateAfter(IAmbiguousMemberAccessExpressionNode node)
-           => node.Context.FlowStateAfter.Transform(node.Context.ValueId, node.ValueId, node.Type);
-*/
     #endregion
 
     public static partial IMaybeType VariableNameExpression_Type(IVariableNameExpressionNode node)

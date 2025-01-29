@@ -139,6 +139,7 @@ internal class ProjectSet : IEnumerable<Project>
         await process.WaitForExitAsync();
         var stderr = await process.StandardError.ReadToEndAsync();
         await Console.Error.WriteLineAsync(stderr);
+        Console.WriteLine($"Run took {process.RunTime}");
     }
 
     public async Task TestAsync(TaskScheduler taskScheduler, bool verbose, ProjectConfig testProjectConfig)

@@ -1,13 +1,15 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.Async;
+using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.MemoryLayout;
 
-internal class LocalVariableScope
+internal sealed class LocalVariableScope
 {
     private readonly LocalVariableScope? enclosingScope;
-    private readonly IDictionary<IBindingNode, AzothValue> values = new Dictionary<IBindingNode, AzothValue>();
+    private readonly Dictionary<IBindingNode, AzothValue> values = new();
     private readonly AsyncScope? asyncScope;
 
     public AsyncScope? AsyncScope => asyncScope ?? enclosingScope?.AsyncScope;
@@ -20,25 +22,23 @@ internal class LocalVariableScope
 
     public AzothValue this[IBindingNode binding]
     {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         get
         {
             if (values.TryGetValue(binding, out var value)) return value;
-            if (enclosingScope is null)
-                throw new InvalidOperationException($"Value for variable '{binding.Syntax}' not defined ");
-            return enclosingScope[binding];
+            return enclosingScope?[binding]
+                ?? throw new InvalidOperationException($"Value for variable '{binding.Syntax}' not defined ");
         }
         set
         {
-            if (values.ContainsKey(binding))
-            {
-                values[binding] = value;
+            if (values.TryUpdate(binding, value))
                 return;
-            }
             if (enclosingScope is null)
                 throw new InvalidOperationException($"Value for variable '{binding.Syntax}' not defined ");
             enclosingScope[binding] = value;
         }
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Add(IBindingNode binding, AzothValue value) => values.Add(binding, value);
 }

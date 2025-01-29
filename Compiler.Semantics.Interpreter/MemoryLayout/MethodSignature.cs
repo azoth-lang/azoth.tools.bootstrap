@@ -8,7 +8,7 @@ using Type = Azoth.Tools.Bootstrap.Compiler.Types.Decorated.Type;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.MemoryLayout;
 
-internal class MethodSignature : IEquatable<MethodSignature>
+internal sealed class MethodSignature : IEquatable<MethodSignature>
 {
     public IdentifierName Name { [DebuggerStepThrough] get; }
     public NonVoidType SelfType { [DebuggerStepThrough] get; }

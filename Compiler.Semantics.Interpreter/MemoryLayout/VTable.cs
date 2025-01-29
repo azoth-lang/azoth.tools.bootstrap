@@ -1,22 +1,22 @@
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Frozen;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
-using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.MemoryLayout;
 
-internal class VTable
+internal sealed class VTable
 {
     public IClassDefinitionNode Class { get; }
     private readonly MethodSignatureCache methodSignatures;
-    private readonly FixedDictionary<OrdinaryTypeSymbol, ITypeDefinitionNode> types;
+    private readonly FrozenDictionary<OrdinaryTypeSymbol, ITypeDefinitionNode> types;
     private readonly ConcurrentDictionary<MethodSignature, IMethodDefinitionNode> methods = new();
 
     public VTable(
         IClassDefinitionNode @class,
         MethodSignatureCache methodSignatures,
-        FixedDictionary<OrdinaryTypeSymbol, ITypeDefinitionNode> types)
+        FrozenDictionary<OrdinaryTypeSymbol, ITypeDefinitionNode> types)
     {
         Class = @class;
         this.methodSignatures = methodSignatures;
