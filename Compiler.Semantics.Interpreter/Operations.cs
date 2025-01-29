@@ -125,4 +125,23 @@ internal static class Operations
 
         throw new NotImplementedException($"Conversion from {from.ToILString()} to {to.ToILString()}");
     }
+
+    public static AzothValue Increment(this AzothValue value, CapabilityType type)
+    {
+        var plainType = type.PlainType;
+        if (ReferenceEquals(plainType, PlainType.Int) || ReferenceEquals(plainType, PlainType.UInt))
+            return AzothValue.Int(value.IntValue + 1);
+        if (ReferenceEquals(plainType, PlainType.Int8)) return AzothValue.I8((sbyte)(value.I8Value + 1));
+        if (ReferenceEquals(plainType, PlainType.Byte)) return AzothValue.Byte((byte)(value.ByteValue + 1));
+        if (ReferenceEquals(plainType, PlainType.Int16)) return AzothValue.I16((short)(value.I16Value + 1));
+        if (ReferenceEquals(plainType, PlainType.UInt16)) return AzothValue.U16((ushort)(value.U16Value + 1));
+        if (ReferenceEquals(plainType, PlainType.Int32)) return AzothValue.I32(value.I32Value + 1);
+        if (ReferenceEquals(plainType, PlainType.UInt32)) return AzothValue.U32(value.U32Value + 1);
+        if (ReferenceEquals(plainType, PlainType.Int64)) return AzothValue.I64(value.I64Value + 1);
+        if (ReferenceEquals(plainType, PlainType.UInt64)) return AzothValue.U64(value.U64Value + 1);
+        if (ReferenceEquals(plainType, PlainType.Size)) return AzothValue.Size(value.SizeValue + 1);
+        if (ReferenceEquals(plainType, PlainType.Offset)) return AzothValue.Offset(value.OffsetValue + 1);
+
+        throw new NotImplementedException($"Increment of {type}");
+    }
 }

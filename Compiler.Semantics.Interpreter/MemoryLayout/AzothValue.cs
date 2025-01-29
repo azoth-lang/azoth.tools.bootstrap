@@ -159,57 +159,6 @@ internal readonly struct AzothValue
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     #endregion
 
-    public AzothValue Increment(CapabilityType numberType)
-    {
-        if (numberType.Equals(Type.Int) || numberType.Equals(Type.UInt)) return Int(IntValue + 1);
-        if (numberType.Equals(Type.Int8)) return I8((sbyte)(I8Value + 1));
-        if (numberType.Equals(Type.Byte)) return Byte((byte)(ByteValue + 1));
-        if (numberType.Equals(Type.Int16)) return I16((short)(I16Value + 1));
-        if (numberType.Equals(Type.UInt16)) return U16((ushort)(U16Value + 1));
-        if (numberType.Equals(Type.Int32)) return I32(I32Value + 1);
-        if (numberType.Equals(Type.UInt32)) return U32(U32Value + 1);
-        if (numberType.Equals(Type.Int64)) return I64(I64Value + 1);
-        if (numberType.Equals(Type.UInt64)) return U64(U64Value + 1);
-        if (numberType.Equals(Type.Size)) return Size(SizeValue + 1);
-        if (numberType.Equals(Type.Offset)) return Offset(OffsetValue + 1);
-
-        throw new NotImplementedException($"Increment of {numberType}");
-    }
-
-    public AzothValue Decrement(CapabilityType numberType)
-    {
-        if (numberType.Equals(Type.Int) || numberType.Equals(Type.UInt)) return Int(IntValue - 1);
-        if (numberType.Equals(Type.Int8)) return I8((sbyte)(I8Value - 1));
-        if (numberType.Equals(Type.Byte)) return Byte((byte)(ByteValue - 1));
-        if (numberType.Equals(Type.Int16)) return I16((short)(I16Value - 1));
-        if (numberType.Equals(Type.UInt16)) return U16((ushort)(U16Value - 1));
-        if (numberType.Equals(Type.Int32)) return I32(I32Value - 1);
-        if (numberType.Equals(Type.UInt32)) return U32(U32Value - 1);
-        if (numberType.Equals(Type.Int64)) return I64(I64Value - 1);
-        if (numberType.Equals(Type.UInt64)) return U64(U64Value - 1);
-        if (numberType.Equals(Type.Size)) return Size(SizeValue - 1);
-        if (numberType.Equals(Type.Offset)) return Offset(OffsetValue - 1);
-
-        throw new NotImplementedException($"Decrement of {numberType.ToILString()}");
-    }
-
-    public BigInteger ToBigInteger(CapabilityType numberType)
-    {
-        if (numberType.Equals(Type.Int) || numberType.Equals(Type.UInt)) return IntValue;
-        if (numberType.Equals(Type.Int8)) return I8Value;
-        if (numberType.Equals(Type.Byte)) return ByteValue;
-        if (numberType.Equals(Type.Int16)) return I16Value;
-        if (numberType.Equals(Type.UInt16)) return U16Value;
-        if (numberType.Equals(Type.Int32)) return I32Value;
-        if (numberType.Equals(Type.UInt32)) return U32Value;
-        if (numberType.Equals(Type.Int64)) return I32Value;
-        if (numberType.Equals(Type.UInt64)) return U32Value;
-        if (numberType.Equals(Type.Size)) return SizeValue;
-        if (numberType.Equals(Type.Offset)) return OffsetValue;
-
-        throw new NotImplementedException($"ToBigInteger for {numberType.ToILString()}");
-    }
-
     [StructLayout(LayoutKind.Explicit)]
     private struct SimpleValue
     {
