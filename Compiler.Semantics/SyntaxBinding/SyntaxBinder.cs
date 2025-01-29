@@ -195,7 +195,7 @@ internal static class SyntaxBinder
 
     private static IInitializerDefinitionNode InitializerDefinition(IInitializerDefinitionSyntax syntax)
         => IOrdinaryInitializerDefinitionNode.Create(syntax, InitializerSelfParameter(syntax.SelfParameter),
-            ConstructorOrInitializerParameters(syntax.Parameters), BlockBody(syntax.Body));
+            InitializerParameters(syntax.Parameters), BlockBody(syntax.Body));
 
     private static IFieldDefinitionNode FieldDefinition(IFieldDefinitionSyntax syntax)
         => IFieldDefinitionNode.Create(syntax, Type(syntax.Type), Expression(syntax.Initializer));
@@ -231,12 +231,10 @@ internal static class SyntaxBinder
     #endregion
 
     #region Parameters
-    private static IEnumerable<IInitializerParameterNode> ConstructorOrInitializerParameters(
-        IEnumerable<IInitializerParameterSyntax> syntax)
-        => syntax.Select(ConstructorOrInitializerParameter);
+    private static IEnumerable<IInitializerParameterNode> InitializerParameters(IEnumerable<IInitializerParameterSyntax> syntax)
+        => syntax.Select(InitializerParameter);
 
-    private static IInitializerParameterNode ConstructorOrInitializerParameter(
-        IInitializerParameterSyntax syntax)
+    private static IInitializerParameterNode InitializerParameter(IInitializerParameterSyntax syntax)
         => syntax switch
         {
             INamedParameterSyntax syn => NamedParameter(syn),

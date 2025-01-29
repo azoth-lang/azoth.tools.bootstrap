@@ -100,10 +100,10 @@ public static class TypeError
             3013, $"Cannot use `{capability.ToSourceCodeString()}` on constant type `{type}`");
     }
 
-    public static Diagnostic InvalidConstructorSelfParameterCapability(CodeFile file, ICapabilitySyntax syn)
+    public static Diagnostic InvalidInitializerSelfParameterCapability(CodeFile file, ICapabilitySyntax syn)
     {
         return new(file, syn.Span, DiagnosticLevel.CompilationError, DiagnosticPhase.Analysis,
-            3014, $"Constructor self parameter cannot have reference capability `{syn.Capability.ToSourceCodeString()}`. Only `mut` and read-only are allowed");
+            3014, $"Initializer self parameter cannot have reference capability `{syn.Capability.ToSourceCodeString()}`. Only `mut` and read-only are allowed");
     }
 
     public static Diagnostic TypeCannotBeLent(CodeFile file, TextSpan span, IMaybeType type)

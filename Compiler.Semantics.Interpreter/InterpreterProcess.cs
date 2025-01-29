@@ -121,7 +121,7 @@ public class InterpreterProcess
         var entryPoint = package.EntryPoint!;
         var arguments = new List<AzothValue>();
         foreach (var parameterType in entryPoint.Symbol.Assigned().ParameterTypes)
-            arguments.Add(await ConstructMainParameterAsync(parameterType.Type));
+            arguments.Add(await InitializeMainParameterAsync(parameterType.Type));
 
         var returnValue = await CallFunctionAsync(entryPoint, arguments).ConfigureAwait(false);
         // Flush any buffered output
@@ -176,7 +176,7 @@ public class InterpreterProcess
     private static bool IsTestAttribute(IAttributeNode attribute)
         => attribute.TypeName.ReferencedDeclaration!.Name.Text == "Test_Attribute";
 
-    private async ValueTask<AzothValue> ConstructMainParameterAsync(Type parameterType)
+    private async ValueTask<AzothValue> InitializeMainParameterAsync(Type parameterType)
     {
         if (parameterType is not CapabilityType { Arguments.Count: 0 } type)
             throw new InvalidOperationException(
@@ -722,7 +722,7 @@ public class InterpreterProcess
             {
                 // Call the constructor of the string class
                 var value = exp.Value;
-                return await ConstructStringAsync(value);
+                return await InitializeStringAsync(value);
             }
             case IUnsafeExpressionNode exp:
                 return await ExecuteAsync(exp.Expression!, variables).ConfigureAwait(false);
@@ -843,7 +843,7 @@ public class InterpreterProcess
         }
     }
 
-    private async ValueTask<AzothValue> ConstructStringAsync(string value)
+    private async ValueTask<AzothValue> InitializeStringAsync(string value)
     {
         var bytes = new RawBoundedByteList(Encoding.UTF8.GetBytes(value));
         var arguments = new List<AzothValue>
@@ -1185,7 +1185,7 @@ public class InterpreterProcess
         else if (type.Equals(Type.NUInt)) displayString = value.NUIntValue.ToString();
         else throw new NotImplementedException($"to_display_string({type.ToILString()})");
 
-        return await ConstructStringAsync(displayString).ConfigureAwait(false);
+        return await InitializeStringAsync(displayString).ConfigureAwait(false);
     }
 
     private async ValueTask<AzothValue> ExecuteBlockOrResultAsync(

@@ -310,7 +310,7 @@ internal static partial class ExpressionTypesAspect
     public static partial IMaybeType SelfExpression_Type(ISelfExpressionNode node)
         => node.FlowStateAfter.AliasType(node.ReferencedDefinition);
 
-    private static void CheckConstructingType(ITypeNameNode node, DiagnosticCollectionBuilder diagnostics)
+    private static void CheckInitializingType(ITypeNameNode node, DiagnosticCollectionBuilder diagnostics)
     {
         switch (node)
         {
@@ -358,7 +358,7 @@ internal static partial class ExpressionTypesAspect
 
     public static partial void InitializerInvocationExpression_Contribute_Diagnostics(IInitializerInvocationExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
-        CheckConstructingType(node.Initializer.Context, diagnostics);
+        CheckInitializingType(node.Initializer.Context, diagnostics);
 
         var flowStateBefore = node.Arguments.LastOrDefault()?.FlowStateAfter ?? node.FlowStateBefore();
         var argumentValueIds = ArgumentValueIds(node.ContextualizedCall, null, node.Arguments);

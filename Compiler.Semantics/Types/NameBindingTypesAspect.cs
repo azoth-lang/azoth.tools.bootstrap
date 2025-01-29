@@ -134,7 +134,7 @@ internal static partial class NameBindingTypesAspect
             case DeclaredCapability.Constant:
             case DeclaredCapability.TemporarilyConstant:
             case DeclaredCapability.Identity:
-                diagnostics.Add(TypeError.InvalidConstructorSelfParameterCapability(file, capabilitySyntax));
+                diagnostics.Add(TypeError.InvalidInitializerSelfParameterCapability(file, capabilitySyntax));
                 break;
             default:
                 throw ExhaustiveMatch.Failed(declaredCapability);
@@ -173,7 +173,7 @@ internal static partial class NameBindingTypesAspect
         DiagnosticCollectionBuilder diagnostics)
     {
         if (node.IsLentBinding)
-            diagnostics.Add(OtherSemanticError.LentConstructorOrInitializerSelf(node.File, node.Syntax));
+            diagnostics.Add(OtherSemanticError.LentInitializerSelf(node.File, node.Syntax));
 
         CheckInvalidInitializerSelfParameterCapability(node.Capability.Syntax, node.File, diagnostics);
     }
