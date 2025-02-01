@@ -52,6 +52,7 @@ public static partial class TokenTypes
         typeof(SelfKeywordToken),
         typeof(SelfTypeKeywordToken),
         typeof(MutableKeywordToken),
+        typeof(IRefKeywordToken),
         typeof(AbstractKeywordToken),
         typeof(GetKeywordToken),
         typeof(SetKeywordToken),
@@ -221,6 +222,9 @@ public static partial class TokenFactory
     public static IMutableKeywordToken MutableKeyword(TextSpan span)
         => new MutableKeywordToken(span);
 
+    public static IIRefKeywordToken IRefKeyword(TextSpan span)
+        => new IRefKeywordToken(span);
+
     public static IAbstractKeywordToken AbstractKeyword(TextSpan span)
         => new AbstractKeywordToken(span);
 
@@ -372,6 +376,7 @@ public static partial class TokenFactory
     typeof(ISelfKeywordToken),
     typeof(ISelfTypeKeywordToken),
     typeof(IMutableKeywordToken),
+    typeof(IIRefKeywordToken),
     typeof(IAbstractKeywordToken),
     typeof(IGetKeywordToken),
     typeof(ISetKeywordToken),
@@ -792,6 +797,15 @@ public partial interface IMutableKeywordToken : IKeywordToken { }
 internal partial class MutableKeywordToken : Token, IMutableKeywordToken
 {
     public MutableKeywordToken(TextSpan span)
+        : base(span)
+    {
+    }
+}
+
+public partial interface IIRefKeywordToken : IKeywordToken { }
+internal partial class IRefKeywordToken : Token, IIRefKeywordToken
+{
+    public IRefKeywordToken(TextSpan span)
         : base(span)
     {
     }
