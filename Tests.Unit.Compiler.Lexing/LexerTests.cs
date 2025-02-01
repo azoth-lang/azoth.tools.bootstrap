@@ -42,7 +42,6 @@ public class LexerTests
     [InlineData("implicit")]
     [InlineData("invariant")]
     [InlineData("params")]
-    [InlineData("ref")]
     [InlineData("throw")]
     [InlineData("where")]
     // Actual Reserved Words

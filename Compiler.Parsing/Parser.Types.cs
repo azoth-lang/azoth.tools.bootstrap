@@ -28,7 +28,7 @@ public partial class Parser
                 return ParseSelfViewpointType();
             case IExplicitCapabilityToken:
                 return ParseTypeWithExplicitCapabilityViewpoint();
-            case IIRefKeywordToken:
+            case IInternalRefKeywordToken:
                 return ParseInternalReferenceType();
             default:
                 var capability = AcceptStandardCapability();
@@ -119,7 +119,7 @@ public partial class Parser
 
     private IInternalReferenceTypeSyntax ParseInternalReferenceType()
     {
-        var irefSpan = Tokens.Consume<IIRefKeywordToken>();
+        var irefSpan = Tokens.Consume<IInternalRefKeywordToken>();
         var isVarBinding = Tokens.Accept<IVarKeywordToken>();
         var referent = ParseType();
         var span = TextSpan.Covering(irefSpan, referent.Span);

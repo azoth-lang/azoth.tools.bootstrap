@@ -3,8 +3,9 @@ using ExhaustiveMatching;
 namespace Azoth.Tools.Bootstrap.Compiler.Tokens;
 
 [Closed(
-    typeof(IIRefKeywordToken))]
+    typeof(IVariableRefKeywordToken),
+    typeof(IInternalRefKeywordToken))]
 public interface IReferenceTypeKeywordToken : IEssentialToken { }
 
-public partial interface IIRefKeywordToken : IReferenceTypeKeywordToken { }
-//public partial interface IRefKeywordToken : IReferenceTypeKeywordToken { }
+public partial interface IVariableRefKeywordToken : IReferenceTypeKeywordToken { }
+public partial interface IInternalRefKeywordToken : IReferenceTypeKeywordToken { }
