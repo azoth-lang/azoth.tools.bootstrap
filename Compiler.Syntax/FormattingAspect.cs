@@ -282,6 +282,13 @@ internal static partial class FormattingAspect
 
     public static partial string PatternMatchExpression_ToString(IPatternMatchExpressionSyntax node)
         => $"{node.Referent.ToGroupedString(node.ExpressionPrecedence)} is {node.Pattern}";
+
+    public static partial string RefExpression_ToString(IRefExpressionSyntax node)
+    {
+        var kind = node.IsInternal ? "iref" : "ref";
+        var binding = node.IsVarBinding ? "var " : "";
+        return $"{kind} {binding}{node.Referent.ToGroupedString(node.ExpressionPrecedence)}";
+    }
     #endregion
 
     #region Control Flow Expressions

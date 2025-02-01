@@ -14,7 +14,7 @@ public partial class Parser
         return Tokens.Current switch
         {
             ICapabilityToken or IIdentifierToken or IBuiltInTypeToken or IOpenParenToken
-                or ISelfKeywordToken or ISelfTypeKeywordToken or IReferenceTypeKeywordToken
+                or ISelfKeywordToken or ISelfTypeKeywordToken or IRefKeywordToken
                 => ParseType(),
             _ => null
         };
@@ -120,7 +120,7 @@ public partial class Parser
 
     private IRefTypeSyntax ParseRefType()
     {
-        var refToken = Tokens.ConsumeToken<IReferenceTypeKeywordToken>();
+        var refToken = Tokens.ConsumeToken<IRefKeywordToken>();
         var isInternal = refToken is IInternalRefKeywordToken;
         var isVarBinding = Tokens.Accept<IVarKeywordToken>();
         var referent = ParseType();

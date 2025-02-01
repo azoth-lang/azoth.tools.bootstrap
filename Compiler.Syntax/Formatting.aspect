@@ -28,6 +28,7 @@
 = UnaryOperatorExpression.ExpressionPrecedence => OperatorPrecedence.Unary;
 = ConversionExpression.ExpressionPrecedence => OperatorPrecedence.Conversion;
 = PatternMatchExpression.ExpressionPrecedence => OperatorPrecedence.Conversion;
+= RefExpression.ExpressionPrecedence => OperatorPrecedence.Unary;
 
 // ---------- Control Flow Expressions
 = IfExpression.ExpressionPrecedence => OperatorPrecedence.Min;

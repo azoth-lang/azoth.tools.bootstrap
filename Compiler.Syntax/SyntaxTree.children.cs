@@ -248,6 +248,9 @@ public static class ISyntaxExtensions
                 foreach (var child in n.GenericArguments)
                     yield return child;
                 yield break;
+            case IRefExpressionSyntax n:
+                yield return n.Referent;
+                yield break;
             case IRefTypeSyntax n:
                 yield return n.Referent;
                 yield break;

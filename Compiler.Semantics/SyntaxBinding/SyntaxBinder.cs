@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -409,6 +410,7 @@ internal static class SyntaxBinder
             IUnaryOperatorExpressionSyntax syn => UnaryOperatorExpression(syn),
             IConversionExpressionSyntax syn => ConversionExpression(syn),
             IPatternMatchExpressionSyntax syn => PatternMatchExpression(syn),
+            IRefExpressionSyntax syn => RefExpression(syn),
             IIfExpressionSyntax syn => IfExpression(syn),
             ILoopExpressionSyntax syn => LoopExpression(syn),
             IWhileExpressionSyntax syn => WhileExpression(syn),
@@ -477,6 +479,9 @@ internal static class SyntaxBinder
 
     private static IPatternMatchExpressionNode PatternMatchExpression(IPatternMatchExpressionSyntax syntax)
         => IPatternMatchExpressionNode.Create(syntax, Expression(syntax.Referent), Pattern(syntax.Pattern));
+
+    private static IExpressionNode RefExpression(IRefExpressionSyntax syn)
+        => throw new NotImplementedException();
     #endregion
 
     #region Control Flow Expressions

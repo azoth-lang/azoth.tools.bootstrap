@@ -992,6 +992,7 @@ public partial interface IOptionalPatternSyntax : IOptionalOrBindingPatternSynta
     typeof(IUnaryOperatorExpressionSyntax),
     typeof(IConversionExpressionSyntax),
     typeof(IPatternMatchExpressionSyntax),
+    typeof(IRefExpressionSyntax),
     typeof(IIfExpressionSyntax),
     typeof(ILoopExpressionSyntax),
     typeof(IWhileExpressionSyntax),
@@ -1206,6 +1207,24 @@ public partial interface IPatternMatchExpressionSyntax : IExpressionSyntax
         IExpressionSyntax referent,
         IPatternSyntax pattern)
         => new PatternMatchExpressionSyntax(span, referent, pattern);
+}
+
+[Closed(typeof(RefExpressionSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
+public partial interface IRefExpressionSyntax : IExpressionSyntax
+{
+    bool IsInternal { get; }
+    bool IsVarBinding { get; }
+    IExpressionSyntax Referent { get; }
+    OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
+        => OperatorPrecedence.Unary;
+
+    public static IRefExpressionSyntax Create(
+        TextSpan span,
+        bool isInternal,
+        bool isVarBinding,
+        IExpressionSyntax referent)
+        => new RefExpressionSyntax(span, isInternal, isVarBinding, referent);
 }
 
 [Closed(typeof(IfExpressionSyntax))]
@@ -2901,6 +2920,31 @@ file class PatternMatchExpressionSyntax : IPatternMatchExpressionSyntax
         Span = span;
         Referent = referent;
         Pattern = pattern;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class RefExpressionSyntax : IRefExpressionSyntax
+{
+    private IRefExpressionSyntax Self { [Inline] get => this; }
+
+    public TextSpan Span { [DebuggerStepThrough] get; }
+    public bool IsInternal { [DebuggerStepThrough] get; }
+    public bool IsVarBinding { [DebuggerStepThrough] get; }
+    public IExpressionSyntax Referent { [DebuggerStepThrough] get; }
+    public override string ToString()
+        => FormattingAspect.RefExpression_ToString(this);
+
+    public RefExpressionSyntax(
+        TextSpan span,
+        bool isInternal,
+        bool isVarBinding,
+        IExpressionSyntax referent)
+    {
+        Span = span;
+        IsInternal = isInternal;
+        IsVarBinding = isVarBinding;
+        Referent = referent;
     }
 }
 

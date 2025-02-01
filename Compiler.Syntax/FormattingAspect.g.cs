@@ -112,6 +112,8 @@ internal static partial class FormattingAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial string PatternMatchExpression_ToString(IPatternMatchExpressionSyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial string RefExpression_ToString(IRefExpressionSyntax node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial string IfExpression_ToString(IIfExpressionSyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial string LoopExpression_ToString(ILoopExpressionSyntax node);
