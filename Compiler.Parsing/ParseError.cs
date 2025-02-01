@@ -101,7 +101,7 @@ internal static class ParseError
     public static Diagnostic MissingSelfParameter(CodeFile file, TextSpan span)
     {
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,
-            2017, "Constructor is missing a self parameter.");
+            2017, "Initializer is missing a self parameter.");
     }
 
     public static Diagnostic LentVarNotAllowed(CodeFile file, TextSpan span)
