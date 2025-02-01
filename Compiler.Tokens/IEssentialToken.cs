@@ -14,7 +14,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Tokens;
     typeof(IBuiltInTypeToken),
     typeof(IBinaryOperatorToken),
     typeof(IPunctuationToken),
-    typeof(IEndOfFileToken))]
+    typeof(IEndOfFileToken),
+    typeof(IReferenceTypeKeywordToken))]
 public partial interface IEssentialToken : IToken
 {
 }

@@ -176,6 +176,9 @@ public static class ISyntaxExtensions
                 yield break;
             case IIntegerLiteralExpressionSyntax n:
                 yield break;
+            case IInternalReferenceTypeSyntax n:
+                yield return n.Referent;
+                yield break;
             case IInvocationExpressionSyntax n:
                 yield return n.Expression;
                 foreach (var child in n.Arguments)

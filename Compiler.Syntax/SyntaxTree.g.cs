@@ -752,6 +752,7 @@ public partial interface IExpressionBodySyntax : IBodySyntax
     typeof(ICapabilityTypeSyntax),
     typeof(IFunctionTypeSyntax),
     typeof(IViewpointTypeSyntax),
+    typeof(IInternalReferenceTypeSyntax),
     typeof(INameSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface ITypeSyntax : ICodeSyntax
@@ -843,6 +844,20 @@ public partial interface ISelfViewpointTypeSyntax : IViewpointTypeSyntax
         TextSpan span,
         ITypeSyntax referent)
         => new SelfViewpointTypeSyntax(span, referent);
+}
+
+[Closed(typeof(InternalReferenceTypeSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
+public partial interface IInternalReferenceTypeSyntax : ITypeSyntax
+{
+    bool IsVarBinding { get; }
+    ITypeSyntax Referent { get; }
+
+    public static IInternalReferenceTypeSyntax Create(
+        TextSpan span,
+        bool isVarBinding,
+        ITypeSyntax referent)
+        => new InternalReferenceTypeSyntax(span, isVarBinding, referent);
 }
 
 [Closed(
@@ -2460,6 +2475,28 @@ file class SelfViewpointTypeSyntax : ISelfViewpointTypeSyntax
         ITypeSyntax referent)
     {
         Span = span;
+        Referent = referent;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class InternalReferenceTypeSyntax : IInternalReferenceTypeSyntax
+{
+    private IInternalReferenceTypeSyntax Self { [Inline] get => this; }
+
+    public TextSpan Span { [DebuggerStepThrough] get; }
+    public bool IsVarBinding { [DebuggerStepThrough] get; }
+    public ITypeSyntax Referent { [DebuggerStepThrough] get; }
+    public override string ToString()
+        => FormattingAspect.InternalReferenceType_ToString(this);
+
+    public InternalReferenceTypeSyntax(
+        TextSpan span,
+        bool isVarBinding,
+        ITypeSyntax referent)
+    {
+        Span = span;
+        IsVarBinding = isVarBinding;
         Referent = referent;
     }
 }

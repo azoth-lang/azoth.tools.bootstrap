@@ -14,7 +14,8 @@ public partial class Parser
         return Tokens.Current switch
         {
             ICapabilityToken or IIdentifierToken or IBuiltInTypeToken or IOpenParenToken
-                or ISelfKeywordToken or ISelfTypeKeywordToken => ParseType(),
+                or ISelfKeywordToken or ISelfTypeKeywordToken or IReferenceTypeKeywordToken
+                => ParseType(),
             _ => null
         };
     }
@@ -27,6 +28,8 @@ public partial class Parser
                 return ParseSelfViewpointType();
             case IExplicitCapabilityToken:
                 return ParseTypeWithExplicitCapabilityViewpoint();
+            case IIRefKeywordToken:
+                return ParseInternalReferenceType();
             default:
                 var capability = AcceptStandardCapability();
                 if (capability is not null && Tokens.Current is IRightTriangleToken)
@@ -112,6 +115,15 @@ public partial class Parser
             default:
                 return false;
         }
+    }
+
+    private IInternalReferenceTypeSyntax ParseInternalReferenceType()
+    {
+        var irefSpan = Tokens.Consume<IIRefKeywordToken>();
+        var isVarBinding = Tokens.Accept<IVarKeywordToken>();
+        var referent = ParseType();
+        var span = TextSpan.Covering(irefSpan, referent.Span);
+        return IInternalReferenceTypeSyntax.Create(span, isVarBinding, referent);
     }
 
     /// <summary>
