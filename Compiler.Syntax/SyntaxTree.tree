@@ -132,7 +132,7 @@ ParameterType <: Code = IsLent:`bool` Referent:Type;
 ViewpointType <: Type = Referent:Type;
 CapabilityViewpointType <: ViewpointType = Capability Referent:Type;
 SelfViewpointType <: ViewpointType = Referent:Type;
-InternalReferenceType <: Type = IsVarBinding:`bool` Referent:Type;
+RefType <: Type = IsInternal:`bool` IsVarBinding:`bool` Referent:Type;
 
 // ---------- Statements
 Statement <: Code;

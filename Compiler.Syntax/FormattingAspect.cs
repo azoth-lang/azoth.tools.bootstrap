@@ -190,8 +190,12 @@ internal static partial class FormattingAspect
     public static partial string SelfViewpointType_ToString(ISelfViewpointTypeSyntax node)
         => $"self|>{node.Referent}";
 
-    public static partial string InternalReferenceType_ToString(IInternalReferenceTypeSyntax node)
-        => node.IsVarBinding ? $"iref var {node.Referent}" : $"iref {node.Referent}";
+    public static partial string RefType_ToString(IRefTypeSyntax node)
+    {
+        var kind = node.IsInternal ? "iref" : "ref";
+        var binding = node.IsVarBinding ? "var " : "";
+        return $"{kind} {binding}{node.Referent}";
+    }
     #endregion
 
     #region Statements

@@ -752,7 +752,7 @@ public partial interface IExpressionBodySyntax : IBodySyntax
     typeof(ICapabilityTypeSyntax),
     typeof(IFunctionTypeSyntax),
     typeof(IViewpointTypeSyntax),
-    typeof(IInternalReferenceTypeSyntax),
+    typeof(IRefTypeSyntax),
     typeof(INameSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface ITypeSyntax : ICodeSyntax
@@ -846,18 +846,20 @@ public partial interface ISelfViewpointTypeSyntax : IViewpointTypeSyntax
         => new SelfViewpointTypeSyntax(span, referent);
 }
 
-[Closed(typeof(InternalReferenceTypeSyntax))]
+[Closed(typeof(RefTypeSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IInternalReferenceTypeSyntax : ITypeSyntax
+public partial interface IRefTypeSyntax : ITypeSyntax
 {
+    bool IsInternal { get; }
     bool IsVarBinding { get; }
     ITypeSyntax Referent { get; }
 
-    public static IInternalReferenceTypeSyntax Create(
+    public static IRefTypeSyntax Create(
         TextSpan span,
+        bool isInternal,
         bool isVarBinding,
         ITypeSyntax referent)
-        => new InternalReferenceTypeSyntax(span, isVarBinding, referent);
+        => new RefTypeSyntax(span, isInternal, isVarBinding, referent);
 }
 
 [Closed(
@@ -2480,22 +2482,25 @@ file class SelfViewpointTypeSyntax : ISelfViewpointTypeSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class InternalReferenceTypeSyntax : IInternalReferenceTypeSyntax
+file class RefTypeSyntax : IRefTypeSyntax
 {
-    private IInternalReferenceTypeSyntax Self { [Inline] get => this; }
+    private IRefTypeSyntax Self { [Inline] get => this; }
 
     public TextSpan Span { [DebuggerStepThrough] get; }
+    public bool IsInternal { [DebuggerStepThrough] get; }
     public bool IsVarBinding { [DebuggerStepThrough] get; }
     public ITypeSyntax Referent { [DebuggerStepThrough] get; }
     public override string ToString()
-        => FormattingAspect.InternalReferenceType_ToString(this);
+        => FormattingAspect.RefType_ToString(this);
 
-    public InternalReferenceTypeSyntax(
+    public RefTypeSyntax(
         TextSpan span,
+        bool isInternal,
         bool isVarBinding,
         ITypeSyntax referent)
     {
         Span = span;
+        IsInternal = isInternal;
         IsVarBinding = isVarBinding;
         Referent = referent;
     }

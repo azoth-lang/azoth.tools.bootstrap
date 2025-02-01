@@ -74,7 +74,7 @@ internal static partial class FormattingAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial string SelfViewpointType_ToString(ISelfViewpointTypeSyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial string InternalReferenceType_ToString(IInternalReferenceTypeSyntax node);
+    public static partial string RefType_ToString(IRefTypeSyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial string ResultStatement_ToString(IResultStatementSyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

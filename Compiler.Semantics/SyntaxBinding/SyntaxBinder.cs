@@ -290,7 +290,7 @@ internal static class SyntaxBinder
             ICapabilityTypeSyntax syn => CapabilityType(syn),
             IFunctionTypeSyntax syn => FunctionType(syn),
             IViewpointTypeSyntax syn => ViewpointType(syn),
-            IInternalReferenceTypeSyntax syn => InternalReferenceType(syn),
+            IRefTypeSyntax syn => RefType(syn),
             _ => throw ExhaustiveMatch.Failed(syntax)
         };
 
@@ -323,7 +323,7 @@ internal static class SyntaxBinder
     private static ISelfViewpointTypeNode SelfViewpointType(ISelfViewpointTypeSyntax syntax)
         => ISelfViewpointTypeNode.Create(syntax, Type(syntax.Referent));
 
-    private static ITypeNode InternalReferenceType(IInternalReferenceTypeSyntax syn)
+    private static ITypeNode RefType(IRefTypeSyntax syn)
         => throw new System.NotImplementedException();
     #endregion
 
