@@ -272,6 +272,46 @@ public partial class Parser
         {
             default:
                 throw ExhaustiveMatch.Failed(Tokens.Current);
+            case ICloseBraceToken _:
+            case IColonToken _:
+            case IColonColonToken _:
+            case IColonColonDotToken _:
+            case ILessThanColonToken _:
+            case ICommaToken _:
+            case IRightArrowToken _:
+            case IQuestionToken _:
+            case IEndOfFileToken _:
+            case IOpenBracketToken _:
+            case ICloseBracketToken _:
+            case IHashToken _:
+            case IRightTriangleToken _:
+            // Various keyword tokens are listed explicitly here rather than using IKeywordToken so
+            // that exhaustive matching will properly report when an added keyword ought to have
+            // expression parsing.
+            case IBindingToken _:
+            case IAccessModifierToken _:
+            case ITypeKindKeywordToken _:
+            case ICapabilityToken _:
+            case ICapabilitySetToken _:
+            case IConversionOperatorToken _:
+            case IAbstractKeywordToken _:
+            case ICopyKeywordToken _:
+            case IElseKeywordToken _:
+            case IInitKeywordToken _:
+            case ILentKeywordToken _:
+            case IInKeywordToken _:
+            case IOutKeywordToken _:
+            case INonwritableKeywordToken _:
+            case IFunctionKeywordToken _:
+            case IImportKeywordToken _:
+            case IGetKeywordToken _:
+            case ISetKeywordToken _:
+            case ISafeKeywordToken _:
+            case INamespaceKeywordToken _:
+            case IIndependentKeywordToken _:
+            case IIsKeywordToken _:
+                Add(ParseError.UnexpectedEndOfExpression(File, Tokens.Current.Span.AtStart()));
+                throw new ParseFailedException("Unexpected end of expression");
             case ISelfKeywordToken _:
                 return ParseSelfExpression();
             case IReturnKeywordToken _:
@@ -312,6 +352,10 @@ public partial class Parser
             }
             case IIdentifierToken _:
                 return ParseOrdinaryName();
+            case IBuiltInTypeToken _:
+                return ParseBuiltInType();
+            case ISelfTypeKeywordToken _:
+                return ParseSelfType();
             case IForeachKeywordToken _:
                 return ParseForeach();
             case IWhileKeywordToken _:
@@ -356,6 +400,16 @@ public partial class Parser
                 var span = TextSpan.Covering(freeze, expression.Span);
                 return IFreezeExpressionSyntax.Create(span, expression);
             }
+            case IRefKeywordToken _:
+            {
+                var refToken = Tokens.ConsumeToken<IRefKeywordToken>();
+                var isInternal = refToken is IInternalRefKeywordToken;
+                var isVarBinding = Tokens.Accept<IVarKeywordToken>();
+                // `ref` and `iref` are like a unary operator
+                var expression = ParseExpression(OperatorPrecedence.Unary);
+                var span = TextSpan.Covering(refToken.Span, expression.Span);
+                return IRefExpressionSyntax.Create(span, isInternal, isVarBinding, expression);
+            }
             case IAsyncKeywordToken _:
                 return ParseAsyncBlock();
             case IDoKeywordToken _:
@@ -373,22 +427,6 @@ public partial class Parser
             case ICloseParenToken _:
                 // If it is one of these, we assume there is a missing identifier
                 return ParseMissingNameExpression();
-            case ICloseBraceToken _:
-            case IColonToken _:
-            case IColonColonToken _:
-            case IColonColonDotToken _:
-            case ILessThanColonToken _:
-            case ICommaToken _:
-            case IRightArrowToken _:
-            case IQuestionToken _:
-            case IKeywordToken _:
-            case IEndOfFileToken _:
-            case IOpenBracketToken _:
-            case ICloseBracketToken _:
-            case IHashToken _:
-            case IRightTriangleToken _:
-                Add(ParseError.UnexpectedEndOfExpression(File, Tokens.Current.Span.AtStart()));
-                throw new ParseFailedException("Unexpected end of expression");
             case IRightDoubleArrowToken _:
                 throw new NotImplementedException($"`{Tokens.Current.Text(File.Code)}` in expression position");
         }
