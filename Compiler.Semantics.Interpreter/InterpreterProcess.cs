@@ -718,6 +718,7 @@ public sealed class InterpreterProcess
             {
                 var result = await ExecuteAsync(exp.Context, variables).ConfigureAwait(false);
                 if (result.ShouldExit(out var obj)) return result;
+                // TODO replace with something that is typesafe for both objects and structs
                 return obj.ObjectValue[exp.ReferencedDeclaration.Name];
             }
             case IForeachExpressionNode exp:
