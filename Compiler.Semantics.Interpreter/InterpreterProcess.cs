@@ -292,7 +292,7 @@ public sealed class InterpreterProcess
                 default:
                     throw ExhaustiveMatch.Failed(parameters[i]);
                 case IFieldParameterNode fieldParameter:
-                    self.ObjectValue[fieldParameter.ReferencedField!.Symbol.Assigned().Name] = arguments[i];
+                    self.ObjectValue[fieldParameter.ReferencedField!.Symbol!] = arguments[i];
                     break;
                 case INamedParameterNode p:
                     scope.Add(p, arguments[i]);
@@ -317,7 +317,7 @@ public sealed class InterpreterProcess
         // Initialize fields to default values
         var fields = typeDefinition.Members.OfType<IFieldDefinitionNode>();
         foreach (var field in fields)
-            self.ObjectValue[field.Symbol.Assigned().Name] = new AzothValue();
+            self.ObjectValue[field.Symbol!] = AzothValue.None;
 
         if (typeDefinition is IClassDefinitionNode
             {
@@ -721,7 +721,7 @@ public sealed class InterpreterProcess
                 var result = await ExecuteAsync(exp.Context, variables).ConfigureAwait(false);
                 if (result.ShouldExit(out var obj)) return result;
                 // TODO replace with something that is typesafe for both objects and structs
-                return obj.ObjectValue[exp.ReferencedDeclaration.Name];
+                return obj.ObjectValue[exp.ReferencedDeclaration.Symbol!];
             }
             case IForeachExpressionNode exp:
             {
@@ -734,7 +734,7 @@ public sealed class InterpreterProcess
                 if (exp.ReferencedIterateMethod is not null)
                 {
                     var selfType = (CapabilityType)exp.InExpression!.Type;
-                    var iterateMethod = exp.ReferencedIterateMethod!.Symbol.Assigned();
+                    var iterateMethod = exp.ReferencedIterateMethod!.Symbol!;
                     iterator = await CallMethodAsync(iterateMethod, selfType, iterable, []).ConfigureAwait(false);
                     iteratorType = (CapabilityType)iterateMethod.ReturnType;
                 }
@@ -744,7 +744,7 @@ public sealed class InterpreterProcess
                     iteratorType = (CapabilityType)exp.InExpression!.Type;
                 }
 
-                var nextMethod = exp.ReferencedNextMethod!.Symbol.Assigned();
+                var nextMethod = exp.ReferencedNextMethod!.Symbol!;
                 var block = exp.Block; // Lifted out of loop
                 while (true)
                 {
@@ -1349,7 +1349,7 @@ public sealed class InterpreterProcess
                 var result = await ExecuteAsync(exp.Context, variables).ConfigureAwait(false);
                 if (result.ShouldExit(out var obj)) return result;
                 // TODO handle the access operator
-                obj.ObjectValue[exp.ReferencedDeclaration.Name] = value;
+                obj.ObjectValue[exp.ReferencedDeclaration.Symbol!] = value;
                 break;
         }
 

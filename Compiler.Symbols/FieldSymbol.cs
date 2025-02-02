@@ -31,9 +31,9 @@ public sealed class FieldSymbol : Symbol
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
         return other is FieldSymbol otherField
+               && Name == otherField.Name // First for improved performance
                && ContainingSymbol == otherField.ContainingSymbol
                && IsMutableBinding == otherField.IsMutableBinding
-               && Name == otherField.Name
                && Type.Equals(otherField.Type);
     }
 

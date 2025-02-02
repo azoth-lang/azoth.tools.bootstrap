@@ -1,9 +1,9 @@
 using System.Collections.Generic;
-using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Symbols;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.MemoryLayout;
 
-internal sealed class AzothObject : Dictionary<IdentifierName, AzothValue>
+internal sealed class AzothObject : Dictionary<FieldSymbol, AzothValue>
 {
     public readonly VTable VTable;
 
