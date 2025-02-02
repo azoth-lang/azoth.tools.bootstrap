@@ -17,6 +17,8 @@ public static partial class TypeOperations
             VoidType _ => true,
             NeverType _ => true,
             OptionalType t => t.Referent.SupertypeMaintainsIndependence(exact, context),
+            // TODO not sure RefType is correct
+            RefType t => t.Referent.SupertypeMaintainsIndependence(exact, context),
             FunctionType t => t.SupertypeMaintainsIndependence(),
             _ => throw ExhaustiveMatch.Failed(type),
         };

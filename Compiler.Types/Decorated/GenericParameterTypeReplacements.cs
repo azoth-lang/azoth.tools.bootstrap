@@ -71,11 +71,18 @@ public sealed class GenericParameterTypeReplacements
         {
             case CapabilityType t:
                 return Apply(t, selfReplacement);
-            case OptionalType optionalType:
+            case OptionalType t:
             {
-                var replacementType = Apply(optionalType.Referent, selfReplacement);
-                if (!ReferenceEquals(optionalType.Referent, replacementType))
-                    return OptionalType.Create(replacementType);
+                var replacementType = Apply(t.Referent, selfReplacement);
+                if (!ReferenceEquals(t.Referent, replacementType))
+                    return OptionalType.CreateWithoutPlainType(replacementType);
+                break;
+            }
+            case RefType t:
+            {
+                var replacementType = Apply(t.Referent, selfReplacement);
+                if (!ReferenceEquals(t.Referent, replacementType))
+                    return RefType.CreateWithoutPlainType(t.IsInternal, t.IsMutableBinding, replacementType);
                 break;
             }
             case GenericParameterType genericParameterType:

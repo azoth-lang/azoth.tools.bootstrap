@@ -193,7 +193,7 @@ internal static partial class FormattingAspect
     public static partial string RefType_ToString(IRefTypeSyntax node)
     {
         var kind = node.IsInternal ? "iref" : "ref";
-        var binding = node.IsVarBinding ? "var " : "";
+        var binding = node.IsMutableBinding ? "var " : "";
         return $"{kind} {binding}{node.Referent}";
     }
     #endregion
@@ -286,7 +286,7 @@ internal static partial class FormattingAspect
     public static partial string RefExpression_ToString(IRefExpressionSyntax node)
     {
         var kind = node.IsInternal ? "iref" : "ref";
-        var binding = node.IsVarBinding ? "var " : "";
+        var binding = node.IsMutableBinding ? "var " : "";
         return $"{kind} {binding}{node.Referent.ToGroupedString(node.ExpressionPrecedence)}";
     }
     #endregion

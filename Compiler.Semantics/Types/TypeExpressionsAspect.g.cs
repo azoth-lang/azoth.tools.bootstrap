@@ -35,4 +35,6 @@ internal static partial class TypeExpressionsAspect
     public static partial IMaybeType CapabilityViewpointType_NamedType(ICapabilityViewpointTypeNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IMaybeType SelfViewpointType_NamedType(ISelfViewpointTypeNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial IMaybeType RefType_NamedType(IRefTypeNode node);
 }

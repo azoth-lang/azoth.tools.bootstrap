@@ -26,6 +26,8 @@ public static partial class TypeOperations
             UnknownType _ => true,
             // The referent of an optional type is basically `out T` (covariant)
             OptionalType t => t.Referent.FieldMaintainsIndependence(context.Child(Independence.Disallowed)),
+            // TODO not sure RefType is correct
+            RefType t => t.Referent.FieldMaintainsIndependence(context.Child(Independence.Disallowed)),
             FunctionType t => t.FieldMaintainsIndependence(),
             _ => throw ExhaustiveMatch.Failed(type),
         };

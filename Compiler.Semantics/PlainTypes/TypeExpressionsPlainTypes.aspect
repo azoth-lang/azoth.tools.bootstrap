@@ -6,5 +6,7 @@
 
 // ---------- Types
 ↑ Type.NamedPlainType: `IMaybePlainType`;
-= QualifiedTypeName.NamedPlainType => throw new NotImplementedException();
 = ViewpointType.NamedPlainType;
+
+// ---------- Type Names
+= QualifiedTypeName.NamedPlainType => throw new NotImplementedException();

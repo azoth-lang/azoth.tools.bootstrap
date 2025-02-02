@@ -851,15 +851,15 @@ public partial interface ISelfViewpointTypeSyntax : IViewpointTypeSyntax
 public partial interface IRefTypeSyntax : ITypeSyntax
 {
     bool IsInternal { get; }
-    bool IsVarBinding { get; }
+    bool IsMutableBinding { get; }
     ITypeSyntax Referent { get; }
 
     public static IRefTypeSyntax Create(
         TextSpan span,
         bool isInternal,
-        bool isVarBinding,
+        bool isMutableBinding,
         ITypeSyntax referent)
-        => new RefTypeSyntax(span, isInternal, isVarBinding, referent);
+        => new RefTypeSyntax(span, isInternal, isMutableBinding, referent);
 }
 
 [Closed(
@@ -1214,7 +1214,7 @@ public partial interface IPatternMatchExpressionSyntax : IExpressionSyntax
 public partial interface IRefExpressionSyntax : IExpressionSyntax
 {
     bool IsInternal { get; }
-    bool IsVarBinding { get; }
+    bool IsMutableBinding { get; }
     IExpressionSyntax Referent { get; }
     OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
         => OperatorPrecedence.Unary;
@@ -1222,9 +1222,9 @@ public partial interface IRefExpressionSyntax : IExpressionSyntax
     public static IRefExpressionSyntax Create(
         TextSpan span,
         bool isInternal,
-        bool isVarBinding,
+        bool isMutableBinding,
         IExpressionSyntax referent)
-        => new RefExpressionSyntax(span, isInternal, isVarBinding, referent);
+        => new RefExpressionSyntax(span, isInternal, isMutableBinding, referent);
 }
 
 [Closed(typeof(IfExpressionSyntax))]
@@ -2507,7 +2507,7 @@ file class RefTypeSyntax : IRefTypeSyntax
 
     public TextSpan Span { [DebuggerStepThrough] get; }
     public bool IsInternal { [DebuggerStepThrough] get; }
-    public bool IsVarBinding { [DebuggerStepThrough] get; }
+    public bool IsMutableBinding { [DebuggerStepThrough] get; }
     public ITypeSyntax Referent { [DebuggerStepThrough] get; }
     public override string ToString()
         => FormattingAspect.RefType_ToString(this);
@@ -2515,12 +2515,12 @@ file class RefTypeSyntax : IRefTypeSyntax
     public RefTypeSyntax(
         TextSpan span,
         bool isInternal,
-        bool isVarBinding,
+        bool isMutableBinding,
         ITypeSyntax referent)
     {
         Span = span;
         IsInternal = isInternal;
-        IsVarBinding = isVarBinding;
+        IsMutableBinding = isMutableBinding;
         Referent = referent;
     }
 }
@@ -2930,7 +2930,7 @@ file class RefExpressionSyntax : IRefExpressionSyntax
 
     public TextSpan Span { [DebuggerStepThrough] get; }
     public bool IsInternal { [DebuggerStepThrough] get; }
-    public bool IsVarBinding { [DebuggerStepThrough] get; }
+    public bool IsMutableBinding { [DebuggerStepThrough] get; }
     public IExpressionSyntax Referent { [DebuggerStepThrough] get; }
     public override string ToString()
         => FormattingAspect.RefExpression_ToString(this);
@@ -2938,12 +2938,12 @@ file class RefExpressionSyntax : IRefExpressionSyntax
     public RefExpressionSyntax(
         TextSpan span,
         bool isInternal,
-        bool isVarBinding,
+        bool isMutableBinding,
         IExpressionSyntax referent)
     {
         Span = span;
         IsInternal = isInternal;
-        IsVarBinding = isVarBinding;
+        IsMutableBinding = isMutableBinding;
         Referent = referent;
     }
 }

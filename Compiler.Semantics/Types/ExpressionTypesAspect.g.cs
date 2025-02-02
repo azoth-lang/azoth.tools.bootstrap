@@ -126,6 +126,10 @@ internal static partial class ExpressionTypesAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFlowState PatternMatchExpression_FlowStateAfter(IPatternMatchExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial IMaybeType RefExpression_Type(IRefExpressionNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial IFlowState RefExpression_FlowStateAfter(IRefExpressionNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IMaybeType IfExpression_Type(IIfExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFlowState IfExpression_FlowStateAfter(IIfExpressionNode node);

@@ -354,6 +354,7 @@ public sealed class InterpreterProcess
             case CapabilitySetSelfType _:
             case CapabilityViewpointType _:
             case SelfViewpointType _:
+            case RefType _:
                 var methodSignature = methodSignatures[methodSymbol];
                 throw new InvalidOperationException($"Can't call {methodSignature} on {selfType}");
             default:
@@ -898,6 +899,10 @@ public sealed class InterpreterProcess
                 var result = await ExecuteAsync(exp.Expression!, variables).ConfigureAwait(false);
                 if (result.ShouldExit(out var value)) return result;
                 return await value.PromiseValue.ConfigureAwait(false);
+            }
+            case IRefExpressionNode exp:
+            {
+                throw new NotImplementedException();
             }
             case IUnresolvedExpressionNode _:
             case IMissingNameExpressionNode _:

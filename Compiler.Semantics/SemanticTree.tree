@@ -162,6 +162,7 @@ ParameterType <: Code = Syntax:`IParameterTypeSyntax` Referent:Type;
 ViewpointType <: Type = Syntax:`IViewpointTypeSyntax` Referent:Type;
 CapabilityViewpointType <: ViewpointType = Syntax:`ICapabilityViewpointTypeSyntax` Capability Referent:Type;
 SelfViewpointType <: ViewpointType = Syntax:`ISelfViewpointTypeSyntax` Referent:Type;
+RefType <: Type = Syntax:`IRefTypeSyntax` Referent:Type;
 
 // ---------- Control Flow
 ControlFlow <: Child;
@@ -242,6 +243,7 @@ ConversionExpression <: OrdinaryTypedExpression = Syntax:`IConversionExpressionS
 ImplicitConversionExpression <: OrdinaryTypedExpression = Referent:Expression PlainType:`BarePlainType`;
 PatternMatchExpression <: OrdinaryTypedExpression
     = Syntax:`IPatternMatchExpressionSyntax` Referent:AmbiguousExpression Pattern;
+RefExpression <: OrdinaryTypedExpression = Syntax:`IRefExpressionSyntax` Referent:AmbiguousExpression;
 
 // ---------- Control Flow Expressions
 IfExpression <: OrdinaryTypedExpression, ElseClause = Syntax:`IIfExpressionSyntax`

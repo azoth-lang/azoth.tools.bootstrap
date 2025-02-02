@@ -1293,6 +1293,7 @@ public partial interface IExpressionBodyNode : IBodyNode
     typeof(ICapabilityTypeNode),
     typeof(IFunctionTypeNode),
     typeof(IViewpointTypeNode),
+    typeof(IRefTypeNode),
     typeof(ITypeNameNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface ITypeNode : ICodeNode
@@ -1420,6 +1421,26 @@ public partial interface ISelfViewpointTypeNode : IViewpointTypeNode
         ISelfViewpointTypeSyntax syntax,
         ITypeNode referent)
         => new SelfViewpointTypeNode(syntax, referent);
+}
+
+[Closed(typeof(RefTypeNode))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
+public partial interface IRefTypeNode : ITypeNode
+{
+    new IRefTypeSyntax Syntax { get; }
+    ITypeSyntax ITypeNode.Syntax => Syntax;
+    ICodeSyntax ICodeNode.Syntax => Syntax;
+    ISyntax? ISemanticNode.Syntax => Syntax;
+    ITypeNode Referent { get; }
+    bool IsInternal
+        => Syntax.IsInternal;
+    bool IsMutableBinding
+        => Syntax.IsMutableBinding;
+
+    public static IRefTypeNode Create(
+        IRefTypeSyntax syntax,
+        ITypeNode referent)
+        => new RefTypeNode(syntax, referent);
 }
 
 [Closed(
@@ -1754,6 +1775,7 @@ public partial interface IExpressionNode : IAmbiguousExpressionNode, IControlFlo
     typeof(IConversionExpressionNode),
     typeof(IImplicitConversionExpressionNode),
     typeof(IPatternMatchExpressionNode),
+    typeof(IRefExpressionNode),
     typeof(IIfExpressionNode),
     typeof(ILoopExpressionNode),
     typeof(IWhileExpressionNode),
@@ -2167,6 +2189,28 @@ public partial interface IPatternMatchExpressionNode : IOrdinaryTypedExpressionN
         IAmbiguousExpressionNode referent,
         IPatternNode pattern)
         => new PatternMatchExpressionNode(syntax, referent, pattern);
+}
+
+[Closed(typeof(RefExpressionNode))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
+public partial interface IRefExpressionNode : IOrdinaryTypedExpressionNode
+{
+    new IRefExpressionSyntax Syntax { get; }
+    IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
+    ICodeSyntax ICodeNode.Syntax => Syntax;
+    ISyntax? ISemanticNode.Syntax => Syntax;
+    IAmbiguousExpressionNode TempReferent { get; }
+    IExpressionNode? Referent { get; }
+    IAmbiguousExpressionNode CurrentReferent { get; }
+    bool IsInternal
+        => Syntax.IsInternal;
+    bool IsMutableBinding
+        => Syntax.IsMutableBinding;
+
+    public static IRefExpressionNode Create(
+        IRefExpressionSyntax syntax,
+        IAmbiguousExpressionNode referent)
+        => new RefExpressionNode(syntax, referent);
 }
 
 [Closed(typeof(IfExpressionNode))]
@@ -8197,6 +8241,46 @@ file class SelfViewpointTypeNode : SemanticNode, ISelfViewpointTypeNode
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
+file class RefTypeNode : SemanticNode, IRefTypeNode
+{
+    private IRefTypeNode Self { [Inline] get => this; }
+
+    public IRefTypeSyntax Syntax { [DebuggerStepThrough] get; }
+    public ITypeNode Referent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package
+        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public CodeFile File
+        => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
+    public IMaybePlainType NamedPlainType
+        => GrammarAttribute.IsCached(in namedPlainTypeCached) ? namedPlainType!
+            : this.Synthetic(ref namedPlainTypeCached, ref namedPlainType,
+                TypeExpressionsPlainTypesAspect.RefType_NamedPlainType);
+    private IMaybePlainType? namedPlainType;
+    private bool namedPlainTypeCached;
+    public IMaybeType NamedType
+        => GrammarAttribute.IsCached(in namedTypeCached) ? namedType!
+            : this.Synthetic(ref namedTypeCached, ref namedType,
+                TypeExpressionsAspect.RefType_NamedType);
+    private IMaybeType? namedType;
+    private bool namedTypeCached;
+
+    public RefTypeNode(
+        IRefTypeSyntax syntax,
+        ITypeNode referent)
+    {
+        Syntax = syntax;
+        Referent = Child.Attach(this, referent);
+    }
+
+    internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return ControlFlowSet.Empty;
+        return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
 file class EntryNode : SemanticNode, IEntryNode
 {
     private IEntryNode Self { [Inline] get => this; }
@@ -11272,6 +11356,156 @@ file class PatternMatchExpressionNode : SemanticNode, IPatternMatchExpressionNod
         if (ReferenceEquals(child, Self.Pattern))
             return Referent?.ValueId;
         return base.Inherited_MatchReferentValueId(child, descendant, ctx);
+    }
+
+    internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return false;
+        return base.Inherited_ShouldPrepareToReturn(child, descendant, ctx);
+    }
+
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+    {
+        contributors.Add(this);
+        base.CollectContributors_Diagnostics(contributors);
+    }
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
+    {
+        ExpressionTypesAspect.OrdinaryTypedExpression_Contribute_Diagnostics(this, builder);
+    }
+
+    internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
+    {
+        contributors.AddToRange(Self.ControlFlowNext.Keys.Cast<SemanticNode>(), this);
+        base.CollectContributors_ControlFlowPrevious(contributors);
+    }
+
+    internal override void Contribute_ControlFlowPrevious(SemanticNode target, Dictionary<IControlFlowNode, ControlFlowKind> builder)
+    {
+        if (target is IControlFlowNode t)
+            ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
+    }
+
+    protected override IChildTreeNode Rewrite()
+        => ExpressionTypesAspect.OrdinaryTypedExpression_ImplicitMove_Insert(this)
+        ?? ExpressionTypesAspect.OrdinaryTypedExpression_ImplicitFreeze_Insert(this)
+        ?? ExpressionTypesAspect.OrdinaryTypedExpression_Insert_PrepareToReturnExpression(this)
+        ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitConversionExpression(this)
+        ?? base.Rewrite();
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class RefExpressionNode : SemanticNode, IRefExpressionNode
+{
+    private IRefExpressionNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
+    protected override bool MayHaveRewrite => true;
+
+    public IRefExpressionSyntax Syntax { [DebuggerStepThrough] get; }
+    private RewritableChild<IAmbiguousExpressionNode> referent;
+    private bool referentCached;
+    public IAmbiguousExpressionNode TempReferent
+        => GrammarAttribute.IsCached(in referentCached) ? referent.UnsafeValue
+            : this.RewritableChild(ref referentCached, ref referent);
+    public IExpressionNode? Referent => TempReferent as IExpressionNode;
+    public IAmbiguousExpressionNode CurrentReferent => referent.UnsafeValue;
+    public IPackageDeclarationNode Package
+        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public CodeFile File
+        => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
+    public LexicalScope ContainingLexicalScope()
+        => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
+    public IEntryNode ControlFlowEntry()
+        => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
+    public ControlFlowSet ControlFlowPrevious
+        => GrammarAttribute.IsCached(in controlFlowPreviousCached) ? controlFlowPrevious!
+            : this.Collection(ref controlFlowPreviousContributors, ref controlFlowPreviousCached, ref controlFlowPrevious,
+                CollectContributors_ControlFlowPrevious<IExecutableDefinitionNode>, Collect_ControlFlowPrevious);
+    private ControlFlowSet? controlFlowPrevious;
+    private bool controlFlowPreviousCached;
+    private IFixedSet<SemanticNode>? controlFlowPreviousContributors;
+    public ControlFlowSet ControlFlowFollowing()
+        => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
+    public ValueIdScope ValueIdScope
+        => Inherited_ValueIdScope(GrammarAttribute.CurrentInheritanceContext());
+    public IMaybeType? ExpectedType
+        => GrammarAttribute.IsCached(in expectedTypeCached) ? expectedType
+            : this.Inherited(ref expectedTypeCached, ref expectedType,
+                Inherited_ExpectedType);
+    private IMaybeType? expectedType;
+    private bool expectedTypeCached;
+    public bool ImplicitRecoveryAllowed()
+        => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
+    public bool ShouldPrepareToReturn()
+        => Inherited_ShouldPrepareToReturn(GrammarAttribute.CurrentInheritanceContext());
+    public IMaybePlainType? ExpectedPlainType
+        => GrammarAttribute.IsCached(in expectedPlainTypeCached) ? expectedPlainType
+            : this.Inherited(ref expectedPlainTypeCached, ref expectedPlainType,
+                Inherited_ExpectedPlainType);
+    private IMaybePlainType? expectedPlainType;
+    private bool expectedPlainTypeCached;
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.Expression_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
+    public IFlowState FlowStateAfter
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+                ExpressionTypesAspect.RefExpression_FlowStateAfter);
+    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private bool flowStateAfterCached;
+    public IMaybePlainType PlainType
+        => GrammarAttribute.IsCached(in plainTypeCached) ? plainType!
+            : this.Synthetic(ref plainTypeCached, ref plainType,
+                ExpressionPlainTypesAspect.RefExpression_PlainType);
+    private IMaybePlainType? plainType;
+    private bool plainTypeCached;
+    public IMaybeType Type
+        => GrammarAttribute.IsCached(in typeCached) ? type!
+            : this.Synthetic(ref typeCached, ref type,
+                ExpressionTypesAspect.RefExpression_Type);
+    private IMaybeType? type;
+    private bool typeCached;
+    public ValueId ValueId
+        => GrammarAttribute.IsCached(in valueIdCached) ? valueId
+            : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
+                ValueIdsAspect.Expression_ValueId);
+    private ValueId valueId;
+    private bool valueIdCached;
+
+    public RefExpressionNode(
+        IRefExpressionSyntax syntax,
+        IAmbiguousExpressionNode referent)
+    {
+        Syntax = syntax;
+        this.referent = Child.Create(this, referent);
+    }
+
+    internal override IMaybePlainType? Inherited_ExpectedPlainType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(descendant, Self.CurrentReferent))
+            return null;
+        if (ReferenceEquals(child, descendant))
+            return null;
+        return base.Inherited_ExpectedPlainType(child, descendant, ctx);
+    }
+
+    internal override IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return null;
+        return base.Inherited_ExpectedType(child, descendant, ctx);
+    }
+
+    internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return false;
+        return base.Inherited_ImplicitRecoveryAllowed(child, descendant, ctx);
     }
 
     internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)

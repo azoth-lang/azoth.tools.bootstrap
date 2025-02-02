@@ -383,6 +383,12 @@ public static class ISemanticNodeExtensions
                 foreach (var child in n.GenericArguments)
                     yield return child;
                 yield break;
+            case IRefExpressionNode n:
+                yield return n.TempReferent;
+                yield break;
+            case IRefTypeNode n:
+                yield return n.Referent;
+                yield break;
             case IResultStatementNode n:
                 yield return n.TempExpression;
                 yield break;

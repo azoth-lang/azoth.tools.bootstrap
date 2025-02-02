@@ -189,7 +189,7 @@ internal static partial class ExpressionPlainTypesAspect
 
     public static partial IMaybePlainType IfExpression_PlainType(IIfExpressionNode node)
     {
-        if (node.ElseClause is null) return node.ThenBlock.PlainType.MakeOptional();
+        if (node.ElseClause is null) return OptionalPlainType.Create(node.ThenBlock.PlainType);
 
         // TODO unify with else clause
         return node.ThenBlock.PlainType;
@@ -221,7 +221,7 @@ internal static partial class ExpressionPlainTypesAspect
     {
         var convertToPlainType = node.ConvertToType.NamedPlainType;
         if (node.Operator == ConversionOperator.Optional)
-            convertToPlainType = convertToPlainType.MakeOptional();
+            convertToPlainType = OptionalPlainType.Create(convertToPlainType);
         return convertToPlainType;
     }
 
@@ -342,6 +342,11 @@ internal static partial class ExpressionPlainTypesAspect
         => (node.Parent as IMethodInvocationExpressionNode)?.SelectedCallCandidate?.SelfParameterPlainType;
     #endregion
 
+    #region Operator Expressions
+    public static partial IMaybePlainType RefExpression_PlainType(IRefExpressionNode node)
+        => RefPlainType.Create(node.Referent?.PlainType, node.IsInternal, node.IsMutableBinding) ?? PlainType.Unknown;
+    #endregion
+
     public static partial IMaybePlainType InitializerNameExpression_PlainType(IInitializerNameExpressionNode node)
         // TODO proper plain type
         // => node.ReferencedDeclaration?.InitializerGroupPlainType ?? PlainType.Unknown;
@@ -436,7 +441,7 @@ internal static partial class ExpressionPlainTypesAspect
                 return BareTypeConstructor.Bool;
             // TODO support lifted implicit conversions
             //case (OptionalPlainType { Referent: var to }, OptionalPlainType { Referent: var from }):
-            //    return ImplicitlyConvertToType(to, from)?.MakeOptional();
+            //    return OptionalPlainType.Create(ImplicitlyConvertToType(to, from));
             case (OptionalPlainType { Referent: var to }, _):
                 return ImplicitlyConvertToType(to, fromType);
             default:

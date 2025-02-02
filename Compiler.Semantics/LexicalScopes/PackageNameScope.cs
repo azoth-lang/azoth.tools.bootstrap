@@ -5,7 +5,6 @@ using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors.Contexts;
-using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
@@ -72,27 +71,6 @@ public sealed class PackageNameScope
     public ITypeDeclarationNode? Lookup(BuiltInTypeName name) => builtIns.GetValueOrDefault(name);
     #endregion
 
-    #region Loopkup(Type)
-    public ITypeDeclarationNode? Lookup(IMaybeType type)
-        => type switch
-        {
-            UnknownType _ => null,
-            NeverType _ => null,
-            VoidType _ => null,
-            FunctionType _ => null,
-            OptionalType _ => throw new NotImplementedException(),
-            CapabilityType t => Lookup(t.PlainType.TypeConstructor),
-            GenericParameterType t => Lookup(t),
-            CapabilityViewpointType t => Lookup(t.Referent),
-            SelfViewpointType t => Lookup(t.Referent),
-            CapabilitySetSelfType t => null,
-            _ => throw ExhaustiveMatch.Failed(type),
-        };
-
-    public ITypeDeclarationNode Lookup(GenericParameterType type)
-        => throw new NotImplementedException();
-    #endregion
-
     #region Lookup(*PlainType)
     public ITypeDeclarationNode? Lookup(IMaybePlainType plainType)
         => plainType switch
@@ -101,6 +79,7 @@ public sealed class PackageNameScope
             VoidPlainType _ => null,
             NeverPlainType _ => null,
             FunctionPlainType _ => null,
+            RefPlainType _ => null,
             OptionalPlainType _ => throw new NotImplementedException(),
             GenericParameterPlainType t => Lookup(t),
             BarePlainType t => Lookup(t.TypeConstructor),

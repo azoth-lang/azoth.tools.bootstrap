@@ -493,7 +493,7 @@ internal static partial class ExpressionTypesAspect
     public static partial IMaybeType IfExpression_Type(IIfExpressionNode node)
     {
         if (node.ElseClause is null)
-            return OptionalType.Create(node.ThenBlock.Type.ToNonLiteral());
+            return OptionalType.Create(node.PlainType, node.ThenBlock.Type.ToNonLiteral());
 
         // TODO unify with else clause
         return node.ThenBlock.Type;
@@ -574,7 +574,7 @@ internal static partial class ExpressionTypesAspect
     {
         var convertToType = node.ConvertToType.NamedType;
         if (node.Operator == ConversionOperator.Optional)
-            convertToType = OptionalType.Create(convertToType);
+            convertToType = OptionalType.Create(node.PlainType, convertToType);
         return convertToType;
     }
 
@@ -788,6 +788,14 @@ internal static partial class ExpressionTypesAspect
         return flowStateBefore.Transform(node.Value.ValueId, node.ValueId, node.Type)
                               .DropBindingsForReturn();
     }
+
+    #region Operator Expressions
+    public static partial IMaybeType RefExpression_Type(IRefExpressionNode node)
+        => RefType.Create(node.PlainType, node.Referent?.Type ?? Type.Unknown);
+
+    public static partial IFlowState RefExpression_FlowStateAfter(IRefExpressionNode node)
+        => node.Referent?.FlowStateAfter.Transform(node.Referent.ValueId, node.ValueId, node.Type) ?? IFlowState.Empty;
+    #endregion
 
     #region Unresolved Name Expressions
     public static partial IFlowState UnresolvedNameExpression_FlowStateAfter(IUnresolvedNameExpressionNode node)

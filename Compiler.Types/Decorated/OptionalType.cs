@@ -13,41 +13,26 @@ public sealed class OptionalType : NonVoidType
     /// Create an optional type for the given type (i.e. `T?` given `T`).
     /// </summary>
     /// <remarks>Unknown and void types are not changed.</remarks>
-    public static IMaybeType Create(IMaybeType referent)
-        => referent switch
+    public static IMaybeType Create(IMaybePlainType plainType, IMaybeType referent)
+        => (plainType, referent) switch
         {
-            NonVoidType t => new OptionalType(t),
-            UnknownType _ => Unknown,
-            VoidType _ => Void,
-            _ => throw ExhaustiveMatch.Failed(referent),
+            (OptionalPlainType t, NonVoidType r) => new OptionalType(t, r),
+            (UnknownPlainType, UnknownType) => Unknown,
+            (VoidPlainType, VoidType) => Void,
+            _ => throw new ArgumentException($"Plain type '{plainType}' does not match referent type '{referent}'.")
         };
 
     /// <summary>
     /// Create an optional type for the given type (i.e. `T?` given `T`).
     /// </summary>
     /// <remarks>Void types are not changed.</remarks>
-    public static Type Create(Type referent)
+    internal static Type CreateWithoutPlainType(Type referent)
         => referent switch
         {
-            NonVoidType t => new OptionalType(t),
+            NonVoidType r => new OptionalType(new(r.PlainType), r),
             VoidType _ => Void,
             _ => throw ExhaustiveMatch.Failed(referent),
         };
-
-    /// <summary>
-    /// Create an optional type for the given type (i.e. `T?` given `T`).
-    /// </summary>
-    /// <remarks>Unknown type produces unknown type.</remarks>
-    public static IMaybeNonVoidType Create(IMaybeNonVoidType referent)
-        => referent switch
-        {
-            NonVoidType t => new OptionalType(t),
-            UnknownType _ => Type.Unknown,
-            _ => throw ExhaustiveMatch.Failed(referent),
-        };
-
-    [DebuggerStepThrough]
-    public static OptionalType Create(NonVoidType referent) => new OptionalType(referent);
 
     public override OptionalPlainType PlainType { [DebuggerStepThrough] get; }
 
@@ -67,9 +52,6 @@ public sealed class OptionalType : NonVoidType
         Referent = referent;
     }
 
-    public OptionalType(NonVoidType referent)
-        : this(new(referent.PlainType), referent) { }
-
     #region Equality
     public override bool Equals(IMaybeType? other)
     {
@@ -79,7 +61,7 @@ public sealed class OptionalType : NonVoidType
                && Referent.Equals(otherType.Referent);
     }
 
-    public override int GetHashCode() => HashCode.Combine(Referent);
+    public override int GetHashCode() => HashCode.Combine(typeof(OptionalType), Referent);
     #endregion
 
     public override string ToSourceCodeString() => $"{Referent.ToSourceCodeString()}?";

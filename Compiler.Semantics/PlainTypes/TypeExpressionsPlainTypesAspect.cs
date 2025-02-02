@@ -6,12 +6,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.PlainTypes;
 
 internal static partial class TypeExpressionsPlainTypesAspect
 {
-    public static partial IMaybePlainType ViewpointType_NamedPlainType(IViewpointTypeNode node)
-        // Viewpoint has no effect on the plain type
-        => node.Referent.NamedPlainType;
-
+    #region Types
     public static partial IMaybePlainType OptionalType_NamedPlainType(IOptionalTypeNode node)
-        => node.Referent.NamedPlainType.MakeOptional();
+        => OptionalPlainType.Create(node.Referent.NamedPlainType);
 
     // TODO report error for `void?`
 
@@ -19,20 +16,30 @@ internal static partial class TypeExpressionsPlainTypesAspect
         // Capability has no effect on the plain type
         => node.Referent.NamedPlainType;
 
-    public static partial IMaybePlainType BuiltInTypeName_NamedPlainType(IBuiltInTypeNameNode node)
-        => node.ReferencedDeclaration?.TypeConstructor.TryConstructNullaryPlainType(containingType: null) ?? IMaybePlainType.Unknown;
-
     public static partial IMaybePlainType FunctionType_NamedPlainType(IFunctionTypeNode node)
     {
-        var parameters = node.Parameters.Select(p => p.Referent.NamedPlainType)
-                             .OfType<NonVoidPlainType>().ToFixedList();
+        var parameters = node.Parameters.Select(p => p.Referent.NamedPlainType).OfType<NonVoidPlainType>()
+                             .ToFixedList();
         if (parameters.Count != node.Parameters.Count)
             // Not all parameters are known and non-void
             return PlainType.Unknown;
-        if (node.Return.NamedPlainType is not PlainType returnPlainType)
-            return PlainType.Unknown;
+        if (node.Return.NamedPlainType is not PlainType returnPlainType) return PlainType.Unknown;
         return new FunctionPlainType(parameters, returnPlainType);
     }
+
+    public static partial IMaybePlainType ViewpointType_NamedPlainType(IViewpointTypeNode node)
+        // Viewpoint has no effect on the plain type
+        => node.Referent.NamedPlainType;
+
+    public static partial IMaybePlainType RefType_NamedPlainType(IRefTypeNode node)
+        => RefPlainType.Create(node.Referent.NamedPlainType, node.IsInternal, node.IsMutableBinding);
+
+    // TODO report error for `ref void` and `ref never`?
+    #endregion
+
+    #region Type Names
+    public static partial IMaybePlainType BuiltInTypeName_NamedPlainType(IBuiltInTypeNameNode node)
+        => node.ReferencedDeclaration?.TypeConstructor.TryConstructNullaryPlainType(containingType: null) ?? IMaybePlainType.Unknown;
 
     public static partial IMaybePlainType IdentifierTypeName_NamedPlainType(IIdentifierTypeNameNode node)
     {
@@ -55,4 +62,5 @@ internal static partial class TypeExpressionsPlainTypesAspect
             return PlainType.Unknown;
         return declaredPlainType.Construct(containingType: null, genericArguments);
     }
+    #endregion
 }

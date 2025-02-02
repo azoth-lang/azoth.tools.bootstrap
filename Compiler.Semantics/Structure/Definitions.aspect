@@ -96,6 +96,11 @@
 = SelfParameter.IsLentBinding => Syntax.IsLentBinding;
 = FieldParameter.Name => Syntax.Name;
 
+// ---------- Types
+↑ ParameterType.IsLent: `bool` => Syntax.IsLent;
+↑ RefType.IsInternal: `bool` => Syntax.IsInternal;
+↑ RefType.IsMutableBinding: `bool` => Syntax.IsMutableBinding;
+
 // ---------- Control Flow
 ↑ Entry.Syntax: `ICodeSyntax`? => null;
 ↑ Exit.Syntax: `ICodeSyntax`? => null;
@@ -110,9 +115,6 @@
 = BindingPattern.IsLentBinding => false;
 = BindingPattern.IsMutableBinding => Syntax.IsMutableBinding;
 = BindingPattern.Name => Syntax.Name;
-
-// ---------- Types
-↑ ParameterType.IsLent: `bool` => Syntax.IsLent;
 
 // ---------- Control Flow Expressions
 = ForeachExpression.IsLentBinding => false;
@@ -139,6 +141,8 @@
 ↑ UnaryOperatorExpression.Fixity: `UnaryOperatorFixity` => Syntax.Fixity;
 ↑ ConversionExpression.Operator: `ConversionOperator` => Syntax.Operator;
 ↑ ImplicitConversionExpression.Syntax: `IExpressionSyntax` => Referent.Syntax;
+↑ RefExpression.IsInternal: `bool` => Syntax.IsInternal;
+↑ RefExpression.IsMutableBinding: `bool` => Syntax.IsMutableBinding;
 
 // ---------- Invocation Expressions
 ↑ InvocationExpression.TempAllArguments: IEnumerable<AmbiguousExpression>;

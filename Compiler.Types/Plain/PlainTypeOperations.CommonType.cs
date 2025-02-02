@@ -13,9 +13,11 @@ public static partial class PlainTypeOperations
             (_, NeverPlainType) => PlainType.Never,
             (NeverPlainType, _) => PlainType.Never,
             (OptionalPlainType { Referent: var left }, OptionalPlainType { Referent: var right })
-                => left.NumericOperatorCommonType(right)?.MakeOptional(),
-            (OptionalPlainType { Referent: var left }, _) => left.NumericOperatorCommonType(rightType)?.MakeOptional(),
-            (_, OptionalPlainType { Referent: var right }) => leftType.NumericOperatorCommonType(right)?.MakeOptional(),
+                => OptionalPlainType.Create(left.NumericOperatorCommonType(right)),
+            (OptionalPlainType { Referent: var left }, _)
+                => OptionalPlainType.Create(left.NumericOperatorCommonType(rightType)),
+            (_, OptionalPlainType { Referent: var right })
+                => OptionalPlainType.Create(leftType.NumericOperatorCommonType(right)),
             (BarePlainType { TypeConstructor: SimpleOrLiteralTypeConstructor left },
                 BarePlainType { TypeConstructor: SimpleOrLiteralTypeConstructor right })
                 => left.NumericOperatorCommonType(right),

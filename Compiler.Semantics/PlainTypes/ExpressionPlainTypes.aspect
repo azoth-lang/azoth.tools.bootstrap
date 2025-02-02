@@ -53,6 +53,7 @@
 // No expected plain type for the referent. If one were given, it could cause another implicit conversion.
 = ImplicitConversionExpression.Referent.ExpectedPlainType => null;
 = PatternMatchExpression.PlainType => AzothPlainType.Bool;
+= RefExpression.Referent.ExpectedPlainType => null;
 
 // ---------- Control Flow Expressions
 = IfExpression.Condition.ExpectedPlainType => AzothPlainType.OptionalBool;

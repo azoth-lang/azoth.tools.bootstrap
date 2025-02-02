@@ -42,7 +42,7 @@ internal static partial class TypeExpressionsAspect
     }
 
     public static partial IMaybeType OptionalType_NamedType(IOptionalTypeNode node)
-        => OptionalType.Create(node.Referent.NamedType);
+        => OptionalType.Create(node.NamedPlainType, node.Referent.NamedType);
 
     public static partial IMaybeType FunctionType_NamedType(IFunctionTypeNode node)
         => FunctionType.Create(node.Parameters.Select(p => p.Parameter), node.Return.NamedType);
@@ -94,5 +94,12 @@ internal static partial class TypeExpressionsAspect
         if (node.Referent.NamedType is not GenericParameterType)
             diagnostics.Add(TypeError.SelfViewpointNotAppliedToTypeParameter(node.File, node.Syntax));
     }
+
+    public static partial IMaybeType RefType_NamedType(IRefTypeNode node)
+        => RefType.Create(node.NamedPlainType, node.Referent.NamedType);
+    #endregion
+
+    #region Type Names
+
     #endregion
 }

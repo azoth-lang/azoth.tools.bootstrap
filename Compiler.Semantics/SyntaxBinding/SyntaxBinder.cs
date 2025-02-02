@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -324,8 +323,8 @@ internal static class SyntaxBinder
     private static ISelfViewpointTypeNode SelfViewpointType(ISelfViewpointTypeSyntax syntax)
         => ISelfViewpointTypeNode.Create(syntax, Type(syntax.Referent));
 
-    private static ITypeNode RefType(IRefTypeSyntax syn)
-        => throw new System.NotImplementedException();
+    private static IRefTypeNode RefType(IRefTypeSyntax syntax)
+        => IRefTypeNode.Create(syntax, Type(syntax.Referent));
     #endregion
 
     #region Statements
@@ -480,8 +479,8 @@ internal static class SyntaxBinder
     private static IPatternMatchExpressionNode PatternMatchExpression(IPatternMatchExpressionSyntax syntax)
         => IPatternMatchExpressionNode.Create(syntax, Expression(syntax.Referent), Pattern(syntax.Pattern));
 
-    private static IExpressionNode RefExpression(IRefExpressionSyntax syn)
-        => throw new NotImplementedException();
+    private static IRefExpressionNode RefExpression(IRefExpressionSyntax syntax)
+        => IRefExpressionNode.Create(syntax, Expression(syntax.Referent));
     #endregion
 
     #region Control Flow Expressions

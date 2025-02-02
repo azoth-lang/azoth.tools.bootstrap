@@ -22,6 +22,7 @@ public static partial class TypeOperations
             SelfViewpointType t => t,
             GenericParameterType t => t,
             OptionalType t => t,
+            RefType t => t,
             FunctionType t => t,
             NeverType t => t,
             _ => throw ExhaustiveMatch.Failed(self),

@@ -43,6 +43,7 @@ public static partial class TypeOperations
             FunctionType t => t,
             NeverType t => t,
             VoidType t => t,
+            RefType t => t,
             // TODO shouldn't this combine with the capability set?
             CapabilitySetSelfType t => t,
             // TODO shouldn't this combine with the capability set?
