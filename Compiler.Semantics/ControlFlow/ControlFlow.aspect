@@ -62,6 +62,8 @@
 ↓ ControlFlow.ControlFlowFollowing(): `ControlFlowSet`;
 
 // ---------- Expressions
+// TODO having this default means that newly added expressions do not report that they need control
+// flow to be properly handled.
 // Default for expressions is just whatever the context says is the following node.
 = Expression.ControlFlowNext;
 = BlockExpression.ControlFlowNext;
@@ -91,6 +93,8 @@
 = PatternMatchExpression.Referent.**.ControlFlowFollowing()
     => ControlFlowSet.CreateNormal(Pattern);
 = PatternMatchExpression.ControlFlowNext;
+= RefExpression.ControlFlowNext;
+= ImplicitDerefExpression.ControlFlowNext;
 
 // ---------- Control Flow Expressions
 = IfExpression.Condition.**.ControlFlowFollowing()

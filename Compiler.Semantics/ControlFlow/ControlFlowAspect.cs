@@ -59,6 +59,14 @@ internal static partial class ControlFlowAspect
         => ControlFlowSet.CreateNormal(node.Context);
     #endregion
 
+    #region Operator Expressions
+    public static partial ControlFlowSet RefExpression_ControlFlowNext(IRefExpressionNode node)
+        => ControlFlowSet.CreateNormal(node.Referent);
+
+    public static partial ControlFlowSet ImplicitDerefExpression_ControlFlowNext(IImplicitDerefExpressionNode node)
+        => ControlFlowSet.CreateNormal(node.Referent);
+    #endregion
+
     #region Invocation Expressions
     public static partial ControlFlowSet UnresolvedInvocationExpression_ControlFlowNext(IUnresolvedInvocationExpressionNode node)
         => ControlFlowSet.CreateNormal(node.Expression);

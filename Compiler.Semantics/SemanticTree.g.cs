@@ -11480,7 +11480,7 @@ file class RefExpressionNode : SemanticNode, IRefExpressionNode
     public ControlFlowSet ControlFlowNext
         => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
             : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
-                ControlFlowAspect.Expression_ControlFlowNext);
+                ControlFlowAspect.RefExpression_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
     public IFlowState FlowStateAfter
@@ -11629,7 +11629,7 @@ file class ImplicitDerefExpressionNode : SemanticNode, IImplicitDerefExpressionN
     public ControlFlowSet ControlFlowNext
         => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
             : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
-                ControlFlowAspect.Expression_ControlFlowNext);
+                ControlFlowAspect.ImplicitDerefExpression_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
     public IFlowState FlowStateAfter
