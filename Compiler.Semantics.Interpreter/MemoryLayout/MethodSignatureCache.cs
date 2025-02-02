@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 
@@ -6,7 +7,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.MemoryLayout;
 
 internal sealed class MethodSignatureCache
 {
-    private readonly ConcurrentDictionary<MethodSymbol, MethodSignature> methods = new();
+    private readonly ConcurrentDictionary<MethodSymbol, MethodSignature> methods = new(ReferenceEqualityComparer.Instance);
 
     public MethodSignature this[MethodSymbol symbol]
     {

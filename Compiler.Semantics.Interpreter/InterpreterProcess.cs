@@ -54,7 +54,8 @@ public sealed class InterpreterProcess
     private byte? exitCode;
     private readonly TextWriter standardOutputWriter;
     private readonly MethodSignatureCache methodSignatures = new();
-    private readonly ConcurrentDictionary<IClassDefinitionNode, VTable> vTables = new();
+    private readonly ConcurrentDictionary<IClassDefinitionNode, VTable> vTables
+        = new(ReferenceEqualityComparer.Instance);
     private readonly LocalVariables.Scope.Pool localVariableScopePool = new();
     private readonly Stopwatch runStopwatch = new();
 

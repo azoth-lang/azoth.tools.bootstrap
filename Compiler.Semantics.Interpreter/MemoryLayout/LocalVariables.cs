@@ -35,7 +35,8 @@ internal readonly struct LocalVariables
 
         internal sealed class Pool
         {
-            private readonly ConcurrentDictionary<IBindingNode, int> bindingIndexes = new();
+            private readonly ConcurrentDictionary<IBindingNode, int> bindingIndexes
+                = new(ReferenceEqualityComparer.Instance);
             private readonly DefaultObjectPool<List<AzothValue>> pool
                 = new(new Policy(), Environment.ProcessorCount * 10);
 
