@@ -55,6 +55,7 @@ public sealed class InterpreterProcess
     private readonly TextWriter standardOutputWriter;
     private readonly MethodSignatureCache methodSignatures = new();
     private readonly ConcurrentDictionary<IClassDefinitionNode, VTable> vTables = new();
+    private readonly LocalVariables.Scope.Pool localVariableScopePool = new();
     private readonly Stopwatch runStopwatch = new();
 
     private InterpreterProcess(IPackageNode package, IEnumerable<IPackageNode> referencedPackages, bool runTests)
@@ -214,13 +215,13 @@ public sealed class InterpreterProcess
         IConcreteFunctionInvocableDefinitionNode function,
         IReadOnlyList<AzothValue> arguments)
     {
-        var variables = new LocalVariableScope();
+        using var scope = localVariableScopePool.CreateRoot();
         var parameters = function.Parameters;
         // For loop avoid Linq Zip
         for (int i = 0; i < parameters.Count; i++)
-            variables.Add(parameters[i], arguments[i]);
+            scope.Add(parameters[i], arguments[i]);
 
-        var result = await ExecuteAsync(function.Body.Statements, variables).ConfigureAwait(false);
+        var result = await ExecuteAsync(function.Body.Statements, scope).ConfigureAwait(false);
         return result.ReturnValue;
     }
 
@@ -280,8 +281,8 @@ public sealed class InterpreterProcess
         AzothValue self,
         IReadOnlyList<AzothValue> arguments)
     {
-        var variables = new LocalVariableScope();
-        variables.Add(initializer.SelfParameter, self);
+        using var scope = localVariableScopePool.CreateRoot();
+        scope.Add(initializer.SelfParameter, self);
         var parameters = initializer.Parameters;
         // For loop avoid Linq Zip
         for (int i = 0; i < parameters.Count; i++)
@@ -293,13 +294,13 @@ public sealed class InterpreterProcess
                     self.ObjectValue[fieldParameter.ReferencedField!.Symbol.Assigned().Name] = arguments[i];
                     break;
                 case INamedParameterNode p:
-                    variables.Add(p, arguments[i]);
+                    scope.Add(p, arguments[i]);
                     break;
             }
 
         foreach (var statement in initializer.Body.Statements)
         {
-            var result = await ExecuteAsync(statement, variables).ConfigureAwait(false);
+            var result = await ExecuteAsync(statement, scope).ConfigureAwait(false);
             if (result.IsReturn) break;
             if (result.Type != AzothResultType.Ordinary) throw new UnreachableException("Unmatched break or next.");
         }
@@ -415,18 +416,18 @@ public sealed class InterpreterProcess
         if (method.Body is null)
             throw new InvalidOperationException($"Can't call abstract method {method.Syntax}");
 
-        var variables = new LocalVariableScope();
-        variables.Add(method.SelfParameter, self);
+        using var scope = localVariableScopePool.CreateRoot();
+        scope.Add(method.SelfParameter, self);
         var parameters = method.Parameters;
         // For loop avoid Linq Zip
         for (int i = 0; i < parameters.Count; i++)
-            variables.Add(parameters[i], arguments[i]);
+            scope.Add(parameters[i], arguments[i]);
 
-        var result = await ExecuteAsync(method.Body.Statements, variables).ConfigureAwait(false);
+        var result = await ExecuteAsync(method.Body.Statements, scope).ConfigureAwait(false);
         return result.ReturnValue;
     }
 
-    private async ValueTask<AzothResult> ExecuteAsync(IFixedList<IStatementNode> statements, LocalVariableScope variables)
+    private async ValueTask<AzothResult> ExecuteAsync(IFixedList<IStatementNode> statements, LocalVariables variables)
     {
         foreach (var statement in statements)
             switch (statement)
@@ -444,7 +445,7 @@ public sealed class InterpreterProcess
         return AzothValue.None;
     }
 
-    private async ValueTask<AzothResult> ExecuteAsync(IBodyStatementNode statement, LocalVariableScope variables)
+    private async ValueTask<AzothResult> ExecuteAsync(IBodyStatementNode statement, LocalVariables variables)
     {
         switch (statement)
         {
@@ -464,10 +465,10 @@ public sealed class InterpreterProcess
         }
     }
 
-    private ValueTask<AzothResult> ExecuteAsync(IResultStatementNode statement, LocalVariableScope variables)
+    private ValueTask<AzothResult> ExecuteAsync(IResultStatementNode statement, LocalVariables variables)
         => ExecuteAsync(statement.Expression!, variables);
 
-    private async ValueTask<AzothResult> ExecuteAsync(IExpressionNode expression, LocalVariableScope variables)
+    private async ValueTask<AzothResult> ExecuteAsync(IExpressionNode expression, LocalVariables variables)
     {
         // A switch on type compiles to essentially a long if/else change of `is Type t` pattern
         // matches. This code spends most of its time determining the node type. To really make this
@@ -551,8 +552,8 @@ public sealed class InterpreterProcess
             }
             case IBlockExpressionNode block:
             {
-                var blockVariables = new LocalVariableScope(variables);
-                return await ExecuteAsync(block.Statements, blockVariables);
+                using var scope = variables.CreateNestedScope();
+                return await ExecuteAsync(block.Statements, scope);
             }
             case ILoopExpressionNode exp:
                 while (true)
@@ -577,13 +578,13 @@ public sealed class InterpreterProcess
                 while (true)
                 {
                     // Create a variable scope in case a variable is declared by a pattern in the condition
-                    var loopVariables = new LocalVariableScope(variables);
-                    var conditionResult = await ExecuteAsync(exp.Condition!, loopVariables).ConfigureAwait(false);
+                    using var scope = variables.CreateNestedScope();
+                    var conditionResult = await ExecuteAsync(exp.Condition!, scope).ConfigureAwait(false);
                     if (conditionResult.ShouldExit(out var condition)) return conditionResult;
                     if (!condition.BoolValue)
                         return AzothValue.None;
 
-                    var result = await ExecuteAsync(block, loopVariables).ConfigureAwait(false);
+                    var result = await ExecuteAsync(block, scope).ConfigureAwait(false);
                     switch (result.Type)
                     {
                         default:
@@ -749,9 +750,9 @@ public sealed class InterpreterProcess
                     var value = await CallMethodAsync(nextMethod, iteratorType, iterator, []).ConfigureAwait(false);
                     if (value.IsNone) break;
 
-                    var loopVariables = new LocalVariableScope(variables);
-                    loopVariables.Add(loopVariable, value);
-                    var result = await ExecuteAsync(block, loopVariables).ConfigureAwait(false);
+                    using var scope = variables.CreateNestedScope();
+                    scope.Add(loopVariable, value);
+                    var result = await ExecuteAsync(block, scope).ConfigureAwait(false);
                     switch (result.Type)
                     {
                         default:
@@ -872,10 +873,10 @@ public sealed class InterpreterProcess
             case IAsyncBlockExpressionNode exp:
             {
                 var asyncScope = new AsyncScope();
-                var blockVariables = new LocalVariableScope(variables, asyncScope);
+                using var scope = variables.CreateNestedScope(asyncScope);
                 try
                 {
-                    return await ExecuteAsync(exp.Block, blockVariables);
+                    return await ExecuteAsync(exp.Block, scope);
                 }
                 finally
                 {
@@ -923,7 +924,7 @@ public sealed class InterpreterProcess
     private static async ValueTask<AzothValue> ExecuteMatchAsync(
         AzothValue value,
         IPatternNode pattern,
-        LocalVariableScope variables)
+        LocalVariables variables)
     {
         switch (pattern)
         {
@@ -1033,7 +1034,7 @@ public sealed class InterpreterProcess
     private VTable CreateVTable(IClassDefinitionNode @class)
         => new(@class, methodSignatures, userTypes);
 
-    private async ValueTask<AzothResult> ExecuteArgumentsAsync(IFixedList<IExpressionNode> arguments, LocalVariableScope variables)
+    private async ValueTask<AzothResult> ExecuteArgumentsAsync(IFixedList<IExpressionNode> arguments, LocalVariables variables)
     {
         var values = new List<AzothValue>(arguments.Count);
         // Execute arguments in order
@@ -1047,7 +1048,7 @@ public sealed class InterpreterProcess
         return AzothValue.Arguments(values);
     }
 
-    private async ValueTask<AzothResult> AddAsync(IExpressionNode leftExp, IExpressionNode rightExp, LocalVariableScope variables)
+    private async ValueTask<AzothResult> AddAsync(IExpressionNode leftExp, IExpressionNode rightExp, LocalVariables variables)
     {
         // Don't check types match to avoid the overhead since the compiler should enforce this
 
@@ -1073,7 +1074,7 @@ public sealed class InterpreterProcess
         throw new NotImplementedException($"Add {leftExp.Type.ToILString()}");
     }
 
-    private async ValueTask<AzothResult> SubtractAsync(IExpressionNode leftExp, IExpressionNode rightExp, LocalVariableScope variables)
+    private async ValueTask<AzothResult> SubtractAsync(IExpressionNode leftExp, IExpressionNode rightExp, LocalVariables variables)
     {
         // Don't check types match to avoid the overhead since the compiler should enforce this
 
@@ -1100,7 +1101,7 @@ public sealed class InterpreterProcess
         throw new NotImplementedException($"Subtract {leftExp.Type.ToILString()}");
     }
 
-    private async ValueTask<AzothResult> MultiplyAsync(IExpressionNode leftExp, IExpressionNode rightExp, LocalVariableScope variables)
+    private async ValueTask<AzothResult> MultiplyAsync(IExpressionNode leftExp, IExpressionNode rightExp, LocalVariables variables)
     {
         // Don't check types match to avoid the overhead since the compiler should enforce this
 
@@ -1126,7 +1127,7 @@ public sealed class InterpreterProcess
         throw new NotImplementedException($"Multiply {leftExp.Type.ToILString()}");
     }
 
-    private async ValueTask<AzothResult> DivideAsync(IExpressionNode leftExp, IExpressionNode rightExp, LocalVariableScope variables)
+    private async ValueTask<AzothResult> DivideAsync(IExpressionNode leftExp, IExpressionNode rightExp, LocalVariables variables)
     {
         // Don't check types match to avoid the overhead since the compiler should enforce this
 
@@ -1152,7 +1153,7 @@ public sealed class InterpreterProcess
         throw new NotImplementedException($"Divide {leftExp.Type.ToILString()}");
     }
 
-    private async ValueTask<AzothResult> BuiltInEqualsAsync(PlainType commonPlainType, IExpressionNode leftExp, IExpressionNode rightExp, LocalVariableScope variables)
+    private async ValueTask<AzothResult> BuiltInEqualsAsync(PlainType commonPlainType, IExpressionNode leftExp, IExpressionNode rightExp, LocalVariables variables)
     {
         // Don't check types match to avoid the overhead since the compiler should enforce this
 
@@ -1189,7 +1190,7 @@ public sealed class InterpreterProcess
         throw new NotImplementedException($"Compare equality of `{plainType}`.");
     }
 
-    private async ValueTask<AzothResult> ReferenceEqualsAsync(IExpressionNode leftExp, IExpressionNode rightExp, LocalVariableScope variables)
+    private async ValueTask<AzothResult> ReferenceEqualsAsync(IExpressionNode leftExp, IExpressionNode rightExp, LocalVariables variables)
     {
         // Don't check types match to avoid the overhead since the compiler should enforce this
 
@@ -1207,7 +1208,7 @@ public sealed class InterpreterProcess
         return AzothValue.Bool(ReferenceEquals(left.ObjectValue, right.ObjectValue));
     }
 
-    private async ValueTask<AzothResult> CompareAsync(IExpressionNode leftExp, IExpressionNode rightExp, LocalVariableScope variables)
+    private async ValueTask<AzothResult> CompareAsync(IExpressionNode leftExp, IExpressionNode rightExp, LocalVariables variables)
     {
         // Don't check types match to avoid the overhead since the compiler should enforce this
 
@@ -1248,7 +1249,7 @@ public sealed class InterpreterProcess
         return AzothValue.Bool(!value.BoolValue);
     }
 
-    private async ValueTask<AzothResult> NegateAsync(IExpressionNode expression, LocalVariableScope variables)
+    private async ValueTask<AzothResult> NegateAsync(IExpressionNode expression, LocalVariables variables)
     {
         var result = await ExecuteAsync(expression, variables).ConfigureAwait(false);
         if (result.ShouldExit(out var value)) return result;
@@ -1311,7 +1312,7 @@ public sealed class InterpreterProcess
 
     private async ValueTask<AzothResult> ExecuteBlockOrResultAsync(
         IBlockOrResultNode statement,
-        LocalVariableScope variables)
+        LocalVariables variables)
         => statement switch
         {
             IBlockExpressionNode b => await ExecuteAsync(b, variables).ConfigureAwait(false),
@@ -1321,7 +1322,7 @@ public sealed class InterpreterProcess
 
     private async ValueTask<AzothResult> ExecuteElseAsync(
         IElseClauseNode elseClause,
-        LocalVariableScope variables)
+        LocalVariables variables)
     {
         return elseClause switch
         {
@@ -1334,7 +1335,7 @@ public sealed class InterpreterProcess
     private async ValueTask<AzothResult> ExecuteAssignmentAsync(
         IExpressionNode expression,
         AzothValue value,
-        LocalVariableScope variables)
+        LocalVariables variables)
     {
         switch (expression)
         {

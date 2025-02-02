@@ -1,26 +1,23 @@
+using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
-using Microsoft.Extensions.Caching.Memory;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.MemoryLayout;
 
 internal sealed class MethodSignatureCache
 {
-    private readonly MemoryCache cache = new(new MemoryCacheOptions());
+    private readonly ConcurrentDictionary<MethodSymbol, MethodSignature> methods = new();
 
     public MethodSignature this[MethodSymbol symbol]
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => cache.GetOrCreate(symbol, Factory)!;
+        get => methods.GetOrAdd(symbol, Factory);
     }
 
-    private static MethodSignature Factory(ICacheEntry entry)
-    {
-        var symbol = (MethodSymbol)entry.Key;
-        return new MethodSignature(
+    private static MethodSignature Factory(MethodSymbol symbol)
+        => new(
             symbol.Name,
             symbol.SelfParameterType,
             symbol.ParameterTypes,
             symbol.ReturnType);
-    }
 }
