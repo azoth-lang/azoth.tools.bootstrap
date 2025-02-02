@@ -143,6 +143,7 @@
 ↑ ImplicitConversionExpression.Syntax: `IExpressionSyntax` => Referent.Syntax;
 ↑ RefExpression.IsInternal: `bool` => Syntax.IsInternal;
 ↑ RefExpression.IsMutableBinding: `bool` => Syntax.IsMutableBinding;
+↑ ImplicitDerefExpression.Syntax: `IExpressionSyntax` => Referent.Syntax;
 
 // ---------- Invocation Expressions
 ↑ InvocationExpression.TempAllArguments: IEnumerable<AmbiguousExpression>;

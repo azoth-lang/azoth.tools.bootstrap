@@ -34,6 +34,7 @@
 ↑ Expression.PlainType: `IMaybePlainType`;
 ↓ OrdinaryTypedExpression.ExpectedPlainType: `IMaybePlainType`?;
 ✎ OrdinaryTypedExpression insert ImplicitConversionExpression;
+✎ OrdinaryTypedExpression insert ImplicitDerefExpression;
 ↑ BlockExpression.PlainType: `IMaybePlainType`;
 = NeverTypedExpression.PlainType => AzothPlainType.Never;
 

@@ -16,6 +16,26 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.PlainTypes;
 
 internal static partial class ExpressionPlainTypesAspect
 {
+    #region Expressions
+    public static partial IImplicitDerefExpressionNode? OrdinaryTypedExpression_Insert_ImplicitDerefExpression(IOrdinaryTypedExpressionNode node)
+    {
+        // To minimize outstanding rewrites, first check whether node.PlainType could possibly
+        // support dereference. If node.ExpectedPlainType is checked, that is inherited and if a
+        // rewrite is in progress, that can't be cached.
+        if (node.PlainType is not RefPlainType plainType)
+            return null;
+
+        if (node.ExpectedPlainType is PlainType expectedPlainType
+            && RefDepth(expectedPlainType) < RefDepth(plainType))
+            return IImplicitDerefExpressionNode.Create(node);
+
+        return null;
+    }
+
+    private static int RefDepth(PlainType plainType)
+        => plainType is RefPlainType t ? 1 + RefDepth(t.Referent) : 0;
+    #endregion
+
     public static partial IMaybePlainType UnsafeExpression_PlainType(IUnsafeExpressionNode node)
         => node.Expression?.PlainType ?? PlainType.Unknown;
 
@@ -347,7 +367,7 @@ internal static partial class ExpressionPlainTypesAspect
         => RefPlainType.Create(node.Referent?.PlainType, node.IsInternal, node.IsMutableBinding) ?? PlainType.Unknown;
 
     public static partial IMaybePlainType ImplicitDerefExpression_PlainType(IImplicitDerefExpressionNode node)
-        => (node.PlainType as RefPlainType)?.Referent ?? IMaybePlainType.Unknown;
+        => (node.Referent.PlainType as RefPlainType)?.Referent ?? IMaybePlainType.Unknown;
     #endregion
 
     public static partial IMaybePlainType InitializerNameExpression_PlainType(IInitializerNameExpressionNode node)
