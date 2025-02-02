@@ -51,6 +51,8 @@ internal static partial class ExpressionPlainTypesAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IMaybePlainType RefExpression_PlainType(IRefExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial IMaybePlainType ImplicitDerefExpression_PlainType(IImplicitDerefExpressionNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IMaybePlainType IfExpression_PlainType(IIfExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IMaybePlainType LoopExpression_PlainType(ILoopExpressionNode node);

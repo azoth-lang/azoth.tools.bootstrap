@@ -904,6 +904,10 @@ public sealed class InterpreterProcess
             {
                 throw new NotImplementedException();
             }
+            case IImplicitDerefExpressionNode exp:
+            {
+                throw new NotImplementedException();
+            }
             case IUnresolvedExpressionNode _:
             case IMissingNameExpressionNode _:
                 throw UnreachableInErrorFreeTree(expression);

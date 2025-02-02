@@ -244,6 +244,7 @@ ImplicitConversionExpression <: OrdinaryTypedExpression = Referent:Expression Pl
 PatternMatchExpression <: OrdinaryTypedExpression
     = Syntax:`IPatternMatchExpressionSyntax` Referent:AmbiguousExpression Pattern;
 RefExpression <: OrdinaryTypedExpression = Syntax:`IRefExpressionSyntax` Referent:AmbiguousExpression;
+ImplicitDerefExpression <: OrdinaryTypedExpression = Referent:Expression;
 
 // ---------- Control Flow Expressions
 IfExpression <: OrdinaryTypedExpression, ElseClause = Syntax:`IIfExpressionSyntax`

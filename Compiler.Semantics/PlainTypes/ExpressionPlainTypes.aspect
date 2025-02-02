@@ -54,6 +54,7 @@
 = ImplicitConversionExpression.Referent.ExpectedPlainType => null;
 = PatternMatchExpression.PlainType => AzothPlainType.Bool;
 = RefExpression.Referent.ExpectedPlainType => null;
+= ImplicitDerefExpression.Referent.ExpectedPlainType => null;
 
 // ---------- Control Flow Expressions
 = IfExpression.Condition.ExpectedPlainType => AzothPlainType.OptionalBool;

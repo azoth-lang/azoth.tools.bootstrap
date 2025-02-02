@@ -345,6 +345,9 @@ internal static partial class ExpressionPlainTypesAspect
     #region Operator Expressions
     public static partial IMaybePlainType RefExpression_PlainType(IRefExpressionNode node)
         => RefPlainType.Create(node.Referent?.PlainType, node.IsInternal, node.IsMutableBinding) ?? PlainType.Unknown;
+
+    public static partial IMaybePlainType ImplicitDerefExpression_PlainType(IImplicitDerefExpressionNode node)
+        => (node.PlainType as RefPlainType)?.Referent ?? IMaybePlainType.Unknown;
     #endregion
 
     public static partial IMaybePlainType InitializerNameExpression_PlainType(IInitializerNameExpressionNode node)

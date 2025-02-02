@@ -795,6 +795,12 @@ internal static partial class ExpressionTypesAspect
 
     public static partial IFlowState RefExpression_FlowStateAfter(IRefExpressionNode node)
         => node.Referent?.FlowStateAfter.Transform(node.Referent.ValueId, node.ValueId, node.Type) ?? IFlowState.Empty;
+
+    public static partial IMaybeType ImplicitDerefExpression_Type(IImplicitDerefExpressionNode node)
+        => (node.Referent.Type as RefType)?.Referent ?? IMaybeType.Unknown;
+
+    public static partial IFlowState ImplicitDerefExpression_FlowStateAfter(IImplicitDerefExpressionNode node)
+        => node.Referent.FlowStateAfter.Transform(node.Referent.ValueId, node.ValueId, node.Type);
     #endregion
 
     #region Unresolved Name Expressions
