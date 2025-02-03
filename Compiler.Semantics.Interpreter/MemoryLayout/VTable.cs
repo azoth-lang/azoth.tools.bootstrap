@@ -1,14 +1,15 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Frozen;
+using System.Diagnostics;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.MemoryLayout;
 
-internal sealed class VTable
+internal sealed class VTable : TypeLayout
 {
-    public IClassDefinitionNode Class { get; }
+    public IClassDefinitionNode Class { [DebuggerStepThrough] get; }
     private readonly MethodSignatureCache methodSignatures;
     private readonly FrozenDictionary<OrdinaryTypeSymbol, ITypeDefinitionNode> types;
     private readonly ConcurrentDictionary<MethodSignature, IMethodDefinitionNode> methods = new();
@@ -17,6 +18,7 @@ internal sealed class VTable
         IClassDefinitionNode @class,
         MethodSignatureCache methodSignatures,
         FrozenDictionary<OrdinaryTypeSymbol, ITypeDefinitionNode> types)
+        : base(@class)
     {
         Class = @class;
         this.methodSignatures = methodSignatures;

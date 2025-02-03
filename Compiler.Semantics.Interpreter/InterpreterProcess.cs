@@ -56,6 +56,8 @@ public sealed class InterpreterProcess
     private readonly MethodSignatureCache methodSignatures = new();
     private readonly ConcurrentDictionary<IClassDefinitionNode, VTable> vTables
         = new(ReferenceEqualityComparer.Instance);
+    private readonly ConcurrentDictionary<IStructDefinitionNode, StructLayout> structLayouts
+        = new(ReferenceEqualityComparer.Instance);
     private readonly LocalVariables.Scope.Pool localVariableScopePool = new();
     private readonly Stopwatch runStopwatch = new();
 
@@ -260,7 +262,8 @@ public sealed class InterpreterProcess
         InitializerSymbol initializerSymbol,
         IReadOnlyList<AzothValue> arguments)
     {
-        var self = AzothValue.Struct(new());
+        var layout = structLayouts.GetOrAdd(@struct, CreateStructLayout);
+        var self = AzothValue.Struct(new(layout));
         return CallInitializerAsync(@struct, initializerSymbol, self, arguments);
     }
 
@@ -292,7 +295,7 @@ public sealed class InterpreterProcess
                 default:
                     throw ExhaustiveMatch.Failed(parameters[i]);
                 case IFieldParameterNode fieldParameter:
-                    self.ObjectValue[fieldParameter.ReferencedField!.Symbol!] = arguments[i];
+                    self.InstanceValue[fieldParameter.ReferencedField!] = arguments[i];
                     break;
                 case INamedParameterNode p:
                     scope.Add(p, arguments[i]);
@@ -317,7 +320,7 @@ public sealed class InterpreterProcess
         // Initialize fields to default values
         var fields = typeDefinition.Members.OfType<IFieldDefinitionNode>();
         foreach (var field in fields)
-            self.ObjectValue[field.Symbol!] = AzothValue.None;
+            self.InstanceValue[field] = AzothValue.None;
 
         if (typeDefinition is IClassDefinitionNode
             {
@@ -373,7 +376,7 @@ public sealed class InterpreterProcess
         var referenceCall = selfType.TypeConstructor.Semantics switch
         {
             // TODO this is an odd case, generic instantiation should avoid it but this works for now
-            null => self.IsObject,
+            null => self.InstanceValue.IsObject,
             TypeSemantics.Value => false,
             TypeSemantics.Reference => true,
             _ => throw ExhaustiveMatch.Failed(selfType.TypeConstructor.Semantics),
@@ -720,8 +723,7 @@ public sealed class InterpreterProcess
             {
                 var result = await ExecuteAsync(exp.Context, variables).ConfigureAwait(false);
                 if (result.ShouldExit(out var obj)) return result;
-                // TODO replace with something that is typesafe for both objects and structs
-                return obj.ObjectValue[exp.ReferencedDeclaration.Symbol!];
+                return obj.InstanceValue[exp.ReferencedDeclaration];
             }
             case IForeachExpressionNode exp:
             {
@@ -955,7 +957,8 @@ public sealed class InterpreterProcess
             // byte_count: size
             AzothValue.Size(bytes.Count),
         };
-        var self = AzothValue.Struct(new());
+        var layout = structLayouts.GetOrAdd(stringStruct, CreateStructLayout);
+        var self = AzothValue.Struct(new(layout));
         return await CallInitializerAsync(stringInitializer, self, arguments).ConfigureAwait(false);
     }
 
@@ -1031,9 +1034,10 @@ public sealed class InterpreterProcess
         throw new NotImplementedException($"Intrinsic {method}");
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private VTable CreateVTable(IClassDefinitionNode @class)
         => new(@class, methodSignatures, userTypes);
+
+    private static StructLayout CreateStructLayout(IStructDefinitionNode @struct) => new(@struct);
 
     private async ValueTask<AzothResult> ExecuteArgumentsAsync(IFixedList<IExpressionNode> arguments, LocalVariables variables)
     {
@@ -1206,7 +1210,7 @@ public sealed class InterpreterProcess
             if (left.IsNone || right.IsNone) return AzothValue.False;
         }
 
-        return AzothValue.Bool(ReferenceEquals(left.ObjectValue, right.ObjectValue));
+        return AzothValue.Bool(left.ObjectValue.ReferenceEquals(right.ObjectValue));
     }
 
     private async ValueTask<AzothResult> CompareAsync(IExpressionNode leftExp, IExpressionNode rightExp, LocalVariables variables)
@@ -1267,8 +1271,9 @@ public sealed class InterpreterProcess
         throw new NotImplementedException($"Negate {type.ToILString()}");
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static AzothValue IdentityHash(AzothValue value)
-        => AzothValue.NUInt((nuint)RuntimeHelpers.GetHashCode(value.ObjectValue));
+        => AzothValue.NUInt((nuint)value.ObjectValue.IdentityHash());
 
     private static AzothValue Remainder(
         AzothValue dividend,
@@ -1349,7 +1354,7 @@ public sealed class InterpreterProcess
                 var result = await ExecuteAsync(exp.Context, variables).ConfigureAwait(false);
                 if (result.ShouldExit(out var obj)) return result;
                 // TODO handle the access operator
-                obj.ObjectValue[exp.ReferencedDeclaration.Symbol!] = value;
+                obj.InstanceValue[exp.ReferencedDeclaration] = value;
                 break;
         }
 

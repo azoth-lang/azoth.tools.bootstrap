@@ -1,11 +1,8 @@
-using System;
 using System.Collections.Generic;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.MemoryLayout.BoundedLists;
-using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
-using Type = Azoth.Tools.Bootstrap.Compiler.Types.Decorated.Type;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.MemoryLayout;
 
@@ -26,6 +23,7 @@ internal readonly struct AzothValue
 
     private static readonly object NoneFlag = new();
 
+    [FieldOffset(0)] public readonly AzothInstance InstanceValue;
     [FieldOffset(0)] public readonly AzothObject ObjectValue;
     [FieldOffset(0)] public readonly AzothStruct StructValue;
     [FieldOffset(0)] public readonly BigInteger IntValue;
@@ -35,9 +33,12 @@ internal readonly struct AzothValue
     [FieldOffset(0)] private readonly SimpleValueType value;
     // This isn't used as a true value, this is only so AzothResult can contain arguments
     [FieldOffset(0)] public readonly List<AzothValue> ArgumentsValue;
+    // These aren't used as true values, they are only so AzothInstance etc. can access fields
+    [FieldOffset(0)] public readonly TypeLayout TypeLayoutValue;
+    [FieldOffset(0)] public readonly VTable VTableValue;
+    [FieldOffset(0)] public readonly StructLayout StructLayoutValue;
 
     public bool IsNone => ReferenceEquals(value.Reference, NoneFlag);
-    public bool IsObject => value.Reference is AzothObject;
     public bool BoolValue => value.Simple.BoolValue;
     public sbyte I8Value => value.Simple.I8Value;
     public byte ByteValue => value.Simple.ByteValue;
@@ -62,6 +63,7 @@ internal readonly struct AzothValue
     public static AzothValue Promise(Task<AzothResult> value) => new(value);
     public static AzothValue FunctionReference(FunctionReference value) => new(value);
     public static AzothValue Arguments(List<AzothValue> value) => new(value);
+    public static AzothValue TypeLayout(TypeLayout typeLayout) => new(typeLayout);
     public static AzothValue Bool(bool value) => new(value);
     public static AzothValue I8(sbyte value) => new(value);
     public static AzothValue Byte(byte value) => new(value);
@@ -110,6 +112,10 @@ internal readonly struct AzothValue
     private AzothValue(List<AzothValue> value)
     {
         ArgumentsValue = value;
+    }
+    private AzothValue(TypeLayout typeLayout)
+    {
+        TypeLayoutValue = typeLayout;
     }
     private AzothValue(bool value)
     {

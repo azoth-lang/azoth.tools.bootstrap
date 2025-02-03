@@ -4,6 +4,7 @@ using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 using Azoth.Tools.Bootstrap.Framework;
+using ExhaustiveMatching;
 using Type = Azoth.Tools.Bootstrap.Compiler.Types.Decorated.Type;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
@@ -53,8 +54,15 @@ public sealed class MethodSymbol : InvocableSymbol
 
     public override string ToILString()
     {
+        var kind = Kind switch
+        {
+            MethodKind.Getter => "get ",
+            MethodKind.Setter => "set ",
+            MethodKind.Standard => "",
+            _ => throw ExhaustiveMatch.Failed(Kind),
+        };
         var parameterSeparator = ParameterTypes.Any() ? ", " : "";
         string parameters = string.Join(", ", ParameterTypes.Select(d => d.ToILString()));
-        return $"{ContainingSymbol.ToILString()}::{Name}({SelfParameterType.ToILString()}{parameterSeparator}{parameters}) -> {ReturnType.ToILString()}";
+        return $"{kind}{ContainingSymbol.ToILString()}::{Name}({SelfParameterType.ToILString()}{parameterSeparator}{parameters}) -> {ReturnType.ToILString()}";
     }
 }
