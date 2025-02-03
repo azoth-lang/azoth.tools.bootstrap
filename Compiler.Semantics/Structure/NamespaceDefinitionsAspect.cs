@@ -8,7 +8,7 @@ using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Structure;
 
-internal partial class NamespaceDefinitions
+internal partial class NamespaceDefinitionsAspect
 {
     public static partial INamespaceDefinitionNode PackageFacet_GlobalNamespace(IPackageFacetNode node)
     {

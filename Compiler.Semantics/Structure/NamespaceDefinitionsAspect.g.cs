@@ -8,7 +8,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Structure;
 // ReSharper disable PartialTypeWithSinglePart
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-internal static partial class NamespaceDefinitions
+internal static partial class NamespaceDefinitionsAspect
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial INamespaceDefinitionNode PackageFacet_GlobalNamespace(IPackageFacetNode node);

@@ -5040,7 +5040,7 @@ file class PackageFacetNode : SemanticNode, IPackageFacetNode
     public INamespaceDefinitionNode GlobalNamespace
         => GrammarAttribute.IsCached(in globalNamespaceCached) ? globalNamespace!
             : this.Synthetic(ref globalNamespaceCached, ref globalNamespace,
-                NamespaceDefinitions.PackageFacet_GlobalNamespace);
+                NamespaceDefinitionsAspect.PackageFacet_GlobalNamespace);
     private INamespaceDefinitionNode? globalNamespace;
     private bool globalNamespaceCached;
 
@@ -5105,7 +5105,7 @@ file class CompilationUnitNode : SemanticNode, ICompilationUnitNode
     public INamespaceDefinitionNode ImplicitNamespace
         => GrammarAttribute.IsCached(in implicitNamespaceCached) ? implicitNamespace!
             : this.Synthetic(ref implicitNamespaceCached, ref implicitNamespace,
-                NamespaceDefinitions.CompilationUnit_ImplicitNamespace);
+                NamespaceDefinitionsAspect.CompilationUnit_ImplicitNamespace);
     private INamespaceDefinitionNode? implicitNamespace;
     private bool implicitNamespaceCached;
     public NamespaceSearchScope LexicalScope
@@ -5198,13 +5198,13 @@ file class NamespaceBlockDefinitionNode : SemanticNode, INamespaceBlockDefinitio
     public INamespaceDefinitionNode ContainingNamespace
         => GrammarAttribute.IsCached(in containingNamespaceCached) ? containingNamespace!
             : this.Synthetic(ref containingNamespaceCached, ref containingNamespace,
-                NamespaceDefinitions.NamespaceBlockDefinition_ContainingNamespace);
+                NamespaceDefinitionsAspect.NamespaceBlockDefinition_ContainingNamespace);
     private INamespaceDefinitionNode? containingNamespace;
     private bool containingNamespaceCached;
     public INamespaceDefinitionNode Definition
         => GrammarAttribute.IsCached(in definitionCached) ? definition!
             : this.Synthetic(ref definitionCached, ref definition,
-                NamespaceDefinitions.NamespaceBlockDefinition_Definition);
+                NamespaceDefinitionsAspect.NamespaceBlockDefinition_Definition);
     private INamespaceDefinitionNode? definition;
     private bool definitionCached;
     public NamespaceSearchScope LexicalScope

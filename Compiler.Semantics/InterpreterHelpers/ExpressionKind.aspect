@@ -1,0 +1,6 @@
+◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Declarations;
+◊name ExpressionKindAspect;
+◊using Azoth.Tools.Bootstrap.Framework;
+◊using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
+
+// ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
