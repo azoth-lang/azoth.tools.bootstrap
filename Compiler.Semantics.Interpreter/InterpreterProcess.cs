@@ -23,6 +23,7 @@ using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
+using InlineMethod;
 using Type = Azoth.Tools.Bootstrap.Compiler.Types.Decorated.Type;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter;
@@ -1308,6 +1309,7 @@ public sealed class InterpreterProcess
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    // TODO [Inline] causes invalid program
     private static AzothResult Not(AzothResult result)
     {
         if (result.ShouldExit(out var value)) return result;
@@ -1331,7 +1333,7 @@ public sealed class InterpreterProcess
         throw new NotImplementedException($"Negate {type.ToILString()}");
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [Inline]
     private static AzothValue IdentityHash(AzothValue value)
         => AzothValue.NUInt((nuint)value.ObjectValue.IdentityHash());
 

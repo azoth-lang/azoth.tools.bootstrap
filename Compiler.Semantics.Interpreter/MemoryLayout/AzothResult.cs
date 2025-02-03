@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.CompilerServices;
+using InlineMethod;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.MemoryLayout;
 
@@ -13,21 +14,27 @@ internal readonly struct AzothResult
     public readonly AzothResultType Type;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    // TODO [Inline(InlineBehavior.Remove)] causes invalid program
     public bool ShouldExit() => Type != AzothResultType.Ordinary;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    // TODO [Inline(InlineBehavior.Remove)] causes invalid program
     public bool ShouldExit(out AzothValue value)
     {
         value = Value;
         return Type != AzothResultType.Ordinary;
     }
 
-    public bool IsNext => Type == AzothResultType.Next;
-    public bool IsReturn => Type == AzothResultType.Return;
+    public bool IsReturn
+    {
+        // TODO [Inline(InlineBehavior.Remove)] causes invalid program
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        get => Type == AzothResultType.Return;
+    }
 
     public AzothValue ReturnValue
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [Inline(InlineBehavior.Remove)]
         get
         {
             if (Type is not (AzothResultType.Return or AzothResultType.Ordinary))
