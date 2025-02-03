@@ -696,12 +696,26 @@ public sealed class InterpreterProcess
             case ExpressionKind.Ref:
             {
                 var exp = (IRefExpressionNode)expression;
-                throw new NotImplementedException();
+                switch (exp.Referent!.ExpressionKind)
+                {
+                    case ExpressionKind.VariableName:
+                        var variable = (IVariableNameExpressionNode)exp.Referent;
+                        return AzothValue.Ref(variables.Ref(variable.ReferencedDefinition));
+                    case ExpressionKind.FieldAccess:
+                        var fieldAccess = (IFieldAccessExpressionNode)exp.Referent;
+                        var result = await ExecuteAsync(fieldAccess.Context, variables).ConfigureAwait(false);
+                        if (result.ShouldExit(out var value)) return result;
+                        return AzothValue.Ref(value.InstanceValue.Ref(fieldAccess.ReferencedDeclaration));
+                    default:
+                        throw UnreachableInErrorFreeTree(exp.Referent);
+                }
             }
             case ExpressionKind.ImplicitDeref:
             {
                 var exp = (IImplicitDerefExpressionNode)expression;
-                throw new NotImplementedException();
+                var result = await ExecuteAsync(exp.Referent, variables).ConfigureAwait(false);
+                if (result.ShouldExit(out var value)) return result;
+                return value.RefValue.Value;
             }
             #endregion
 

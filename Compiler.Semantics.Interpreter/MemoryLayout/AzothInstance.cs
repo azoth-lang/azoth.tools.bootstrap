@@ -30,4 +30,8 @@ internal readonly struct AzothInstance
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         set => fields[Layout.GetIndex(field)] = value;
     }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public AzothRef Ref(IFieldDeclarationNode field)
+        => new(fields, Layout.GetIndex(field));
 }

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.MemoryLayout.BoundedLists;
@@ -27,6 +28,7 @@ internal readonly struct AzothValue
     [FieldOffset(0)] public readonly AzothObject ObjectValue;
     [FieldOffset(0)] public readonly AzothStruct StructValue;
     [FieldOffset(0)] public readonly BigInteger IntValue;
+    [FieldOffset(0)] public readonly AzothRef RefValue;
     [FieldOffset(0)] public readonly IRawBoundedList RawBoundedListValue;
     [FieldOffset(0)] public readonly Task<AzothResult> PromiseValue;
     [FieldOffset(0)] public readonly FunctionReference FunctionReferenceValue;
@@ -56,26 +58,49 @@ internal readonly struct AzothValue
     #region Static Factory Methods/Properties
     public static readonly AzothValue None = new();
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static AzothValue Object(AzothObject value) => new(value);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static AzothValue Struct(AzothStruct value) => new(value);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static AzothValue Int(BigInteger value) => new(value);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static AzothValue Ref(AzothRef value) => new(value);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static AzothValue RawBoundedList(IRawBoundedList value) => new(value);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static AzothValue Promise(Task<AzothResult> value) => new(value);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static AzothValue FunctionReference(FunctionReference value) => new(value);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static AzothValue Arguments(List<AzothValue> value) => new(value);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static AzothValue TypeLayout(TypeLayout typeLayout) => new(typeLayout);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static AzothValue Bool(bool value) => new(value);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static AzothValue I8(sbyte value) => new(value);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static AzothValue Byte(byte value) => new(value);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static AzothValue I16(short value) => new(value);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static AzothValue U16(ushort value) => new(value);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static AzothValue I32(int value) => new(value);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static AzothValue U32(uint value) => new(value);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static AzothValue I64(long value) => new(value);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static AzothValue U64(ulong value) => new(value);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static AzothValue Offset(nint value) => new(value);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static AzothValue Size(nuint value) => new(value);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static AzothValue NInt(nint value) => new(value);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static AzothValue NUInt(nuint value) => new(value);
     #endregion
 
@@ -96,6 +121,10 @@ internal readonly struct AzothValue
     private AzothValue(BigInteger value)
     {
         IntValue = value;
+    }
+    private AzothValue(AzothRef value)
+    {
+        RefValue = value;
     }
     private AzothValue(IRawBoundedList value)
     {

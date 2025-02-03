@@ -118,4 +118,8 @@ internal readonly struct LocalVariables
             throw new InvalidOperationException("Cannot change index of a binding");
         variableStack.Add(value);
     }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public AzothRef Ref(IBindingNode binding)
+        => new(variableStack, bindingIndexes[binding]);
 }
