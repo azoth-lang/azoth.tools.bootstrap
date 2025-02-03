@@ -2646,7 +2646,7 @@ public partial interface IFunctionReferenceInvocationExpressionNode : IInvocatio
     IEnumerable<IExpressionNode?> IInvocationExpressionNode.AllArguments
         => Arguments;
     ExpressionKind IExpressionNode.ExpressionKind
-        => ExpressionKind.FunctionReference;
+        => ExpressionKind.FunctionReferenceInvocation;
 
     public static IFunctionReferenceInvocationExpressionNode Create(
         IInvocationExpressionSyntax syntax,

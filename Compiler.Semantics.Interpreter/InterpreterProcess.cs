@@ -15,6 +15,7 @@ using Azoth.Tools.Bootstrap.Compiler.Primitives;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.Async;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.MemoryLayout;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.MemoryLayout.BoundedLists;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.InterpreterHelpers;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
@@ -484,127 +485,69 @@ public sealed class InterpreterProcess
 
         // Also, more common operations should be earlier in the switch
 
-        switch (expression)
+        switch (expression.ExpressionKind)
         {
             default:
-                throw ExhaustiveMatch.Failed(expression);
-            case ILiteralExpressionNode literalExpression:
-                switch (literalExpression)
-                {
-                    default:
-                        throw ExhaustiveMatch.Failed(expression);
-                    case IIntegerLiteralExpressionNode exp:
-                        return AzothValue.Int(exp.Value);
-                    case IBoolLiteralExpressionNode exp:
-                        return AzothValue.Bool(exp.Value);
-                    case IStringLiteralExpressionNode exp:
-                    {
-                        // Call the constructor of the string class
-                        var value = exp.Value;
-                        return await InitializeStringAsync(value);
-                    }
-                    case INoneLiteralExpressionNode _:
-                        return AzothValue.None;
-                }
-            case IOrdinaryTypedNameExpressionNode ordinaryTypedNameExpression:
-                switch (ordinaryTypedNameExpression)
-                {
-                    default:
-                        throw ExhaustiveMatch.Failed(expression);
-                    case IVariableNameExpressionNode exp:
-                        return variables[exp.ReferencedDefinition];
-                    case ISelfExpressionNode exp:
-                        return variables[exp.ReferencedDefinition!];
-                    case IFunctionNameExpressionNode exp:
-                        return AzothValue.FunctionReference(
-                            new OrdinaryFunctionReference(this, exp.ReferencedDeclaration!.Symbol.Assigned()));
-                    case IInitializerNameExpressionNode exp:
-                    {
-                        var initializerSymbol = exp.ReferencedDeclaration!.Symbol.Assigned();
-                        return AzothValue.FunctionReference(new InitializerReference(this, initializerSymbol));
-                    }
-                }
-            case IConversionExpressionNode exp:
+                throw ExhaustiveMatch.Failed(expression.ExpressionKind);
+
+            #region Expressions
+            case ExpressionKind.Block:
             {
-                var result = await ExecuteAsync(exp.Referent!, variables).ConfigureAwait(false);
-                if (result.ShouldExit(out var value)) return result;
-                return value.Convert(exp.Referent!.Type.Known(), (CapabilityType)exp.ConvertToType.NamedType, false);
+                var block = (IBlockExpressionNode)expression;
+                using var scope = variables.CreateNestedScope();
+                return await ExecuteAsync(block.Statements, scope).ConfigureAwait(false);
             }
-            case IImplicitConversionExpressionNode exp:
+            case ExpressionKind.Unsafe:
             {
-                var result = await ExecuteAsync(exp.Referent, variables).ConfigureAwait(false);
-                if (result.ShouldExit(out var value)) return result;
-                return value.Convert(exp.Referent.Type.Known(), (CapabilityType)exp.Type, true);
+                var exp = (IUnsafeExpressionNode)expression;
+                return await ExecuteAsync(exp.Expression!, variables).ConfigureAwait(false);
             }
-            case IIfExpressionNode exp:
+            #endregion
+
+            #region Instance Member Access Expressions
+            case ExpressionKind.FieldAccess:
             {
-                var conditionResult = await ExecuteAsync(exp.Condition!, variables).ConfigureAwait(false);
-                if (conditionResult.ShouldExit(out var condition)) return conditionResult;
-                if (condition.BoolValue)
-                    return await ExecuteBlockOrResultAsync(exp.ThenBlock, variables).ConfigureAwait(false);
-                if (exp.ElseClause is not null)
-                    return await ExecuteElseAsync(exp.ElseClause, variables).ConfigureAwait(false);
-                return AzothValue.None;
+                var exp = (IFieldAccessExpressionNode)expression;
+                var result = await ExecuteAsync(exp.Context, variables).ConfigureAwait(false);
+                if (result.ShouldExit(out var obj)) return result;
+                return obj.InstanceValue[exp.ReferencedDeclaration];
             }
-            case IMethodAccessExpressionNode exp:
+            case ExpressionKind.MethodAccess:
             {
+                var exp = (IMethodAccessExpressionNode)expression;
                 var selfResult = await ExecuteAsync(exp.Context, variables).ConfigureAwait(false);
                 if (selfResult.ShouldExit(out var self)) return selfResult;
                 var methodSymbol = exp.ReferencedDeclaration!.Symbol.Assigned();
                 var selfType = exp.Context.Type.Known();
                 return AzothValue.FunctionReference(new MethodReference(this, selfType, self, methodSymbol));
             }
-            case IBlockExpressionNode block:
-            {
-                using var scope = variables.CreateNestedScope();
-                return await ExecuteAsync(block.Statements, scope);
-            }
-            case ILoopExpressionNode exp:
-                while (true)
-                {
-                    var result = await ExecuteAsync(exp.Block, variables).ConfigureAwait(false);
-                    switch (result.Type)
-                    {
-                        default:
-                            throw ExhaustiveMatch.Failed(result.Type);
-                        case AzothResultType.Next:
-                        case AzothResultType.Ordinary:
-                            continue;
-                        case AzothResultType.Break:
-                            return result.Value;
-                        case AzothResultType.Return:
-                            return result;
-                    }
-                }
-            case IWhileExpressionNode exp:
-            {
-                var block = exp.Block; // Lifted out of loop
-                while (true)
-                {
-                    // Create a variable scope in case a variable is declared by a pattern in the condition
-                    using var scope = variables.CreateNestedScope();
-                    var conditionResult = await ExecuteAsync(exp.Condition!, scope).ConfigureAwait(false);
-                    if (conditionResult.ShouldExit(out var condition)) return conditionResult;
-                    if (!condition.BoolValue)
-                        return AzothValue.None;
+            #endregion
 
-                    var result = await ExecuteAsync(block, scope).ConfigureAwait(false);
-                    switch (result.Type)
-                    {
-                        default:
-                            throw ExhaustiveMatch.Failed(result.Type);
-                        case AzothResultType.Next:
-                        case AzothResultType.Ordinary:
-                            continue;
-                        case AzothResultType.Break:
-                            return result.Value;
-                        case AzothResultType.Return:
-                            return result;
-                    }
-                }
-            }
-            case IAssignmentExpressionNode exp:
+            #region Literal Expressions
+            case ExpressionKind.BoolLiteral:
             {
+                var exp = (IBoolLiteralExpressionNode)expression;
+                return AzothValue.Bool(exp.Value);
+            }
+            case ExpressionKind.IntegerLiteral:
+            {
+                var exp = (IIntegerLiteralExpressionNode)expression;
+                return AzothValue.Int(exp.Value);
+            }
+            case ExpressionKind.NoneLiteral:
+                return AzothValue.None;
+            case ExpressionKind.StringLiteral:
+            {
+                var exp = (IStringLiteralExpressionNode)expression;
+                // Call the constructor of the string class
+                return await InitializeStringAsync(exp.Value).ConfigureAwait(false);
+            }
+            #endregion
+
+            #region Operator Expressions
+            case ExpressionKind.Assignment:
+            {
+                var exp = (IAssignmentExpressionNode)expression;
                 // TODO this evaluates the left hand side twice for compound operators
                 var result = exp.Operator switch
                 {
@@ -624,7 +567,9 @@ public sealed class InterpreterProcess
                 if (result.ShouldExit(out var value)) return result;
                 return await ExecuteAssignmentAsync(exp.LeftOperand!, value, variables).ConfigureAwait(false);
             }
-            case IBinaryOperatorExpressionNode exp:
+            case ExpressionKind.BinaryOperator:
+            {
+                var exp = (IBinaryOperatorExpressionNode)expression;
                 switch (exp.Operator)
                 {
                     default:
@@ -638,14 +583,13 @@ public sealed class InterpreterProcess
                         return await MultiplyAsync(exp.LeftOperand!, exp.RightOperand!, variables)
                             .ConfigureAwait(false);
                     case BinaryOperator.Slash:
-                        return await DivideAsync(exp.LeftOperand!, exp.RightOperand!, variables)
-                            .ConfigureAwait(false);
+                        return await DivideAsync(exp.LeftOperand!, exp.RightOperand!, variables).ConfigureAwait(false);
                     case BinaryOperator.EqualsEquals:
-                        return await BuiltInEqualsAsync(exp.NumericOperatorCommonPlainType!, exp.LeftOperand!, exp.RightOperand!, variables)
-                            .ConfigureAwait(false);
+                        return await BuiltInEqualsAsync(exp.NumericOperatorCommonPlainType!, exp.LeftOperand!,
+                            exp.RightOperand!, variables).ConfigureAwait(false);
                     case BinaryOperator.NotEqual:
-                        return Not(await BuiltInEqualsAsync(exp.NumericOperatorCommonPlainType!, exp.LeftOperand!, exp.RightOperand!, variables)
-                            .ConfigureAwait(false));
+                        return Not(await BuiltInEqualsAsync(exp.NumericOperatorCommonPlainType!, exp.LeftOperand!,
+                            exp.RightOperand!, variables).ConfigureAwait(false));
                     case BinaryOperator.ReferenceEquals:
                         return await ReferenceEqualsAsync(exp.LeftOperand!, exp.RightOperand!, variables)
                             .ConfigureAwait(false);
@@ -654,25 +598,29 @@ public sealed class InterpreterProcess
                             .ConfigureAwait(false));
                     case BinaryOperator.LessThan:
                     {
-                        var result = await CompareAsync(exp.LeftOperand!, exp.RightOperand!, variables).ConfigureAwait(false);
+                        var result = await CompareAsync(exp.LeftOperand!, exp.RightOperand!, variables)
+                            .ConfigureAwait(false);
                         if (result.ShouldExit(out var value)) return result;
                         return AzothValue.Bool(value.I32Value < 0);
                     }
                     case BinaryOperator.LessThanOrEqual:
                     {
-                        var result = await CompareAsync(exp.LeftOperand!, exp.RightOperand!, variables).ConfigureAwait(false);
+                        var result = await CompareAsync(exp.LeftOperand!, exp.RightOperand!, variables)
+                            .ConfigureAwait(false);
                         if (result.ShouldExit(out var value)) return result;
                         return AzothValue.Bool(value.I32Value <= 0);
                     }
                     case BinaryOperator.GreaterThan:
                     {
-                        var result = await CompareAsync(exp.LeftOperand!, exp.RightOperand!, variables).ConfigureAwait(false);
+                        var result = await CompareAsync(exp.LeftOperand!, exp.RightOperand!, variables)
+                            .ConfigureAwait(false);
                         if (result.ShouldExit(out var value)) return result;
                         return AzothValue.Bool(value.I32Value > 0);
                     }
                     case BinaryOperator.GreaterThanOrEqual:
                     {
-                        var result = await CompareAsync(exp.LeftOperand!, exp.RightOperand!, variables).ConfigureAwait(false);
+                        var result = await CompareAsync(exp.LeftOperand!, exp.RightOperand!, variables)
+                            .ConfigureAwait(false);
                         if (result.ShouldExit(out var value)) return result;
                         return AzothValue.Bool(value.I32Value >= 0);
                     }
@@ -711,7 +659,10 @@ public sealed class InterpreterProcess
                         return await ExecuteAsync(exp.RightOperand!, variables).ConfigureAwait(false);
                     }
                 }
-            case IUnaryOperatorExpressionNode exp:
+            }
+            case ExpressionKind.UnaryOperator:
+            {
+                var exp = (IUnaryOperatorExpressionNode)expression;
                 return exp.Operator switch
                 {
                     UnaryOperator.Not => Not(await ExecuteAsync(exp.Operand!, variables).ConfigureAwait(false)),
@@ -719,14 +670,103 @@ public sealed class InterpreterProcess
                     UnaryOperator.Plus => await ExecuteAsync(exp.Operand!, variables).ConfigureAwait(false),
                     _ => throw ExhaustiveMatch.Failed(exp.Operator)
                 };
-            case IFieldAccessExpressionNode exp:
-            {
-                var result = await ExecuteAsync(exp.Context, variables).ConfigureAwait(false);
-                if (result.ShouldExit(out var obj)) return result;
-                return obj.InstanceValue[exp.ReferencedDeclaration];
             }
-            case IForeachExpressionNode exp:
+            case ExpressionKind.Conversion:
             {
+                var exp = (IConversionExpressionNode)expression;
+                var result = await ExecuteAsync(exp.Referent!, variables).ConfigureAwait(false);
+                if (result.ShouldExit(out var value)) return result;
+                return value.Convert(exp.Referent!.Type.Known(), (CapabilityType)exp.ConvertToType.NamedType, false);
+            }
+            case ExpressionKind.ImplicitConversion:
+            {
+                var exp = (IImplicitConversionExpressionNode)expression;
+                var result = await ExecuteAsync(exp.Referent, variables).ConfigureAwait(false);
+                if (result.ShouldExit(out var value)) return result;
+                return value.Convert(exp.Referent.Type.Known(), (CapabilityType)exp.Type, true);
+            }
+            case ExpressionKind.PatternMatch:
+            {
+                var exp = (IPatternMatchExpressionNode)expression;
+                var result = await ExecuteAsync(exp.Referent!, variables).ConfigureAwait(false);
+                if (result.ShouldExit(out var value)) return result;
+                return await ExecuteMatchAsync(value, exp.Pattern, variables);
+            }
+            case ExpressionKind.Ref:
+            {
+                var exp = (IRefExpressionNode)expression;
+                throw new NotImplementedException();
+            }
+            case ExpressionKind.ImplicitDeref:
+            {
+                var exp = (IImplicitDerefExpressionNode)expression;
+                throw new NotImplementedException();
+            }
+            #endregion
+
+            #region Control Flow Expressions
+            case ExpressionKind.If:
+            {
+                var exp = (IIfExpressionNode)expression;
+                var conditionResult = await ExecuteAsync(exp.Condition!, variables).ConfigureAwait(false);
+                if (conditionResult.ShouldExit(out var condition)) return conditionResult;
+                if (condition.BoolValue)
+                    return await ExecuteBlockOrResultAsync(exp.ThenBlock, variables).ConfigureAwait(false);
+                if (exp.ElseClause is not null)
+                    return await ExecuteElseAsync(exp.ElseClause, variables).ConfigureAwait(false);
+                return AzothValue.None;
+            }
+            case ExpressionKind.Loop:
+            {
+                var exp = (IWhileExpressionNode)expression;
+                while (true)
+                {
+                    var result = await ExecuteAsync(exp.Block, variables).ConfigureAwait(false);
+                    switch (result.Type)
+                    {
+                        default:
+                            throw ExhaustiveMatch.Failed(result.Type);
+                        case AzothResultType.Next:
+                        case AzothResultType.Ordinary:
+                            continue;
+                        case AzothResultType.Break:
+                            return result.Value;
+                        case AzothResultType.Return:
+                            return result;
+                    }
+                }
+            }
+            case ExpressionKind.While:
+            {
+                var exp = (IWhileExpressionNode)expression;
+                var block = exp.Block; // Lifted out of loop
+                while (true)
+                {
+                    // Create a variable scope in case a variable is declared by a pattern in the condition
+                    using var scope = variables.CreateNestedScope();
+                    var conditionResult = await ExecuteAsync(exp.Condition!, scope).ConfigureAwait(false);
+                    if (conditionResult.ShouldExit(out var condition)) return conditionResult;
+                    if (!condition.BoolValue)
+                        return AzothValue.None;
+
+                    var result = await ExecuteAsync(block, scope).ConfigureAwait(false);
+                    switch (result.Type)
+                    {
+                        default:
+                            throw ExhaustiveMatch.Failed(result.Type);
+                        case AzothResultType.Next:
+                        case AzothResultType.Ordinary:
+                            continue;
+                        case AzothResultType.Break:
+                            return result.Value;
+                        case AzothResultType.Return:
+                            return result;
+                    }
+                }
+            }
+            case ExpressionKind.Foreach:
+            {
+                var exp = (IForeachExpressionNode)expression;
                 var iterableResult = await ExecuteAsync(exp.InExpression!, variables).ConfigureAwait(false);
                 if (iterableResult.ShouldExit(out var iterable)) return iterableResult;
                 IBindingNode loopVariable = exp;
@@ -772,104 +812,133 @@ public sealed class InterpreterProcess
 
                 return AzothValue.None;
             }
-            case INeverTypedExpressionNode neverTypedExpression:
-                switch (neverTypedExpression)
-                {
-                    default:
-                        throw ExhaustiveMatch.Failed(expression);
-                    case IReturnExpressionNode exp:
-                    {
-                        var value = exp.Value;
-                        if (value is null) return AzothResult.ReturnVoid;
-                        var result = await ExecuteAsync(value, variables).ConfigureAwait(false);
-                        if (result.ShouldExit(out var returnValue)) return result;
-                        return AzothResult.Return(returnValue);
-                    }
-                    case IBreakExpressionNode exp:
-                    {
-                        if (exp.Value is null) return AzothResult.BreakWithoutValue;
-                        var result = await ExecuteAsync(exp.Value, variables).ConfigureAwait(false);
-                        if (result.ShouldExit(out var value)) return result;
-                        return AzothResult.Break(value);
-                    }
-                    case INextExpressionNode _:
-                        return AzothResult.Next;
-                }
-            case IPrepareToReturnExpressionNode exp:
-                return await ExecuteAsync(exp.Value, variables).ConfigureAwait(false);
-            case IUnsafeExpressionNode exp:
-                return await ExecuteAsync(exp.Expression!, variables).ConfigureAwait(false);
-            case IPatternMatchExpressionNode exp:
+            case ExpressionKind.Break:
             {
-                var result = await ExecuteAsync(exp.Referent!, variables).ConfigureAwait(false);
+                var exp = (IBreakExpressionNode)expression;
+                if (exp.Value is null) return AzothResult.BreakWithoutValue;
+                var result = await ExecuteAsync(exp.Value, variables).ConfigureAwait(false);
                 if (result.ShouldExit(out var value)) return result;
-                return await ExecuteMatchAsync(value, exp.Pattern, variables);
+                return AzothResult.Break(value);
             }
-            case IRecoveryExpressionNode exp:
-                return await ExecuteAsync(exp.Referent, variables).ConfigureAwait(false);
-            case IImplicitTempMoveExpressionNode exp:
-                return await ExecuteAsync(exp.Referent, variables);
-            case IInvocationExpressionNode invocationExpression:
-                switch (invocationExpression)
-                {
-                    default:
-                        throw ExhaustiveMatch.Failed(expression);
-                    case IGetterInvocationExpressionNode exp:
-                    {
-                        var selfResult = await ExecuteAsync(exp.Context, variables).ConfigureAwait(false);
-                        if (selfResult.ShouldExit(out var self)) return selfResult;
-                        var getterSymbol = exp.ReferencedDeclaration!.Symbol.Assigned();
-                        var selfType = exp.Context.Type.Known();
-                        return await CallMethodAsync(getterSymbol, selfType, self, []).ConfigureAwait(false);
-                    }
-                    case IMethodInvocationExpressionNode exp:
-                    {
-                        var selfResult = await ExecuteAsync(exp.Method.Context, variables).ConfigureAwait(false);
-                        if (selfResult.ShouldExit(out var self)) return selfResult;
-                        var argumentsResult = await ExecuteArgumentsAsync(exp.Arguments!, variables).ConfigureAwait(false);
-                        if (argumentsResult.ShouldExit(out var arguments)) return argumentsResult;
-                        var methodSymbol = exp.Method.ReferencedDeclaration!.Symbol.Assigned();
-                        var selfType = exp.Method.Context.Type.Known();
-                        return await CallMethodAsync(methodSymbol, selfType, self, arguments.ArgumentsValue).ConfigureAwait(false);
-                    }
-                    case IFunctionInvocationExpressionNode exp:
-                    {
-                        var argumentsResult = await ExecuteArgumentsAsync(exp.Arguments!, variables).ConfigureAwait(false);
-                        if (argumentsResult.ShouldExit(out var arguments)) return argumentsResult;
-                        var functionSymbol = exp.Function.ReferencedDeclaration!.Symbol.Assigned();
-                        return await CallFunctionAsync(functionSymbol, arguments.ArgumentsValue).ConfigureAwait(false);
-                    }
-                    case ISetterInvocationExpressionNode exp:
-                    {
-                        var selfResult = await ExecuteAsync(exp.Context, variables).ConfigureAwait(false);
-                        if (selfResult.ShouldExit(out var self)) return selfResult;
-                        var valueResult = await ExecuteAsync(exp.Value!, variables).ConfigureAwait(false);
-                        if (valueResult.ShouldExit(out var value)) return valueResult;
-                        var setterSymbol = exp.ReferencedDeclaration!.Symbol.Assigned();
-                        var selfType = exp.Context.Type.Known();
-                        return await CallMethodAsync(setterSymbol, selfType, self, [value]).ConfigureAwait(false);
-                    }
-                    case IInitializerInvocationExpressionNode exp:
-                    {
-                        var argumentsResult = await ExecuteArgumentsAsync(exp.Arguments!, variables).ConfigureAwait(false);
-                        if (argumentsResult.ShouldExit(out var arguments)) return argumentsResult;
-                        var initializerSymbol = exp.Initializer.ReferencedDeclaration!.Symbol.Assigned();
-                        return await CallInitializerAsync(initializerSymbol, arguments.ArgumentsValue).ConfigureAwait(false);
-                    }
-                    case IFunctionReferenceInvocationExpressionNode exp:
-                    {
-                        var functionResult = await ExecuteAsync(exp.Expression, variables).ConfigureAwait(false);
-                        if (functionResult.ShouldExit(out var function)) return functionResult;
-                        var argumentsResult = await ExecuteArgumentsAsync(exp.Arguments!, variables).ConfigureAwait(false);
-                        if (argumentsResult.ShouldExit(out var arguments)) return argumentsResult;
-                        return await function.FunctionReferenceValue.CallAsync(arguments.ArgumentsValue).ConfigureAwait(false);
-                    }
-                    case IUnresolvedInvocationExpressionNode _:
-                    case INonInvocableInvocationExpressionNode _:
-                        throw UnreachableInErrorFreeTree(expression);
-                }
-            case IAsyncBlockExpressionNode exp:
+            case ExpressionKind.Next:
+                return AzothResult.Next;
+            case ExpressionKind.Return:
             {
+                var exp = (IReturnExpressionNode)expression;
+                var value = exp.Value;
+                if (value is null) return AzothResult.ReturnVoid;
+                var result = await ExecuteAsync(value, variables).ConfigureAwait(false);
+                if (result.ShouldExit(out var returnValue)) return result;
+                return AzothResult.Return(returnValue);
+            }
+            #endregion
+
+            #region Invocation Expressions
+            case ExpressionKind.FunctionInvocation:
+            {
+                var exp = (IFunctionInvocationExpressionNode)expression;
+                var argumentsResult = await ExecuteArgumentsAsync(exp.Arguments!, variables).ConfigureAwait(false);
+                if (argumentsResult.ShouldExit(out var arguments)) return argumentsResult;
+                var functionSymbol = exp.Function.ReferencedDeclaration!.Symbol.Assigned();
+                return await CallFunctionAsync(functionSymbol, arguments.ArgumentsValue).ConfigureAwait(false);
+            }
+            case ExpressionKind.MethodInvocation:
+            {
+                var exp = (IMethodInvocationExpressionNode)expression;
+                var selfResult = await ExecuteAsync(exp.Method.Context, variables).ConfigureAwait(false);
+                if (selfResult.ShouldExit(out var self)) return selfResult;
+                var argumentsResult = await ExecuteArgumentsAsync(exp.Arguments!, variables).ConfigureAwait(false);
+                if (argumentsResult.ShouldExit(out var arguments)) return argumentsResult;
+                var methodSymbol = exp.Method.ReferencedDeclaration!.Symbol.Assigned();
+                var selfType = exp.Method.Context.Type.Known();
+                return await CallMethodAsync(methodSymbol, selfType, self, arguments.ArgumentsValue).ConfigureAwait(false);
+            }
+            case ExpressionKind.GetterInvocation:
+            {
+                var exp = (IGetterInvocationExpressionNode)expression;
+                var selfResult = await ExecuteAsync(exp.Context, variables).ConfigureAwait(false);
+                if (selfResult.ShouldExit(out var self)) return selfResult;
+                var getterSymbol = exp.ReferencedDeclaration!.Symbol.Assigned();
+                var selfType = exp.Context.Type.Known();
+                return await CallMethodAsync(getterSymbol, selfType, self, []).ConfigureAwait(false);
+            }
+            case ExpressionKind.SetterInvocation:
+            {
+                var exp = (ISetterInvocationExpressionNode)expression;
+                var selfResult = await ExecuteAsync(exp.Context, variables).ConfigureAwait(false);
+                if (selfResult.ShouldExit(out var self)) return selfResult;
+                var valueResult = await ExecuteAsync(exp.Value!, variables).ConfigureAwait(false);
+                if (valueResult.ShouldExit(out var value)) return valueResult;
+                var setterSymbol = exp.ReferencedDeclaration!.Symbol.Assigned();
+                var selfType = exp.Context.Type.Known();
+                return await CallMethodAsync(setterSymbol, selfType, self, [value]).ConfigureAwait(false);
+            }
+            case ExpressionKind.FunctionReferenceInvocation:
+            {
+                var exp = (IFunctionReferenceInvocationExpressionNode)expression;
+                var functionResult = await ExecuteAsync(exp.Expression, variables).ConfigureAwait(false);
+                if (functionResult.ShouldExit(out var function)) return functionResult;
+                var argumentsResult = await ExecuteArgumentsAsync(exp.Arguments!, variables).ConfigureAwait(false);
+                if (argumentsResult.ShouldExit(out var arguments)) return argumentsResult;
+                return await function.FunctionReferenceValue.CallAsync(arguments.ArgumentsValue).ConfigureAwait(false);
+            }
+            case ExpressionKind.InitializerInvocation:
+            {
+                var exp = (IInitializerInvocationExpressionNode)expression;
+                var argumentsResult = await ExecuteArgumentsAsync(exp.Arguments!, variables).ConfigureAwait(false);
+                if (argumentsResult.ShouldExit(out var arguments)) return argumentsResult;
+                var initializerSymbol = exp.Initializer.ReferencedDeclaration!.Symbol.Assigned();
+                return await CallInitializerAsync(initializerSymbol, arguments.ArgumentsValue).ConfigureAwait(false);
+            }
+            #endregion
+
+            #region Name Expressions
+            case ExpressionKind.VariableName:
+            {
+                var exp = (IVariableNameExpressionNode)expression;
+                return variables[exp.ReferencedDefinition];
+            }
+            case ExpressionKind.Self:
+            {
+                var exp = (ISelfExpressionNode)expression;
+                return variables[exp.ReferencedDefinition!];
+            }
+            case ExpressionKind.FunctionName:
+            {
+                var exp = (IFunctionNameExpressionNode)expression;
+                return AzothValue.FunctionReference(new OrdinaryFunctionReference(this,
+                    exp.ReferencedDeclaration!.Symbol.Assigned()));
+            }
+            case ExpressionKind.InitializerName:
+            {
+                var exp = (IInitializerNameExpressionNode)expression;
+                var initializerSymbol = exp.ReferencedDeclaration!.Symbol.Assigned();
+                return AzothValue.FunctionReference(new InitializerReference(this, initializerSymbol));
+            }
+            #endregion
+
+            #region Capability Expressions
+            case ExpressionKind.Recovery:
+            {
+                var exp = (IImplicitTempMoveExpressionNode)expression;
+                return await ExecuteAsync(exp.Referent, variables).ConfigureAwait(false);
+            }
+            case ExpressionKind.ImplicitTempMove:
+            {
+                var exp = (IImplicitTempMoveExpressionNode)expression;
+                return await ExecuteAsync(exp.Referent, variables).ConfigureAwait(false);
+            }
+            case ExpressionKind.PrepareToReturn:
+            {
+                var exp = (IPrepareToReturnExpressionNode)expression;
+                return await ExecuteAsync(exp.Value, variables).ConfigureAwait(false);
+            }
+            #endregion
+
+            #region Async Expressions
+            case ExpressionKind.AsyncBlock:
+            {
+                var exp = (IAsyncBlockExpressionNode)expression;
                 var asyncScope = new AsyncScope();
                 using var scope = variables.CreateNestedScope(asyncScope);
                 try
@@ -881,10 +950,12 @@ public sealed class InterpreterProcess
                     await asyncScope.ExitAsync();
                 }
             }
-            case IAsyncStartExpressionNode exp:
+            case ExpressionKind.AsyncStart:
             {
+                var exp = (IAsyncStartExpressionNode)expression;
                 if (variables.AsyncScope is not AsyncScope asyncScope)
-                    throw new InvalidOperationException("Cannot execute `go` or `do` expression outside of an async scope.");
+                    throw new InvalidOperationException(
+                        "Cannot execute `go` or `do` expression outside of an async scope.");
 
                 var task = exp.Scheduled
                     ? Task.Run(async () => await ExecuteAsync(exp.Expression!, variables))
@@ -894,25 +965,19 @@ public sealed class InterpreterProcess
 
                 return AzothValue.Promise(task);
             }
-            case IAwaitExpressionNode exp:
+            case ExpressionKind.Await:
             {
+                var exp = (IAwaitExpressionNode)expression;
                 var result = await ExecuteAsync(exp.Expression!, variables).ConfigureAwait(false);
                 if (result.ShouldExit(out var value)) return result;
                 return await value.PromiseValue.ConfigureAwait(false);
             }
-            case IRefExpressionNode exp:
-            {
-                throw new NotImplementedException();
-            }
-            case IImplicitDerefExpressionNode exp:
-            {
-                throw new NotImplementedException();
-            }
-            case IUnresolvedExpressionNode _:
-            case IMissingNameExpressionNode _:
+            #endregion
+
+            case ExpressionKind.Invalid:
                 throw UnreachableInErrorFreeTree(expression);
-            case INameNode _:
-                throw new UnreachableException($"Name node type {expression.GetType().GetFriendlyName()} won't be traversed.");
+            case ExpressionKind.NotTraversed:
+                throw new UnreachableException($"Node type {expression.GetType().GetFriendlyName()} won't be traversed.");
         }
     }
 

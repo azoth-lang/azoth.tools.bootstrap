@@ -46,7 +46,7 @@
 = MethodInvocationExpression.ExpressionKind => ExpressionKind.MethodInvocation;
 = GetterInvocationExpression.ExpressionKind => ExpressionKind.GetterInvocation;
 = SetterInvocationExpression.ExpressionKind => ExpressionKind.SetterInvocation;
-= FunctionReferenceInvocationExpression.ExpressionKind => ExpressionKind.FunctionReference;
+= FunctionReferenceInvocationExpression.ExpressionKind => ExpressionKind.FunctionReferenceInvocation;
 = InitializerInvocationExpression.ExpressionKind => ExpressionKind.InitializerInvocation;
 = NonInvocableInvocationExpression.ExpressionKind => ExpressionKind.Invalid;
 

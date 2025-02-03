@@ -52,7 +52,7 @@ public enum ExpressionKind
     MethodInvocation,
     GetterInvocation,
     SetterInvocation,
-    FunctionReference,
+    FunctionReferenceInvocation,
     InitializerInvocation,
     #endregion
 
