@@ -718,7 +718,7 @@ public sealed class InterpreterProcess
             }
             case ExpressionKind.Loop:
             {
-                var exp = (IWhileExpressionNode)expression;
+                var exp = (ILoopExpressionNode)expression;
                 while (true)
                 {
                     var result = await ExecuteAsync(exp.Block, variables).ConfigureAwait(false);
@@ -920,7 +920,7 @@ public sealed class InterpreterProcess
             #region Capability Expressions
             case ExpressionKind.Recovery:
             {
-                var exp = (IImplicitTempMoveExpressionNode)expression;
+                var exp = (IRecoveryExpressionNode)expression;
                 return await ExecuteAsync(exp.Referent, variables).ConfigureAwait(false);
             }
             case ExpressionKind.ImplicitTempMove:
