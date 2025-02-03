@@ -805,13 +805,8 @@ public sealed class InterpreterProcess
                 if (result.ShouldExit(out var value)) return result;
                 return await ExecuteMatchAsync(value, exp.Pattern, variables);
             }
-            case IRecoveryExpressionNode recoveryExpression:
-                return recoveryExpression switch
-                {
-                    IMoveExpressionNode exp => await ExecuteAsync(exp.Referent, variables),
-                    IFreezeExpressionNode exp => await ExecuteAsync(exp.Referent, variables),
-                    _ => throw ExhaustiveMatch.Failed(expression)
-                };
+            case IRecoveryExpressionNode exp:
+                return await ExecuteAsync(exp.Referent, variables).ConfigureAwait(false);
             case IImplicitTempMoveExpressionNode exp:
                 return await ExecuteAsync(exp.Referent, variables);
             case IInvocationExpressionNode invocationExpression:

@@ -1,6 +1,74 @@
 ◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Declarations;
 ◊name ExpressionKindAspect;
-◊using Azoth.Tools.Bootstrap.Framework;
-◊using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
+◊using Azoth.Tools.Bootstrap.Compiler.Semantics.InterpreterHelpers;
 
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
+
+// ---------- Expressions
+↑ Expression.ExpressionKind: `ExpressionKind`;
+= BlockExpression.ExpressionKind => ExpressionKind.Block;
+= UnsafeExpression.ExpressionKind => ExpressionKind.Unsafe;
+
+// ---------- Unresolved Expressions
+= UnresolvedExpression.ExpressionKind => ExpressionKind.Invalid;
+
+// ---------- Instance Member Access Expressions
+= FieldAccessExpression.ExpressionKind => ExpressionKind.FieldAccess;
+= MethodAccessExpression.ExpressionKind => ExpressionKind.MethodAccess;
+
+// ---------- Literal Expressions
+= BoolLiteralExpression.ExpressionKind => ExpressionKind.BoolLiteral;
+= IntegerLiteralExpression.ExpressionKind => ExpressionKind.IntegerLiteral;
+= NoneLiteralExpression.ExpressionKind => ExpressionKind.NoneLiteral;
+= StringLiteralExpression.ExpressionKind => ExpressionKind.StringLiteral;
+
+// ---------- Operator Expressions
+= AssignmentExpression.ExpressionKind => ExpressionKind.Assignment;
+= BinaryOperatorExpression.ExpressionKind => ExpressionKind.BinaryOperator;
+= UnaryOperatorExpression.ExpressionKind => ExpressionKind.UnaryOperator;
+= ConversionExpression.ExpressionKind => ExpressionKind.Conversion;
+= ImplicitConversionExpression.ExpressionKind => ExpressionKind.ImplicitConversion;
+= PatternMatchExpression.ExpressionKind => ExpressionKind.PatternMatch;
+= RefExpression.ExpressionKind => ExpressionKind.Ref;
+= ImplicitDerefExpression.ExpressionKind => ExpressionKind.ImplicitDeref;
+
+// ---------- Control Flow Expressions
+= IfExpression.ExpressionKind => ExpressionKind.If;
+= LoopExpression.ExpressionKind => ExpressionKind.Loop;
+= WhileExpression.ExpressionKind => ExpressionKind.While;
+= ForeachExpression.ExpressionKind => ExpressionKind.Foreach;
+= BreakExpression.ExpressionKind => ExpressionKind.Break;
+= NextExpression.ExpressionKind => ExpressionKind.Next;
+= ReturnExpression.ExpressionKind => ExpressionKind.Return;
+
+// ---------- Invocation Expressions
+= FunctionInvocationExpression.ExpressionKind => ExpressionKind.FunctionInvocation;
+= MethodInvocationExpression.ExpressionKind => ExpressionKind.MethodInvocation;
+= GetterInvocationExpression.ExpressionKind => ExpressionKind.GetterInvocation;
+= SetterInvocationExpression.ExpressionKind => ExpressionKind.SetterInvocation;
+= FunctionReferenceInvocationExpression.ExpressionKind => ExpressionKind.FunctionReference;
+= InitializerInvocationExpression.ExpressionKind => ExpressionKind.InitializerInvocation;
+= NonInvocableInvocationExpression.ExpressionKind => ExpressionKind.Invalid;
+
+// ---------- Name Expressions
+= VariableNameExpression.ExpressionKind => ExpressionKind.VariableName;
+= SelfExpression.ExpressionKind => ExpressionKind.Self;
+= FunctionNameExpression.ExpressionKind => ExpressionKind.FunctionName;
+= InitializerNameExpression.ExpressionKind => ExpressionKind.InitializerName;
+= MissingNameExpression.ExpressionKind => ExpressionKind.Invalid;
+
+// ---------- Names
+= Name.ExpressionKind => ExpressionKind.NotTraversed;
+
+// ---------- Unresolved Names
+= UnresolvedName.ExpressionKind => ExpressionKind.Invalid;
+
+// ---------- Capability Expressions
+= RecoveryExpression.ExpressionKind => ExpressionKind.Recovery;
+= ImplicitTempMoveExpression.ExpressionKind => ExpressionKind.ImplicitTempMove;
+= PrepareToReturnExpression.ExpressionKind => ExpressionKind.PrepareToReturn;
+
+// ---------- Async Expressions
+= AsyncBlockExpression.ExpressionKind => ExpressionKind.AsyncBlock;
+= AsyncStartExpression.ExpressionKind => ExpressionKind.AsyncStart;
+= AwaitExpression.ExpressionKind => ExpressionKind.Await;

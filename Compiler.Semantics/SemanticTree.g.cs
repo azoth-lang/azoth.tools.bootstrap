@@ -16,6 +16,7 @@ using Azoth.Tools.Bootstrap.Compiler.Primitives;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.ControlFlow;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.DataFlow;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Declarations;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.InterpreterHelpers;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.NameBinding;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.PlainTypes;
@@ -1761,6 +1762,7 @@ public partial interface IExpressionNode : IAmbiguousExpressionNode, IControlFlo
     IMaybeType Type { get; }
     IFlowState FlowStateAfter { get; }
     IMaybePlainType PlainType { get; }
+    ExpressionKind ExpressionKind { get; }
 }
 
 [Closed(
@@ -1824,6 +1826,8 @@ public partial interface IBlockExpressionNode : IOrdinaryTypedExpressionNode, IB
     new ValueId ValueId { get; }
     ValueId IExpressionNode.ValueId => ValueId;
     ValueId IElseClauseNode.ValueId => ValueId;
+    ExpressionKind IExpressionNode.ExpressionKind
+        => ExpressionKind.Block;
 
     public static IBlockExpressionNode Create(
         IBlockExpressionSyntax syntax,
@@ -1844,6 +1848,8 @@ public partial interface IUnsafeExpressionNode : IOrdinaryTypedExpressionNode
     IAmbiguousExpressionNode CurrentExpression { get; }
     ConditionalLexicalScope IAmbiguousExpressionNode.FlowLexicalScope()
         => TempExpression.FlowLexicalScope();
+    ExpressionKind IExpressionNode.ExpressionKind
+        => ExpressionKind.Unsafe;
 
     public static IUnsafeExpressionNode Create(
         IUnsafeExpressionSyntax syntax,
@@ -1872,6 +1878,8 @@ public partial interface INeverTypedExpressionNode : IExpressionNode
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IUnresolvedExpressionNode : IExpressionNode
 {
+    ExpressionKind IExpressionNode.ExpressionKind
+        => ExpressionKind.Invalid;
 }
 
 [Closed(
@@ -1917,6 +1925,8 @@ public partial interface IFieldAccessExpressionNode : IOrdinaryTypedExpressionNo
     IFieldDeclarationNode ReferencedDeclaration { get; }
     IdentifierName FieldName
         => (IdentifierName)Syntax.MemberName;
+    ExpressionKind IExpressionNode.ExpressionKind
+        => ExpressionKind.FieldAccess;
 
     public static IFieldAccessExpressionNode Create(
         IMemberAccessExpressionSyntax syntax,
@@ -1947,6 +1957,8 @@ public partial interface IMethodAccessExpressionNode : IOrdinaryTypedExpressionN
         => SelectedCallCandidate?.Declaration;
     OrdinaryName MethodName
         => Syntax.MemberName;
+    ExpressionKind IExpressionNode.ExpressionKind
+        => ExpressionKind.MethodAccess;
 
     public static IMethodAccessExpressionNode Create(
         IMemberAccessExpressionSyntax syntax,
@@ -1984,6 +1996,8 @@ public partial interface IBoolLiteralExpressionNode : ILiteralExpressionNode
     IMaybeType IExpressionNode.Type => Type;
     bool Value
         => Syntax.Value;
+    ExpressionKind IExpressionNode.ExpressionKind
+        => ExpressionKind.BoolLiteral;
 
     public static IBoolLiteralExpressionNode Create(IBoolLiteralExpressionSyntax syntax)
         => new BoolLiteralExpressionNode(syntax);
@@ -2002,6 +2016,8 @@ public partial interface IIntegerLiteralExpressionNode : ILiteralExpressionNode
     IMaybeType IExpressionNode.Type => Type;
     BigInteger Value
         => Syntax.Value;
+    ExpressionKind IExpressionNode.ExpressionKind
+        => ExpressionKind.IntegerLiteral;
 
     public static IIntegerLiteralExpressionNode Create(IIntegerLiteralExpressionSyntax syntax)
         => new IntegerLiteralExpressionNode(syntax);
@@ -2018,6 +2034,8 @@ public partial interface INoneLiteralExpressionNode : ILiteralExpressionNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     new OptionalType Type { get; }
     IMaybeType IExpressionNode.Type => Type;
+    ExpressionKind IExpressionNode.ExpressionKind
+        => ExpressionKind.NoneLiteral;
 
     public static INoneLiteralExpressionNode Create(INoneLiteralExpressionSyntax syntax)
         => new NoneLiteralExpressionNode(syntax);
@@ -2036,6 +2054,8 @@ public partial interface IStringLiteralExpressionNode : ILiteralExpressionNode
     LexicalScope IAmbiguousExpressionNode.ContainingLexicalScope() => ContainingLexicalScope;
     string Value
         => Syntax.Value;
+    ExpressionKind IExpressionNode.ExpressionKind
+        => ExpressionKind.StringLiteral;
 
     public static IStringLiteralExpressionNode Create(IStringLiteralExpressionSyntax syntax)
         => new StringLiteralExpressionNode(syntax);
@@ -2059,6 +2079,8 @@ public partial interface IAssignmentExpressionNode : IOrdinaryTypedExpressionNod
         => Syntax.Operator;
     ConditionalLexicalScope IAmbiguousExpressionNode.FlowLexicalScope()
         => LexicalScopingAspect.AssignmentExpression_FlowLexicalScope(this);
+    ExpressionKind IExpressionNode.ExpressionKind
+        => ExpressionKind.Assignment;
 
     public static IAssignmentExpressionNode Create(
         IAssignmentExpressionSyntax syntax,
@@ -2088,6 +2110,8 @@ public partial interface IBinaryOperatorExpressionNode : IOrdinaryTypedExpressio
     PlainType? NumericOperatorCommonPlainType { get; }
     ConditionalLexicalScope IAmbiguousExpressionNode.FlowLexicalScope()
         => LexicalScopingAspect.BinaryOperatorExpression_FlowLexicalScope(this);
+    ExpressionKind IExpressionNode.ExpressionKind
+        => ExpressionKind.BinaryOperator;
 
     public static IBinaryOperatorExpressionNode Create(
         IBinaryOperatorExpressionSyntax syntax,
@@ -2113,6 +2137,8 @@ public partial interface IUnaryOperatorExpressionNode : IOrdinaryTypedExpression
         => Syntax.Fixity;
     ConditionalLexicalScope IAmbiguousExpressionNode.FlowLexicalScope()
         => LexicalScopingAspect.UnaryOperatorExpression_FlowLexicalScope(this);
+    ExpressionKind IExpressionNode.ExpressionKind
+        => ExpressionKind.UnaryOperator;
 
     public static IUnaryOperatorExpressionNode Create(
         IUnaryOperatorExpressionSyntax syntax,
@@ -2136,6 +2162,8 @@ public partial interface IConversionExpressionNode : IOrdinaryTypedExpressionNod
         => Syntax.Operator;
     ConditionalLexicalScope IAmbiguousExpressionNode.FlowLexicalScope()
         => TempReferent.FlowLexicalScope();
+    ExpressionKind IExpressionNode.ExpressionKind
+        => ExpressionKind.Conversion;
 
     public static IConversionExpressionNode Create(
         IConversionExpressionSyntax syntax,
@@ -2159,6 +2187,8 @@ public partial interface IImplicitConversionExpressionNode : IOrdinaryTypedExpre
     ISyntax? ISemanticNode.Syntax => Syntax;
     ConditionalLexicalScope IAmbiguousExpressionNode.FlowLexicalScope()
         => Referent.FlowLexicalScope();
+    ExpressionKind IExpressionNode.ExpressionKind
+        => ExpressionKind.ImplicitConversion;
 
     public static IImplicitConversionExpressionNode Create(
         IExpressionNode referent,
@@ -2184,6 +2214,8 @@ public partial interface IPatternMatchExpressionNode : IOrdinaryTypedExpressionN
         => AzothType.Bool;
     IMaybePlainType IExpressionNode.PlainType
         => AzothPlainType.Bool;
+    ExpressionKind IExpressionNode.ExpressionKind
+        => ExpressionKind.PatternMatch;
 
     public static IPatternMatchExpressionNode Create(
         IPatternMatchExpressionSyntax syntax,
@@ -2207,6 +2239,8 @@ public partial interface IRefExpressionNode : IOrdinaryTypedExpressionNode
         => Syntax.IsInternal;
     bool IsMutableBinding
         => Syntax.IsMutableBinding;
+    ExpressionKind IExpressionNode.ExpressionKind
+        => ExpressionKind.Ref;
 
     public static IRefExpressionNode Create(
         IRefExpressionSyntax syntax,
@@ -2225,6 +2259,8 @@ public partial interface IImplicitDerefExpressionNode : IOrdinaryTypedExpression
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ICodeSyntax ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
+    ExpressionKind IExpressionNode.ExpressionKind
+        => ExpressionKind.ImplicitDeref;
 
     public static IImplicitDerefExpressionNode Create(IExpressionNode referent)
         => new ImplicitDerefExpressionNode(referent);
@@ -2251,6 +2287,8 @@ public partial interface IIfExpressionNode : IOrdinaryTypedExpressionNode, IElse
     new ValueId ValueId { get; }
     ValueId IExpressionNode.ValueId => ValueId;
     ValueId IElseClauseNode.ValueId => ValueId;
+    ExpressionKind IExpressionNode.ExpressionKind
+        => ExpressionKind.If;
 
     public static IIfExpressionNode Create(
         IIfExpressionSyntax syntax,
@@ -2270,6 +2308,8 @@ public partial interface ILoopExpressionNode : IOrdinaryTypedExpressionNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     IBlockExpressionNode Block { get; }
     IBlockExpressionNode CurrentBlock { get; }
+    ExpressionKind IExpressionNode.ExpressionKind
+        => ExpressionKind.Loop;
 
     public static ILoopExpressionNode Create(
         ILoopExpressionSyntax syntax,
@@ -2290,6 +2330,8 @@ public partial interface IWhileExpressionNode : IOrdinaryTypedExpressionNode
     IAmbiguousExpressionNode CurrentCondition { get; }
     IBlockExpressionNode Block { get; }
     IBlockExpressionNode CurrentBlock { get; }
+    ExpressionKind IExpressionNode.ExpressionKind
+        => ExpressionKind.While;
 
     public static IWhileExpressionNode Create(
         IWhileExpressionSyntax syntax,
@@ -2335,6 +2377,8 @@ public partial interface IForeachExpressionNode : IOrdinaryTypedExpressionNode, 
         => Syntax.IsMutableBinding;
     IdentifierName INamedBindingDeclarationNode.Name
         => VariableName;
+    ExpressionKind IExpressionNode.ExpressionKind
+        => ExpressionKind.Foreach;
 
     public static IForeachExpressionNode Create(
         IForeachExpressionSyntax syntax,
@@ -2355,6 +2399,8 @@ public partial interface IBreakExpressionNode : INeverTypedExpressionNode
     IAmbiguousExpressionNode? TempValue { get; }
     IExpressionNode? Value { get; }
     IAmbiguousExpressionNode? CurrentValue { get; }
+    ExpressionKind IExpressionNode.ExpressionKind
+        => ExpressionKind.Break;
 
     public static IBreakExpressionNode Create(
         IBreakExpressionSyntax syntax,
@@ -2370,6 +2416,8 @@ public partial interface INextExpressionNode : INeverTypedExpressionNode
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ICodeSyntax ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
+    ExpressionKind IExpressionNode.ExpressionKind
+        => ExpressionKind.Next;
 
     public static INextExpressionNode Create(INextExpressionSyntax syntax)
         => new NextExpressionNode(syntax);
@@ -2389,6 +2437,8 @@ public partial interface IReturnExpressionNode : INeverTypedExpressionNode
     IMaybeType? ExpectedReturnType { get; }
     IExitNode ControlFlowExit();
     IMaybePlainType? ExpectedReturnPlainType { get; }
+    ExpressionKind IExpressionNode.ExpressionKind
+        => ExpressionKind.Return;
 
     public static IReturnExpressionNode Create(
         IReturnExpressionSyntax syntax,
@@ -2464,6 +2514,8 @@ public partial interface IFunctionInvocationExpressionNode : IInvocationExpressi
         => TempArguments;
     IEnumerable<IExpressionNode?> IInvocationExpressionNode.AllArguments
         => Arguments;
+    ExpressionKind IExpressionNode.ExpressionKind
+        => ExpressionKind.FunctionInvocation;
 
     public static IFunctionInvocationExpressionNode Create(
         IInvocationExpressionSyntax syntax,
@@ -2492,6 +2544,8 @@ public partial interface IMethodInvocationExpressionNode : IInvocationExpression
         => TempArguments.Prepend(Method.Context);
     IEnumerable<IExpressionNode?> IInvocationExpressionNode.AllArguments
         => Arguments.Prepend(Method.Context);
+    ExpressionKind IExpressionNode.ExpressionKind
+        => ExpressionKind.MethodInvocation;
 
     public static IMethodInvocationExpressionNode Create(
         IInvocationExpressionSyntax syntax,
@@ -2524,6 +2578,8 @@ public partial interface IGetterInvocationExpressionNode : IInvocationExpression
         => [Context];
     IEnumerable<IExpressionNode?> IInvocationExpressionNode.AllArguments
         => [Context];
+    ExpressionKind IExpressionNode.ExpressionKind
+        => ExpressionKind.GetterInvocation;
 
     public static IGetterInvocationExpressionNode Create(
         IMemberAccessExpressionSyntax syntax,
@@ -2558,6 +2614,8 @@ public partial interface ISetterInvocationExpressionNode : IInvocationExpression
         => [Context, TempValue];
     IEnumerable<IExpressionNode?> IInvocationExpressionNode.AllArguments
         => [Context, Value];
+    ExpressionKind IExpressionNode.ExpressionKind
+        => ExpressionKind.SetterInvocation;
 
     public static ISetterInvocationExpressionNode Create(
         IAssignmentExpressionSyntax syntax,
@@ -2587,6 +2645,8 @@ public partial interface IFunctionReferenceInvocationExpressionNode : IInvocatio
         => TempArguments;
     IEnumerable<IExpressionNode?> IInvocationExpressionNode.AllArguments
         => Arguments;
+    ExpressionKind IExpressionNode.ExpressionKind
+        => ExpressionKind.FunctionReference;
 
     public static IFunctionReferenceInvocationExpressionNode Create(
         IInvocationExpressionSyntax syntax,
@@ -2616,6 +2676,8 @@ public partial interface IInitializerInvocationExpressionNode : IInvocationExpre
         => TempArguments;
     IEnumerable<IExpressionNode?> IInvocationExpressionNode.AllArguments
         => Arguments;
+    ExpressionKind IExpressionNode.ExpressionKind
+        => ExpressionKind.InitializerInvocation;
 
     public static IInitializerInvocationExpressionNode Create(
         IInvocationExpressionSyntax syntax,
@@ -2647,6 +2709,8 @@ public partial interface INonInvocableInvocationExpressionNode : IInvocationExpr
         => Arguments;
     IMaybePlainType IExpressionNode.PlainType
         => AzothPlainType.Unknown;
+    ExpressionKind IExpressionNode.ExpressionKind
+        => ExpressionKind.Invalid;
 
     public static INonInvocableInvocationExpressionNode Create(
         IInvocationExpressionSyntax syntax,
@@ -2708,6 +2772,8 @@ public partial interface IVariableNameExpressionNode : ILocalBindingNameExpressi
     IFixedSet<IDataFlowNode> DataFlowPrevious { get; }
     IFlowState INameExpressionNode.FlowStateAfter
         => ExpressionTypesAspect.VariableNameExpression_FlowStateAfter(this);
+    ExpressionKind IExpressionNode.ExpressionKind
+        => ExpressionKind.VariableName;
 
     public static IVariableNameExpressionNode Create(
         IIdentifierNameSyntax syntax,
@@ -2744,6 +2810,8 @@ public partial interface ISelfExpressionNode : IInstanceExpressionNode, ILocalBi
     IBindingNode? ILocalBindingNameExpressionNode.ReferencedDefinition => ReferencedDefinition;
     IFlowState INameExpressionNode.FlowStateAfter
         => ExpressionTypesAspect.SelfExpression_FlowStateAfter(this);
+    ExpressionKind IExpressionNode.ExpressionKind
+        => ExpressionKind.Self;
 
     public static ISelfExpressionNode Create(ISelfExpressionSyntax syntax)
         => new SelfExpressionNode(syntax);
@@ -2765,6 +2833,8 @@ public partial interface IFunctionNameExpressionNode : IOrdinaryTypedNameExpress
         => SelectedCallCandidate?.Declaration;
     IFlowState INameExpressionNode.FlowStateAfter
         => ExpressionTypesAspect.FunctionNameExpression_FlowStateAfter(this);
+    ExpressionKind IExpressionNode.ExpressionKind
+        => ExpressionKind.FunctionName;
 
     public static IFunctionNameExpressionNode Create(
         INameExpressionSyntax syntax,
@@ -2791,6 +2861,8 @@ public partial interface IInitializerNameExpressionNode : IOrdinaryTypedNameExpr
         => Context.NamedPlainType;
     IFlowState INameExpressionNode.FlowStateAfter
         => ExpressionTypesAspect.InitializerNameExpression_FlowStateAfter(this);
+    ExpressionKind IExpressionNode.ExpressionKind
+        => ExpressionKind.InitializerName;
 
     public static IInitializerNameExpressionNode Create(
         INameExpressionSyntax syntax,
@@ -2814,6 +2886,8 @@ public partial interface IMissingNameExpressionNode : INameExpressionNode
     IMaybeType IExpressionNode.Type => Type;
     IMaybePlainType IExpressionNode.PlainType
         => AzothPlainType.Unknown;
+    ExpressionKind IExpressionNode.ExpressionKind
+        => ExpressionKind.Invalid;
 
     public static IMissingNameExpressionNode Create(IMissingNameExpressionSyntax syntax)
         => new MissingNameExpressionNode(syntax);
@@ -2984,6 +3058,8 @@ public partial interface INameNode : INameExpressionNode
     IMaybeType IExpressionNode.Type => Type;
     IMaybePlainType IExpressionNode.PlainType
         => AzothPlainType.Unknown;
+    ExpressionKind IExpressionNode.ExpressionKind
+        => ExpressionKind.NotTraversed;
 }
 
 [Closed(
@@ -3048,6 +3124,8 @@ public partial interface IUnresolvedNameNode : INameNode, IUnresolvedNameExpress
     UnknownType IUnresolvedNameExpressionNode.Type => Type;
     IMaybePlainType IExpressionNode.PlainType
         => AzothPlainType.Unknown;
+    ExpressionKind IExpressionNode.ExpressionKind
+        => ExpressionKind.Invalid;
 }
 
 [Closed(
@@ -3344,6 +3422,8 @@ public partial interface IRecoveryExpressionNode : IOrdinaryTypedExpressionNode
     IExpressionNode Referent { get; }
     IExpressionNode CurrentReferent { get; }
     bool IsImplicit { get; }
+    ExpressionKind IExpressionNode.ExpressionKind
+        => ExpressionKind.Recovery;
 }
 
 [Closed(
@@ -3392,6 +3472,8 @@ public partial interface IImplicitTempMoveExpressionNode : IOrdinaryTypedExpress
     IExpressionNode CurrentReferent { get; }
     IMaybePlainType IExpressionNode.PlainType
         => Referent.PlainType;
+    ExpressionKind IExpressionNode.ExpressionKind
+        => ExpressionKind.ImplicitTempMove;
 
     public static IImplicitTempMoveExpressionNode Create(
         IExpressionSyntax syntax,
@@ -3473,6 +3555,8 @@ public partial interface IPrepareToReturnExpressionNode : IOrdinaryTypedExpressi
         => Value.Type;
     IMaybePlainType IExpressionNode.PlainType
         => Value.PlainType;
+    ExpressionKind IExpressionNode.ExpressionKind
+        => ExpressionKind.PrepareToReturn;
 
     public static IPrepareToReturnExpressionNode Create(IExpressionNode value)
         => new PrepareToReturnExpressionNode(value);
@@ -3495,6 +3579,8 @@ public partial interface IAsyncBlockExpressionNode : IOrdinaryTypedExpressionNod
         => Block.Type;
     IMaybePlainType IExpressionNode.PlainType
         => Block.PlainType;
+    ExpressionKind IExpressionNode.ExpressionKind
+        => ExpressionKind.AsyncBlock;
 
     public static IAsyncBlockExpressionNode Create(
         IAsyncBlockExpressionSyntax syntax,
@@ -3515,6 +3601,8 @@ public partial interface IAsyncStartExpressionNode : IOrdinaryTypedExpressionNod
     IAmbiguousExpressionNode CurrentExpression { get; }
     bool Scheduled
         => Syntax.Scheduled;
+    ExpressionKind IExpressionNode.ExpressionKind
+        => ExpressionKind.AsyncStart;
 
     public static IAsyncStartExpressionNode Create(
         IAsyncStartExpressionSyntax syntax,
@@ -3535,6 +3623,8 @@ public partial interface IAwaitExpressionNode : IOrdinaryTypedExpressionNode
     IAmbiguousExpressionNode CurrentExpression { get; }
     ConditionalLexicalScope IAmbiguousExpressionNode.FlowLexicalScope()
         => TempExpression.FlowLexicalScope();
+    ExpressionKind IExpressionNode.ExpressionKind
+        => ExpressionKind.Await;
 
     public static IAwaitExpressionNode Create(
         IAwaitExpressionSyntax syntax,

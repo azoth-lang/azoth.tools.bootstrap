@@ -1,7 +1,6 @@
 using System.CodeDom.Compiler;
 using System.Runtime.CompilerServices;
-using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
-using Azoth.Tools.Bootstrap.Framework;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.InterpreterHelpers;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Declarations;
 
