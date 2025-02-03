@@ -128,6 +128,6 @@ public static class OtherSemanticError
     public static Diagnostic CantAssignIntoExpression(CodeFile file, in TextSpan span)
     {
         return new(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
-            6021, "Expression can not appear on the left hand side of an assignment.");
+            6021, "Expression cannot appear on the left hand side of an assignment.");
     }
 }
