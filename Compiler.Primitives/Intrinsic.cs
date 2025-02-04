@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
@@ -50,6 +51,12 @@ public static class Intrinsic
     public static readonly MethodSymbol RawBoundedListShrink
         = Find<MethodSymbol>(RawHybridBoundedList, "shrink");
 
+    public static readonly MethodSymbol GetFixed
+        = FindGetter(RawHybridBoundedList, "fixed");
+
+    public static readonly MethodSymbol SetFixed
+        = FindSetter(RawHybridBoundedList, "fixed");
+
     public static readonly FunctionSymbol PrintRawUtf8Bytes = Find<FunctionSymbol>("print_raw_utf8_bytes");
 
     public static readonly FunctionSymbol AbortRawUtf8Bytes = Find<FunctionSymbol>("ABORT_RAW_UTF8_BYTES");
@@ -64,6 +71,12 @@ public static class Intrinsic
     private static T Find<T>(Symbol containingSymbol, string? name)
         where T : Symbol
         => Find<T>().Single(s => s.ContainingSymbol == containingSymbol && s.Name?.Text == name);
+
+    private static MethodSymbol FindGetter(Symbol containingSymbol, string name)
+        => Find<MethodSymbol>().Single(s => s.Kind == MethodKind.Getter && s.ContainingSymbol == containingSymbol && s.Name.Text == name);
+
+    private static MethodSymbol FindSetter(Symbol containingSymbol, string name)
+        => Find<MethodSymbol>().Single(s => s.Kind == MethodKind.Setter && s.ContainingSymbol == containingSymbol && s.Name.Text == name);
 
     private static FixedSymbolTree DefineIntrinsicSymbols()
     {

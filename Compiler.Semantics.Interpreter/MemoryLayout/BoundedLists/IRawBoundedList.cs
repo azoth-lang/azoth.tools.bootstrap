@@ -2,6 +2,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.MemoryLayout.Boun
 
 internal interface IRawBoundedList
 {
+    public AzothValue Fixed { get; set; }
     public nuint Count { get; }
     public nuint Capacity { get; }
     public void Add(AzothValue value);

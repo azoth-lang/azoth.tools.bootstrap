@@ -1105,6 +1105,13 @@ public sealed class InterpreterProcess
             self.RawBoundedListValue.Shrink(arguments[0].SizeValue);
             return ValueTask.FromResult(AzothValue.None);
         }
+        if (ReferenceEquals(method, Intrinsic.GetFixed))
+            return ValueTask.FromResult(self.RawBoundedListValue.Fixed);
+        if (ReferenceEquals(method, Intrinsic.SetFixed))
+        {
+            self.RawBoundedListValue.Fixed = arguments[0];
+            return ValueTask.FromResult(AzothValue.None);
+        }
 
         throw new NotImplementedException($"Intrinsic {method}");
     }

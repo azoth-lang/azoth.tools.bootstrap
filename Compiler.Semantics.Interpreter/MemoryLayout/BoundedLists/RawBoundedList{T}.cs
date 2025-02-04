@@ -21,6 +21,7 @@ internal abstract class RawBoundedList<T> : IRawBoundedList
         this.clearValues = clearValues;
     }
 
+    public AzothValue Fixed { get; set; }
     public nuint Count { get; private set; }
     public nuint Capacity => (nuint)items.Length;
     private readonly T[] items;
