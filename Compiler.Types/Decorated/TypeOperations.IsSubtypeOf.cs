@@ -8,6 +8,7 @@ using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 
+// TODO the logic here mostly duplicates the logic in PlainType.IsSubtypeOf is there a way to eliminate the duplication?
 public static partial class TypeOperations
 {
     public static bool IsSubtypeOf(this IMaybeType self, IMaybeType other)
@@ -28,6 +29,7 @@ public static partial class TypeOperations
                 => self.IsSubtypeOf(o.Referent),
             (FunctionType s, FunctionType o)
                 => s.IsSubtypeOf(o),
+            (RefType s, RefType o) => s.IsSubtypeOf(o),
             _ => false,
         };
 
@@ -163,5 +165,25 @@ public static partial class TypeOperations
                 return false;
 
         return self.Return.ReturnCanOverride(other.Return);
+    }
+
+    public static bool IsSubtypeOf(this RefType self, RefType other)
+    {
+        // `iref var T <: ref var T`
+        if ((self, other)
+            is ({ IsInternal: true, IsMutableBinding: true }, { IsInternal: false, IsMutableBinding: true }))
+            // Types must match because it can be assigned into
+            return self.Referent.Equals(other.Referent);
+
+        // `ref var S <: ref T`
+        // `iref S <: ref T`
+        // `iref var S <: ref T`
+        // `iref var S <: iref T`
+        // when S <: T
+        if (!other.IsMutableBinding && other.IsInternal.Implies(self.IsInternal))
+            return self.Referent.IsSubtypeOf(other.Referent);
+
+        // If this method is directly called, then the case where they are equal must be covered
+        return self.Equals(other);
     }
 }

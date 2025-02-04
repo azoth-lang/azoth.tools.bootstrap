@@ -35,6 +35,7 @@ public sealed class SelfViewpointType : NonVoidType
 
     public override bool HasIndependentTypeArguments => Referent.HasIndependentTypeArguments;
 
+    // TODO switch to requiring a plain type
     public SelfViewpointType(CapabilitySet capabilitySet, NonVoidType referent)
     {
         CapabilitySet = capabilitySet;

@@ -110,18 +110,18 @@ public static partial class PlainTypeOperations
 
     public static bool IsSubtypeOf(this RefPlainType self, RefPlainType other)
     {
-        // `ref var T <: iref var T`
+        // `iref var T <: ref var T`
         if ((self, other)
-            is ({ IsInternal: false, IsMutableBinding: true }, { IsInternal: true, IsMutableBinding: true }))
+            is ({ IsInternal: true, IsMutableBinding: true }, { IsInternal: false, IsMutableBinding: true }))
             // Types must match because it can be assigned into
             return self.Referent.Equals(other.Referent);
 
-        // `ref T <: ref var S`
-        // `ref T <: iref S`
-        // `ref T <: iref var S`
-        // `iref T <: iref var S`
-        // when T <: S
-        if (!self.IsMutableBinding && self.IsInternal.Implies(other.IsInternal))
+        // `ref var S <: ref T`
+        // `iref S <: ref T`
+        // `iref var S <: ref T`
+        // `iref var S <: iref T`
+        // when S <: T
+        if (!other.IsMutableBinding && other.IsInternal.Implies(self.IsInternal))
             return self.Referent.IsSubtypeOf(other.Referent);
 
         // If this method is directly called, then the case where they are equal must be covered
