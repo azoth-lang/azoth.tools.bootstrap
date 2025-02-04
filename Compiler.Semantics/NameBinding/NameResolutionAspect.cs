@@ -110,6 +110,12 @@ internal static partial class NameResolutionAspect
 
         if (node.TempLeftOperand is not IGetterInvocationExpressionNode getterInvocation) return null;
 
+        // There must be a setter to call
+        if (!getterInvocation.ReferencedDeclarations.OfType<ISetterMethodDeclarationNode>().Any())
+            return null;
+
+        // TODO whether this is a set also depends on whether the `ref` and `iref` types say it should be
+
         return ISetterInvocationExpressionNode.Create(node.Syntax, getterInvocation.Context,
             getterInvocation.PropertyName, node.CurrentRightOperand, getterInvocation.ReferencedDeclarations);
     }

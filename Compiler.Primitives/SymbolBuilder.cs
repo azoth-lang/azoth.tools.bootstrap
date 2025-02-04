@@ -2,7 +2,10 @@ using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
+using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
+using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
+using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Primitives;
@@ -32,4 +35,12 @@ internal static class SymbolBuilder
 
     public static MethodSymbol Setter(TypeSymbol containingSymbol, IdentifierName name, NonVoidType selfParam, ParameterType parameter)
         => new(containingSymbol, MethodKind.Setter, name, selfParam, FixedList.Create(parameter), Type.Void);
+
+    public static BareType BareSelfType(BareType bareType, params Type[] arguments)
+    {
+        var selfTypeConstructor = new SelfTypeConstructor(bareType.TypeConstructor);
+        var bareSelfPlainType = new BarePlainType(selfTypeConstructor, bareType.PlainType, arguments.Select(a => a.PlainType));
+        var bareSelfType = new BareType(bareSelfPlainType, bareType, arguments.ToFixedList());
+        return bareSelfType;
+    }
 }
