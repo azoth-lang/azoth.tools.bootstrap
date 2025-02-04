@@ -1094,7 +1094,7 @@ public sealed class InterpreterProcess
             return ValueTask.FromResult(AzothValue.None);
         }
         if (ReferenceEquals(method, Intrinsic.RawBoundedListAt))
-            return ValueTask.FromResult(self.RawBoundedListValue.At(arguments[0].SizeValue));
+            return ValueTask.FromResult(AzothValue.Ref(self.RawBoundedListValue.RefAt(arguments[0].SizeValue)));
         if (ReferenceEquals(method, Intrinsic.RawBoundedListSetAt))
         {
             self.RawBoundedListValue.Set(arguments[0].SizeValue, arguments[1]);

@@ -148,10 +148,13 @@ public static class Intrinsic
             TypeConstructorParameter.Independent(CapabilitySet.Aliasable, "T"));
         var plainType = typeConstructor.ConstructWithParameterPlainTypes();
         var bareType = typeConstructor.ConstructWithParameterTypes(plainType);
+        // var bareSelfType = BareSelfType(bareType);
         var fixedType = typeConstructor.ParameterTypes[0];
+        // var readableType = new CapabilitySetSelfType(CapabilitySet.Readable, bareSelfType);
         var readType = bareType.WithDefaultCapability();
         var mutType = bareType.With(Capability.Mutable);
         var itemType = typeConstructor.ParameterTypes[1];
+        var irefItemType = new RefType(new RefPlainType(true, false, itemType.PlainType), itemType);
         var classSymbol = new OrdinaryTypeSymbol(@namespace, typeConstructor);
         tree.Add(classSymbol);
 
@@ -159,6 +162,7 @@ public static class Intrinsic
         var initializer = new InitializerSymbol(classSymbol, null, mutType, Params(fixedType, Type.Size));
         tree.Add(initializer);
 
+        // TODO should this use `iref` to avoid copying large structs?
         // published get fixed(self) -> F;
         var getFixed = Getter(classSymbol, "fixed", readType, fixedType);
         tree.Add(getFixed);
@@ -175,10 +179,9 @@ public static class Intrinsic
         var count = Getter(classSymbol, "count", readType, Type.Size);
         tree.Add(count);
 
-        // published /* unsafe */ fn at(self, index: size) -> T
-        // TODO replace with at method returning a `ref var`
-        var at = Method(classSymbol, "at", readType,
-            Params(Type.Size), itemType);
+        // published /* unsafe */ fn at(self, index: size) -> iref T
+        // TODO replace with at method returning a `iref var`
+        var at = Method(classSymbol, "at", readType, Params(Type.Size), irefItemType);
         tree.Add(at);
 
         // published /* unsafe */ fn set_at(mut self, index: size, T value)
