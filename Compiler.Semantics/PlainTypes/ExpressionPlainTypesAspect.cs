@@ -52,7 +52,7 @@ internal static partial class ExpressionPlainTypesAspect
     {
         // TODO should probably use PlainType on the declaration
         var unboundPlainType = node.ReferencedDeclaration.BindingType.PlainType;
-        var boundPlainType = node.Context.PlainType.TypeReplacements.Apply(unboundPlainType);
+        var boundPlainType = node.Context.PlainType.TypeReplacements.ApplyTo(unboundPlainType);
         return boundPlainType;
     }
 
@@ -339,14 +339,14 @@ internal static partial class ExpressionPlainTypesAspect
     public static partial IMaybePlainType GetterInvocationExpression_PlainType(IGetterInvocationExpressionNode node)
     {
         var unboundPlainType = node.ReferencedDeclaration?.ReturnPlainType ?? PlainType.Unknown;
-        var boundPlainType = node.Context.PlainType.TypeReplacements.Apply(unboundPlainType);
+        var boundPlainType = node.Context.PlainType.TypeReplacements.ApplyTo(unboundPlainType);
         return boundPlainType;
     }
 
     public static partial IMaybePlainType SetterInvocationExpression_PlainType(ISetterInvocationExpressionNode node)
     {
         var unboundPlainType = node.ReferencedDeclaration?.ParameterPlainTypes[0] ?? PlainType.Unknown;
-        var boundPlainType = node.Context.PlainType.TypeReplacements.Apply(unboundPlainType);
+        var boundPlainType = node.Context.PlainType.TypeReplacements.ApplyTo(unboundPlainType);
         return boundPlainType;
     }
 

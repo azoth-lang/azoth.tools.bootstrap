@@ -90,7 +90,7 @@ internal static partial class TypeDefinitionsAspect
                 {
                     // Since this is our supertype's supertype, we need to replace any type
                     // parameters with those given to the supertype.
-                    yield return bareSupertype.TypeReplacements.Apply(supertype);
+                    yield return bareSupertype.TypeReplacements.ApplyTo(supertype);
                 }
             }
         }

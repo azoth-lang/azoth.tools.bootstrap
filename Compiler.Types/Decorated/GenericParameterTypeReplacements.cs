@@ -7,6 +7,9 @@ using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 
+/// <summary>
+/// Replacements for the <see cref="GenericParameterType"/>s for a <see cref="BareType"/>.
+/// </summary>
 public sealed class GenericParameterTypeReplacements
 {
     public static readonly GenericParameterTypeReplacements None = new();
@@ -47,7 +50,7 @@ public sealed class GenericParameterTypeReplacements
             foreach (var (parameter, arg) in supertype.TypeConstructor.ParameterTypes
                                                       .EquiZip(supertype.Arguments))
             {
-                var replacement = Apply(arg, null);
+                var replacement = ApplyTo(arg, null);
                 if (!replacements.TryAdd(parameter, replacement)
                     && !replacements[parameter].Equals(replacement))
                     throw new NotImplementedException(
@@ -57,40 +60,40 @@ public sealed class GenericParameterTypeReplacements
         }
     }
 
-    internal IMaybeType Apply(IMaybeType type, NonVoidType? selfReplacement)
+    internal IMaybeType ApplyTo(IMaybeType type, NonVoidType? selfReplacement)
         => type switch
         {
-            Type t => Apply(t, selfReplacement),
+            Type t => ApplyTo(t, selfReplacement),
             UnknownType _ => type,
             _ => throw ExhaustiveMatch.Failed(type)
         };
 
-    internal Type Apply(Type type, NonVoidType? selfReplacement)
+    internal Type ApplyTo(Type type, NonVoidType? selfReplacement)
     {
         switch (type)
         {
             case CapabilityType t:
-                return Apply(t, selfReplacement);
+                return ApplyTo(t, selfReplacement);
             case OptionalType t:
             {
-                var replacementType = Apply(t.Referent, selfReplacement);
+                var replacementType = ApplyTo(t.Referent, selfReplacement);
                 if (!ReferenceEquals(t.Referent, replacementType))
                     return OptionalType.CreateWithoutPlainType(replacementType);
                 break;
             }
             case RefType t:
             {
-                var replacementType = Apply(t.Referent, selfReplacement);
+                var replacementType = ApplyTo(t.Referent, selfReplacement);
                 if (!ReferenceEquals(t.Referent, replacementType))
                     return RefType.CreateWithoutPlainType(t.IsInternal, t.IsMutableBinding, replacementType);
                 break;
             }
             case GenericParameterType genericParameterType:
-                return Apply(genericParameterType);
+                return ApplyTo(genericParameterType);
             case FunctionType functionType:
             {
-                var replacementParameterTypes = Apply(functionType.Parameters, selfReplacement);
-                var replacementReturnType = Apply(functionType.Return, selfReplacement);
+                var replacementParameterTypes = ApplyTo(functionType.Parameters, selfReplacement);
+                var replacementReturnType = ApplyTo(functionType.Return, selfReplacement);
                 if (!ReferenceEquals(functionType.Parameters, replacementParameterTypes)
                     || !ReferenceEquals(functionType.Return, replacementReturnType))
                     return new FunctionType(replacementParameterTypes, replacementReturnType);
@@ -98,13 +101,13 @@ public sealed class GenericParameterTypeReplacements
             }
             case CapabilityViewpointType capabilityViewpointType:
             {
-                var replacementType = Apply(capabilityViewpointType.Referent);
+                var replacementType = ApplyTo(capabilityViewpointType.Referent);
                 if (!ReferenceEquals(capabilityViewpointType.Referent, replacementType))
                     return replacementType.AccessedVia(capabilityViewpointType.Capability);
                 break;
             }
             case SelfViewpointType selfViewpointType:
-                return Apply(selfViewpointType, selfReplacement);
+                return ApplyTo(selfViewpointType, selfReplacement);
             case CapabilitySetSelfType t:
             {
                 if (selfReplacement is not null)
@@ -126,64 +129,64 @@ public sealed class GenericParameterTypeReplacements
         return type;
     }
 
-    internal Type Apply(SelfViewpointType type, NonVoidType? selfReplacement)
+    internal Type ApplyTo(SelfViewpointType type, NonVoidType? selfReplacement)
     {
         // TODO what about CapabilitySetTypes and other types?
         if (selfReplacement is CapabilityType capabilitySelfReplacement)
-            return Apply(type, capabilitySelfReplacement);
+            return ApplyTo(type, capabilitySelfReplacement);
 
-        var replacementType = Apply(type.Referent, selfReplacement);
+        var replacementType = ApplyTo(type.Referent, selfReplacement);
         if (!ReferenceEquals(type.Referent, replacementType))
             return SelfViewpointType.Create(type.CapabilitySet, replacementType);
 
         return type;
     }
 
-    internal Type Apply(SelfViewpointType type, CapabilityType selfReplacement)
+    internal Type ApplyTo(SelfViewpointType type, CapabilityType selfReplacement)
     {
-        var replacementType = Apply(type.Referent, selfReplacement);
+        var replacementType = ApplyTo(type.Referent, selfReplacement);
         // regardless of whether the replacement type changes, we need to apply the new capability
         return replacementType.AccessedVia(selfReplacement.Capability);
     }
 
-    internal Type Apply(GenericParameterType type)
+    internal Type ApplyTo(GenericParameterType type)
     {
         if (replacements.TryGetValue(type, out var replacementType))
             return replacementType;
         return type;
     }
 
-    internal Type Apply(CapabilityType type, NonVoidType? selfReplacement)
+    internal Type ApplyTo(CapabilityType type, NonVoidType? selfReplacement)
     {
         // TODO what about CapabilitySetTypes and other types?
         var bareSelfReplacement = (selfReplacement as CapabilityType)?.BareType;
-        var replacementBareType = Apply(type.BareType, selfReplacement, bareSelfReplacement);
+        var replacementBareType = ApplyTo(type.BareType, selfReplacement, bareSelfReplacement);
         if (ReferenceEquals(type.BareType, replacementBareType)) return type;
         return replacementBareType.WithModified(type.Capability);
     }
 
-    internal ParameterType? Apply(ParameterType type, NonVoidType? selfReplacement)
+    internal ParameterType? ApplyTo(ParameterType type, NonVoidType? selfReplacement)
     {
-        if (Apply(type.Type, selfReplacement) is NonVoidType replacementType)
+        if (ApplyTo(type.Type, selfReplacement) is NonVoidType replacementType)
             return type with { Type = replacementType };
         return null;
     }
 
-    internal IMaybeParameterType? Apply(IMaybeParameterType type, NonVoidType? selfReplacement)
+    internal IMaybeParameterType? ApplyTo(IMaybeParameterType type, NonVoidType? selfReplacement)
         => type switch
         {
-            ParameterType t => Apply(t, selfReplacement),
+            ParameterType t => ApplyTo(t, selfReplacement),
             UnknownType _ => Type.Unknown,
             _ => throw ExhaustiveMatch.Failed(type),
         };
 
-    private IFixedList<Type> Apply(IFixedList<Type> types, NonVoidType? selfReplacement)
+    private IFixedList<Type> ApplyTo(IFixedList<Type> types, NonVoidType? selfReplacement)
     {
         var replacementTypes = new List<Type>();
         var typesReplaced = false;
         foreach (var type in types)
         {
-            var replacementType = Apply(type, selfReplacement);
+            var replacementType = ApplyTo(type, selfReplacement);
             typesReplaced |= !ReferenceEquals(type, replacementType);
             replacementTypes.Add(replacementType);
         }
@@ -191,13 +194,13 @@ public sealed class GenericParameterTypeReplacements
         return typesReplaced ? replacementTypes.ToFixedList() : types;
     }
 
-    private IFixedList<ParameterType> Apply(IFixedList<ParameterType> types, NonVoidType? selfReplacement)
+    private IFixedList<ParameterType> ApplyTo(IFixedList<ParameterType> types, NonVoidType? selfReplacement)
     {
         var replacementTypes = new List<ParameterType>();
         var typesReplaced = false;
         foreach (var type in types)
         {
-            var replacementType = Apply(type, selfReplacement);
+            var replacementType = ApplyTo(type, selfReplacement);
             if (replacementType is null)
                 continue;
             typesReplaced |= !type.ReferenceEquals(replacementType);
@@ -207,11 +210,11 @@ public sealed class GenericParameterTypeReplacements
         return typesReplaced ? replacementTypes.ToFixedList() : types;
     }
 
-    public BareType Apply(BareType bareType)
-        => Apply(bareType, selfReplacement: null, bareSelfReplacement: null);
+    public BareType ApplyTo(BareType bareType)
+        => ApplyTo(bareType, selfReplacement: null, bareSelfReplacement: null);
 
     [return: NotNullIfNotNull(nameof(bareType))]
-    internal BareType? Apply(BareType? bareType, NonVoidType? selfReplacement, BareType? bareSelfReplacement)
+    internal BareType? ApplyTo(BareType? bareType, NonVoidType? selfReplacement, BareType? bareSelfReplacement)
     {
         if (bareType is null) return null;
 
@@ -219,12 +222,12 @@ public sealed class GenericParameterTypeReplacements
             // TODO doesn't the replacement type need to match the Self context type?
             return bareSelfReplacement;
 
-        var replacementContainingType = Apply(bareType.ContainingType, selfReplacement, bareSelfReplacement);
-        var replacementTypes = Apply(bareType.Arguments, selfReplacement);
+        var replacementContainingType = ApplyTo(bareType.ContainingType, selfReplacement, bareSelfReplacement);
+        var replacementTypes = ApplyTo(bareType.Arguments, selfReplacement);
         if (ReferenceEquals(bareType.ContainingType, replacementContainingType)
             && ReferenceEquals(bareType.Arguments, replacementTypes)) return bareType;
 
-        var plainType = plainTypeReplacements.Apply(bareType.PlainType);
+        var plainType = plainTypeReplacements.ApplyTo(bareType.PlainType);
         return new(plainType, replacementContainingType, replacementTypes);
     }
 }

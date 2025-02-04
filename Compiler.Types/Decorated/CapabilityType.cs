@@ -79,7 +79,7 @@ public sealed class CapabilityType : NonVoidType
 
         // TODO determine the correct containing type
         var bareType = new BareType(supertype.PlainType, containingType: null, supertype.Arguments);
-        bareType = BareTypeReplacements.Apply(bareType);
+        bareType = BareTypeReplacements.ApplyTo(bareType);
 
         return bareType.With(Capability);
     }

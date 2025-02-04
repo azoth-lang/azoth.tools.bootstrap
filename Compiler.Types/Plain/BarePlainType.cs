@@ -21,7 +21,7 @@ public sealed class BarePlainType : NonVoidPlainType
     public IFixedSet<BarePlainType> Supertypes
         => Lazy.Initialize(ref supertypes, TypeConstructor, TypeReplacements,
             static (typeConstructor, replacements)
-                => typeConstructor.Supertypes.Select(s => replacements.Apply(s.PlainType)).ToFixedSet());
+                => typeConstructor.Supertypes.Select(s => replacements.ApplyTo(s.PlainType)).ToFixedSet());
     private IFixedSet<BarePlainType>? supertypes;
     public override PlainTypeReplacements TypeReplacements
         => Lazy.Initialize(ref typeReplacements, this, static plainType => new(plainType));

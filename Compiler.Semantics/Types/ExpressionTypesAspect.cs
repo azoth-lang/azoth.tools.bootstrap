@@ -843,7 +843,7 @@ internal static partial class ExpressionTypesAspect
         // Then type parameters can be replaced now that they have the correct access
         if (contextType is NonVoidType nonVoidContext)
             // resolve generic type fields
-            type = nonVoidContext.TypeReplacements.Apply(type);
+            type = nonVoidContext.TypeReplacements.ApplyTo(type);
 
         return type;
     }

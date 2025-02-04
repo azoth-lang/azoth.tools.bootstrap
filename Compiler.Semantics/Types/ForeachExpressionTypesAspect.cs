@@ -13,7 +13,7 @@ internal static partial class ForeachExpressionTypesAspect
         var iterableType = node.InExpression?.Type.ToNonLiteral() ?? Type.Unknown;
         var iterateMethod = node.ReferencedIterateMethod;
         var iteratorType = iterableType is NonVoidType nonVoidIterableType && iterateMethod is not null
-            ? nonVoidIterableType.TypeReplacements.Apply(iterateMethod.MethodGroupType.Return)
+            ? nonVoidIterableType.TypeReplacements.ApplyTo(iterateMethod.MethodGroupType.Return)
             : iterableType;
         // TODO report an error for void type
         return iteratorType.ToNonVoidType();
@@ -29,7 +29,7 @@ internal static partial class ForeachExpressionTypesAspect
             return iteratedType;
 
         // TODO report an error for void type
-        return nonVoidIteratorType.TypeReplacements.Apply(iteratedType).ToNonVoidType();
+        return nonVoidIteratorType.TypeReplacements.ApplyTo(iteratedType).ToNonVoidType();
     }
 
     public static partial IFlowState ForeachExpression_FlowStateBeforeBlock(IForeachExpressionNode node)

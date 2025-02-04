@@ -43,7 +43,7 @@ public sealed class PlainTypeReplacements
             foreach (var (parameter, arg) in supertype.TypeConstructor.ParameterPlainTypes
                                                       .EquiZip(supertype.Arguments.Select(a => a.PlainType)))
             {
-                var replacement = Apply(arg);
+                var replacement = ApplyTo(arg);
                 if (!replacements.TryAdd(parameter, replacement) && !replacements[parameter].Equals(replacement))
                     throw new NotImplementedException(
                         $"Conflicting type replacements. Replace `{parameter}` with "
@@ -51,43 +51,43 @@ public sealed class PlainTypeReplacements
             }
     }
 
-    public IMaybePlainType Apply(IMaybePlainType plainType)
+    public IMaybePlainType ApplyTo(IMaybePlainType plainType)
         => plainType switch
         {
-            PlainType a => Apply(a),
+            PlainType a => ApplyTo(a),
             UnknownPlainType a => a,
             _ => throw ExhaustiveMatch.Failed(plainType)
         };
 
-    public PlainType Apply(PlainType plainType)
+    public PlainType ApplyTo(PlainType plainType)
         => plainType switch
         {
             VoidPlainType a => a,
-            NonVoidPlainType a => Apply(a),
+            NonVoidPlainType a => ApplyTo(a),
             _ => throw ExhaustiveMatch.Failed(plainType)
         };
 
-    public PlainType Apply(NonVoidPlainType plainType)
+    public PlainType ApplyTo(NonVoidPlainType plainType)
         => plainType switch
         {
             NeverPlainType t => t,
-            BarePlainType t => Apply(t),
-            GenericParameterPlainType t => Apply(t),
-            FunctionPlainType t => Apply(t),
-            OptionalPlainType t => Apply(t),
-            RefPlainType t => Apply(t),
+            BarePlainType t => ApplyTo(t),
+            GenericParameterPlainType t => ApplyTo(t),
+            FunctionPlainType t => ApplyTo(t),
+            OptionalPlainType t => ApplyTo(t),
+            RefPlainType t => ApplyTo(t),
             _ => throw ExhaustiveMatch.Failed(plainType)
         };
 
     [return: NotNullIfNotNull(nameof(plainType))]
-    public BarePlainType? Apply(BarePlainType? plainType)
+    public BarePlainType? ApplyTo(BarePlainType? plainType)
     {
         if (plainType is null) return null;
         if (selfReplacement is not null && plainType is { TypeConstructor: SelfTypeConstructor })
             return selfReplacement;
 
-        var replacementContainingType = Apply(plainType.ContainingType);
-        var replacementTypeArguments = Apply(plainType.Arguments);
+        var replacementContainingType = ApplyTo(plainType.ContainingType);
+        var replacementTypeArguments = ApplyTo(plainType.Arguments);
         if (ReferenceEquals(plainType.ContainingType, replacementContainingType)
             && ReferenceEquals(plainType.Arguments, replacementTypeArguments))
             return plainType;
@@ -95,13 +95,13 @@ public sealed class PlainTypeReplacements
         return new(plainType.TypeConstructor, replacementContainingType, replacementTypeArguments);
     }
 
-    private IFixedList<PlainType> Apply(IFixedList<PlainType> plainTypes)
+    private IFixedList<PlainType> ApplyTo(IFixedList<PlainType> plainTypes)
     {
         var replacementPlainTypes = new List<PlainType>();
         var typesReplaced = false;
         foreach (var plainType in plainTypes)
         {
-            var replacementType = Apply(plainType);
+            var replacementType = ApplyTo(plainType);
             typesReplaced |= !ReferenceEquals(plainType, replacementType);
             replacementPlainTypes.Add(replacementType);
         }
@@ -109,13 +109,13 @@ public sealed class PlainTypeReplacements
         return typesReplaced ? replacementPlainTypes.ToFixedList() : plainTypes;
     }
 
-    public PlainType Apply(GenericParameterPlainType plainType)
+    public PlainType ApplyTo(GenericParameterPlainType plainType)
         => replacements.GetValueOrDefault(plainType, plainType);
 
-    public FunctionPlainType Apply(FunctionPlainType plainType)
+    public FunctionPlainType ApplyTo(FunctionPlainType plainType)
     {
         var replacementParameterTypes = ApplyToParameters(plainType.Parameters);
-        var replacementReturnType = Apply(plainType.Return);
+        var replacementReturnType = ApplyTo(plainType.Return);
         if (ReferenceEquals(plainType.Parameters, replacementParameterTypes)
             && ReferenceEquals(plainType.Return, replacementReturnType))
             return plainType;
@@ -134,7 +134,7 @@ public sealed class PlainTypeReplacements
         var typesReplaced = false;
         foreach (var plainType in plainTypes)
         {
-            var replacementType = Apply(plainType);
+            var replacementType = ApplyTo(plainType);
             typesReplaced |= !ReferenceEquals(plainType, replacementType);
             if (replacementType is NonVoidPlainType nonVoidPlainType)
                 replacementPlainTypes.Add(nonVoidPlainType);
@@ -143,18 +143,18 @@ public sealed class PlainTypeReplacements
         return typesReplaced ? replacementPlainTypes.ToFixedList() : plainTypes;
     }
 
-    public PlainType Apply(OptionalPlainType plainType)
+    public PlainType ApplyTo(OptionalPlainType plainType)
     {
-        var replacementType = Apply(plainType.Referent);
+        var replacementType = ApplyTo(plainType.Referent);
         if (ReferenceEquals(plainType.Referent, replacementType))
             return plainType;
 
         return OptionalPlainType.Create(replacementType);
     }
 
-    public PlainType Apply(RefPlainType plainType)
+    public PlainType ApplyTo(RefPlainType plainType)
     {
-        var replacementType = Apply(plainType.Referent);
+        var replacementType = ApplyTo(plainType.Referent);
         if (ReferenceEquals(plainType.Referent, replacementType))
             return plainType;
 

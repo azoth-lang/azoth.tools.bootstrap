@@ -9,15 +9,15 @@ public sealed class TypeReplacements
         selfReplacement = type;
     }
 
-    public IMaybeType Apply(IMaybeType type)
-        => selfReplacement.BareTypeReplacements.Apply(type, selfReplacement);
+    public IMaybeType ApplyTo(IMaybeType type)
+        => selfReplacement.BareTypeReplacements.ApplyTo(type, selfReplacement);
 
-    public Type Apply(Type type)
-        => selfReplacement.BareTypeReplacements.Apply(type, selfReplacement);
+    public Type ApplyTo(Type type)
+        => selfReplacement.BareTypeReplacements.ApplyTo(type, selfReplacement);
 
-    public IMaybeParameterType? Apply(IMaybeParameterType type)
-        => selfReplacement.BareTypeReplacements.Apply(type, selfReplacement);
+    public IMaybeParameterType? ApplyTo(IMaybeParameterType type)
+        => selfReplacement.BareTypeReplacements.ApplyTo(type, selfReplacement);
 
-    public ParameterType? Apply(ParameterType type)
-        => selfReplacement.BareTypeReplacements.Apply(type, selfReplacement);
+    public ParameterType? ApplyTo(ParameterType type)
+        => selfReplacement.BareTypeReplacements.ApplyTo(type, selfReplacement);
 }
