@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
@@ -17,11 +18,23 @@ public sealed class RefType : NonVoidType
             _ => throw new ArgumentException($"Plain type '{plainType}' does not match referent type '{referent}'."),
         };
 
+    [return: NotNullIfNotNull(nameof(referent))]
+    public static IMaybeType? CreateWithoutPlainType(bool isInternal, bool isMutableBinding, IMaybeType? referent)
+        => referent switch
+        {
+            null => null,
+            UnknownType _ => Unknown,
+            VoidType _ => Void,
+            NeverType _ => Never,
+            NonVoidType t => new RefType(new(isInternal, isMutableBinding, t.PlainType), t),
+            _ => throw ExhaustiveMatch.Failed(referent),
+        };
+
     /// <summary>
     /// Create a ref type for the given type (e.g. `ref T` given `T`).
     /// </summary>
     /// <remarks>`void` and `never` types are not changed.</remarks>
-    internal static Type CreateWithoutPlainType(bool isInternal, bool isMutableBinding, Type referent)
+    public static Type CreateWithoutPlainType(bool isInternal, bool isMutableBinding, Type referent)
         => referent switch
         {
             VoidType _ => Void,

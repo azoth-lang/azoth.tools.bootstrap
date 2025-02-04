@@ -32,7 +32,7 @@ internal static partial class TypeExpressionsPlainTypesAspect
         => node.Referent.NamedPlainType;
 
     public static partial IMaybePlainType RefType_NamedPlainType(IRefTypeNode node)
-        => RefPlainType.Create(node.Referent.NamedPlainType, node.IsInternal, node.IsMutableBinding);
+        => RefPlainType.Create(node.IsInternal, node.IsMutableBinding, node.Referent.NamedPlainType);
 
     // TODO report error for `ref void` and `ref never`?
     #endregion

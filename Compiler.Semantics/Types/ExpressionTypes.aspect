@@ -114,6 +114,11 @@
     => LeftOperand?.FlowStateAfter ?? IFlowState.Empty;
 = AssignmentExpression.RightOperand.ExpectedType => LeftOperand?.Type;
 = AssignmentExpression.↑.Diagnostics;
+= RefAssignmentExpression.RightOperand.**.FlowStateBefore
+    => LeftOperand?.FlowStateAfter ?? IFlowState.Empty;
+= RefAssignmentExpression.LeftOperand.ExpectedType
+    => RefType.CreateWithoutPlainType(isInternal: false, isMutableBinding: true, RightOperand?.Type);
+= RefAssignmentExpression.RightOperand.ExpectedType => (LeftOperand?.Type as RefType)?.Referent;
 = BinaryOperatorExpression.RightOperand.**.FlowStateBefore
     => LeftOperand?.FlowStateAfter ?? IFlowState.Empty;
 = BinaryOperatorExpression.↑.Diagnostics;

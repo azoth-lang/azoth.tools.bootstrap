@@ -10,7 +10,7 @@ public sealed class RefPlainType : NonVoidPlainType
     /// </summary>
     /// <remarks>Unknown, `void` and `never` types are not changed.</remarks>
     [return: NotNullIfNotNull(nameof(plainType))]
-    public static IMaybePlainType? Create(IMaybePlainType? plainType, bool isInternal, bool isMutableBinding)
+    public static IMaybePlainType? Create(bool isInternal, bool isMutableBinding, IMaybePlainType? plainType)
         => plainType switch
         {
             null => null,
@@ -23,7 +23,7 @@ public sealed class RefPlainType : NonVoidPlainType
     /// Create a ref type for the given type (e.g. `ref T` given `T`).
     /// </summary>
     /// <remarks>`void` and `never` types are not changed.</remarks>
-    public static PlainType Create(PlainType plainType, bool isInternal, bool isMutableBinding)
+    public static PlainType Create(bool isInternal, bool isMutableBinding, PlainType plainType)
         => plainType switch
         {
             NeverPlainType or VoidPlainType => plainType,

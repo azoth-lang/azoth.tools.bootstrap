@@ -568,6 +568,15 @@ public sealed class InterpreterProcess
                 if (result.ShouldExit(out var value)) return result;
                 return await ExecuteAssignmentAsync(exp.LeftOperand!, value, variables).ConfigureAwait(false);
             }
+            case ExpressionKind.RefAssignment:
+            {
+                var exp = (IRefAssignmentExpressionNode)expression;
+                var result = await ExecuteAsync(exp.LeftOperand!, variables).ConfigureAwait(false);
+                if (result.ShouldExit(out var leftValue)) return result;
+                result = await ExecuteAsync(exp.RightOperand!, variables).ConfigureAwait(false);
+                if (result.ShouldExit(out var rightValue)) return result;
+                return leftValue.RefValue.Value = rightValue;
+            }
             case ExpressionKind.BinaryOperator:
             {
                 var exp = (IBinaryOperatorExpressionNode)expression;
@@ -1095,11 +1104,6 @@ public sealed class InterpreterProcess
         }
         if (ReferenceEquals(method, Intrinsic.RawBoundedListAt))
             return ValueTask.FromResult(AzothValue.Ref(self.RawBoundedListValue.RefAt(arguments[0].SizeValue)));
-        if (ReferenceEquals(method, Intrinsic.RawBoundedListSetAt))
-        {
-            self.RawBoundedListValue.Set(arguments[0].SizeValue, arguments[1]);
-            return ValueTask.FromResult(AzothValue.None);
-        }
         if (ReferenceEquals(method, Intrinsic.RawBoundedListShrink))
         {
             self.RawBoundedListValue.Shrink(arguments[0].SizeValue);

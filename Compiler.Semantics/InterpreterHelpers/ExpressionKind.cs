@@ -28,6 +28,7 @@ public enum ExpressionKind
 
     #region Operator Expressions
     Assignment,
+    RefAssignment,
     BinaryOperator,
     UnaryOperator,
     Conversion,

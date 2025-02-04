@@ -26,14 +26,11 @@ internal static partial class ExpressionPlainTypesAspect
             return null;
 
         if (node.ExpectedPlainType is PlainType expectedPlainType
-            && RefDepth(expectedPlainType) < RefDepth(plainType))
+            && expectedPlainType.RefDepth() < plainType.RefDepth())
             return IImplicitDerefExpressionNode.Create(node);
 
         return null;
     }
-
-    private static int RefDepth(PlainType plainType)
-        => plainType is RefPlainType t ? 1 + RefDepth(t.Referent) : 0;
     #endregion
 
     public static partial IMaybePlainType UnsafeExpression_PlainType(IUnsafeExpressionNode node)
@@ -61,6 +58,21 @@ internal static partial class ExpressionPlainTypesAspect
 
     public static partial IMaybePlainType AssignmentExpression_PlainType(IAssignmentExpressionNode node)
         => node.LeftOperand?.PlainType ?? PlainType.Unknown;
+
+    public static partial IRefAssignmentExpressionNode? AssignmentExpression_ReplaceWith_RefAssignmentExpression(IAssignmentExpressionNode node)
+    {
+        var leftDepth = node.LeftOperand?.PlainType.RefDepth();
+        // The left hand side must be a ref/iref and the depth >= the right hand side. Note that
+        // `list.at(i) = list.at(j)` have equal depth.
+        // TODO what if the left is a ref var field, then equal depth is a normal assignment?
+        if (leftDepth > 0 && leftDepth >= node.RightOperand?.PlainType.RefDepth())
+            return IRefAssignmentExpressionNode.Create(node.Syntax, node.CurrentLeftOperand, node.CurrentRightOperand);
+
+        return null;
+    }
+
+    public static partial IMaybePlainType RefAssignmentExpression_PlainType(IRefAssignmentExpressionNode node)
+        => (node.LeftOperand?.PlainType as RefPlainType)?.Referent ?? IMaybePlainType.Unknown;
 
     public static partial IMaybePlainType ResultStatement_PlainType(IResultStatementNode node)
         => node.Expression?.PlainType ?? PlainType.Unknown;
@@ -364,7 +376,7 @@ internal static partial class ExpressionPlainTypesAspect
 
     #region Operator Expressions
     public static partial IMaybePlainType RefExpression_PlainType(IRefExpressionNode node)
-        => RefPlainType.Create(node.Referent?.PlainType, node.IsInternal, node.IsMutableBinding) ?? PlainType.Unknown;
+        => RefPlainType.Create(node.IsInternal, node.IsMutableBinding, node.Referent?.PlainType) ?? PlainType.Unknown;
 
     public static partial IMaybePlainType ImplicitDerefExpression_PlainType(IImplicitDerefExpressionNode node)
         => (node.Referent.PlainType as RefPlainType)?.Referent ?? IMaybePlainType.Unknown;

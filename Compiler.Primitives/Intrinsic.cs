@@ -45,9 +45,6 @@ public static class Intrinsic
     public static readonly MethodSymbol RawBoundedListAt
         = Find<MethodSymbol>(RawHybridBoundedList, "at");
 
-    public static readonly MethodSymbol RawBoundedListSetAt
-        = Find<MethodSymbol>(RawHybridBoundedList, "set_at");
-
     public static readonly MethodSymbol RawBoundedListShrink
         = Find<MethodSymbol>(RawHybridBoundedList, "shrink");
 
@@ -148,13 +145,14 @@ public static class Intrinsic
             TypeConstructorParameter.Independent(CapabilitySet.Aliasable, "T"));
         var plainType = typeConstructor.ConstructWithParameterPlainTypes();
         var bareType = typeConstructor.ConstructWithParameterTypes(plainType);
-        // var bareSelfType = BareSelfType(bareType);
+        var bareSelfType = BareSelfType(bareType);
+        var readableSelfType = new CapabilitySetSelfType(CapabilitySet.Readable, bareSelfType);
         var fixedType = typeConstructor.ParameterTypes[0];
-        // var readableType = new CapabilitySetSelfType(CapabilitySet.Readable, bareSelfType);
         var readType = bareType.WithDefaultCapability();
         var mutType = bareType.With(Capability.Mutable);
         var itemType = typeConstructor.ParameterTypes[1];
-        var irefItemType = new RefType(new RefPlainType(true, false, itemType.PlainType), itemType);
+        var irefVarItemType = new RefType(new(isInternal: true, isMutableBinding: true, itemType.PlainType), itemType);
+        var selfViewIRefVarItemType = new SelfViewpointType(CapabilitySet.Readable, irefVarItemType);
         var classSymbol = new OrdinaryTypeSymbol(@namespace, typeConstructor);
         tree.Add(classSymbol);
 
@@ -179,15 +177,9 @@ public static class Intrinsic
         var count = Getter(classSymbol, "count", readType, Type.Size);
         tree.Add(count);
 
-        // published /* unsafe */ fn at(self, index: size) -> iref T
-        // TODO replace with at method returning a `iref var`
-        var at = Method(classSymbol, "at", readType, Params(Type.Size), irefItemType);
+        // published /* unsafe */ fn at(readable self, index: size) -> self |> iref var T
+        var at = Method(classSymbol, "at", readableSelfType, Params(Type.Size), selfViewIRefVarItemType);
         tree.Add(at);
-
-        // published /* unsafe */ fn set_at(mut self, index: size, T value)
-        // TODO replace with at method returning a `ref var`
-        var setAt = Method(classSymbol, "set_at", mutType, Params(Type.Size, itemType));
-        tree.Add(setAt);
 
         // published fn add(mut self, value: T);
         var add = Method(classSymbol, "add", mutType, Params(itemType));

@@ -47,6 +47,11 @@
 
 // ---------- Operator Expressions
 = AssignmentExpression.RightOperand.ExpectedPlainType => LeftOperand?.PlainType;
+✎ AssignmentExpression replace_with RefAssignmentExpression;
+= RefAssignmentExpression.LeftOperand.ExpectedPlainType
+    => RefPlainType.Create(isInternal: false, isMutableBinding: true, RightOperand?.PlainType);
+= RefAssignmentExpression.RightOperand.ExpectedPlainType
+    => (LeftOperand?.PlainType as RefPlainType)?.Referent;
 ↑ BinaryOperatorExpression.NumericOperatorCommonPlainType: `PlainType`?;
 = BinaryOperatorExpression.LeftOperand.ExpectedPlainType => NumericOperatorCommonPlainType;
 = BinaryOperatorExpression.RightOperand.ExpectedPlainType => NumericOperatorCommonPlainType;

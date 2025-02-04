@@ -1,4 +1,5 @@
 using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
+using Type = Azoth.Tools.Bootstrap.Compiler.Types.Decorated.Type;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Flow;
 
@@ -20,6 +21,7 @@ public static class CapabilityIndexExtensions
     private static IMaybeType TypeAt(this IMaybeType type, CapabilityIndex index, int depth)
         => type switch
         {
+            UnknownType _ => Type.Unknown,
             OptionalType t => t.Referent.TypeAt(index, depth),
             _ when depth == index.TreeIndex.Count => type,
             CapabilityType t => t.Arguments[index.TreeIndex[depth]].TypeAt(index, depth + 1),

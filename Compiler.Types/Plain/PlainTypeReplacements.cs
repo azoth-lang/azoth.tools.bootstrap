@@ -158,6 +158,6 @@ public sealed class PlainTypeReplacements
         if (ReferenceEquals(plainType.Referent, replacementType))
             return plainType;
 
-        return RefPlainType.Create(replacementType, plainType.IsInternal, plainType.IsMutableBinding);
+        return RefPlainType.Create(plainType.IsInternal, plainType.IsMutableBinding, replacementType);
     }
 }

@@ -35,7 +35,7 @@ published class List[T ind]
     {
         let count = .items.count;
         if index < 0 or index >= count => ABORT("index out of bounds");
-        .items.set_at(index, value);
+        .items.at(index) = value;
     }
 
     published fn add(mut self, value: T)

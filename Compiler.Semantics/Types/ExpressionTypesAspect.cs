@@ -392,43 +392,37 @@ internal static partial class ExpressionTypesAspect
     {
         // TODO maybe all assignments should happen via `ref`.
 
-        if (node.LeftOperand!.PlainType is RefPlainType { IsMutableBinding: true } leftRefPlainType
-            && leftRefPlainType.Referent.Equals(node.RightOperand!.PlainType))
+        switch (node.LeftOperand)
         {
-            // No error in this case. Assigning into a ref.
-        }
-        else
-            switch (node.LeftOperand)
+            case IFieldAccessExpressionNode fieldAccess:
             {
-                case IFieldAccessExpressionNode fieldAccess:
-                {
-                    var contextType = fieldAccess.Context.Type;
-                    if (contextType is CapabilityType
-                        {
-                            Capability: { AllowsWrite: false, AllowsInit: false }
-                        } capabilityType)
-                        diagnostics.Add(
-                            TypeError.CannotAssignFieldOfReadOnly(node.File, node.Syntax.Span, capabilityType));
-
-                    // Check for assigning into `let` fields (skip self fields in constructors and initializers)
-                    if (contextType is not CapabilityType { Capability.AllowsInit: true }
-                        && fieldAccess.ReferencedDeclaration.Symbol is
-                        { IsMutableBinding: false, Name: IdentifierName name })
-                        diagnostics.Add(
-                            OtherSemanticError.CannotAssignImmutableField(node.File, node.Syntax.Span, name));
-                    break;
-                }
-                case IVariableNameExpressionNode:
-                    // TODO fix this condition. It is really about LValues
-                    break;
-                case IUnresolvedNameExpressionNode:
-                    // Since it is unknown, we must assume that it can be assigned into
-                    break;
-                default:
+                var contextType = fieldAccess.Context.Type;
+                if (contextType is CapabilityType
+                    {
+                        Capability: { AllowsWrite: false, AllowsInit: false }
+                    } capabilityType)
                     diagnostics.Add(
-                        OtherSemanticError.CantAssignIntoExpression(node.File, node.TempLeftOperand.Syntax.Span));
-                    break;
+                        TypeError.CannotAssignFieldOfReadOnly(node.File, node.Syntax.Span, capabilityType));
+
+                // Check for assigning into `let` fields (skip self fields in constructors and initializers)
+                if (contextType is not CapabilityType { Capability.AllowsInit: true }
+                    && fieldAccess.ReferencedDeclaration.Symbol is
+                    { IsMutableBinding: false, Name: IdentifierName name })
+                    diagnostics.Add(
+                        OtherSemanticError.CannotAssignImmutableField(node.File, node.Syntax.Span, name));
+                break;
             }
+            case IVariableNameExpressionNode:
+                // TODO fix this condition. It is really about LValues
+                break;
+            case IUnresolvedNameExpressionNode:
+                // Since it is unknown, we must assume that it can be assigned into
+                break;
+            default:
+                diagnostics.Add(
+                    OtherSemanticError.CantAssignIntoExpression(node.File, node.TempLeftOperand.Syntax.Span));
+                break;
+        }
 
         if (node is { LeftOperand: { } leftOperand, RightOperand: { } rightOperand })
         {
@@ -443,6 +437,18 @@ internal static partial class ExpressionTypesAspect
             }
         }
     }
+
+    public static partial IMaybeType RefAssignmentExpression_Type(IRefAssignmentExpressionNode node)
+        => (node.LeftOperand?.Type as RefType)?.Referent ?? IMaybeType.Unknown;
+
+    public static partial IFlowState RefAssignmentExpression_FlowStateAfter(IRefAssignmentExpressionNode node)
+    {
+        // TODO this isn't quite right since the original value is replaced by the new value
+        if (node.LeftOperand?.ValueId is not ValueId leftValueId) return IFlowState.Empty;
+        return node.RightOperand?.FlowStateAfter.Combine(leftValueId, node.RightOperand.ValueId, node.ValueId) ?? IFlowState.Empty;
+    }
+
+    // TODO RefAssignment diagnostics
 
     public static partial IMaybeType BinaryOperatorExpression_Type(IBinaryOperatorExpressionNode node)
     {

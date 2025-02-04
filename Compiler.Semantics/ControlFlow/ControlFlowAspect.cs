@@ -60,6 +60,12 @@ internal static partial class ControlFlowAspect
     #endregion
 
     #region Operator Expressions
+    public static partial ControlFlowSet AssignmentExpression_ControlFlowNext(IAssignmentExpressionNode node)
+        => ControlFlowSet.CreateNormal(node.LeftOperand);
+
+    public static partial ControlFlowSet RefAssignmentExpression_ControlFlowNext(IRefAssignmentExpressionNode node)
+        => ControlFlowSet.CreateNormal(node.LeftOperand);
+
     public static partial ControlFlowSet RefExpression_ControlFlowNext(IRefExpressionNode node)
         => ControlFlowSet.CreateNormal(node.Referent);
 
@@ -96,9 +102,6 @@ internal static partial class ControlFlowAspect
     #region Name Expressions
 
     #endregion
-
-    public static partial ControlFlowSet AssignmentExpression_ControlFlowNext(IAssignmentExpressionNode node)
-        => ControlFlowSet.CreateNormal(node.LeftOperand);
 
     public static partial ControlFlowSet UnsafeExpression_ControlFlowNext(IUnsafeExpressionNode node)
         => ControlFlowSet.CreateNormal(node.Expression);
