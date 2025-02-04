@@ -86,6 +86,7 @@ public static partial class TokenTypes
         typeof(ShareableKeywordToken),
         typeof(AliasableKeywordToken),
         typeof(SendableKeywordToken),
+        typeof(TemporaryKeywordToken),
         typeof(AnyKeywordToken),
         typeof(NonwritableKeywordToken),
     }.AsReadOnly();
@@ -324,6 +325,9 @@ public static partial class TokenFactory
     public static ISendableKeywordToken SendableKeyword(TextSpan span)
         => new SendableKeywordToken(span);
 
+    public static ITemporaryKeywordToken TemporaryKeyword(TextSpan span)
+        => new TemporaryKeywordToken(span);
+
     public static IAnyKeywordToken AnyKeyword(TextSpan span)
         => new AnyKeywordToken(span);
 
@@ -410,6 +414,7 @@ public static partial class TokenFactory
     typeof(IShareableKeywordToken),
     typeof(IAliasableKeywordToken),
     typeof(ISendableKeywordToken),
+    typeof(ITemporaryKeywordToken),
     typeof(IAnyKeywordToken),
     typeof(INonwritableKeywordToken))]
 public partial interface IKeywordToken : IToken { }
@@ -1103,6 +1108,15 @@ public partial interface ISendableKeywordToken : IKeywordToken { }
 internal partial class SendableKeywordToken : Token, ISendableKeywordToken
 {
     public SendableKeywordToken(TextSpan span)
+        : base(span)
+    {
+    }
+}
+
+public partial interface ITemporaryKeywordToken : IKeywordToken { }
+internal partial class TemporaryKeywordToken : Token, ITemporaryKeywordToken
+{
+    public TemporaryKeywordToken(TextSpan span)
         : base(span)
     {
     }

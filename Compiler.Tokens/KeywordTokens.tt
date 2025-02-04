@@ -108,6 +108,7 @@
         "Shareable",
         "Aliasable",
         "Sendable",
+        "Temporary",
         "Any",
         "Nonwritable",
     }.AsReadOnly();

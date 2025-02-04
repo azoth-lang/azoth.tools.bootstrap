@@ -216,6 +216,7 @@ public sealed class GenericParameterTypeReplacements
         if (bareType is null) return null;
 
         if (bareSelfReplacement is not null && bareType is { TypeConstructor: SelfTypeConstructor })
+            // TODO doesn't the replacement type need to match the Self context type?
             return bareSelfReplacement;
 
         var replacementContainingType = Apply(bareType.ContainingType, selfReplacement, bareSelfReplacement);

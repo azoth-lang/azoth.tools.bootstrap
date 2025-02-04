@@ -102,6 +102,7 @@ public partial class Parser
             IShareableKeywordToken _ => ICapabilitySetSyntax.Create(constraint.Span, CapabilitySet.Shareable),
             IAliasableKeywordToken _ => ICapabilitySetSyntax.Create(constraint.Span, CapabilitySet.Aliasable),
             ISendableKeywordToken _ => ICapabilitySetSyntax.Create(constraint.Span, CapabilitySet.Sendable),
+            ITemporaryKeywordToken _ => ICapabilitySetSyntax.Create(constraint.Span, CapabilitySet.Temporary),
             IAnyKeywordToken _ => ICapabilitySetSyntax.Create(constraint.Span, CapabilitySet.Any),
             _ => throw ExhaustiveMatch.Failed(constraint),
         };
