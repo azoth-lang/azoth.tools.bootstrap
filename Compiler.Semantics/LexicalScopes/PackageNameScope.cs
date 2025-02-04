@@ -99,7 +99,7 @@ public sealed class PackageNameScope
         {
             null => null,
             SimpleTypeConstructor t => Lookup(t),
-            // TODO There are no declarations for const value type, but perhaps there should be?
+            // TODO There are no declarations for literal value type, but perhaps there should be?
             LiteralTypeConstructor _ => null,
             AnyTypeConstructor t => Lookup(t),
             OrdinaryTypeConstructor t => Lookup(t),
