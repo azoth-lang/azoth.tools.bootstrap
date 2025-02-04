@@ -93,7 +93,7 @@ internal static class Operations
                 if (isSigned)
                 {
                     if (isOptional) return AzothValue.None;
-                    throw new Abort($"Cannot convert value {fromValue} to {to.ToILString()}");
+                    throw new AbortException($"Cannot convert value {fromValue} to {to.ToILString()}");
                 }
                 return value;
             }
@@ -105,7 +105,7 @@ internal static class Operations
                                  || fromValue.GetBitLength() > fixedSizeIntegerType.Bits))
                 {
                     if (isOptional) return AzothValue.None;
-                    throw new Abort($"Cannot convert value {fromValue} to {to.ToILString()}");
+                    throw new AbortException($"Cannot convert value {fromValue} to {to.ToILString()}");
                 }
             }
 

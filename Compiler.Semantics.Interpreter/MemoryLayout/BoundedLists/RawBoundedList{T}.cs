@@ -33,7 +33,7 @@ internal abstract class RawBoundedList<T> : IRawBoundedList
     {
         // Even though this is raw and not supposed to check bounds, aborting makes debugging easier
         if (Count >= Capacity)
-            throw new Abort("Cannot add to Raw_Bounded_List.");
+            throw new AbortException("Cannot add to Raw_Bounded_List.");
         items[Count++] = value;
     }
 
@@ -42,7 +42,7 @@ internal abstract class RawBoundedList<T> : IRawBoundedList
     {
         // Even though this is raw and not supposed to check bounds, aborting makes debugging easier
         if (index >= Count)
-            throw new Abort("Index out of bounds");
+            throw new AbortException("Index out of bounds");
         return items[index];
     }
 
@@ -51,7 +51,7 @@ internal abstract class RawBoundedList<T> : IRawBoundedList
 
     public void Shrink(nuint count)
     {
-        if (count > Count) throw new Abort("Cannot increase Raw_Bounded_List size with `shrink`.");
+        if (count > Count) throw new AbortException("Cannot increase Raw_Bounded_List size with `shrink`.");
         var oldCount = Count;
         Count = count;
         if (!clearValues) return;

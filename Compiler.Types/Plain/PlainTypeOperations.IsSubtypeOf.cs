@@ -25,6 +25,7 @@ public static partial class PlainTypeOperations
         => (self, other) switch
         {
             (_, _) when self.Equals(other) => true,
+            // Never is even a subtype of void
             (NeverPlainType, _) => true,
             (VoidPlainType, _) => false,
             (OptionalPlainType s, OptionalPlainType o) => s.Referent.IsSubtypeOf(o.Referent),

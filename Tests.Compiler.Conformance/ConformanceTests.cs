@@ -38,6 +38,9 @@ public partial class ConformanceTests
 
     [GeneratedRegex(@"//[ \t]*exit code: (?<exitCode>\d+)", RegexOptions.ExplicitCapture)]
     private static partial Regex ExitCodePattern();
+
+    [GeneratedRegex(@"//[ \t]*exit abort: (?<message>[^\r\n]*)", RegexOptions.ExplicitCapture)]
+    private static partial Regex ExitAbortPattern();
     private const string ExpectedOutputFileFormat = @"//[ \t]*{0} file: (?<file>[a-zA-Z0-9_.]+)";
     private const string ExpectedOutputFormat = @"\/\*[ \t]*{0}:\r?\n(?<output>(\*+[^/]|[^*])*)\*\/";
     [GeneratedRegex("//[ \\t]*compile: errors", RegexOptions.ExplicitCapture)]
@@ -63,6 +66,7 @@ public partial class ConformanceTests
         var supportPackage = CompileSupportPackage(compiler);
         references.Add(new(TestsSupportPackage.Name, supportPackage.PackageSymbols, true));
 
+        string? expectedAbortMessage = ExpectedAbort(code);
         try
         {
             // Analyze
@@ -98,11 +102,17 @@ public partial class ConformanceTests
             testOutput.WriteLine(stderr);
             Assert.Equal(ExpectedOutput(code, "stderr", testCase.FullCodePath), stderr);
             Assert.Equal(ExpectedExitCode(code), process.ExitCode);
+            Assert.Null(expectedAbortMessage);
         }
         catch (FatalCompilationErrorException ex)
         {
             var diagnostics = ex.Diagnostics;
             CheckErrorsExpected(testCase, codeFile, code, diagnostics);
+        }
+        catch (AbortException ex) when (ex.Message == expectedAbortMessage)
+        {
+            testOutput.WriteLine("Aborted as Expected with message:");
+            testOutput.WriteLine(ex.Message);
         }
     }
 
@@ -232,6 +242,12 @@ public partial class ConformanceTests
     {
         var interpreter = new AzothTreeInterpreter();
         return interpreter.Execute(package, [supportPackage]);
+    }
+
+    private static string? ExpectedAbort(string code)
+    {
+        var abortMessage = ExitAbortPattern().Match(code).Groups["message"]?.Captures.SingleOrDefault()?.Value;
+        return abortMessage;
     }
 
     private static int ExpectedExitCode(string code)

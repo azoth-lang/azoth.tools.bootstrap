@@ -176,7 +176,7 @@ public sealed class InterpreterProcess
                 stopwatch.Stop();
                 await standardOutputWriter.WriteLineAsync($"  passed in {stopwatch.Elapsed.ToTotalSecondsAndMilliseconds()}");
             }
-            catch (Abort ex)
+            catch (AbortException ex)
             {
                 await standardOutputWriter.WriteLineAsync("  FAILED: " + ex.Message);
                 failed += 1;
@@ -1048,7 +1048,7 @@ public sealed class InterpreterProcess
         if (ReferenceEquals(function, Intrinsic.AbortRawUtf8Bytes))
         {
             string message = RawUtf8BytesToString(arguments);
-            throw new Abort(message);
+            throw new AbortException(message);
         }
         throw new NotImplementedException($"Intrinsic {function}");
     }
