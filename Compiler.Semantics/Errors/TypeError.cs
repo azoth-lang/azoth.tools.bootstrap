@@ -142,10 +142,10 @@ public static class TypeError
             3020, $"Reference capabilities viewpoint must be applied to type parameter `{typeSyntax}`.");
     }
 
-    public static Diagnostic SelfViewpointNotAppliedToTypeParameter(CodeFile file, ISelfViewpointTypeSyntax typeSyntax)
+    public static Diagnostic SelfViewpointAppliedIncorrectly(CodeFile file, ISelfViewpointTypeSyntax typeSyntax)
     {
         return new(file, typeSyntax.Span, DiagnosticLevel.CompilationError, DiagnosticPhase.Analysis,
-            3021, $"Self viewpoint must be applied to type parameter `{typeSyntax}`.");
+            3021, $"Self viewpoint must be applied to type parameter or ref/iref var type `{typeSyntax}`.");
     }
 
     public static Diagnostic SelfViewpointNotAvailable(CodeFile file, ISelfViewpointTypeSyntax typeSyntax)

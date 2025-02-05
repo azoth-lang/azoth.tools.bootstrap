@@ -87,12 +87,12 @@ internal static partial class TypeExpressionsAspect
     public static partial void SelfViewpointType_Contribute_Diagnostics(ISelfViewpointTypeNode node, DiagnosticCollectionBuilder diagnostics)
     {
         // TODO properly restrict this once `Self` type is being used
-        if (node.MethodSelfType is not (CapabilityType or CapabilitySetSelfType or SelfViewpointType))
+        if (node.MethodSelfType is null)
             diagnostics.Add(TypeError.SelfViewpointNotAvailable(node.File, node.Syntax));
 
         // TODO move this condition into the Types project to remove logic duplication
-        if (node.Referent.NamedType is not GenericParameterType)
-            diagnostics.Add(TypeError.SelfViewpointNotAppliedToTypeParameter(node.File, node.Syntax));
+        if (node.Referent.NamedType is not (GenericParameterType or RefType { IsMutableBinding: true }))
+            diagnostics.Add(TypeError.SelfViewpointAppliedIncorrectly(node.File, node.Syntax));
     }
 
     public static partial IMaybeType RefType_NamedType(IRefTypeNode node)

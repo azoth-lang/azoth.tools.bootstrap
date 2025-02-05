@@ -812,7 +812,28 @@ internal static partial class ExpressionTypesAspect
 
     #region Operator Expressions
     public static partial IMaybeType RefExpression_Type(IRefExpressionNode node)
-        => RefType.Create(node.PlainType, node.Referent?.Type ?? Type.Unknown);
+    {
+        var referentType = node.Referent?.Type ?? Type.Unknown;
+        if (referentType is not NonVoidType nonVoidType) return referentType;
+
+        // The net effect of this is to place the `ref` type inside of any self viewpoint
+
+        // TODO this all seems rather adhoc. Is there a principled way to do this?
+
+        CapabilitySet? capabilitySet = null;
+        if (nonVoidType is SelfViewpointType selfViewpointType)
+        {
+            capabilitySet = selfViewpointType.CapabilitySet;
+            nonVoidType = selfViewpointType.Referent;
+        }
+
+        nonVoidType = RefType.Create(node.PlainType, nonVoidType);
+
+        if (capabilitySet is not null)
+            nonVoidType = new SelfViewpointType(capabilitySet, nonVoidType);
+
+        return nonVoidType;
+    }
 
     public static partial IFlowState RefExpression_FlowStateAfter(IRefExpressionNode node)
         => node.Referent?.FlowStateAfter.Transform(node.Referent.ValueId, node.ValueId, node.Type) ?? IFlowState.Empty;

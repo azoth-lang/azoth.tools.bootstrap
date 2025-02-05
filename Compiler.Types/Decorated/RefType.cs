@@ -18,6 +18,14 @@ public sealed class RefType : NonVoidType
             _ => throw new ArgumentException($"Plain type '{plainType}' does not match referent type '{referent}'."),
         };
 
+    public static NonVoidType Create(IMaybePlainType plainType, NonVoidType referent)
+        => (plainType, referent) switch
+        {
+            (RefPlainType t, NonVoidType r) => new RefType(t, r),
+            (NeverPlainType, NeverType) => Never,
+            _ => throw new ArgumentException($"Plain type '{plainType}' does not match referent type '{referent}'."),
+        };
+
     [return: NotNullIfNotNull(nameof(referent))]
     public static IMaybeType? CreateWithoutPlainType(bool isInternal, bool isMutableBinding, IMaybeType? referent)
         => referent switch
