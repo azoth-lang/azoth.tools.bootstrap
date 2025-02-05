@@ -91,7 +91,9 @@ internal static partial class TypeExpressionsAspect
             diagnostics.Add(TypeError.SelfViewpointNotAvailable(node.File, node.Syntax));
 
         // TODO move this condition into the Types project to remove logic duplication
-        if (node.Referent.NamedType is not (GenericParameterType or RefType { IsMutableBinding: true }))
+        if (node.Referent.NamedType is not (GenericParameterType
+            or RefType { IsMutableBinding: true }
+            or RefType { Referent: GenericParameterType }))
             diagnostics.Add(TypeError.SelfViewpointAppliedIncorrectly(node.File, node.Syntax));
     }
 

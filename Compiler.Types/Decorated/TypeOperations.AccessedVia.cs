@@ -103,16 +103,19 @@ public static partial class TypeOperations
 
     public static Type AccessedVia(this RefType self, ICapabilityConstraint capability)
     {
-        // TODO should it modify the referent?
-
-        // If not a `var` binding, there is nothing about the ref type affected by the capability
-        if (!self.IsMutableBinding) return self;
-        return capability switch
+        switch (capability)
         {
-            Capability c => c.AllowsWrite
-                ? self : RefType.CreateWithoutPlainType(self.IsInternal, false, self.Referent),
-            CapabilitySet c => new SelfViewpointType(c, self),
-            _ => throw ExhaustiveMatch.Failed(capability),
-        };
+            case Capability c:
+                var newReferent = self.Referent.AccessedVia(capability);
+                var newIsMutableBinding = self.IsMutableBinding && c.AllowsWrite;
+                if (ReferenceEquals(newReferent, self.Referent)
+                    && newIsMutableBinding == self.IsMutableBinding)
+                    return self;
+                return RefType.CreateWithoutPlainType(self.IsInternal, newIsMutableBinding, newReferent);
+            case CapabilitySet c:
+                return new SelfViewpointType(c, self);
+            default:
+                throw ExhaustiveMatch.Failed(capability);
+        }
     }
 }
