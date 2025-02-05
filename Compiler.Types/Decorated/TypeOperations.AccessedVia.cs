@@ -43,7 +43,7 @@ public static partial class TypeOperations
             FunctionType t => t,
             NeverType t => t,
             VoidType t => t,
-            RefType t => t,
+            RefType t => t.AccessedVia(capability),
             // TODO shouldn't this combine with the capability set?
             CapabilitySetSelfType t => t,
             // TODO shouldn't this combine with the capability set?
@@ -89,7 +89,6 @@ public static partial class TypeOperations
         return typesReplaced ? newTypeArguments.ToFixedList() : self.Arguments;
     }
 
-
     public static Type AccessedVia(this GenericParameterType self, ICapabilityConstraint capability)
     {
         // Independent type parameters are not affected by the capability
@@ -97,6 +96,21 @@ public static partial class TypeOperations
         return capability switch
         {
             Capability c => CapabilityViewpointType.Create(c, self),
+            CapabilitySet c => new SelfViewpointType(c, self),
+            _ => throw ExhaustiveMatch.Failed(capability),
+        };
+    }
+
+    public static Type AccessedVia(this RefType self, ICapabilityConstraint capability)
+    {
+        // TODO should it modify the referent?
+
+        // If not a `var` binding, there is nothing about the ref type affected by the capability
+        if (!self.IsMutableBinding) return self;
+        return capability switch
+        {
+            Capability c => c.AllowsWrite
+                ? self : RefType.CreateWithoutPlainType(self.IsInternal, false, self.Referent),
             CapabilitySet c => new SelfViewpointType(c, self),
             _ => throw ExhaustiveMatch.Failed(capability),
         };

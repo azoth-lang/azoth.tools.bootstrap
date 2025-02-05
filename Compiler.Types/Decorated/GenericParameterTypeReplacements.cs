@@ -1,5 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
+using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using Azoth.Tools.Bootstrap.Framework;
@@ -10,6 +11,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 /// <summary>
 /// Replacements for the <see cref="GenericParameterType"/>s for a <see cref="BareType"/>.
 /// </summary>
+/// <remarks>This can also replace `self |>` and `Self` types.</remarks>
 public sealed class GenericParameterTypeReplacements
 {
     public static readonly GenericParameterTypeReplacements None = new();
@@ -109,16 +111,12 @@ public sealed class GenericParameterTypeReplacements
             case SelfViewpointType selfViewpointType:
                 return ApplyTo(selfViewpointType, selfReplacement);
             case CapabilitySetSelfType t:
-            {
-                if (selfReplacement is not null)
-                {
-                    if (selfReplacement is CapabilityType { Capability: var selfCapability })
-                        Requires.That(t.CapabilitySet.AllowedCapabilities.Contains(selfCapability), nameof(selfReplacement),
-                            "Must have a compatible capability.");
-                    return selfReplacement;
-                }
+                if (selfReplacement != null)
+                    // A CapabilitySetSelfType can only occur as the `self` parameter to a method.
+                    // As such, using the upper bound places the least restriction on what context
+                    // the method can be called on.
+                    return SelfReplacement(selfReplacement, t.CapabilitySet.UpperBound);
                 break;
-            }
             case VoidType _:
             case NeverType _:
                 break;
@@ -131,15 +129,35 @@ public sealed class GenericParameterTypeReplacements
 
     internal Type ApplyTo(SelfViewpointType type, NonVoidType? selfReplacement)
     {
-        // TODO what about CapabilitySetTypes and other types?
-        if (selfReplacement is CapabilityType capabilitySelfReplacement)
-            return ApplyTo(type, capabilitySelfReplacement);
+        switch (selfReplacement)
+        {
+            case CapabilitySetSelfType r:
+                return ApplyTo(type, r);
+            case SelfViewpointType r:
+                return ApplyTo(type, r);
+            case CapabilityType r:
+                return ApplyTo(type, r);
+        }
 
         var replacementType = ApplyTo(type.Referent, selfReplacement);
         if (!ReferenceEquals(type.Referent, replacementType))
             return SelfViewpointType.Create(type.CapabilitySet, replacementType);
 
         return type;
+    }
+
+    internal Type ApplyTo(SelfViewpointType type, CapabilitySetSelfType selfReplacement)
+    {
+        var replacementType = ApplyTo(type.Referent, selfReplacement);
+        // regardless of whether the replacement type changes, we need to apply the new capability
+        return replacementType.AccessedVia(selfReplacement.CapabilitySet);
+    }
+
+    internal Type ApplyTo(SelfViewpointType type, SelfViewpointType selfReplacement)
+    {
+        var replacementType = ApplyTo(type.Referent, selfReplacement.Referent);
+        // regardless of whether the replacement type changes, we need to apply the new capability
+        return replacementType.AccessedVia(selfReplacement.CapabilitySet);
     }
 
     internal Type ApplyTo(SelfViewpointType type, CapabilityType selfReplacement)
@@ -158,9 +176,10 @@ public sealed class GenericParameterTypeReplacements
 
     internal Type ApplyTo(CapabilityType type, NonVoidType? selfReplacement)
     {
-        // TODO what about CapabilitySetTypes and other types?
-        var bareSelfReplacement = (selfReplacement as CapabilityType)?.BareType;
-        var replacementBareType = ApplyTo(type.BareType, selfReplacement, bareSelfReplacement);
+        if (selfReplacement != null && type is { TypeConstructor: SelfTypeConstructor })
+            return SelfReplacement(selfReplacement, type.Capability);
+
+        var replacementBareType = ApplyTo(type.BareType, selfReplacement);
         if (ReferenceEquals(type.BareType, replacementBareType)) return type;
         return replacementBareType.WithModified(type.Capability);
     }
@@ -211,18 +230,14 @@ public sealed class GenericParameterTypeReplacements
     }
 
     public BareType ApplyTo(BareType bareType)
-        => ApplyTo(bareType, selfReplacement: null, bareSelfReplacement: null);
+        => ApplyTo(bareType, selfReplacement: null);
 
     [return: NotNullIfNotNull(nameof(bareType))]
-    internal BareType? ApplyTo(BareType? bareType, NonVoidType? selfReplacement, BareType? bareSelfReplacement)
+    internal BareType? ApplyTo(BareType? bareType, NonVoidType? selfReplacement)
     {
         if (bareType is null) return null;
 
-        if (bareSelfReplacement is not null && bareType is { TypeConstructor: SelfTypeConstructor })
-            // TODO doesn't the replacement type need to match the Self context type?
-            return bareSelfReplacement;
-
-        var replacementContainingType = ApplyTo(bareType.ContainingType, selfReplacement, bareSelfReplacement);
+        var replacementContainingType = ApplyTo(bareType.ContainingType, selfReplacement);
         var replacementTypes = ApplyTo(bareType.Arguments, selfReplacement);
         if (ReferenceEquals(bareType.ContainingType, replacementContainingType)
             && ReferenceEquals(bareType.Arguments, replacementTypes)) return bareType;
@@ -230,4 +245,25 @@ public sealed class GenericParameterTypeReplacements
         var plainType = plainTypeReplacements.ApplyTo(bareType.PlainType);
         return new(plainType, replacementContainingType, replacementTypes);
     }
+
+    /// <summary>
+    /// Produce the actual type to replace `Self` with. It should have the <paramref name="withCapability"/>.
+    /// </summary>
+    /// <remarks>The `Self` type is a bare type and doesn't carry any capabilities with it. So no
+    /// capabilities are replaced. Instead, the capabilities in the type replacements are applied to
+    /// is kept.</remarks>
+    private static NonVoidType SelfReplacement(NonVoidType selfReplacement, Capability withCapability)
+        => selfReplacement switch
+        {
+            CapabilitySetSelfType t => throw new NotSupportedException("Cannot replace `Self` with another `Self`."),
+            CapabilityType t => t.BareType.WithModified(withCapability),
+            CapabilityViewpointType t => CapabilityViewpointType.Create(withCapability, t.Referent),
+            FunctionType t => t,
+            GenericParameterType t => t,
+            NeverType t => t,
+            OptionalType t => t,
+            RefType t => t,
+            SelfViewpointType t => SelfReplacement(t.Referent, withCapability),
+            _ => throw ExhaustiveMatch.Failed(selfReplacement),
+        };
 }
