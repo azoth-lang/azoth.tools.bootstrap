@@ -224,6 +224,6 @@ internal static partial class ExpressionTypesAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFlowState AwaitExpression_FlowStateAfter(IAwaitExpressionNode node);
     public static partial IExpressionNode? OrdinaryTypedExpression_ImplicitMove_Insert(IOrdinaryTypedExpressionNode node);
-    public static partial IExpressionNode? OrdinaryTypedExpression_ImplicitFreeze_Insert(IOrdinaryTypedExpressionNode node);
+    public static partial IFreezeExpressionNode? OrdinaryTypedExpression_Insert_FreezeExpression(IOrdinaryTypedExpressionNode node);
     public static partial IPrepareToReturnExpressionNode? OrdinaryTypedExpression_Insert_PrepareToReturnExpression(IOrdinaryTypedExpressionNode node);
 }

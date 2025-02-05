@@ -76,7 +76,7 @@
 /// </summary>
 ↓ OrdinaryTypedExpression.ShouldPrepareToReturn(): `bool`;
 ✎ OrdinaryTypedExpression ImplicitMove insert;
-✎ OrdinaryTypedExpression ImplicitFreeze insert;
+✎ OrdinaryTypedExpression insert FreezeExpression;
 ✎ OrdinaryTypedExpression insert PrepareToReturnExpression;
 = OrdinaryTypedExpression.↑.Diagnostics;
 

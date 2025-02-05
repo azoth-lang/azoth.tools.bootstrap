@@ -178,7 +178,7 @@ internal static partial class ExpressionTypesAspect
         return implicitMove;
     }
 
-    public static partial IExpressionNode? OrdinaryTypedExpression_ImplicitFreeze_Insert(IOrdinaryTypedExpressionNode node)
+    public static partial IFreezeExpressionNode? OrdinaryTypedExpression_Insert_FreezeExpression(IOrdinaryTypedExpressionNode node)
     {
         if (!node.ImplicitRecoveryAllowed())
             return null;
@@ -293,7 +293,7 @@ internal static partial class ExpressionTypesAspect
         {
             if (overload.SelfParameterType is not NonVoidType selfParameterType)
                 throw new InvalidOperationException("Self argument provided for overload without self parameter");
-            parameterTypes = parameterTypes.Prepend(ParameterType.Create(false, selfParameterType.ToUpperBound()));
+            parameterTypes = parameterTypes.Prepend(ParameterType.Create(false, selfParameterType));
         }
         return parameterTypes.EquiZip(allArguments)
                              .Select((p, a) => new ArgumentValueId(p.IsLent, a.ValueId));
