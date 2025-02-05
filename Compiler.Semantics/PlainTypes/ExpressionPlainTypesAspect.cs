@@ -370,6 +370,7 @@ internal static partial class ExpressionPlainTypesAspect
         => node.ReferencedDeclaration?.MethodGroupPlainType ?? PlainType.Unknown;
 
     // TODO this is strange and maybe a hack
+    // TODO this ought to be accounting for generic arguments
     public static partial IMaybePlainType? MethodAccessExpression_Context_ExpectedPlainType(IMethodAccessExpressionNode node)
         => (node.Parent as IMethodInvocationExpressionNode)?.SelectedCallCandidate?.SelfParameterPlainType;
     #endregion
@@ -398,6 +399,8 @@ internal static partial class ExpressionPlainTypesAspect
         // T <: T? as a subtype and not an implicit conversion.
         if (!CanPossiblyImplicitlyConvertFrom(node.PlainType))
             return null;
+
+        // TODO what about self argument context? Shouldn't implicit conversion be disallowed there?
 
         if (ImplicitlyConvertToType(node.ExpectedPlainType, node.PlainType) is SimpleTypeConstructor convertToTypeConstructor)
             return IImplicitConversionExpressionNode.Create(node, convertToTypeConstructor.PlainType);

@@ -7,6 +7,8 @@ public sealed class TypeReplacements
     internal TypeReplacements(NonVoidType type)
     {
         selfReplacement = type;
+        // TODO actually we don't want to replace just any `Self` type, we want to replace only the
+        // `Self` type associated with this type
     }
 
     public IMaybeType ApplyTo(IMaybeType type)

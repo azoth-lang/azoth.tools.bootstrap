@@ -379,7 +379,7 @@ internal sealed class FlowState : IFlowState
 
     public IFlowState AccessField(
         ValueId contextId,
-        CapabilityType contextType,
+        IMaybeType contextType,
         BareTypeConstructor declaringTypeConstructor,
         ValueId id,
         IMaybeNonVoidType bindingType,
@@ -387,7 +387,7 @@ internal sealed class FlowState : IFlowState
     {
         var builder = ToBuilder();
         var newValueCapabilities = CapabilityValue.ForType(id, memberType);
-        var valueMap = AccessFieldValueMapping(contextId, contextType, declaringTypeConstructor,
+        var valueMap = AccessFieldValueMapping(contextId, (CapabilityType)contextType, declaringTypeConstructor,
             bindingType, id, newValueCapabilities.Keys);
         foreach (var (newValue, flowCapability) in newValueCapabilities)
         {

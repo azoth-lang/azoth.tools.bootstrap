@@ -70,7 +70,7 @@ internal static class FlowStateExtensions
     public static IFlowState AccessField(this IFlowState self, IFieldAccessExpressionNode node)
     {
         var contextId = node.Context.ValueId;
-        var contextType = (CapabilityType)node.Context.Type;
+        var contextType = node.Context.Type;
         var declaringTypeConstructor
             = node.ReferencedDeclaration.ContainingDeclaration.TypeConstructor as BareTypeConstructor
               ?? throw new InvalidOperationException("Cannot access field of primitive type.");

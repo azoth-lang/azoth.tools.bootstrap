@@ -39,6 +39,7 @@ public sealed class CapabilitySet : ICapabilityConstraint
     // TODO `temporary` is a strange name because `temporary self` reads wrong. The adjective
     // "temporary" doesn't describe `self` it describes the capabilities. Maybe a capability that
     // indicates there are no other writers and also included `const` would be better?
+    // Another option would be to name this `temp any` or `any temp`
     public static readonly CapabilitySet Temporary = new("temporary", TemporarilyIsolated, TemporarilyConstant);
 
     /// <summary>

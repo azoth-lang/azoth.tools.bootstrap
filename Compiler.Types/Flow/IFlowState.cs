@@ -60,7 +60,7 @@ public interface IFlowState : IEquatable<IFlowState>
 
     IFlowState AccessField(
         ValueId contextId,
-        CapabilityType contextType,
+        IMaybeType contextType,
         BareTypeConstructor declaringTypeConstructor,
         ValueId id,
         IMaybeNonVoidType bindingType,
