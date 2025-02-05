@@ -199,10 +199,26 @@ happening?
 
 ### Rewrites
 
-Rewrite rule names are optional. They exist to distinguish rewrites from each other.
+Rewrite rule names are optional. They exist to distinguish rewrites from each other. It help
+optimize performance, there are two special kinds of rewrites in addition to the general rewrite.
 
-| Declaration                                 | Meaning                                                      |
-| ------------------------------------------- | ------------------------------------------------------------ |
-| `✎` *Node* *Name*? `insert` *Node*`;`       | Add a rewrite that could insert a node above the given node  |
-| `✎` *Node* *Name*? `replace_with` *Node*`;` | Add a rewrite that could replace a node above the given node |
-| `✎` *Node* *Name*? `rewrite` *Node*?`;`     | Add a rewrite rule to the given node                         |
+| Declaration                                 | Meaning                                                     |
+| ------------------------------------------- | ----------------------------------------------------------- |
+| `✎` *Node* *Name*? `insert` *Node*`;`       | Add a rewrite that could insert a node above the given node |
+| `✎` *Node* *Name*? `replace_with` *Node*`;` | Add a rewrite that could replace a node with the given node |
+| `✎` *Node* *Name*? `rewrite` *Node*?`;`     | Add a rewrite rule to the given node                        |
+
+Rewrite Kinds:
+
+* `insert`: an insert is allowed to insert a node of the given type *above* the node the rewrite is
+  running on. It is not allowed to change the subtree rooted at the node the rewrite is running on.
+* `replace`: a replace is allowed to remove the node the rewrite is running with and replace it with
+  a node of the given type. It is not allowed to change the subtree below the node being replaced.
+* `rewrite`: a rewrite can make basically arbitrary changes to the tree at and below the node that
+  is being rewritten. Remember that trees are immutable other than their parent reference. So
+  basically this allows branches to be chopped off and put into some new tree with new nodes at the
+  root.
+
+**TODO:** how does replace work on a node with multiple children? **TODO:** should their be an
+`insert_below` kind? That would make several rewrites easier to write without needing to add
+inherited attributes.

@@ -9,6 +9,7 @@
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
 // ---------- Unresolved Expressions
+✎ UnresolvedMemberAccessExpression Deref rewrite UnresolvedMemberAccessExpression;
 ✎ UnresolvedMemberAccessExpression ExpressionContext replace_with Expression;
 = UnresolvedMemberAccessExpression.↑.Diagnostics;
 

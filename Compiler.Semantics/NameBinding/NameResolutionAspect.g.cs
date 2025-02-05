@@ -31,6 +31,7 @@ internal static partial class NameResolutionAspect
     public static partial IFixedList<INamespaceOrOrdinaryTypeDeclarationNode> UnresolvedOrdinaryName_ReferencedDeclarations(IUnresolvedOrdinaryNameNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial void UnresolvedOrdinaryName_Contribute_Diagnostics(IUnresolvedOrdinaryNameNode node, DiagnosticCollectionBuilder diagnostics);
+    public static partial IUnresolvedMemberAccessExpressionNode? UnresolvedMemberAccessExpression_Deref_Rewrite_UnresolvedMemberAccessExpression(IUnresolvedMemberAccessExpressionNode node);
     public static partial IExpressionNode? UnresolvedMemberAccessExpression_ExpressionContext_ReplaceWith_Expression(IUnresolvedMemberAccessExpressionNode node);
     public static partial IExpressionNode? AssignmentExpression_PropertyNameLeftOperand_Rewrite(IAssignmentExpressionNode node);
     public static partial INameExpressionNode? UnresolvedIdentifierNameExpression_ReplaceWith_NameExpression(IUnresolvedIdentifierNameExpressionNode node);

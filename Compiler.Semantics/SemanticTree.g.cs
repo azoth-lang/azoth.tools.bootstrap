@@ -9617,7 +9617,8 @@ file class UnresolvedMemberAccessExpressionNode : SemanticNode, IUnresolvedMembe
     }
 
     protected override IChildTreeNode Rewrite()
-        => NameResolutionAspect.UnresolvedMemberAccessExpression_ExpressionContext_ReplaceWith_Expression(this)
+        => NameResolutionAspect.UnresolvedMemberAccessExpression_Deref_Rewrite_UnresolvedMemberAccessExpression(this)
+        ?? NameResolutionAspect.UnresolvedMemberAccessExpression_ExpressionContext_ReplaceWith_Expression(this)
         ?? base.Rewrite();
 }
 
@@ -15733,6 +15734,7 @@ file class UnresolvedNameExpressionQualifiedNameExpressionNode : SemanticNode, I
     protected override IChildTreeNode Rewrite()
         => NameResolutionAspect.UnresolvedNameExpressionQualifiedNameExpression_ReplaceWith_UnresolvedNamespaceQualifiedNameExpression(this)
         ?? NameResolutionAspect.UnresolvedNameExpressionQualifiedNameExpression_ReplaceWith_UnresolvedTypeQualifiedNameExpression(this)
+        ?? NameResolutionAspect.UnresolvedMemberAccessExpression_Deref_Rewrite_UnresolvedMemberAccessExpression(this)
         ?? NameResolutionAspect.UnresolvedMemberAccessExpression_ExpressionContext_ReplaceWith_Expression(this)
         ?? base.Rewrite();
 }
@@ -15853,6 +15855,7 @@ file class UnresolvedNamespaceQualifiedNameExpressionNode : SemanticNode, IUnres
 
     protected override IChildTreeNode Rewrite()
         => NameResolutionAspect.UnresolvedNamespaceQualifiedNameExpression_ReplaceWith_NameExpression(this)
+        ?? NameResolutionAspect.UnresolvedMemberAccessExpression_Deref_Rewrite_UnresolvedMemberAccessExpression(this)
         ?? NameResolutionAspect.UnresolvedMemberAccessExpression_ExpressionContext_ReplaceWith_Expression(this)
         ?? base.Rewrite();
 }
@@ -15973,6 +15976,7 @@ file class UnresolvedTypeQualifiedNameExpressionNode : SemanticNode, IUnresolved
 
     protected override IChildTreeNode Rewrite()
         => NameResolutionAspect.UnresolvedTypeQualifiedNameExpression_ReplaceWith_NameExpression(this)
+        ?? NameResolutionAspect.UnresolvedMemberAccessExpression_Deref_Rewrite_UnresolvedMemberAccessExpression(this)
         ?? NameResolutionAspect.UnresolvedMemberAccessExpression_ExpressionContext_ReplaceWith_Expression(this)
         ?? base.Rewrite();
 }
