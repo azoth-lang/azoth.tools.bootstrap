@@ -20,7 +20,8 @@ public interface ICapabilityValue : IValue
     {
         var index = new Stack<int>();
         var values = new Dictionary<T, FlowCapability>();
-        ForType(id, type.ToUpperBound(), index, true, values, create);
+        // TODO why was it `type.ToUpperBound()` before?
+        ForType(id, type, index, capture: true, values, create);
         return values.AsReadOnly();
     }
 
@@ -38,15 +39,25 @@ public interface ICapabilityValue : IValue
             case CapabilityType t when capture:
                 values.Add(create(id, new(index)), t.Capability);
                 break;
-            case OptionalType optionalType:
+            case OptionalType t:
                 // Traverse into optional types
-                ForType(id, optionalType.Referent, index, capture, values, create);
+                ForType(id, t.Referent, index, capture, values, create);
+                return;
+            case SelfViewpointType t:
+                // TODO if capture is true, shouldn't the viewpoint somehow affect the flow capability?
+                ForType(id, t.Referent, index, capture, values, create);
+                return;
+            case CapabilitySetSelfType t:
+                // TODO I really don't know that this is right
+                var newContextType = t.BareType.ContainingType!.With(t.CapabilitySet.UpperBound);
+                ForType(id, newContextType, index, capture, values, create);
                 return;
         }
 
         if (!type.HasIndependentTypeArguments)
             return;
 
+        // TODO handle other types? It would have to be one with independent type arguments
         var capabilityType = (CapabilityType)type;
         foreach (var (arg, i) in capabilityType.TypeParameterArguments.Enumerate())
         {

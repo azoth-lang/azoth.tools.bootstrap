@@ -1,8 +1,16 @@
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Flow.Sharing;
 
+/// <summary>
+/// A value that could be relevant for flow type tracking. Values represent things like the
+/// temporary value that results from an expression. Values are identified by the
+/// <see cref="ValueId"/> of the expression etc. that created them and the
+/// <see cref="CapabilityIndex"/> of the tracked value within that result.
+/// </summary>
+[DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
 public sealed class CapabilityValue : ICapabilityValue
 {
     #region Cache

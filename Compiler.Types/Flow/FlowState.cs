@@ -387,7 +387,7 @@ internal sealed class FlowState : IFlowState
     {
         var builder = ToBuilder();
         var newValueCapabilities = CapabilityValue.ForType(id, memberType);
-        var valueMap = AccessFieldValueMapping(contextId, (CapabilityType)contextType, declaringTypeConstructor,
+        var valueMap = AccessFieldValueMapping(contextId, contextType, declaringTypeConstructor,
             bindingType, id, newValueCapabilities.Keys);
         foreach (var (newValue, flowCapability) in newValueCapabilities)
         {
@@ -407,16 +407,40 @@ internal sealed class FlowState : IFlowState
         return builder.ToImmutable();
     }
 
+    /// <summary>
+    /// Construct a mapping from the <see cref="CapabilityValue"/>s of the member being accessed to
+    /// the <see cref="ICapabilityValue"/> of the context it is being accessed in.
+    /// </summary>
     private MultiMapHashSet<CapabilityValue, ICapabilityValue> AccessFieldValueMapping(
         ValueId contextValueId,
-        CapabilityType contextType,
-        BareTypeConstructor containingTypeConstructor,
+        IMaybeType contextType,
+        BareTypeConstructor declaringTypeConstructor,
         IMaybeType bindingType,
         ValueId valueId,
         IEnumerable<CapabilityValue> newValues)
     {
-        var effectiveContextType = contextType.UpcastTo(containingTypeConstructor);
-        var valueMap = SupertypeValueMapping(contextValueId, contextType, valueId, effectiveContextType);
+        // TODO this switch mostly duplicates logic inside of ICapabilityValue.ForType
+        switch (contextType)
+        {
+            case OptionalType t:
+                // Traverse into optional types
+                return AccessFieldValueMapping(contextValueId, t.Referent, declaringTypeConstructor,
+                    bindingType, valueId, newValues);
+            case SelfViewpointType t:
+                // TODO if capture is true, shouldn't the viewpoint somehow affect the flow capability?
+                return AccessFieldValueMapping(contextValueId, t.Referent, declaringTypeConstructor,
+                    bindingType, valueId, newValues);
+            case CapabilitySetSelfType t:
+                // TODO I really don't know that this is right
+                var newContextType = t.BareType.ContainingType!.With(t.CapabilitySet.UpperBound);
+                return AccessFieldValueMapping(contextValueId, newContextType,
+                    declaringTypeConstructor, bindingType, valueId, newValues);
+        }
+
+        // TODO handle other types?
+        var contextCapabilityType = (CapabilityType)contextType;
+        var effectiveContextType = contextCapabilityType.UpcastTo(declaringTypeConstructor);
+        var valueMap = SupertypeValueMapping(contextValueId, contextCapabilityType, valueId, effectiveContextType);
 
         var rootValue = CapabilityValue.CreateTopLevel(valueId);
         var mapping = new MultiMapHashSet<CapabilityValue, ICapabilityValue>();
@@ -428,7 +452,7 @@ internal sealed class FlowState : IFlowState
             CapabilityValue mapFromValue;
             if (typeAtIndex is GenericParameterType { Parameter.HasIndependence: true } t)
             {
-                var parameterIndex = containingTypeConstructor.Parameters.IndexOf(t.Parameter)
+                var parameterIndex = declaringTypeConstructor.Parameters.IndexOf(t.Parameter)
                     // Types nested in a type with independent parameters are not implemented
                     ?? throw new NotImplementedException("Independent parameter not from containing type.");
                 // Find the corresponding value in the context
@@ -777,6 +801,7 @@ internal sealed class FlowState : IFlowState
 
         public FlowCapability this[ICapabilityValue value] => values[value];
 
+        /// <remarks>Note that <paramref name="values"/> can be empty for types like <see cref="NeverType"/>.</remarks>
         public void AddValueId(ValueId valueId, IEnumerable<ICapabilityValue> values)
             => valuesForId.Add(valueId, values.ToFixedSet());
 
