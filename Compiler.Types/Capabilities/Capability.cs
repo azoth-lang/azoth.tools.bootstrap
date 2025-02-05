@@ -186,8 +186,8 @@ public sealed class Capability : ICapabilityConstraint
     public bool IsAssignableFrom(ICapabilityConstraint from)
         => from switch
         {
-            Capability fromCapability => IsAssignableFrom(fromCapability),
-            CapabilitySet _ => false,
+            Capability c => IsAssignableFrom(c),
+            CapabilitySet c => IsAssignableFrom(c.UpperBound),
             _ => throw ExhaustiveMatch.Failed(from),
         };
 
