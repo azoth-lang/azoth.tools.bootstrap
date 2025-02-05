@@ -17,9 +17,7 @@ published const struct string
     }
 
     public fn raw_bytes(self) -> Raw_Hybrid_Bounded_List[void, byte]
-    {
-        return .bytes;
-    }
+        => .bytes;
 
     // Once it is supported, this should be a copy constructor
     // published safe init(other: string)

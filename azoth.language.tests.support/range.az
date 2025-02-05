@@ -14,7 +14,7 @@ namespace azoth
             if .end < .start => ABORT("End before start");
         }
 
-        published fn iterate(const self) -> mut Range_Iterator
-            => return Range_Iterator(self);
+        published fn iterate(self) -> mut Range_Iterator
+            => Range_Iterator(self);
     }
 }

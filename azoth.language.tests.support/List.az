@@ -14,22 +14,17 @@ published class List[T ind]
     }
 
     published get capacity(self) -> size
-    {
-        return .items.capacity;
-    }
+        => .items.capacity;
 
     published get count(self) -> size
-    {
-        return .items.count;
-    }
+        => .items.count;
 
-    published fn at(temporary self, index: size) -> self |> ref var T
+    published fn at(temporary self, index: size) -> self |> iref var T
     {
         let count = .items.count;
         if index < 0 or index >= count => ABORT("index out of bounds");
         return .items.at(index);
     }
-
 
     published fn add(mut self, value: T)
     {
@@ -50,9 +45,7 @@ published class List[T ind]
     }
 
     published fn clear(mut self)
-    {
-        .items.shrink(0);
-    }
+        => .items.shrink(0);
 
     published fn iterate(temp const self) -> mut List_Iterator[T]
         => List_Iterator[T](self);
