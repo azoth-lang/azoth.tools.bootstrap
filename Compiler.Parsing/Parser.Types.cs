@@ -44,7 +44,7 @@ public partial class Parser
     {
         var self = Tokens.Consume<ISelfKeywordToken>();
         _ = Tokens.Required<IRightTriangleToken>();
-        var type = ParseBareType();
+        var type = ParseBareOrRefType();
         var span = TextSpan.Covering(self, type.Span);
         type = ISelfViewpointTypeSyntax.Create(span, type);
         return ParseOptionalType(type);
@@ -117,6 +117,13 @@ public partial class Parser
                 return false;
         }
     }
+
+    private ITypeSyntax ParseBareOrRefType()
+        => Tokens.Current switch
+        {
+            IVariableRefKeywordToken or IInternalRefKeywordToken => ParseRefType(),
+            _ => ParseBareType()
+        };
 
     private IRefTypeSyntax ParseRefType()
     {
