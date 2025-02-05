@@ -90,7 +90,7 @@ public partial class Parser
                     Add(ParseError.MissingType(File, Tokens.Current.Span.AtStart()));
                 return (null, capability);
             default:
-                return (ParseTypeWithCapability(capability), null);
+                return (ParseTypeStartingWith(capability), null);
         }
     }
 

@@ -22,22 +22,24 @@ public partial class Parser
 
     private ITypeSyntax ParseType()
     {
-        switch (Tokens.Current)
+        var type = Tokens.Current switch
         {
-            case ISelfKeywordToken:
-                return ParseSelfViewpointType();
-            case IExplicitCapabilityToken:
-                return ParseTypeWithExplicitCapabilityViewpoint();
-            case IVariableRefKeywordToken:
-            case IInternalRefKeywordToken:
-                return ParseRefType();
-            default:
-                var capability = AcceptStandardCapability();
-                if (capability is not null && Tokens.Current is IRightTriangleToken)
-                    return ParseTypeWithCapabilityViewpoint(capability);
+            ISelfKeywordToken => ParseSelfViewpointType(),
+            IRefKeywordToken => ParseRefType(),
+            IExplicitCapabilityToken => ParseTypeWithExplicitCapabilityViewpoint(),
+            ICapabilityToken => ParseTypeStartingWithCapability(),
+            IOpenParenToken => ParseFunctionType(),
+            _ => ParseBareType()
+        };
+        return ParseOptionalType(type);
+    }
 
-                return ParseTypeWithCapability(capability);
-        }
+    private ITypeSyntax ParseTypeStartingWith(ICapabilitySyntax? capability)
+    {
+        if (capability is null) return ParseType();
+
+        var type = ParseTypeStartingWithCapability(capability);
+        return ParseOptionalType(type);
     }
 
     private ITypeSyntax ParseSelfViewpointType()
@@ -46,30 +48,7 @@ public partial class Parser
         _ = Tokens.Required<IRightTriangleToken>();
         var type = ParseBareOrRefType();
         var span = TextSpan.Covering(self, type.Span);
-        type = ISelfViewpointTypeSyntax.Create(span, type);
-        return ParseOptionalType(type);
-    }
-
-    private ITypeSyntax ParseTypeWithCapability(ICapabilitySyntax? capability)
-    {
-        var type = ParseBareType();
-        if (capability is not null)
-        {
-            var span = TextSpan.Covering(capability.Span, type.Span);
-            type = ICapabilityTypeSyntax.Create(span, capability, type);
-        }
-
-        return ParseOptionalType(type);
-    }
-
-    private ITypeSyntax ParseTypeWithCapabilityViewpoint(ICapabilitySyntax capability)
-    {
-        _ = Tokens.Consume<IRightTriangleToken>();
-        var type = ParseBareType();
-        var span = TextSpan.Covering(capability.Span, type.Span);
-        type = ICapabilityViewpointTypeSyntax.Create(span, capability, type);
-
-        return ParseOptionalType(type);
+        return ISelfViewpointTypeSyntax.Create(span, type);
     }
 
     private ITypeSyntax ParseTypeWithExplicitCapabilityViewpoint()
@@ -78,9 +57,29 @@ public partial class Parser
         _ = Tokens.Required<IRightTriangleToken>();
         var type = ParseBareType();
         var span = TextSpan.Covering(capability.Span, type.Span);
-        type = ICapabilityViewpointTypeSyntax.Create(span, capability, type);
+        return ICapabilityViewpointTypeSyntax.Create(span, capability, type);
+    }
 
-        return ParseOptionalType(type);
+    private ITypeSyntax ParseTypeStartingWithCapability()
+    {
+        var capability = ParseStandardCapability();
+        return ParseTypeStartingWithCapability(capability);
+    }
+
+    private ITypeSyntax ParseTypeStartingWithCapability(ICapabilitySyntax capability)
+    {
+        var isViewpointType = Tokens.Accept<IRightTriangleToken>();
+        var type = ParseBareType();
+        if (isViewpointType)
+        {
+            var span = TextSpan.Covering(capability.Span, type.Span);
+            return ICapabilityViewpointTypeSyntax.Create(span, capability, type);
+        }
+        else
+        {
+            var span = TextSpan.Covering(capability.Span, type.Span);
+            return ICapabilityTypeSyntax.Create(span, capability, type);
+        }
     }
 
     private ITypeSyntax ParseOptionalType(ITypeSyntax type)
@@ -121,7 +120,7 @@ public partial class Parser
     private ITypeSyntax ParseBareOrRefType()
         => Tokens.Current switch
         {
-            IVariableRefKeywordToken or IInternalRefKeywordToken => ParseRefType(),
+            IRefKeywordToken => ParseRefType(),
             _ => ParseBareType()
         };
 
@@ -142,7 +141,6 @@ public partial class Parser
         => Tokens.Current switch
         {
             IBuiltInTypeToken _ => ParseBuiltInType(),
-            IOpenParenToken _ => ParseFunctionType(),
             ISelfTypeKeywordToken => ParseSelfType(),
             // otherwise we want a type name
             _ => ParseOrdinaryTypeName()
