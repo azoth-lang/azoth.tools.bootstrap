@@ -23,20 +23,13 @@ published class List[T ind]
         return .items.count;
     }
 
-    published fn at(self, index: size) -> T
+    published fn at(temporary self, index: size) -> self |> ref var T
     {
         let count = .items.count;
         if index < 0 or index >= count => ABORT("index out of bounds");
         return .items.at(index);
     }
 
-    // TODO replace with `at` returning `ref var`
-    published fn set_at(mut self, index: size, value: T)
-    {
-        let count = .items.count;
-        if index < 0 or index >= count => ABORT("index out of bounds");
-        .items.at(index) = value;
-    }
 
     published fn add(mut self, value: T)
     {
