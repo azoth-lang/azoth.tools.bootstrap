@@ -293,6 +293,7 @@ internal static partial class ExpressionTypesAspect
         {
             if (overload.SelfParameterType is not NonVoidType selfParameterType)
                 throw new InvalidOperationException("Self argument provided for overload without self parameter");
+            // TODO this assumes that the self parameter is not lent, but it can be lent!
             parameterTypes = parameterTypes.Prepend(ParameterType.Create(false, selfParameterType));
         }
         return parameterTypes.EquiZip(allArguments)
@@ -893,7 +894,17 @@ internal static partial class ExpressionTypesAspect
 
     // TODO this is strange and maybe a hack
     public static partial IMaybeType? MethodAccessExpression_Context_ExpectedType(IMethodAccessExpressionNode node)
-        => (node.Parent as IMethodInvocationExpressionNode)?.ContextualizedCall?.SelfParameterType?.ToUpperBound();
+    {
+        // TODO the below should be equivalent to what is being run, but is a little less of a hack. However
+        // it duplicates code.
+
+        // var contextType = node.Context.Type as NonVoidType;
+        // var selfParameterType = node.ReferencedDeclaration?.SelfParameterType;
+        // if (selfParameterType is null) return null;
+        // return contextType?.TypeReplacements.ApplyTo(selfParameterType);
+
+        return (node.Parent as IMethodInvocationExpressionNode)?.ContextualizedCall?.SelfParameterType?.ToUpperBound();
+    }
     #endregion
 
     #region Name Expressions

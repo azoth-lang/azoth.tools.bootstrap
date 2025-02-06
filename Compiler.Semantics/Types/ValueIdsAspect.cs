@@ -41,6 +41,12 @@ internal static partial class ValueIdsAspect
     #endregion
 
     #region Control Flow Expressions
+    public static partial ValueId ForeachExpression_ImplicitRecoveryValueId(IForeachExpressionNode node)
+        => node.ValueIdScope.CreateNext();
+
+    public static partial ValueId ForeachExpression_IteratorValueId(IForeachExpressionNode node)
+        => node.ValueIdScope.CreateNext();
+
     public static partial ValueId ForeachExpression_BindingValueId(IForeachExpressionNode node)
         => node.ValueIdScope.CreateNext();
     #endregion

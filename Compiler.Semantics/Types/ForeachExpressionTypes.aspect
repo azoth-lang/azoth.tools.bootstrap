@@ -7,7 +7,12 @@
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
 // ---------- Control Flow Expressions
+/// The type that `.iterate()` is called on if it is called
+↑ ForeachExpression.IterableType: `IMaybeNonVoidType`;
+↑ ForeachExpression.IterateContextualizedCall: `ContextualizedCall`?;
+/// The type that `.next()` is called on. May be the same as `IterableType`.
 ↑ ForeachExpression.IteratorType: `IMaybeNonVoidType`;
+/// The type of value being looped over as determined by the return type of `.next()`
 ↑ ForeachExpression.IteratedType: `IMaybeNonVoidType`;
 ↑ ForeachExpression.FlowStateBeforeBlock: `IFlowState`;
 = ForeachExpression.Type;

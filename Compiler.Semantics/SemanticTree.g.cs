@@ -2385,8 +2385,12 @@ public partial interface IForeachExpressionNode : IOrdinaryTypedExpressionNode, 
     LexicalScope IAmbiguousExpressionNode.ContainingLexicalScope() => ContainingLexicalScope;
     LexicalScope INamedBindingNode.ContainingLexicalScope => ContainingLexicalScope;
     LexicalScope LexicalScope { get; }
+    ValueId ImplicitRecoveryValueId { get; }
+    ValueId IteratorValueId { get; }
     IdentifierName VariableName
         => Syntax.VariableName;
+    IMaybeNonVoidType IterableType { get; }
+    ContextualizedCall? IterateContextualizedCall { get; }
     IMaybeNonVoidType IteratorType { get; }
     IMaybeNonVoidType IteratedType { get; }
     IFlowState FlowStateBeforeBlock { get; }
@@ -12676,6 +12680,24 @@ file class ForeachExpressionNode : SemanticNode, IForeachExpressionNode
                 ForeachExpressionTypesAspect.ForeachExpression_FlowStateBeforeBlock);
     private IFlowState? flowStateBeforeBlock;
     private bool flowStateBeforeBlockCached;
+    public ValueId ImplicitRecoveryValueId
+        => GrammarAttribute.IsCached(in implicitRecoveryValueIdCached) ? implicitRecoveryValueId
+            : this.Synthetic(ref implicitRecoveryValueIdCached, ref implicitRecoveryValueId, ref syncLock,
+                ValueIdsAspect.ForeachExpression_ImplicitRecoveryValueId);
+    private ValueId implicitRecoveryValueId;
+    private bool implicitRecoveryValueIdCached;
+    public IMaybeNonVoidType IterableType
+        => GrammarAttribute.IsCached(in iterableTypeCached) ? iterableType!
+            : this.Synthetic(ref iterableTypeCached, ref iterableType,
+                ForeachExpressionTypesAspect.ForeachExpression_IterableType);
+    private IMaybeNonVoidType? iterableType;
+    private bool iterableTypeCached;
+    public ContextualizedCall? IterateContextualizedCall
+        => GrammarAttribute.IsCached(in iterateContextualizedCallCached) ? iterateContextualizedCall
+            : this.Synthetic(ref iterateContextualizedCallCached, ref iterateContextualizedCall,
+                ForeachExpressionTypesAspect.ForeachExpression_IterateContextualizedCall);
+    private ContextualizedCall? iterateContextualizedCall;
+    private bool iterateContextualizedCallCached;
     public IMaybeNonVoidPlainType IteratedPlainType
         => GrammarAttribute.IsCached(in iteratedPlainTypeCached) ? iteratedPlainType!
             : this.Synthetic(ref iteratedPlainTypeCached, ref iteratedPlainType,
@@ -12700,6 +12722,12 @@ file class ForeachExpressionNode : SemanticNode, IForeachExpressionNode
                 ForeachExpressionTypesAspect.ForeachExpression_IteratorType);
     private IMaybeNonVoidType? iteratorType;
     private bool iteratorTypeCached;
+    public ValueId IteratorValueId
+        => GrammarAttribute.IsCached(in iteratorValueIdCached) ? iteratorValueId
+            : this.Synthetic(ref iteratorValueIdCached, ref iteratorValueId, ref syncLock,
+                ValueIdsAspect.ForeachExpression_IteratorValueId);
+    private ValueId iteratorValueId;
+    private bool iteratorValueIdCached;
     public LexicalScope LexicalScope
         => GrammarAttribute.IsCached(in lexicalScopeCached) ? lexicalScope!
             : this.Synthetic(ref lexicalScopeCached, ref lexicalScope,

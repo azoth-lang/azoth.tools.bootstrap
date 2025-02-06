@@ -1,26 +1,29 @@
 using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
+using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 using Azoth.Tools.Bootstrap.Compiler.Types.Flow;
+using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 
 internal static partial class ForeachExpressionTypesAspect
 {
+    public static partial IMaybeNonVoidType ForeachExpression_IterableType(IForeachExpressionNode node)
+        => node.InExpression?.Type.ToNonLiteral().ToNonVoidType() ?? Type.Unknown;
+
+    public static partial ContextualizedCall? ForeachExpression_IterateContextualizedCall(IForeachExpressionNode node)
+        => node.ReferencedIterateMethod is { } iterateMethod
+            ? ContextualizedCall.Create(node.IterableType, iterateMethod) : null;
+
     public static partial IMaybeNonVoidType ForeachExpression_IteratorType(IForeachExpressionNode node)
-    {
-        var iterableType = node.InExpression?.Type.ToNonLiteral() ?? Type.Unknown;
-        var iterateMethod = node.ReferencedIterateMethod;
-        var iteratorType = iterableType is NonVoidType nonVoidIterableType && iterateMethod is not null
-            ? nonVoidIterableType.TypeReplacements.ApplyTo(iterateMethod.MethodGroupType.Return)
-            : iterableType;
         // TODO report an error for void type
-        return iteratorType.ToNonVoidType();
-    }
+        => node.IterateContextualizedCall?.ReturnType.ToNonVoidType() ?? node.IterableType;
 
     public static partial IMaybeNonVoidType ForeachExpression_IteratedType(IForeachExpressionNode node)
     {
+        // TODO add and use a contextualized call for the next method
         var nextMethodReturnType = node.ReferencedNextMethod?.MethodGroupType.Return;
         if (nextMethodReturnType is not OptionalType { Referent: var iteratedType })
             return Type.Unknown;
@@ -34,9 +37,56 @@ internal static partial class ForeachExpressionTypesAspect
 
     public static partial IFlowState ForeachExpression_FlowStateBeforeBlock(IForeachExpressionNode node)
     {
-        var flowState = node.InExpression?.FlowStateAfter ?? IFlowState.Empty;
+        var flowStateBefore = node.InExpression?.FlowStateAfter ?? IFlowState.Empty;
+
+        // Apply any flow state changes as if .iterate() was called
+        if (node is { IterateContextualizedCall: { } iterateCall, InExpression: { } inExpression })
+        {
+            // TODO this duplicates logic in other nodes, eliminate that duplication somehow
+            var contextType = node.IterableType;
+            // Apply any implicit deref needed
+            // TODO do derefs need to affect the flow state?
+            while (contextType is RefType refType) contextType = refType.Referent;
+
+            var previousValueId = inExpression.ValueId;
+
+            // TODO handle the possibility that an implicit move is needed
+
+            // Check for and apply an implicit freeze
+            var expectedType = iterateCall.SelfParameterType;
+            if (expectedType is CapabilityType { Capability: var expectedCapability }
+                && (expectedCapability == Capability.Constant || expectedCapability == Capability.TemporarilyConstant)
+                && contextType.ToNonLiteral() is CapabilityType { Capability: var capability } capabilityType
+                && capability != expectedCapability)
+            {
+                var isTemporary = expectedCapability == Capability.TemporarilyConstant;
+                var implicitRecoveryValueId = node.ImplicitRecoveryValueId;
+                if (isTemporary)
+                    flowStateBefore = flowStateBefore.TempFreeze(previousValueId, implicitRecoveryValueId);
+                else if (inExpression is IVariableNameExpressionNode variableExpression)
+                    flowStateBefore = flowStateBefore.FreezeVariable(variableExpression.ReferencedDefinition,
+                        previousValueId, implicitRecoveryValueId);
+                else
+                    flowStateBefore = flowStateBefore.FreezeValue(inExpression.ValueId, implicitRecoveryValueId);
+
+                previousValueId = implicitRecoveryValueId;
+                var newCapability = isTemporary ? Capability.TemporarilyConstant : Capability.Constant;
+                contextType = capabilityType.With(newCapability);
+            }
+
+            // Now apply the actual .iterate() call
+            // TODO this, like ArgumentValueIds assumes the self parameter is not lent, but it can be!
+            var selfArgumentValueId = new ArgumentValueId(false, previousValueId);
+            flowStateBefore = flowStateBefore.CombineArguments(selfArgumentValueId.Yield(), node.IteratorValueId, node.IteratorType);
+
+            // Hold the iterator in the node.IteratorValueId temporary value for the duration of the loop
+        }
+
+        // TODO apply flow state changes as if .next() was called and use the output as the initializer for the loop variable
+
+        // TODO null is wrong here, it is initialized with the result of .next()
         // This uses the node.BindingValueId so it doesn't conflict with the `foreach` expression result
-        return flowState.Declare(node, node.InExpression?.ValueId);
+        return flowStateBefore.Declare(node, null);
     }
 
     public static partial IMaybeType ForeachExpression_Type(IForeachExpressionNode node)
@@ -44,10 +94,17 @@ internal static partial class ForeachExpressionTypesAspect
         => Type.Void;
 
     public static partial IFlowState ForeachExpression_FlowStateAfter(IForeachExpressionNode node)
+    {
         // TODO loop flow state
-        => (node.InExpression?.FlowStateAfter.Merge(node.Block.FlowStateAfter) ?? IFlowState.Empty)
-            // TODO when the `foreach` has a type other than void, correctly handle the value id
-            .Constant(node.ValueId);
+        var flowStateAfter = node.InExpression?.FlowStateAfter.Merge(node.Block.FlowStateAfter) ?? IFlowState.Empty;
+        if (node.IterateContextualizedCall is not null && node.InExpression is not null)
+            // Drop the temporary that is holding the iterator
+            flowStateAfter = flowStateAfter.DropValue(node.IteratorValueId);
+
+        // TODO when the `foreach` has a type other than void, correctly handle the value id
+        flowStateAfter = flowStateAfter.Constant(node.ValueId);
+        return flowStateAfter;
+    }
 
     public static partial void ForeachExpression_Contribute_Diagnostics(IForeachExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {

@@ -26,4 +26,8 @@ internal static partial class ValueIdsAspect
     public static partial ValueId BindingPattern_BindingValueId(IBindingPatternNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial ValueId ForeachExpression_BindingValueId(IForeachExpressionNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial ValueId ForeachExpression_ImplicitRecoveryValueId(IForeachExpressionNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial ValueId ForeachExpression_IteratorValueId(IForeachExpressionNode node);
 }

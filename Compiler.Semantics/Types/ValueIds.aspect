@@ -59,3 +59,7 @@ struct `ValueId`;
 
 // ---------- Operator Expressions
 = PatternMatchExpression.Pattern.**.MatchReferentValueId => Referent?.ValueId;
+
+// ---------- Control Flow Expressions
+↑ ForeachExpression.ImplicitRecoveryValueId: `ValueId`;
+↑ ForeachExpression.IteratorValueId: `ValueId`;

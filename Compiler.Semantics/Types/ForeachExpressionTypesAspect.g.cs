@@ -19,6 +19,10 @@ internal static partial class ForeachExpressionTypesAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial void ForeachExpression_Contribute_Diagnostics(IForeachExpressionNode node, DiagnosticCollectionBuilder diagnostics);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial IMaybeNonVoidType ForeachExpression_IterableType(IForeachExpressionNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial ContextualizedCall? ForeachExpression_IterateContextualizedCall(IForeachExpressionNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IMaybeNonVoidType ForeachExpression_IteratorType(IForeachExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IMaybeNonVoidType ForeachExpression_IteratedType(IForeachExpressionNode node);
