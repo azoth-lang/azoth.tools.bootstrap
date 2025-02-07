@@ -217,6 +217,7 @@
 = FunctionNameExpression.*.ExpectedType => null;
 = InitializerNameExpression.FlowStateAfter;
 ↑ MissingNameExpression.Type: `UnknownType` => AzothType.Unknown;
+= MissingNameExpression.FlowStateAfter;
 
 // ---------- Unresolved Name Expressions
 ↑ UnresolvedNameExpression.Type: `UnknownType` => AzothType.Unknown;

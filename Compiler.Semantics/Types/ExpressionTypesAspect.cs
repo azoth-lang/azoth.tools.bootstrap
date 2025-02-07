@@ -921,5 +921,11 @@ internal static partial class ExpressionTypesAspect
 
     public static partial IFlowState InitializerNameExpression_FlowStateAfter(IInitializerNameExpressionNode node)
         => node.FlowStateBefore().Constant(node.ValueId);
+
+    public static partial IFlowState MissingNameExpression_FlowStateAfter(IMissingNameExpressionNode node)
+        // The flow state needs to contain something for this nodes value id. By treating it as a
+        // constant, it will be added to the untracked values and hopefully not cause issues for the
+        // analysis of invalid code.
+        => node.FlowStateBefore().Constant(node.ValueId);
     #endregion
 }

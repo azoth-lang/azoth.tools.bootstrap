@@ -2913,6 +2913,8 @@ public partial interface IMissingNameExpressionNode : INameExpressionNode
     new UnknownType Type
         => AzothType.Unknown;
     IMaybeType IExpressionNode.Type => Type;
+    IFlowState INameExpressionNode.FlowStateAfter
+        => ExpressionTypesAspect.MissingNameExpression_FlowStateAfter(this);
     IMaybePlainType IExpressionNode.PlainType
         => AzothPlainType.Unknown;
     ExpressionKind IExpressionNode.ExpressionKind
