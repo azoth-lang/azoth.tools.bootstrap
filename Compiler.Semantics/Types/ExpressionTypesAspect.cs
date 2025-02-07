@@ -928,4 +928,16 @@ internal static partial class ExpressionTypesAspect
         // analysis of invalid code.
         => node.FlowStateBefore().Constant(node.ValueId);
     #endregion
+
+    #region Names
+    public static partial IFlowState NamespaceName_FlowStateAfter(INamespaceNameNode node)
+        // Namespace names don't produce values and therefore have no effect on flow state.
+        => node.FlowStateBefore();
+    #endregion
+
+    #region Type Names
+    public static partial IFlowState TypeName_FlowStateAfter(ITypeNameNode node)
+        // Type names don't produce values and therefore have no effect on flow state.
+        => node.FlowStateBefore();
+    #endregion
 }

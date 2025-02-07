@@ -208,9 +208,6 @@
 
 // ---------- Name Expressions
 ↓ NameExpression.FlowStateBefore(): `IFlowState`;
-// TODO delete once all name expressions implement FlowStateAfter
-↑ NameExpression.FlowStateAfter: `IFlowState`
-    => throw new NotImplementedException($"{GetType().GetFriendlyName()}.{nameof(FlowStateAfter)} not implemented.");
 = VariableNameExpression.FlowStateAfter;
 = SelfExpression.FlowStateAfter;
 = FunctionNameExpression.FlowStateAfter;
@@ -226,6 +223,10 @@
 
 // ---------- Names
 ↑ Name.Type: `UnknownType` => AzothType.Unknown;
+= NamespaceName.FlowStateAfter;
+
+// ---------- Type Names
+= TypeName.FlowStateAfter;
 
 // ---------- Capability Expressions
 = MoveExpression.Type;
