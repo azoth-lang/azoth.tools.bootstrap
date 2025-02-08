@@ -36,7 +36,7 @@ public static partial class TypeOperations
         => type.Parameter.Independence switch
         {
             TypeParameterIndependence.None => true,
-            TypeParameterIndependence.SharableIndependent
+            TypeParameterIndependence.ShareableIndependent
                 => context >= Independence.BothAllowed,
             TypeParameterIndependence.Independent
                 => context == Independence.BothAllowed,
@@ -49,7 +49,7 @@ public static partial class TypeOperations
         {
             var parameterIndependenceAllows = parameter.Independence switch
             {
-                TypeParameterIndependence.SharableIndependent => Independence.OnlyShareableAllowed,
+                TypeParameterIndependence.ShareableIndependent => Independence.OnlyShareableAllowed,
                 TypeParameterIndependence.Independent => Independence.BothAllowed,
                 TypeParameterIndependence.None => Independence.Disallowed,
                 _ => throw ExhaustiveMatch.Failed(parameter.Independence),

@@ -226,17 +226,17 @@ public partial class Parser
         return Tokens.Current switch
         {
             IIndependentKeywordToken _ => (TypeParameterIndependence.Independent, Tokens.Consume<IIndependentKeywordToken>()),
-            IShareableKeywordToken _ => ParseSharableIndependence(),
+            IShareableKeywordToken _ => ParseShareableIndependence(),
             _ => (TypeParameterIndependence.None, Tokens.Current.Span.AtStart())
         };
     }
 
-    private (TypeParameterIndependence, TextSpan) ParseSharableIndependence()
+    private (TypeParameterIndependence, TextSpan) ParseShareableIndependence()
     {
         var shareableKeyword = Tokens.Required<IShareableKeywordToken>();
         var independentKeyword = Tokens.Required<IIndependentKeywordToken>();
         var span = TextSpan.Covering(shareableKeyword, independentKeyword);
-        return (TypeParameterIndependence.SharableIndependent, span);
+        return (TypeParameterIndependence.ShareableIndependent, span);
     }
 
     private (TypeParameterVariance, TextSpan) ParseVariance()

@@ -29,8 +29,8 @@ public static partial class TypeOperations
         return context switch
         {
             TypeParameterIndependence.None => independence == TypeParameterIndependence.None,
-            TypeParameterIndependence.SharableIndependent
-                => independence == TypeParameterIndependence.SharableIndependent
+            TypeParameterIndependence.ShareableIndependent
+                => independence == TypeParameterIndependence.ShareableIndependent
                    || (!exact && independence == TypeParameterIndependence.Independent),
             TypeParameterIndependence.Independent => independence == TypeParameterIndependence.Independent,
             _ => throw ExhaustiveMatch.Failed(context),

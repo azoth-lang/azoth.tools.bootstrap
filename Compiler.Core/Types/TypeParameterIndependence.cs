@@ -5,7 +5,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Core.Types;
 public enum TypeParameterIndependence
 {
     None = 0,
-    SharableIndependent,
+    ShareableIndependent,
     Independent,
 }
 
@@ -15,7 +15,7 @@ public static class TypeParameterIndependenceExtensions
         => independence switch
         {
             TypeParameterIndependence.None => "",
-            TypeParameterIndependence.SharableIndependent => "sharable ind",
+            TypeParameterIndependence.ShareableIndependent => "shareable ind",
             TypeParameterIndependence.Independent => "ind",
             _ => throw ExhaustiveMatch.Failed(independence),
         };

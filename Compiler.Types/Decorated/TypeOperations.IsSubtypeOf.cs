@@ -118,7 +118,7 @@ public static partial class TypeOperations
                                     return false;
                                 break;
                             }
-                            case TypeParameterIndependence.SharableIndependent:
+                            case TypeParameterIndependence.ShareableIndependent:
                             {
                                 if (from is not CapabilityType fromCapabilityType
                                     || to is not CapabilityType toCapabilityType)

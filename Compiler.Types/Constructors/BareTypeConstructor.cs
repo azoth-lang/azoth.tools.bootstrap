@@ -191,7 +191,7 @@ public abstract class BareTypeConstructor : BareTypeConstructorContext, IEquatab
     public abstract bool AllowsVariance { get; }
 
     /// <summary>
-    /// Whether any of the parameters are independent (i.e. `ind` or `sharable ind`).
+    /// Whether any of the parameters are independent (i.e. `ind` or `shareable ind`).
     /// </summary>
     public abstract bool HasIndependentParameters { get; }
 
