@@ -68,6 +68,14 @@ public sealed class Capability : ICapabilityConstraint
     public static readonly Capability Identity
         = new("id", allowsWriteAliases: true, allowsRead: false, allowsReadAliases: true);
 
+    public static IComparer<Capability> SubtypeComparer = Comparer<Capability>.Create((a, b) =>
+    {
+        if (ReferenceEquals(a, b)) return 0;
+        if (a.IsSubtypeOf(b)) // i.e. a < b
+            return -1;
+        return 1;
+    });
+
     private readonly string ilName;
     private readonly string sourceCodeName;
 
@@ -250,6 +258,22 @@ public sealed class Capability : ICapabilityConstraint
     /// <remarks>`id` references remain `id` otherwise they become `const`.</remarks>
     public Capability Freeze() => this == Identity ? this : Constant;
 
+    /// <summary>
+    /// Upcast this capability to the lowest compatible capability in the given capability set.
+    /// </summary>
+    /// <remarks>This operates without allowing a freeze so `iso` cannot become `const`.</remarks>
+    public Capability? UpcastTo(CapabilitySet capabilitySet)
+    {
+        if (capabilitySet.AllowedCapabilities.Contains(this))
+            // It is already in the set
+            return this;
+        return capabilitySet.AllowedCapabilities.Where(IsSubtypeOf).Min(SubtypeComparer);
+    }
+
+    /// <summary>
+    /// Convert to a capability that is appropriate for the given bare type based on whether the
+    /// type is declared `const`.
+    /// </summary>
     public Capability ToCapabilityFor(BareTypeConstructor typeConstructor)
     {
         if (typeConstructor.IsDeclaredConst && this == Read) return Constant;

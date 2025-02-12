@@ -121,10 +121,23 @@ public sealed class GenericParameterTypeReplacements
             {
                 var replacementType = ApplyTo(t.Referent);
                 if (!ReferenceEquals(t.Referent, replacementType))
-                {
-                    // TODO upcast the capability to the min within the set
-                    throw new NotImplementedException();
-                }
+                    switch (replacementType)
+                    {
+                        case CapabilityType replacement:
+                        {
+                            var capability = replacement.Capability.UpcastTo(t.CapabilitySet)
+                                             ?? throw new NotImplementedException("Handle capability cannot be upcast to capability set.");
+                            // The capability was already applied to the type, so the original
+                            // capability accounted for whether the type was declared `const`. So there
+                            // is no need to do anything for that now.
+                            return replacement.BareType.With(capability);
+                        }
+                        case GenericParameterType replacement:
+                            return CapabilitySetRestrictedType.Create(t.CapabilitySet, replacement);
+                        default:
+                            // TODO what is the correct thing to do in this case?
+                            throw new NotImplementedException();
+                    }
                 break;
             }
             case VoidType _:
