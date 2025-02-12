@@ -15,6 +15,7 @@ public partial class Parser
         {
             ICapabilityToken or IIdentifierToken or IBuiltInTypeToken or IOpenParenToken
                 or ISelfKeywordToken or ISelfTypeKeywordToken or IRefKeywordToken
+                or ICapabilitySetToken
                 => ParseType(),
             _ => null
         };
@@ -28,6 +29,7 @@ public partial class Parser
             IRefKeywordToken => ParseRefType(),
             IExplicitCapabilityToken => ParseTypeWithExplicitCapabilityViewpoint(),
             ICapabilityToken => ParseTypeStartingWithCapability(),
+            ICapabilitySetToken => ParseCapabilitySetType(),
             IOpenParenToken => ParseFunctionType(),
             _ => ParseBareType()
         };
@@ -80,6 +82,14 @@ public partial class Parser
             var span = TextSpan.Covering(capability.Span, type.Span);
             return ICapabilityTypeSyntax.Create(span, capability, type);
         }
+    }
+
+    private ITypeSyntax ParseCapabilitySetType()
+    {
+        var capabilitySet = ParseCapabilitySet();
+        var type = ParseBareType();
+        var span = TextSpan.Covering(capabilitySet.Span, type.Span);
+        return ICapabilitySetTypeSyntax.Create(span, capabilitySet, type);
     }
 
     private ITypeSyntax ParseOptionalType(ITypeSyntax type)
