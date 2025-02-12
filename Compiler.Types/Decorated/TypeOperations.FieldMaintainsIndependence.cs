@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using Azoth.Tools.Bootstrap.Compiler.Core.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using ExhaustiveMatching;
@@ -20,6 +21,7 @@ public static partial class TypeOperations
             CapabilityType t => t.FieldMaintainsIndependence(context),
             CapabilityViewpointType t => t.Referent.FieldMaintainsIndependence(context),
             SelfViewpointType t => t.Referent.FieldMaintainsIndependence(context),
+            CapabilitySetRestrictedType t => t.FieldMaintainsIndependence(context),
             CapabilitySetSelfType _ => true,
             VoidType _ => true,
             NeverType _ => true,
@@ -69,12 +71,22 @@ public static partial class TypeOperations
                     => Independence.Disallowed, // TODO if field is `let`, then Independence.BothAllowed
                 _ => throw ExhaustiveMatch.Failed(parameter.Variance),
             };
-            var parameterAllows = (Independence)Math.Max((int)parameterIndependenceAllows, (int)parameterVarianceAllows);
+            var parameterAllows = Max(parameterIndependenceAllows, parameterVarianceAllows);
             if (!argument.FieldMaintainsIndependence(context.Child(parameterAllows)))
                 return false;
         }
 
         return true;
+    }
+
+    private static bool FieldMaintainsIndependence(this CapabilitySetRestrictedType type, Independence context)
+    {
+        // If the capability set is shareable then it weakens the context since it satisfies the
+        // shareable requirement.
+        if (type.CapabilitySet == CapabilitySet.Shareable && context >= Independence.BothAllowed)
+            context = Independence.BothAllowed;
+
+        return type.Referent.FieldMaintainsIndependence(context);
     }
 
     private static bool FieldMaintainsIndependence(this FunctionType type)
@@ -101,6 +113,11 @@ public static partial class TypeOperations
         BothAllowed,
         OnlyShareableAllowed,
     }
+
+    //[Inline]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static Independence Max(Independence left, Independence right)
+        => (Independence)Math.Max((int)left, (int)right);
 
     private static Independence Child(this Independence context, Independence independence)
         => context == Independence.Blocked ? Independence.Blocked : independence;

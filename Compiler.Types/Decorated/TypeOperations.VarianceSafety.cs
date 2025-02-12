@@ -33,9 +33,9 @@ public static partial class TypeOperations
             CapabilityType t => t.TypeParameterArguments.IsVarianceSafe(t.Capability, context, nonwritableSelf),
             CapabilityViewpointType t => t.Referent.IsVarianceSafe(context, nonwritableSelf),
             SelfViewpointType t => t.Referent.IsVarianceSafe(context, nonwritableSelf),
+            CapabilitySetRestrictedType t => t.Referent.IsVarianceSafe(context, nonwritableSelf),
             // TODO is this correct?
             CapabilitySetSelfType t => true,
-            //CapabilityTypeConstraint t => t.BareType.IsVarianceSafe(t.Capability, context, nonwritableSelf),
             VoidType _ => true,
             NeverType _ => true,
             UnknownType _ => true,

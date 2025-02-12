@@ -362,6 +362,7 @@ public sealed class InterpreterProcess
             case CapabilityViewpointType _:
             case SelfViewpointType _:
             case RefType _:
+            case CapabilitySetRestrictedType _:
                 var methodSignature = methodSignatures[methodSymbol];
                 throw new InvalidOperationException($"Can't call {methodSignature} on {selfType}");
             default:

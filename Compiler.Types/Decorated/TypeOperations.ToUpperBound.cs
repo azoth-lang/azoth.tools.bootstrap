@@ -44,7 +44,7 @@ public static partial class TypeOperations
             SelfViewpointType t => t,
             FunctionType t => t,
             CapabilityType t => t,
-
+            CapabilitySetRestrictedType t => t,
             NeverType _ => Type.Never,
             _ => throw ExhaustiveMatch.Failed(self),
         };

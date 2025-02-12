@@ -39,6 +39,10 @@ public static partial class TypeOperations
                     if (!param.Constraint.IsAssignableFrom(selfViewpointType.CapabilitySet))
                         return false;
                     break;
+                case CapabilitySetRestrictedType t:
+                    if (!param.Constraint.IsAssignableFrom(t.CapabilitySet))
+                        return false;
+                    break;
                 case NeverType _:
                 case VoidType _:
                 case FunctionType _:

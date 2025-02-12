@@ -14,7 +14,7 @@ public static partial class TypeOperations
         => capability == CapabilitySet.Readable;
 
     /// <summary>
-    /// Whether a parameter of this type be marked `lent`.
+    /// Whether a parameter of this type can be marked `lent`.
     /// </summary>
     /// <remarks>In general types that aren't `id` or `const` can be lent. However, types with
     /// independent parameters act almost like multiple parameters. So they can be lent if any of
@@ -23,12 +23,13 @@ public static partial class TypeOperations
     public static bool CanBeLent(this IMaybeType type)
         => type switch
         {
-            CapabilityType t => t.Capability.CanBeLent() || t.BareType.ArgumentsCanBeLent(),
+            CapabilityType t => t.Capability.CanBeLent() || t.BareType.GenericArgumentsCanBeLent(),
             OptionalType t => t.Referent.CanBeLent(),
             RefType t => t.IsMutableBinding || t.Referent.CanBeLent(),
             CapabilityViewpointType t => t.Capability.CanBeLent() && t.Referent.CanBeLent(),
             SelfViewpointType t => t.CapabilitySet.CanBeLent() && t.Referent.CanBeLent(),
-            CapabilitySetSelfType t => t.CapabilitySet.CanBeLent() || t.BareType.ArgumentsCanBeLent(),
+            CapabilitySetSelfType t => t.CapabilitySet.CanBeLent() || t.BareType.GenericArgumentsCanBeLent(),
+            CapabilitySetRestrictedType t => t.CapabilitySet.CanBeLent(),
             GenericParameterType _ => true,
             VoidType _ => false,
             NeverType _ => false,
@@ -39,26 +40,27 @@ public static partial class TypeOperations
 
     public static bool CanBeLent(this TypeParameterArgument arg)
         => (arg.Parameter.HasIndependence && arg.Argument.CanBeLent())
-           || arg.Argument.ArgumentsCanBeLent();
+           || arg.Argument.GenericArgumentsCanBeLent();
 
-    public static bool ArgumentsCanBeLent(this BareType type)
+    public static bool GenericArgumentsCanBeLent(this BareType type)
         => (type.HasIndependentTypeArguments && type.TypeParameterArguments.Any(a => a.CanBeLent()))
-           || (type.ContainingType?.ArgumentsCanBeLent() ?? false);
+           || (type.ContainingType?.GenericArgumentsCanBeLent() ?? false);
 
-    public static bool ArgumentsCanBeLent(this Type type)
+    public static bool GenericArgumentsCanBeLent(this Type type)
         => type switch
         {
-            CapabilityType t => t.BareType.ArgumentsCanBeLent(),
-            OptionalType t => t.Referent.ArgumentsCanBeLent(),
+            CapabilityType t => t.BareType.GenericArgumentsCanBeLent(),
+            OptionalType t => t.Referent.GenericArgumentsCanBeLent(),
             RefType t => t.IsMutableBinding || t.Referent.CanBeLent(),
-            CapabilityViewpointType _ => false,
+            CapabilityViewpointType _ => false, // No generic arguments
             // TODO is it right that the capability must be lendable? If so, explain why
-            SelfViewpointType t => t.CapabilitySet.CanBeLent() && t.Referent.ArgumentsCanBeLent(),
-            CapabilitySetSelfType t => false,
-            GenericParameterType _ => false,
-            VoidType _ => false,
-            NeverType _ => false,
-            FunctionType _ => false,
+            SelfViewpointType t => t.CapabilitySet.CanBeLent() && t.Referent.GenericArgumentsCanBeLent(),
+            CapabilitySetSelfType _ => false, // No generic arguments
+            CapabilitySetRestrictedType _ => false, // No generic arguments
+            GenericParameterType _ => false, // No generic arguments
+            VoidType _ => false, // No generic arguments
+            NeverType _ => false, // No generic arguments
+            FunctionType _ => false, // No generic arguments
             _ => throw ExhaustiveMatch.Failed(type),
         };
 }

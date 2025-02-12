@@ -90,26 +90,26 @@ public sealed class GenericParameterTypeReplacements
                     return RefType.CreateWithoutPlainType(t.IsInternal, t.IsMutableBinding, replacementType);
                 break;
             }
-            case GenericParameterType genericParameterType:
-                return ApplyTo(genericParameterType);
-            case FunctionType functionType:
+            case GenericParameterType t:
+                return ApplyTo(t);
+            case FunctionType t:
             {
-                var replacementParameterTypes = ApplyTo(functionType.Parameters, selfReplacement);
-                var replacementReturnType = ApplyTo(functionType.Return, selfReplacement);
-                if (!ReferenceEquals(functionType.Parameters, replacementParameterTypes)
-                    || !ReferenceEquals(functionType.Return, replacementReturnType))
+                var replacementParameterTypes = ApplyTo(t.Parameters, selfReplacement);
+                var replacementReturnType = ApplyTo(t.Return, selfReplacement);
+                if (!ReferenceEquals(t.Parameters, replacementParameterTypes)
+                    || !ReferenceEquals(t.Return, replacementReturnType))
                     return new FunctionType(replacementParameterTypes, replacementReturnType);
                 break;
             }
-            case CapabilityViewpointType capabilityViewpointType:
+            case CapabilityViewpointType t:
             {
-                var replacementType = ApplyTo(capabilityViewpointType.Referent);
-                if (!ReferenceEquals(capabilityViewpointType.Referent, replacementType))
-                    return replacementType.AccessedVia(capabilityViewpointType.Capability);
+                var replacementType = ApplyTo(t.Referent);
+                if (!ReferenceEquals(t.Referent, replacementType))
+                    return replacementType.AccessedVia(t.Capability);
                 break;
             }
-            case SelfViewpointType selfViewpointType:
-                return ApplyTo(selfViewpointType, selfReplacement);
+            case SelfViewpointType t:
+                return ApplyTo(t, selfReplacement);
             case CapabilitySetSelfType t:
                 if (selfReplacement != null)
                     // A CapabilitySetSelfType can only occur as the `self` parameter to a method.
@@ -117,6 +117,16 @@ public sealed class GenericParameterTypeReplacements
                     // the method can be called on.
                     return SelfReplacement(selfReplacement, t.CapabilitySet.UpperBound);
                 break;
+            case CapabilitySetRestrictedType t:
+            {
+                var replacementType = ApplyTo(t.Referent);
+                if (!ReferenceEquals(t.Referent, replacementType))
+                {
+                    // TODO upcast the capability to the min within the set
+                    throw new NotImplementedException();
+                }
+                break;
+            }
             case VoidType _:
             case NeverType _:
                 break;
@@ -258,6 +268,8 @@ public sealed class GenericParameterTypeReplacements
             CapabilitySetSelfType t => throw new NotSupportedException("Cannot replace `Self` with another `Self`."),
             CapabilityType t => t.BareType.WithModified(withCapability),
             CapabilityViewpointType t => CapabilityViewpointType.Create(withCapability, t.Referent),
+            // TODO combine withCapability with the capability set somehow
+            CapabilitySetRestrictedType t => throw new NotImplementedException(),
             FunctionType t => t,
             GenericParameterType t => t,
             NeverType t => t,

@@ -14,6 +14,8 @@ public static partial class TypeOperations
             CapabilitySetSelfType _ => true,
             CapabilityViewpointType t => t.Referent.SupertypeMaintainsIndependence(exact, context),
             SelfViewpointType t => t.Referent.SupertypeMaintainsIndependence(exact, context),
+            // TODO is this correct?
+            CapabilitySetRestrictedType t => t.Referent.SupertypeMaintainsIndependence(exact, context),
             VoidType _ => true,
             NeverType _ => true,
             OptionalType t => t.Referent.SupertypeMaintainsIndependence(exact, context),
@@ -41,7 +43,7 @@ public static partial class TypeOperations
     public static bool SupertypeMaintainsIndependence(this CapabilityType type, bool exact)
     {
         // Once the supertype is a trait exact independence is not required
-        exact &= type.TypeConstructor?.CanHaveFields ?? false;
+        exact &= type.TypeConstructor.CanHaveFields;
         foreach (var (parameter, argument) in type.TypeParameterArguments)
             if (!argument.SupertypeMaintainsIndependence(exact, parameter.Independence))
                 return false;
@@ -52,8 +54,7 @@ public static partial class TypeOperations
     /// <param name="exact">Whether the independence must match exactly. For base classes it must.</param>
     public static bool SupertypeMaintainsIndependence(this BareType bareType, bool exact)
     {
-        if (bareType is not { TypeConstructor: var typeConstructor }) return true;
-
+        var typeConstructor = bareType.TypeConstructor;
         // Once the supertype is a trait exact independence is not required
         exact &= typeConstructor.CanHaveFields;
         foreach (var (parameter, argument) in bareType.TypeParameterArguments)

@@ -13,6 +13,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
     typeof(OptionalType),
     typeof(SelfViewpointType),
     typeof(CapabilityViewpointType),
+    typeof(CapabilitySetRestrictedType),
     typeof(NeverType),
     typeof(RefType))]
 public abstract class NonVoidType : Type, IMaybeNonVoidType
