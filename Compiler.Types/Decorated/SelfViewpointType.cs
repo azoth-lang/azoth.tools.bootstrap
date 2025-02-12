@@ -5,7 +5,11 @@ using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 
-// e.g. `self |> mut Foo` Applies to all non-void types
+/// <summary>
+/// A generic type as accessed from `self` when it has a capability set self type (e.g. `self |> T`).
+/// The target type can be any non-void type.
+/// </summary>
+// TODO maybe this shouldn't reference the capability set. That is implied by the context?
 public sealed class SelfViewpointType : NonVoidType
 {
     public static IMaybeType Create(CapabilitySet capability, IMaybeType referent)

@@ -8,7 +8,9 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 
-// e.g. `mut Foo`, `const Self`, etc. when not applied to GenericParameterPlainType
+/// <summary>
+/// A bare type with a capability applied to it (e.g. `mut Foo`, `const Self`, etc.).
+/// </summary>
 public sealed class CapabilityType : NonVoidType
 {
     public static CapabilityType Create(Capability capability, BareType? containingType, BarePlainType plainType)

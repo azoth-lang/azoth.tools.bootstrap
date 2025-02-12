@@ -14,7 +14,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 ///
 /// <para>This is distinct from <see cref="SelfViewpointType"/> even though that combines a
 /// capability set with a type because that combines with a full type whereas this combines with a
-/// plain type.</para></remarks>
+/// bare `Self` type.</para></remarks>
 public sealed class CapabilitySetSelfType : NonVoidType
 {
     public CapabilitySet CapabilitySet { [DebuggerStepThrough] get; }

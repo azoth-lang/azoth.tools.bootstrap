@@ -5,7 +5,10 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 
-// TODO should `iso|>T` be disallowed?
+/// <summary>
+/// A generic type as accessed from a capability (e.g. `const |> T`).
+/// </summary>
+// TODO should `iso |> T` and `temp iso |> T` be disallowed? Those types require upcasting to access
 public sealed class CapabilityViewpointType : NonVoidType
 {
     public static IMaybeType Create(Capability capability, IMaybeType referent)
