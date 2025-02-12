@@ -497,9 +497,12 @@ internal static partial class ExpressionTypesAspect
     }
 
     public static partial IFlowState BinaryOperatorExpression_FlowStateAfter(IBinaryOperatorExpressionNode node)
-        => node.RightOperand?.FlowStateAfter.Combine(
-               node.LeftOperand?.ValueId, node.RightOperand.ValueId, node.ValueId)
-           ?? IFlowState.Empty;
+    {
+        var rightOperand = node.RightOperand; // Avoid repeated access
+        return rightOperand?.FlowStateAfter
+                           .Combine(node.LeftOperand?.ValueId, rightOperand.ValueId, node.ValueId)
+               ?? IFlowState.Empty;
+    }
 
     public static partial void BinaryOperatorExpression_Contribute_Diagnostics(IBinaryOperatorExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
@@ -526,10 +529,12 @@ internal static partial class ExpressionTypesAspect
 
     public static partial IFlowState IfExpression_FlowStateAfter(IIfExpressionNode node)
     {
-        var thenPath = node.ThenBlock.FlowStateAfter;
-        var elsePath = node.ElseClause?.FlowStateAfter ?? node.Condition?.FlowStateAfter ?? IFlowState.Empty;
-        var flowStateBefore = thenPath.Merge(elsePath);
-        return flowStateBefore.Combine(node.ThenBlock.ValueId, node.ElseClause?.ValueId, node.ValueId);
+        var thenBlock = node.ThenBlock; // Avoid repeated access
+        var elseClause = node.ElseClause; // Avoid repeated access
+        var flowStateAfterThen = thenBlock.FlowStateAfter;
+        var flowStateAfterElse = elseClause?.FlowStateAfter ?? node.Condition?.FlowStateAfter ?? IFlowState.Empty;
+        var mergedFlowState = flowStateAfterThen.Merge(flowStateAfterElse);
+        return mergedFlowState.Combine(thenBlock.ValueId, elseClause?.ValueId, node.ValueId);
     }
 
     public static partial void IfExpression_Contribute_Diagnostics(IIfExpressionNode node, DiagnosticCollectionBuilder diagnostics)
@@ -843,7 +848,10 @@ internal static partial class ExpressionTypesAspect
         => (node.Referent.Type as RefType)?.Referent ?? IMaybeType.Unknown;
 
     public static partial IFlowState ImplicitDerefExpression_FlowStateAfter(IImplicitDerefExpressionNode node)
-        => node.Referent.FlowStateAfter.Transform(node.Referent.ValueId, node.ValueId, node.Type);
+    {
+        var referent = node.Referent; // Avoid repeated access
+        return referent.FlowStateAfter.Transform(referent.ValueId, node.ValueId, node.Type);
+    }
     #endregion
 
     #region Unresolved Name Expressions
