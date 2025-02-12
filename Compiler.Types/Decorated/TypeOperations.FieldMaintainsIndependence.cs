@@ -81,10 +81,12 @@ public static partial class TypeOperations
 
     private static bool FieldMaintainsIndependence(this CapabilitySetRestrictedType type, Independence context)
     {
-        // If the capability set is shareable then it weakens the context since it satisfies the
-        // shareable requirement.
-        if (type.CapabilitySet == CapabilitySet.Shareable && context >= Independence.BothAllowed)
-            context = Independence.BothAllowed;
+        // If the capability set is `shareable` and the parameter is `shareable ind` then the type
+        // acts invariantly and is always allowed.
+        // TODO handle other capability sets correctly
+        if (type.CapabilitySet == CapabilitySet.Shareable
+            && type.Referent.Parameter.Independence == TypeParameterIndependence.ShareableIndependent)
+            return true;
 
         return type.Referent.FieldMaintainsIndependence(context);
     }
