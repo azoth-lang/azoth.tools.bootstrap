@@ -114,6 +114,7 @@ public static partial class TypeOperations
         OnlyShareableAllowed,
     }
 
+    // TODO cannot inline this method due to https://github.com/oleg-st/InlineMethod.Fody/issues/14
     //[Inline]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static Independence Max(Independence left, Independence right)
