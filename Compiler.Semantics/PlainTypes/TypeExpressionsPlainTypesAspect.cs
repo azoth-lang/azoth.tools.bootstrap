@@ -16,6 +16,10 @@ internal static partial class TypeExpressionsPlainTypesAspect
         // Capability has no effect on the plain type
         => node.Referent.NamedPlainType;
 
+    public static partial IMaybePlainType CapabilitySetType_NamedPlainType(ICapabilitySetTypeNode node)
+        // Capability has no effect on the plain type
+        => node.Referent.NamedPlainType;
+
     public static partial IMaybePlainType FunctionType_NamedPlainType(IFunctionTypeNode node)
     {
         var parameters = node.Parameters.Select(p => p.Referent.NamedPlainType).OfType<NonVoidPlainType>()

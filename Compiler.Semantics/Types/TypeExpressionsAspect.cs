@@ -41,6 +41,24 @@ internal static partial class TypeExpressionsAspect
         // TODO I think there are more errors that can happen
     }
 
+    public static partial IMaybeType CapabilitySetType_NamedType(ICapabilitySetTypeNode node)
+    {
+        var referent = node.Referent.NamedType as GenericParameterType ?? IMaybeType.Unknown;
+        return CapabilitySetRestrictedType.Create(node.CapabilitySet.CapabilitySet, referent);
+    }
+
+    public static partial void CapabilitySetType_Contribute_Diagnostics(ICapabilitySetTypeNode node, DiagnosticCollectionBuilder diagnostics)
+    {
+        var referentType = node.Referent.NamedType;
+        // GenericParameterType is correct
+        if (referentType is GenericParameterType
+            or UnknownType) // Error reported elsewhere
+            return;
+
+        diagnostics.Add(TypeError.CannotApplyCapabilitySetToType(node.File, node.Syntax,
+            node.CapabilitySet.CapabilitySet, referentType));
+    }
+
     public static partial IMaybeType OptionalType_NamedType(IOptionalTypeNode node)
         => OptionalType.Create(node.NamedPlainType, node.Referent.NamedType);
 

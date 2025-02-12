@@ -1292,6 +1292,7 @@ public partial interface IExpressionBodyNode : IBodyNode
 [Closed(
     typeof(IOptionalTypeNode),
     typeof(ICapabilityTypeNode),
+    typeof(ICapabilitySetTypeNode),
     typeof(IFunctionTypeNode),
     typeof(IViewpointTypeNode),
     typeof(IRefTypeNode),
@@ -1338,6 +1339,24 @@ public partial interface ICapabilityTypeNode : ITypeNode
         ICapabilityNode capability,
         ITypeNode referent)
         => new CapabilityTypeNode(syntax, capability, referent);
+}
+
+[Closed(typeof(CapabilitySetTypeNode))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
+public partial interface ICapabilitySetTypeNode : ITypeNode
+{
+    new ICapabilitySetTypeSyntax Syntax { get; }
+    ITypeSyntax ITypeNode.Syntax => Syntax;
+    ICodeSyntax ICodeNode.Syntax => Syntax;
+    ISyntax? ISemanticNode.Syntax => Syntax;
+    ICapabilitySetNode CapabilitySet { get; }
+    ITypeNode Referent { get; }
+
+    public static ICapabilitySetTypeNode Create(
+        ICapabilitySetTypeSyntax syntax,
+        ICapabilitySetNode capabilitySet,
+        ITypeNode referent)
+        => new CapabilitySetTypeNode(syntax, capabilitySet, referent);
 }
 
 [Closed(typeof(FunctionTypeNode))]
@@ -8170,6 +8189,60 @@ file class CapabilityTypeNode : SemanticNode, ICapabilityTypeNode
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
     {
         TypeExpressionsAspect.CapabilityType_Contribute_Diagnostics(this, builder);
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class CapabilitySetTypeNode : SemanticNode, ICapabilitySetTypeNode
+{
+    private ICapabilitySetTypeNode Self { [Inline] get => this; }
+
+    public ICapabilitySetTypeSyntax Syntax { [DebuggerStepThrough] get; }
+    public ICapabilitySetNode CapabilitySet { [DebuggerStepThrough] get; }
+    public ITypeNode Referent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package
+        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public CodeFile File
+        => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
+    public IMaybePlainType NamedPlainType
+        => GrammarAttribute.IsCached(in namedPlainTypeCached) ? namedPlainType!
+            : this.Synthetic(ref namedPlainTypeCached, ref namedPlainType,
+                TypeExpressionsPlainTypesAspect.CapabilitySetType_NamedPlainType);
+    private IMaybePlainType? namedPlainType;
+    private bool namedPlainTypeCached;
+    public IMaybeType NamedType
+        => GrammarAttribute.IsCached(in namedTypeCached) ? namedType!
+            : this.Synthetic(ref namedTypeCached, ref namedType,
+                TypeExpressionsAspect.CapabilitySetType_NamedType);
+    private IMaybeType? namedType;
+    private bool namedTypeCached;
+
+    public CapabilitySetTypeNode(
+        ICapabilitySetTypeSyntax syntax,
+        ICapabilitySetNode capabilitySet,
+        ITypeNode referent)
+    {
+        Syntax = syntax;
+        CapabilitySet = Child.Attach(this, capabilitySet);
+        Referent = Child.Attach(this, referent);
+    }
+
+    internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return ControlFlowSet.Empty;
+        return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
+    }
+
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+    {
+        contributors.Add(this);
+        base.CollectContributors_Diagnostics(contributors);
+    }
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
+    {
+        TypeExpressionsAspect.CapabilitySetType_Contribute_Diagnostics(this, builder);
     }
 }
 

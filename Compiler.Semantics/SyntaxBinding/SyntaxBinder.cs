@@ -288,6 +288,7 @@ internal static class SyntaxBinder
             INameSyntax syn => TypeName(syn),
             IOptionalTypeSyntax syn => OptionalType(syn),
             ICapabilityTypeSyntax syn => CapabilityType(syn),
+            ICapabilitySetTypeSyntax syn => CapabilitySetType(syn),
             IFunctionTypeSyntax syn => FunctionType(syn),
             IViewpointTypeSyntax syn => ViewpointType(syn),
             IRefTypeSyntax syn => RefType(syn),
@@ -299,6 +300,9 @@ internal static class SyntaxBinder
 
     private static ICapabilityTypeNode CapabilityType(ICapabilityTypeSyntax syntax)
         => ICapabilityTypeNode.Create(syntax, Capability(syntax.Capability), Type(syntax.Referent));
+
+    private static ICapabilitySetTypeNode CapabilitySetType(ICapabilitySetTypeSyntax syntax)
+        => ICapabilitySetTypeNode.Create(syntax, CapabilitySet(syntax.CapabilitySet), Type(syntax.Referent));
 
     private static IFunctionTypeNode FunctionType(IFunctionTypeSyntax syntax)
         => IFunctionTypeNode.Create(syntax, ParameterTypes(syntax.Parameters), Type(syntax.Return));

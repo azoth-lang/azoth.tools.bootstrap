@@ -127,6 +127,7 @@ Type <: Code;
 // See the names section for more nodes that are types
 OptionalType <: Type = Referent:Type;
 CapabilityType <: Type = Capability Referent:Type;
+CapabilitySetType <: Type = CapabilitySet Referent:Type;
 FunctionType <: Type = Parameters:ParameterType* Return:Type;
 ParameterType <: Code = IsLent:`bool` Referent:Type;
 ViewpointType <: Type = Referent:Type;

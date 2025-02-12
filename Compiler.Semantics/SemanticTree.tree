@@ -157,6 +157,7 @@ ExpressionBody <: Body = Syntax:`IExpressionBodySyntax` ResultStatement;
 Type <: Code = Syntax:`ITypeSyntax`;
 OptionalType <: Type = Syntax:`IOptionalTypeSyntax` Referent:Type;
 CapabilityType <: Type = Syntax:`ICapabilityTypeSyntax` Capability Referent:Type;
+CapabilitySetType <: Type = Syntax:`ICapabilitySetTypeSyntax` CapabilitySet Referent:Type;
 FunctionType <: Type = Syntax:`IFunctionTypeSyntax` Parameters:ParameterType* Return:Type;
 ParameterType <: Code = Syntax:`IParameterTypeSyntax` Referent:Type;
 ViewpointType <: Type = Syntax:`IViewpointTypeSyntax` Referent:Type;

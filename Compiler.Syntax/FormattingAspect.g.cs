@@ -66,6 +66,8 @@ internal static partial class FormattingAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial string CapabilityType_ToString(ICapabilityTypeSyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial string CapabilitySetType_ToString(ICapabilitySetTypeSyntax node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial string FunctionType_ToString(IFunctionTypeSyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial string ParameterType_ToString(IParameterTypeSyntax node);

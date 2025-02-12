@@ -178,6 +178,9 @@ internal static partial class FormattingAspect
     public static partial string CapabilityType_ToString(ICapabilityTypeSyntax node)
         => $"{node.Capability} {node.Referent}";
 
+    public static partial string CapabilitySetType_ToString(ICapabilitySetTypeSyntax node)
+        => $"{node.CapabilitySet} {node.Referent}";
+
     public static partial string FunctionType_ToString(IFunctionTypeSyntax node)
         => $"({string.Join(", ", node.Parameters.Select(p => p.ToString()))}) -> {node.Return}";
 

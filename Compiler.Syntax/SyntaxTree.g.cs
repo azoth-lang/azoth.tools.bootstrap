@@ -750,6 +750,7 @@ public partial interface IExpressionBodySyntax : IBodySyntax
 [Closed(
     typeof(IOptionalTypeSyntax),
     typeof(ICapabilityTypeSyntax),
+    typeof(ICapabilitySetTypeSyntax),
     typeof(IFunctionTypeSyntax),
     typeof(IViewpointTypeSyntax),
     typeof(IRefTypeSyntax),
@@ -783,6 +784,20 @@ public partial interface ICapabilityTypeSyntax : ITypeSyntax
         ICapabilitySyntax capability,
         ITypeSyntax referent)
         => new CapabilityTypeSyntax(span, capability, referent);
+}
+
+[Closed(typeof(CapabilitySetTypeSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
+public partial interface ICapabilitySetTypeSyntax : ITypeSyntax
+{
+    ICapabilitySetSyntax CapabilitySet { get; }
+    ITypeSyntax Referent { get; }
+
+    public static ICapabilitySetTypeSyntax Create(
+        TextSpan span,
+        ICapabilitySetSyntax capabilitySet,
+        ITypeSyntax referent)
+        => new CapabilitySetTypeSyntax(span, capabilitySet, referent);
 }
 
 [Closed(typeof(FunctionTypeSyntax))]
@@ -2411,6 +2426,28 @@ file class CapabilityTypeSyntax : ICapabilityTypeSyntax
     {
         Span = span;
         Capability = capability;
+        Referent = referent;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class CapabilitySetTypeSyntax : ICapabilitySetTypeSyntax
+{
+    private ICapabilitySetTypeSyntax Self { [Inline] get => this; }
+
+    public TextSpan Span { [DebuggerStepThrough] get; }
+    public ICapabilitySetSyntax CapabilitySet { [DebuggerStepThrough] get; }
+    public ITypeSyntax Referent { [DebuggerStepThrough] get; }
+    public override string ToString()
+        => FormattingAspect.CapabilitySetType_ToString(this);
+
+    public CapabilitySetTypeSyntax(
+        TextSpan span,
+        ICapabilitySetSyntax capabilitySet,
+        ITypeSyntax referent)
+    {
+        Span = span;
+        CapabilitySet = capabilitySet;
         Referent = referent;
     }
 }

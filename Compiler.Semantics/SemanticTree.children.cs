@@ -93,6 +93,10 @@ public static class ISemanticNodeExtensions
                 yield break;
             case ICapabilitySetNode n:
                 yield break;
+            case ICapabilitySetTypeNode n:
+                yield return n.CapabilitySet;
+                yield return n.Referent;
+                yield break;
             case ICapabilityTypeNode n:
                 yield return n.Capability;
                 yield return n.Referent;

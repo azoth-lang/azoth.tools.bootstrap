@@ -14,6 +14,7 @@
 = BuiltInTypeName.NamedType;
 ↑ ParameterType.Parameter: `IMaybeParameterType`;
 = CapabilityType.↑.Diagnostics;
+= CapabilitySetType.↑.Diagnostics;
 = CapabilityViewpointType.↑.Diagnostics;
 ↓ SelfViewpointType.MethodSelfType: `IMaybeType`?;
 = SelfViewpointType.↑.Diagnostics;

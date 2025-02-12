@@ -74,6 +74,10 @@ public static class ISyntaxExtensions
                 yield break;
             case ICapabilitySetSyntax n:
                 yield break;
+            case ICapabilitySetTypeSyntax n:
+                yield return n.CapabilitySet;
+                yield return n.Referent;
+                yield break;
             case ICapabilitySyntax n:
                 yield break;
             case ICapabilityTypeSyntax n:
