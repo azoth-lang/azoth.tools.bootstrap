@@ -22,7 +22,7 @@ published class List[T ind]
     published fn at(temporary self, index: size) -> self |> iref var T
     {
         let count = .items.count;
-        if index < 0 or index >= count => ABORT("index out of bounds");
+        if index >= count => ABORT("index out of bounds");
         return .items.at(index);
     }
 
