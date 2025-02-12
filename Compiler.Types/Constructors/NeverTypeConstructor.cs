@@ -27,7 +27,7 @@ internal class NeverTypeConstructor : ITypeConstructor
         return null;
     }
 
-    public Type? TryConstructNullaryType(BareType? containingType)
+    public Type TryConstructNullaryType(BareType? containingType)
     {
         Requires.Null(containingType, nameof(containingType), "Never does not have a containing type.");
         return Type.Never;

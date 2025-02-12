@@ -299,8 +299,6 @@ public abstract class BareTypeConstructor : BareTypeConstructorContext, IEquatab
     {
         Requires.That(Equals(Context as BareTypeConstructor, containingType?.TypeConstructor), nameof(containingType),
             "Must match the context.");
-        if (!Parameters.IsEmpty)
-            throw new InvalidOperationException($"Cannot construct nullary type for type constructor `{this}` expecting arguments.");
         // Type constructors require a capability, not just type parameters, to construct a full type.
         return null;
     }

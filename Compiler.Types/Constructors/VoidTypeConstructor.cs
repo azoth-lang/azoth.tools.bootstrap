@@ -27,7 +27,7 @@ internal sealed class VoidTypeConstructor : ITypeConstructor
         return null;
     }
 
-    public Type? TryConstructNullaryType(BareType? containingType)
+    public Type TryConstructNullaryType(BareType? containingType)
     {
         Requires.Null(containingType, nameof(containingType), "Void does not have a containing type.");
         return Type.Void;

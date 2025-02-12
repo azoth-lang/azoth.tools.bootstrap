@@ -41,7 +41,7 @@ public class GenericParameterTypeConstructor : ITypeConstructor
         return null;
     }
 
-    Type? ITypeConstructor.TryConstructNullaryType(BareType? containingType)
+    Type ITypeConstructor.TryConstructNullaryType(BareType? containingType)
     {
         Requires.Null(containingType, nameof(containingType), NoContainingTypeMessage);
         return Type;
