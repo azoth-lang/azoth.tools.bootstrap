@@ -277,6 +277,11 @@ file class <#= Emit.ClassName(node.Defines) #> : <#= Emit.BaseClass(tree) #><#= 
 <#                  break;#>
 <#              case LocalAttributeEquationModel eq
                     when eq.Strategy == EvaluationStrategy.Lazy || eq.Strategy == EvaluationStrategy.Computed && eq.IsObjectMember(): #>
+<#                  if (eq.Attribute is CircularAttributeModel) { #>
+<#                      // Bug: DebuggerDisplay doesn't work on properties: https://github.com/dotnet/roslyn/issues/4134 #>
+<#                      // [DebuggerDisplay("Bar: {\<#= eq.Name.ToCamelCase() \#>.DebuggerDisplay,nq}")] #>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+<#                  } #>
     public <#= Emit.Override(eq) #><#= Emit.Type(eq.Type) #> <#= eq.Name #><#= Emit.ParametersAndBody(eq) #>
 <#                  break;#>
 <#          } #>

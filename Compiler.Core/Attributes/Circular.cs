@@ -1,9 +1,12 @@
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes.Operations;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 
+[DebuggerDisplay($"{{{nameof(DebuggerDisplay)}(),nq}}")]
+[DebuggerTypeProxy(typeof(Circular<>.CircularDebugView))]
 public struct Circular<T> : ICyclic<T>
     where T : class?
 {
@@ -41,6 +44,24 @@ public struct Circular<T> : ICyclic<T>
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static implicit operator Circular<T>(T value) => new(value);
+
+    /// <summary>
+    /// A good value to display in the debugger watch window for this circular attribute
+    /// </summary>
+    public readonly object? DebuggerDisplay() => IsInitialized ? rawValue : "<uninitialized>";
+
+    private class CircularDebugView
+    {
+        private readonly Circular<T> attribute;
+
+        public CircularDebugView(Circular<T> attribute)
+        {
+            this.attribute = attribute;
+        }
+
+        [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
+        public object? Value => attribute.DebuggerDisplay();
+    }
 }
 
 
