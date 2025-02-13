@@ -1,7 +1,9 @@
+using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 
+[DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
 internal readonly struct AttributeCachedRef
 {
     public AttributeId Attribute { get; }
@@ -13,4 +15,6 @@ internal readonly struct AttributeCachedRef
         Attribute = attribute;
         this.cached = cached;
     }
+
+    public override string ToString() => $"{Attribute}.Cached: {Cached}";
 }
