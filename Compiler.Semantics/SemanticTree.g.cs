@@ -7272,9 +7272,11 @@ file class FieldDefinitionNode : SemanticNode, IFieldDefinitionNode
     public ITypeNode TypeNode { [DebuggerStepThrough] get; }
     private RewritableChild<IAmbiguousExpressionNode?> initializer;
     private bool initializerCached;
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IAmbiguousExpressionNode? TempInitializer
         => GrammarAttribute.IsCached(in initializerCached) ? initializer.UnsafeValue
             : this.RewritableChild(ref initializerCached, ref initializer);
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IExpressionNode? Initializer => TempInitializer as IExpressionNode;
     public IAmbiguousExpressionNode? CurrentInitializer => initializer.UnsafeValue;
     public IPackageDeclarationNode Package
@@ -8592,9 +8594,11 @@ file class ResultStatementNode : SemanticNode, IResultStatementNode
     public IResultStatementSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IAmbiguousExpressionNode> expression;
     private bool expressionCached;
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IAmbiguousExpressionNode TempExpression
         => GrammarAttribute.IsCached(in expressionCached) ? expression.UnsafeValue
             : this.RewritableChild(ref expressionCached, ref expression);
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IExpressionNode? Expression => TempExpression as IExpressionNode;
     public IAmbiguousExpressionNode CurrentExpression => expression.UnsafeValue;
     public IPackageDeclarationNode Package
@@ -8709,9 +8713,11 @@ file class VariableDeclarationStatementNode : SemanticNode, IVariableDeclaration
     public ITypeNode? Type { [DebuggerStepThrough] get; }
     private RewritableChild<IAmbiguousExpressionNode?> initializer;
     private bool initializerCached;
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IAmbiguousExpressionNode? TempInitializer
         => GrammarAttribute.IsCached(in initializerCached) ? initializer.UnsafeValue
             : this.RewritableChild(ref initializerCached, ref initializer);
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IExpressionNode? Initializer => TempInitializer as IExpressionNode;
     public IAmbiguousExpressionNode? CurrentInitializer => initializer.UnsafeValue;
     public IPackageDeclarationNode Package
@@ -8871,9 +8877,11 @@ file class ExpressionStatementNode : SemanticNode, IExpressionStatementNode
     public IExpressionStatementSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IAmbiguousExpressionNode> expression;
     private bool expressionCached;
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IAmbiguousExpressionNode TempExpression
         => GrammarAttribute.IsCached(in expressionCached) ? expression.UnsafeValue
             : this.RewritableChild(ref expressionCached, ref expression);
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IExpressionNode? Expression => TempExpression as IExpressionNode;
     public IAmbiguousExpressionNode CurrentExpression => expression.UnsafeValue;
     public IPackageDeclarationNode Package
@@ -9422,9 +9430,11 @@ file class UnsafeExpressionNode : SemanticNode, IUnsafeExpressionNode
     public IUnsafeExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IAmbiguousExpressionNode> expression;
     private bool expressionCached;
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IAmbiguousExpressionNode TempExpression
         => GrammarAttribute.IsCached(in expressionCached) ? expression.UnsafeValue
             : this.RewritableChild(ref expressionCached, ref expression);
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IExpressionNode? Expression => TempExpression as IExpressionNode;
     public IAmbiguousExpressionNode CurrentExpression => expression.UnsafeValue;
     public IPackageDeclarationNode Package
@@ -9571,9 +9581,11 @@ file class UnresolvedMemberAccessExpressionNode : SemanticNode, IUnresolvedMembe
     public IMemberAccessExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IAmbiguousExpressionNode> context;
     private bool contextCached;
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IAmbiguousExpressionNode TempContext
         => GrammarAttribute.IsCached(in contextCached) ? context.UnsafeValue
             : this.RewritableChild(ref contextCached, ref context);
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IExpressionNode? Context => TempContext as IExpressionNode;
     public IAmbiguousExpressionNode CurrentContext => context.UnsafeValue;
     public IFixedList<ITypeNode> GenericArguments { [DebuggerStepThrough] get; }
@@ -9694,6 +9706,7 @@ file class FieldAccessExpressionNode : SemanticNode, IFieldAccessExpressionNode
     public IMemberAccessExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IExpressionNode> context;
     private bool contextCached;
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IExpressionNode Context
         => GrammarAttribute.IsCached(in contextCached) ? context.UnsafeValue
             : this.RewritableChild(ref contextCached, ref context);
@@ -9846,6 +9859,7 @@ file class MethodAccessExpressionNode : SemanticNode, IMethodAccessExpressionNod
     public IMemberAccessExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IExpressionNode> context;
     private bool contextCached;
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IExpressionNode Context
         => GrammarAttribute.IsCached(in contextCached) ? context.UnsafeValue
             : this.RewritableChild(ref contextCached, ref context);
@@ -10588,16 +10602,20 @@ file class AssignmentExpressionNode : SemanticNode, IAssignmentExpressionNode
     public IAssignmentExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IAmbiguousExpressionNode> leftOperand;
     private bool leftOperandCached;
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IAmbiguousExpressionNode TempLeftOperand
         => GrammarAttribute.IsCached(in leftOperandCached) ? leftOperand.UnsafeValue
             : this.RewritableChild(ref leftOperandCached, ref leftOperand);
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IExpressionNode? LeftOperand => TempLeftOperand as IExpressionNode;
     public IAmbiguousExpressionNode CurrentLeftOperand => leftOperand.UnsafeValue;
     private RewritableChild<IAmbiguousExpressionNode> rightOperand;
     private bool rightOperandCached;
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IAmbiguousExpressionNode TempRightOperand
         => GrammarAttribute.IsCached(in rightOperandCached) ? rightOperand.UnsafeValue
             : this.RewritableChild(ref rightOperandCached, ref rightOperand);
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IExpressionNode? RightOperand => TempRightOperand as IExpressionNode;
     public IAmbiguousExpressionNode CurrentRightOperand => rightOperand.UnsafeValue;
     public IPackageDeclarationNode Package
@@ -10787,16 +10805,20 @@ file class RefAssignmentExpressionNode : SemanticNode, IRefAssignmentExpressionN
     public IAssignmentExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IAmbiguousExpressionNode> leftOperand;
     private bool leftOperandCached;
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IAmbiguousExpressionNode TempLeftOperand
         => GrammarAttribute.IsCached(in leftOperandCached) ? leftOperand.UnsafeValue
             : this.RewritableChild(ref leftOperandCached, ref leftOperand);
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IExpressionNode? LeftOperand => TempLeftOperand as IExpressionNode;
     public IAmbiguousExpressionNode CurrentLeftOperand => leftOperand.UnsafeValue;
     private RewritableChild<IAmbiguousExpressionNode> rightOperand;
     private bool rightOperandCached;
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IAmbiguousExpressionNode TempRightOperand
         => GrammarAttribute.IsCached(in rightOperandCached) ? rightOperand.UnsafeValue
             : this.RewritableChild(ref rightOperandCached, ref rightOperand);
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IExpressionNode? RightOperand => TempRightOperand as IExpressionNode;
     public IAmbiguousExpressionNode CurrentRightOperand => rightOperand.UnsafeValue;
     public IPackageDeclarationNode Package
@@ -10967,16 +10989,20 @@ file class BinaryOperatorExpressionNode : SemanticNode, IBinaryOperatorExpressio
     public IBinaryOperatorExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IAmbiguousExpressionNode> leftOperand;
     private bool leftOperandCached;
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IAmbiguousExpressionNode TempLeftOperand
         => GrammarAttribute.IsCached(in leftOperandCached) ? leftOperand.UnsafeValue
             : this.RewritableChild(ref leftOperandCached, ref leftOperand);
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IExpressionNode? LeftOperand => TempLeftOperand as IExpressionNode;
     public IAmbiguousExpressionNode CurrentLeftOperand => leftOperand.UnsafeValue;
     private RewritableChild<IAmbiguousExpressionNode> rightOperand;
     private bool rightOperandCached;
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IAmbiguousExpressionNode TempRightOperand
         => GrammarAttribute.IsCached(in rightOperandCached) ? rightOperand.UnsafeValue
             : this.RewritableChild(ref rightOperandCached, ref rightOperand);
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IExpressionNode? RightOperand => TempRightOperand as IExpressionNode;
     public IAmbiguousExpressionNode CurrentRightOperand => rightOperand.UnsafeValue;
     public IPackageDeclarationNode Package
@@ -11163,9 +11189,11 @@ file class UnaryOperatorExpressionNode : SemanticNode, IUnaryOperatorExpressionN
     public IUnaryOperatorExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IAmbiguousExpressionNode> operand;
     private bool operandCached;
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IAmbiguousExpressionNode TempOperand
         => GrammarAttribute.IsCached(in operandCached) ? operand.UnsafeValue
             : this.RewritableChild(ref operandCached, ref operand);
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IExpressionNode? Operand => TempOperand as IExpressionNode;
     public IAmbiguousExpressionNode CurrentOperand => operand.UnsafeValue;
     public IPackageDeclarationNode Package
@@ -11313,9 +11341,11 @@ file class ConversionExpressionNode : SemanticNode, IConversionExpressionNode
     public IConversionExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IAmbiguousExpressionNode> referent;
     private bool referentCached;
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IAmbiguousExpressionNode TempReferent
         => GrammarAttribute.IsCached(in referentCached) ? referent.UnsafeValue
             : this.RewritableChild(ref referentCached, ref referent);
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IExpressionNode? Referent => TempReferent as IExpressionNode;
     public IAmbiguousExpressionNode CurrentReferent => referent.UnsafeValue;
     public ITypeNode ConvertToType { [DebuggerStepThrough] get; }
@@ -11465,6 +11495,7 @@ file class ImplicitConversionExpressionNode : SemanticNode, IImplicitConversionE
 
     private RewritableChild<IExpressionNode> referent;
     private bool referentCached;
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IExpressionNode Referent
         => GrammarAttribute.IsCached(in referentCached) ? referent.UnsafeValue
             : this.RewritableChild(ref referentCached, ref referent);
@@ -11612,9 +11643,11 @@ file class PatternMatchExpressionNode : SemanticNode, IPatternMatchExpressionNod
     public IPatternMatchExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IAmbiguousExpressionNode> referent;
     private bool referentCached;
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IAmbiguousExpressionNode TempReferent
         => GrammarAttribute.IsCached(in referentCached) ? referent.UnsafeValue
             : this.RewritableChild(ref referentCached, ref referent);
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IExpressionNode? Referent => TempReferent as IExpressionNode;
     public IAmbiguousExpressionNode CurrentReferent => referent.UnsafeValue;
     public IPatternNode Pattern { [DebuggerStepThrough] get; }
@@ -11796,9 +11829,11 @@ file class RefExpressionNode : SemanticNode, IRefExpressionNode
     public IRefExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IAmbiguousExpressionNode> referent;
     private bool referentCached;
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IAmbiguousExpressionNode TempReferent
         => GrammarAttribute.IsCached(in referentCached) ? referent.UnsafeValue
             : this.RewritableChild(ref referentCached, ref referent);
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IExpressionNode? Referent => TempReferent as IExpressionNode;
     public IAmbiguousExpressionNode CurrentReferent => referent.UnsafeValue;
     public IPackageDeclarationNode Package
@@ -11946,6 +11981,7 @@ file class ImplicitDerefExpressionNode : SemanticNode, IImplicitDerefExpressionN
 
     private RewritableChild<IExpressionNode> referent;
     private bool referentCached;
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IExpressionNode Referent
         => GrammarAttribute.IsCached(in referentCached) ? referent.UnsafeValue
             : this.RewritableChild(ref referentCached, ref referent);
@@ -12093,19 +12129,23 @@ file class IfExpressionNode : SemanticNode, IIfExpressionNode
     public IIfExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IAmbiguousExpressionNode> condition;
     private bool conditionCached;
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IAmbiguousExpressionNode TempCondition
         => GrammarAttribute.IsCached(in conditionCached) ? condition.UnsafeValue
             : this.RewritableChild(ref conditionCached, ref condition);
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IExpressionNode? Condition => TempCondition as IExpressionNode;
     public IAmbiguousExpressionNode CurrentCondition => condition.UnsafeValue;
     private RewritableChild<IBlockOrResultNode> thenBlock;
     private bool thenBlockCached;
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IBlockOrResultNode ThenBlock
         => GrammarAttribute.IsCached(in thenBlockCached) ? thenBlock.UnsafeValue
             : this.RewritableChild(ref thenBlockCached, ref thenBlock);
     public IBlockOrResultNode CurrentThenBlock => thenBlock.UnsafeValue;
     private RewritableChild<IElseClauseNode?> elseClause;
     private bool elseClauseCached;
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IElseClauseNode? ElseClause
         => GrammarAttribute.IsCached(in elseClauseCached) ? elseClause.UnsafeValue
             : this.RewritableChild(ref elseClauseCached, ref elseClause);
@@ -12288,6 +12328,7 @@ file class LoopExpressionNode : SemanticNode, ILoopExpressionNode
     public ILoopExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IBlockExpressionNode> block;
     private bool blockCached;
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IBlockExpressionNode Block
         => GrammarAttribute.IsCached(in blockCached) ? block.UnsafeValue
             : this.RewritableChild(ref blockCached, ref block);
@@ -12443,13 +12484,16 @@ file class WhileExpressionNode : SemanticNode, IWhileExpressionNode
     public IWhileExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IAmbiguousExpressionNode> condition;
     private bool conditionCached;
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IAmbiguousExpressionNode TempCondition
         => GrammarAttribute.IsCached(in conditionCached) ? condition.UnsafeValue
             : this.RewritableChild(ref conditionCached, ref condition);
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IExpressionNode? Condition => TempCondition as IExpressionNode;
     public IAmbiguousExpressionNode CurrentCondition => condition.UnsafeValue;
     private RewritableChild<IBlockExpressionNode> block;
     private bool blockCached;
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IBlockExpressionNode Block
         => GrammarAttribute.IsCached(in blockCached) ? block.UnsafeValue
             : this.RewritableChild(ref blockCached, ref block);
@@ -12627,14 +12671,17 @@ file class ForeachExpressionNode : SemanticNode, IForeachExpressionNode
     public IForeachExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IAmbiguousExpressionNode> inExpression;
     private bool inExpressionCached;
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IAmbiguousExpressionNode TempInExpression
         => GrammarAttribute.IsCached(in inExpressionCached) ? inExpression.UnsafeValue
             : this.RewritableChild(ref inExpressionCached, ref inExpression);
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IExpressionNode? InExpression => TempInExpression as IExpressionNode;
     public IAmbiguousExpressionNode CurrentInExpression => inExpression.UnsafeValue;
     public ITypeNode? DeclaredType { [DebuggerStepThrough] get; }
     private RewritableChild<IBlockExpressionNode> block;
     private bool blockCached;
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IBlockExpressionNode Block
         => GrammarAttribute.IsCached(in blockCached) ? block.UnsafeValue
             : this.RewritableChild(ref blockCached, ref block);
@@ -12943,9 +12990,11 @@ file class BreakExpressionNode : SemanticNode, IBreakExpressionNode
     public IBreakExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IAmbiguousExpressionNode?> value;
     private bool valueCached;
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IAmbiguousExpressionNode? TempValue
         => GrammarAttribute.IsCached(in valueCached) ? value.UnsafeValue
             : this.RewritableChild(ref valueCached, ref value);
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IExpressionNode? Value => TempValue as IExpressionNode;
     public IAmbiguousExpressionNode? CurrentValue => value.UnsafeValue;
     public IPackageDeclarationNode Package
@@ -13135,9 +13184,11 @@ file class ReturnExpressionNode : SemanticNode, IReturnExpressionNode
     public IReturnExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IAmbiguousExpressionNode?> value;
     private bool valueCached;
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IAmbiguousExpressionNode? TempValue
         => GrammarAttribute.IsCached(in valueCached) ? value.UnsafeValue
             : this.RewritableChild(ref valueCached, ref value);
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IExpressionNode? Value => TempValue as IExpressionNode;
     public IAmbiguousExpressionNode? CurrentValue => value.UnsafeValue;
     public IPackageDeclarationNode Package
@@ -13278,13 +13329,17 @@ file class UnresolvedInvocationExpressionNode : SemanticNode, IUnresolvedInvocat
     public IInvocationExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IAmbiguousExpressionNode> expression;
     private bool expressionCached;
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IAmbiguousExpressionNode TempExpression
         => GrammarAttribute.IsCached(in expressionCached) ? expression.UnsafeValue
             : this.RewritableChild(ref expressionCached, ref expression);
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IExpressionNode? Expression => TempExpression as IExpressionNode;
     public IAmbiguousExpressionNode CurrentExpression => expression.UnsafeValue;
     private IRewritableChildList<IAmbiguousExpressionNode, IExpressionNode> arguments;
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IFixedList<IAmbiguousExpressionNode> TempArguments => arguments;
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IFixedList<IExpressionNode?> Arguments => arguments.AsFinalType;
     public IFixedList<IAmbiguousExpressionNode> CurrentArguments => arguments.Current;
     public IPackageDeclarationNode Package
@@ -13463,12 +13518,15 @@ file class FunctionInvocationExpressionNode : SemanticNode, IFunctionInvocationE
     public IInvocationExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IFunctionNameExpressionNode> function;
     private bool functionCached;
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IFunctionNameExpressionNode Function
         => GrammarAttribute.IsCached(in functionCached) ? function.UnsafeValue
             : this.RewritableChild(ref functionCached, ref function);
     public IFunctionNameExpressionNode CurrentFunction => function.UnsafeValue;
     private IRewritableChildList<IAmbiguousExpressionNode, IExpressionNode> arguments;
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IFixedList<IAmbiguousExpressionNode> TempArguments => arguments;
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IFixedList<IExpressionNode?> Arguments => arguments.AsFinalType;
     public IFixedList<IAmbiguousExpressionNode> CurrentArguments => arguments.Current;
     public IPackageDeclarationNode Package
@@ -13659,12 +13717,15 @@ file class MethodInvocationExpressionNode : SemanticNode, IMethodInvocationExpre
     public IInvocationExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IMethodAccessExpressionNode> method;
     private bool methodCached;
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IMethodAccessExpressionNode Method
         => GrammarAttribute.IsCached(in methodCached) ? method.UnsafeValue
             : this.RewritableChild(ref methodCached, ref method);
     public IMethodAccessExpressionNode CurrentMethod => method.UnsafeValue;
     private IRewritableChildList<IAmbiguousExpressionNode, IExpressionNode> arguments;
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IFixedList<IAmbiguousExpressionNode> TempArguments => arguments;
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IFixedList<IExpressionNode?> Arguments => arguments.AsFinalType;
     public IFixedList<IAmbiguousExpressionNode> CurrentArguments => arguments.Current;
     public IPackageDeclarationNode Package
@@ -13842,6 +13903,7 @@ file class GetterInvocationExpressionNode : SemanticNode, IGetterInvocationExpre
     public IMemberAccessExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IExpressionNode> context;
     private bool contextCached;
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IExpressionNode Context
         => GrammarAttribute.IsCached(in contextCached) ? context.UnsafeValue
             : this.RewritableChild(ref contextCached, ref context);
@@ -14016,6 +14078,7 @@ file class SetterInvocationExpressionNode : SemanticNode, ISetterInvocationExpre
     public IAssignmentExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IExpressionNode> context;
     private bool contextCached;
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IExpressionNode Context
         => GrammarAttribute.IsCached(in contextCached) ? context.UnsafeValue
             : this.RewritableChild(ref contextCached, ref context);
@@ -14023,9 +14086,11 @@ file class SetterInvocationExpressionNode : SemanticNode, ISetterInvocationExpre
     public OrdinaryName PropertyName { [DebuggerStepThrough] get; }
     private RewritableChild<IAmbiguousExpressionNode> value;
     private bool valueCached;
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IAmbiguousExpressionNode TempValue
         => GrammarAttribute.IsCached(in valueCached) ? value.UnsafeValue
             : this.RewritableChild(ref valueCached, ref value);
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IExpressionNode? Value => TempValue as IExpressionNode;
     public IAmbiguousExpressionNode CurrentValue => value.UnsafeValue;
     public IFixedSet<IPropertyAccessorDeclarationNode> ReferencedDeclarations { [DebuggerStepThrough] get; }
@@ -14220,12 +14285,15 @@ file class FunctionReferenceInvocationExpressionNode : SemanticNode, IFunctionRe
     public IInvocationExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IExpressionNode> expression;
     private bool expressionCached;
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IExpressionNode Expression
         => GrammarAttribute.IsCached(in expressionCached) ? expression.UnsafeValue
             : this.RewritableChild(ref expressionCached, ref expression);
     public IExpressionNode CurrentExpression => expression.UnsafeValue;
     private IRewritableChildList<IAmbiguousExpressionNode, IExpressionNode> arguments;
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IFixedList<IAmbiguousExpressionNode> TempArguments => arguments;
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IFixedList<IExpressionNode?> Arguments => arguments.AsFinalType;
     public IFixedList<IAmbiguousExpressionNode> CurrentArguments => arguments.Current;
     public IPackageDeclarationNode Package
@@ -14409,12 +14477,15 @@ file class InitializerInvocationExpressionNode : SemanticNode, IInitializerInvoc
     public IInvocationExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IInitializerNameExpressionNode> initializer;
     private bool initializerCached;
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IInitializerNameExpressionNode Initializer
         => GrammarAttribute.IsCached(in initializerCached) ? initializer.UnsafeValue
             : this.RewritableChild(ref initializerCached, ref initializer);
     public IInitializerNameExpressionNode CurrentInitializer => initializer.UnsafeValue;
     private IRewritableChildList<IAmbiguousExpressionNode, IExpressionNode> arguments;
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IFixedList<IAmbiguousExpressionNode> TempArguments => arguments;
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IFixedList<IExpressionNode?> Arguments => arguments.AsFinalType;
     public IFixedList<IAmbiguousExpressionNode> CurrentArguments => arguments.Current;
     public IPackageDeclarationNode Package
@@ -14596,13 +14667,17 @@ file class NonInvocableInvocationExpressionNode : SemanticNode, INonInvocableInv
     public IInvocationExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IAmbiguousExpressionNode> expression;
     private bool expressionCached;
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IAmbiguousExpressionNode TempExpression
         => GrammarAttribute.IsCached(in expressionCached) ? expression.UnsafeValue
             : this.RewritableChild(ref expressionCached, ref expression);
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IExpressionNode? Expression => TempExpression as IExpressionNode;
     public IAmbiguousExpressionNode CurrentExpression => expression.UnsafeValue;
     private IRewritableChildList<IAmbiguousExpressionNode, IExpressionNode> arguments;
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IFixedList<IAmbiguousExpressionNode> TempArguments => arguments;
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IFixedList<IExpressionNode?> Arguments => arguments.AsFinalType;
     public IFixedList<IAmbiguousExpressionNode> CurrentArguments => arguments.Current;
     public IPackageDeclarationNode Package
@@ -15069,6 +15144,7 @@ file class FunctionNameExpressionNode : SemanticNode, IFunctionNameExpressionNod
     public INameExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<INameNode?> context;
     private bool contextCached;
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public INameNode? Context
         => GrammarAttribute.IsCached(in contextCached) ? context.UnsafeValue
             : this.RewritableChild(ref contextCached, ref context);
@@ -15753,6 +15829,7 @@ file class UnresolvedNameExpressionQualifiedNameExpressionNode : SemanticNode, I
     public IQualifiedNameSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IExpressionNode> context;
     private bool contextCached;
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IExpressionNode Context
         => GrammarAttribute.IsCached(in contextCached) ? context.UnsafeValue
             : this.RewritableChild(ref contextCached, ref context);
@@ -16576,6 +16653,7 @@ file class UnresolvedNameQualifiedNameNode : SemanticNode, IUnresolvedNameQualif
     public IQualifiedNameSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<INameNode> context;
     private bool contextCached;
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public INameNode Context
         => GrammarAttribute.IsCached(in contextCached) ? context.UnsafeValue
             : this.RewritableChild(ref contextCached, ref context);
@@ -17336,6 +17414,7 @@ file class QualifiedTypeNameNode : SemanticNode, IQualifiedTypeNameNode
     public IQualifiedNameSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<INameNode> context;
     private bool contextCached;
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public INameNode Context
         => GrammarAttribute.IsCached(in contextCached) ? context.UnsafeValue
             : this.RewritableChild(ref contextCached, ref context);
@@ -17464,9 +17543,11 @@ file class AmbiguousMoveExpressionNode : SemanticNode, IAmbiguousMoveExpressionN
     public IMoveExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IAmbiguousExpressionNode> referent;
     private bool referentCached;
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IAmbiguousExpressionNode TempReferent
         => GrammarAttribute.IsCached(in referentCached) ? referent.UnsafeValue
             : this.RewritableChild(ref referentCached, ref referent);
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IExpressionNode? Referent => TempReferent as IExpressionNode;
     public IAmbiguousExpressionNode CurrentReferent => referent.UnsafeValue;
     public IPackageDeclarationNode Package
@@ -17528,6 +17609,7 @@ file class MoveVariableExpressionNode : SemanticNode, IMoveVariableExpressionNod
     public IExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<ILocalBindingNameExpressionNode> referent;
     private bool referentCached;
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public ILocalBindingNameExpressionNode Referent
         => GrammarAttribute.IsCached(in referentCached) ? referent.UnsafeValue
             : this.RewritableChild(ref referentCached, ref referent);
@@ -17674,6 +17756,7 @@ file class MoveValueExpressionNode : SemanticNode, IMoveValueExpressionNode
     public IExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IExpressionNode> referent;
     private bool referentCached;
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IExpressionNode Referent
         => GrammarAttribute.IsCached(in referentCached) ? referent.UnsafeValue
             : this.RewritableChild(ref referentCached, ref referent);
@@ -17822,6 +17905,7 @@ file class ImplicitTempMoveExpressionNode : SemanticNode, IImplicitTempMoveExpre
     public IExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IExpressionNode> referent;
     private bool referentCached;
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IExpressionNode Referent
         => GrammarAttribute.IsCached(in referentCached) ? referent.UnsafeValue
             : this.RewritableChild(ref referentCached, ref referent);
@@ -17963,9 +18047,11 @@ file class AmbiguousFreezeExpressionNode : SemanticNode, IAmbiguousFreezeExpress
     public IFreezeExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IAmbiguousExpressionNode> referent;
     private bool referentCached;
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IAmbiguousExpressionNode TempReferent
         => GrammarAttribute.IsCached(in referentCached) ? referent.UnsafeValue
             : this.RewritableChild(ref referentCached, ref referent);
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IExpressionNode? Referent => TempReferent as IExpressionNode;
     public IAmbiguousExpressionNode CurrentReferent => referent.UnsafeValue;
     public IPackageDeclarationNode Package
@@ -18027,6 +18113,7 @@ file class FreezeVariableExpressionNode : SemanticNode, IFreezeVariableExpressio
     public IExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<ILocalBindingNameExpressionNode> referent;
     private bool referentCached;
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public ILocalBindingNameExpressionNode Referent
         => GrammarAttribute.IsCached(in referentCached) ? referent.UnsafeValue
             : this.RewritableChild(ref referentCached, ref referent);
@@ -18176,6 +18263,7 @@ file class FreezeValueExpressionNode : SemanticNode, IFreezeValueExpressionNode
     public IExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IExpressionNode> referent;
     private bool referentCached;
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IExpressionNode Referent
         => GrammarAttribute.IsCached(in referentCached) ? referent.UnsafeValue
             : this.RewritableChild(ref referentCached, ref referent);
@@ -18326,6 +18414,7 @@ file class PrepareToReturnExpressionNode : SemanticNode, IPrepareToReturnExpress
 
     private RewritableChild<IExpressionNode> value;
     private bool valueCached;
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IExpressionNode Value
         => GrammarAttribute.IsCached(in valueCached) ? value.UnsafeValue
             : this.RewritableChild(ref valueCached, ref value);
@@ -18461,6 +18550,7 @@ file class AsyncBlockExpressionNode : SemanticNode, IAsyncBlockExpressionNode
     public IAsyncBlockExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IBlockExpressionNode> block;
     private bool blockCached;
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IBlockExpressionNode Block
         => GrammarAttribute.IsCached(in blockCached) ? block.UnsafeValue
             : this.RewritableChild(ref blockCached, ref block);
@@ -18591,9 +18681,11 @@ file class AsyncStartExpressionNode : SemanticNode, IAsyncStartExpressionNode
     public IAsyncStartExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IAmbiguousExpressionNode> expression;
     private bool expressionCached;
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IAmbiguousExpressionNode TempExpression
         => GrammarAttribute.IsCached(in expressionCached) ? expression.UnsafeValue
             : this.RewritableChild(ref expressionCached, ref expression);
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IExpressionNode? Expression => TempExpression as IExpressionNode;
     public IAmbiguousExpressionNode CurrentExpression => expression.UnsafeValue;
     public IPackageDeclarationNode Package
@@ -18740,9 +18832,11 @@ file class AwaitExpressionNode : SemanticNode, IAwaitExpressionNode
     public IAwaitExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IAmbiguousExpressionNode> expression;
     private bool expressionCached;
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IAmbiguousExpressionNode TempExpression
         => GrammarAttribute.IsCached(in expressionCached) ? expression.UnsafeValue
             : this.RewritableChild(ref expressionCached, ref expression);
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IExpressionNode? Expression => TempExpression as IExpressionNode;
     public IAmbiguousExpressionNode CurrentExpression => expression.UnsafeValue;
     public IPackageDeclarationNode Package
