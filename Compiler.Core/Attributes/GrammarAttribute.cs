@@ -585,8 +585,10 @@ public static class GrammarAttribute
                     attributeScope.MarkRewritableFinal();
                     Volatile.Write(ref cached, true);
                     attributeScope.Success();
-                    return current;
+                    // Use next. It is the new value because current hasn't changed yet.
+                    return next;
                 }
+                // TODO does this line make sense if (!ReferenceEquals(original, current) above?
                 attributeScope.AddToRewriteContext(current!, next);
             }
 

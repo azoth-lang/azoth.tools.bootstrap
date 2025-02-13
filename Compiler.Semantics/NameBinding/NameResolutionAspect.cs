@@ -209,8 +209,6 @@ internal static partial class NameResolutionAspect
 
     public static partial IUnresolvedNamespaceQualifiedNameExpressionNode? UnresolvedNameExpressionQualifiedNameExpression_ReplaceWith_UnresolvedNamespaceQualifiedNameExpression(IUnresolvedNameExpressionQualifiedNameExpressionNode node)
     {
-        // TODO remove this hack that somehow works around a bug in the rewrite or circular attribute framework
-        _ = node.Context;
         if (node.Context is not INamespaceNameNode context) return null;
         var referencedDeclarations = context.ReferencedDeclarations.SelectMany(d => d.MembersNamed(node.MemberName)).ToFixedSet();
         return IUnresolvedNamespaceQualifiedNameExpressionNode.Create(node.Syntax, context, node.GenericArguments, referencedDeclarations);
