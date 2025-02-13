@@ -20,6 +20,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 /// the dependency graph can change between iterations, all the nodes of the SSC are popped except
 /// for the root. Once there are no changes when evaluating the SSC, all the nodes are popped and
 /// marked as cached.</para></remarks>
+[DebuggerStepThrough]
 internal sealed class AttributeGrammarThreadState : IInheritanceContext
 {
     public bool InGraph => inStackIndexes.Count > 0;
@@ -98,6 +99,7 @@ internal sealed class AttributeGrammarThreadState : IInheritanceContext
         return new(this, attribute, rewriteContext, index);
     }
 
+    [DebuggerStepThrough]
     [StructLayout(LayoutKind.Auto)]
     public readonly ref struct CyclicScope
     {

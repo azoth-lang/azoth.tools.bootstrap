@@ -3,6 +3,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 
+[DebuggerStepThrough]
 [DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
 internal readonly struct AttributeCachedRef
 {

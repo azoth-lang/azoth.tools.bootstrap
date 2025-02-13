@@ -92,6 +92,7 @@ internal abstract partial class <#= Emit.BaseClassName(tree) #> : TreeNode, IChi
         return node;
     }
 
+    [DebuggerStepThrough]
     void IChildTreeNode<<#= Emit.TypeName(tree.RootSupertype) #>>.SetParent(<#= Emit.TypeName(tree.RootSupertype) #> newParent)
     {
         if (newParent is not <#= Emit.BaseClassName(tree) #> newParentNode)
@@ -241,7 +242,7 @@ file class <#= Emit.ClassName(node.Defines) #> : <#= Emit.BaseClass(tree) #><#= 
     private AttributeLock syncLock;
 <#      } #>
 <#      if (node.MayHaveRewrite) { #>
-    protected override bool MayHaveRewrite => true;
+    protected override bool MayHaveRewrite { [DebuggerStepThrough] get => true; }
 <#      } #>
 
 <#      foreach (var property in Build.PropertiesForClass(node)) { #>

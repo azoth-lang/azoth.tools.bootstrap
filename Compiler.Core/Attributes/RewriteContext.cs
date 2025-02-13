@@ -1,8 +1,11 @@
+using System.Diagnostics;
+
 namespace Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 
 /// <summary>
 /// The context established by a rewrite operation.
 /// </summary>
+[DebuggerStepThrough]
 internal sealed class RewriteContext
 {
     /// <summary>

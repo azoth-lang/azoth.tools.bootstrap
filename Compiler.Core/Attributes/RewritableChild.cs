@@ -1,10 +1,12 @@
 using System;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes.Operations;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 
+[DebuggerStepThrough]
 public struct RewritableChild<T> : ICyclic<T>
     where T : class?, IChildTreeNode?
 {

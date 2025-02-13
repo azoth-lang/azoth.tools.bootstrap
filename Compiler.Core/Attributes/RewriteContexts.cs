@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
@@ -7,6 +8,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 /// <summary>
 /// A collection of rewrite contexts.
 /// </summary>
+[DebuggerStepThrough]
 internal sealed class RewriteContexts
 {
     /// <summary>

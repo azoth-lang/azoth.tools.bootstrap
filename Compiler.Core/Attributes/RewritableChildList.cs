@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes.Operations;
 using Azoth.Tools.Bootstrap.Framework;
@@ -8,6 +9,7 @@ using InlineMethod;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 
+[DebuggerStepThrough]
 internal abstract class RewritableChildList<T> : IFixedList<T>
 {
     private int hashCode;
@@ -28,6 +30,7 @@ internal abstract class RewritableChildList<T> : IFixedList<T>
     #endregion
 }
 
+[DebuggerStepThrough]
 internal class RewritableChildList<TNode, TChild> : RewritableChildList<TChild>, IRewritableChildList<TChild>
     where TNode : class, ITreeNode
     where TChild : class, IChildTreeNode<TNode>
@@ -84,6 +87,7 @@ internal class RewritableChildList<TNode, TChild> : RewritableChildList<TChild>,
     }
 }
 
+[DebuggerStepThrough]
 internal sealed class RewritableChildList<TNode, TChild, TFinal> : RewritableChildList<TNode, TChild>, IRewritableChildList<TChild, TFinal>
     where TNode : class, ITreeNode
     where TChild : class, IChildTreeNode<TNode>

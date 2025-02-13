@@ -1,7 +1,9 @@
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
 namespace Azoth.Tools.Bootstrap.Framework;
 
+[DebuggerStepThrough]
 public readonly struct InteriorRef<T>
     where T : struct
 {
@@ -29,8 +31,13 @@ public readonly struct InteriorRef<T>
     }
 }
 
+[DebuggerStepThrough]
 public static class InteriorRef
 {
+    /// <summary>
+    /// CAUTION: This is a dangerous method that should be used with care. The <paramref name="owner"/>
+    /// must be the object that contains the <paramref name="value"/>.
+    /// </summary>
     public static InteriorRef<T> Create<T>(in object owner, ref T value)
         where T : struct
         => new InteriorRef<T>(owner, ref value);

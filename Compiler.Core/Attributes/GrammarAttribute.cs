@@ -13,6 +13,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 /// <summary>
 /// Functions for working with a cached attribute in and attribute grammar.
 /// </summary>
+[DebuggerStepThrough]
 public static class GrammarAttribute
 {
     /// <remarks><see cref="ThreadStaticAttribute"/> does not support static initializers. The
@@ -27,7 +28,6 @@ public static class GrammarAttribute
     /// Get the thread state for the current thread.
     /// </summary>
     [Inline]
-    [DebuggerStepThrough]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static AttributeGrammarThreadState ThreadState()
         // Do not need to use LazyInitializer here because this is thread static
@@ -38,7 +38,6 @@ public static class GrammarAttribute
     /// simply read the attribute value from the backing field.
     /// </summary>
     [Inline(export: true)]
-    [DebuggerStepThrough]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsCached(in bool cached) => Volatile.Read(in cached);
 
@@ -48,7 +47,6 @@ public static class GrammarAttribute
     /// <remarks>This should only be used for nodes that directly expose a function that calls the
     /// inherited member.</remarks>
     [Inline]
-    [DebuggerStepThrough]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static IInheritanceContext CurrentInheritanceContext() => ThreadState();
 
@@ -56,7 +54,6 @@ public static class GrammarAttribute
     /// <summary>
     /// Read the value of a non-circular attribute.
     /// </summary>
-    [DebuggerStepThrough]
     public static T NonCircular<TNode, T, TFunc, TOp, TLock>(
         this TNode node,
         ref bool cached,
@@ -102,7 +99,6 @@ public static class GrammarAttribute
     }
 
     [Inline(export: true)]
-    [DebuggerStepThrough]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static T NonCircular<TNode, T, TFunc>(
         this TNode node,
@@ -118,7 +114,6 @@ public static class GrammarAttribute
             func, comparer, ref _noLock, attributeName);
 
     [Inline(export: true)]
-    [DebuggerStepThrough]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static T NonCircular<TNode, T, TFunc>(
         this TNode node,
@@ -135,7 +130,6 @@ public static class GrammarAttribute
             func, comparer, ref syncLock, attributeName);
 
     [Inline(export: true)]
-    [DebuggerStepThrough]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static T? NonCircular<TNode, T, TFunc>(
         this TNode node,
@@ -158,7 +152,6 @@ public static class GrammarAttribute
     /// some supertype.
     /// </summary>
     [Inline] // Not always working
-    [DebuggerStepThrough]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static T Synthetic<TNode, T>(
         this TNode node,
@@ -175,7 +168,6 @@ public static class GrammarAttribute
     /// Read the value of a non-circular synthetic attribute.
     /// </summary>
     [Inline] // Not always working
-    [DebuggerStepThrough]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static T Synthetic<TNode, T>(
         this TNode node,
@@ -192,7 +184,6 @@ public static class GrammarAttribute
     /// Read the value of a non-circular synthetic attribute that is <see cref="IEquatable{T}"/>.
     /// </summary>
     [Inline] // Not always working
-    [DebuggerStepThrough]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static T Synthetic<TNode, T>(
         this TNode node,
@@ -210,7 +201,6 @@ public static class GrammarAttribute
     /// Read the value of a non-circular synthetic attribute that is <see cref="IEquatable{T}"/>.
     /// </summary>
     [Inline] // Not always working
-    [DebuggerStepThrough]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static T? Synthetic<TNode, T>(
         this TNode node,
@@ -230,7 +220,6 @@ public static class GrammarAttribute
     /// Read the value of a non-circular inherited attribute that is <see cref="IEquatable{T}"/>.
     /// </summary>
     [Inline]
-    [DebuggerStepThrough]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static T Inherited<TNode, T>(
         this TNode node,
@@ -247,7 +236,6 @@ public static class GrammarAttribute
     /// Read the value of a non-circular inherited attribute.
     /// </summary>
     [Inline]
-    [DebuggerStepThrough]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static T Inherited<TNode, T>(
         this TNode node,
@@ -265,7 +253,6 @@ public static class GrammarAttribute
     /// Read the value of a non-circular inherited attribute that is <see cref="IEquatable{T}"/>.
     /// </summary>
     [Inline]
-    [DebuggerStepThrough]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static T Inherited<TNode, T>(
         this TNode node,
@@ -283,7 +270,6 @@ public static class GrammarAttribute
     /// Read the value of a non-circular inherited attribute that is <see cref="IEquatable{T}"/>.
     /// </summary>
     [Inline]
-    [DebuggerStepThrough]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static T? Inherited<TNode, T>(
         this TNode node,
@@ -303,7 +289,6 @@ public static class GrammarAttribute
     /// Read the value of an aggregate attribute.
     /// </summary>
     [Inline]
-    [DebuggerStepThrough]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static T Aggregate<TNode, T>(
         this TNode node,
@@ -331,7 +316,6 @@ public static class GrammarAttribute
         T Compute() => collect(actualContributors);
     }
 
-    [DebuggerStepThrough]
     // Not null inference is wrong here. This can be null because another thread could null it out.
     private static IFixedSet<T>? GetAggregateContributors<T>(
         ref IFixedSet<T>? contributors,
@@ -359,7 +343,6 @@ public static class GrammarAttribute
     /// Read the value of a collection attribute.
     /// </summary>
     [Inline]
-    [DebuggerStepThrough]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static T Collection<TNode, T>(
         this TNode node,
@@ -387,7 +370,6 @@ public static class GrammarAttribute
         T Compute(TNode t) => collect(t, actualContributors);
     }
 
-    [DebuggerStepThrough]
     // Not null inference is wrong here. This can be null because another thread could null it out.
     private static IFixedSet<T>? GetCollectionContributors<T>(
         T node,
@@ -418,7 +400,6 @@ public static class GrammarAttribute
     /// <see cref="IEquatable{T}"/>.
     /// </summary>
     [Inline] // Not always working
-    [DebuggerStepThrough]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static T Circular<TNode, T>(
         this TNode node,
@@ -435,7 +416,6 @@ public static class GrammarAttribute
     /// Read the value of a circular attribute that already has an initial value.
     /// </summary>
     [Inline] // Not always working
-    [DebuggerStepThrough]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static T Circular<TNode, T, TCompare>(
         this TNode node,
@@ -453,7 +433,6 @@ public static class GrammarAttribute
     /// Read the value of a circular attribute that is <see cref="IEquatable{T}"/>.
     /// </summary>
     [Inline] // Not always working
-    [DebuggerStepThrough]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static T Circular<TNode, T>(
         this TNode node,
@@ -471,7 +450,6 @@ public static class GrammarAttribute
     /// Read the value of a circular attribute.
     /// </summary>
     [Inline] // Not always working
-    [DebuggerStepThrough]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static T Circular<TNode, T, TCompare>(
         this TNode node,
@@ -491,7 +469,6 @@ public static class GrammarAttribute
     /// Read the value of a rewritable child attribute.
     /// </summary>
     [Inline] // Not always working
-    [DebuggerStepThrough]
     public static TChild RewritableChild<TNode, TChild>(
         this TNode node,
         ref bool cached,
@@ -507,7 +484,6 @@ public static class GrammarAttribute
     /// <summary>
     /// Read the value of a circular attribute.
     /// </summary>
-    [DebuggerStepThrough]
     internal static T Cyclic<TNode, T, TCyclic, TFunc, TCompare>(
         this TNode node,
         ref bool cached,
@@ -529,7 +505,6 @@ public static class GrammarAttribute
     /// <summary>
     /// Read the value of a circular attribute.
     /// </summary>
-    [DebuggerStepThrough]
     internal static T Cyclic<TNode, T, TCyclic, TFunc, TCompare>(
         TNode node,
         ref bool cached,

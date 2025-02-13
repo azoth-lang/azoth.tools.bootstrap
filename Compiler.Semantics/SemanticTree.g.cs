@@ -4771,6 +4771,7 @@ internal abstract partial class SemanticNode : TreeNode, IChildTreeNode<ISemanti
         return node;
     }
 
+    [DebuggerStepThrough]
     void IChildTreeNode<ISemanticNode>.SetParent(ISemanticNode newParent)
     {
         if (newParent is not SemanticNode newParentNode)
@@ -9256,7 +9257,7 @@ file class BlockExpressionNode : SemanticNode, IBlockExpressionNode
 {
     private IBlockExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
-    protected override bool MayHaveRewrite => true;
+    protected override bool MayHaveRewrite { [DebuggerStepThrough] get => true; }
 
     public IBlockExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     public IFixedList<IStatementNode> Statements { [DebuggerStepThrough] get; }
@@ -9425,7 +9426,7 @@ file class UnsafeExpressionNode : SemanticNode, IUnsafeExpressionNode
 {
     private IUnsafeExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
-    protected override bool MayHaveRewrite => true;
+    protected override bool MayHaveRewrite { [DebuggerStepThrough] get => true; }
 
     public IUnsafeExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IAmbiguousExpressionNode> expression;
@@ -9576,7 +9577,7 @@ file class UnresolvedMemberAccessExpressionNode : SemanticNode, IUnresolvedMembe
 {
     private IUnresolvedMemberAccessExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
-    protected override bool MayHaveRewrite => true;
+    protected override bool MayHaveRewrite { [DebuggerStepThrough] get => true; }
 
     public IMemberAccessExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IAmbiguousExpressionNode> context;
@@ -9701,7 +9702,7 @@ file class FieldAccessExpressionNode : SemanticNode, IFieldAccessExpressionNode
 {
     private IFieldAccessExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
-    protected override bool MayHaveRewrite => true;
+    protected override bool MayHaveRewrite { [DebuggerStepThrough] get => true; }
 
     public IMemberAccessExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IExpressionNode> context;
@@ -9854,7 +9855,7 @@ file class MethodAccessExpressionNode : SemanticNode, IMethodAccessExpressionNod
 {
     private IMethodAccessExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
-    protected override bool MayHaveRewrite => true;
+    protected override bool MayHaveRewrite { [DebuggerStepThrough] get => true; }
 
     public IMemberAccessExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IExpressionNode> context;
@@ -10028,7 +10029,7 @@ file class BoolLiteralExpressionNode : SemanticNode, IBoolLiteralExpressionNode
 {
     private IBoolLiteralExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
-    protected override bool MayHaveRewrite => true;
+    protected override bool MayHaveRewrite { [DebuggerStepThrough] get => true; }
 
     public IBoolLiteralExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
@@ -10169,7 +10170,7 @@ file class IntegerLiteralExpressionNode : SemanticNode, IIntegerLiteralExpressio
 {
     private IIntegerLiteralExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
-    protected override bool MayHaveRewrite => true;
+    protected override bool MayHaveRewrite { [DebuggerStepThrough] get => true; }
 
     public IIntegerLiteralExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
@@ -10310,7 +10311,7 @@ file class NoneLiteralExpressionNode : SemanticNode, INoneLiteralExpressionNode
 {
     private INoneLiteralExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
-    protected override bool MayHaveRewrite => true;
+    protected override bool MayHaveRewrite { [DebuggerStepThrough] get => true; }
 
     public INoneLiteralExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
@@ -10451,7 +10452,7 @@ file class StringLiteralExpressionNode : SemanticNode, IStringLiteralExpressionN
 {
     private IStringLiteralExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
-    protected override bool MayHaveRewrite => true;
+    protected override bool MayHaveRewrite { [DebuggerStepThrough] get => true; }
 
     public IStringLiteralExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
@@ -10597,7 +10598,7 @@ file class AssignmentExpressionNode : SemanticNode, IAssignmentExpressionNode
 {
     private IAssignmentExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
-    protected override bool MayHaveRewrite => true;
+    protected override bool MayHaveRewrite { [DebuggerStepThrough] get => true; }
 
     public IAssignmentExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IAmbiguousExpressionNode> leftOperand;
@@ -10800,7 +10801,7 @@ file class RefAssignmentExpressionNode : SemanticNode, IRefAssignmentExpressionN
 {
     private IRefAssignmentExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
-    protected override bool MayHaveRewrite => true;
+    protected override bool MayHaveRewrite { [DebuggerStepThrough] get => true; }
 
     public IAssignmentExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IAmbiguousExpressionNode> leftOperand;
@@ -10984,7 +10985,7 @@ file class BinaryOperatorExpressionNode : SemanticNode, IBinaryOperatorExpressio
 {
     private IBinaryOperatorExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
-    protected override bool MayHaveRewrite => true;
+    protected override bool MayHaveRewrite { [DebuggerStepThrough] get => true; }
 
     public IBinaryOperatorExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IAmbiguousExpressionNode> leftOperand;
@@ -11184,7 +11185,7 @@ file class UnaryOperatorExpressionNode : SemanticNode, IUnaryOperatorExpressionN
 {
     private IUnaryOperatorExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
-    protected override bool MayHaveRewrite => true;
+    protected override bool MayHaveRewrite { [DebuggerStepThrough] get => true; }
 
     public IUnaryOperatorExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IAmbiguousExpressionNode> operand;
@@ -11336,7 +11337,7 @@ file class ConversionExpressionNode : SemanticNode, IConversionExpressionNode
 {
     private IConversionExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
-    protected override bool MayHaveRewrite => true;
+    protected override bool MayHaveRewrite { [DebuggerStepThrough] get => true; }
 
     public IConversionExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IAmbiguousExpressionNode> referent;
@@ -11491,7 +11492,7 @@ file class ImplicitConversionExpressionNode : SemanticNode, IImplicitConversionE
 {
     private IImplicitConversionExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
-    protected override bool MayHaveRewrite => true;
+    protected override bool MayHaveRewrite { [DebuggerStepThrough] get => true; }
 
     private RewritableChild<IExpressionNode> referent;
     private bool referentCached;
@@ -11638,7 +11639,7 @@ file class PatternMatchExpressionNode : SemanticNode, IPatternMatchExpressionNod
 {
     private IPatternMatchExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
-    protected override bool MayHaveRewrite => true;
+    protected override bool MayHaveRewrite { [DebuggerStepThrough] get => true; }
 
     public IPatternMatchExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IAmbiguousExpressionNode> referent;
@@ -11824,7 +11825,7 @@ file class RefExpressionNode : SemanticNode, IRefExpressionNode
 {
     private IRefExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
-    protected override bool MayHaveRewrite => true;
+    protected override bool MayHaveRewrite { [DebuggerStepThrough] get => true; }
 
     public IRefExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IAmbiguousExpressionNode> referent;
@@ -11977,7 +11978,7 @@ file class ImplicitDerefExpressionNode : SemanticNode, IImplicitDerefExpressionN
 {
     private IImplicitDerefExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
-    protected override bool MayHaveRewrite => true;
+    protected override bool MayHaveRewrite { [DebuggerStepThrough] get => true; }
 
     private RewritableChild<IExpressionNode> referent;
     private bool referentCached;
@@ -12124,7 +12125,7 @@ file class IfExpressionNode : SemanticNode, IIfExpressionNode
 {
     private IIfExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
-    protected override bool MayHaveRewrite => true;
+    protected override bool MayHaveRewrite { [DebuggerStepThrough] get => true; }
 
     public IIfExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IAmbiguousExpressionNode> condition;
@@ -12323,7 +12324,7 @@ file class LoopExpressionNode : SemanticNode, ILoopExpressionNode
 {
     private ILoopExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
-    protected override bool MayHaveRewrite => true;
+    protected override bool MayHaveRewrite { [DebuggerStepThrough] get => true; }
 
     public ILoopExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IBlockExpressionNode> block;
@@ -12479,7 +12480,7 @@ file class WhileExpressionNode : SemanticNode, IWhileExpressionNode
 {
     private IWhileExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
-    protected override bool MayHaveRewrite => true;
+    protected override bool MayHaveRewrite { [DebuggerStepThrough] get => true; }
 
     public IWhileExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IAmbiguousExpressionNode> condition;
@@ -12666,7 +12667,7 @@ file class ForeachExpressionNode : SemanticNode, IForeachExpressionNode
 {
     private IForeachExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
-    protected override bool MayHaveRewrite => true;
+    protected override bool MayHaveRewrite { [DebuggerStepThrough] get => true; }
 
     public IForeachExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IAmbiguousExpressionNode> inExpression;
@@ -13324,7 +13325,7 @@ file class UnresolvedInvocationExpressionNode : SemanticNode, IUnresolvedInvocat
 {
     private IUnresolvedInvocationExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
-    protected override bool MayHaveRewrite => true;
+    protected override bool MayHaveRewrite { [DebuggerStepThrough] get => true; }
 
     public IInvocationExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IAmbiguousExpressionNode> expression;
@@ -13513,7 +13514,7 @@ file class FunctionInvocationExpressionNode : SemanticNode, IFunctionInvocationE
 {
     private IFunctionInvocationExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
-    protected override bool MayHaveRewrite => true;
+    protected override bool MayHaveRewrite { [DebuggerStepThrough] get => true; }
 
     public IInvocationExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IFunctionNameExpressionNode> function;
@@ -13712,7 +13713,7 @@ file class MethodInvocationExpressionNode : SemanticNode, IMethodInvocationExpre
 {
     private IMethodInvocationExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
-    protected override bool MayHaveRewrite => true;
+    protected override bool MayHaveRewrite { [DebuggerStepThrough] get => true; }
 
     public IInvocationExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IMethodAccessExpressionNode> method;
@@ -13898,7 +13899,7 @@ file class GetterInvocationExpressionNode : SemanticNode, IGetterInvocationExpre
 {
     private IGetterInvocationExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
-    protected override bool MayHaveRewrite => true;
+    protected override bool MayHaveRewrite { [DebuggerStepThrough] get => true; }
 
     public IMemberAccessExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IExpressionNode> context;
@@ -14073,7 +14074,7 @@ file class SetterInvocationExpressionNode : SemanticNode, ISetterInvocationExpre
 {
     private ISetterInvocationExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
-    protected override bool MayHaveRewrite => true;
+    protected override bool MayHaveRewrite { [DebuggerStepThrough] get => true; }
 
     public IAssignmentExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IExpressionNode> context;
@@ -14280,7 +14281,7 @@ file class FunctionReferenceInvocationExpressionNode : SemanticNode, IFunctionRe
 {
     private IFunctionReferenceInvocationExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
-    protected override bool MayHaveRewrite => true;
+    protected override bool MayHaveRewrite { [DebuggerStepThrough] get => true; }
 
     public IInvocationExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IExpressionNode> expression;
@@ -14472,7 +14473,7 @@ file class InitializerInvocationExpressionNode : SemanticNode, IInitializerInvoc
 {
     private IInitializerInvocationExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
-    protected override bool MayHaveRewrite => true;
+    protected override bool MayHaveRewrite { [DebuggerStepThrough] get => true; }
 
     public IInvocationExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IInitializerNameExpressionNode> initializer;
@@ -14662,7 +14663,7 @@ file class NonInvocableInvocationExpressionNode : SemanticNode, INonInvocableInv
 {
     private INonInvocableInvocationExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
-    protected override bool MayHaveRewrite => true;
+    protected override bool MayHaveRewrite { [DebuggerStepThrough] get => true; }
 
     public IInvocationExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IAmbiguousExpressionNode> expression;
@@ -14831,7 +14832,7 @@ file class VariableNameExpressionNode : SemanticNode, IVariableNameExpressionNod
 {
     private IVariableNameExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
-    protected override bool MayHaveRewrite => true;
+    protected override bool MayHaveRewrite { [DebuggerStepThrough] get => true; }
 
     public IIdentifierNameSyntax Syntax { [DebuggerStepThrough] get; }
     public ILocalBindingNode ReferencedDefinition { [DebuggerStepThrough] get; }
@@ -14985,7 +14986,7 @@ file class SelfExpressionNode : SemanticNode, ISelfExpressionNode
 {
     private ISelfExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
-    protected override bool MayHaveRewrite => true;
+    protected override bool MayHaveRewrite { [DebuggerStepThrough] get => true; }
 
     public ISelfExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
@@ -15139,7 +15140,7 @@ file class FunctionNameExpressionNode : SemanticNode, IFunctionNameExpressionNod
 {
     private IFunctionNameExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
-    protected override bool MayHaveRewrite => true;
+    protected override bool MayHaveRewrite { [DebuggerStepThrough] get => true; }
 
     public INameExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<INameNode?> context;
@@ -15319,7 +15320,7 @@ file class InitializerNameExpressionNode : SemanticNode, IInitializerNameExpress
 {
     private IInitializerNameExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
-    protected override bool MayHaveRewrite => true;
+    protected override bool MayHaveRewrite { [DebuggerStepThrough] get => true; }
 
     public INameExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     public ITypeNameNode Context { [DebuggerStepThrough] get; }
@@ -15582,7 +15583,7 @@ file class UnresolvedIdentifierNameExpressionNode : SemanticNode, IUnresolvedIde
 {
     private IUnresolvedIdentifierNameExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
-    protected override bool MayHaveRewrite => true;
+    protected override bool MayHaveRewrite { [DebuggerStepThrough] get => true; }
 
     public IIdentifierNameSyntax Syntax { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
@@ -15701,7 +15702,7 @@ file class UnresolvedGenericNameExpressionNode : SemanticNode, IUnresolvedGeneri
 {
     private IUnresolvedGenericNameExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
-    protected override bool MayHaveRewrite => true;
+    protected override bool MayHaveRewrite { [DebuggerStepThrough] get => true; }
 
     public IGenericNameSyntax Syntax { [DebuggerStepThrough] get; }
     public IFixedList<ITypeNode> GenericArguments { [DebuggerStepThrough] get; }
@@ -15824,7 +15825,7 @@ file class UnresolvedNameExpressionQualifiedNameExpressionNode : SemanticNode, I
 {
     private IUnresolvedNameExpressionQualifiedNameExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
-    protected override bool MayHaveRewrite => true;
+    protected override bool MayHaveRewrite { [DebuggerStepThrough] get => true; }
 
     public IQualifiedNameSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IExpressionNode> context;
@@ -15955,7 +15956,7 @@ file class UnresolvedNamespaceQualifiedNameExpressionNode : SemanticNode, IUnres
 {
     private IUnresolvedNamespaceQualifiedNameExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
-    protected override bool MayHaveRewrite => true;
+    protected override bool MayHaveRewrite { [DebuggerStepThrough] get => true; }
 
     public IQualifiedNameSyntax Syntax { [DebuggerStepThrough] get; }
     public INamespaceNameNode Context { [DebuggerStepThrough] get; }
@@ -16082,7 +16083,7 @@ file class UnresolvedTypeQualifiedNameExpressionNode : SemanticNode, IUnresolved
 {
     private IUnresolvedTypeQualifiedNameExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
-    protected override bool MayHaveRewrite => true;
+    protected override bool MayHaveRewrite { [DebuggerStepThrough] get => true; }
 
     public IQualifiedNameSyntax Syntax { [DebuggerStepThrough] get; }
     public ITypeNameNode Context { [DebuggerStepThrough] get; }
@@ -16406,7 +16407,7 @@ file class UnresolvedIdentifierNameNode : SemanticNode, IUnresolvedIdentifierNam
 {
     private IUnresolvedIdentifierNameNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
-    protected override bool MayHaveRewrite => true;
+    protected override bool MayHaveRewrite { [DebuggerStepThrough] get => true; }
 
     public IIdentifierNameSyntax Syntax { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
@@ -16525,7 +16526,7 @@ file class UnresolvedGenericNameNode : SemanticNode, IUnresolvedGenericNameNode
 {
     private IUnresolvedGenericNameNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
-    protected override bool MayHaveRewrite => true;
+    protected override bool MayHaveRewrite { [DebuggerStepThrough] get => true; }
 
     public IGenericNameSyntax Syntax { [DebuggerStepThrough] get; }
     public IFixedList<ITypeNode> GenericArguments { [DebuggerStepThrough] get; }
@@ -16648,7 +16649,7 @@ file class UnresolvedNameQualifiedNameNode : SemanticNode, IUnresolvedNameQualif
 {
     private IUnresolvedNameQualifiedNameNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
-    protected override bool MayHaveRewrite => true;
+    protected override bool MayHaveRewrite { [DebuggerStepThrough] get => true; }
 
     public IQualifiedNameSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<INameNode> context;
@@ -16764,7 +16765,7 @@ file class UnresolvedNamespaceQualifiedNameNode : SemanticNode, IUnresolvedNames
 {
     private IUnresolvedNamespaceQualifiedNameNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
-    protected override bool MayHaveRewrite => true;
+    protected override bool MayHaveRewrite { [DebuggerStepThrough] get => true; }
 
     public IQualifiedNameSyntax Syntax { [DebuggerStepThrough] get; }
     public INamespaceNameNode Context { [DebuggerStepThrough] get; }
@@ -16876,7 +16877,7 @@ file class UnresolvedTypeQualifiedNameNode : SemanticNode, IUnresolvedTypeQualif
 {
     private IUnresolvedTypeQualifiedNameNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
-    protected override bool MayHaveRewrite => true;
+    protected override bool MayHaveRewrite { [DebuggerStepThrough] get => true; }
 
     public IQualifiedNameSyntax Syntax { [DebuggerStepThrough] get; }
     public ITypeNameNode Context { [DebuggerStepThrough] get; }
@@ -17538,7 +17539,7 @@ file class QualifiedTypeNameNode : SemanticNode, IQualifiedTypeNameNode
 file class AmbiguousMoveExpressionNode : SemanticNode, IAmbiguousMoveExpressionNode
 {
     private IAmbiguousMoveExpressionNode Self { [Inline] get => this; }
-    protected override bool MayHaveRewrite => true;
+    protected override bool MayHaveRewrite { [DebuggerStepThrough] get => true; }
 
     public IMoveExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IAmbiguousExpressionNode> referent;
@@ -17604,7 +17605,7 @@ file class MoveVariableExpressionNode : SemanticNode, IMoveVariableExpressionNod
 {
     private IMoveVariableExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
-    protected override bool MayHaveRewrite => true;
+    protected override bool MayHaveRewrite { [DebuggerStepThrough] get => true; }
 
     public IExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<ILocalBindingNameExpressionNode> referent;
@@ -17751,7 +17752,7 @@ file class MoveValueExpressionNode : SemanticNode, IMoveValueExpressionNode
 {
     private IMoveValueExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
-    protected override bool MayHaveRewrite => true;
+    protected override bool MayHaveRewrite { [DebuggerStepThrough] get => true; }
 
     public IExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IExpressionNode> referent;
@@ -17900,7 +17901,7 @@ file class ImplicitTempMoveExpressionNode : SemanticNode, IImplicitTempMoveExpre
 {
     private IImplicitTempMoveExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
-    protected override bool MayHaveRewrite => true;
+    protected override bool MayHaveRewrite { [DebuggerStepThrough] get => true; }
 
     public IExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IExpressionNode> referent;
@@ -18042,7 +18043,7 @@ file class ImplicitTempMoveExpressionNode : SemanticNode, IImplicitTempMoveExpre
 file class AmbiguousFreezeExpressionNode : SemanticNode, IAmbiguousFreezeExpressionNode
 {
     private IAmbiguousFreezeExpressionNode Self { [Inline] get => this; }
-    protected override bool MayHaveRewrite => true;
+    protected override bool MayHaveRewrite { [DebuggerStepThrough] get => true; }
 
     public IFreezeExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IAmbiguousExpressionNode> referent;
@@ -18108,7 +18109,7 @@ file class FreezeVariableExpressionNode : SemanticNode, IFreezeVariableExpressio
 {
     private IFreezeVariableExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
-    protected override bool MayHaveRewrite => true;
+    protected override bool MayHaveRewrite { [DebuggerStepThrough] get => true; }
 
     public IExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<ILocalBindingNameExpressionNode> referent;
@@ -18258,7 +18259,7 @@ file class FreezeValueExpressionNode : SemanticNode, IFreezeValueExpressionNode
 {
     private IFreezeValueExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
-    protected override bool MayHaveRewrite => true;
+    protected override bool MayHaveRewrite { [DebuggerStepThrough] get => true; }
 
     public IExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IExpressionNode> referent;
@@ -18410,7 +18411,7 @@ file class PrepareToReturnExpressionNode : SemanticNode, IPrepareToReturnExpress
 {
     private IPrepareToReturnExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
-    protected override bool MayHaveRewrite => true;
+    protected override bool MayHaveRewrite { [DebuggerStepThrough] get => true; }
 
     private RewritableChild<IExpressionNode> value;
     private bool valueCached;
@@ -18545,7 +18546,7 @@ file class AsyncBlockExpressionNode : SemanticNode, IAsyncBlockExpressionNode
 {
     private IAsyncBlockExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
-    protected override bool MayHaveRewrite => true;
+    protected override bool MayHaveRewrite { [DebuggerStepThrough] get => true; }
 
     public IAsyncBlockExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IBlockExpressionNode> block;
@@ -18676,7 +18677,7 @@ file class AsyncStartExpressionNode : SemanticNode, IAsyncStartExpressionNode
 {
     private IAsyncStartExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
-    protected override bool MayHaveRewrite => true;
+    protected override bool MayHaveRewrite { [DebuggerStepThrough] get => true; }
 
     public IAsyncStartExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IAmbiguousExpressionNode> expression;
@@ -18827,7 +18828,7 @@ file class AwaitExpressionNode : SemanticNode, IAwaitExpressionNode
 {
     private IAwaitExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
-    protected override bool MayHaveRewrite => true;
+    protected override bool MayHaveRewrite { [DebuggerStepThrough] get => true; }
 
     public IAwaitExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IAmbiguousExpressionNode> expression;
