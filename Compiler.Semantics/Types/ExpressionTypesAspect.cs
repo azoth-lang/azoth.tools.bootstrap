@@ -607,11 +607,10 @@ internal static partial class ExpressionTypesAspect
 
     public static partial IFlowState ConversionExpression_FlowStateAfter(IConversionExpressionNode node)
     {
-        var intermediateReferent = node.Referent;
-        if (intermediateReferent is null)
+        var referent = node.Referent; // Avoids repeated access
+        if (referent is null)
             return IFlowState.Empty;
-        return intermediateReferent.FlowStateAfter
-            .Transform(node.Referent?.ValueId, node.ValueId, node.Type);
+        return referent.FlowStateAfter.Transform(referent.ValueId, node.ValueId, node.Type);
     }
 
     public static partial void ConversionExpression_Contribute_Diagnostics(IConversionExpressionNode node, DiagnosticCollectionBuilder diagnostics)
@@ -628,14 +627,20 @@ internal static partial class ExpressionTypesAspect
         => ((SimpleTypeConstructor)node.PlainType.TypeConstructor).Type;
 
     public static partial IFlowState ImplicitConversionExpression_FlowStateAfter(IImplicitConversionExpressionNode node)
-        => node.Referent.FlowStateAfter.Transform(node.Referent.ValueId, node.ValueId, node.Type);
+    {
+        var referent = node.Referent; // Avoids repeated access
+        return referent.FlowStateAfter.Transform(referent.ValueId, node.ValueId, node.Type);
+    }
 
     public static partial IMaybeType AsyncStartExpression_Type(IAsyncStartExpressionNode node)
         => Intrinsic.PromiseOf(node.Expression?.Type.ToNonLiteral() ?? Type.Unknown);
 
     public static partial IFlowState AsyncStartExpression_FlowStateAfter(IAsyncStartExpressionNode node)
+    {
+        var expression = node.Expression; // Avoids repeated access
         // TODO this isn't correct, async start can act like a delayed lambda. It is also a transform that wraps
-        => node.Expression?.FlowStateAfter.Combine(node.Expression.ValueId, null, node.ValueId) ?? IFlowState.Empty;
+        return expression?.FlowStateAfter.Combine(expression.ValueId, null, node.ValueId) ?? IFlowState.Empty;
+    }
 
     public static partial IMaybeType AwaitExpression_Type(IAwaitExpressionNode node)
     {
@@ -647,8 +652,11 @@ internal static partial class ExpressionTypesAspect
     }
 
     public static partial IFlowState AwaitExpression_FlowStateAfter(IAwaitExpressionNode node)
+    {
+        var expression = node.Expression; // Avoids repeated access
         // TODO actually this is a transform that unwraps
-        => node.Expression?.FlowStateAfter.Combine(node.Expression.ValueId, null, node.ValueId) ?? IFlowState.Empty;
+        return expression?.FlowStateAfter.Combine(expression.ValueId, null, node.ValueId) ?? IFlowState.Empty;
+    }
 
     public static partial IMaybeType UnaryOperatorExpression_Type(IUnaryOperatorExpressionNode node)
         => node.PlainType switch
@@ -660,7 +668,11 @@ internal static partial class ExpressionTypesAspect
         };
 
     public static partial IFlowState UnaryOperatorExpression_FlowStateAfter(IUnaryOperatorExpressionNode node)
-        => node.Operand?.FlowStateAfter.Transform(node.Operand.ValueId, node.ValueId, node.Type) ?? IFlowState.Empty;
+    {
+        var operand = node.Operand; // Avoids repeated access
+        return operand?.FlowStateAfter.Transform(operand.ValueId, node.ValueId, node.Type)
+               ?? IFlowState.Empty;
+    }
 
     public static partial IMaybeType FreezeExpression_Type(IFreezeExpressionNode node)
     {
@@ -676,18 +688,20 @@ internal static partial class ExpressionTypesAspect
 
     public static partial IFlowState FreezeVariableExpression_FlowStateAfter(IFreezeVariableExpressionNode node)
     {
-        var flowStateBefore = node.Referent.FlowStateAfter;
-        var referentValueId = node.Referent.ValueId;
+        var referent = node.Referent; // Avoids repeated access
+        var flowStateBefore = referent.FlowStateAfter;
+        var referentValueId = referent.ValueId;
         return node.IsTemporary
             // TODO this implies that temp freeze is a fundamentally different operation and ought to have its own node type
             ? flowStateBefore.TempFreeze(referentValueId, node.ValueId)
-            : flowStateBefore.FreezeVariable(node.Referent.ReferencedDefinition, referentValueId, node.ValueId);
+            : flowStateBefore.FreezeVariable(referent.ReferencedDefinition, referentValueId, node.ValueId);
     }
 
     public static partial IFlowState FreezeValueExpression_FlowStateAfter(IFreezeValueExpressionNode node)
     {
-        var flowStateBefore = node.Referent.FlowStateAfter;
-        var referentValueId = node.Referent.ValueId;
+        var referent = node.Referent; // Avoids repeated access
+        var flowStateBefore = referent.FlowStateAfter;
+        var referentValueId = referent.ValueId;
         return node.IsTemporary
             ? flowStateBefore.TempFreeze(referentValueId, node.ValueId)
             : flowStateBefore.FreezeValue(referentValueId, node.ValueId);
@@ -728,8 +742,9 @@ internal static partial class ExpressionTypesAspect
 
     public static partial IFlowState MoveVariableExpression_FlowStateAfter(IMoveVariableExpressionNode node)
     {
-        var flowStateBefore = node.Referent.FlowStateAfter;
-        return flowStateBefore.MoveVariable(node.Referent.ReferencedDefinition, node.Referent.ValueId, node.ValueId);
+        var referent = node.Referent; // Avoids repeated access
+        var flowStateBefore = referent.FlowStateAfter;
+        return flowStateBefore.MoveVariable(referent.ReferencedDefinition, referent.ValueId, node.ValueId);
     }
 
     public static partial void MoveVariableExpression_Contribute_Diagnostics(IMoveVariableExpressionNode node, DiagnosticCollectionBuilder diagnostics)
@@ -745,8 +760,9 @@ internal static partial class ExpressionTypesAspect
 
     public static partial IFlowState MoveValueExpression_FlowStateAfter(IMoveValueExpressionNode node)
     {
-        var flowStateBefore = node.Referent.FlowStateAfter;
-        return flowStateBefore.MoveValue(node.Referent.ValueId, node.ValueId);
+        var referent = node.Referent; // Avoids repeated access
+        var flowStateBefore = referent.FlowStateAfter;
+        return flowStateBefore.MoveValue(referent.ValueId, node.ValueId);
     }
 
     public static partial void MoveValueExpression_Contribute_Diagnostics(IMoveValueExpressionNode node, DiagnosticCollectionBuilder diagnostics)
@@ -771,17 +787,18 @@ internal static partial class ExpressionTypesAspect
 
     public static partial IFlowState ImplicitTempMoveExpression_FlowStateAfter(IImplicitTempMoveExpressionNode node)
     {
-        var flowStateBefore = node.Referent.FlowStateAfter;
-        return flowStateBefore.TempMove(node.Referent.ValueId, node.ValueId);
+        var referent = node.Referent; // Avoids repeated access
+        var flowStateBefore = referent.FlowStateAfter;
+        return flowStateBefore.TempMove(referent.ValueId, node.ValueId);
     }
 
     public static partial IFlowState ExpressionStatement_FlowStateAfter(IExpressionStatementNode node)
     {
-        var intermediateExpression = node.Expression;
-        if (intermediateExpression is null)
+        var expression = node.Expression;
+        if (expression is null)
             return IFlowState.Empty;
 
-        return intermediateExpression.FlowStateAfter.DropValue(intermediateExpression.ValueId);
+        return expression.FlowStateAfter.DropValue(expression.ValueId);
     }
 
     public static partial IFlowState ReturnExpression_FlowStateAfter(IReturnExpressionNode node)
@@ -811,8 +828,9 @@ internal static partial class ExpressionTypesAspect
 
     public static partial IFlowState PrepareToReturnExpression_FlowStateAfter(IPrepareToReturnExpressionNode node)
     {
-        var flowStateBefore = node.Value.FlowStateAfter;
-        return flowStateBefore.Transform(node.Value.ValueId, node.ValueId, node.Type)
+        var value = node.Value; // Avoids repeated access
+        var flowStateBefore = value.FlowStateAfter;
+        return flowStateBefore.Transform(value.ValueId, node.ValueId, node.Type)
                               .DropBindingsForReturn();
     }
 
@@ -842,7 +860,11 @@ internal static partial class ExpressionTypesAspect
     }
 
     public static partial IFlowState RefExpression_FlowStateAfter(IRefExpressionNode node)
-        => node.Referent?.FlowStateAfter.Transform(node.Referent.ValueId, node.ValueId, node.Type) ?? IFlowState.Empty;
+    {
+        var referent = node.Referent; // Avoids repeated access
+        return referent?.FlowStateAfter.Transform(referent.ValueId, node.ValueId, node.Type)
+               ?? IFlowState.Empty;
+    }
 
     public static partial IMaybeType ImplicitDerefExpression_Type(IImplicitDerefExpressionNode node)
         => (node.Referent.Type as RefType)?.Referent ?? IMaybeType.Unknown;
@@ -860,7 +882,11 @@ internal static partial class ExpressionTypesAspect
         => node.FlowStateBefore().Alias(null, node.ValueId);
 
     public static partial IFlowState UnresolvedQualifiedNameExpression_FlowStateAfter(IUnresolvedQualifiedNameExpressionNode node)
-        => node.Context?.FlowStateAfter.Transform(node.Context.ValueId, node.ValueId, node.Type) ?? IFlowState.Empty;
+    {
+        var context = node.Context; // Avoid repeated access
+        return context.FlowStateAfter.Transform(context.ValueId, node.ValueId, node.Type);
+    }
+
     #endregion
 
     #region Instance Member Access Expressions
