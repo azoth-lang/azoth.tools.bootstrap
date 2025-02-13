@@ -7,6 +7,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 
 [DebuggerDisplay($"{{{nameof(DebuggerDisplay)}(),nq}}")]
 [DebuggerTypeProxy(typeof(Circular<>.CircularDebugView))]
+[DebuggerStepThrough]
 public struct Circular<T> : ICyclic<T>
     where T : class?
 {

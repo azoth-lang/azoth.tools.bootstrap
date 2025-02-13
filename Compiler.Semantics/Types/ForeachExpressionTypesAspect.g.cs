@@ -28,4 +28,6 @@ internal static partial class ForeachExpressionTypesAspect
     public static partial IMaybeNonVoidType ForeachExpression_IteratedType(IForeachExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFlowState ForeachExpression_FlowStateBeforeBlock(IForeachExpressionNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial IFlowState ForeachExpression_FlowStateAfterBlock(IForeachExpressionNode node);
 }

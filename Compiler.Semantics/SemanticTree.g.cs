@@ -1227,11 +1227,10 @@ public partial interface IFieldParameterNode : IInitializerParameterNode
     IParameterSyntax IParameterNode.Syntax => Syntax;
     ICodeSyntax ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    new IFlowState FlowStateAfter
-        => FlowStateBefore();
-    IFlowState IParameterNode.FlowStateAfter => FlowStateAfter;
     ITypeDefinitionNode ContainingTypeDefinition { get; }
     IFieldDefinitionNode? ReferencedField { get; }
+    IFlowState IParameterNode.FlowStateAfter
+        => FlowStateBefore();
     IdentifierName IInitializerParameterNode.Name
         => Syntax.Name;
 
@@ -1679,13 +1678,12 @@ public partial interface IBindingContextPatternNode : IPatternNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     IPatternNode Pattern { get; }
     ITypeNode? Type { get; }
-    new IFlowState FlowStateAfter
-        => Pattern.FlowStateAfter;
-    IFlowState IPatternNode.FlowStateAfter => FlowStateAfter;
     bool IsMutableBinding
         => Syntax.IsMutableBinding;
     ConditionalLexicalScope IPatternNode.FlowLexicalScope()
         => Pattern.FlowLexicalScope();
+    IFlowState IPatternNode.FlowStateAfter
+        => Pattern.FlowStateAfter;
 
     public static IBindingContextPatternNode Create(
         IBindingContextPatternSyntax syntax,
@@ -1741,11 +1739,10 @@ public partial interface IOptionalPatternNode : IOptionalOrBindingPatternNode
     ICodeSyntax ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     IOptionalOrBindingPatternNode Pattern { get; }
-    new IFlowState FlowStateAfter
-        => Pattern.FlowStateAfter;
-    IFlowState IPatternNode.FlowStateAfter => FlowStateAfter;
     ConditionalLexicalScope IPatternNode.FlowLexicalScope()
         => Pattern.FlowLexicalScope();
+    IFlowState IPatternNode.FlowStateAfter
+        => Pattern.FlowStateAfter;
 
     public static IOptionalPatternNode Create(
         IOptionalPatternSyntax syntax,
@@ -1967,9 +1964,6 @@ public partial interface IMethodAccessExpressionNode : IOrdinaryTypedExpressionN
     IExpressionNode CurrentContext { get; }
     IFixedList<ITypeNode> GenericArguments { get; }
     IFixedSet<IOrdinaryMethodDeclarationNode> ReferencedDeclarations { get; }
-    new IFlowState FlowStateAfter
-        => Context.FlowStateAfter;
-    IFlowState IExpressionNode.FlowStateAfter => FlowStateAfter;
     IFixedSet<ICallCandidate<IOrdinaryMethodDeclarationNode>> CallCandidates { get; }
     IFixedSet<ICallCandidate<IOrdinaryMethodDeclarationNode>> CompatibleCallCandidates { get; }
     ICallCandidate<IOrdinaryMethodDeclarationNode>? SelectedCallCandidate { get; }
@@ -1977,6 +1971,8 @@ public partial interface IMethodAccessExpressionNode : IOrdinaryTypedExpressionN
         => SelectedCallCandidate?.Declaration;
     OrdinaryName MethodName
         => Syntax.MemberName;
+    IFlowState IExpressionNode.FlowStateAfter
+        => Context.FlowStateAfter;
     ExpressionKind IExpressionNode.ExpressionKind
         => ExpressionKind.MethodAccess;
 
@@ -2325,6 +2321,7 @@ public partial interface IIfExpressionNode : IOrdinaryTypedExpressionNode, IElse
     IBlockOrResultNode CurrentThenBlock { get; }
     IElseClauseNode? ElseClause { get; }
     IElseClauseNode? CurrentElseClause { get; }
+    IFlowState FlowStateAfterCondition { get; }
     new IFlowState FlowStateAfter { get; }
     IFlowState IExpressionNode.FlowStateAfter => FlowStateAfter;
     IFlowState IElseClauseNode.FlowStateAfter => FlowStateAfter;
@@ -2374,6 +2371,7 @@ public partial interface IWhileExpressionNode : IOrdinaryTypedExpressionNode
     IAmbiguousExpressionNode CurrentCondition { get; }
     IBlockExpressionNode Block { get; }
     IBlockExpressionNode CurrentBlock { get; }
+    IFlowState FlowStateAfterCondition { get; }
     ExpressionKind IExpressionNode.ExpressionKind
         => ExpressionKind.While;
 
@@ -2413,6 +2411,7 @@ public partial interface IForeachExpressionNode : IOrdinaryTypedExpressionNode, 
     IMaybeNonVoidType IteratorType { get; }
     IMaybeNonVoidType IteratedType { get; }
     IFlowState FlowStateBeforeBlock { get; }
+    IFlowState FlowStateAfterBlock { get; }
     ITypeDeclarationNode? ReferencedIterableDeclaration { get; }
     IOrdinaryMethodDeclarationNode? ReferencedIterateMethod { get; }
     IMaybeNonVoidPlainType IteratorPlainType { get; }
@@ -3605,11 +3604,10 @@ public partial interface IAsyncBlockExpressionNode : IOrdinaryTypedExpressionNod
     ISyntax? ISemanticNode.Syntax => Syntax;
     IBlockExpressionNode Block { get; }
     IBlockExpressionNode CurrentBlock { get; }
-    new IFlowState FlowStateAfter
-        => throw new NotImplementedException();
-    IFlowState IExpressionNode.FlowStateAfter => FlowStateAfter;
     IMaybeType IExpressionNode.Type
         => Block.Type;
+    IFlowState IExpressionNode.FlowStateAfter
+        => throw new NotImplementedException();
     IMaybePlainType IExpressionNode.PlainType
         => Block.PlainType;
     ExpressionKind IExpressionNode.ExpressionKind
@@ -4763,6 +4761,7 @@ internal abstract partial class SemanticNode : TreeNode, IChildTreeNode<ISemanti
         // node not in the final tree, then there is a bug where the parent wasn't set in time.
         => Volatile.Read(in parent) ?? (InFinalTree ? null : throw Child.ParentMissing(this));
 
+    [DebuggerStepThrough]
     private SemanticNode? GetParent(IInheritanceContext ctx)
     {
         // Use volatile read to ensure order of operations as seen by other threads
@@ -7716,12 +7715,11 @@ file class NamedParameterNode : SemanticNode, INamedParameterNode
                 ValueIdsAspect.Parameter_BindingValueId);
     private ValueId bindingValueId;
     private bool bindingValueIdCached;
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
+            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.NamedParameter_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
     public IMaybeParameterType ParameterType
         => GrammarAttribute.IsCached(in parameterTypeCached) ? parameterType!
@@ -7811,12 +7809,11 @@ file class InitializerSelfParameterNode : SemanticNode, IInitializerSelfParamete
                 ValueIdsAspect.Parameter_BindingValueId);
     private ValueId bindingValueId;
     private bool bindingValueIdCached;
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
+            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.SelfParameter_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
     public IMaybeNonVoidType ParameterType
         => GrammarAttribute.IsCached(in parameterTypeCached) ? parameterType!
@@ -7899,12 +7896,11 @@ file class MethodSelfParameterNode : SemanticNode, IMethodSelfParameterNode
                 ValueIdsAspect.Parameter_BindingValueId);
     private ValueId bindingValueId;
     private bool bindingValueIdCached;
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
+            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.SelfParameter_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
     public IMaybeNonVoidType ParameterType
         => GrammarAttribute.IsCached(in parameterTypeCached) ? parameterType!
@@ -8802,12 +8798,11 @@ file class VariableDeclarationStatementNode : SemanticNode, IVariableDeclaration
                 SingleAssignmentAspect.DataFlow_DefinitelyUnassigned_Initial);
     private Circular<BindingFlags<IVariableBindingNode>> definitelyUnassigned = Circular.Unset;
     private bool definitelyUnassignedCached;
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
+            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
                 NameBindingTypesAspect.VariableDeclarationStatement_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
     public LexicalScope LexicalScope
         => GrammarAttribute.IsCached(in lexicalScopeCached) ? lexicalScope!
@@ -8919,12 +8914,11 @@ file class ExpressionStatementNode : SemanticNode, IExpressionStatementNode
                 ControlFlowAspect.ExpressionStatement_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
+            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.ExpressionStatement_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
 
     public ExpressionStatementNode(
@@ -9144,12 +9138,11 @@ file class BindingPatternNode : SemanticNode, IBindingPatternNode
                 SingleAssignmentAspect.DataFlow_DefinitelyUnassigned_Initial);
     private Circular<BindingFlags<IVariableBindingNode>> definitelyUnassigned = Circular.Unset;
     private bool definitelyUnassignedCached;
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
+            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
                 NameBindingTypesAspect.BindingPattern_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
 
     public BindingPatternNode(IBindingPatternSyntax syntax)
@@ -9495,12 +9488,11 @@ file class UnsafeExpressionNode : SemanticNode, IUnsafeExpressionNode
                 ControlFlowAspect.UnsafeExpression_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
+            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.UnsafeExpression_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
     public IMaybePlainType PlainType
         => GrammarAttribute.IsCached(in plainTypeCached) ? plainType!
@@ -9634,12 +9626,11 @@ file class UnresolvedMemberAccessExpressionNode : SemanticNode, IUnresolvedMembe
                 ControlFlowAspect.UnresolvedMemberAccessExpression_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
+            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.UnresolvedMemberAccessExpression_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
@@ -9772,12 +9763,11 @@ file class FieldAccessExpressionNode : SemanticNode, IFieldAccessExpressionNode
                 ControlFlowAspect.FieldAccessExpression_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
+            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.FieldAccessExpression_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
     public IMaybePlainType PlainType
         => GrammarAttribute.IsCached(in plainTypeCached) ? plainType!
@@ -10095,12 +10085,11 @@ file class BoolLiteralExpressionNode : SemanticNode, IBoolLiteralExpressionNode
                 ControlFlowAspect.Expression_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
+            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.LiteralExpression_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
     public IMaybePlainType PlainType
         => GrammarAttribute.IsCached(in plainTypeCached) ? plainType!
@@ -10237,12 +10226,11 @@ file class IntegerLiteralExpressionNode : SemanticNode, IIntegerLiteralExpressio
                 ControlFlowAspect.Expression_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
+            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.LiteralExpression_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
     public IMaybePlainType PlainType
         => GrammarAttribute.IsCached(in plainTypeCached) ? plainType!
@@ -10379,12 +10367,11 @@ file class NoneLiteralExpressionNode : SemanticNode, INoneLiteralExpressionNode
                 ControlFlowAspect.Expression_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
+            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.LiteralExpression_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
     public IMaybePlainType PlainType
         => GrammarAttribute.IsCached(in plainTypeCached) ? plainType!
@@ -10525,12 +10512,11 @@ file class StringLiteralExpressionNode : SemanticNode, IStringLiteralExpressionN
                 ControlFlowAspect.Expression_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
+            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.LiteralExpression_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
     public IMaybePlainType PlainType
         => GrammarAttribute.IsCached(in plainTypeCached) ? plainType!
@@ -10706,12 +10692,11 @@ file class AssignmentExpressionNode : SemanticNode, IAssignmentExpressionNode
                 SingleAssignmentAspect.DataFlow_DefinitelyUnassigned_Initial);
     private Circular<BindingFlags<IVariableBindingNode>> definitelyUnassigned = Circular.Unset;
     private bool definitelyUnassignedCached;
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
+            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.AssignmentExpression_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
     public IMaybePlainType PlainType
         => GrammarAttribute.IsCached(in plainTypeCached) ? plainType!
@@ -10890,12 +10875,11 @@ file class RefAssignmentExpressionNode : SemanticNode, IRefAssignmentExpressionN
                 ControlFlowAspect.RefAssignmentExpression_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
+            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.RefAssignmentExpression_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
     public IMaybePlainType PlainType
         => GrammarAttribute.IsCached(in plainTypeCached) ? plainType!
@@ -11079,12 +11063,11 @@ file class BinaryOperatorExpressionNode : SemanticNode, IBinaryOperatorExpressio
                 ControlFlowAspect.BinaryOperatorExpression_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
+            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.BinaryOperatorExpression_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
     public PlainType? NumericOperatorCommonPlainType
         => GrammarAttribute.IsCached(in numericOperatorCommonPlainTypeCached) ? numericOperatorCommonPlainType
@@ -11267,12 +11250,11 @@ file class UnaryOperatorExpressionNode : SemanticNode, IUnaryOperatorExpressionN
                 ControlFlowAspect.UnaryOperatorExpression_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
+            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.UnaryOperatorExpression_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
     public IMaybePlainType PlainType
         => GrammarAttribute.IsCached(in plainTypeCached) ? plainType!
@@ -11421,12 +11403,11 @@ file class ConversionExpressionNode : SemanticNode, IConversionExpressionNode
                 ControlFlowAspect.ConversionExpression_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
+            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.ConversionExpression_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
     public IMaybePlainType PlainType
         => GrammarAttribute.IsCached(in plainTypeCached) ? plainType!
@@ -11574,12 +11555,11 @@ file class ImplicitConversionExpressionNode : SemanticNode, IImplicitConversionE
                 ControlFlowAspect.ImplicitConversionExpression_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
+            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.ImplicitConversionExpression_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
     public IMaybeType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
@@ -11725,12 +11705,11 @@ file class PatternMatchExpressionNode : SemanticNode, IPatternMatchExpressionNod
                 ControlFlowAspect.PatternMatchExpression_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
+            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.PatternMatchExpression_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
@@ -11911,12 +11890,11 @@ file class RefExpressionNode : SemanticNode, IRefExpressionNode
                 ControlFlowAspect.RefExpression_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
+            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.RefExpression_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
     public IMaybePlainType PlainType
         => GrammarAttribute.IsCached(in plainTypeCached) ? plainType!
@@ -12062,12 +12040,11 @@ file class ImplicitDerefExpressionNode : SemanticNode, IImplicitDerefExpressionN
                 ControlFlowAspect.ImplicitDerefExpression_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
+            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.ImplicitDerefExpression_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
     public IMaybePlainType PlainType
         => GrammarAttribute.IsCached(in plainTypeCached) ? plainType!
@@ -12227,13 +12204,18 @@ file class IfExpressionNode : SemanticNode, IIfExpressionNode
                 ControlFlowAspect.IfExpression_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
+            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.IfExpression_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
+    public IFlowState FlowStateAfterCondition
+        => GrammarAttribute.IsCached(in flowStateAfterConditionCached) ? flowStateAfterCondition!
+            : this.Synthetic(ref flowStateAfterConditionCached, ref flowStateAfterCondition,
+                ExpressionTypesAspect.IfExpression_FlowStateAfterCondition);
+    private IFlowState? flowStateAfterCondition;
+    private bool flowStateAfterConditionCached;
     public IMaybePlainType PlainType
         => GrammarAttribute.IsCached(in plainTypeCached) ? plainType!
             : this.Synthetic(ref plainTypeCached, ref plainType,
@@ -12302,9 +12284,9 @@ file class IfExpressionNode : SemanticNode, IIfExpressionNode
     internal override IFlowState Inherited_FlowStateBefore(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, Self.CurrentThenBlock))
-            return Condition?.FlowStateAfter ?? IFlowState.Empty;
+            return FlowStateAfterCondition;
         if (ReferenceEquals(child, Self.CurrentElseClause))
-            return Condition?.FlowStateAfter ?? IFlowState.Empty;
+            return FlowStateAfterCondition;
         return base.Inherited_FlowStateBefore(child, descendant, ctx);
     }
 
@@ -12411,12 +12393,11 @@ file class LoopExpressionNode : SemanticNode, ILoopExpressionNode
                 ControlFlowAspect.LoopExpression_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
+            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.LoopExpression_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
     public IMaybePlainType PlainType
         => GrammarAttribute.IsCached(in plainTypeCached) ? plainType!
@@ -12464,6 +12445,13 @@ file class LoopExpressionNode : SemanticNode, ILoopExpressionNode
         if (ReferenceEquals(child, descendant))
             return null;
         return base.Inherited_ExpectedType(child, descendant, ctx);
+    }
+
+    internal override IFlowState Inherited_FlowStateBefore(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.CurrentBlock))
+            return base.Inherited_FlowStateBefore(child, descendant, ctx).Merge(Block.FlowStateAfter);
+        return base.Inherited_FlowStateBefore(child, descendant, ctx);
     }
 
     internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -12577,13 +12565,18 @@ file class WhileExpressionNode : SemanticNode, IWhileExpressionNode
                 ControlFlowAspect.WhileExpression_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
+            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.WhileExpression_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
+    public IFlowState FlowStateAfterCondition
+        => GrammarAttribute.IsCached(in flowStateAfterConditionCached) ? flowStateAfterCondition!
+            : this.Synthetic(ref flowStateAfterConditionCached, ref flowStateAfterCondition,
+                ExpressionTypesAspect.WhileExpression_FlowStateAfterCondition);
+    private IFlowState? flowStateAfterCondition;
+    private bool flowStateAfterConditionCached;
     public IMaybePlainType PlainType
         => GrammarAttribute.IsCached(in plainTypeCached) ? plainType!
             : this.Synthetic(ref plainTypeCached, ref plainType,
@@ -12650,7 +12643,7 @@ file class WhileExpressionNode : SemanticNode, IWhileExpressionNode
     internal override IFlowState Inherited_FlowStateBefore(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, Self.CurrentBlock))
-            return Condition?.FlowStateAfter ?? IFlowState.Empty;
+            return FlowStateAfterCondition.Merge(Block.FlowStateAfter);
         return base.Inherited_FlowStateBefore(child, descendant, ctx);
     }
 
@@ -12814,13 +12807,18 @@ file class ForeachExpressionNode : SemanticNode, IForeachExpressionNode
                 SingleAssignmentAspect.DataFlow_DefinitelyUnassigned_Initial);
     private Circular<BindingFlags<IVariableBindingNode>> definitelyUnassigned = Circular.Unset;
     private bool definitelyUnassignedCached;
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
+            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
                 ForeachExpressionTypesAspect.ForeachExpression_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
+    public IFlowState FlowStateAfterBlock
+        => GrammarAttribute.IsCached(in flowStateAfterBlockCached) ? flowStateAfterBlock!
+            : this.Synthetic(ref flowStateAfterBlockCached, ref flowStateAfterBlock,
+                ForeachExpressionTypesAspect.ForeachExpression_FlowStateAfterBlock);
+    private IFlowState? flowStateAfterBlock;
+    private bool flowStateAfterBlockCached;
     public IFlowState FlowStateBeforeBlock
         => GrammarAttribute.IsCached(in flowStateBeforeBlockCached) ? flowStateBeforeBlock!
             : this.Synthetic(ref flowStateBeforeBlockCached, ref flowStateBeforeBlock,
@@ -12971,7 +12969,7 @@ file class ForeachExpressionNode : SemanticNode, IForeachExpressionNode
     internal override IFlowState Inherited_FlowStateBefore(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, Self.CurrentBlock))
-            return FlowStateBeforeBlock;
+            return FlowStateBeforeBlock.Merge(FlowStateAfterBlock);
         return base.Inherited_FlowStateBefore(child, descendant, ctx);
     }
 
@@ -13064,12 +13062,11 @@ file class BreakExpressionNode : SemanticNode, IBreakExpressionNode
                 ControlFlowAspect.Expression_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
+            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.BreakExpression_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
@@ -13159,12 +13156,11 @@ file class NextExpressionNode : SemanticNode, INextExpressionNode
                 ControlFlowAspect.Expression_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
+            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.NextExpression_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
@@ -13274,12 +13270,11 @@ file class ReturnExpressionNode : SemanticNode, IReturnExpressionNode
                 ControlFlowAspect.ReturnExpression_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
+            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.ReturnExpression_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
@@ -13430,12 +13425,11 @@ file class UnresolvedInvocationExpressionNode : SemanticNode, IUnresolvedInvocat
                 ControlFlowAspect.UnresolvedInvocationExpression_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
+            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.UnresolvedInvocationExpression_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
@@ -13624,12 +13618,11 @@ file class FunctionInvocationExpressionNode : SemanticNode, IFunctionInvocationE
                 ControlFlowAspect.FunctionInvocationExpression_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
+            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.FunctionInvocationExpression_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
     public IMaybePlainType PlainType
         => GrammarAttribute.IsCached(in plainTypeCached) ? plainType!
@@ -13822,12 +13815,11 @@ file class MethodInvocationExpressionNode : SemanticNode, IMethodInvocationExpre
                 ControlFlowAspect.MethodInvocationExpression_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
+            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.MethodInvocationExpression_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
     public IMaybePlainType PlainType
         => GrammarAttribute.IsCached(in plainTypeCached) ? plainType!
@@ -14016,12 +14008,11 @@ file class GetterInvocationExpressionNode : SemanticNode, IGetterInvocationExpre
                 ControlFlowAspect.GetterInvocationExpression_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
+            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.GetterInvocationExpression_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
     public IMaybePlainType PlainType
         => GrammarAttribute.IsCached(in plainTypeCached) ? plainType!
@@ -14202,12 +14193,11 @@ file class SetterInvocationExpressionNode : SemanticNode, ISetterInvocationExpre
                 ControlFlowAspect.SetterInvocationExpression_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
+            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.SetterInvocationExpression_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
     public IMaybePlainType PlainType
         => GrammarAttribute.IsCached(in plainTypeCached) ? plainType!
@@ -14387,12 +14377,11 @@ file class FunctionReferenceInvocationExpressionNode : SemanticNode, IFunctionRe
                 ControlFlowAspect.FunctionReferenceInvocationExpression_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
+            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.FunctionReferenceInvocationExpression_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
     public FunctionPlainType FunctionPlainType
         => GrammarAttribute.IsCached(in functionPlainTypeCached) ? functionPlainType!
@@ -14588,12 +14577,11 @@ file class InitializerInvocationExpressionNode : SemanticNode, IInitializerInvoc
                 ControlFlowAspect.InitializerInvocationExpression_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
+            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.InitializerInvocationExpression_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
     public IMaybePlainType PlainType
         => GrammarAttribute.IsCached(in plainTypeCached) ? plainType!
@@ -14775,12 +14763,11 @@ file class NonInvocableInvocationExpressionNode : SemanticNode, INonInvocableInv
                 ControlFlowAspect.NonInvocableInvocationExpression_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
+            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.NonInvocableInvocationExpression_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
@@ -14937,12 +14924,11 @@ file class VariableNameExpressionNode : SemanticNode, IVariableNameExpressionNod
                 DataFlowAspect.VariableNameExpression_DataFlowPrevious);
     private IFixedSet<IDataFlowNode>? dataFlowPrevious;
     private bool dataFlowPreviousCached;
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
+            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.VariableNameExpression_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
     public IMaybePlainType PlainType
         => GrammarAttribute.IsCached(in plainTypeCached) ? plainType!
@@ -15091,12 +15077,11 @@ file class SelfExpressionNode : SemanticNode, ISelfExpressionNode
                 ControlFlowAspect.Expression_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
+            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.SelfExpression_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
     public IMaybePlainType PlainType
         => GrammarAttribute.IsCached(in plainTypeCached) ? plainType!
@@ -15263,12 +15248,11 @@ file class FunctionNameExpressionNode : SemanticNode, IFunctionNameExpressionNod
                 ControlFlowAspect.Expression_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
+            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.FunctionNameExpression_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
     public IMaybePlainType PlainType
         => GrammarAttribute.IsCached(in plainTypeCached) ? plainType!
@@ -15438,12 +15422,11 @@ file class InitializerNameExpressionNode : SemanticNode, IInitializerNameExpress
                 ControlFlowAspect.Expression_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
+            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.InitializerNameExpression_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
     public IMaybePlainType PlainType
         => GrammarAttribute.IsCached(in plainTypeCached) ? plainType!
@@ -15577,12 +15560,11 @@ file class MissingNameExpressionNode : SemanticNode, IMissingNameExpressionNode
                 ControlFlowAspect.Expression_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
+            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.MissingNameExpression_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
@@ -15676,12 +15658,11 @@ file class UnresolvedIdentifierNameExpressionNode : SemanticNode, IUnresolvedIde
                 ControlFlowAspect.Expression_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
+            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.UnresolvedNameExpression_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
     public IFixedList<IDeclarationNode> ReferencedDeclarations
         => GrammarAttribute.IsCached(in referencedDeclarationsCached) ? referencedDeclarations!
@@ -15797,12 +15778,11 @@ file class UnresolvedGenericNameExpressionNode : SemanticNode, IUnresolvedGeneri
                 ControlFlowAspect.Expression_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
+            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.UnresolvedNameExpression_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
     public IFixedList<IDeclarationNode> ReferencedDeclarations
         => GrammarAttribute.IsCached(in referencedDeclarationsCached) ? referencedDeclarations!
@@ -15930,12 +15910,11 @@ file class UnresolvedNameExpressionQualifiedNameExpressionNode : SemanticNode, I
                 ControlFlowAspect.UnresolvedMemberAccessExpression_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
+            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.UnresolvedQualifiedNameExpression_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
@@ -16057,12 +16036,11 @@ file class UnresolvedNamespaceQualifiedNameExpressionNode : SemanticNode, IUnres
                 ControlFlowAspect.UnresolvedMemberAccessExpression_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
+            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.UnresolvedQualifiedNameExpression_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
@@ -16185,12 +16163,11 @@ file class UnresolvedTypeQualifiedNameExpressionNode : SemanticNode, IUnresolved
                 ControlFlowAspect.UnresolvedMemberAccessExpression_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
+            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.UnresolvedQualifiedNameExpression_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
@@ -16304,12 +16281,11 @@ file class UnqualifiedNamespaceNameNode : SemanticNode, IUnqualifiedNamespaceNam
                 ControlFlowAspect.Expression_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
+            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.NamespaceName_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
@@ -16403,12 +16379,11 @@ file class QualifiedNamespaceNameNode : SemanticNode, IQualifiedNamespaceNameNod
                 ControlFlowAspect.Expression_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
+            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.NamespaceName_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
@@ -16507,12 +16482,11 @@ file class UnresolvedIdentifierNameNode : SemanticNode, IUnresolvedIdentifierNam
                 ControlFlowAspect.Expression_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
+            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.UnresolvedNameExpression_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
     public IFixedList<INamespaceOrOrdinaryTypeDeclarationNode> ReferencedDeclarations
         => GrammarAttribute.IsCached(in referencedDeclarationsCached) ? referencedDeclarations!
@@ -16628,12 +16602,11 @@ file class UnresolvedGenericNameNode : SemanticNode, IUnresolvedGenericNameNode
                 ControlFlowAspect.Expression_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
+            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.UnresolvedNameExpression_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
     public IFixedList<INamespaceOrOrdinaryTypeDeclarationNode> ReferencedDeclarations
         => GrammarAttribute.IsCached(in referencedDeclarationsCached) ? referencedDeclarations!
@@ -16759,12 +16732,11 @@ file class UnresolvedNameQualifiedNameNode : SemanticNode, IUnresolvedNameQualif
                 ControlFlowAspect.Expression_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
+            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.UnresolvedNameExpression_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
@@ -16871,12 +16843,11 @@ file class UnresolvedNamespaceQualifiedNameNode : SemanticNode, IUnresolvedNames
                 ControlFlowAspect.Expression_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
+            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.UnresolvedNameExpression_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
@@ -16984,12 +16955,11 @@ file class UnresolvedTypeQualifiedNameNode : SemanticNode, IUnresolvedTypeQualif
                 ControlFlowAspect.Expression_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
+            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.UnresolvedNameExpression_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
@@ -17093,12 +17063,11 @@ file class BuiltInTypeNameNode : SemanticNode, IBuiltInTypeNameNode
                 ControlFlowAspect.Expression_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
+            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.TypeName_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
     public BareType? NamedBareType
         => GrammarAttribute.IsCached(in namedBareTypeCached) ? namedBareType
@@ -17228,12 +17197,11 @@ file class IdentifierTypeNameNode : SemanticNode, IIdentifierTypeNameNode
                 ControlFlowAspect.Expression_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
+            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.TypeName_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
     public BareType? NamedBareType
         => GrammarAttribute.IsCached(in namedBareTypeCached) ? namedBareType
@@ -17375,12 +17343,11 @@ file class GenericTypeNameNode : SemanticNode, IGenericTypeNameNode
                 ControlFlowAspect.Expression_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
+            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.TypeName_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
     public BareType? NamedBareType
         => GrammarAttribute.IsCached(in namedBareTypeCached) ? namedBareType
@@ -17526,12 +17493,11 @@ file class QualifiedTypeNameNode : SemanticNode, IQualifiedTypeNameNode
                 ControlFlowAspect.Expression_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
+            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.TypeName_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
     public IMaybeType NamedType
         => GrammarAttribute.IsCached(in namedTypeCached) ? namedType!
@@ -17732,12 +17698,11 @@ file class MoveVariableExpressionNode : SemanticNode, IMoveVariableExpressionNod
                 ControlFlowAspect.RecoveryExpression_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
+            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.MoveVariableExpression_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
     public IMaybeType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
@@ -17880,12 +17845,11 @@ file class MoveValueExpressionNode : SemanticNode, IMoveValueExpressionNode
                 ControlFlowAspect.RecoveryExpression_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
+            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.MoveValueExpression_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
     public IMaybeType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
@@ -18029,12 +17993,11 @@ file class ImplicitTempMoveExpressionNode : SemanticNode, IImplicitTempMoveExpre
                 ControlFlowAspect.ImplicitTempMoveExpression_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
+            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.ImplicitTempMoveExpression_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
     public IMaybeType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
@@ -18240,12 +18203,11 @@ file class FreezeVariableExpressionNode : SemanticNode, IFreezeVariableExpressio
                 ControlFlowAspect.RecoveryExpression_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
+            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.FreezeVariableExpression_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
     public IMaybeType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
@@ -18391,12 +18353,11 @@ file class FreezeValueExpressionNode : SemanticNode, IFreezeValueExpressionNode
                 ControlFlowAspect.RecoveryExpression_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
+            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.FreezeValueExpression_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
     public IMaybeType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
@@ -18541,12 +18502,11 @@ file class PrepareToReturnExpressionNode : SemanticNode, IPrepareToReturnExpress
                 ControlFlowAspect.PrepareToReturnExpression_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
+            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.PrepareToReturnExpression_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
@@ -18811,12 +18771,11 @@ file class AsyncStartExpressionNode : SemanticNode, IAsyncStartExpressionNode
                 ControlFlowAspect.Expression_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
+            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.AsyncStartExpression_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
     public IMaybePlainType PlainType
         => GrammarAttribute.IsCached(in plainTypeCached) ? plainType!
@@ -18963,12 +18922,11 @@ file class AwaitExpressionNode : SemanticNode, IAwaitExpressionNode
                 ControlFlowAspect.AwaitExpression_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
+            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.AwaitExpression_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
     public IMaybePlainType PlainType
         => GrammarAttribute.IsCached(in plainTypeCached) ? plainType!

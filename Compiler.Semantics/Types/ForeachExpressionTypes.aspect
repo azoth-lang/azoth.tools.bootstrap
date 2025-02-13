@@ -14,8 +14,9 @@
 ↑ ForeachExpression.IteratorType: `IMaybeNonVoidType`;
 /// The type of value being looped over as determined by the return type of `.next()`
 ↑ ForeachExpression.IteratedType: `IMaybeNonVoidType`;
-↑ ForeachExpression.FlowStateBeforeBlock: `IFlowState`;
 = ForeachExpression.Type;
-= ForeachExpression.Block.**.FlowStateBefore => FlowStateBeforeBlock;
+↑ ForeachExpression.FlowStateBeforeBlock: `IFlowState`;
+= ForeachExpression.Block.**.FlowStateBefore => FlowStateBeforeBlock.Merge(FlowStateAfterBlock);
+↑ ForeachExpression.FlowStateAfterBlock: `IFlowState`;
 = ForeachExpression.FlowStateAfter;
 = ForeachExpression.↑.Diagnostics;

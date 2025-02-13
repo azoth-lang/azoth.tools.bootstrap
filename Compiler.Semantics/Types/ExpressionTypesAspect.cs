@@ -385,8 +385,9 @@ internal static partial class ExpressionTypesAspect
         // TODO this isn't quite right since the original value is replaced by the new value
         if (node.LeftOperand?.ValueId is not ValueId leftValueId)
             return IFlowState.Empty;
-        return node.RightOperand?.FlowStateAfter.Combine(leftValueId,
-            node.RightOperand.ValueId, node.ValueId) ?? IFlowState.Empty;
+        var rightOperand = node.RightOperand; // Avoids repeated access
+        return rightOperand?.FlowStateAfter.Combine(leftValueId, rightOperand.ValueId, node.ValueId)
+               ?? IFlowState.Empty;
     }
 
     public static partial void AssignmentExpression_Contribute_Diagnostics(IAssignmentExpressionNode node, DiagnosticCollectionBuilder diagnostics)
@@ -515,6 +516,9 @@ internal static partial class ExpressionTypesAspect
                 node.Syntax.Span, node.Operator, node.LeftOperand!.Type, node.RightOperand!.Type));
     }
 
+    public static partial IMaybeType ResultStatement_Type(IResultStatementNode node)
+        => node.Expression?.Type.ToNonLiteral() ?? Type.Unknown;
+
     public static partial IMaybeType IfExpression_Type(IIfExpressionNode node)
     {
         if (node.ElseClause is null)
@@ -524,15 +528,19 @@ internal static partial class ExpressionTypesAspect
         return node.ThenBlock.Type;
     }
 
-    public static partial IMaybeType ResultStatement_Type(IResultStatementNode node)
-        => node.Expression?.Type.ToNonLiteral() ?? Type.Unknown;
+    public static partial IFlowState IfExpression_FlowStateAfterCondition(IIfExpressionNode node)
+    {
+        if (node.Condition is not { } condition) return IFlowState.Empty;
+
+        return condition.FlowStateAfter.DropValue(condition.ValueId);
+    }
 
     public static partial IFlowState IfExpression_FlowStateAfter(IIfExpressionNode node)
     {
         var thenBlock = node.ThenBlock; // Avoid repeated access
         var elseClause = node.ElseClause; // Avoid repeated access
         var flowStateAfterThen = thenBlock.FlowStateAfter;
-        var flowStateAfterElse = elseClause?.FlowStateAfter ?? node.Condition?.FlowStateAfter ?? IFlowState.Empty;
+        var flowStateAfterElse = elseClause?.FlowStateAfter ?? node.FlowStateAfterCondition;
         var mergedFlowState = flowStateAfterThen.Merge(flowStateAfterElse);
         return mergedFlowState.Combine(thenBlock.ValueId, elseClause?.ValueId, node.ValueId);
     }
@@ -579,12 +587,18 @@ internal static partial class ExpressionTypesAspect
         // TODO assign correct type to the expression
         => Type.Void;
 
+    public static partial IFlowState WhileExpression_FlowStateAfterCondition(IWhileExpressionNode node)
+    {
+        if (node.Condition is not { } condition) return IFlowState.Empty;
+
+        return condition.FlowStateAfter.DropValue(condition.ValueId);
+    }
+
     public static partial IFlowState WhileExpression_FlowStateAfter(IWhileExpressionNode node)
-        // TODO loop flow state
         // Merge condition with block flow state because the body may not be executed
-        => (node.Condition?.FlowStateAfter.Merge(node.Block.FlowStateAfter) ?? IFlowState.Empty)
-            // TODO when the `while` has a type other than void, correctly handle the value id
-            .Constant(node.ValueId);
+        => node.FlowStateAfterCondition.Merge(node.Block.FlowStateAfter)
+               // TODO when the `while` has a type other than void, correctly handle the value id
+               .Constant(node.ValueId);
 
     public static partial IMaybeType LoopExpression_Type(ILoopExpressionNode node)
         // TODO assign correct type to the expression
@@ -592,7 +606,6 @@ internal static partial class ExpressionTypesAspect
 
     public static partial IFlowState LoopExpression_FlowStateAfter(ILoopExpressionNode node)
         // Body is always executes at least once
-        // TODO loop flow state
         => node.Block.FlowStateAfter
                // TODO when the `loop` has a type other than void, correctly handle the value id
                .Constant(node.ValueId);

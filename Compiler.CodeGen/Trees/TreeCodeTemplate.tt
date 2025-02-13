@@ -84,6 +84,7 @@ internal abstract partial class <#= Emit.BaseClassName(tree) #> : TreeNode, IChi
         // node not in the final tree, then there is a bug where the parent wasn't set in time.
         => Volatile.Read(in parent) ?? (InFinalTree ? null : throw Child.ParentMissing(this));
 
+    [DebuggerStepThrough]
     private <#= Emit.BaseClassName(tree) #>? GetParent(IInheritanceContext ctx)
     {
         // Use volatile read to ensure order of operations as seen by other threads

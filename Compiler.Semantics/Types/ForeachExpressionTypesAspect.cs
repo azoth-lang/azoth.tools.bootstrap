@@ -35,6 +35,10 @@ internal static partial class ForeachExpressionTypesAspect
         return nonVoidIteratorType.TypeReplacements.ApplyTo(iteratedType).ToNonVoidType();
     }
 
+    public static partial IMaybeType ForeachExpression_Type(IForeachExpressionNode node)
+        // TODO assign correct type to the expression
+        => Type.Void;
+
     public static partial IFlowState ForeachExpression_FlowStateBeforeBlock(IForeachExpressionNode node)
     {
         var flowStateBefore = node.InExpression?.FlowStateAfter ?? IFlowState.Empty;
@@ -70,8 +74,6 @@ internal static partial class ForeachExpressionTypesAspect
                     flowStateBefore = flowStateBefore.FreezeValue(inExpression.ValueId, implicitRecoveryValueId);
 
                 previousValueId = implicitRecoveryValueId;
-                var newCapability = isTemporary ? Capability.TemporarilyConstant : Capability.Constant;
-                contextType = capabilityType.With(newCapability);
             }
 
             // Now apply the actual .iterate() call
@@ -84,19 +86,23 @@ internal static partial class ForeachExpressionTypesAspect
 
         // TODO apply flow state changes as if .next() was called and use the output as the initializer for the loop variable
 
+        // TODO this declares the variable outside the block which could cause the issue where closures
+        // capture a variable that lives too long.
         // TODO null is wrong here, it is initialized with the result of .next()
         // This uses the node.BindingValueId so it doesn't conflict with the `foreach` expression result
         return flowStateBefore.Declare(node, null);
     }
 
-    public static partial IMaybeType ForeachExpression_Type(IForeachExpressionNode node)
-        // TODO assign correct type to the expression
-        => Type.Void;
+    public static partial IFlowState ForeachExpression_FlowStateAfterBlock(IForeachExpressionNode node)
+        // Merge FlowStateBeforeBlock with Block.FlowStateAfter because the body may not be executed.
+        // Then drop the loop variable binding which is created outside the block.
+        => node.FlowStateBeforeBlock.Merge(node.Block.FlowStateAfter).DropBindings([node]);
 
     public static partial IFlowState ForeachExpression_FlowStateAfter(IForeachExpressionNode node)
     {
-        // TODO loop flow state
-        var flowStateAfter = node.InExpression?.FlowStateAfter.Merge(node.Block.FlowStateAfter) ?? IFlowState.Empty;
+        // The FlowStateAfterBlock has already been merged properly with the before block, no need
+        // to merge again here.
+        var flowStateAfter = node.FlowStateAfterBlock;
         if (node.IterateContextualizedCall is not null && node.InExpression is not null)
             // Drop the temporary that is holding the iterator
             flowStateAfter = flowStateAfter.DropValue(node.IteratorValueId);

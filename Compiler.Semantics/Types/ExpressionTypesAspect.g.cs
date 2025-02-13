@@ -146,6 +146,8 @@ internal static partial class ExpressionTypesAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IMaybeType IfExpression_Type(IIfExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial IFlowState IfExpression_FlowStateAfterCondition(IIfExpressionNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFlowState IfExpression_FlowStateAfter(IIfExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IMaybeType LoopExpression_Type(ILoopExpressionNode node);
@@ -155,6 +157,8 @@ internal static partial class ExpressionTypesAspect
     public static partial IMaybeType WhileExpression_Type(IWhileExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFlowState WhileExpression_FlowStateAfter(IWhileExpressionNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial IFlowState WhileExpression_FlowStateAfterCondition(IWhileExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFlowState BreakExpression_FlowStateAfter(IBreakExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

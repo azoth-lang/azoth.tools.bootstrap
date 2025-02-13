@@ -7,6 +7,11 @@
 
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
+// Note: while FlowStateAfter is circular in specific cases, in many cases it isn't. Much of the
+// overhead of circular attributes can be avoided by using them only where it is truly circular. It
+// is circular around loops. However, the loops FlowStateAfter isn't part of the cycle. Instead the
+// cycle exists around the block. So it is BlockExpression.FlowStateAfter that must be circular.
+
 // ---------- Function Parts
 ↓ ExpressionBody.ExpectedType: `IMaybeType`?;
 = ExpressionBody.ResultStatement.ExpectedType => ExpectedType;
@@ -19,13 +24,13 @@
 
 // ---------- Parameters
 ↓ Parameter.FlowStateBefore(): `IFlowState`;
-⟳ Parameter.FlowStateAfter: `IFlowState` initial => IFlowState.Empty;
+↑ Parameter.FlowStateAfter: `IFlowState`;
 = SelfParameter.FlowStateAfter;
-↑ FieldParameter.FlowStateAfter: `IFlowState` => FlowStateBefore();
+= FieldParameter.FlowStateAfter => FlowStateBefore();
 
 // ---------- Statements
 ↑ Statement.ResultType: `IMaybeType`? => null;
-⟳ Statement.FlowStateAfter: `IFlowState` initial => IFlowState.Empty;
+↑ Statement.FlowStateAfter: `IFlowState`;
 // Forward ImplicitRecoveryAllowed() to the expression
 ↓ ResultStatement.ImplicitRecoveryAllowed(): `bool`;
 = ResultStatement.Expression.ImplicitRecoveryAllowed() => ImplicitRecoveryAllowed();
@@ -49,10 +54,10 @@
 = ExpressionStatement.Expression.ShouldPrepareToReturn() => false;
 
 // ---------- Patterns
-⟳ Pattern.FlowStateAfter: `IFlowState` initial => IFlowState.Empty;
-↑ BindingContextPattern.FlowStateAfter: `IFlowState` => Pattern.FlowStateAfter;
+↑ Pattern.FlowStateAfter: `IFlowState`;
+= BindingContextPattern.FlowStateAfter => Pattern.FlowStateAfter;
 ↓ BindingPattern.FlowStateBefore(): `IFlowState`;
-↑ OptionalPattern.FlowStateAfter: `IFlowState` => Pattern.FlowStateAfter;
+= OptionalPattern.FlowStateAfter => Pattern.FlowStateAfter;
 
 // ---------- Expressions
 // By default, implicit recovery is not allowed. Avoiding broadcast ensures that this never requires
@@ -64,7 +69,7 @@
 // TODO remove once all nodes properly provide the expected type
 = AmbiguousExpression.*.ExpectedType => null;
 ↑ Expression.Type: `IMaybeType`;
-⟳ Expression.FlowStateAfter: `IFlowState` initial => IFlowState.Empty;
+↑ Expression.FlowStateAfter: `IFlowState`;
 ↓ OrdinaryTypedExpression.ExpectedType:`IMaybeType`?;
 /// <summary>
 /// Whether an implicit recovery (i.e. move or freeze) is allowed to convert this expression to
@@ -99,7 +104,7 @@
 = FieldAccessExpression.↑.Diagnostics;
 = MethodAccessExpression.Context.ExpectedType;
 = MethodAccessExpression.Context.ImplicitRecoveryAllowed() => true;
-↑ MethodAccessExpression.FlowStateAfter: `IFlowState` => Context.FlowStateAfter;
+= MethodAccessExpression.FlowStateAfter => Context.FlowStateAfter;
 
 // ---------- Literal Expressions
 ↓ LiteralExpression.FlowStateBefore(): `IFlowState`;
@@ -130,16 +135,18 @@
 = PatternMatchExpression.Type => AzothType.Bool;
 
 // ---------- Control Flow Expressions
-= IfExpression.ThenBlock.**.FlowStateBefore
-    => Condition?.FlowStateAfter ?? IFlowState.Empty;
-= IfExpression.ElseClause.**.FlowStateBefore
-    => Condition?.FlowStateAfter ?? IFlowState.Empty;
 = IfExpression.Condition.ExpectedType => AzothType.OptionalBool;
-⟳ IfExpression.FlowStateAfter: `IFlowState` initial => IFlowState.Empty;
+↑ IfExpression.FlowStateAfterCondition: `IFlowState`;
+= IfExpression.ThenBlock.**.FlowStateBefore => FlowStateAfterCondition;
+= IfExpression.ElseClause.**.FlowStateBefore => FlowStateAfterCondition;
+↑ IfExpression.FlowStateAfter: `IFlowState`;
 = IfExpression.↑.Diagnostics;
-= WhileExpression.Block.**.FlowStateBefore
-    => Condition?.FlowStateAfter ?? IFlowState.Empty;
+= LoopExpression.Block.**.FlowStateBefore()
+    => base.Inherited_FlowStateBefore(child, descendant, ctx).Merge(Block.FlowStateAfter);
 = WhileExpression.Condition.ExpectedType => AzothType.OptionalBool;
+↑ WhileExpression.FlowStateAfterCondition: `IFlowState`;
+= WhileExpression.Block.**.FlowStateBefore
+    => FlowStateAfterCondition.Merge(Block.FlowStateAfter);
 ↓ ReturnExpression.ExpectedReturnType: `IMaybeType`?;
 = ReturnExpression.Value.ExpectedType => ExpectedReturnType;
 = ReturnExpression.Value.ImplicitRecoveryAllowed() => true;
@@ -245,4 +252,4 @@
 
 // ---------- Async Expressions
 = AsyncBlockExpression.Type => Block.Type;
-↑ AsyncBlockExpression.FlowStateAfter: `IFlowState` => throw new NotImplementedException();
+= AsyncBlockExpression.FlowStateAfter => throw new NotImplementedException();

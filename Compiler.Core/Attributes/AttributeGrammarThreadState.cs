@@ -297,6 +297,7 @@ internal sealed class AttributeGrammarThreadState : IInheritanceContext
         return new(this, attribute);
     }
 
+    [DebuggerStepThrough]
     [StructLayout(LayoutKind.Auto)]
     public readonly ref struct NonCircularScope
     {
