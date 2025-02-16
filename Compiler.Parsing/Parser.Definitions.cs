@@ -353,6 +353,9 @@ public partial class Parser
                 return ParseField(false, modifiers);
             case IVarKeywordToken _:
                 return ParseField(true, modifiers);
+            case IVarianceToken _:
+            case ITypeKeywordToken _:
+                return ParseAssociatedType(modifiers);
             default:
                 Tokens.UnexpectedToken();
                 throw new ParseFailedException();
@@ -601,6 +604,26 @@ public partial class Parser
 
         return IOrdinaryMethodDefinitionSyntax.Create(span, File, identifier.Span, accessModifer,
             abstractModifier, name, selfParameter, namedParameters, @return, body);
+    }
+
+    internal IAssociatedTypeDefinitionSyntax ParseAssociatedType(ModifierParser modifiers)
+    {
+        var accessModifier = modifiers.ParseAccessModifier();
+        modifiers.ParseEndOfModifiers();
+        var variance = Tokens.AcceptToken<IVarianceToken>();
+        var typeKeyword = Tokens.ConsumeToken<ITypeKeywordToken>();
+        var identifier = Tokens.RequiredToken<IIdentifierToken>();
+        IdentifierName name = identifier.Value;
+
+        var equalsOperator = Tokens.AcceptToken<IEqualsToken>();
+        ITypeSyntax? initializer = null;
+        if (equalsOperator is not null)
+            initializer = ParseType();
+
+        var semicolon = Tokens.Expect<ISemicolonToken>();
+        var span = TextSpan.Covering(accessModifier?.Span, variance?.Span, typeKeyword.Span, semicolon);
+        return IAssociatedTypeDefinitionSyntax.Create(span, File, identifier.Span, accessModifier,
+            variance, typeKeyword, name, equalsOperator, initializer);
     }
     #endregion
 }
