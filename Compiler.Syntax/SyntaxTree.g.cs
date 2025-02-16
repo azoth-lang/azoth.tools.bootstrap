@@ -511,6 +511,7 @@ public partial interface IAssociatedFunctionDefinitionSyntax : IMemberDefinition
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IAssociatedTypeDefinitionSyntax : IMemberDefinitionSyntax
 {
+    IAbstractKeywordToken? AbstractKeyword { get; }
     IVarianceToken? Variance { get; }
     ITypeKeywordToken TypeKeyword { get; }
     new IdentifierName Name { get; }
@@ -523,12 +524,13 @@ public partial interface IAssociatedTypeDefinitionSyntax : IMemberDefinitionSynt
         CodeFile file,
         TextSpan nameSpan,
         IAccessModifierToken? accessModifier,
+        IAbstractKeywordToken? abstractKeyword,
         IVarianceToken? variance,
         ITypeKeywordToken typeKeyword,
         IdentifierName name,
         IEqualsToken? equalsOperator,
         ITypeSyntax? initializer)
-        => new AssociatedTypeDefinitionSyntax(span, file, nameSpan, accessModifier, variance, typeKeyword, name, equalsOperator, initializer);
+        => new AssociatedTypeDefinitionSyntax(span, file, nameSpan, accessModifier, abstractKeyword, variance, typeKeyword, name, equalsOperator, initializer);
 }
 
 [Closed(typeof(AttributeSyntax))]
@@ -2123,6 +2125,7 @@ file class AssociatedTypeDefinitionSyntax : IAssociatedTypeDefinitionSyntax
     public CodeFile File { [DebuggerStepThrough] get; }
     public TextSpan NameSpan { [DebuggerStepThrough] get; }
     public IAccessModifierToken? AccessModifier { [DebuggerStepThrough] get; }
+    public IAbstractKeywordToken? AbstractKeyword { [DebuggerStepThrough] get; }
     public IVarianceToken? Variance { [DebuggerStepThrough] get; }
     public ITypeKeywordToken TypeKeyword { [DebuggerStepThrough] get; }
     public IdentifierName Name { [DebuggerStepThrough] get; }
@@ -2136,6 +2139,7 @@ file class AssociatedTypeDefinitionSyntax : IAssociatedTypeDefinitionSyntax
         CodeFile file,
         TextSpan nameSpan,
         IAccessModifierToken? accessModifier,
+        IAbstractKeywordToken? abstractKeyword,
         IVarianceToken? variance,
         ITypeKeywordToken typeKeyword,
         IdentifierName name,
@@ -2146,6 +2150,7 @@ file class AssociatedTypeDefinitionSyntax : IAssociatedTypeDefinitionSyntax
         File = file;
         NameSpan = nameSpan;
         AccessModifier = accessModifier;
+        AbstractKeyword = abstractKeyword;
         Variance = variance;
         TypeKeyword = typeKeyword;
         Name = name;

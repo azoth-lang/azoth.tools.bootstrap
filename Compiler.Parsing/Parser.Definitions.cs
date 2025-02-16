@@ -194,7 +194,6 @@ public partial class Parser
         var (members, bodySpan) = ParseClassBody();
         var span = TextSpan.Covering(classKeywordSpan, identifier.Span, generic?.Span, baseClass?.Span,
             TextSpan.Covering(supertypes.Select(st => st.Span)), bodySpan);
-        // TODO parse nested traits
         return IClassDefinitionSyntax.Create(span, File, identifier.Span, accessModifier, constModifier,
             moveModifier, name, abstractModifier, genericParameters, baseClass, supertypes, members);
     }
@@ -284,7 +283,6 @@ public partial class Parser
         var (members, bodySpan) = ParseStructBody();
         var span = TextSpan.Covering(structKeywordSpan, identifier.Span, generic?.Span,
             TextSpan.Covering(superTypes.Select(st => st.Span)), bodySpan);
-        // TODO parse nested traits
         return IStructDefinitionSyntax.Create(span, File, identifier.Span, accessModifier,
             constModifier, moveModifier, name, genericParameters, superTypes,
             members);
@@ -316,7 +314,6 @@ public partial class Parser
         var (members, bodySpan) = ParseTraitBody();
         var span = TextSpan.Covering(traitKeywordSpan, identifier.Span, generic?.Span,
             TextSpan.Covering(superTypes.Select(st => st.Span)), bodySpan);
-        // TODO parse nested traits
         return ITraitDefinitionSyntax.Create(span, File, identifier.Span, accessModifier,
             constModifier, moveModifier, name, genericParameters, superTypes, members);
     }
@@ -341,6 +338,7 @@ public partial class Parser
 
         switch (Tokens.Current)
         {
+            // TODO parse nested traits
             case IFunctionKeywordToken _:
                 return ParseMemberFunction(modifiers, inTrait);
             case IGetKeywordToken _:
@@ -355,7 +353,7 @@ public partial class Parser
                 return ParseField(true, modifiers);
             case IVarianceToken _:
             case ITypeKeywordToken _:
-                return ParseAssociatedType(modifiers);
+                return ParseAssociatedType(modifiers, inTrait);
             default:
                 Tokens.UnexpectedToken();
                 throw new ParseFailedException();
@@ -433,9 +431,10 @@ public partial class Parser
         }
         else
         {
-            // TODO if inTrait, cannot use abstract modifier
             if (!inTrait && abstractModifier is null)
                 Add(ParseError.AbstractMethodMissingAbstractModifier(File, identifier.Span));
+            else if (abstractModifier is not null && inTrait)
+                Add(ParseError.AbstractModifierInTrait(File, abstractModifier.Span));
             var semicolon = Tokens.Expect<ISemicolonToken>();
             var span = TextSpan.Covering(accessModifer?.Span, abstractModifier?.Span, get, semicolon);
             return IGetterMethodDefinitionSyntax.Create(span, File, identifier.Span, accessModifer,
@@ -468,9 +467,10 @@ public partial class Parser
         }
         else
         {
-            // TODO if inTrait, cannot use abstract modifier
             if (!inTrait && abstractModifier is null)
                 Add(ParseError.AbstractMethodMissingAbstractModifier(File, identifier.Span));
+            else if (abstractModifier is not null && inTrait)
+                Add(ParseError.AbstractModifierInTrait(File, abstractModifier.Span));
             body = null;
             var semicolon = Tokens.Expect<ISemicolonToken>();
             span = TextSpan.Covering(accessModifer?.Span, abstractModifier?.Span, set, semicolon);
@@ -606,9 +606,11 @@ public partial class Parser
             abstractModifier, name, selfParameter, namedParameters, @return, body);
     }
 
-    internal IAssociatedTypeDefinitionSyntax ParseAssociatedType(ModifierParser modifiers)
+    internal IAssociatedTypeDefinitionSyntax ParseAssociatedType(ModifierParser modifiers, bool inTrait)
     {
         var accessModifier = modifiers.ParseAccessModifier();
+        // TODO move checking for abstract modifier rules to semantic tree
+        var abstractModifier = modifiers.ParseAbstractModifier();
         modifiers.ParseEndOfModifiers();
         var variance = Tokens.AcceptToken<IVarianceToken>();
         var typeKeyword = Tokens.ConsumeToken<ITypeKeywordToken>();
@@ -618,12 +620,24 @@ public partial class Parser
         var equalsOperator = Tokens.AcceptToken<IEqualsToken>();
         ITypeSyntax? initializer = null;
         if (equalsOperator is not null)
+        {
+            if (abstractModifier is not null)
+                Add(ParseError.ConcreteAssociatedTypeDeclaredAbstract(File, abstractModifier.Span));
+
             initializer = ParseType();
+        }
+        else
+        {
+            if (abstractModifier is null && !inTrait)
+                Add(ParseError.AbstractAssociatedTypeMissingAbstractModifier(File, identifier.Span));
+            else if (abstractModifier is not null && inTrait)
+                Add(ParseError.AbstractModifierInTrait(File, abstractModifier.Span));
+        }
 
         var semicolon = Tokens.Expect<ISemicolonToken>();
         var span = TextSpan.Covering(accessModifier?.Span, variance?.Span, typeKeyword.Span, semicolon);
         return IAssociatedTypeDefinitionSyntax.Create(span, File, identifier.Span, accessModifier,
-            variance, typeKeyword, name, equalsOperator, initializer);
+            abstractModifier, variance, typeKeyword, name, equalsOperator, initializer);
     }
     #endregion
 }

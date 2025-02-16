@@ -163,4 +163,22 @@ internal static class ParseError
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,
             2028, "Setter has extra parameters. A setter should have only one named parameter.");
     }
+
+    public static Diagnostic ConcreteAssociatedTypeDeclaredAbstract(CodeFile file, TextSpan span)
+    {
+        return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,
+            2019, "A concrete associated type cannot be abstract.");
+    }
+
+    public static Diagnostic AbstractAssociatedTypeMissingAbstractModifier(CodeFile file, TextSpan span)
+    {
+        return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,
+            2020, "An abstract associated type must be declared `abstract`.");
+    }
+
+    public static Diagnostic AbstractModifierInTrait(CodeFile file, TextSpan span)
+    {
+        return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,
+            2021, "An abstract associated type must be declared `abstract`.");
+    }
 }

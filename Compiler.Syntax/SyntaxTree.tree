@@ -88,7 +88,7 @@ FieldDefinition <: MemberDefinition, Binding
 AssociatedFunctionDefinition <: MemberDefinition, InvocableDefinition
     = AbstractKeyword:`IAbstractKeywordToken`? Name:`IdentifierName` Parameters:NamedParameter* Return? Body?;
 AssociatedTypeDefinition <: MemberDefinition
-    = Variance:`IVarianceToken`? TypeKeyword:`ITypeKeywordToken` Name:`IdentifierName` EqualsOperator:`IEqualsToken`? Initializer:Type?;
+    = AbstractKeyword:`IAbstractKeywordToken`? Variance:`IVarianceToken`? TypeKeyword:`ITypeKeywordToken` Name:`IdentifierName` EqualsOperator:`IEqualsToken`? Initializer:Type?;
 
 // ---------- Attributes
 Attribute <: Code = TypeName:Name;
