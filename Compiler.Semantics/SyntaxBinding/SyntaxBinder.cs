@@ -126,10 +126,10 @@ internal static class SyntaxBinder
     #endregion
 
     #region Type Member Definitions
-    private static IEnumerable<IClassMemberDefinitionNode> ClassMemberDefinitions(IEnumerable<ITypeMemberDefinitionSyntax> syntax)
+    private static IEnumerable<IClassMemberDefinitionNode> ClassMemberDefinitions(IEnumerable<IMemberDefinitionSyntax> syntax)
         => syntax.Select(ClassMemberDefinition);
 
-    private static IClassMemberDefinitionNode ClassMemberDefinition(ITypeMemberDefinitionSyntax syntax)
+    private static IClassMemberDefinitionNode ClassMemberDefinition(IMemberDefinitionSyntax syntax)
         => syntax switch
         {
             ITypeDefinitionSyntax syn => TypeDefinition(syn),
@@ -140,10 +140,10 @@ internal static class SyntaxBinder
             _ => throw ExhaustiveMatch.Failed(syntax)
         };
 
-    private static IEnumerable<IStructMemberDefinitionNode> StructMemberDefinitions(IEnumerable<ITypeMemberDefinitionSyntax> syntax)
+    private static IEnumerable<IStructMemberDefinitionNode> StructMemberDefinitions(IEnumerable<IMemberDefinitionSyntax> syntax)
         => syntax.Select(StructMemberDefinition);
 
-    private static IStructMemberDefinitionNode StructMemberDefinition(ITypeMemberDefinitionSyntax syntax)
+    private static IStructMemberDefinitionNode StructMemberDefinition(IMemberDefinitionSyntax syntax)
         => syntax switch
         {
             ITypeDefinitionSyntax syn => TypeDefinition(syn),
@@ -154,10 +154,10 @@ internal static class SyntaxBinder
             _ => throw ExhaustiveMatch.Failed(syntax)
         };
 
-    private static IEnumerable<ITraitMemberDefinitionNode> TraitMemberDefinitions(IEnumerable<ITypeMemberDefinitionSyntax> syntax)
+    private static IEnumerable<ITraitMemberDefinitionNode> TraitMemberDefinitions(IEnumerable<IMemberDefinitionSyntax> syntax)
         => syntax.Select(TraitMemberDefinition);
 
-    private static ITraitMemberDefinitionNode TraitMemberDefinition(ITypeMemberDefinitionSyntax syntax)
+    private static ITraitMemberDefinitionNode TraitMemberDefinition(IMemberDefinitionSyntax syntax)
         => syntax switch
         {
             ITypeDefinitionSyntax syn => TypeDefinition(syn),

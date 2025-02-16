@@ -97,7 +97,8 @@ GenericParameter <: Code, GenericParameterDeclaration
 ImplicitSelfDefinition <: ImplicitSelfDeclaration;
 
 // ---------- Type Member Definitions (i.e. definitions that can be contained in a type)
-TypeMemberDefinition <: Definition, TypeMemberDeclaration = Syntax:`ITypeMemberDefinitionSyntax`?;
+TypeMemberDefinition <: Definition, TypeMemberDeclaration = Syntax:`IMemberDefinitionSyntax`?;
+// TODO remove these specific ones and handle by reporting errors for members that don't belong
 ClassMemberDefinition <: TypeMemberDefinition, ClassMemberDeclaration;
 TraitMemberDefinition <: TypeMemberDefinition, TraitMemberDeclaration;
 StructMemberDefinition <: TypeMemberDefinition, StructMemberDeclaration;

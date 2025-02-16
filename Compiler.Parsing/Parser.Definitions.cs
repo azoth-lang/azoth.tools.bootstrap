@@ -258,7 +258,7 @@ public partial class Parser
         return (TypeParameterVariance.NonwritableCovariant, span);
     }
 
-    private (IFixedList<ITypeMemberDefinitionSyntax> Members, TextSpan Span) ParseClassBody()
+    private (IFixedList<IMemberDefinitionSyntax> Members, TextSpan Span) ParseClassBody()
     {
         var openBrace = Tokens.Expect<IOpenBraceToken>();
         var members = ParseClassMemberDefinitions();
@@ -267,10 +267,10 @@ public partial class Parser
         return (members, span);
     }
 
-    private IFixedList<ITypeMemberDefinitionSyntax> ParseClassMemberDefinitions()
-        => ParseMany<ITypeMemberDefinitionSyntax, ICloseBraceToken>(ParseClassMemberDefinition);
+    private IFixedList<IMemberDefinitionSyntax> ParseClassMemberDefinitions()
+        => ParseMany<IMemberDefinitionSyntax, ICloseBraceToken>(ParseClassMemberDefinition);
 
-    internal ITypeMemberDefinitionSyntax ParseClassMemberDefinition()
+    internal IMemberDefinitionSyntax ParseClassMemberDefinition()
     {
         var modifiers = ParseModifiers();
 
@@ -317,7 +317,7 @@ public partial class Parser
             members);
     }
 
-    private (IFixedList<ITypeMemberDefinitionSyntax> Members, TextSpan Span) ParseStructBody()
+    private (IFixedList<IMemberDefinitionSyntax> Members, TextSpan Span) ParseStructBody()
     {
         var openBrace = Tokens.Expect<IOpenBraceToken>();
         var members = ParseStructMemberDefinitions();
@@ -326,10 +326,10 @@ public partial class Parser
         return (members, span);
     }
 
-    private IFixedList<ITypeMemberDefinitionSyntax> ParseStructMemberDefinitions()
-        => ParseMany<ITypeMemberDefinitionSyntax, ICloseBraceToken>(ParseStructMemberDefinition);
+    private IFixedList<IMemberDefinitionSyntax> ParseStructMemberDefinitions()
+        => ParseMany<IMemberDefinitionSyntax, ICloseBraceToken>(ParseStructMemberDefinition);
 
-    internal ITypeMemberDefinitionSyntax ParseStructMemberDefinition()
+    internal IMemberDefinitionSyntax ParseStructMemberDefinition()
     {
         var modifiers = ParseModifiers();
 
@@ -375,7 +375,7 @@ public partial class Parser
             constModifier, moveModifier, name, genericParameters, superTypes, members);
     }
 
-    private (IFixedList<ITypeMemberDefinitionSyntax> Members, TextSpan Span) ParseTraitBody()
+    private (IFixedList<IMemberDefinitionSyntax> Members, TextSpan Span) ParseTraitBody()
     {
         var openBrace = Tokens.Expect<IOpenBraceToken>();
         var members = ParseTraitMemberDeclarations();
@@ -384,10 +384,10 @@ public partial class Parser
         return (members, span);
     }
 
-    private IFixedList<ITypeMemberDefinitionSyntax> ParseTraitMemberDeclarations()
-        => ParseMany<ITypeMemberDefinitionSyntax, ICloseBraceToken>(ParseTraitMemberDefinition);
+    private IFixedList<IMemberDefinitionSyntax> ParseTraitMemberDeclarations()
+        => ParseMany<IMemberDefinitionSyntax, ICloseBraceToken>(ParseTraitMemberDefinition);
 
-    internal ITypeMemberDefinitionSyntax ParseTraitMemberDefinition()
+    internal IMemberDefinitionSyntax ParseTraitMemberDefinition()
     {
         var modifiers = ParseModifiers();
 
@@ -405,7 +405,7 @@ public partial class Parser
         }
     }
 
-    internal ITypeMemberDefinitionSyntax ParseTraitMemberFunction(ModifierParser modifiers)
+    internal IMemberDefinitionSyntax ParseTraitMemberFunction(ModifierParser modifiers)
     {
         var accessModifer = modifiers.ParseAccessModifier();
         modifiers.ParseEndOfModifiers();
@@ -486,7 +486,7 @@ public partial class Parser
              name, type, initializer);
     }
 
-    internal ITypeMemberDefinitionSyntax ParseClassMemberFunction(ModifierParser modifiers)
+    internal IMemberDefinitionSyntax ParseClassMemberFunction(ModifierParser modifiers)
     {
         var accessModifer = modifiers.ParseAccessModifier();
         // TODO move checking for abstract modifier rules to semantic tree
@@ -690,7 +690,7 @@ public partial class Parser
             name, selfParameter, constructorParameters, body);
     }
 
-    internal ITypeMemberDefinitionSyntax ParseStructMemberFunction(ModifierParser modifiers)
+    internal IMemberDefinitionSyntax ParseStructMemberFunction(ModifierParser modifiers)
     {
         var accessModifer = modifiers.ParseAccessModifier();
         modifiers.ParseEndOfModifiers();

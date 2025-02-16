@@ -502,7 +502,7 @@ public partial interface ITypeDefinitionNode : ICodeNode, IFacetMemberDefinition
     ICodeSyntax ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     IDefinitionSyntax? IDefinitionNode.Syntax => Syntax;
-    ITypeMemberDefinitionSyntax? ITypeMemberDefinitionNode.Syntax => Syntax;
+    IMemberDefinitionSyntax? ITypeMemberDefinitionNode.Syntax => Syntax;
     new IFixedList<IGenericParameterNode> GenericParameters { get; }
     IFixedList<IGenericParameterDeclarationNode> IOrdinaryTypeDeclarationNode.GenericParameters => GenericParameters;
     IFixedList<ITypeNameNode> SupertypeNames { get; }
@@ -545,7 +545,7 @@ public partial interface IClassDefinitionNode : ITypeDefinitionNode, IClassDecla
     ICodeSyntax ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     IDefinitionSyntax? IDefinitionNode.Syntax => Syntax;
-    ITypeMemberDefinitionSyntax? ITypeMemberDefinitionNode.Syntax => Syntax;
+    IMemberDefinitionSyntax? ITypeMemberDefinitionNode.Syntax => Syntax;
     ITypeNameNode? BaseTypeName { get; }
     IFixedList<IClassMemberDefinitionNode> SourceMembers { get; }
     bool IsAbstract
@@ -578,7 +578,7 @@ public partial interface IStructDefinitionNode : ITypeDefinitionNode, IStructDec
     ICodeSyntax ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     IDefinitionSyntax? IDefinitionNode.Syntax => Syntax;
-    ITypeMemberDefinitionSyntax? ITypeMemberDefinitionNode.Syntax => Syntax;
+    IMemberDefinitionSyntax? ITypeMemberDefinitionNode.Syntax => Syntax;
     IFixedList<IStructMemberDefinitionNode> SourceMembers { get; }
     new IFixedSet<IStructMemberDefinitionNode> Members { get; }
     IFixedSet<ITypeMemberDefinitionNode> ITypeDefinitionNode.Members => Members;
@@ -605,7 +605,7 @@ public partial interface ITraitDefinitionNode : ITypeDefinitionNode, ITraitDecla
     ICodeSyntax ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     IDefinitionSyntax? IDefinitionNode.Syntax => Syntax;
-    ITypeMemberDefinitionSyntax? ITypeMemberDefinitionNode.Syntax => Syntax;
+    IMemberDefinitionSyntax? ITypeMemberDefinitionNode.Syntax => Syntax;
     new IFixedSet<ITraitMemberDefinitionNode> Members { get; }
     IFixedSet<ITypeMemberDefinitionNode> ITypeDefinitionNode.Members => Members;
     IFixedSet<ITypeMemberDeclarationNode> IOrdinaryTypeDeclarationNode.Members => Members;
@@ -680,7 +680,7 @@ public partial interface IImplicitSelfDefinitionNode : IImplicitSelfDeclarationN
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface ITypeMemberDefinitionNode : IDefinitionNode, ITypeMemberDeclarationNode
 {
-    new ITypeMemberDefinitionSyntax? Syntax { get; }
+    new IMemberDefinitionSyntax? Syntax { get; }
     IDefinitionSyntax? IDefinitionNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     AccessModifier AccessModifier { get; }
@@ -752,7 +752,7 @@ public partial interface IMethodDefinitionNode : ICodeNode, IAlwaysTypeMemberDef
     new IMethodDefinitionSyntax Syntax { get; }
     ICodeSyntax ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    ITypeMemberDefinitionSyntax? ITypeMemberDefinitionNode.Syntax => Syntax;
+    IMemberDefinitionSyntax? ITypeMemberDefinitionNode.Syntax => Syntax;
     IDefinitionSyntax? IDefinitionNode.Syntax => Syntax;
     IMethodSelfParameterNode SelfParameter { get; }
     new IFixedList<INamedParameterNode> Parameters { get; }
@@ -782,7 +782,7 @@ public partial interface IAbstractMethodDefinitionNode : IMethodDefinitionNode, 
     IMethodDefinitionSyntax IMethodDefinitionNode.Syntax => Syntax;
     ICodeSyntax ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    ITypeMemberDefinitionSyntax? ITypeMemberDefinitionNode.Syntax => Syntax;
+    IMemberDefinitionSyntax? ITypeMemberDefinitionNode.Syntax => Syntax;
     IDefinitionSyntax? IDefinitionNode.Syntax => Syntax;
     new IBodyNode? Body
         => null;
@@ -813,7 +813,7 @@ public partial interface IOrdinaryMethodDefinitionNode : IMethodDefinitionNode, 
     IMethodDefinitionSyntax IMethodDefinitionNode.Syntax => Syntax;
     ICodeSyntax ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    ITypeMemberDefinitionSyntax? ITypeMemberDefinitionNode.Syntax => Syntax;
+    IMemberDefinitionSyntax? ITypeMemberDefinitionNode.Syntax => Syntax;
     IDefinitionSyntax? IDefinitionNode.Syntax => Syntax;
     new IBodyNode Body { get; }
     IBodyNode? IInvocableDefinitionNode.Body => Body;
@@ -843,7 +843,7 @@ public partial interface IGetterMethodDefinitionNode : IMethodDefinitionNode, IG
     IMethodDefinitionSyntax IMethodDefinitionNode.Syntax => Syntax;
     ICodeSyntax ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    ITypeMemberDefinitionSyntax? ITypeMemberDefinitionNode.Syntax => Syntax;
+    IMemberDefinitionSyntax? ITypeMemberDefinitionNode.Syntax => Syntax;
     IDefinitionSyntax? IDefinitionNode.Syntax => Syntax;
     new ITypeNode Return { get; }
     ITypeNode? IMethodDefinitionNode.Return => Return;
@@ -867,7 +867,7 @@ public partial interface ISetterMethodDefinitionNode : IMethodDefinitionNode, IS
     IMethodDefinitionSyntax IMethodDefinitionNode.Syntax => Syntax;
     ICodeSyntax ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    ITypeMemberDefinitionSyntax? ITypeMemberDefinitionNode.Syntax => Syntax;
+    IMemberDefinitionSyntax? ITypeMemberDefinitionNode.Syntax => Syntax;
     IDefinitionSyntax? IDefinitionNode.Syntax => Syntax;
     new IBodyNode Body { get; }
     IBodyNode? IInvocableDefinitionNode.Body => Body;
@@ -892,7 +892,7 @@ public partial interface IInitializerDefinitionNode : IInvocableDefinitionNode, 
     new IInitializerDefinitionSyntax? Syntax { get; }
     IDefinitionSyntax? IDefinitionNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    ITypeMemberDefinitionSyntax? ITypeMemberDefinitionNode.Syntax => Syntax;
+    IMemberDefinitionSyntax? ITypeMemberDefinitionNode.Syntax => Syntax;
     ITypeDefinitionNode ContainingTypeDefinition { get; }
     new IdentifierName? Name
         => Syntax?.Name;
@@ -913,7 +913,7 @@ public partial interface IDefaultInitializerDefinitionNode : IInitializerDefinit
     IInitializerDefinitionSyntax? IInitializerDefinitionNode.Syntax => Syntax;
     IDefinitionSyntax? IDefinitionNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    ITypeMemberDefinitionSyntax? ITypeMemberDefinitionNode.Syntax => Syntax;
+    IMemberDefinitionSyntax? ITypeMemberDefinitionNode.Syntax => Syntax;
     new IFixedList<IInitializerParameterNode> Parameters
         => FixedList.Empty<IInitializerParameterNode>();
     IFixedList<IInitializerParameterNode> IInvocableDefinitionNode.Parameters => Parameters;
@@ -938,7 +938,7 @@ public partial interface IOrdinaryInitializerDefinitionNode : ICodeNode, IInitia
     ISyntax? ISemanticNode.Syntax => Syntax;
     IInitializerDefinitionSyntax? IInitializerDefinitionNode.Syntax => Syntax;
     IDefinitionSyntax? IDefinitionNode.Syntax => Syntax;
-    ITypeMemberDefinitionSyntax? ITypeMemberDefinitionNode.Syntax => Syntax;
+    IMemberDefinitionSyntax? ITypeMemberDefinitionNode.Syntax => Syntax;
     IInitializerSelfParameterNode SelfParameter { get; }
     new IBlockBodyNode Body { get; }
     IBodyNode? IInvocableDefinitionNode.Body => Body;
@@ -962,7 +962,7 @@ public partial interface IFieldDefinitionNode : ICodeNode, IAlwaysTypeMemberDefi
     new IFieldDefinitionSyntax Syntax { get; }
     ICodeSyntax ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    ITypeMemberDefinitionSyntax? ITypeMemberDefinitionNode.Syntax => Syntax;
+    IMemberDefinitionSyntax? ITypeMemberDefinitionNode.Syntax => Syntax;
     IDefinitionSyntax? IDefinitionNode.Syntax => Syntax;
     ITypeNode TypeNode { get; }
     IAmbiguousExpressionNode? TempInitializer { get; }
@@ -1005,7 +1005,7 @@ public partial interface IAssociatedFunctionDefinitionNode : IConcreteFunctionIn
     ICodeSyntax ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     IDefinitionSyntax? IDefinitionNode.Syntax => Syntax;
-    ITypeMemberDefinitionSyntax? ITypeMemberDefinitionNode.Syntax => Syntax;
+    IMemberDefinitionSyntax? ITypeMemberDefinitionNode.Syntax => Syntax;
     new IdentifierName Name
         => Syntax.Name;
     IdentifierName IConcreteFunctionInvocableDefinitionNode.Name => Name;

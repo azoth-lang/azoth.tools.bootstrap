@@ -63,8 +63,8 @@ FunctionDefinition <: InvocableDefinition, NamespaceBlockMemberDefinition
     = Attributes:Attribute* Name:`IdentifierName` Parameters:NamedParameter* Return? Body;
 
 // ---------- Type Definitions
-TypeDefinition <: NamespaceBlockMemberDefinition, TypeMemberDefinition
-    = ConstModifier:`IConstKeywordToken`? MoveModifier:`IMoveKeywordToken`? Name:`OrdinaryName` GenericParameters:GenericParameter* SupertypeNames:Name* Members:TypeMemberDefinition*;
+TypeDefinition <: NamespaceBlockMemberDefinition, MemberDefinition
+    = ConstModifier:`IConstKeywordToken`? MoveModifier:`IMoveKeywordToken`? Name:`OrdinaryName` GenericParameters:GenericParameter* SupertypeNames:Name* Members:MemberDefinition*;
 ClassDefinition <: TypeDefinition
     = AbstractModifier:`IAbstractKeywordToken`? /GenericParameters/ BaseTypeName:Name? /SupertypeNames/ /Members/;
 StructDefinition <: TypeDefinition;
@@ -73,21 +73,19 @@ TraitDefinition <: TypeDefinition;
 // ---------- Type Definition Parts
 GenericParameter <: Code = Constraint:CapabilityConstraint Name:`IdentifierName` Independence:`TypeParameterIndependence` Variance:`TypeParameterVariance`;
 
-// ---------- Type Member Definitions (i.e. declarations that can be contained in a type)
-TypeMemberDefinition <: FacetMemberDefinition;
-
-// ---------- Member Definitions
-MethodDefinition <: TypeMemberDefinition, InvocableDefinition
+// ---------- Member Definitions (i.e. definitions that can be contained in a type)
+MemberDefinition <: FacetMemberDefinition;
+MethodDefinition <: MemberDefinition, InvocableDefinition
     = Name:`IdentifierName` SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return? Body?;
 AbstractMethodDefinition <: MethodDefinition = /SelfParameter/ /Parameters/ Return?;
 OrdinaryMethodDefinition <: MethodDefinition = SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return? Body;
 GetterMethodDefinition <: MethodDefinition = SelfParameter:MethodSelfParameter Return Body?;
 SetterMethodDefinition <: MethodDefinition = SelfParameter:MethodSelfParameter Parameters:NamedParameter* Body;
-InitializerDefinition <: TypeMemberDefinition, InvocableDefinition
+InitializerDefinition <: MemberDefinition, InvocableDefinition
     = Name:`IdentifierName`? SelfParameter:InitializerSelfParameter Parameters:InitializerParameter* Body:BlockBody;
-FieldDefinition <: TypeMemberDefinition, Binding
+FieldDefinition <: MemberDefinition, Binding
     = Name:`IdentifierName` Type Initializer:Expression?;
-AssociatedFunctionDefinition <: TypeMemberDefinition, InvocableDefinition
+AssociatedFunctionDefinition <: MemberDefinition, InvocableDefinition
     = Name:`IdentifierName` Parameters:NamedParameter* Return? Body;
 
 // ---------- Attributes
