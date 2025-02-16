@@ -8,9 +8,9 @@
 ↑ TypeDefinition.Members: {TypeMemberDefinition};
 ↑ child TypeDefinition.ImplicitSelf: ImplicitSelfDefinition;
 = TypeDefinition.ImplicitSelf;
-↑ ClassDefinition.Members: {ClassMemberDefinition};
+↑ ClassDefinition.Members: {TypeMemberDefinition};
 ↑ child ClassDefinition.DefaultInitializer: DefaultInitializerDefinition?;
-↑ StructDefinition.Members: {StructMemberDefinition};
+↑ StructDefinition.Members: {TypeMemberDefinition};
 ↑ child StructDefinition.DefaultInitializer: DefaultInitializerDefinition?;
 
 // ---------- Type Definition Parts

@@ -101,17 +101,17 @@ internal static class SyntaxBinder
         // TODO support attributes on class
         => IClassDefinitionNode.Create(syntax, [], GenericParameters(syntax.GenericParameters),
             TypeName(syntax.BaseTypeName), SupertypeNames(syntax.SupertypeNames),
-            ClassMemberDefinitions(syntax.Members));
+            MemberDefinitions(syntax.Members));
 
     private static IStructDefinitionNode StructDefinition(IStructDefinitionSyntax syntax)
         // TODO support attributes on struct
         => IStructDefinitionNode.Create(syntax, [], GenericParameters(syntax.GenericParameters),
-            SupertypeNames(syntax.SupertypeNames), StructMemberDefinitions(syntax.Members));
+            SupertypeNames(syntax.SupertypeNames), MemberDefinitions(syntax.Members));
 
     private static ITraitDefinitionNode TraitDefinition(ITraitDefinitionSyntax syntax)
         // TODO support attributes on trait
         => ITraitDefinitionNode.Create(syntax, [], GenericParameters(syntax.GenericParameters),
-            SupertypeNames(syntax.SupertypeNames), TraitMemberDefinitions(syntax.Members));
+            SupertypeNames(syntax.SupertypeNames), MemberDefinitions(syntax.Members));
 
     private static IEnumerable<ITypeNameNode> SupertypeNames(IEnumerable<INameSyntax> syntax)
         => syntax.Select(syn => TypeName(syn));
@@ -125,64 +125,32 @@ internal static class SyntaxBinder
         => IGenericParameterNode.Create(syntax, CapabilityConstraint(syntax.Constraint));
     #endregion
 
-    #region Type Member Definitions
-    private static IEnumerable<IClassMemberDefinitionNode> ClassMemberDefinitions(IEnumerable<IMemberDefinitionSyntax> syntax)
-        => syntax.Select(ClassMemberDefinition);
-
-    private static IClassMemberDefinitionNode ClassMemberDefinition(IMemberDefinitionSyntax syntax)
-        => syntax switch
-        {
-            ITypeDefinitionSyntax syn => TypeDefinition(syn),
-            IMethodDefinitionSyntax syn => MethodDefinition(syn),
-            IInitializerDefinitionSyntax syn => InitializerDefinition(syn),
-            IFieldDefinitionSyntax syn => FieldDefinition(syn),
-            IAssociatedFunctionDefinitionSyntax syn => AssociatedFunctionDefinition(syn),
-            IAssociatedTypeDefinitionSyntax _ => throw new NotImplementedException(),
-            _ => throw ExhaustiveMatch.Failed(syntax)
-        };
-
-    private static IEnumerable<IStructMemberDefinitionNode> StructMemberDefinitions(IEnumerable<IMemberDefinitionSyntax> syntax)
-        => syntax.Select(StructMemberDefinition);
-
-    private static IStructMemberDefinitionNode StructMemberDefinition(IMemberDefinitionSyntax syntax)
-        => syntax switch
-        {
-            ITypeDefinitionSyntax syn => TypeDefinition(syn),
-            IMethodDefinitionSyntax syn => MethodDefinition(syn),
-            IInitializerDefinitionSyntax syn => InitializerDefinition(syn),
-            IFieldDefinitionSyntax syn => FieldDefinition(syn),
-            IAssociatedFunctionDefinitionSyntax syn => AssociatedFunctionDefinition(syn),
-            IAssociatedTypeDefinitionSyntax _ => throw new NotImplementedException(),
-            _ => throw ExhaustiveMatch.Failed(syntax)
-        };
-
-    private static IEnumerable<ITraitMemberDefinitionNode> TraitMemberDefinitions(IEnumerable<IMemberDefinitionSyntax> syntax)
-        => syntax.Select(TraitMemberDefinition);
-
-    private static ITraitMemberDefinitionNode TraitMemberDefinition(IMemberDefinitionSyntax syntax)
-        => syntax switch
-        {
-            ITypeDefinitionSyntax syn => TypeDefinition(syn),
-            IMethodDefinitionSyntax syn => MethodDefinition(syn),
-            IAssociatedFunctionDefinitionSyntax syn => AssociatedFunctionDefinition(syn),
-            IFieldDefinitionSyntax _ => throw new NotImplementedException(),
-            IInitializerDefinitionSyntax _ => throw new NotImplementedException(),
-            IAssociatedTypeDefinitionSyntax _ => throw new NotImplementedException(),
-            _ => throw ExhaustiveMatch.Failed(syntax)
-        };
-    #endregion
-
     #region Member Definitions
+    private static IEnumerable<ITypeMemberDefinitionNode> MemberDefinitions(IEnumerable<IMemberDefinitionSyntax> syntax)
+        => syntax.Select(MemberDefinition);
+
+    private static ITypeMemberDefinitionNode MemberDefinition(IMemberDefinitionSyntax syntax)
+        => syntax switch
+        {
+            ITypeDefinitionSyntax syn => TypeDefinition(syn),
+            IMethodDefinitionSyntax syn => MethodDefinition(syn),
+            IInitializerDefinitionSyntax syn => InitializerDefinition(syn),
+            IFieldDefinitionSyntax syn => FieldDefinition(syn),
+            IAssociatedFunctionDefinitionSyntax syn => AssociatedFunctionDefinition(syn),
+            IAssociatedTypeDefinitionSyntax _ => throw new NotImplementedException(),
+            _ => throw ExhaustiveMatch.Failed(syntax)
+        };
+
     private static IMethodDefinitionNode MethodDefinition(IMethodDefinitionSyntax syntax)
         => syntax switch
         {
-            IOrdinaryMethodDefinitionSyntax syn => StandardMethodDefinition(syn),
+            IOrdinaryMethodDefinitionSyntax syn => OrdinaryMethodDefinition(syn),
             IGetterMethodDefinitionSyntax syn => GetterMethodDefinition(syn),
             ISetterMethodDefinitionSyntax syn => SetterMethodDefinition(syn),
             _ => throw ExhaustiveMatch.Failed(syntax)
         };
 
-    private static IOrdinaryMethodDefinitionNode StandardMethodDefinition(IOrdinaryMethodDefinitionSyntax syntax)
+    private static IOrdinaryMethodDefinitionNode OrdinaryMethodDefinition(IOrdinaryMethodDefinitionSyntax syntax)
         => IOrdinaryMethodDefinitionNode.Create(syntax, MethodSelfParameter(syntax.SelfParameter),
             NamedParameters(syntax.Parameters), Type(syntax.Return?.Type), Body(syntax.Body));
 

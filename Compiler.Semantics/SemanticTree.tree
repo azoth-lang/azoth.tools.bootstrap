@@ -83,13 +83,13 @@ TypeDefinition <: Code, FacetMemberDefinition, AssociatedMemberDefinition, Ordin
     /Attributes/ GenericParameters:GenericParameter* SupertypeNames:TypeName*;
 ClassDefinition <: Code, TypeDefinition, ClassDeclaration = Syntax:`IClassDefinitionSyntax`
     /Attributes/ /GenericParameters/ BaseTypeName:TypeName? /SupertypeNames/
-    SourceMembers:ClassMemberDefinition*;
+    SourceMembers:TypeMemberDefinition*;
 StructDefinition <: Code, TypeDefinition, StructDeclaration = Syntax:`IStructDefinitionSyntax`
     /Attributes/ /GenericParameters/ /SupertypeNames/
-    SourceMembers:StructMemberDefinition*;
+    SourceMembers:TypeMemberDefinition*;
 TraitDefinition <: Code, TypeDefinition, TraitDeclaration = Syntax:`ITraitDefinitionSyntax`
     /Attributes/ /GenericParameters/ /SupertypeNames/
-    Members:{TraitMemberDefinition};
+    Members:{TypeMemberDefinition};
 
 // ---------- Type Definition Parts
 GenericParameter <: Code, GenericParameterDeclaration
@@ -98,16 +98,12 @@ ImplicitSelfDefinition <: ImplicitSelfDeclaration;
 
 // ---------- Type Member Definitions (i.e. definitions that can be contained in a type)
 TypeMemberDefinition <: Definition, TypeMemberDeclaration = Syntax:`IMemberDefinitionSyntax`?;
-// TODO remove these specific ones and handle by reporting errors for members that don't belong
-ClassMemberDefinition <: TypeMemberDefinition, ClassMemberDeclaration;
-TraitMemberDefinition <: TypeMemberDefinition, TraitMemberDeclaration;
-StructMemberDefinition <: TypeMemberDefinition, StructMemberDeclaration;
 AlwaysTypeMemberDefinition <: TypeMemberDefinition, AlwaysTypeMemberDeclaration;
-AssociatedMemberDefinition <: ClassMemberDefinition, TraitMemberDefinition, StructMemberDefinition, NamedDeclaration
+AssociatedMemberDefinition <: TypeMemberDefinition, NamedDeclaration, AssociatedMemberDeclaration
     = Name:`OrdinaryName`;
 
 // ---------- Member Definitions
-MethodDefinition <: Code, AlwaysTypeMemberDefinition, ClassMemberDefinition, TraitMemberDefinition, StructMemberDefinition, InvocableDefinition, MethodDeclaration
+MethodDefinition <: Code, AlwaysTypeMemberDefinition, InvocableDefinition, MethodDeclaration
     = Syntax:`IMethodDefinitionSyntax`
     SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return:Type? Body?;
 OrdinaryMethodDefinition <: MethodDefinition, OrdinaryMethodDeclaration
@@ -116,13 +112,13 @@ GetterMethodDefinition <: MethodDefinition, GetterMethodDeclaration
     = Syntax:`IGetterMethodDefinitionSyntax` /SelfParameter/ /Parameters/ Return:Type /Entry/ /Body/ /Exit/;
 SetterMethodDefinition <: MethodDefinition, SetterMethodDeclaration
     = Syntax:`ISetterMethodDefinitionSyntax` /SelfParameter/ /Parameters/ /Return/ /Entry/ /Body/ /Exit/;
-InitializerDefinition <: InvocableDefinition, AlwaysTypeMemberDefinition, StructMemberDefinition, ClassMemberDefinition, InitializerDeclaration
+InitializerDefinition <: InvocableDefinition, AlwaysTypeMemberDefinition, InitializerDeclaration
     = Syntax:`IInitializerDefinitionSyntax`? Parameters:InitializerParameter*;
 DefaultInitializerDefinition <: InitializerDefinition;
 OrdinaryInitializerDefinition <: Code, InitializerDefinition
     = Syntax:`IInitializerDefinitionSyntax`
     SelfParameter:InitializerSelfParameter /Parameters/ /Entry/ Body:BlockBody /Exit/;
-FieldDefinition <: Code, AlwaysTypeMemberDefinition, ClassMemberDefinition, StructMemberDefinition, NamedBinding, FieldDeclaration, ExecutableDefinition
+FieldDefinition <: Code, AlwaysTypeMemberDefinition, NamedBinding, FieldDeclaration, ExecutableDefinition
     = Syntax:`IFieldDefinitionSyntax` TypeNode:Type /Entry/ Initializer:AmbiguousExpression? /Exit/;
 AssociatedFunctionDefinition <: FunctionInvocableDefinition, AlwaysTypeMemberDefinition, AssociatedMemberDefinition, AssociatedFunctionDeclaration
     = Syntax:`IAssociatedFunctionDefinitionSyntax` /Parameters/ /Return/ /Entry/ /Body/ /Exit/;
@@ -459,11 +455,11 @@ TypeDeclaration <: NamedDeclaration, SymbolDeclaration;
 // TODO this needs a better name
 NonVariableTypeDeclaration <: TypeDeclaration;
 BuiltInTypeDeclaration <: NonVariableTypeDeclaration = Name:`BuiltInTypeName` Members:{TypeMemberDeclaration};
-OrdinaryTypeDeclaration <: NamespaceMemberDeclaration, ClassMemberDeclaration, TraitMemberDeclaration, StructMemberDeclaration, NonVariableTypeDeclaration, NamespaceOrOrdinaryTypeDeclaration
+OrdinaryTypeDeclaration <: NamespaceMemberDeclaration, TypeMemberDeclaration, NonVariableTypeDeclaration, NamespaceOrOrdinaryTypeDeclaration
     = Name:`OrdinaryName` GenericParameters:GenericParameterDeclaration* Members:{TypeMemberDeclaration};
-ClassDeclaration <: OrdinaryTypeDeclaration = Members:{ClassMemberDeclaration};
-StructDeclaration <: OrdinaryTypeDeclaration = Members:{StructMemberDeclaration};
-TraitDeclaration <: OrdinaryTypeDeclaration = Members:{TraitMemberDeclaration};
+ClassDeclaration <: OrdinaryTypeDeclaration = Members:{TypeMemberDeclaration};
+StructDeclaration <: OrdinaryTypeDeclaration = Members:{TypeMemberDeclaration};
+TraitDeclaration <: OrdinaryTypeDeclaration = Members:{TypeMemberDeclaration};
 
 // ---------- Type Declaration Parts
 GenericParameterDeclaration <: TypeDeclaration, AssociatedMemberDeclaration
@@ -472,23 +468,20 @@ ImplicitSelfDeclaration <: TypeDeclaration;
 
 // ---------- Type Member Declarations (i.e. declarations that can be contained in a type)
 TypeMemberDeclaration <: PackageFacetChildDeclaration, SymbolDeclaration;
-ClassMemberDeclaration <: TypeMemberDeclaration;
-TraitMemberDeclaration <: TypeMemberDeclaration;
-StructMemberDeclaration <: TypeMemberDeclaration;
 AlwaysTypeMemberDeclaration <: TypeMemberDeclaration;
-AssociatedMemberDeclaration <: ClassMemberDeclaration, TraitMemberDeclaration, StructMemberDeclaration, SymbolDeclaration;
+AssociatedMemberDeclaration <: TypeMemberDeclaration, SymbolDeclaration;
 InstanceMemberDeclaration <: TypeMemberDeclaration;
 
 // ---------- Member Declarations
-MethodDeclaration <: ClassMemberDeclaration, TraitMemberDeclaration, StructMemberDeclaration, NamedDeclaration, InstanceMemberDeclaration, InvocableDeclaration, AlwaysTypeMemberDeclaration
+MethodDeclaration <: NamedDeclaration, InstanceMemberDeclaration, InvocableDeclaration, AlwaysTypeMemberDeclaration
     = Name:`IdentifierName`;
 OrdinaryMethodDeclaration <: MethodDeclaration;
 PropertyAccessorDeclaration <: MethodDeclaration;
 GetterMethodDeclaration <: PropertyAccessorDeclaration;
 SetterMethodDeclaration <: PropertyAccessorDeclaration;
-InitializerDeclaration <: StructMemberDeclaration, ClassMemberDeclaration, AssociatedMemberDeclaration, InvocableDeclaration, AlwaysTypeMemberDeclaration
+InitializerDeclaration <: AssociatedMemberDeclaration, InvocableDeclaration, AlwaysTypeMemberDeclaration
     = Name:`IdentifierName`?;
-FieldDeclaration <: NamedDeclaration, ClassMemberDeclaration, StructMemberDeclaration, InstanceMemberDeclaration, NamedBindingDeclaration, AlwaysTypeMemberDeclaration
+FieldDeclaration <: NamedDeclaration, InstanceMemberDeclaration, NamedBindingDeclaration, AlwaysTypeMemberDeclaration
     = Name:`IdentifierName`;
 AssociatedFunctionDeclaration <: AssociatedMemberDeclaration, FunctionInvocableDeclaration, AlwaysTypeMemberDeclaration
     = Name:`OrdinaryName`;
@@ -535,18 +528,15 @@ SelfSymbol <: ImplicitSelfDeclaration = Symbol:`AssociatedTypeSymbol`;
 
 // ---------- Type Member Declarations (i.e. declarations that can be contained in a type)
 TypeMemberSymbol <: TypeMemberDeclaration, ChildSymbol;
-ClassMemberSymbol <: ClassMemberDeclaration, TypeMemberSymbol;
-TraitMemberSymbol <: TraitMemberDeclaration, TypeMemberSymbol;
-StructMemberSymbol <: StructMemberDeclaration, TypeMemberSymbol;
-AssociatedMemberSymbol <: AssociatedMemberDeclaration, ClassMemberSymbol, TraitMemberSymbol, StructMemberSymbol;
+AssociatedMemberSymbol <: AssociatedMemberDeclaration, TypeMemberSymbol;
 
 // ---------- Member Symbol Nodes
-MethodSymbol <: MethodDeclaration, ClassMemberSymbol, TraitMemberSymbol, StructMemberSymbol
+MethodSymbol <: MethodDeclaration, TypeMemberSymbol
     = Symbol:`MethodSymbol`;
 OrdinaryMethodSymbol <: OrdinaryMethodDeclaration, MethodSymbol;
 GetterMethodSymbol <: GetterMethodDeclaration, MethodSymbol;
 SetterMethodSymbol <: SetterMethodDeclaration, MethodSymbol;
-InitializerSymbol <: InitializerDeclaration, StructMemberSymbol, ClassMemberSymbol = Symbol:`InitializerSymbol`;
-FieldSymbol <: FieldDeclaration, ClassMemberSymbol, StructMemberSymbol = Symbol:`FieldSymbol`;
+InitializerSymbol <: InitializerDeclaration, TypeMemberSymbol = Symbol:`InitializerSymbol`;
+FieldSymbol <: FieldDeclaration, TypeMemberSymbol = Symbol:`FieldSymbol`;
 AssociatedFunctionSymbol <: AssociatedFunctionDeclaration, AssociatedMemberSymbol
     = Symbol:`FunctionSymbol`;

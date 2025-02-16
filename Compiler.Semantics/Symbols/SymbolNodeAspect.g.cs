@@ -43,9 +43,9 @@ internal static partial class SymbolNodeAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFixedList<INamespaceMemberSymbolNode> NamespaceSymbol_Members(INamespaceSymbolNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IFixedSet<IClassMemberSymbolNode> ClassSymbol_Members(IClassSymbolNode node);
+    public static partial IFixedSet<ITypeMemberSymbolNode> ClassSymbol_Members(IClassSymbolNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IFixedSet<IStructMemberSymbolNode> StructSymbol_Members(IStructSymbolNode node);
+    public static partial IFixedSet<ITypeMemberSymbolNode> StructSymbol_Members(IStructSymbolNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IFixedSet<ITraitMemberSymbolNode> TraitSymbol_Members(ITraitSymbolNode node);
+    public static partial IFixedSet<ITypeMemberSymbolNode> TraitSymbol_Members(ITraitSymbolNode node);
 }

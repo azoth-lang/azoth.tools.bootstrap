@@ -54,9 +54,9 @@
 ↑ NonVariableTypeDeclaration.ImplicitSelf: ImplicitSelfDeclaration;
 ↑ OrdinaryTypeDeclaration.Symbol: `OrdinaryTypeSymbol`;
 ↑ OrdinaryTypeDeclaration.InclusiveMembers: {TypeMemberDeclaration};
-↑ ClassDeclaration.InclusiveMembers: {ClassMemberDeclaration};
-↑ StructDeclaration.InclusiveMembers: {StructMemberDeclaration};
-↑ TraitDeclaration.InclusiveMembers: {TraitMemberDeclaration};
+↑ ClassDeclaration.InclusiveMembers: {TypeMemberDeclaration};
+↑ StructDeclaration.InclusiveMembers: {TypeMemberDeclaration};
+↑ TraitDeclaration.InclusiveMembers: {TypeMemberDeclaration};
 
 // ---------- Type Declaration Parts
 = GenericParameterDeclaration.TypeConstructor;

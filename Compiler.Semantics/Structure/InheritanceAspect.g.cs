@@ -11,9 +11,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Structure;
 internal static partial class InheritanceAspect
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IFixedSet<IClassMemberDeclarationNode> ClassDefinition_InclusiveMembers(IClassDefinitionNode node);
+    public static partial IFixedSet<ITypeMemberDeclarationNode> ClassDefinition_InclusiveMembers(IClassDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IFixedSet<IStructMemberDeclarationNode> StructDefinition_InclusiveMembers(IStructDefinitionNode node);
+    public static partial IFixedSet<ITypeMemberDeclarationNode> StructDefinition_InclusiveMembers(IStructDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IFixedSet<ITraitMemberDeclarationNode> TraitDefinition_InclusiveMembers(ITraitDefinitionNode node);
+    public static partial IFixedSet<ITypeMemberDeclarationNode> TraitDefinition_InclusiveMembers(ITraitDefinitionNode node);
 }

@@ -12,7 +12,7 @@ internal static partial class DefaultMembersAspect
 
     /// <remarks>This needs to be lazy computed because the
     /// <see cref="IClassDefinitionNode.DefaultInitializer"/> attribute must be computed.</remarks>
-    public static partial IFixedSet<IClassMemberDefinitionNode> ClassDefinition_Members(IClassDefinitionNode node)
+    public static partial IFixedSet<ITypeMemberDefinitionNode> ClassDefinition_Members(IClassDefinitionNode node)
     {
         var members = node.SourceMembers.AsEnumerable();
 
@@ -30,7 +30,7 @@ internal static partial class DefaultMembersAspect
 
     /// <remarks>This needs to be lazy computed because the
     /// <see cref="IStructDefinitionNode.DefaultInitializer"/> attribute must be computed.</remarks>
-    public static partial IFixedSet<IStructMemberDefinitionNode> StructDefinition_Members(IStructDefinitionNode node)
+    public static partial IFixedSet<ITypeMemberDefinitionNode> StructDefinition_Members(IStructDefinitionNode node)
     {
         var members = node.SourceMembers.AsEnumerable();
 

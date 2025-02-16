@@ -98,17 +98,17 @@
 ↑ child OrdinaryTypeSymbol.Members: {TypeMemberSymbol};
 
 + ClassSymbol.new.Validate;
-↑ child ClassSymbol.Members: {ClassMemberSymbol};
+↑ child ClassSymbol.Members: {TypeMemberSymbol};
 // For now, the symbol tree already includes all inherited members.
 = ClassSymbol.InclusiveMembers => Members;
 
 + StructSymbol.new.Validate;
-↑ child StructSymbol.Members: {StructMemberSymbol};
+↑ child StructSymbol.Members: {TypeMemberSymbol};
 // For now, the symbol tree already includes all inherited members.
 = StructSymbol.InclusiveMembers => Members;
 
 + TraitSymbol.new.Validate;
-↑ child TraitSymbol.Members: {TraitMemberSymbol};
+↑ child TraitSymbol.Members: {TypeMemberSymbol};
 // For now, the symbol tree already includes all inherited members.
 = TraitSymbol.InclusiveMembers => Members;
 
