@@ -511,6 +511,7 @@ public partial interface IAssociatedFunctionDefinitionSyntax : IMemberDefinition
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IAssociatedTypeDefinitionSyntax : IMemberDefinitionSyntax
 {
+    IVarianceToken? Variance { get; }
     ITypeKeywordToken TypeKeyword { get; }
     new IdentifierName Name { get; }
     UnqualifiedName? IDefinitionSyntax.Name => Name;
@@ -522,11 +523,12 @@ public partial interface IAssociatedTypeDefinitionSyntax : IMemberDefinitionSynt
         CodeFile file,
         TextSpan nameSpan,
         IAccessModifierToken? accessModifier,
+        IVarianceToken? variance,
         ITypeKeywordToken typeKeyword,
         IdentifierName name,
         IEqualsToken? equalsOperator,
         ITypeSyntax? initializer)
-        => new AssociatedTypeDefinitionSyntax(span, file, nameSpan, accessModifier, typeKeyword, name, equalsOperator, initializer);
+        => new AssociatedTypeDefinitionSyntax(span, file, nameSpan, accessModifier, variance, typeKeyword, name, equalsOperator, initializer);
 }
 
 [Closed(typeof(AttributeSyntax))]
@@ -2121,6 +2123,7 @@ file class AssociatedTypeDefinitionSyntax : IAssociatedTypeDefinitionSyntax
     public CodeFile File { [DebuggerStepThrough] get; }
     public TextSpan NameSpan { [DebuggerStepThrough] get; }
     public IAccessModifierToken? AccessModifier { [DebuggerStepThrough] get; }
+    public IVarianceToken? Variance { [DebuggerStepThrough] get; }
     public ITypeKeywordToken TypeKeyword { [DebuggerStepThrough] get; }
     public IdentifierName Name { [DebuggerStepThrough] get; }
     public IEqualsToken? EqualsOperator { [DebuggerStepThrough] get; }
@@ -2133,6 +2136,7 @@ file class AssociatedTypeDefinitionSyntax : IAssociatedTypeDefinitionSyntax
         CodeFile file,
         TextSpan nameSpan,
         IAccessModifierToken? accessModifier,
+        IVarianceToken? variance,
         ITypeKeywordToken typeKeyword,
         IdentifierName name,
         IEqualsToken? equalsOperator,
@@ -2142,6 +2146,7 @@ file class AssociatedTypeDefinitionSyntax : IAssociatedTypeDefinitionSyntax
         File = file;
         NameSpan = nameSpan;
         AccessModifier = accessModifier;
+        Variance = variance;
         TypeKeyword = typeKeyword;
         Name = name;
         EqualsOperator = equalsOperator;
