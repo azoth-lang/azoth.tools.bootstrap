@@ -45,7 +45,7 @@ public sealed class InterpreterProcess
 
     private readonly IPackageNode package;
     private readonly Task executionTask;
-    private readonly FrozenDictionary<FunctionSymbol, IConcreteFunctionInvocableDefinitionNode> functions;
+    private readonly FrozenDictionary<FunctionSymbol, IFunctionInvocableDefinitionNode> functions;
     private readonly FrozenDictionary<MethodSymbol, IMethodDefinitionNode> structMethods;
     private readonly FrozenDictionary<InitializerSymbol, IOrdinaryInitializerDefinitionNode?> initializers;
     private readonly FrozenDictionary<OrdinaryTypeSymbol, ITypeDefinitionNode> userTypes;
@@ -69,7 +69,7 @@ public sealed class InterpreterProcess
         var allDefinitions = GetAllDefinitions(package, referencedPackages,
             runTests ? r => r.MainFacet.Definitions.Concat(r.TestingFacet.Definitions) : r => r.MainFacet.Definitions);
         functions = allDefinitions
-                    .OfType<IConcreteFunctionInvocableDefinitionNode>()
+                    .OfType<IFunctionInvocableDefinitionNode>()
                     .ToFrozenDictionary(f => f.Symbol.Assigned());
 
         structMethods = allDefinitions
@@ -217,7 +217,7 @@ public sealed class InterpreterProcess
     }
 
     private async ValueTask<AzothValue> CallFunctionAsync(
-        IConcreteFunctionInvocableDefinitionNode function,
+        IFunctionInvocableDefinitionNode function,
         IReadOnlyList<AzothValue> arguments)
     {
         using var scope = localVariableScopePool.CreateRoot();
@@ -226,7 +226,7 @@ public sealed class InterpreterProcess
         for (int i = 0; i < parameters.Count; i++)
             scope.Add(parameters[i], arguments[i]);
 
-        var result = await ExecuteAsync(function.Body.Statements, scope).ConfigureAwait(false);
+        var result = await ExecuteAsync(function.Body!.Statements, scope).ConfigureAwait(false);
         return result.ReturnValue;
     }
 

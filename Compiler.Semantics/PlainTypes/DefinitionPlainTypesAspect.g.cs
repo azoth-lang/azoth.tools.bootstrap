@@ -15,7 +15,7 @@ internal static partial class DefinitionPlainTypesAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFixedList<IMaybeNonVoidPlainType> InvocableDefinition_ParameterPlainTypes(IInvocableDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IMaybeFunctionPlainType ConcreteFunctionInvocableDefinition_PlainType(IConcreteFunctionInvocableDefinitionNode node);
+    public static partial IMaybeFunctionPlainType FunctionInvocableDefinition_PlainType(IFunctionInvocableDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial SelfTypeConstructor ImplicitSelfDefinition_TypeConstructor(IImplicitSelfDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

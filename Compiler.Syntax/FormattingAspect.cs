@@ -87,23 +87,19 @@ internal static partial class FormattingAspect
     #endregion
 
     #region Member Definitions
-    public static partial string AbstractMethodDefinition_ToString(IAbstractMethodDefinitionSyntax node)
-    {
-        var @return = node.Return?.ToString() ?? "";
-        return $"abstract fn {node.Name}({string.Join(", ", node.Parameters.Prepend<IParameterSyntax>(node.SelfParameter))}){@return};";
-    }
+    private static string AbstractKeyword(IMethodDefinitionSyntax node)
+        => node.AbstractKeyword is not null ? "abstract " : "";
+
+    private static string Return(IMethodDefinitionSyntax node) => node.Return?.ToString() ?? "";
 
     public static partial string OrdinaryMethodDefinition_ToString(IOrdinaryMethodDefinitionSyntax node)
-    {
-        var @return = node.Return?.ToString() ?? "";
-        return $"fn {node.Name}({string.Join(", ", node.Parameters.Prepend<IParameterSyntax>(node.SelfParameter))}){@return} {node.Body}";
-    }
+        => $"{AbstractKeyword(node)}fn {node.Name}({string.Join(", ", node.Parameters.Prepend<IParameterSyntax>(node.SelfParameter))}){Return(node)} {node.Body}";
 
     public static partial string GetterMethodDefinition_ToString(IGetterMethodDefinitionSyntax node)
-        => $"get {node.Name}({node.SelfParameter}){node.Return} {node.Body}";
+        => $"{AbstractKeyword(node)}get {node.Name}({node.SelfParameter}){node.Return} {node.Body}";
 
     public static partial string SetterMethodDefinition_ToString(ISetterMethodDefinitionSyntax node)
-        => $"set {node.Name}({string.Join(", ", node.Parameters.Prepend<IParameterSyntax>(node.SelfParameter))}) {node.Body}";
+        => $"{AbstractKeyword(node)}set {node.Name}({string.Join(", ", node.Parameters.Prepend<IParameterSyntax>(node.SelfParameter))}) {node.Body}";
 
     public static partial string InitializerDefinition_ToString(IInitializerDefinitionSyntax node)
     {
@@ -122,6 +118,7 @@ internal static partial class FormattingAspect
 
     public static partial string AssociatedFunctionDefinition_ToString(IAssociatedFunctionDefinitionSyntax node)
     {
+        var abstractKeyword = node.AbstractKeyword is not null ? "abstract " : "";
         var @return = node.Return?.ToString() ?? "";
         return $"fn {node.Name}({string.Join(", ", node.Parameters)}){@return} {node.Body}";
     }

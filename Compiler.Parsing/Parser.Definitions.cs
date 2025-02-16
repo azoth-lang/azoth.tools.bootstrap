@@ -426,7 +426,7 @@ public partial class Parser
             var body = ParseBody();
             var span = TextSpan.Covering(accessModifer?.Span, abstractModifier?.Span, get, body.Span);
             return IGetterMethodDefinitionSyntax.Create(span, File, identifier.Span, accessModifer,
-                name, selfParameter, @return, body);
+                abstractModifier, name, selfParameter, @return, body);
         }
         else
         {
@@ -436,7 +436,7 @@ public partial class Parser
             var semicolon = Tokens.Expect<ISemicolonToken>();
             var span = TextSpan.Covering(accessModifer?.Span, abstractModifier?.Span, get, semicolon);
             return IGetterMethodDefinitionSyntax.Create(span, File, identifier.Span, accessModifer,
-                name, selfParameter, @return, null);
+                abstractModifier, name, selfParameter, @return, null);
         }
     }
 
@@ -494,7 +494,7 @@ public partial class Parser
         if (@return is not null)
             Add(ParseError.SetterHasReturn(File, @return.Span));
         return ISetterMethodDefinitionSyntax.Create(span, File, identifier.Span, accessModifer,
-             name, selfParameter, namedParameters, body);
+            abstractModifier, name, selfParameter, namedParameters, body);
     }
 
     internal IInitializerDefinitionSyntax ParseInitializer(ModifierParser modifiers)
@@ -551,7 +551,7 @@ public partial class Parser
         var namedParameters = parameters.Except(parameters.OfType<ISelfParameterSyntax>()).Cast<INamedParameterSyntax>()
                                         .ToFixedList();
 
-        IBodySyntax body;
+        IBodySyntax? body;
         TextSpan span;
 
         // if no self parameter, it is an associated function
@@ -572,8 +572,8 @@ public partial class Parser
                 Add(ParseError.AssociatedFunctionMissingBody(File, span, name));
             }
 
-            return IAssociatedFunctionDefinitionSyntax.Create(span, File, identifier.Span, accessModifer, name,
-                namedParameters, @return, body);
+            return IAssociatedFunctionDefinitionSyntax.Create(span, File, identifier.Span,
+                accessModifer, abstractModifier, name, namedParameters, @return, body);
         }
 
         if (parameters[0] is not ISelfParameterSyntax)
@@ -589,19 +589,19 @@ public partial class Parser
                 Add(ParseError.ConcreteMethodDeclaredAbstract(File, abstractModifier.Span));
             body = ParseBody();
             span = TextSpan.Covering(fn, body.Span);
-            return IOrdinaryMethodDefinitionSyntax.Create(span, File, identifier.Span, accessModifer,
-                name, selfParameter, namedParameters, @return, body);
         }
         else
         {
             if (!inTrait && abstractModifier is null)
                 Add(ParseError.AbstractMethodMissingAbstractModifier(File, identifier.Span));
+            body = null;
             var semicolon = Tokens.Expect<ISemicolonToken>();
             span = TextSpan.Covering(fn, semicolon);
             // TODO Add(ParseError.StructMethodMissingBody(File, span, name));
-            return IAbstractMethodDefinitionSyntax.Create(span, File, identifier.Span, accessModifer,
-                name, selfParameter, namedParameters, @return);
         }
+
+        return IOrdinaryMethodDefinitionSyntax.Create(span, File, identifier.Span, accessModifer,
+            abstractModifier, name, selfParameter, namedParameters, @return, body);
     }
     #endregion
 }

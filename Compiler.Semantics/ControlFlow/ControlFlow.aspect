@@ -14,7 +14,7 @@
 = InvocableDefinition.Entry.ControlFlowFollowing();
 = InvocableDefinition.Body.**.ControlFlowFollowing()
     => ControlFlowSet.CreateNormal(Exit);
-= ConcreteFunctionInvocableDefinition.Return.ControlFlowFollowing() => ControlFlowSet.Empty;
+= FunctionInvocableDefinition.Return.ControlFlowFollowing() => ControlFlowSet.Empty;
 
 // ---------- Type Definitions
 = TypeDefinition.SupertypeNames[*].ControlFlowFollowing() => ControlFlowSet.Empty;

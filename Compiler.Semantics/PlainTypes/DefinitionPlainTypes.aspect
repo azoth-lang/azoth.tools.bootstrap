@@ -8,9 +8,9 @@
 
 // ---------- Definitions
 = InvocableDefinition.ParameterPlainTypes;
-= ConcreteFunctionInvocableDefinition.ReturnPlainType
+= FunctionInvocableDefinition.ReturnPlainType
     => Return?.NamedPlainType ?? AzothPlainType.Void;
-= ConcreteFunctionInvocableDefinition.PlainType;
+= FunctionInvocableDefinition.PlainType;
 
 // ---------- Function Definition
 = FunctionDefinition.Body.ExpectedPlainType => Self.ReturnPlainType;
@@ -32,8 +32,6 @@
 
 = MethodDefinition.ReturnPlainType => Return?.NamedPlainType ?? AzothPlainType.Void;
 = FieldDefinition.BindingPlainType;
-// TODO it would be good to refactor to not depend on Type
-= AbstractMethodDefinition.MethodGroupPlainType => MethodGroupType.PlainType;
 // TODO it would be good to refactor to not depend on Type
 = OrdinaryMethodDefinition.MethodGroupPlainType => MethodGroupType.PlainType;
 = InitializerDefinition.ReturnPlainType

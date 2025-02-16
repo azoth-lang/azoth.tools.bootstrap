@@ -15,15 +15,6 @@ public static class ISemanticNodeExtensions
         {
             default:
                 throw ExhaustiveMatch.Failed(node);
-            case IAbstractMethodDefinitionNode n:
-                yield return n.Entry;
-                yield return n.Exit;
-                yield return n.SelfParameter;
-                foreach (var child in n.Parameters)
-                    yield return child;
-                if (n.Return is not null)
-                    yield return n.Return;
-                yield break;
             case IAmbiguousFreezeExpressionNode n:
                 yield return n.TempReferent;
                 yield break;
@@ -40,7 +31,8 @@ public static class ISemanticNodeExtensions
                 if (n.Return is not null)
                     yield return n.Return;
                 yield return n.Entry;
-                yield return n.Body;
+                if (n.Body is not null)
+                    yield return n.Body;
                 yield return n.Exit;
                 yield break;
             case IAssociatedFunctionSymbolNode n:
@@ -347,7 +339,8 @@ public static class ISemanticNodeExtensions
                 if (n.Return is not null)
                     yield return n.Return;
                 yield return n.Entry;
-                yield return n.Body;
+                if (n.Body is not null)
+                    yield return n.Body;
                 yield return n.Exit;
                 yield break;
             case IOrdinaryMethodSymbolNode n:

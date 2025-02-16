@@ -22,8 +22,10 @@ internal static partial class TypeModifiersAspect
     private static AccessModifier EntityDefinitionAccessModifier(IFacetMemberDefinitionSyntax entityDefinitionSyntax)
         => entityDefinitionSyntax.AccessModifier?.ToAccessModifier() ?? AccessModifier.Private;
 
-    public static partial void AbstractMethodDefinition_Contribute_Diagnostics(IAbstractMethodDefinitionNode node, DiagnosticCollectionBuilder diagnostics)
+    public static partial void MethodDefinition_Contribute_Diagnostics(IMethodDefinitionNode node, DiagnosticCollectionBuilder diagnostics)
     {
+        if (!node.IsAbstract)
+            return;
         // TODO this would be better handled on the class node
         var concreteClass = !node.ContainingTypeConstructor.IsAbstract;
         if (concreteClass)

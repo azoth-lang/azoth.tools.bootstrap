@@ -13,7 +13,7 @@ internal static partial class DefinitionPlainTypesAspect
     public static partial IFixedList<IMaybeNonVoidPlainType> InvocableDefinition_ParameterPlainTypes(IInvocableDefinitionNode node)
         => node.Parameters.Select(p => p.BindingPlainType).ToFixedList();
 
-    public static partial IMaybeFunctionPlainType ConcreteFunctionInvocableDefinition_PlainType(IConcreteFunctionInvocableDefinitionNode node)
+    public static partial IMaybeFunctionPlainType FunctionInvocableDefinition_PlainType(IFunctionInvocableDefinitionNode node)
         => FunctionPlainType.Create(node.ParameterPlainTypes, node.ReturnPlainType);
     #endregion
 

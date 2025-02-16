@@ -15,13 +15,6 @@ public static class ISyntaxExtensions
         {
             default:
                 throw ExhaustiveMatch.Failed(node);
-            case IAbstractMethodDefinitionSyntax n:
-                yield return n.SelfParameter;
-                foreach (var child in n.Parameters)
-                    yield return child;
-                if (n.Return is not null)
-                    yield return n.Return;
-                yield break;
             case IAssignmentExpressionSyntax n:
                 yield return n.LeftOperand;
                 yield return n.RightOperand;
@@ -31,7 +24,8 @@ public static class ISyntaxExtensions
                     yield return child;
                 if (n.Return is not null)
                     yield return n.Return;
-                yield return n.Body;
+                if (n.Body is not null)
+                    yield return n.Body;
                 yield break;
             case IAssociatedTypeDefinitionSyntax n:
                 if (n.Initializer is not null)
@@ -227,7 +221,8 @@ public static class ISyntaxExtensions
                     yield return child;
                 if (n.Return is not null)
                     yield return n.Return;
-                yield return n.Body;
+                if (n.Body is not null)
+                    yield return n.Body;
                 yield break;
             case IPackageReferenceSyntax n:
                 yield break;

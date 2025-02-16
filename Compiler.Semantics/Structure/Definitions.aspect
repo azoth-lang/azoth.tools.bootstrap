@@ -60,9 +60,7 @@
 // ---------- Member Definitions
 ↑ MethodDefinition.Name:`IdentifierName` => Syntax.Name;
 ↑ MethodDefinition.Kind: `MethodKind`;
-= AbstractMethodDefinition.Kind => MethodKind.Standard;
-= AbstractMethodDefinition.Arity => Parameters.Count;
-↑ AbstractMethodDefinition.Body: Body? => null;
+↑ MethodDefinition.IsAbstract: `bool` => Body is null;
 = OrdinaryMethodDefinition.Kind => MethodKind.Standard;
 = OrdinaryMethodDefinition.Arity => Parameters.Count;
 = GetterMethodDefinition.Kind => MethodKind.Getter;

@@ -10,7 +10,7 @@
 // ---------- Definitions
 ↑ InvocableDefinition.FlowStateBefore(): `IFlowState`;
 = InvocableDefinition.FlowStateBefore();
-= ConcreteFunctionInvocableDefinition.Type;
+= FunctionInvocableDefinition.Type;
 
 // ---------- Member Definitions
 = MethodDefinition.SelfParameterType => SelfParameter.ParameterType;
@@ -25,9 +25,6 @@
 = MethodDefinition.Body.ExpectedType => Self.ReturnType;
 = MethodDefinition.ReturnType => Return?.NamedType ?? AzothType.Void;
 = MethodDefinition.↑.Diagnostics;
-
-// TODO this shouldn't use Symbol
-= AbstractMethodDefinition.MethodGroupType => Symbol?.MethodGroupType ?? IMaybeFunctionType.Unknown;
 
 // TODO this shouldn't use Symbol
 = OrdinaryMethodDefinition.MethodGroupType => Symbol?.MethodGroupType ?? IMaybeFunctionType.Unknown;

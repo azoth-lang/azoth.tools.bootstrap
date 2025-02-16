@@ -18,5 +18,5 @@ internal static partial class TypeModifiersAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial AccessModifier TypeMemberDefinition_AccessModifier(ITypeMemberDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial void AbstractMethodDefinition_Contribute_Diagnostics(IAbstractMethodDefinitionNode node, DiagnosticCollectionBuilder diagnostics);
+    public static partial void MethodDefinition_Contribute_Diagnostics(IMethodDefinitionNode node, DiagnosticCollectionBuilder diagnostics);
 }

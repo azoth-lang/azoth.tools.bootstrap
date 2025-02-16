@@ -16,7 +16,7 @@ internal static partial class TypeMemberDeclarationsAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFlowState InvocableDefinition_FlowStateBefore(IInvocableDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IMaybeFunctionType ConcreteFunctionInvocableDefinition_Type(IConcreteFunctionInvocableDefinitionNode node);
+    public static partial IMaybeFunctionType FunctionInvocableDefinition_Type(IFunctionInvocableDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial void MethodDefinition_Contribute_Diagnostics(IMethodDefinitionNode node, DiagnosticCollectionBuilder diagnostics);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -21,4 +21,4 @@ struct `AccessModifier`;
 = TypeMemberDefinition.AccessModifier;
 
 // ---------- Member Definitions
-= AbstractMethodDefinition.↑.Diagnostics;
+= MethodDefinition.↑.Diagnostics;

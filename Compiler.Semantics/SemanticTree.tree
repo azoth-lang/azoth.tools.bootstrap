@@ -61,9 +61,9 @@ ImportDirective <: Code = Syntax:`IImportDirectiveSyntax`;
 Definition <: PackageFacetChildDeclaration = Syntax:`IDefinitionSyntax`?;
 ExecutableDefinition <: Definition, SymbolDeclaration = /Entry/ /Exit/;
 InvocableDefinition <: ExecutableDefinition, InvocableDeclaration
-    = Parameters:InitializerParameter* /Entry/ Body? /Exit/;
-ConcreteFunctionInvocableDefinition <: Code, InvocableDefinition, FunctionInvocableDeclaration
-    = Syntax:`IInvocableDefinitionSyntax` Name:`IdentifierName` Parameters:NamedParameter* Return:Type? Body;
+    = Name:`IdentifierName`? Parameters:InitializerParameter* /Entry/ Body? /Exit/;
+FunctionInvocableDefinition <: Code, InvocableDefinition, FunctionInvocableDeclaration
+    = Syntax:`IInvocableDefinitionSyntax` Name:`IdentifierName` Parameters:NamedParameter* Return:Type?;
 
 // ---------- Namespace Definitions
 NamespaceBlockDefinition <: NamespaceBlockMemberDefinition = Syntax:`INamespaceBlockDefinitionSyntax`
@@ -74,7 +74,7 @@ NamespaceDefinition <: NamespaceMemberDefinition, NamespaceDeclaration
 NamespaceMemberDefinition <: NamespaceMemberDeclaration;
 
 // ---------- Function Definition
-FunctionDefinition <: FacetMemberDefinition, FunctionDeclaration, ConcreteFunctionInvocableDefinition
+FunctionDefinition <: FacetMemberDefinition, FunctionDeclaration, FunctionInvocableDefinition
     = Syntax:`IFunctionDefinitionSyntax` Attributes:Attribute* /Parameters/ /Return/ /Entry/ Body /Exit/;
 
 // ---------- Type Definitions
@@ -109,25 +109,22 @@ AssociatedMemberDefinition <: ClassMemberDefinition, TraitMemberDefinition, Stru
 // ---------- Member Definitions
 MethodDefinition <: Code, AlwaysTypeMemberDefinition, ClassMemberDefinition, TraitMemberDefinition, StructMemberDefinition, InvocableDefinition, MethodDeclaration
     = Syntax:`IMethodDefinitionSyntax`
-    SelfParameter:MethodSelfParameter Parameters:NamedParameter* Body? Return:Type?;
-// TODO getters and setters can be abstract too
-AbstractMethodDefinition <: MethodDefinition, OrdinaryMethodDeclaration
-    = Syntax:`IAbstractMethodDefinitionSyntax` /SelfParameter/ /Parameters/ /Return/;
+    SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return:Type? Body?;
 OrdinaryMethodDefinition <: MethodDefinition, OrdinaryMethodDeclaration
-    = Syntax:`IOrdinaryMethodDefinitionSyntax` /SelfParameter/ /Parameters/ /Return/ /Entry/ Body /Exit/;
+    = Syntax:`IOrdinaryMethodDefinitionSyntax` /SelfParameter/ /Parameters/ /Return/ /Entry/ /Body/ /Exit/;
 GetterMethodDefinition <: MethodDefinition, GetterMethodDeclaration
     = Syntax:`IGetterMethodDefinitionSyntax` /SelfParameter/ /Parameters/ Return:Type /Entry/ /Body/ /Exit/;
 SetterMethodDefinition <: MethodDefinition, SetterMethodDeclaration
     = Syntax:`ISetterMethodDefinitionSyntax` /SelfParameter/ /Parameters/ /Return/ /Entry/ /Body/ /Exit/;
 InitializerDefinition <: InvocableDefinition, AlwaysTypeMemberDefinition, StructMemberDefinition, ClassMemberDefinition, InitializerDeclaration
-    = Syntax:`IInitializerDefinitionSyntax`? Name:`IdentifierName`? Parameters:InitializerParameter*;
+    = Syntax:`IInitializerDefinitionSyntax`? Parameters:InitializerParameter*;
 DefaultInitializerDefinition <: InitializerDefinition;
 OrdinaryInitializerDefinition <: Code, InitializerDefinition
     = Syntax:`IInitializerDefinitionSyntax`
     SelfParameter:InitializerSelfParameter /Parameters/ /Entry/ Body:BlockBody /Exit/;
 FieldDefinition <: Code, AlwaysTypeMemberDefinition, ClassMemberDefinition, StructMemberDefinition, NamedBinding, FieldDeclaration, ExecutableDefinition
     = Syntax:`IFieldDefinitionSyntax` TypeNode:Type /Entry/ Initializer:AmbiguousExpression? /Exit/;
-AssociatedFunctionDefinition <: ConcreteFunctionInvocableDefinition, AlwaysTypeMemberDefinition, AssociatedMemberDefinition, AssociatedFunctionDeclaration
+AssociatedFunctionDefinition <: FunctionInvocableDefinition, AlwaysTypeMemberDefinition, AssociatedMemberDefinition, AssociatedFunctionDeclaration
     = Syntax:`IAssociatedFunctionDefinitionSyntax` /Parameters/ /Return/ /Entry/ /Body/ /Exit/;
 
 // ---------- Attributes

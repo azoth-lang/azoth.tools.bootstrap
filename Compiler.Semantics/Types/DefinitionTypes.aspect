@@ -13,7 +13,7 @@
 
 // ---------- Definitions
 = InvocableDefinition.ParameterTypes;
-= ConcreteFunctionInvocableDefinition.ReturnType
+= FunctionInvocableDefinition.ReturnType
     => Return?.NamedType ?? AzothType.Void;
 
 // ---------- Function Definition
@@ -34,7 +34,7 @@
 ↓ GenericParameter.ContainingTypeConstructor: `OrdinaryTypeConstructor`;
 
 // ---------- Member Definitions
-↓ AbstractMethodDefinition.ContainingTypeConstructor: `OrdinaryTypeConstructor`;
+↓ MethodDefinition.ContainingTypeConstructor: `OrdinaryTypeConstructor`;
 
 // ---------- Parameters
 ↓ SelfParameter.ContainingTypeConstructor: `OrdinaryTypeConstructor`;

@@ -32,8 +32,6 @@ internal static partial class FormattingAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial string GenericParameter_ToString(IGenericParameterSyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial string AbstractMethodDefinition_ToString(IAbstractMethodDefinitionSyntax node);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial string OrdinaryMethodDefinition_ToString(IOrdinaryMethodDefinitionSyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial string GetterMethodDefinition_ToString(IGetterMethodDefinitionSyntax node);

@@ -361,13 +361,13 @@ public partial interface IMemberDefinitionSyntax : IFacetMemberDefinitionSyntax
 }
 
 [Closed(
-    typeof(IAbstractMethodDefinitionSyntax),
     typeof(IOrdinaryMethodDefinitionSyntax),
     typeof(IGetterMethodDefinitionSyntax),
     typeof(ISetterMethodDefinitionSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IMethodDefinitionSyntax : IMemberDefinitionSyntax, IInvocableDefinitionSyntax
 {
+    IAbstractKeywordToken? AbstractKeyword { get; }
     new IdentifierName Name { get; }
     UnqualifiedName? IDefinitionSyntax.Name => Name;
     IMethodSelfParameterSyntax SelfParameter { get; }
@@ -376,44 +376,23 @@ public partial interface IMethodDefinitionSyntax : IMemberDefinitionSyntax, IInv
     IReturnSyntax? Return { get; }
 }
 
-[Closed(typeof(AbstractMethodDefinitionSyntax))]
-[GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IAbstractMethodDefinitionSyntax : IMethodDefinitionSyntax
-{
-    new IBodySyntax? Body
-        => null;
-    IBodySyntax? IInvocableDefinitionSyntax.Body => Body;
-
-    public static IAbstractMethodDefinitionSyntax Create(
-        TextSpan span,
-        CodeFile file,
-        TextSpan nameSpan,
-        IAccessModifierToken? accessModifier,
-        IdentifierName name,
-        IMethodSelfParameterSyntax selfParameter,
-        IEnumerable<INamedParameterSyntax> parameters,
-        IReturnSyntax? @return)
-        => new AbstractMethodDefinitionSyntax(span, file, nameSpan, accessModifier, name, selfParameter, parameters, @return);
-}
-
 [Closed(typeof(OrdinaryMethodDefinitionSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IOrdinaryMethodDefinitionSyntax : IMethodDefinitionSyntax
 {
-    new IBodySyntax Body { get; }
-    IBodySyntax? IInvocableDefinitionSyntax.Body => Body;
 
     public static IOrdinaryMethodDefinitionSyntax Create(
         TextSpan span,
         CodeFile file,
         TextSpan nameSpan,
         IAccessModifierToken? accessModifier,
+        IAbstractKeywordToken? abstractKeyword,
         IdentifierName name,
         IMethodSelfParameterSyntax selfParameter,
         IEnumerable<INamedParameterSyntax> parameters,
         IReturnSyntax? @return,
-        IBodySyntax body)
-        => new OrdinaryMethodDefinitionSyntax(span, file, nameSpan, accessModifier, name, selfParameter, parameters, @return, body);
+        IBodySyntax? body)
+        => new OrdinaryMethodDefinitionSyntax(span, file, nameSpan, accessModifier, abstractKeyword, name, selfParameter, parameters, @return, body);
 }
 
 [Closed(typeof(GetterMethodDefinitionSyntax))]
@@ -432,11 +411,12 @@ public partial interface IGetterMethodDefinitionSyntax : IMethodDefinitionSyntax
         CodeFile file,
         TextSpan nameSpan,
         IAccessModifierToken? accessModifier,
+        IAbstractKeywordToken? abstractKeyword,
         IdentifierName name,
         IMethodSelfParameterSyntax selfParameter,
         IReturnSyntax @return,
         IBodySyntax? body)
-        => new GetterMethodDefinitionSyntax(span, file, nameSpan, accessModifier, name, selfParameter, @return, body);
+        => new GetterMethodDefinitionSyntax(span, file, nameSpan, accessModifier, abstractKeyword, name, selfParameter, @return, body);
 }
 
 [Closed(typeof(SetterMethodDefinitionSyntax))]
@@ -452,11 +432,12 @@ public partial interface ISetterMethodDefinitionSyntax : IMethodDefinitionSyntax
         CodeFile file,
         TextSpan nameSpan,
         IAccessModifierToken? accessModifier,
+        IAbstractKeywordToken? abstractKeyword,
         IdentifierName name,
         IMethodSelfParameterSyntax selfParameter,
         IEnumerable<INamedParameterSyntax> parameters,
         IBodySyntax? body)
-        => new SetterMethodDefinitionSyntax(span, file, nameSpan, accessModifier, name, selfParameter, parameters, body);
+        => new SetterMethodDefinitionSyntax(span, file, nameSpan, accessModifier, abstractKeyword, name, selfParameter, parameters, body);
 }
 
 [Closed(typeof(InitializerDefinitionSyntax))]
@@ -506,24 +487,24 @@ public partial interface IFieldDefinitionSyntax : IMemberDefinitionSyntax, IBind
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IAssociatedFunctionDefinitionSyntax : IMemberDefinitionSyntax, IInvocableDefinitionSyntax
 {
+    IAbstractKeywordToken? AbstractKeyword { get; }
     new IdentifierName Name { get; }
     UnqualifiedName? IDefinitionSyntax.Name => Name;
     new IFixedList<INamedParameterSyntax> Parameters { get; }
     IFixedList<IInitializerParameterSyntax> IInvocableDefinitionSyntax.Parameters => Parameters;
     IReturnSyntax? Return { get; }
-    new IBodySyntax Body { get; }
-    IBodySyntax? IInvocableDefinitionSyntax.Body => Body;
 
     public static IAssociatedFunctionDefinitionSyntax Create(
         TextSpan span,
         CodeFile file,
         TextSpan nameSpan,
         IAccessModifierToken? accessModifier,
+        IAbstractKeywordToken? abstractKeyword,
         IdentifierName name,
         IEnumerable<INamedParameterSyntax> parameters,
         IReturnSyntax? @return,
-        IBodySyntax body)
-        => new AssociatedFunctionDefinitionSyntax(span, file, nameSpan, accessModifier, name, parameters, @return, body);
+        IBodySyntax? body)
+        => new AssociatedFunctionDefinitionSyntax(span, file, nameSpan, accessModifier, abstractKeyword, name, parameters, @return, body);
 }
 
 [Closed(typeof(AssociatedTypeDefinitionSyntax))]
@@ -1895,43 +1876,6 @@ file class GenericParameterSyntax : IGenericParameterSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class AbstractMethodDefinitionSyntax : IAbstractMethodDefinitionSyntax
-{
-    private IAbstractMethodDefinitionSyntax Self { [Inline] get => this; }
-
-    public TextSpan Span { [DebuggerStepThrough] get; }
-    public CodeFile File { [DebuggerStepThrough] get; }
-    public TextSpan NameSpan { [DebuggerStepThrough] get; }
-    public IAccessModifierToken? AccessModifier { [DebuggerStepThrough] get; }
-    public IdentifierName Name { [DebuggerStepThrough] get; }
-    public IMethodSelfParameterSyntax SelfParameter { [DebuggerStepThrough] get; }
-    public IFixedList<INamedParameterSyntax> Parameters { [DebuggerStepThrough] get; }
-    public IReturnSyntax? Return { [DebuggerStepThrough] get; }
-    public override string ToString()
-        => FormattingAspect.AbstractMethodDefinition_ToString(this);
-
-    public AbstractMethodDefinitionSyntax(
-        TextSpan span,
-        CodeFile file,
-        TextSpan nameSpan,
-        IAccessModifierToken? accessModifier,
-        IdentifierName name,
-        IMethodSelfParameterSyntax selfParameter,
-        IEnumerable<INamedParameterSyntax> parameters,
-        IReturnSyntax? @return)
-    {
-        Span = span;
-        File = file;
-        NameSpan = nameSpan;
-        AccessModifier = accessModifier;
-        Name = name;
-        SelfParameter = selfParameter;
-        Parameters = parameters.ToFixedList();
-        Return = @return;
-    }
-}
-
-[GeneratedCode("AzothCompilerCodeGen", null)]
 file class OrdinaryMethodDefinitionSyntax : IOrdinaryMethodDefinitionSyntax
 {
     private IOrdinaryMethodDefinitionSyntax Self { [Inline] get => this; }
@@ -1940,11 +1884,12 @@ file class OrdinaryMethodDefinitionSyntax : IOrdinaryMethodDefinitionSyntax
     public CodeFile File { [DebuggerStepThrough] get; }
     public TextSpan NameSpan { [DebuggerStepThrough] get; }
     public IAccessModifierToken? AccessModifier { [DebuggerStepThrough] get; }
+    public IAbstractKeywordToken? AbstractKeyword { [DebuggerStepThrough] get; }
     public IdentifierName Name { [DebuggerStepThrough] get; }
     public IMethodSelfParameterSyntax SelfParameter { [DebuggerStepThrough] get; }
     public IFixedList<INamedParameterSyntax> Parameters { [DebuggerStepThrough] get; }
     public IReturnSyntax? Return { [DebuggerStepThrough] get; }
-    public IBodySyntax Body { [DebuggerStepThrough] get; }
+    public IBodySyntax? Body { [DebuggerStepThrough] get; }
     public override string ToString()
         => FormattingAspect.OrdinaryMethodDefinition_ToString(this);
 
@@ -1953,16 +1898,18 @@ file class OrdinaryMethodDefinitionSyntax : IOrdinaryMethodDefinitionSyntax
         CodeFile file,
         TextSpan nameSpan,
         IAccessModifierToken? accessModifier,
+        IAbstractKeywordToken? abstractKeyword,
         IdentifierName name,
         IMethodSelfParameterSyntax selfParameter,
         IEnumerable<INamedParameterSyntax> parameters,
         IReturnSyntax? @return,
-        IBodySyntax body)
+        IBodySyntax? body)
     {
         Span = span;
         File = file;
         NameSpan = nameSpan;
         AccessModifier = accessModifier;
+        AbstractKeyword = abstractKeyword;
         Name = name;
         SelfParameter = selfParameter;
         Parameters = parameters.ToFixedList();
@@ -1980,6 +1927,7 @@ file class GetterMethodDefinitionSyntax : IGetterMethodDefinitionSyntax
     public CodeFile File { [DebuggerStepThrough] get; }
     public TextSpan NameSpan { [DebuggerStepThrough] get; }
     public IAccessModifierToken? AccessModifier { [DebuggerStepThrough] get; }
+    public IAbstractKeywordToken? AbstractKeyword { [DebuggerStepThrough] get; }
     public IdentifierName Name { [DebuggerStepThrough] get; }
     public IMethodSelfParameterSyntax SelfParameter { [DebuggerStepThrough] get; }
     public IReturnSyntax Return { [DebuggerStepThrough] get; }
@@ -1992,6 +1940,7 @@ file class GetterMethodDefinitionSyntax : IGetterMethodDefinitionSyntax
         CodeFile file,
         TextSpan nameSpan,
         IAccessModifierToken? accessModifier,
+        IAbstractKeywordToken? abstractKeyword,
         IdentifierName name,
         IMethodSelfParameterSyntax selfParameter,
         IReturnSyntax @return,
@@ -2001,6 +1950,7 @@ file class GetterMethodDefinitionSyntax : IGetterMethodDefinitionSyntax
         File = file;
         NameSpan = nameSpan;
         AccessModifier = accessModifier;
+        AbstractKeyword = abstractKeyword;
         Name = name;
         SelfParameter = selfParameter;
         Return = @return;
@@ -2017,6 +1967,7 @@ file class SetterMethodDefinitionSyntax : ISetterMethodDefinitionSyntax
     public CodeFile File { [DebuggerStepThrough] get; }
     public TextSpan NameSpan { [DebuggerStepThrough] get; }
     public IAccessModifierToken? AccessModifier { [DebuggerStepThrough] get; }
+    public IAbstractKeywordToken? AbstractKeyword { [DebuggerStepThrough] get; }
     public IdentifierName Name { [DebuggerStepThrough] get; }
     public IMethodSelfParameterSyntax SelfParameter { [DebuggerStepThrough] get; }
     public IFixedList<INamedParameterSyntax> Parameters { [DebuggerStepThrough] get; }
@@ -2029,6 +1980,7 @@ file class SetterMethodDefinitionSyntax : ISetterMethodDefinitionSyntax
         CodeFile file,
         TextSpan nameSpan,
         IAccessModifierToken? accessModifier,
+        IAbstractKeywordToken? abstractKeyword,
         IdentifierName name,
         IMethodSelfParameterSyntax selfParameter,
         IEnumerable<INamedParameterSyntax> parameters,
@@ -2038,6 +1990,7 @@ file class SetterMethodDefinitionSyntax : ISetterMethodDefinitionSyntax
         File = file;
         NameSpan = nameSpan;
         AccessModifier = accessModifier;
+        AbstractKeyword = abstractKeyword;
         Name = name;
         SelfParameter = selfParameter;
         Parameters = parameters.ToFixedList();
@@ -2128,10 +2081,11 @@ file class AssociatedFunctionDefinitionSyntax : IAssociatedFunctionDefinitionSyn
     public CodeFile File { [DebuggerStepThrough] get; }
     public TextSpan NameSpan { [DebuggerStepThrough] get; }
     public IAccessModifierToken? AccessModifier { [DebuggerStepThrough] get; }
+    public IAbstractKeywordToken? AbstractKeyword { [DebuggerStepThrough] get; }
     public IdentifierName Name { [DebuggerStepThrough] get; }
     public IFixedList<INamedParameterSyntax> Parameters { [DebuggerStepThrough] get; }
     public IReturnSyntax? Return { [DebuggerStepThrough] get; }
-    public IBodySyntax Body { [DebuggerStepThrough] get; }
+    public IBodySyntax? Body { [DebuggerStepThrough] get; }
     public override string ToString()
         => FormattingAspect.AssociatedFunctionDefinition_ToString(this);
 
@@ -2140,15 +2094,17 @@ file class AssociatedFunctionDefinitionSyntax : IAssociatedFunctionDefinitionSyn
         CodeFile file,
         TextSpan nameSpan,
         IAccessModifierToken? accessModifier,
+        IAbstractKeywordToken? abstractKeyword,
         IdentifierName name,
         IEnumerable<INamedParameterSyntax> parameters,
         IReturnSyntax? @return,
-        IBodySyntax body)
+        IBodySyntax? body)
     {
         Span = span;
         File = file;
         NameSpan = nameSpan;
         AccessModifier = accessModifier;
+        AbstractKeyword = abstractKeyword;
         Name = name;
         Parameters = parameters.ToFixedList();
         Return = @return;

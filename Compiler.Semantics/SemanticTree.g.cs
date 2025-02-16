@@ -256,7 +256,7 @@ public partial interface IFacetMemberDefinitionNode : INamespaceBlockMemberDefin
     typeof(IBindingNode),
     typeof(ICompilationUnitNode),
     typeof(IImportDirectiveNode),
-    typeof(IConcreteFunctionInvocableDefinitionNode),
+    typeof(IFunctionInvocableDefinitionNode),
     typeof(ITypeDefinitionNode),
     typeof(IGenericParameterNode),
     typeof(IMethodDefinitionNode),
@@ -353,12 +353,14 @@ public partial interface IExecutableDefinitionNode : IDefinitionNode, ISymbolDec
 }
 
 [Closed(
-    typeof(IConcreteFunctionInvocableDefinitionNode),
+    typeof(IFunctionInvocableDefinitionNode),
     typeof(IMethodDefinitionNode),
     typeof(IInitializerDefinitionNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IInvocableDefinitionNode : IExecutableDefinitionNode, IInvocableDeclarationNode
 {
+    new IdentifierName? Name { get; }
+    OrdinaryName? IPackageFacetChildDeclarationNode.Name => Name;
     IFixedList<IInitializerParameterNode> Parameters { get; }
     IBodyNode? Body { get; }
     IFlowState FlowStateBefore()
@@ -369,20 +371,19 @@ public partial interface IInvocableDefinitionNode : IExecutableDefinitionNode, I
     typeof(IFunctionDefinitionNode),
     typeof(IAssociatedFunctionDefinitionNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IConcreteFunctionInvocableDefinitionNode : ICodeNode, IInvocableDefinitionNode, IFunctionInvocableDeclarationNode
+public partial interface IFunctionInvocableDefinitionNode : ICodeNode, IInvocableDefinitionNode, IFunctionInvocableDeclarationNode
 {
     new IInvocableDefinitionSyntax Syntax { get; }
     ICodeSyntax ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     IDefinitionSyntax? IDefinitionNode.Syntax => Syntax;
     new IdentifierName Name { get; }
+    IdentifierName? IInvocableDefinitionNode.Name => Name;
     OrdinaryName? IPackageFacetChildDeclarationNode.Name => Name;
     UnqualifiedName INamedDeclarationNode.Name => Name;
     new IFixedList<INamedParameterNode> Parameters { get; }
     IFixedList<IInitializerParameterNode> IInvocableDefinitionNode.Parameters => Parameters;
     ITypeNode? Return { get; }
-    new IBodyNode Body { get; }
-    IBodyNode? IInvocableDefinitionNode.Body => Body;
     IMaybeType IInvocableDeclarationNode.ReturnType
         => Return?.NamedType ?? AzothType.Void;
     IMaybePlainType IInvocableDeclarationNode.ReturnPlainType
@@ -465,19 +466,22 @@ public partial interface INamespaceMemberDefinitionNode : INamespaceMemberDeclar
 
 [Closed(typeof(FunctionDefinitionNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IFunctionDefinitionNode : IFacetMemberDefinitionNode, IFunctionDeclarationNode, IConcreteFunctionInvocableDefinitionNode
+public partial interface IFunctionDefinitionNode : IFacetMemberDefinitionNode, IFunctionDeclarationNode, IFunctionInvocableDefinitionNode
 {
     new IFunctionDefinitionSyntax Syntax { get; }
     IDefinitionSyntax? IDefinitionNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    IInvocableDefinitionSyntax IConcreteFunctionInvocableDefinitionNode.Syntax => Syntax;
+    IInvocableDefinitionSyntax IFunctionInvocableDefinitionNode.Syntax => Syntax;
     ICodeSyntax ICodeNode.Syntax => Syntax;
+    new IBodyNode Body { get; }
+    IBodyNode? IInvocableDefinitionNode.Body => Body;
     new IdentifierName Name
         => Syntax.Name;
     OrdinaryName? IPackageFacetChildDeclarationNode.Name => Name;
     OrdinaryName INamespaceMemberDeclarationNode.Name => Name;
     UnqualifiedName INamedDeclarationNode.Name => Name;
-    IdentifierName IConcreteFunctionInvocableDefinitionNode.Name => Name;
+    IdentifierName IFunctionInvocableDefinitionNode.Name => Name;
+    IdentifierName? IInvocableDefinitionNode.Name => Name;
     new NamespaceSymbol ContainingSymbol
         => ContainingDeclaration.Symbol;
     Symbol? IDefinitionNode.ContainingSymbol => ContainingSymbol;
@@ -742,7 +746,6 @@ public partial interface IAssociatedMemberDefinitionNode : IClassMemberDefinitio
 }
 
 [Closed(
-    typeof(IAbstractMethodDefinitionNode),
     typeof(IOrdinaryMethodDefinitionNode),
     typeof(IGetterMethodDefinitionNode),
     typeof(ISetterMethodDefinitionNode))]
@@ -761,9 +764,13 @@ public partial interface IMethodDefinitionNode : ICodeNode, IAlwaysTypeMemberDef
     new IdentifierName Name
         => Syntax.Name;
     OrdinaryName? IPackageFacetChildDeclarationNode.Name => Name;
+    IdentifierName? IInvocableDefinitionNode.Name => Name;
     IdentifierName IMethodDeclarationNode.Name => Name;
     UnqualifiedName INamedDeclarationNode.Name => Name;
     MethodKind Kind { get; }
+    bool IsAbstract
+        => Body is null;
+    OrdinaryTypeConstructor ContainingTypeConstructor { get; }
     IMaybeNonVoidType IMethodDeclarationNode.SelfParameterType
         => SelfParameter.ParameterType;
     IMaybeType IInvocableDeclarationNode.ReturnType
@@ -772,37 +779,6 @@ public partial interface IMethodDefinitionNode : ICodeNode, IAlwaysTypeMemberDef
         => SelfParameter.BindingPlainType;
     IMaybePlainType IInvocableDeclarationNode.ReturnPlainType
         => Return?.NamedPlainType ?? AzothPlainType.Void;
-}
-
-[Closed(typeof(AbstractMethodDefinitionNode))]
-[GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IAbstractMethodDefinitionNode : IMethodDefinitionNode, IOrdinaryMethodDeclarationNode
-{
-    new IAbstractMethodDefinitionSyntax Syntax { get; }
-    IMethodDefinitionSyntax IMethodDefinitionNode.Syntax => Syntax;
-    ICodeSyntax ICodeNode.Syntax => Syntax;
-    ISyntax? ISemanticNode.Syntax => Syntax;
-    IMemberDefinitionSyntax? ITypeMemberDefinitionNode.Syntax => Syntax;
-    IDefinitionSyntax? IDefinitionNode.Syntax => Syntax;
-    new IBodyNode? Body
-        => null;
-    IBodyNode? IInvocableDefinitionNode.Body => Body;
-    OrdinaryTypeConstructor ContainingTypeConstructor { get; }
-    IMaybeFunctionType IOrdinaryMethodDeclarationNode.MethodGroupType
-        => Symbol?.MethodGroupType ?? IMaybeFunctionType.Unknown;
-    MethodKind IMethodDefinitionNode.Kind
-        => MethodKind.Standard;
-    int IOrdinaryMethodDeclarationNode.Arity
-        => Parameters.Count;
-    IMaybeFunctionPlainType IOrdinaryMethodDeclarationNode.MethodGroupPlainType
-        => MethodGroupType.PlainType;
-
-    public static IAbstractMethodDefinitionNode Create(
-        IAbstractMethodDefinitionSyntax syntax,
-        IMethodSelfParameterNode selfParameter,
-        IEnumerable<INamedParameterNode> parameters,
-        ITypeNode? @return)
-        => new AbstractMethodDefinitionNode(syntax, selfParameter, parameters, @return);
 }
 
 [Closed(typeof(OrdinaryMethodDefinitionNode))]
@@ -815,8 +791,6 @@ public partial interface IOrdinaryMethodDefinitionNode : IMethodDefinitionNode, 
     ISyntax? ISemanticNode.Syntax => Syntax;
     IMemberDefinitionSyntax? ITypeMemberDefinitionNode.Syntax => Syntax;
     IDefinitionSyntax? IDefinitionNode.Syntax => Syntax;
-    new IBodyNode Body { get; }
-    IBodyNode? IInvocableDefinitionNode.Body => Body;
     IMaybeFunctionType IOrdinaryMethodDeclarationNode.MethodGroupType
         => Symbol?.MethodGroupType ?? IMaybeFunctionType.Unknown;
     MethodKind IMethodDefinitionNode.Kind
@@ -831,7 +805,7 @@ public partial interface IOrdinaryMethodDefinitionNode : IMethodDefinitionNode, 
         IMethodSelfParameterNode selfParameter,
         IEnumerable<INamedParameterNode> parameters,
         ITypeNode? @return,
-        IBodyNode body)
+        IBodyNode? body)
         => new OrdinaryMethodDefinitionNode(syntax, selfParameter, parameters, @return, body);
 }
 
@@ -894,6 +868,7 @@ public partial interface IInitializerDefinitionNode : IInvocableDefinitionNode, 
     ITypeDefinitionNode ContainingTypeDefinition { get; }
     new IdentifierName? Name
         => Syntax?.Name;
+    IdentifierName? IInvocableDefinitionNode.Name => Name;
     OrdinaryName? IPackageFacetChildDeclarationNode.Name => Name;
     IdentifierName? IInitializerDeclarationNode.Name => Name;
     IMaybeType IInvocableDeclarationNode.ReturnType
@@ -996,17 +971,18 @@ public partial interface IFieldDefinitionNode : ICodeNode, IAlwaysTypeMemberDefi
 
 [Closed(typeof(AssociatedFunctionDefinitionNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IAssociatedFunctionDefinitionNode : IConcreteFunctionInvocableDefinitionNode, IAlwaysTypeMemberDefinitionNode, IAssociatedMemberDefinitionNode, IAssociatedFunctionDeclarationNode
+public partial interface IAssociatedFunctionDefinitionNode : IFunctionInvocableDefinitionNode, IAlwaysTypeMemberDefinitionNode, IAssociatedMemberDefinitionNode, IAssociatedFunctionDeclarationNode
 {
     new IAssociatedFunctionDefinitionSyntax Syntax { get; }
-    IInvocableDefinitionSyntax IConcreteFunctionInvocableDefinitionNode.Syntax => Syntax;
+    IInvocableDefinitionSyntax IFunctionInvocableDefinitionNode.Syntax => Syntax;
     ICodeSyntax ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     IDefinitionSyntax? IDefinitionNode.Syntax => Syntax;
     IMemberDefinitionSyntax? ITypeMemberDefinitionNode.Syntax => Syntax;
     new IdentifierName Name
         => Syntax.Name;
-    IdentifierName IConcreteFunctionInvocableDefinitionNode.Name => Name;
+    IdentifierName IFunctionInvocableDefinitionNode.Name => Name;
+    IdentifierName? IInvocableDefinitionNode.Name => Name;
     OrdinaryName? IPackageFacetChildDeclarationNode.Name => Name;
     UnqualifiedName INamedDeclarationNode.Name => Name;
     OrdinaryName IAssociatedMemberDefinitionNode.Name => Name;
@@ -1016,7 +992,7 @@ public partial interface IAssociatedFunctionDefinitionNode : IConcreteFunctionIn
         IAssociatedFunctionDefinitionSyntax syntax,
         IEnumerable<INamedParameterNode> parameters,
         ITypeNode? @return,
-        IBodyNode body)
+        IBodyNode? body)
         => new AssociatedFunctionDefinitionNode(syntax, parameters, @return, body);
 }
 
@@ -3789,7 +3765,7 @@ public partial interface IInvocableDeclarationNode : ISymbolDeclarationNode, ICh
 }
 
 [Closed(
-    typeof(IConcreteFunctionInvocableDefinitionNode),
+    typeof(IFunctionInvocableDefinitionNode),
     typeof(IFunctionDeclarationNode),
     typeof(IAssociatedFunctionDeclarationNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -4117,7 +4093,6 @@ public partial interface IMethodDeclarationNode : IClassMemberDeclarationNode, I
 }
 
 [Closed(
-    typeof(IAbstractMethodDefinitionNode),
     typeof(IOrdinaryMethodDefinitionNode),
     typeof(IOrdinaryMethodSymbolNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -5462,7 +5437,7 @@ file class FunctionDefinitionNode : SemanticNode, IFunctionDefinitionNode
     public IMaybeFunctionPlainType PlainType
         => GrammarAttribute.IsCached(in plainTypeCached) ? plainType!
             : this.Synthetic(ref plainTypeCached, ref plainType,
-                DefinitionPlainTypesAspect.ConcreteFunctionInvocableDefinition_PlainType);
+                DefinitionPlainTypesAspect.FunctionInvocableDefinition_PlainType);
     private IMaybeFunctionPlainType? plainType;
     private bool plainTypeCached;
     public FunctionSymbol? Symbol
@@ -5474,7 +5449,7 @@ file class FunctionDefinitionNode : SemanticNode, IFunctionDefinitionNode
     public IMaybeFunctionType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
             : this.Synthetic(ref typeCached, ref type,
-                TypeMemberDeclarationsAspect.ConcreteFunctionInvocableDefinition_Type);
+                TypeMemberDeclarationsAspect.FunctionInvocableDefinition_Type);
     private IMaybeFunctionType? type;
     private bool typeCached;
     public ValueIdScope ValueIdScope { [DebuggerStepThrough] get; }
@@ -6225,15 +6200,16 @@ file class ImplicitSelfDefinitionNode : SemanticNode, IImplicitSelfDefinitionNod
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class AbstractMethodDefinitionNode : SemanticNode, IAbstractMethodDefinitionNode
+file class OrdinaryMethodDefinitionNode : SemanticNode, IOrdinaryMethodDefinitionNode
 {
-    private IAbstractMethodDefinitionNode Self { [Inline] get => this; }
+    private IOrdinaryMethodDefinitionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
-    public IAbstractMethodDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
+    public IOrdinaryMethodDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
     public IMethodSelfParameterNode SelfParameter { [DebuggerStepThrough] get; }
     public IFixedList<INamedParameterNode> Parameters { [DebuggerStepThrough] get; }
     public ITypeNode? Return { [DebuggerStepThrough] get; }
+    public IBodyNode? Body { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -6298,200 +6274,12 @@ file class AbstractMethodDefinitionNode : SemanticNode, IAbstractMethodDefinitio
     private FixedDictionary<IVariableBindingNode, int>? variableBindingsMap;
     private bool variableBindingsMapCached;
 
-    public AbstractMethodDefinitionNode(
-        IAbstractMethodDefinitionSyntax syntax,
-        IMethodSelfParameterNode selfParameter,
-        IEnumerable<INamedParameterNode> parameters,
-        ITypeNode? @return)
-    {
-        Syntax = syntax;
-        SelfParameter = Child.Attach(this, selfParameter);
-        Parameters = ChildList.Attach(this, parameters);
-        Return = Child.Attach(this, @return);
-        Entry = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Entry(this));
-        Exit = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Exit(this));
-        ValueIdScope = ValueIdsAspect.ExecutableDefinition_ValueIdScope(this);
-    }
-
-    internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        return this;
-    }
-
-    internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ReferenceEquals(child, Self.Body))
-            return LexicalScope;
-        return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
-    }
-
-    internal override IEntryNode Inherited_ControlFlowEntry(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        return Entry;
-    }
-
-    internal override IExitNode Inherited_ControlFlowExit(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        return Exit;
-    }
-
-    internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ReferenceEquals(descendant, Self.Return))
-            return ControlFlowSet.Empty;
-        if (ReferenceEquals(descendant, Self.Entry))
-            return ControlFlowAspect.InvocableDefinition_Entry_ControlFlowFollowing(this);
-        if (ReferenceEquals(child, Self.Body))
-            return ControlFlowSet.CreateNormal(Exit);
-        return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
-    }
-
-    internal override IMaybePlainType? Inherited_ExpectedPlainType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ReferenceEquals(descendant, Self.Body))
-            return Self.ReturnPlainType;
-        return base.Inherited_ExpectedPlainType(child, descendant, ctx);
-    }
-
-    internal override IMaybePlainType? Inherited_ExpectedReturnPlainType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ReferenceEquals(child, Self.Body))
-            return Self.ReturnPlainType;
-        return base.Inherited_ExpectedReturnPlainType(child, descendant, ctx);
-    }
-
-    internal override IMaybeType? Inherited_ExpectedReturnType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ReferenceEquals(child, Self.Body))
-            return Self.ReturnType;
-        return base.Inherited_ExpectedReturnType(child, descendant, ctx);
-    }
-
-    internal override IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ReferenceEquals(descendant, Self.Body))
-            return Self.ReturnType;
-        return base.Inherited_ExpectedType(child, descendant, ctx);
-    }
-
-    internal override IFlowState Inherited_FlowStateBefore(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ReferenceEquals(child, Self.SelfParameter))
-            return Self.FlowStateBefore();
-        if (0 < Self.Parameters.Count && ReferenceEquals(child, Self.Parameters[0]))
-            return SelfParameter.FlowStateAfter;
-        if (IndexOfNode(Self.Parameters, child) is { } index)
-            return Parameters[index - 1].FlowStateAfter;
-        if (ReferenceEquals(child, Self.Body))
-            return Parameters.LastOrDefault()?.FlowStateAfter ?? SelfParameter.FlowStateAfter;
-        return base.Inherited_FlowStateBefore(child, descendant, ctx);
-    }
-
-    internal override IMaybeType? Inherited_MethodSelfType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        return TypeExpressionsAspect.MethodDefinition_Children_Broadcast_MethodSelfType(this);
-    }
-
-    internal override ValueIdScope Inherited_ValueIdScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        return ValueIdScope;
-    }
-
-    internal override FixedDictionary<IVariableBindingNode, int> Inherited_VariableBindingsMap(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ReferenceEquals(descendant, Self.Entry))
-            return VariableBindingsMap;
-        return base.Inherited_VariableBindingsMap(child, descendant, ctx);
-    }
-
-    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
-    {
-        contributors.Add(this);
-        base.CollectContributors_Diagnostics(contributors);
-    }
-
-    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
-    {
-        TypeMemberDeclarationsAspect.MethodDefinition_Contribute_Diagnostics(this, builder);
-        TypeModifiersAspect.AbstractMethodDefinition_Contribute_Diagnostics(this, builder);
-    }
-}
-
-[GeneratedCode("AzothCompilerCodeGen", null)]
-file class OrdinaryMethodDefinitionNode : SemanticNode, IOrdinaryMethodDefinitionNode
-{
-    private IOrdinaryMethodDefinitionNode Self { [Inline] get => this; }
-    private AttributeLock syncLock;
-
-    public IOrdinaryMethodDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
-    public IMethodSelfParameterNode SelfParameter { [DebuggerStepThrough] get; }
-    public IFixedList<INamedParameterNode> Parameters { [DebuggerStepThrough] get; }
-    public ITypeNode? Return { [DebuggerStepThrough] get; }
-    public IBodyNode Body { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
-    public CodeFile File
-        => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
-    public LexicalScope ContainingLexicalScope
-        => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
-            : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
-                Inherited_ContainingLexicalScope);
-    private LexicalScope? containingLexicalScope;
-    private bool containingLexicalScopeCached;
-    public IPackageFacetNode Facet
-        => GrammarAttribute.IsCached(in facetCached) ? facet!
-            : this.Inherited(ref facetCached, ref facet,
-                (ctx) => (IPackageFacetNode)Inherited_Facet(ctx));
-    private IPackageFacetNode? facet;
-    private bool facetCached;
-    public IOrdinaryTypeDeclarationNode ContainingDeclaration
-        => (IOrdinaryTypeDeclarationNode)Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
-    public AccessModifier AccessModifier
-        => GrammarAttribute.IsCached(in accessModifierCached) ? accessModifier
-            : this.Synthetic(ref accessModifierCached, ref accessModifier, ref syncLock,
-                TypeModifiersAspect.TypeMemberDefinition_AccessModifier);
-    private AccessModifier accessModifier;
-    private bool accessModifierCached;
-    public IEntryNode Entry { [DebuggerStepThrough] get; }
-    public IExitNode Exit { [DebuggerStepThrough] get; }
-    public LexicalScope LexicalScope
-        => GrammarAttribute.IsCached(in lexicalScopeCached) ? lexicalScope!
-            : this.Synthetic(ref lexicalScopeCached, ref lexicalScope,
-                LexicalScopingAspect.MethodDefinition_LexicalScope);
-    private LexicalScope? lexicalScope;
-    private bool lexicalScopeCached;
-    public IFixedList<IMaybeNonVoidPlainType> ParameterPlainTypes
-        => GrammarAttribute.IsCached(in parameterPlainTypesCached) ? parameterPlainTypes!
-            : this.Synthetic(ref parameterPlainTypesCached, ref parameterPlainTypes,
-                DefinitionPlainTypesAspect.InvocableDefinition_ParameterPlainTypes);
-    private IFixedList<IMaybeNonVoidPlainType>? parameterPlainTypes;
-    private bool parameterPlainTypesCached;
-    public IFixedList<IMaybeParameterType> ParameterTypes
-        => GrammarAttribute.IsCached(in parameterTypesCached) ? parameterTypes!
-            : this.Synthetic(ref parameterTypesCached, ref parameterTypes,
-                DefinitionTypesAspect.InvocableDefinition_ParameterTypes);
-    private IFixedList<IMaybeParameterType>? parameterTypes;
-    private bool parameterTypesCached;
-    public MethodSymbol? Symbol
-        => GrammarAttribute.IsCached(in symbolCached) ? symbol
-            : this.Synthetic(ref symbolCached, ref symbol,
-                SymbolsAspect.MethodDefinition_Symbol);
-    private MethodSymbol? symbol;
-    private bool symbolCached;
-    public ValueIdScope ValueIdScope { [DebuggerStepThrough] get; }
-    public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap
-        => GrammarAttribute.IsCached(in variableBindingsMapCached) ? variableBindingsMap!
-            : this.Synthetic(ref variableBindingsMapCached, ref variableBindingsMap,
-                VariablesAspect.InvocableDefinition_VariableBindingsMap);
-    private FixedDictionary<IVariableBindingNode, int>? variableBindingsMap;
-    private bool variableBindingsMapCached;
-
     public OrdinaryMethodDefinitionNode(
         IOrdinaryMethodDefinitionSyntax syntax,
         IMethodSelfParameterNode selfParameter,
         IEnumerable<INamedParameterNode> parameters,
         ITypeNode? @return,
-        IBodyNode body)
+        IBodyNode? body)
     {
         Syntax = syntax;
         SelfParameter = Child.Attach(this, selfParameter);
@@ -6603,6 +6391,7 @@ file class OrdinaryMethodDefinitionNode : SemanticNode, IOrdinaryMethodDefinitio
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
     {
         TypeMemberDeclarationsAspect.MethodDefinition_Contribute_Diagnostics(this, builder);
+        TypeModifiersAspect.MethodDefinition_Contribute_Diagnostics(this, builder);
     }
 }
 
@@ -6635,6 +6424,12 @@ file class GetterMethodDefinitionNode : SemanticNode, IGetterMethodDefinitionNod
     private bool facetCached;
     public IOrdinaryTypeDeclarationNode ContainingDeclaration
         => (IOrdinaryTypeDeclarationNode)Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
+    public OrdinaryTypeConstructor ContainingTypeConstructor
+        => GrammarAttribute.IsCached(in containingTypeConstructorCached) ? containingTypeConstructor!
+            : this.Inherited(ref containingTypeConstructorCached, ref containingTypeConstructor,
+                Inherited_ContainingTypeConstructor);
+    private OrdinaryTypeConstructor? containingTypeConstructor;
+    private bool containingTypeConstructorCached;
     public AccessModifier AccessModifier
         => GrammarAttribute.IsCached(in accessModifierCached) ? accessModifier
             : this.Synthetic(ref accessModifierCached, ref accessModifier, ref syncLock,
@@ -6792,6 +6587,7 @@ file class GetterMethodDefinitionNode : SemanticNode, IGetterMethodDefinitionNod
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
     {
         TypeMemberDeclarationsAspect.MethodDefinition_Contribute_Diagnostics(this, builder);
+        TypeModifiersAspect.MethodDefinition_Contribute_Diagnostics(this, builder);
     }
 }
 
@@ -6824,6 +6620,12 @@ file class SetterMethodDefinitionNode : SemanticNode, ISetterMethodDefinitionNod
     private bool facetCached;
     public IOrdinaryTypeDeclarationNode ContainingDeclaration
         => (IOrdinaryTypeDeclarationNode)Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
+    public OrdinaryTypeConstructor ContainingTypeConstructor
+        => GrammarAttribute.IsCached(in containingTypeConstructorCached) ? containingTypeConstructor!
+            : this.Inherited(ref containingTypeConstructorCached, ref containingTypeConstructor,
+                Inherited_ContainingTypeConstructor);
+    private OrdinaryTypeConstructor? containingTypeConstructor;
+    private bool containingTypeConstructorCached;
     public AccessModifier AccessModifier
         => GrammarAttribute.IsCached(in accessModifierCached) ? accessModifier
             : this.Synthetic(ref accessModifierCached, ref accessModifier, ref syncLock,
@@ -6981,6 +6783,7 @@ file class SetterMethodDefinitionNode : SemanticNode, ISetterMethodDefinitionNod
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
     {
         TypeMemberDeclarationsAspect.MethodDefinition_Contribute_Diagnostics(this, builder);
+        TypeModifiersAspect.MethodDefinition_Contribute_Diagnostics(this, builder);
     }
 }
 
@@ -7419,7 +7222,7 @@ file class AssociatedFunctionDefinitionNode : SemanticNode, IAssociatedFunctionD
     public IAssociatedFunctionDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
     public IFixedList<INamedParameterNode> Parameters { [DebuggerStepThrough] get; }
     public ITypeNode? Return { [DebuggerStepThrough] get; }
-    public IBodyNode Body { [DebuggerStepThrough] get; }
+    public IBodyNode? Body { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -7467,7 +7270,7 @@ file class AssociatedFunctionDefinitionNode : SemanticNode, IAssociatedFunctionD
     public IMaybeFunctionPlainType PlainType
         => GrammarAttribute.IsCached(in plainTypeCached) ? plainType!
             : this.Synthetic(ref plainTypeCached, ref plainType,
-                DefinitionPlainTypesAspect.ConcreteFunctionInvocableDefinition_PlainType);
+                DefinitionPlainTypesAspect.FunctionInvocableDefinition_PlainType);
     private IMaybeFunctionPlainType? plainType;
     private bool plainTypeCached;
     public FunctionSymbol? Symbol
@@ -7479,7 +7282,7 @@ file class AssociatedFunctionDefinitionNode : SemanticNode, IAssociatedFunctionD
     public IMaybeFunctionType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
             : this.Synthetic(ref typeCached, ref type,
-                TypeMemberDeclarationsAspect.ConcreteFunctionInvocableDefinition_Type);
+                TypeMemberDeclarationsAspect.FunctionInvocableDefinition_Type);
     private IMaybeFunctionType? type;
     private bool typeCached;
     public ValueIdScope ValueIdScope { [DebuggerStepThrough] get; }
@@ -7494,7 +7297,7 @@ file class AssociatedFunctionDefinitionNode : SemanticNode, IAssociatedFunctionD
         IAssociatedFunctionDefinitionSyntax syntax,
         IEnumerable<INamedParameterNode> parameters,
         ITypeNode? @return,
-        IBodyNode body)
+        IBodyNode? body)
     {
         Syntax = syntax;
         Parameters = ChildList.Attach(this, parameters);

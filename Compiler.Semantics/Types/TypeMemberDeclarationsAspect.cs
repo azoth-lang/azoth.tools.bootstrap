@@ -13,7 +13,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 internal static partial class TypeMemberDeclarationsAspect
 {
     // TODO maybe this should be moved to definition types aspect?
-    public static partial IMaybeFunctionType ConcreteFunctionInvocableDefinition_Type(IConcreteFunctionInvocableDefinitionNode node)
+    public static partial IMaybeFunctionType FunctionInvocableDefinition_Type(IFunctionInvocableDefinitionNode node)
         => FunctionType.Create(node.ParameterTypes, node.ReturnType);
 
     public static partial void MethodDefinition_Contribute_Diagnostics(IMethodDefinitionNode node, DiagnosticCollectionBuilder diagnostics)
