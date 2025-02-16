@@ -68,7 +68,7 @@ public static class OtherSemanticError
     public static Diagnostic AbstractMethodNotInAbstractClass(CodeFile file, TextSpan span, IdentifierName name)
     {
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Analysis,
-            6011, $"Abstract method `{name}` declared in a concrete class");
+            6011, $"Abstract method `{name}` declared in a concrete type.");
     }
 
     public static Diagnostic CannotAssignImmutableField(CodeFile file, TextSpan span, IdentifierName name)

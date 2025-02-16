@@ -597,7 +597,6 @@ public partial class Parser
             body = null;
             var semicolon = Tokens.Expect<ISemicolonToken>();
             span = TextSpan.Covering(fn, semicolon);
-            // TODO Add(ParseError.StructMethodMissingBody(File, span, name));
         }
 
         return IOrdinaryMethodDefinitionSyntax.Create(span, File, identifier.Span, accessModifer,
