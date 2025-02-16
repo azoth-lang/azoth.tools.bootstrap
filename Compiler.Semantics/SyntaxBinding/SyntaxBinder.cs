@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -125,10 +126,10 @@ internal static class SyntaxBinder
     #endregion
 
     #region Type Member Definitions
-    private static IEnumerable<IClassMemberDefinitionNode> ClassMemberDefinitions(IEnumerable<IClassMemberDefinitionSyntax> syntax)
+    private static IEnumerable<IClassMemberDefinitionNode> ClassMemberDefinitions(IEnumerable<ITypeMemberDefinitionSyntax> syntax)
         => syntax.Select(ClassMemberDefinition);
 
-    private static IClassMemberDefinitionNode ClassMemberDefinition(IClassMemberDefinitionSyntax syntax)
+    private static IClassMemberDefinitionNode ClassMemberDefinition(ITypeMemberDefinitionSyntax syntax)
         => syntax switch
         {
             ITypeDefinitionSyntax syn => TypeDefinition(syn),
@@ -139,10 +140,10 @@ internal static class SyntaxBinder
             _ => throw ExhaustiveMatch.Failed(syntax)
         };
 
-    private static IEnumerable<IStructMemberDefinitionNode> StructMemberDefinitions(IEnumerable<IStructMemberDefinitionSyntax> syntax)
+    private static IEnumerable<IStructMemberDefinitionNode> StructMemberDefinitions(IEnumerable<ITypeMemberDefinitionSyntax> syntax)
         => syntax.Select(StructMemberDefinition);
 
-    private static IStructMemberDefinitionNode StructMemberDefinition(IStructMemberDefinitionSyntax syntax)
+    private static IStructMemberDefinitionNode StructMemberDefinition(ITypeMemberDefinitionSyntax syntax)
         => syntax switch
         {
             ITypeDefinitionSyntax syn => TypeDefinition(syn),
@@ -153,15 +154,17 @@ internal static class SyntaxBinder
             _ => throw ExhaustiveMatch.Failed(syntax)
         };
 
-    private static IEnumerable<ITraitMemberDefinitionNode> TraitMemberDefinitions(IEnumerable<ITraitMemberDefinitionSyntax> syntax)
+    private static IEnumerable<ITraitMemberDefinitionNode> TraitMemberDefinitions(IEnumerable<ITypeMemberDefinitionSyntax> syntax)
         => syntax.Select(TraitMemberDefinition);
 
-    private static ITraitMemberDefinitionNode TraitMemberDefinition(ITraitMemberDefinitionSyntax syntax)
+    private static ITraitMemberDefinitionNode TraitMemberDefinition(ITypeMemberDefinitionSyntax syntax)
         => syntax switch
         {
             ITypeDefinitionSyntax syn => TypeDefinition(syn),
             IMethodDefinitionSyntax syn => MethodDefinition(syn),
             IAssociatedFunctionDefinitionSyntax syn => AssociatedFunctionDefinition(syn),
+            IFieldDefinitionSyntax _ => throw new NotImplementedException(),
+            IInitializerDefinitionSyntax _ => throw new NotImplementedException(),
             _ => throw ExhaustiveMatch.Failed(syntax)
         };
     #endregion

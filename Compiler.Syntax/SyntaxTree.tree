@@ -63,37 +63,31 @@ FunctionDefinition <: InvocableDefinition, NamespaceBlockMemberDefinition
     = Attributes:Attribute* Name:`IdentifierName` Parameters:NamedParameter* Return? Body;
 
 // ---------- Type Definitions
-TypeDefinition <: NamespaceBlockMemberDefinition, ClassMemberDefinition, TraitMemberDefinition, StructMemberDefinition
+TypeDefinition <: NamespaceBlockMemberDefinition, TypeMemberDefinition
     = ConstModifier:`IConstKeywordToken`? MoveModifier:`IMoveKeywordToken`? Name:`OrdinaryName` GenericParameters:GenericParameter* SupertypeNames:Name* Members:TypeMemberDefinition*;
 ClassDefinition <: TypeDefinition
-    = AbstractModifier:`IAbstractKeywordToken`? GenericParameters:GenericParameter* BaseTypeName:Name? SupertypeNames:Name* Members:ClassMemberDefinition*;
-StructDefinition <: TypeDefinition
-    = GenericParameters:GenericParameter* SupertypeNames:Name* Members:StructMemberDefinition*;
-TraitDefinition <: TypeDefinition
-    = GenericParameters:GenericParameter* SupertypeNames:Name* Members:TraitMemberDefinition*;
+    = AbstractModifier:`IAbstractKeywordToken`? /GenericParameters/ BaseTypeName:Name? /SupertypeNames/ /Members/;
+StructDefinition <: TypeDefinition;
+TraitDefinition <: TypeDefinition;
 
 // ---------- Type Definition Parts
 GenericParameter <: Code = Constraint:CapabilityConstraint Name:`IdentifierName` Independence:`TypeParameterIndependence` Variance:`TypeParameterVariance`;
 
 // ---------- Type Member Definitions (i.e. declarations that can be contained in a type)
 TypeMemberDefinition <: FacetMemberDefinition;
-// TODO eliminate the syntax level restrictions on which members can occur in which definitions
-ClassMemberDefinition <: TypeMemberDefinition;
-TraitMemberDefinition <: TypeMemberDefinition;
-StructMemberDefinition <: TypeMemberDefinition;
 
 // ---------- Member Definitions
-MethodDefinition <: TypeMemberDefinition, ClassMemberDefinition, TraitMemberDefinition, StructMemberDefinition, InvocableDefinition
+MethodDefinition <: TypeMemberDefinition, InvocableDefinition
     = Name:`IdentifierName` SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return? Body?;
 AbstractMethodDefinition <: MethodDefinition = /SelfParameter/ /Parameters/ Return?;
 OrdinaryMethodDefinition <: MethodDefinition = SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return? Body;
 GetterMethodDefinition <: MethodDefinition = SelfParameter:MethodSelfParameter Return Body?;
 SetterMethodDefinition <: MethodDefinition = SelfParameter:MethodSelfParameter Parameters:NamedParameter* Body;
-InitializerDefinition <: InvocableDefinition, StructMemberDefinition, ClassMemberDefinition
+InitializerDefinition <: TypeMemberDefinition, InvocableDefinition
     = Name:`IdentifierName`? SelfParameter:InitializerSelfParameter Parameters:InitializerParameter* Body:BlockBody;
-FieldDefinition <: TypeMemberDefinition, ClassMemberDefinition, StructMemberDefinition, Binding
+FieldDefinition <: TypeMemberDefinition, Binding
     = Name:`IdentifierName` Type Initializer:Expression?;
-AssociatedFunctionDefinition <: TypeMemberDefinition, ClassMemberDefinition, TraitMemberDefinition, StructMemberDefinition, InvocableDefinition
+AssociatedFunctionDefinition <: TypeMemberDefinition, InvocableDefinition
     = Name:`IdentifierName` Parameters:NamedParameter* Return? Body;
 
 // ---------- Attributes

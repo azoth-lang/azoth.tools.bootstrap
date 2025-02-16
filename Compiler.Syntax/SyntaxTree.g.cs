@@ -258,7 +258,7 @@ public partial interface IFunctionDefinitionSyntax : IInvocableDefinitionSyntax,
     typeof(IStructDefinitionSyntax),
     typeof(ITraitDefinitionSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface ITypeDefinitionSyntax : INamespaceBlockMemberDefinitionSyntax, IClassMemberDefinitionSyntax, ITraitMemberDefinitionSyntax, IStructMemberDefinitionSyntax
+public partial interface ITypeDefinitionSyntax : INamespaceBlockMemberDefinitionSyntax, ITypeMemberDefinitionSyntax
 {
     IConstKeywordToken? ConstModifier { get; }
     IMoveKeywordToken? MoveModifier { get; }
@@ -275,8 +275,6 @@ public partial interface IClassDefinitionSyntax : ITypeDefinitionSyntax
 {
     IAbstractKeywordToken? AbstractModifier { get; }
     INameSyntax? BaseTypeName { get; }
-    new IFixedList<IClassMemberDefinitionSyntax> Members { get; }
-    IFixedList<ITypeMemberDefinitionSyntax> ITypeDefinitionSyntax.Members => Members;
 
     public static IClassDefinitionSyntax Create(
         TextSpan span,
@@ -290,7 +288,7 @@ public partial interface IClassDefinitionSyntax : ITypeDefinitionSyntax
         IEnumerable<IGenericParameterSyntax> genericParameters,
         INameSyntax? baseTypeName,
         IEnumerable<INameSyntax> supertypeNames,
-        IEnumerable<IClassMemberDefinitionSyntax> members)
+        IEnumerable<ITypeMemberDefinitionSyntax> members)
         => new ClassDefinitionSyntax(span, file, nameSpan, accessModifier, constModifier, moveModifier, name, abstractModifier, genericParameters, baseTypeName, supertypeNames, members);
 }
 
@@ -298,8 +296,6 @@ public partial interface IClassDefinitionSyntax : ITypeDefinitionSyntax
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IStructDefinitionSyntax : ITypeDefinitionSyntax
 {
-    new IFixedList<IStructMemberDefinitionSyntax> Members { get; }
-    IFixedList<ITypeMemberDefinitionSyntax> ITypeDefinitionSyntax.Members => Members;
 
     public static IStructDefinitionSyntax Create(
         TextSpan span,
@@ -311,7 +307,7 @@ public partial interface IStructDefinitionSyntax : ITypeDefinitionSyntax
         OrdinaryName name,
         IEnumerable<IGenericParameterSyntax> genericParameters,
         IEnumerable<INameSyntax> supertypeNames,
-        IEnumerable<IStructMemberDefinitionSyntax> members)
+        IEnumerable<ITypeMemberDefinitionSyntax> members)
         => new StructDefinitionSyntax(span, file, nameSpan, accessModifier, constModifier, moveModifier, name, genericParameters, supertypeNames, members);
 }
 
@@ -319,8 +315,6 @@ public partial interface IStructDefinitionSyntax : ITypeDefinitionSyntax
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface ITraitDefinitionSyntax : ITypeDefinitionSyntax
 {
-    new IFixedList<ITraitMemberDefinitionSyntax> Members { get; }
-    IFixedList<ITypeMemberDefinitionSyntax> ITypeDefinitionSyntax.Members => Members;
 
     public static ITraitDefinitionSyntax Create(
         TextSpan span,
@@ -332,7 +326,7 @@ public partial interface ITraitDefinitionSyntax : ITypeDefinitionSyntax
         OrdinaryName name,
         IEnumerable<IGenericParameterSyntax> genericParameters,
         IEnumerable<INameSyntax> supertypeNames,
-        IEnumerable<ITraitMemberDefinitionSyntax> members)
+        IEnumerable<ITypeMemberDefinitionSyntax> members)
         => new TraitDefinitionSyntax(span, file, nameSpan, accessModifier, constModifier, moveModifier, name, genericParameters, supertypeNames, members);
 }
 
@@ -355,42 +349,13 @@ public partial interface IGenericParameterSyntax : ICodeSyntax
 }
 
 [Closed(
-    typeof(IClassMemberDefinitionSyntax),
-    typeof(ITraitMemberDefinitionSyntax),
-    typeof(IStructMemberDefinitionSyntax))]
+    typeof(ITypeDefinitionSyntax),
+    typeof(IMethodDefinitionSyntax),
+    typeof(IInitializerDefinitionSyntax),
+    typeof(IFieldDefinitionSyntax),
+    typeof(IAssociatedFunctionDefinitionSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface ITypeMemberDefinitionSyntax : IFacetMemberDefinitionSyntax
-{
-}
-
-[Closed(
-    typeof(ITypeDefinitionSyntax),
-    typeof(IMethodDefinitionSyntax),
-    typeof(IInitializerDefinitionSyntax),
-    typeof(IFieldDefinitionSyntax),
-    typeof(IAssociatedFunctionDefinitionSyntax))]
-[GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IClassMemberDefinitionSyntax : ITypeMemberDefinitionSyntax
-{
-}
-
-[Closed(
-    typeof(ITypeDefinitionSyntax),
-    typeof(IMethodDefinitionSyntax),
-    typeof(IAssociatedFunctionDefinitionSyntax))]
-[GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface ITraitMemberDefinitionSyntax : ITypeMemberDefinitionSyntax
-{
-}
-
-[Closed(
-    typeof(ITypeDefinitionSyntax),
-    typeof(IMethodDefinitionSyntax),
-    typeof(IInitializerDefinitionSyntax),
-    typeof(IFieldDefinitionSyntax),
-    typeof(IAssociatedFunctionDefinitionSyntax))]
-[GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IStructMemberDefinitionSyntax : ITypeMemberDefinitionSyntax
 {
 }
 
@@ -400,7 +365,7 @@ public partial interface IStructMemberDefinitionSyntax : ITypeMemberDefinitionSy
     typeof(IGetterMethodDefinitionSyntax),
     typeof(ISetterMethodDefinitionSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IMethodDefinitionSyntax : IClassMemberDefinitionSyntax, ITraitMemberDefinitionSyntax, IStructMemberDefinitionSyntax, IInvocableDefinitionSyntax
+public partial interface IMethodDefinitionSyntax : ITypeMemberDefinitionSyntax, IInvocableDefinitionSyntax
 {
     new IdentifierName Name { get; }
     UnqualifiedName? IDefinitionSyntax.Name => Name;
@@ -497,7 +462,7 @@ public partial interface ISetterMethodDefinitionSyntax : IMethodDefinitionSyntax
 
 [Closed(typeof(InitializerDefinitionSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IInitializerDefinitionSyntax : IInvocableDefinitionSyntax, IStructMemberDefinitionSyntax, IClassMemberDefinitionSyntax
+public partial interface IInitializerDefinitionSyntax : ITypeMemberDefinitionSyntax, IInvocableDefinitionSyntax
 {
     new IdentifierName? Name { get; }
     UnqualifiedName? IDefinitionSyntax.Name => Name;
@@ -519,7 +484,7 @@ public partial interface IInitializerDefinitionSyntax : IInvocableDefinitionSynt
 
 [Closed(typeof(FieldDefinitionSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IFieldDefinitionSyntax : IClassMemberDefinitionSyntax, IStructMemberDefinitionSyntax, IBindingSyntax
+public partial interface IFieldDefinitionSyntax : ITypeMemberDefinitionSyntax, IBindingSyntax
 {
     new IdentifierName Name { get; }
     UnqualifiedName? IDefinitionSyntax.Name => Name;
@@ -540,7 +505,7 @@ public partial interface IFieldDefinitionSyntax : IClassMemberDefinitionSyntax, 
 
 [Closed(typeof(AssociatedFunctionDefinitionSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IAssociatedFunctionDefinitionSyntax : IClassMemberDefinitionSyntax, ITraitMemberDefinitionSyntax, IStructMemberDefinitionSyntax, IInvocableDefinitionSyntax
+public partial interface IAssociatedFunctionDefinitionSyntax : ITypeMemberDefinitionSyntax, IInvocableDefinitionSyntax
 {
     new IdentifierName Name { get; }
     UnqualifiedName? IDefinitionSyntax.Name => Name;
@@ -1761,7 +1726,7 @@ file class ClassDefinitionSyntax : IClassDefinitionSyntax
     public IFixedList<IGenericParameterSyntax> GenericParameters { [DebuggerStepThrough] get; }
     public INameSyntax? BaseTypeName { [DebuggerStepThrough] get; }
     public IFixedList<INameSyntax> SupertypeNames { [DebuggerStepThrough] get; }
-    public IFixedList<IClassMemberDefinitionSyntax> Members { [DebuggerStepThrough] get; }
+    public IFixedList<ITypeMemberDefinitionSyntax> Members { [DebuggerStepThrough] get; }
     public override string ToString()
         => FormattingAspect.ClassDefinition_ToString(this);
 
@@ -1777,7 +1742,7 @@ file class ClassDefinitionSyntax : IClassDefinitionSyntax
         IEnumerable<IGenericParameterSyntax> genericParameters,
         INameSyntax? baseTypeName,
         IEnumerable<INameSyntax> supertypeNames,
-        IEnumerable<IClassMemberDefinitionSyntax> members)
+        IEnumerable<ITypeMemberDefinitionSyntax> members)
     {
         Span = span;
         File = file;
@@ -1808,7 +1773,7 @@ file class StructDefinitionSyntax : IStructDefinitionSyntax
     public OrdinaryName Name { [DebuggerStepThrough] get; }
     public IFixedList<IGenericParameterSyntax> GenericParameters { [DebuggerStepThrough] get; }
     public IFixedList<INameSyntax> SupertypeNames { [DebuggerStepThrough] get; }
-    public IFixedList<IStructMemberDefinitionSyntax> Members { [DebuggerStepThrough] get; }
+    public IFixedList<ITypeMemberDefinitionSyntax> Members { [DebuggerStepThrough] get; }
     public override string ToString()
         => FormattingAspect.StructDefinition_ToString(this);
 
@@ -1822,7 +1787,7 @@ file class StructDefinitionSyntax : IStructDefinitionSyntax
         OrdinaryName name,
         IEnumerable<IGenericParameterSyntax> genericParameters,
         IEnumerable<INameSyntax> supertypeNames,
-        IEnumerable<IStructMemberDefinitionSyntax> members)
+        IEnumerable<ITypeMemberDefinitionSyntax> members)
     {
         Span = span;
         File = file;
@@ -1851,7 +1816,7 @@ file class TraitDefinitionSyntax : ITraitDefinitionSyntax
     public OrdinaryName Name { [DebuggerStepThrough] get; }
     public IFixedList<IGenericParameterSyntax> GenericParameters { [DebuggerStepThrough] get; }
     public IFixedList<INameSyntax> SupertypeNames { [DebuggerStepThrough] get; }
-    public IFixedList<ITraitMemberDefinitionSyntax> Members { [DebuggerStepThrough] get; }
+    public IFixedList<ITypeMemberDefinitionSyntax> Members { [DebuggerStepThrough] get; }
     public override string ToString()
         => FormattingAspect.TraitDefinition_ToString(this);
 
@@ -1865,7 +1830,7 @@ file class TraitDefinitionSyntax : ITraitDefinitionSyntax
         OrdinaryName name,
         IEnumerable<IGenericParameterSyntax> genericParameters,
         IEnumerable<INameSyntax> supertypeNames,
-        IEnumerable<ITraitMemberDefinitionSyntax> members)
+        IEnumerable<ITypeMemberDefinitionSyntax> members)
     {
         Span = span;
         File = file;
