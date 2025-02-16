@@ -15,7 +15,6 @@ internal class IntegerLiteralToken : Token, IIntegerLiteralToken
     }
 
     // Helpful for debugging
-
     public override string ToString() => Value.ToString(CultureInfo.InvariantCulture);
 }
 

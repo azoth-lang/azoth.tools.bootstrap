@@ -137,6 +137,7 @@ internal static class SyntaxBinder
             IInitializerDefinitionSyntax syn => InitializerDefinition(syn),
             IFieldDefinitionSyntax syn => FieldDefinition(syn),
             IAssociatedFunctionDefinitionSyntax syn => AssociatedFunctionDefinition(syn),
+            IAssociatedTypeDefinitionSyntax _ => throw new NotImplementedException(),
             _ => throw ExhaustiveMatch.Failed(syntax)
         };
 
@@ -151,6 +152,7 @@ internal static class SyntaxBinder
             IInitializerDefinitionSyntax syn => InitializerDefinition(syn),
             IFieldDefinitionSyntax syn => FieldDefinition(syn),
             IAssociatedFunctionDefinitionSyntax syn => AssociatedFunctionDefinition(syn),
+            IAssociatedTypeDefinitionSyntax _ => throw new NotImplementedException(),
             _ => throw ExhaustiveMatch.Failed(syntax)
         };
 
@@ -165,6 +167,7 @@ internal static class SyntaxBinder
             IAssociatedFunctionDefinitionSyntax syn => AssociatedFunctionDefinition(syn),
             IFieldDefinitionSyntax _ => throw new NotImplementedException(),
             IInitializerDefinitionSyntax _ => throw new NotImplementedException(),
+            IAssociatedTypeDefinitionSyntax _ => throw new NotImplementedException(),
             _ => throw ExhaustiveMatch.Failed(syntax)
         };
     #endregion

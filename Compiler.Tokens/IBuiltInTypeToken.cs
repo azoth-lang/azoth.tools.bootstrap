@@ -25,26 +25,26 @@ namespace Azoth.Tools.Bootstrap.Compiler.Tokens;
 //typeof(IFloat32KeywordToken),
 //typeof(IFloat64KeywordToken)
 )]
-public interface IBuiltInTypeToken : IEssentialToken { }
+public interface IBuiltInTypeToken : IEssentialToken;
 
-public partial interface IVoidKeywordToken : IBuiltInTypeToken { }
-public partial interface INeverKeywordToken : IBuiltInTypeToken { }
-public partial interface IBoolKeywordToken : IBuiltInTypeToken { }
-public partial interface IAnyTypeKeywordToken : IBuiltInTypeToken { }
-//public partial interface ITypeKeywordToken : IBuiltInTypeToken { }
-public partial interface IIntKeywordToken : IBuiltInTypeToken { }
-public partial interface IUIntKeywordToken : IBuiltInTypeToken { }
-public partial interface IInt8KeywordToken : IBuiltInTypeToken { }
-public partial interface IByteKeywordToken : IBuiltInTypeToken { }
-public partial interface IInt16KeywordToken : IBuiltInTypeToken { }
-public partial interface IUInt16KeywordToken : IBuiltInTypeToken { }
-public partial interface IInt32KeywordToken : IBuiltInTypeToken { }
-public partial interface IUInt32KeywordToken : IBuiltInTypeToken { }
-public partial interface IInt64KeywordToken : IBuiltInTypeToken { }
-public partial interface IUInt64KeywordToken : IBuiltInTypeToken { }
-public partial interface ISizeKeywordToken : IBuiltInTypeToken { }
-public partial interface IOffsetKeywordToken : IBuiltInTypeToken { }
-public partial interface INIntKeywordToken : IBuiltInTypeToken { }
-public partial interface INUIntKeywordToken : IBuiltInTypeToken { }
-//public partial interface IFloat32KeywordToken : IBuiltInTypeToken { }
-//public partial interface IFloat64KeywordToken : IBuiltInTypeToken { }
+public partial interface IVoidKeywordToken : IBuiltInTypeToken;
+public partial interface INeverKeywordToken : IBuiltInTypeToken;
+public partial interface IBoolKeywordToken : IBuiltInTypeToken;
+public partial interface IAnyTypeKeywordToken : IBuiltInTypeToken;
+//public partial interface ITypeKeywordToken : IBuiltInTypeToken;
+public partial interface IIntKeywordToken : IBuiltInTypeToken;
+public partial interface IUIntKeywordToken : IBuiltInTypeToken;
+public partial interface IInt8KeywordToken : IBuiltInTypeToken;
+public partial interface IByteKeywordToken : IBuiltInTypeToken;
+public partial interface IInt16KeywordToken : IBuiltInTypeToken;
+public partial interface IUInt16KeywordToken : IBuiltInTypeToken;
+public partial interface IInt32KeywordToken : IBuiltInTypeToken;
+public partial interface IUInt32KeywordToken : IBuiltInTypeToken;
+public partial interface IInt64KeywordToken : IBuiltInTypeToken;
+public partial interface IUInt64KeywordToken : IBuiltInTypeToken;
+public partial interface ISizeKeywordToken : IBuiltInTypeToken;
+public partial interface IOffsetKeywordToken : IBuiltInTypeToken;
+public partial interface INIntKeywordToken : IBuiltInTypeToken;
+public partial interface INUIntKeywordToken : IBuiltInTypeToken;
+//public partial interface IFloat32KeywordToken : IBuiltInTypeToken;
+//public partial interface IFloat64KeywordToken : IBuiltInTypeToken;

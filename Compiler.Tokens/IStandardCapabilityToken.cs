@@ -8,10 +8,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.Tokens;
     typeof(IMutableKeywordToken),
     typeof(IIdKeywordToken),
     typeof(ITempKeywordToken))]
-public interface IStandardCapabilityToken : ICapabilityToken { }
+public interface IStandardCapabilityToken : ICapabilityToken;
 
-public partial interface IIsolatedKeywordToken : IStandardCapabilityToken { }
-public partial interface IConstKeywordToken : IStandardCapabilityToken { }
-public partial interface IMutableKeywordToken : IStandardCapabilityToken { }
-public partial interface IIdKeywordToken : IStandardCapabilityToken { }
-public partial interface ITempKeywordToken : IStandardCapabilityToken { }
+public partial interface IIsolatedKeywordToken : IStandardCapabilityToken;
+public partial interface IConstKeywordToken : IStandardCapabilityToken;
+public partial interface IMutableKeywordToken : IStandardCapabilityToken;
+public partial interface IIdKeywordToken : IStandardCapabilityToken;
+public partial interface ITempKeywordToken : IStandardCapabilityToken;

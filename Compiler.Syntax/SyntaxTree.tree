@@ -87,6 +87,8 @@ FieldDefinition <: MemberDefinition, Binding
     = Name:`IdentifierName` Type Initializer:Expression?;
 AssociatedFunctionDefinition <: MemberDefinition, InvocableDefinition
     = Name:`IdentifierName` Parameters:NamedParameter* Return? Body;
+AssociatedTypeDefinition <: MemberDefinition
+    =  TypeKeyword:`ITypeKeywordToken` Name:`IdentifierName` EqualsOperator:`IEqualsToken`? Initializer:Type?;
 
 // ---------- Attributes
 Attribute <: Code = TypeName:Name;

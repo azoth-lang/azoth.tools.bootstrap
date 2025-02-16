@@ -10,5 +10,5 @@ public partial interface IBooleanLiteralToken : IKeywordToken
     bool Value { get; }
 }
 
-public partial interface ITrueKeywordToken : IBooleanLiteralToken { }
-public partial interface IFalseKeywordToken : IBooleanLiteralToken { }
+public partial interface ITrueKeywordToken : IBooleanLiteralToken;
+public partial interface IFalseKeywordToken : IBooleanLiteralToken;

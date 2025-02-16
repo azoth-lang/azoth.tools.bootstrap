@@ -125,6 +125,12 @@ internal static partial class FormattingAspect
         var @return = node.Return?.ToString() ?? "";
         return $"fn {node.Name}({string.Join(", ", node.Parameters)}){@return} {node.Body}";
     }
+
+    public static partial string AssociatedTypeDefinition_ToString(IAssociatedTypeDefinitionSyntax node)
+    {
+        var initializer = node.Initializer is not null ? " = " + node.Initializer : "";
+        return $"type {node.Name}{initializer}";
+    }
     #endregion
 
     #region Attributes

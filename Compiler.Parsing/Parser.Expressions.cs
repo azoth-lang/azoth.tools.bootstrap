@@ -306,6 +306,7 @@ public partial class Parser
             case IImportKeywordToken _:
             case IGetKeywordToken _:
             case ISetKeywordToken _:
+            case ITypeKeywordToken _:
             case ISafeKeywordToken _:
             case INamespaceKeywordToken _:
             case IIndependentKeywordToken _:

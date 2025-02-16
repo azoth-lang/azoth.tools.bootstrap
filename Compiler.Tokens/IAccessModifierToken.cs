@@ -6,7 +6,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Tokens;
     typeof(IPublishedKeywordToken),
     typeof(IPublicKeywordToken)
 )]
-public partial interface IAccessModifierToken : IKeywordToken { }
+public partial interface IAccessModifierToken : IKeywordToken;
 
-public partial interface IPublishedKeywordToken : IAccessModifierToken { }
-public partial interface IPublicKeywordToken : IAccessModifierToken { }
+public partial interface IPublishedKeywordToken : IAccessModifierToken;
+public partial interface IPublicKeywordToken : IAccessModifierToken;

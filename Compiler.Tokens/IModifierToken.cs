@@ -9,11 +9,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Tokens;
     typeof(ISafeKeywordToken),
     typeof(IUnsafeKeywordToken),
     typeof(IAbstractKeywordToken))]
-public partial interface IModifierToken : IKeywordToken { }
+public partial interface IModifierToken : IKeywordToken;
 
-public partial interface IAccessModifierToken : IModifierToken { }
-public partial interface IConstKeywordToken : IModifierToken { }
-public partial interface IMoveKeywordToken : IModifierToken { }
-public partial interface ISafeKeywordToken : IModifierToken { }
-public partial interface IUnsafeKeywordToken : IModifierToken { }
-public partial interface IAbstractKeywordToken : IModifierToken { }
+public partial interface IAccessModifierToken : IModifierToken;
+public partial interface IConstKeywordToken : IModifierToken;
+public partial interface IMoveKeywordToken : IModifierToken;
+public partial interface ISafeKeywordToken : IModifierToken;
+public partial interface IUnsafeKeywordToken : IModifierToken;
+public partial interface IAbstractKeywordToken : IModifierToken;

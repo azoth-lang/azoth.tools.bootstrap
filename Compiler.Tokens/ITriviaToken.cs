@@ -7,11 +7,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Tokens;
     typeof(ICommentToken),
     typeof(IWhitespaceToken),
     typeof(IUnexpectedToken))]
-public interface ITriviaToken : IToken { }
+public interface ITriviaToken : IToken;
 
-public interface ICommentToken : ITriviaToken { }
-public interface IWhitespaceToken : ITriviaToken { }
-public interface IUnexpectedToken : ITriviaToken { }
+public interface ICommentToken : ITriviaToken;
+public interface IWhitespaceToken : ITriviaToken;
+public interface IUnexpectedToken : ITriviaToken;
 
 
 internal class WhitespaceToken : Token, IWhitespaceToken
@@ -34,18 +34,9 @@ internal class UnexpectedToken : Token, IUnexpectedToken
 
 public static partial class TokenFactory
 {
-    public static IWhitespaceToken Whitespace(TextSpan span)
-    {
-        return new WhitespaceToken(span);
-    }
+    public static IWhitespaceToken Whitespace(TextSpan span) => new WhitespaceToken(span);
 
-    public static ICommentToken Comment(TextSpan span)
-    {
-        return new CommentToken(span);
-    }
+    public static ICommentToken Comment(TextSpan span) => new CommentToken(span);
 
-    public static IUnexpectedToken Unexpected(TextSpan span)
-    {
-        return new UnexpectedToken(span);
-    }
+    public static IUnexpectedToken Unexpected(TextSpan span) => new UnexpectedToken(span);
 }

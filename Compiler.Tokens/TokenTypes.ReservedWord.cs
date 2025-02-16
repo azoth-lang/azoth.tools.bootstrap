@@ -21,7 +21,6 @@ public partial class TokenTypes
         "float32",
         "float64",
         "forever",
-        //"get",
         "implicit",
         "invariant",
         "match",
@@ -34,7 +33,6 @@ public partial class TokenTypes
         "protected",
         "ref",
         "requires",
-        //"set",
         "struct",
         "throw",
         "Tuple",
@@ -75,7 +73,6 @@ public partial class TokenTypes
         "transmute",         // Reinterpret Cast
         "trn",               // Transition reference capability
         "then",              // Python style loop else
-        "type",              // Type aliases and declarations
         "unchecked",         // Unchecked Operations
         "unless",            // Ruby style `if not` statement or `unless break` for Python style loop else
         "when",              // C# style exception filters

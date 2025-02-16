@@ -9,8 +9,8 @@ public interface IIdentifierOrUnderscoreToken : IEssentialToken
     string Value { get; }
 }
 
-public partial interface IIdentifierToken : IIdentifierOrUnderscoreToken { }
-//public partial interface IUnderscoreKeywordToken : IIdentifierOrUnderscoreToken { }
+public partial interface IIdentifierToken : IIdentifierOrUnderscoreToken;
+//public partial interface IUnderscoreKeywordToken : IIdentifierOrUnderscoreToken;
 
 //internal partial class UnderscoreKeywordToken
 //{

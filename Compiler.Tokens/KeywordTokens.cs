@@ -50,6 +50,7 @@ public static partial class TokenTypes
         typeof(SafeKeywordToken),
         typeof(SelfKeywordToken),
         typeof(SelfTypeKeywordToken),
+        typeof(TypeKeywordToken),
         typeof(MutableKeywordToken),
         typeof(VariableRefKeywordToken),
         typeof(InternalRefKeywordToken),
@@ -217,6 +218,9 @@ public static partial class TokenFactory
     public static ISelfTypeKeywordToken SelfTypeKeyword(TextSpan span)
         => new SelfTypeKeywordToken(span);
 
+    public static ITypeKeywordToken TypeKeyword(TextSpan span)
+        => new TypeKeywordToken(span);
+
     public static IMutableKeywordToken MutableKeyword(TextSpan span)
         => new MutableKeywordToken(span);
 
@@ -378,6 +382,7 @@ public static partial class TokenFactory
     typeof(ISafeKeywordToken),
     typeof(ISelfKeywordToken),
     typeof(ISelfTypeKeywordToken),
+    typeof(ITypeKeywordToken),
     typeof(IMutableKeywordToken),
     typeof(IVariableRefKeywordToken),
     typeof(IInternalRefKeywordToken),
@@ -417,10 +422,10 @@ public static partial class TokenFactory
     typeof(ITemporaryKeywordToken),
     typeof(IAnyKeywordToken),
     typeof(INonwritableKeywordToken))]
-public partial interface IKeywordToken : IToken { }
+public partial interface IKeywordToken : IToken;
 
 
-public partial interface IPublishedKeywordToken : IKeywordToken { }
+public partial interface IPublishedKeywordToken : IKeywordToken;
 internal partial class PublishedKeywordToken : Token, IPublishedKeywordToken
 {
     public PublishedKeywordToken(TextSpan span)
@@ -429,7 +434,7 @@ internal partial class PublishedKeywordToken : Token, IPublishedKeywordToken
     }
 }
 
-public partial interface IPublicKeywordToken : IKeywordToken { }
+public partial interface IPublicKeywordToken : IKeywordToken;
 internal partial class PublicKeywordToken : Token, IPublicKeywordToken
 {
     public PublicKeywordToken(TextSpan span)
@@ -438,7 +443,7 @@ internal partial class PublicKeywordToken : Token, IPublicKeywordToken
     }
 }
 
-public partial interface ILetKeywordToken : IKeywordToken { }
+public partial interface ILetKeywordToken : IKeywordToken;
 internal partial class LetKeywordToken : Token, ILetKeywordToken
 {
     public LetKeywordToken(TextSpan span)
@@ -447,7 +452,7 @@ internal partial class LetKeywordToken : Token, ILetKeywordToken
     }
 }
 
-public partial interface IVarKeywordToken : IKeywordToken { }
+public partial interface IVarKeywordToken : IKeywordToken;
 internal partial class VarKeywordToken : Token, IVarKeywordToken
 {
     public VarKeywordToken(TextSpan span)
@@ -456,7 +461,7 @@ internal partial class VarKeywordToken : Token, IVarKeywordToken
     }
 }
 
-public partial interface IVoidKeywordToken : IKeywordToken { }
+public partial interface IVoidKeywordToken : IKeywordToken;
 internal partial class VoidKeywordToken : Token, IVoidKeywordToken
 {
     public VoidKeywordToken(TextSpan span)
@@ -465,7 +470,7 @@ internal partial class VoidKeywordToken : Token, IVoidKeywordToken
     }
 }
 
-public partial interface IIntKeywordToken : IKeywordToken { }
+public partial interface IIntKeywordToken : IKeywordToken;
 internal partial class IntKeywordToken : Token, IIntKeywordToken
 {
     public IntKeywordToken(TextSpan span)
@@ -474,7 +479,7 @@ internal partial class IntKeywordToken : Token, IIntKeywordToken
     }
 }
 
-public partial interface IInt8KeywordToken : IKeywordToken { }
+public partial interface IInt8KeywordToken : IKeywordToken;
 internal partial class Int8KeywordToken : Token, IInt8KeywordToken
 {
     public Int8KeywordToken(TextSpan span)
@@ -483,7 +488,7 @@ internal partial class Int8KeywordToken : Token, IInt8KeywordToken
     }
 }
 
-public partial interface IInt16KeywordToken : IKeywordToken { }
+public partial interface IInt16KeywordToken : IKeywordToken;
 internal partial class Int16KeywordToken : Token, IInt16KeywordToken
 {
     public Int16KeywordToken(TextSpan span)
@@ -492,7 +497,7 @@ internal partial class Int16KeywordToken : Token, IInt16KeywordToken
     }
 }
 
-public partial interface IInt32KeywordToken : IKeywordToken { }
+public partial interface IInt32KeywordToken : IKeywordToken;
 internal partial class Int32KeywordToken : Token, IInt32KeywordToken
 {
     public Int32KeywordToken(TextSpan span)
@@ -501,7 +506,7 @@ internal partial class Int32KeywordToken : Token, IInt32KeywordToken
     }
 }
 
-public partial interface IInt64KeywordToken : IKeywordToken { }
+public partial interface IInt64KeywordToken : IKeywordToken;
 internal partial class Int64KeywordToken : Token, IInt64KeywordToken
 {
     public Int64KeywordToken(TextSpan span)
@@ -510,7 +515,7 @@ internal partial class Int64KeywordToken : Token, IInt64KeywordToken
     }
 }
 
-public partial interface IUIntKeywordToken : IKeywordToken { }
+public partial interface IUIntKeywordToken : IKeywordToken;
 internal partial class UIntKeywordToken : Token, IUIntKeywordToken
 {
     public UIntKeywordToken(TextSpan span)
@@ -519,7 +524,7 @@ internal partial class UIntKeywordToken : Token, IUIntKeywordToken
     }
 }
 
-public partial interface IByteKeywordToken : IKeywordToken { }
+public partial interface IByteKeywordToken : IKeywordToken;
 internal partial class ByteKeywordToken : Token, IByteKeywordToken
 {
     public ByteKeywordToken(TextSpan span)
@@ -528,7 +533,7 @@ internal partial class ByteKeywordToken : Token, IByteKeywordToken
     }
 }
 
-public partial interface IUInt16KeywordToken : IKeywordToken { }
+public partial interface IUInt16KeywordToken : IKeywordToken;
 internal partial class UInt16KeywordToken : Token, IUInt16KeywordToken
 {
     public UInt16KeywordToken(TextSpan span)
@@ -537,7 +542,7 @@ internal partial class UInt16KeywordToken : Token, IUInt16KeywordToken
     }
 }
 
-public partial interface IUInt32KeywordToken : IKeywordToken { }
+public partial interface IUInt32KeywordToken : IKeywordToken;
 internal partial class UInt32KeywordToken : Token, IUInt32KeywordToken
 {
     public UInt32KeywordToken(TextSpan span)
@@ -546,7 +551,7 @@ internal partial class UInt32KeywordToken : Token, IUInt32KeywordToken
     }
 }
 
-public partial interface IUInt64KeywordToken : IKeywordToken { }
+public partial interface IUInt64KeywordToken : IKeywordToken;
 internal partial class UInt64KeywordToken : Token, IUInt64KeywordToken
 {
     public UInt64KeywordToken(TextSpan span)
@@ -555,7 +560,7 @@ internal partial class UInt64KeywordToken : Token, IUInt64KeywordToken
     }
 }
 
-public partial interface ISizeKeywordToken : IKeywordToken { }
+public partial interface ISizeKeywordToken : IKeywordToken;
 internal partial class SizeKeywordToken : Token, ISizeKeywordToken
 {
     public SizeKeywordToken(TextSpan span)
@@ -564,7 +569,7 @@ internal partial class SizeKeywordToken : Token, ISizeKeywordToken
     }
 }
 
-public partial interface IOffsetKeywordToken : IKeywordToken { }
+public partial interface IOffsetKeywordToken : IKeywordToken;
 internal partial class OffsetKeywordToken : Token, IOffsetKeywordToken
 {
     public OffsetKeywordToken(TextSpan span)
@@ -573,7 +578,7 @@ internal partial class OffsetKeywordToken : Token, IOffsetKeywordToken
     }
 }
 
-public partial interface INIntKeywordToken : IKeywordToken { }
+public partial interface INIntKeywordToken : IKeywordToken;
 internal partial class NIntKeywordToken : Token, INIntKeywordToken
 {
     public NIntKeywordToken(TextSpan span)
@@ -582,7 +587,7 @@ internal partial class NIntKeywordToken : Token, INIntKeywordToken
     }
 }
 
-public partial interface INUIntKeywordToken : IKeywordToken { }
+public partial interface INUIntKeywordToken : IKeywordToken;
 internal partial class NUIntKeywordToken : Token, INUIntKeywordToken
 {
     public NUIntKeywordToken(TextSpan span)
@@ -591,7 +596,7 @@ internal partial class NUIntKeywordToken : Token, INUIntKeywordToken
     }
 }
 
-public partial interface IBoolKeywordToken : IKeywordToken { }
+public partial interface IBoolKeywordToken : IKeywordToken;
 internal partial class BoolKeywordToken : Token, IBoolKeywordToken
 {
     public BoolKeywordToken(TextSpan span)
@@ -600,7 +605,7 @@ internal partial class BoolKeywordToken : Token, IBoolKeywordToken
     }
 }
 
-public partial interface INeverKeywordToken : IKeywordToken { }
+public partial interface INeverKeywordToken : IKeywordToken;
 internal partial class NeverKeywordToken : Token, INeverKeywordToken
 {
     public NeverKeywordToken(TextSpan span)
@@ -609,7 +614,7 @@ internal partial class NeverKeywordToken : Token, INeverKeywordToken
     }
 }
 
-public partial interface IReturnKeywordToken : IKeywordToken { }
+public partial interface IReturnKeywordToken : IKeywordToken;
 internal partial class ReturnKeywordToken : Token, IReturnKeywordToken
 {
     public ReturnKeywordToken(TextSpan span)
@@ -618,7 +623,7 @@ internal partial class ReturnKeywordToken : Token, IReturnKeywordToken
     }
 }
 
-public partial interface IClassKeywordToken : IKeywordToken { }
+public partial interface IClassKeywordToken : IKeywordToken;
 internal partial class ClassKeywordToken : Token, IClassKeywordToken
 {
     public ClassKeywordToken(TextSpan span)
@@ -627,7 +632,7 @@ internal partial class ClassKeywordToken : Token, IClassKeywordToken
     }
 }
 
-public partial interface IFunctionKeywordToken : IKeywordToken { }
+public partial interface IFunctionKeywordToken : IKeywordToken;
 internal partial class FunctionKeywordToken : Token, IFunctionKeywordToken
 {
     public FunctionKeywordToken(TextSpan span)
@@ -636,7 +641,7 @@ internal partial class FunctionKeywordToken : Token, IFunctionKeywordToken
     }
 }
 
-public partial interface IInitKeywordToken : IKeywordToken { }
+public partial interface IInitKeywordToken : IKeywordToken;
 internal partial class InitKeywordToken : Token, IInitKeywordToken
 {
     public InitKeywordToken(TextSpan span)
@@ -645,7 +650,7 @@ internal partial class InitKeywordToken : Token, IInitKeywordToken
     }
 }
 
-public partial interface IIsolatedKeywordToken : IKeywordToken { }
+public partial interface IIsolatedKeywordToken : IKeywordToken;
 internal partial class IsolatedKeywordToken : Token, IIsolatedKeywordToken
 {
     public IsolatedKeywordToken(TextSpan span)
@@ -654,7 +659,7 @@ internal partial class IsolatedKeywordToken : Token, IIsolatedKeywordToken
     }
 }
 
-public partial interface IReadKeywordToken : IKeywordToken { }
+public partial interface IReadKeywordToken : IKeywordToken;
 internal partial class ReadKeywordToken : Token, IReadKeywordToken
 {
     public ReadKeywordToken(TextSpan span)
@@ -663,7 +668,7 @@ internal partial class ReadKeywordToken : Token, IReadKeywordToken
     }
 }
 
-public partial interface IConstKeywordToken : IKeywordToken { }
+public partial interface IConstKeywordToken : IKeywordToken;
 internal partial class ConstKeywordToken : Token, IConstKeywordToken
 {
     public ConstKeywordToken(TextSpan span)
@@ -672,7 +677,7 @@ internal partial class ConstKeywordToken : Token, IConstKeywordToken
     }
 }
 
-public partial interface IIdKeywordToken : IKeywordToken { }
+public partial interface IIdKeywordToken : IKeywordToken;
 internal partial class IdKeywordToken : Token, IIdKeywordToken
 {
     public IdKeywordToken(TextSpan span)
@@ -681,7 +686,7 @@ internal partial class IdKeywordToken : Token, IIdKeywordToken
     }
 }
 
-public partial interface ILentKeywordToken : IKeywordToken { }
+public partial interface ILentKeywordToken : IKeywordToken;
 internal partial class LentKeywordToken : Token, ILentKeywordToken
 {
     public LentKeywordToken(TextSpan span)
@@ -690,7 +695,7 @@ internal partial class LentKeywordToken : Token, ILentKeywordToken
     }
 }
 
-public partial interface INamespaceKeywordToken : IKeywordToken { }
+public partial interface INamespaceKeywordToken : IKeywordToken;
 internal partial class NamespaceKeywordToken : Token, INamespaceKeywordToken
 {
     public NamespaceKeywordToken(TextSpan span)
@@ -699,7 +704,7 @@ internal partial class NamespaceKeywordToken : Token, INamespaceKeywordToken
     }
 }
 
-public partial interface IImportKeywordToken : IKeywordToken { }
+public partial interface IImportKeywordToken : IKeywordToken;
 internal partial class ImportKeywordToken : Token, IImportKeywordToken
 {
     public ImportKeywordToken(TextSpan span)
@@ -708,7 +713,7 @@ internal partial class ImportKeywordToken : Token, IImportKeywordToken
     }
 }
 
-public partial interface IForeachKeywordToken : IKeywordToken { }
+public partial interface IForeachKeywordToken : IKeywordToken;
 internal partial class ForeachKeywordToken : Token, IForeachKeywordToken
 {
     public ForeachKeywordToken(TextSpan span)
@@ -717,7 +722,7 @@ internal partial class ForeachKeywordToken : Token, IForeachKeywordToken
     }
 }
 
-public partial interface IInKeywordToken : IKeywordToken { }
+public partial interface IInKeywordToken : IKeywordToken;
 internal partial class InKeywordToken : Token, IInKeywordToken
 {
     public InKeywordToken(TextSpan span)
@@ -726,7 +731,7 @@ internal partial class InKeywordToken : Token, IInKeywordToken
     }
 }
 
-public partial interface IIfKeywordToken : IKeywordToken { }
+public partial interface IIfKeywordToken : IKeywordToken;
 internal partial class IfKeywordToken : Token, IIfKeywordToken
 {
     public IfKeywordToken(TextSpan span)
@@ -735,7 +740,7 @@ internal partial class IfKeywordToken : Token, IIfKeywordToken
     }
 }
 
-public partial interface IElseKeywordToken : IKeywordToken { }
+public partial interface IElseKeywordToken : IKeywordToken;
 internal partial class ElseKeywordToken : Token, IElseKeywordToken
 {
     public ElseKeywordToken(TextSpan span)
@@ -744,7 +749,7 @@ internal partial class ElseKeywordToken : Token, IElseKeywordToken
     }
 }
 
-public partial interface IStructKeywordToken : IKeywordToken { }
+public partial interface IStructKeywordToken : IKeywordToken;
 internal partial class StructKeywordToken : Token, IStructKeywordToken
 {
     public StructKeywordToken(TextSpan span)
@@ -753,7 +758,7 @@ internal partial class StructKeywordToken : Token, IStructKeywordToken
     }
 }
 
-public partial interface IUnsafeKeywordToken : IKeywordToken { }
+public partial interface IUnsafeKeywordToken : IKeywordToken;
 internal partial class UnsafeKeywordToken : Token, IUnsafeKeywordToken
 {
     public UnsafeKeywordToken(TextSpan span)
@@ -762,7 +767,7 @@ internal partial class UnsafeKeywordToken : Token, IUnsafeKeywordToken
     }
 }
 
-public partial interface ISafeKeywordToken : IKeywordToken { }
+public partial interface ISafeKeywordToken : IKeywordToken;
 internal partial class SafeKeywordToken : Token, ISafeKeywordToken
 {
     public SafeKeywordToken(TextSpan span)
@@ -771,7 +776,7 @@ internal partial class SafeKeywordToken : Token, ISafeKeywordToken
     }
 }
 
-public partial interface ISelfKeywordToken : IKeywordToken { }
+public partial interface ISelfKeywordToken : IKeywordToken;
 internal partial class SelfKeywordToken : Token, ISelfKeywordToken
 {
     public SelfKeywordToken(TextSpan span)
@@ -780,7 +785,7 @@ internal partial class SelfKeywordToken : Token, ISelfKeywordToken
     }
 }
 
-public partial interface ISelfTypeKeywordToken : IKeywordToken { }
+public partial interface ISelfTypeKeywordToken : IKeywordToken;
 internal partial class SelfTypeKeywordToken : Token, ISelfTypeKeywordToken
 {
     public SelfTypeKeywordToken(TextSpan span)
@@ -789,7 +794,16 @@ internal partial class SelfTypeKeywordToken : Token, ISelfTypeKeywordToken
     }
 }
 
-public partial interface IMutableKeywordToken : IKeywordToken { }
+public partial interface ITypeKeywordToken : IKeywordToken;
+internal partial class TypeKeywordToken : Token, ITypeKeywordToken
+{
+    public TypeKeywordToken(TextSpan span)
+        : base(span)
+    {
+    }
+}
+
+public partial interface IMutableKeywordToken : IKeywordToken;
 internal partial class MutableKeywordToken : Token, IMutableKeywordToken
 {
     public MutableKeywordToken(TextSpan span)
@@ -798,7 +812,7 @@ internal partial class MutableKeywordToken : Token, IMutableKeywordToken
     }
 }
 
-public partial interface IVariableRefKeywordToken : IKeywordToken { }
+public partial interface IVariableRefKeywordToken : IKeywordToken;
 internal partial class VariableRefKeywordToken : Token, IVariableRefKeywordToken
 {
     public VariableRefKeywordToken(TextSpan span)
@@ -807,7 +821,7 @@ internal partial class VariableRefKeywordToken : Token, IVariableRefKeywordToken
     }
 }
 
-public partial interface IInternalRefKeywordToken : IKeywordToken { }
+public partial interface IInternalRefKeywordToken : IKeywordToken;
 internal partial class InternalRefKeywordToken : Token, IInternalRefKeywordToken
 {
     public InternalRefKeywordToken(TextSpan span)
@@ -816,7 +830,7 @@ internal partial class InternalRefKeywordToken : Token, IInternalRefKeywordToken
     }
 }
 
-public partial interface IAbstractKeywordToken : IKeywordToken { }
+public partial interface IAbstractKeywordToken : IKeywordToken;
 internal partial class AbstractKeywordToken : Token, IAbstractKeywordToken
 {
     public AbstractKeywordToken(TextSpan span)
@@ -825,7 +839,7 @@ internal partial class AbstractKeywordToken : Token, IAbstractKeywordToken
     }
 }
 
-public partial interface IGetKeywordToken : IKeywordToken { }
+public partial interface IGetKeywordToken : IKeywordToken;
 internal partial class GetKeywordToken : Token, IGetKeywordToken
 {
     public GetKeywordToken(TextSpan span)
@@ -834,7 +848,7 @@ internal partial class GetKeywordToken : Token, IGetKeywordToken
     }
 }
 
-public partial interface ISetKeywordToken : IKeywordToken { }
+public partial interface ISetKeywordToken : IKeywordToken;
 internal partial class SetKeywordToken : Token, ISetKeywordToken
 {
     public SetKeywordToken(TextSpan span)
@@ -843,7 +857,7 @@ internal partial class SetKeywordToken : Token, ISetKeywordToken
     }
 }
 
-public partial interface INoneKeywordToken : IKeywordToken { }
+public partial interface INoneKeywordToken : IKeywordToken;
 internal partial class NoneKeywordToken : Token, INoneKeywordToken
 {
     public NoneKeywordToken(TextSpan span)
@@ -852,7 +866,7 @@ internal partial class NoneKeywordToken : Token, INoneKeywordToken
     }
 }
 
-public partial interface IMoveKeywordToken : IKeywordToken { }
+public partial interface IMoveKeywordToken : IKeywordToken;
 internal partial class MoveKeywordToken : Token, IMoveKeywordToken
 {
     public MoveKeywordToken(TextSpan span)
@@ -861,7 +875,7 @@ internal partial class MoveKeywordToken : Token, IMoveKeywordToken
     }
 }
 
-public partial interface IFreezeKeywordToken : IKeywordToken { }
+public partial interface IFreezeKeywordToken : IKeywordToken;
 internal partial class FreezeKeywordToken : Token, IFreezeKeywordToken
 {
     public FreezeKeywordToken(TextSpan span)
@@ -870,7 +884,7 @@ internal partial class FreezeKeywordToken : Token, IFreezeKeywordToken
     }
 }
 
-public partial interface ICopyKeywordToken : IKeywordToken { }
+public partial interface ICopyKeywordToken : IKeywordToken;
 internal partial class CopyKeywordToken : Token, ICopyKeywordToken
 {
     public CopyKeywordToken(TextSpan span)
@@ -879,7 +893,7 @@ internal partial class CopyKeywordToken : Token, ICopyKeywordToken
     }
 }
 
-public partial interface ILoopKeywordToken : IKeywordToken { }
+public partial interface ILoopKeywordToken : IKeywordToken;
 internal partial class LoopKeywordToken : Token, ILoopKeywordToken
 {
     public LoopKeywordToken(TextSpan span)
@@ -888,7 +902,7 @@ internal partial class LoopKeywordToken : Token, ILoopKeywordToken
     }
 }
 
-public partial interface IWhileKeywordToken : IKeywordToken { }
+public partial interface IWhileKeywordToken : IKeywordToken;
 internal partial class WhileKeywordToken : Token, IWhileKeywordToken
 {
     public WhileKeywordToken(TextSpan span)
@@ -897,7 +911,7 @@ internal partial class WhileKeywordToken : Token, IWhileKeywordToken
     }
 }
 
-public partial interface IBreakKeywordToken : IKeywordToken { }
+public partial interface IBreakKeywordToken : IKeywordToken;
 internal partial class BreakKeywordToken : Token, IBreakKeywordToken
 {
     public BreakKeywordToken(TextSpan span)
@@ -906,7 +920,7 @@ internal partial class BreakKeywordToken : Token, IBreakKeywordToken
     }
 }
 
-public partial interface INextKeywordToken : IKeywordToken { }
+public partial interface INextKeywordToken : IKeywordToken;
 internal partial class NextKeywordToken : Token, INextKeywordToken
 {
     public NextKeywordToken(TextSpan span)
@@ -915,7 +929,7 @@ internal partial class NextKeywordToken : Token, INextKeywordToken
     }
 }
 
-public partial interface IAnyTypeKeywordToken : IKeywordToken { }
+public partial interface IAnyTypeKeywordToken : IKeywordToken;
 internal partial class AnyTypeKeywordToken : Token, IAnyTypeKeywordToken
 {
     public AnyTypeKeywordToken(TextSpan span)
@@ -924,7 +938,7 @@ internal partial class AnyTypeKeywordToken : Token, IAnyTypeKeywordToken
     }
 }
 
-public partial interface ITrueKeywordToken : IKeywordToken { }
+public partial interface ITrueKeywordToken : IKeywordToken;
 internal partial class TrueKeywordToken : Token, ITrueKeywordToken
 {
     public TrueKeywordToken(TextSpan span)
@@ -933,7 +947,7 @@ internal partial class TrueKeywordToken : Token, ITrueKeywordToken
     }
 }
 
-public partial interface IFalseKeywordToken : IKeywordToken { }
+public partial interface IFalseKeywordToken : IKeywordToken;
 internal partial class FalseKeywordToken : Token, IFalseKeywordToken
 {
     public FalseKeywordToken(TextSpan span)
@@ -942,7 +956,7 @@ internal partial class FalseKeywordToken : Token, IFalseKeywordToken
     }
 }
 
-public partial interface IAsKeywordToken : IKeywordToken { }
+public partial interface IAsKeywordToken : IKeywordToken;
 internal partial class AsKeywordToken : Token, IAsKeywordToken
 {
     public AsKeywordToken(TextSpan span)
@@ -951,7 +965,7 @@ internal partial class AsKeywordToken : Token, IAsKeywordToken
     }
 }
 
-public partial interface IAsExclamationKeywordToken : IKeywordToken { }
+public partial interface IAsExclamationKeywordToken : IKeywordToken;
 internal partial class AsExclamationKeywordToken : Token, IAsExclamationKeywordToken
 {
     public AsExclamationKeywordToken(TextSpan span)
@@ -960,7 +974,7 @@ internal partial class AsExclamationKeywordToken : Token, IAsExclamationKeywordT
     }
 }
 
-public partial interface IAsQuestionKeywordToken : IKeywordToken { }
+public partial interface IAsQuestionKeywordToken : IKeywordToken;
 internal partial class AsQuestionKeywordToken : Token, IAsQuestionKeywordToken
 {
     public AsQuestionKeywordToken(TextSpan span)
@@ -969,7 +983,7 @@ internal partial class AsQuestionKeywordToken : Token, IAsQuestionKeywordToken
     }
 }
 
-public partial interface IAndKeywordToken : IKeywordToken { }
+public partial interface IAndKeywordToken : IKeywordToken;
 internal partial class AndKeywordToken : Token, IAndKeywordToken
 {
     public AndKeywordToken(TextSpan span)
@@ -978,7 +992,7 @@ internal partial class AndKeywordToken : Token, IAndKeywordToken
     }
 }
 
-public partial interface IOrKeywordToken : IKeywordToken { }
+public partial interface IOrKeywordToken : IKeywordToken;
 internal partial class OrKeywordToken : Token, IOrKeywordToken
 {
     public OrKeywordToken(TextSpan span)
@@ -987,7 +1001,7 @@ internal partial class OrKeywordToken : Token, IOrKeywordToken
     }
 }
 
-public partial interface INotKeywordToken : IKeywordToken { }
+public partial interface INotKeywordToken : IKeywordToken;
 internal partial class NotKeywordToken : Token, INotKeywordToken
 {
     public NotKeywordToken(TextSpan span)
@@ -996,7 +1010,7 @@ internal partial class NotKeywordToken : Token, INotKeywordToken
     }
 }
 
-public partial interface ITraitKeywordToken : IKeywordToken { }
+public partial interface ITraitKeywordToken : IKeywordToken;
 internal partial class TraitKeywordToken : Token, ITraitKeywordToken
 {
     public TraitKeywordToken(TextSpan span)
@@ -1005,7 +1019,7 @@ internal partial class TraitKeywordToken : Token, ITraitKeywordToken
     }
 }
 
-public partial interface IIsKeywordToken : IKeywordToken { }
+public partial interface IIsKeywordToken : IKeywordToken;
 internal partial class IsKeywordToken : Token, IIsKeywordToken
 {
     public IsKeywordToken(TextSpan span)
@@ -1014,7 +1028,7 @@ internal partial class IsKeywordToken : Token, IIsKeywordToken
     }
 }
 
-public partial interface IAsyncKeywordToken : IKeywordToken { }
+public partial interface IAsyncKeywordToken : IKeywordToken;
 internal partial class AsyncKeywordToken : Token, IAsyncKeywordToken
 {
     public AsyncKeywordToken(TextSpan span)
@@ -1023,7 +1037,7 @@ internal partial class AsyncKeywordToken : Token, IAsyncKeywordToken
     }
 }
 
-public partial interface IGoKeywordToken : IKeywordToken { }
+public partial interface IGoKeywordToken : IKeywordToken;
 internal partial class GoKeywordToken : Token, IGoKeywordToken
 {
     public GoKeywordToken(TextSpan span)
@@ -1032,7 +1046,7 @@ internal partial class GoKeywordToken : Token, IGoKeywordToken
     }
 }
 
-public partial interface IDoKeywordToken : IKeywordToken { }
+public partial interface IDoKeywordToken : IKeywordToken;
 internal partial class DoKeywordToken : Token, IDoKeywordToken
 {
     public DoKeywordToken(TextSpan span)
@@ -1041,7 +1055,7 @@ internal partial class DoKeywordToken : Token, IDoKeywordToken
     }
 }
 
-public partial interface IAwaitKeywordToken : IKeywordToken { }
+public partial interface IAwaitKeywordToken : IKeywordToken;
 internal partial class AwaitKeywordToken : Token, IAwaitKeywordToken
 {
     public AwaitKeywordToken(TextSpan span)
@@ -1050,7 +1064,7 @@ internal partial class AwaitKeywordToken : Token, IAwaitKeywordToken
     }
 }
 
-public partial interface IOutKeywordToken : IKeywordToken { }
+public partial interface IOutKeywordToken : IKeywordToken;
 internal partial class OutKeywordToken : Token, IOutKeywordToken
 {
     public OutKeywordToken(TextSpan span)
@@ -1059,7 +1073,7 @@ internal partial class OutKeywordToken : Token, IOutKeywordToken
     }
 }
 
-public partial interface IIndependentKeywordToken : IKeywordToken { }
+public partial interface IIndependentKeywordToken : IKeywordToken;
 internal partial class IndependentKeywordToken : Token, IIndependentKeywordToken
 {
     public IndependentKeywordToken(TextSpan span)
@@ -1068,7 +1082,7 @@ internal partial class IndependentKeywordToken : Token, IIndependentKeywordToken
     }
 }
 
-public partial interface ITempKeywordToken : IKeywordToken { }
+public partial interface ITempKeywordToken : IKeywordToken;
 internal partial class TempKeywordToken : Token, ITempKeywordToken
 {
     public TempKeywordToken(TextSpan span)
@@ -1077,7 +1091,7 @@ internal partial class TempKeywordToken : Token, ITempKeywordToken
     }
 }
 
-public partial interface IReadableKeywordToken : IKeywordToken { }
+public partial interface IReadableKeywordToken : IKeywordToken;
 internal partial class ReadableKeywordToken : Token, IReadableKeywordToken
 {
     public ReadableKeywordToken(TextSpan span)
@@ -1086,7 +1100,7 @@ internal partial class ReadableKeywordToken : Token, IReadableKeywordToken
     }
 }
 
-public partial interface IShareableKeywordToken : IKeywordToken { }
+public partial interface IShareableKeywordToken : IKeywordToken;
 internal partial class ShareableKeywordToken : Token, IShareableKeywordToken
 {
     public ShareableKeywordToken(TextSpan span)
@@ -1095,7 +1109,7 @@ internal partial class ShareableKeywordToken : Token, IShareableKeywordToken
     }
 }
 
-public partial interface IAliasableKeywordToken : IKeywordToken { }
+public partial interface IAliasableKeywordToken : IKeywordToken;
 internal partial class AliasableKeywordToken : Token, IAliasableKeywordToken
 {
     public AliasableKeywordToken(TextSpan span)
@@ -1104,7 +1118,7 @@ internal partial class AliasableKeywordToken : Token, IAliasableKeywordToken
     }
 }
 
-public partial interface ISendableKeywordToken : IKeywordToken { }
+public partial interface ISendableKeywordToken : IKeywordToken;
 internal partial class SendableKeywordToken : Token, ISendableKeywordToken
 {
     public SendableKeywordToken(TextSpan span)
@@ -1113,7 +1127,7 @@ internal partial class SendableKeywordToken : Token, ISendableKeywordToken
     }
 }
 
-public partial interface ITemporaryKeywordToken : IKeywordToken { }
+public partial interface ITemporaryKeywordToken : IKeywordToken;
 internal partial class TemporaryKeywordToken : Token, ITemporaryKeywordToken
 {
     public TemporaryKeywordToken(TextSpan span)
@@ -1122,7 +1136,7 @@ internal partial class TemporaryKeywordToken : Token, ITemporaryKeywordToken
     }
 }
 
-public partial interface IAnyKeywordToken : IKeywordToken { }
+public partial interface IAnyKeywordToken : IKeywordToken;
 internal partial class AnyKeywordToken : Token, IAnyKeywordToken
 {
     public AnyKeywordToken(TextSpan span)
@@ -1131,7 +1145,7 @@ internal partial class AnyKeywordToken : Token, IAnyKeywordToken
     }
 }
 
-public partial interface INonwritableKeywordToken : IKeywordToken { }
+public partial interface INonwritableKeywordToken : IKeywordToken;
 internal partial class NonwritableKeywordToken : Token, INonwritableKeywordToken
 {
     public NonwritableKeywordToken(TextSpan span)

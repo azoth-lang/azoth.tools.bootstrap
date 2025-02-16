@@ -176,10 +176,10 @@ public static partial class TokenFactory
     typeof(ILessThanColonToken),
     typeof(IRightDoubleArrowToken),
     typeof(IRightTriangleToken))]
-public partial interface IEssentialToken { }
+public partial interface IEssentialToken;
 
 
-public partial interface IEndOfFileToken : IEssentialToken { }
+public partial interface IEndOfFileToken : IEssentialToken;
 internal partial class EndOfFileToken : Token, IEndOfFileToken
 {
     public EndOfFileToken(TextSpan span)
@@ -188,7 +188,7 @@ internal partial class EndOfFileToken : Token, IEndOfFileToken
     }
 }
 
-public partial interface IOpenBraceToken : IEssentialToken { }
+public partial interface IOpenBraceToken : IEssentialToken;
 internal partial class OpenBraceToken : Token, IOpenBraceToken
 {
     public OpenBraceToken(TextSpan span)
@@ -197,7 +197,7 @@ internal partial class OpenBraceToken : Token, IOpenBraceToken
     }
 }
 
-public partial interface ICloseBraceToken : IEssentialToken { }
+public partial interface ICloseBraceToken : IEssentialToken;
 internal partial class CloseBraceToken : Token, ICloseBraceToken
 {
     public CloseBraceToken(TextSpan span)
@@ -206,7 +206,7 @@ internal partial class CloseBraceToken : Token, ICloseBraceToken
     }
 }
 
-public partial interface IOpenParenToken : IEssentialToken { }
+public partial interface IOpenParenToken : IEssentialToken;
 internal partial class OpenParenToken : Token, IOpenParenToken
 {
     public OpenParenToken(TextSpan span)
@@ -215,7 +215,7 @@ internal partial class OpenParenToken : Token, IOpenParenToken
     }
 }
 
-public partial interface ICloseParenToken : IEssentialToken { }
+public partial interface ICloseParenToken : IEssentialToken;
 internal partial class CloseParenToken : Token, ICloseParenToken
 {
     public CloseParenToken(TextSpan span)
@@ -224,7 +224,7 @@ internal partial class CloseParenToken : Token, ICloseParenToken
     }
 }
 
-public partial interface IOpenBracketToken : IEssentialToken { }
+public partial interface IOpenBracketToken : IEssentialToken;
 internal partial class OpenBracketToken : Token, IOpenBracketToken
 {
     public OpenBracketToken(TextSpan span)
@@ -233,7 +233,7 @@ internal partial class OpenBracketToken : Token, IOpenBracketToken
     }
 }
 
-public partial interface ICloseBracketToken : IEssentialToken { }
+public partial interface ICloseBracketToken : IEssentialToken;
 internal partial class CloseBracketToken : Token, ICloseBracketToken
 {
     public CloseBracketToken(TextSpan span)
@@ -242,7 +242,7 @@ internal partial class CloseBracketToken : Token, ICloseBracketToken
     }
 }
 
-public partial interface ISemicolonToken : IEssentialToken { }
+public partial interface ISemicolonToken : IEssentialToken;
 internal partial class SemicolonToken : Token, ISemicolonToken
 {
     public SemicolonToken(TextSpan span)
@@ -251,7 +251,7 @@ internal partial class SemicolonToken : Token, ISemicolonToken
     }
 }
 
-public partial interface ICommaToken : IEssentialToken { }
+public partial interface ICommaToken : IEssentialToken;
 internal partial class CommaToken : Token, ICommaToken
 {
     public CommaToken(TextSpan span)
@@ -260,7 +260,7 @@ internal partial class CommaToken : Token, ICommaToken
     }
 }
 
-public partial interface IColonToken : IEssentialToken { }
+public partial interface IColonToken : IEssentialToken;
 internal partial class ColonToken : Token, IColonToken
 {
     public ColonToken(TextSpan span)
@@ -269,7 +269,7 @@ internal partial class ColonToken : Token, IColonToken
     }
 }
 
-public partial interface IRightArrowToken : IEssentialToken { }
+public partial interface IRightArrowToken : IEssentialToken;
 internal partial class RightArrowToken : Token, IRightArrowToken
 {
     public RightArrowToken(TextSpan span)
@@ -278,7 +278,7 @@ internal partial class RightArrowToken : Token, IRightArrowToken
     }
 }
 
-public partial interface IHashToken : IEssentialToken { }
+public partial interface IHashToken : IEssentialToken;
 internal partial class HashToken : Token, IHashToken
 {
     public HashToken(TextSpan span)
@@ -287,7 +287,7 @@ internal partial class HashToken : Token, IHashToken
     }
 }
 
-public partial interface IDotToken : IEssentialToken { }
+public partial interface IDotToken : IEssentialToken;
 internal partial class DotToken : Token, IDotToken
 {
     public DotToken(TextSpan span)
@@ -296,7 +296,7 @@ internal partial class DotToken : Token, IDotToken
     }
 }
 
-public partial interface IColonColonToken : IEssentialToken { }
+public partial interface IColonColonToken : IEssentialToken;
 internal partial class ColonColonToken : Token, IColonColonToken
 {
     public ColonColonToken(TextSpan span)
@@ -305,7 +305,7 @@ internal partial class ColonColonToken : Token, IColonColonToken
     }
 }
 
-public partial interface IColonColonDotToken : IEssentialToken { }
+public partial interface IColonColonDotToken : IEssentialToken;
 internal partial class ColonColonDotToken : Token, IColonColonDotToken
 {
     public ColonColonDotToken(TextSpan span)
@@ -314,7 +314,7 @@ internal partial class ColonColonDotToken : Token, IColonColonDotToken
     }
 }
 
-public partial interface IDotDotToken : IEssentialToken { }
+public partial interface IDotDotToken : IEssentialToken;
 internal partial class DotDotToken : Token, IDotDotToken
 {
     public DotDotToken(TextSpan span)
@@ -323,7 +323,7 @@ internal partial class DotDotToken : Token, IDotDotToken
     }
 }
 
-public partial interface ILessThanDotDotToken : IEssentialToken { }
+public partial interface ILessThanDotDotToken : IEssentialToken;
 internal partial class LessThanDotDotToken : Token, ILessThanDotDotToken
 {
     public LessThanDotDotToken(TextSpan span)
@@ -332,7 +332,7 @@ internal partial class LessThanDotDotToken : Token, ILessThanDotDotToken
     }
 }
 
-public partial interface IDotDotLessThanToken : IEssentialToken { }
+public partial interface IDotDotLessThanToken : IEssentialToken;
 internal partial class DotDotLessThanToken : Token, IDotDotLessThanToken
 {
     public DotDotLessThanToken(TextSpan span)
@@ -341,7 +341,7 @@ internal partial class DotDotLessThanToken : Token, IDotDotLessThanToken
     }
 }
 
-public partial interface ILessThanDotDotLessThanToken : IEssentialToken { }
+public partial interface ILessThanDotDotLessThanToken : IEssentialToken;
 internal partial class LessThanDotDotLessThanToken : Token, ILessThanDotDotLessThanToken
 {
     public LessThanDotDotLessThanToken(TextSpan span)
@@ -350,7 +350,7 @@ internal partial class LessThanDotDotLessThanToken : Token, ILessThanDotDotLessT
     }
 }
 
-public partial interface IPlusToken : IEssentialToken { }
+public partial interface IPlusToken : IEssentialToken;
 internal partial class PlusToken : Token, IPlusToken
 {
     public PlusToken(TextSpan span)
@@ -359,7 +359,7 @@ internal partial class PlusToken : Token, IPlusToken
     }
 }
 
-public partial interface IMinusToken : IEssentialToken { }
+public partial interface IMinusToken : IEssentialToken;
 internal partial class MinusToken : Token, IMinusToken
 {
     public MinusToken(TextSpan span)
@@ -368,7 +368,7 @@ internal partial class MinusToken : Token, IMinusToken
     }
 }
 
-public partial interface IAsteriskToken : IEssentialToken { }
+public partial interface IAsteriskToken : IEssentialToken;
 internal partial class AsteriskToken : Token, IAsteriskToken
 {
     public AsteriskToken(TextSpan span)
@@ -377,7 +377,7 @@ internal partial class AsteriskToken : Token, IAsteriskToken
     }
 }
 
-public partial interface ISlashToken : IEssentialToken { }
+public partial interface ISlashToken : IEssentialToken;
 internal partial class SlashToken : Token, ISlashToken
 {
     public SlashToken(TextSpan span)
@@ -386,7 +386,7 @@ internal partial class SlashToken : Token, ISlashToken
     }
 }
 
-public partial interface IEqualsToken : IEssentialToken { }
+public partial interface IEqualsToken : IEssentialToken;
 internal partial class EqualsToken : Token, IEqualsToken
 {
     public EqualsToken(TextSpan span)
@@ -395,7 +395,7 @@ internal partial class EqualsToken : Token, IEqualsToken
     }
 }
 
-public partial interface IEqualsEqualsToken : IEssentialToken { }
+public partial interface IEqualsEqualsToken : IEssentialToken;
 internal partial class EqualsEqualsToken : Token, IEqualsEqualsToken
 {
     public EqualsEqualsToken(TextSpan span)
@@ -404,7 +404,7 @@ internal partial class EqualsEqualsToken : Token, IEqualsEqualsToken
     }
 }
 
-public partial interface INotEqualToken : IEssentialToken { }
+public partial interface INotEqualToken : IEssentialToken;
 internal partial class NotEqualToken : Token, INotEqualToken
 {
     public NotEqualToken(TextSpan span)
@@ -413,7 +413,7 @@ internal partial class NotEqualToken : Token, INotEqualToken
     }
 }
 
-public partial interface IReferenceEqualsToken : IEssentialToken { }
+public partial interface IReferenceEqualsToken : IEssentialToken;
 internal partial class ReferenceEqualsToken : Token, IReferenceEqualsToken
 {
     public ReferenceEqualsToken(TextSpan span)
@@ -422,7 +422,7 @@ internal partial class ReferenceEqualsToken : Token, IReferenceEqualsToken
     }
 }
 
-public partial interface INotReferenceEqualsToken : IEssentialToken { }
+public partial interface INotReferenceEqualsToken : IEssentialToken;
 internal partial class NotReferenceEqualsToken : Token, INotReferenceEqualsToken
 {
     public NotReferenceEqualsToken(TextSpan span)
@@ -431,7 +431,7 @@ internal partial class NotReferenceEqualsToken : Token, INotReferenceEqualsToken
     }
 }
 
-public partial interface IGreaterThanToken : IEssentialToken { }
+public partial interface IGreaterThanToken : IEssentialToken;
 internal partial class GreaterThanToken : Token, IGreaterThanToken
 {
     public GreaterThanToken(TextSpan span)
@@ -440,7 +440,7 @@ internal partial class GreaterThanToken : Token, IGreaterThanToken
     }
 }
 
-public partial interface IGreaterThanOrEqualToken : IEssentialToken { }
+public partial interface IGreaterThanOrEqualToken : IEssentialToken;
 internal partial class GreaterThanOrEqualToken : Token, IGreaterThanOrEqualToken
 {
     public GreaterThanOrEqualToken(TextSpan span)
@@ -449,7 +449,7 @@ internal partial class GreaterThanOrEqualToken : Token, IGreaterThanOrEqualToken
     }
 }
 
-public partial interface ILessThanToken : IEssentialToken { }
+public partial interface ILessThanToken : IEssentialToken;
 internal partial class LessThanToken : Token, ILessThanToken
 {
     public LessThanToken(TextSpan span)
@@ -458,7 +458,7 @@ internal partial class LessThanToken : Token, ILessThanToken
     }
 }
 
-public partial interface ILessThanOrEqualToken : IEssentialToken { }
+public partial interface ILessThanOrEqualToken : IEssentialToken;
 internal partial class LessThanOrEqualToken : Token, ILessThanOrEqualToken
 {
     public LessThanOrEqualToken(TextSpan span)
@@ -467,7 +467,7 @@ internal partial class LessThanOrEqualToken : Token, ILessThanOrEqualToken
     }
 }
 
-public partial interface IPlusEqualsToken : IEssentialToken { }
+public partial interface IPlusEqualsToken : IEssentialToken;
 internal partial class PlusEqualsToken : Token, IPlusEqualsToken
 {
     public PlusEqualsToken(TextSpan span)
@@ -476,7 +476,7 @@ internal partial class PlusEqualsToken : Token, IPlusEqualsToken
     }
 }
 
-public partial interface IMinusEqualsToken : IEssentialToken { }
+public partial interface IMinusEqualsToken : IEssentialToken;
 internal partial class MinusEqualsToken : Token, IMinusEqualsToken
 {
     public MinusEqualsToken(TextSpan span)
@@ -485,7 +485,7 @@ internal partial class MinusEqualsToken : Token, IMinusEqualsToken
     }
 }
 
-public partial interface IAsteriskEqualsToken : IEssentialToken { }
+public partial interface IAsteriskEqualsToken : IEssentialToken;
 internal partial class AsteriskEqualsToken : Token, IAsteriskEqualsToken
 {
     public AsteriskEqualsToken(TextSpan span)
@@ -494,7 +494,7 @@ internal partial class AsteriskEqualsToken : Token, IAsteriskEqualsToken
     }
 }
 
-public partial interface ISlashEqualsToken : IEssentialToken { }
+public partial interface ISlashEqualsToken : IEssentialToken;
 internal partial class SlashEqualsToken : Token, ISlashEqualsToken
 {
     public SlashEqualsToken(TextSpan span)
@@ -503,7 +503,7 @@ internal partial class SlashEqualsToken : Token, ISlashEqualsToken
     }
 }
 
-public partial interface IQuestionToken : IEssentialToken { }
+public partial interface IQuestionToken : IEssentialToken;
 internal partial class QuestionToken : Token, IQuestionToken
 {
     public QuestionToken(TextSpan span)
@@ -512,7 +512,7 @@ internal partial class QuestionToken : Token, IQuestionToken
     }
 }
 
-public partial interface IQuestionQuestionToken : IEssentialToken { }
+public partial interface IQuestionQuestionToken : IEssentialToken;
 internal partial class QuestionQuestionToken : Token, IQuestionQuestionToken
 {
     public QuestionQuestionToken(TextSpan span)
@@ -521,7 +521,7 @@ internal partial class QuestionQuestionToken : Token, IQuestionQuestionToken
     }
 }
 
-public partial interface IQuestionDotToken : IEssentialToken { }
+public partial interface IQuestionDotToken : IEssentialToken;
 internal partial class QuestionDotToken : Token, IQuestionDotToken
 {
     public QuestionDotToken(TextSpan span)
@@ -530,7 +530,7 @@ internal partial class QuestionDotToken : Token, IQuestionDotToken
     }
 }
 
-public partial interface ILessThanColonToken : IEssentialToken { }
+public partial interface ILessThanColonToken : IEssentialToken;
 internal partial class LessThanColonToken : Token, ILessThanColonToken
 {
     public LessThanColonToken(TextSpan span)
@@ -539,7 +539,7 @@ internal partial class LessThanColonToken : Token, ILessThanColonToken
     }
 }
 
-public partial interface IRightDoubleArrowToken : IEssentialToken { }
+public partial interface IRightDoubleArrowToken : IEssentialToken;
 internal partial class RightDoubleArrowToken : Token, IRightDoubleArrowToken
 {
     public RightDoubleArrowToken(TextSpan span)
@@ -548,7 +548,7 @@ internal partial class RightDoubleArrowToken : Token, IRightDoubleArrowToken
     }
 }
 
-public partial interface IRightTriangleToken : IEssentialToken { }
+public partial interface IRightTriangleToken : IEssentialToken;
 internal partial class RightTriangleToken : Token, IRightTriangleToken
 {
     public RightTriangleToken(TextSpan span)

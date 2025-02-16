@@ -6,10 +6,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Tokens;
     typeof(IAsKeywordToken),
     typeof(IAsExclamationKeywordToken),
     typeof(IAsQuestionKeywordToken))]
-public interface IConversionOperatorToken : IOperatorToken, IEssentialToken
-{
-}
+public interface IConversionOperatorToken : IOperatorToken, IEssentialToken;
 
-public partial interface IAsKeywordToken : IConversionOperatorToken { }
-public partial interface IAsExclamationKeywordToken : IConversionOperatorToken { }
-public partial interface IAsQuestionKeywordToken : IConversionOperatorToken { }
+public partial interface IAsKeywordToken : IConversionOperatorToken;
+public partial interface IAsExclamationKeywordToken : IConversionOperatorToken;
+public partial interface IAsQuestionKeywordToken : IConversionOperatorToken;

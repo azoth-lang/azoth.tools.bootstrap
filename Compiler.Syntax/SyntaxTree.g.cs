@@ -353,7 +353,8 @@ public partial interface IGenericParameterSyntax : ICodeSyntax
     typeof(IMethodDefinitionSyntax),
     typeof(IInitializerDefinitionSyntax),
     typeof(IFieldDefinitionSyntax),
-    typeof(IAssociatedFunctionDefinitionSyntax))]
+    typeof(IAssociatedFunctionDefinitionSyntax),
+    typeof(IAssociatedTypeDefinitionSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IMemberDefinitionSyntax : IFacetMemberDefinitionSyntax
 {
@@ -525,6 +526,28 @@ public partial interface IAssociatedFunctionDefinitionSyntax : IMemberDefinition
         IReturnSyntax? @return,
         IBodySyntax body)
         => new AssociatedFunctionDefinitionSyntax(span, file, nameSpan, accessModifier, name, parameters, @return, body);
+}
+
+[Closed(typeof(AssociatedTypeDefinitionSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
+public partial interface IAssociatedTypeDefinitionSyntax : IMemberDefinitionSyntax
+{
+    ITypeKeywordToken TypeKeyword { get; }
+    new IdentifierName Name { get; }
+    UnqualifiedName? IDefinitionSyntax.Name => Name;
+    IEqualsToken? EqualsOperator { get; }
+    ITypeSyntax? Initializer { get; }
+
+    public static IAssociatedTypeDefinitionSyntax Create(
+        TextSpan span,
+        CodeFile file,
+        TextSpan nameSpan,
+        IAccessModifierToken? accessModifier,
+        ITypeKeywordToken typeKeyword,
+        IdentifierName name,
+        IEqualsToken? equalsOperator,
+        ITypeSyntax? initializer)
+        => new AssociatedTypeDefinitionSyntax(span, file, nameSpan, accessModifier, typeKeyword, name, equalsOperator, initializer);
 }
 
 [Closed(typeof(AttributeSyntax))]
@@ -2132,6 +2155,43 @@ file class AssociatedFunctionDefinitionSyntax : IAssociatedFunctionDefinitionSyn
         Parameters = parameters.ToFixedList();
         Return = @return;
         Body = body;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class AssociatedTypeDefinitionSyntax : IAssociatedTypeDefinitionSyntax
+{
+    private IAssociatedTypeDefinitionSyntax Self { [Inline] get => this; }
+
+    public TextSpan Span { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public TextSpan NameSpan { [DebuggerStepThrough] get; }
+    public IAccessModifierToken? AccessModifier { [DebuggerStepThrough] get; }
+    public ITypeKeywordToken TypeKeyword { [DebuggerStepThrough] get; }
+    public IdentifierName Name { [DebuggerStepThrough] get; }
+    public IEqualsToken? EqualsOperator { [DebuggerStepThrough] get; }
+    public ITypeSyntax? Initializer { [DebuggerStepThrough] get; }
+    public override string ToString()
+        => FormattingAspect.AssociatedTypeDefinition_ToString(this);
+
+    public AssociatedTypeDefinitionSyntax(
+        TextSpan span,
+        CodeFile file,
+        TextSpan nameSpan,
+        IAccessModifierToken? accessModifier,
+        ITypeKeywordToken typeKeyword,
+        IdentifierName name,
+        IEqualsToken? equalsOperator,
+        ITypeSyntax? initializer)
+    {
+        Span = span;
+        File = file;
+        NameSpan = nameSpan;
+        AccessModifier = accessModifier;
+        TypeKeyword = typeKeyword;
+        Name = name;
+        EqualsOperator = equalsOperator;
+        Initializer = initializer;
     }
 }
 

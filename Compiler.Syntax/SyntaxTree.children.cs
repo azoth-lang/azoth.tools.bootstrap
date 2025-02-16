@@ -33,6 +33,10 @@ public static class ISyntaxExtensions
                     yield return n.Return;
                 yield return n.Body;
                 yield break;
+            case IAssociatedTypeDefinitionSyntax n:
+                if (n.Initializer is not null)
+                    yield return n.Initializer;
+                yield break;
             case IAsyncBlockExpressionSyntax n:
                 yield return n.Block;
                 yield break;
