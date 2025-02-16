@@ -80,7 +80,7 @@ MethodDefinition <: MemberDefinition, InvocableDefinition
 AbstractMethodDefinition <: MethodDefinition = /SelfParameter/ /Parameters/ Return?;
 OrdinaryMethodDefinition <: MethodDefinition = SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return? Body;
 GetterMethodDefinition <: MethodDefinition = SelfParameter:MethodSelfParameter Return Body?;
-SetterMethodDefinition <: MethodDefinition = SelfParameter:MethodSelfParameter Parameters:NamedParameter* Body;
+SetterMethodDefinition <: MethodDefinition = SelfParameter:MethodSelfParameter Parameters:NamedParameter* Body?;
 InitializerDefinition <: MemberDefinition, InvocableDefinition
     = Name:`IdentifierName`? SelfParameter:InitializerSelfParameter Parameters:InitializerParameter* Body:BlockBody;
 FieldDefinition <: MemberDefinition, Binding

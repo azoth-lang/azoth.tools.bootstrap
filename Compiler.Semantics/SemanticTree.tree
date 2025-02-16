@@ -116,9 +116,9 @@ AbstractMethodDefinition <: MethodDefinition, OrdinaryMethodDeclaration
 OrdinaryMethodDefinition <: MethodDefinition, OrdinaryMethodDeclaration
     = Syntax:`IOrdinaryMethodDefinitionSyntax` /SelfParameter/ /Parameters/ /Return/ /Entry/ Body /Exit/;
 GetterMethodDefinition <: MethodDefinition, GetterMethodDeclaration
-    = Syntax:`IGetterMethodDefinitionSyntax` /SelfParameter/ /Parameters/ Return:Type /Entry/ Body? /Exit/;
+    = Syntax:`IGetterMethodDefinitionSyntax` /SelfParameter/ /Parameters/ Return:Type /Entry/ /Body/ /Exit/;
 SetterMethodDefinition <: MethodDefinition, SetterMethodDeclaration
-    = Syntax:`ISetterMethodDefinitionSyntax` /SelfParameter/ /Parameters/ /Return/ /Entry/ Body /Exit/;
+    = Syntax:`ISetterMethodDefinitionSyntax` /SelfParameter/ /Parameters/ /Return/ /Entry/ /Body/ /Exit/;
 InitializerDefinition <: InvocableDefinition, AlwaysTypeMemberDefinition, StructMemberDefinition, ClassMemberDefinition, InitializerDeclaration
     = Syntax:`IInitializerDefinitionSyntax`? Name:`IdentifierName`? Parameters:InitializerParameter*;
 DefaultInitializerDefinition <: InitializerDefinition;

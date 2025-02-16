@@ -281,7 +281,8 @@ public static class ISyntaxExtensions
                 yield return n.SelfParameter;
                 foreach (var child in n.Parameters)
                     yield return child;
-                yield return n.Body;
+                if (n.Body is not null)
+                    yield return n.Body;
                 yield break;
             case IStringLiteralExpressionSyntax n:
                 yield break;

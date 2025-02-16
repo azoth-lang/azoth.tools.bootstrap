@@ -443,8 +443,6 @@ public partial interface IGetterMethodDefinitionSyntax : IMethodDefinitionSyntax
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface ISetterMethodDefinitionSyntax : IMethodDefinitionSyntax
 {
-    new IBodySyntax Body { get; }
-    IBodySyntax? IInvocableDefinitionSyntax.Body => Body;
     new IReturnSyntax? Return
         => null;
     IReturnSyntax? IMethodDefinitionSyntax.Return => Return;
@@ -457,7 +455,7 @@ public partial interface ISetterMethodDefinitionSyntax : IMethodDefinitionSyntax
         IdentifierName name,
         IMethodSelfParameterSyntax selfParameter,
         IEnumerable<INamedParameterSyntax> parameters,
-        IBodySyntax body)
+        IBodySyntax? body)
         => new SetterMethodDefinitionSyntax(span, file, nameSpan, accessModifier, name, selfParameter, parameters, body);
 }
 
@@ -2022,7 +2020,7 @@ file class SetterMethodDefinitionSyntax : ISetterMethodDefinitionSyntax
     public IdentifierName Name { [DebuggerStepThrough] get; }
     public IMethodSelfParameterSyntax SelfParameter { [DebuggerStepThrough] get; }
     public IFixedList<INamedParameterSyntax> Parameters { [DebuggerStepThrough] get; }
-    public IBodySyntax Body { [DebuggerStepThrough] get; }
+    public IBodySyntax? Body { [DebuggerStepThrough] get; }
     public override string ToString()
         => FormattingAspect.SetterMethodDefinition_ToString(this);
 
@@ -2034,7 +2032,7 @@ file class SetterMethodDefinitionSyntax : ISetterMethodDefinitionSyntax
         IdentifierName name,
         IMethodSelfParameterSyntax selfParameter,
         IEnumerable<INamedParameterSyntax> parameters,
-        IBodySyntax body)
+        IBodySyntax? body)
     {
         Span = span;
         File = file;

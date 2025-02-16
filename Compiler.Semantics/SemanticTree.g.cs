@@ -869,8 +869,6 @@ public partial interface ISetterMethodDefinitionNode : IMethodDefinitionNode, IS
     ISyntax? ISemanticNode.Syntax => Syntax;
     IMemberDefinitionSyntax? ITypeMemberDefinitionNode.Syntax => Syntax;
     IDefinitionSyntax? IDefinitionNode.Syntax => Syntax;
-    new IBodyNode Body { get; }
-    IBodyNode? IInvocableDefinitionNode.Body => Body;
     MethodKind IMethodDefinitionNode.Kind
         => MethodKind.Setter;
 
@@ -879,7 +877,7 @@ public partial interface ISetterMethodDefinitionNode : IMethodDefinitionNode, IS
         IMethodSelfParameterNode selfParameter,
         IEnumerable<INamedParameterNode> parameters,
         ITypeNode? @return,
-        IBodyNode body)
+        IBodyNode? body)
         => new SetterMethodDefinitionNode(syntax, selfParameter, parameters, @return, body);
 }
 
@@ -6807,7 +6805,7 @@ file class SetterMethodDefinitionNode : SemanticNode, ISetterMethodDefinitionNod
     public IMethodSelfParameterNode SelfParameter { [DebuggerStepThrough] get; }
     public IFixedList<INamedParameterNode> Parameters { [DebuggerStepThrough] get; }
     public ITypeNode? Return { [DebuggerStepThrough] get; }
-    public IBodyNode Body { [DebuggerStepThrough] get; }
+    public IBodyNode? Body { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -6871,7 +6869,7 @@ file class SetterMethodDefinitionNode : SemanticNode, ISetterMethodDefinitionNod
         IMethodSelfParameterNode selfParameter,
         IEnumerable<INamedParameterNode> parameters,
         ITypeNode? @return,
-        IBodyNode body)
+        IBodyNode? body)
     {
         Syntax = syntax;
         SelfParameter = Child.Attach(this, selfParameter);

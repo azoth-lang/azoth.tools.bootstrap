@@ -5,7 +5,7 @@ using Xunit;
 namespace Azoth.Tools.Bootstrap.Tests.Unit.Framework;
 
 [Trait("Category", "Framework")]
-public class EnumerableExtensionTests
+public class EnumerableExtensionsTests
 {
     [Fact]
     public void CrossJoinCreatesEveryCombination()
