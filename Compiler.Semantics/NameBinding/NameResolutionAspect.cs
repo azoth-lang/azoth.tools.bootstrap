@@ -169,16 +169,14 @@ internal static partial class NameResolutionAspect
     {
         var referencedDeclarations = node.ReferencedDeclarations;
 
-        // If not all referenced declarations are namespaces, then this is not a namespace name.
-        if (referencedDeclarations.TryAllOfType<INamespaceDeclarationNode>(out var referencedNamespaces))
-            return IUnqualifiedNamespaceNameNode.Create(node.Syntax, referencedNamespaces);
-
         if (referencedDeclarations.TryAllOfType<IFunctionInvocableDeclarationNode>(out var referencedFunctions))
             return IFunctionNameExpressionNode.Create(node.Syntax, null, node.Name, FixedList.Empty<ITypeNode>(), referencedFunctions);
 
         if (referencedDeclarations.TrySingle() is not null and var referencedDeclaration)
             switch (referencedDeclaration)
             {
+                case INamespaceDeclarationNode referencedNamespace:
+                    return IUnqualifiedNamespaceNameNode.Create(node.Syntax, referencedNamespace.Yield());
                 case ILocalBindingNode referencedVariable:
                     return IVariableNameExpressionNode.Create(node.Syntax, referencedVariable);
                 case ITypeDeclarationNode referencedType:
@@ -296,14 +294,11 @@ internal static partial class NameResolutionAspect
     {
         var referencedDeclarations = node.ReferencedDeclarations;
 
-        // If not all referenced declarations are namespaces, then this is not a namespace name.
-        if (referencedDeclarations.TryAllOfType<INamespaceDeclarationNode>(out var referencedNamespaces))
-            return IUnqualifiedNamespaceNameNode.Create(node.Syntax, referencedNamespaces);
-
-
         if (referencedDeclarations.TrySingle() is not null and var referencedDeclaration)
             switch (referencedDeclaration)
             {
+                case INamespaceDeclarationNode referencedNamespace:
+                    return IUnqualifiedNamespaceNameNode.Create(node.Syntax, referencedNamespace.Yield());
                 case ITypeDeclarationNode referencedType:
                     // TODO a way to pass along referenced declarations rather than requiring they be figured out again?
                     return IIdentifierTypeNameNode.Create(node.Syntax);
