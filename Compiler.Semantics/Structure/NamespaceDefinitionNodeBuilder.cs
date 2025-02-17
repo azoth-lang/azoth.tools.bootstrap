@@ -4,7 +4,7 @@ using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using DotNet.Collections.Generic;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
+namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Structure;
 
 internal class NamespaceDefinitionNodeBuilder
 {
