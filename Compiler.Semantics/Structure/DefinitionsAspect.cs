@@ -1,7 +1,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
+using Azoth.Tools.Bootstrap.Compiler.Core.Types;
+using Azoth.Tools.Bootstrap.Compiler.Tokens;
 using Azoth.Tools.Bootstrap.Framework;
+using ExhaustiveMatching;
 using MoreLinq;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Structure;
@@ -28,4 +31,15 @@ internal static partial class DefinitionsAspect
 
     public static partial IFixedList<INamespaceMemberDefinitionNode> NamespaceDefinition_Members(INamespaceDefinitionNode node)
         => node.MemberNamespaces.Concat<INamespaceMemberDefinitionNode>(node.PackageMembers).ToFixedList();
+
+    #region Member Definitions
+    public static partial TypeVariance AssociatedTypeDefinition_Variance(IAssociatedTypeDefinitionNode node)
+        => node.Syntax.Variance switch
+        {
+            null => TypeVariance.Invariant,
+            IInKeywordToken _ => TypeVariance.Contravariant,
+            IOutKeywordToken _ => TypeVariance.Covariant,
+            _ => throw ExhaustiveMatch.Failed(node.Syntax.Variance),
+        };
+    #endregion
 }

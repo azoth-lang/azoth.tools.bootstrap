@@ -20,4 +20,6 @@ internal static partial class DefinitionsAspect
     public static partial IFixedSet<IFacetMemberDefinitionNode> PackageFacet_Definitions(IPackageFacetNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFixedList<INamespaceMemberDefinitionNode> NamespaceDefinition_Members(INamespaceDefinitionNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial TypeVariance AssociatedTypeDefinition_Variance(IAssociatedTypeDefinitionNode node);
 }

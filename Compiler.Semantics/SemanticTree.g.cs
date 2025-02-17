@@ -972,6 +972,7 @@ public partial interface IAssociatedTypeDefinitionNode : IAssociatedMemberDefini
     OrdinaryName? IPackageFacetChildDeclarationNode.Name => Name;
     UnqualifiedName INamedDeclarationNode.Name => Name;
     IdentifierName IAssociatedTypeDeclarationNode.Name => Name;
+    TypeVariance Variance { get; }
     OrdinaryAssociatedTypeConstructor TypeConstructor { get; }
     LexicalScope IDefinitionNode.LexicalScope
         => ContainingLexicalScope;
@@ -7349,6 +7350,7 @@ file class AssociatedTypeDefinitionNode : SemanticNode, IAssociatedTypeDefinitio
                 DefinitionPlainTypesAspect.AssociatedTypeDefinition_TypeConstructor);
     private OrdinaryAssociatedTypeConstructor? typeConstructor;
     private bool typeConstructorCached;
+    public TypeVariance Variance { [DebuggerStepThrough] get; }
 
     public AssociatedTypeDefinitionNode(
         IAssociatedTypeDefinitionSyntax syntax,
@@ -7356,6 +7358,7 @@ file class AssociatedTypeDefinitionNode : SemanticNode, IAssociatedTypeDefinitio
     {
         Syntax = syntax;
         Initializer = Child.Attach(this, initializer);
+        Variance = DefinitionsAspect.AssociatedTypeDefinition_Variance(this);
     }
 }
 

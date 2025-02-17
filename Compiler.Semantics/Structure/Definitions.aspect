@@ -75,6 +75,7 @@
 ↑ FieldDefinition.Name: `IdentifierName` => Syntax.Name;
 ↑ AssociatedFunctionDefinition.Name:`IdentifierName` => Syntax.Name;
 ↑ AssociatedTypeDefinition.Name:`IdentifierName` => Syntax.Name;
+↑ eager AssociatedTypeDefinition.Variance: `TypeVariance`;
 
 // ---------- Capabilities
 ↑ CapabilitySet.CapabilitySet: `CapabilitySet` => Syntax.CapabilitySet;
