@@ -83,3 +83,4 @@
 ↑ FieldDeclaration.BindingType: `IMaybeNonVoidType`;
 ↑ FieldDeclaration.Symbol: `FieldSymbol`?;
 ↑ AssociatedFunctionDeclaration.Symbol: `FunctionSymbol`?;
+↑ AssociatedTypeDeclaration.Symbol: `AssociatedTypeSymbol`;

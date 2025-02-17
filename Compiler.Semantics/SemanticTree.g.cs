@@ -681,7 +681,8 @@ public partial interface ITypeMemberDefinitionNode : IDefinitionNode, ITypeMembe
     typeof(IMethodDefinitionNode),
     typeof(IInitializerDefinitionNode),
     typeof(IFieldDefinitionNode),
-    typeof(IAssociatedFunctionDefinitionNode))]
+    typeof(IAssociatedFunctionDefinitionNode),
+    typeof(IAssociatedTypeDefinitionNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IAlwaysTypeMemberDefinitionNode : ITypeMemberDefinitionNode, IAlwaysTypeMemberDeclarationNode
 {
@@ -695,7 +696,8 @@ public partial interface IAlwaysTypeMemberDefinitionNode : ITypeMemberDefinition
 
 [Closed(
     typeof(ITypeDefinitionNode),
-    typeof(IAssociatedFunctionDefinitionNode))]
+    typeof(IAssociatedFunctionDefinitionNode),
+    typeof(IAssociatedTypeDefinitionNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IAssociatedMemberDefinitionNode : ITypeMemberDefinitionNode, INamedDeclarationNode, IAssociatedMemberDeclarationNode
 {
@@ -953,6 +955,31 @@ public partial interface IAssociatedFunctionDefinitionNode : IFunctionInvocableD
         ITypeNode? @return,
         IBodyNode? body)
         => new AssociatedFunctionDefinitionNode(syntax, parameters, @return, body);
+}
+
+[Closed(typeof(AssociatedTypeDefinitionNode))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
+public partial interface IAssociatedTypeDefinitionNode : IAssociatedMemberDefinitionNode, IAlwaysTypeMemberDefinitionNode, IAssociatedTypeDeclarationNode
+{
+    new IAssociatedTypeDefinitionSyntax Syntax { get; }
+    IMemberDefinitionSyntax? ITypeMemberDefinitionNode.Syntax => Syntax;
+    IDefinitionSyntax? IDefinitionNode.Syntax => Syntax;
+    ISyntax? ISemanticNode.Syntax => Syntax;
+    ITypeNode? Initializer { get; }
+    new IdentifierName Name
+        => Syntax.Name;
+    OrdinaryName IAssociatedMemberDefinitionNode.Name => Name;
+    OrdinaryName? IPackageFacetChildDeclarationNode.Name => Name;
+    UnqualifiedName INamedDeclarationNode.Name => Name;
+    IdentifierName IAssociatedTypeDeclarationNode.Name => Name;
+    OrdinaryAssociatedTypeConstructor TypeConstructor { get; }
+    LexicalScope IDefinitionNode.LexicalScope
+        => ContainingLexicalScope;
+
+    public static IAssociatedTypeDefinitionNode Create(
+        IAssociatedTypeDefinitionSyntax syntax,
+        ITypeNode? initializer)
+        => new AssociatedTypeDefinitionNode(syntax, initializer);
 }
 
 [Closed(typeof(AttributeNode))]
@@ -3968,6 +3995,7 @@ public partial interface IAlwaysTypeMemberDeclarationNode : ITypeMemberDeclarati
     typeof(IGenericParameterDeclarationNode),
     typeof(IInitializerDeclarationNode),
     typeof(IAssociatedFunctionDeclarationNode),
+    typeof(IAssociatedTypeDeclarationNode),
     typeof(IAssociatedMemberSymbolNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IAssociatedMemberDeclarationNode : ITypeMemberDeclarationNode
@@ -4075,6 +4103,18 @@ public partial interface IAssociatedFunctionDeclarationNode : IAssociatedMemberD
     new OrdinaryName Name { get; }
     OrdinaryName? IPackageFacetChildDeclarationNode.Name => Name;
     UnqualifiedName INamedDeclarationNode.Name => Name;
+}
+
+[Closed(
+    typeof(IAssociatedTypeDefinitionNode),
+    typeof(IAssociatedTypeSymbolNode))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
+public partial interface IAssociatedTypeDeclarationNode : IAssociatedMemberDeclarationNode
+{
+    new IdentifierName Name { get; }
+    OrdinaryName? IPackageFacetChildDeclarationNode.Name => Name;
+    new AssociatedTypeSymbol Symbol { get; }
+    Symbol? ISymbolDeclarationNode.Symbol => Symbol;
 }
 
 [Closed(
@@ -4430,7 +4470,8 @@ public partial interface ITypeMemberSymbolNode : ITypeMemberDeclarationNode, ICh
 }
 
 [Closed(
-    typeof(IAssociatedFunctionSymbolNode))]
+    typeof(IAssociatedFunctionSymbolNode),
+    typeof(IAssociatedTypeSymbolNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IAssociatedMemberSymbolNode : IAssociatedMemberDeclarationNode, ITypeMemberSymbolNode
 {
@@ -4579,6 +4620,21 @@ public partial interface IAssociatedFunctionSymbolNode : IAssociatedFunctionDecl
         OrdinaryName name,
         FunctionSymbol symbol)
         => new AssociatedFunctionSymbolNode(name, symbol);
+}
+
+[Closed(typeof(AssociatedTypeSymbolNode))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
+public partial interface IAssociatedTypeSymbolNode : IAssociatedTypeDeclarationNode, IAssociatedMemberSymbolNode
+{
+    new AssociatedTypeSymbol Symbol { get; }
+    AssociatedTypeSymbol IAssociatedTypeDeclarationNode.Symbol => Symbol;
+    Symbol? ISymbolDeclarationNode.Symbol => Symbol;
+    Symbol IChildSymbolNode.Symbol => Symbol;
+
+    public static IAssociatedTypeSymbolNode Create(
+        IdentifierName name,
+        AssociatedTypeSymbol symbol)
+        => new AssociatedTypeSymbolNode(name, symbol);
 }
 
 // TODO switch back to `file` and not `partial` once fully transitioned
@@ -7248,6 +7304,58 @@ file class AssociatedFunctionDefinitionNode : SemanticNode, IAssociatedFunctionD
         if (ReferenceEquals(descendant, Self.Entry))
             return VariableBindingsMap;
         return base.Inherited_VariableBindingsMap(child, descendant, ctx);
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class AssociatedTypeDefinitionNode : SemanticNode, IAssociatedTypeDefinitionNode
+{
+    private IAssociatedTypeDefinitionNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
+
+    public IAssociatedTypeDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
+    public ITypeNode? Initializer { [DebuggerStepThrough] get; }
+    public IOrdinaryTypeDeclarationNode ContainingDeclaration
+        => (IOrdinaryTypeDeclarationNode)Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
+    public IPackageDeclarationNode Package
+        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public LexicalScope ContainingLexicalScope
+        => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
+            : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
+                Inherited_ContainingLexicalScope);
+    private LexicalScope? containingLexicalScope;
+    private bool containingLexicalScopeCached;
+    public IPackageFacetNode Facet
+        => GrammarAttribute.IsCached(in facetCached) ? facet!
+            : this.Inherited(ref facetCached, ref facet,
+                (ctx) => (IPackageFacetNode)Inherited_Facet(ctx));
+    private IPackageFacetNode? facet;
+    private bool facetCached;
+    public AccessModifier AccessModifier
+        => GrammarAttribute.IsCached(in accessModifierCached) ? accessModifier
+            : this.Synthetic(ref accessModifierCached, ref accessModifier, ref syncLock,
+                TypeModifiersAspect.TypeMemberDefinition_AccessModifier);
+    private AccessModifier accessModifier;
+    private bool accessModifierCached;
+    public AssociatedTypeSymbol Symbol
+        => GrammarAttribute.IsCached(in symbolCached) ? symbol!
+            : this.Synthetic(ref symbolCached, ref symbol,
+                SymbolsAspect.AssociatedTypeDefinition_Symbol);
+    private AssociatedTypeSymbol? symbol;
+    private bool symbolCached;
+    public OrdinaryAssociatedTypeConstructor TypeConstructor
+        => GrammarAttribute.IsCached(in typeConstructorCached) ? typeConstructor!
+            : this.Synthetic(ref typeConstructorCached, ref typeConstructor,
+                DefinitionPlainTypesAspect.AssociatedTypeDefinition_TypeConstructor);
+    private OrdinaryAssociatedTypeConstructor? typeConstructor;
+    private bool typeConstructorCached;
+
+    public AssociatedTypeDefinitionNode(
+        IAssociatedTypeDefinitionSyntax syntax,
+        ITypeNode? initializer)
+    {
+        Syntax = syntax;
+        Initializer = Child.Attach(this, initializer);
     }
 }
 
@@ -19276,6 +19384,31 @@ file class AssociatedFunctionSymbolNode : SemanticNode, IAssociatedFunctionSymbo
     public AssociatedFunctionSymbolNode(
         OrdinaryName name,
         FunctionSymbol symbol)
+    {
+        Name = name;
+        Symbol = symbol;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class AssociatedTypeSymbolNode : SemanticNode, IAssociatedTypeSymbolNode
+{
+    private IAssociatedTypeSymbolNode Self { [Inline] get => this; }
+
+    public IdentifierName Name { [DebuggerStepThrough] get; }
+    public AssociatedTypeSymbol Symbol { [DebuggerStepThrough] get; }
+    public ISymbolDeclarationNode ContainingDeclaration
+        => Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
+    public IPackageDeclarationNode Package
+        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public IPackageFacetDeclarationNode Facet
+        => Inherited_Facet(GrammarAttribute.CurrentInheritanceContext());
+    public ISymbolTree SymbolTree()
+        => Inherited_SymbolTree(GrammarAttribute.CurrentInheritanceContext());
+
+    public AssociatedTypeSymbolNode(
+        IdentifierName name,
+        AssociatedTypeSymbol symbol)
     {
         Name = name;
         Symbol = symbol;

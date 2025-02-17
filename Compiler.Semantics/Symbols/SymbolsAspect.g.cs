@@ -31,6 +31,8 @@ internal static partial class SymbolsAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial FunctionSymbol? AssociatedFunctionDefinition_Symbol(IAssociatedFunctionDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial AssociatedTypeSymbol AssociatedTypeDefinition_Symbol(IAssociatedTypeDefinitionNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IPackageSymbols Package_PackageSymbols(IPackageNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial InvocableSymbol? Attribute_ReferencedSymbol(IAttributeNode node);

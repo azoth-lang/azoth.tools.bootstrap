@@ -60,6 +60,11 @@ internal static partial class DefinitionPlainTypesAspect
         => new(node.ContainingDeclaration.TypeConstructor);
     #endregion
 
+    #region Member Definitions
     public static partial IMaybeNonVoidPlainType FieldDefinition_BindingPlainType(IFieldDefinitionNode node)
         => node.TypeNode.NamedPlainType.ToNonVoid();
+
+    public static partial OrdinaryAssociatedTypeConstructor AssociatedTypeDefinition_TypeConstructor(IAssociatedTypeDefinitionNode node)
+        => new(node.ContainingDeclaration.TypeConstructor, node.Name);
+    #endregion
 }

@@ -81,6 +81,9 @@ internal static partial class SymbolsAspect
             return null;
         return new(node.ContainingSymbol, node.Name, type);
     }
+
+    public static partial AssociatedTypeSymbol AssociatedTypeDefinition_Symbol(IAssociatedTypeDefinitionNode node)
+        => new(node.ContainingSymbol, node.TypeConstructor);
     #endregion
 
     #region Attributes

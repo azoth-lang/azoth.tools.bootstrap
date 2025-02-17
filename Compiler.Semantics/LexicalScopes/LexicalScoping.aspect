@@ -54,6 +54,7 @@ type `NamespaceSearchScope` <: `LexicalScope`;
 ↓ FieldDefinition.ContainingLexicalScope: `LexicalScope`; // needed due to conflict between NamedBinding and Definition
 // TODO does this need to make a new lexical scope?
 = FieldDefinition.LexicalScope => ContainingLexicalScope;
+= AssociatedTypeDefinition.LexicalScope => ContainingLexicalScope;
 
 // ---------- Statements
 ↓ Statement.ContainingLexicalScope(): `LexicalScope`;

@@ -48,6 +48,7 @@
 = OrdinaryInitializerDefinition.Symbol;
 = FieldDefinition.Symbol;
 = AssociatedFunctionDefinition.Symbol;
+= AssociatedTypeDefinition.Symbol;
 
 // ---------- Attributes
 ↑ Attribute.ReferencedSymbol: `InvocableSymbol`?;

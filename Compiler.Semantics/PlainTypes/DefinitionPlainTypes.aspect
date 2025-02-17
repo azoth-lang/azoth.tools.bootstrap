@@ -29,8 +29,8 @@
 = MethodDefinition.Body.**.ExpectedReturnPlainType => Self.ReturnPlainType;
 = MethodDefinition.Body.ExpectedPlainType
     => Self.ReturnPlainType;
-
 = MethodDefinition.ReturnPlainType => Return?.NamedPlainType ?? AzothPlainType.Void;
+
 = FieldDefinition.BindingPlainType;
 // TODO it would be good to refactor to not depend on Type
 = OrdinaryMethodDefinition.MethodGroupPlainType => MethodGroupType.PlainType;
@@ -44,3 +44,4 @@
 = FieldDefinition.Initializer.**.ExpectedReturnPlainType => null;
 = AssociatedFunctionDefinition.Body.ExpectedPlainType => Self.ReturnPlainType;
 = AssociatedFunctionDefinition.Body.**.ExpectedReturnPlainType => Self.ReturnPlainType;
+↑ AssociatedTypeDefinition.TypeConstructor: `OrdinaryAssociatedTypeConstructor`;

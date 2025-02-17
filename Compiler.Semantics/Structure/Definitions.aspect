@@ -74,6 +74,7 @@
 ↑ FieldDefinition.IsMutableBinding: `bool` => Syntax.IsMutableBinding;
 ↑ FieldDefinition.Name: `IdentifierName` => Syntax.Name;
 ↑ AssociatedFunctionDefinition.Name:`IdentifierName` => Syntax.Name;
+↑ AssociatedTypeDefinition.Name:`IdentifierName` => Syntax.Name;
 
 // ---------- Capabilities
 ↑ CapabilitySet.CapabilitySet: `CapabilitySet` => Syntax.CapabilitySet;

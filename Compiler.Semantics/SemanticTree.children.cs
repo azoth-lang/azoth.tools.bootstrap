@@ -37,6 +37,12 @@ public static class ISemanticNodeExtensions
                 yield break;
             case IAssociatedFunctionSymbolNode n:
                 yield break;
+            case IAssociatedTypeDefinitionNode n:
+                if (n.Initializer is not null)
+                    yield return n.Initializer;
+                yield break;
+            case IAssociatedTypeSymbolNode n:
+                yield break;
             case IAsyncBlockExpressionNode n:
                 yield return n.Block;
                 yield break;

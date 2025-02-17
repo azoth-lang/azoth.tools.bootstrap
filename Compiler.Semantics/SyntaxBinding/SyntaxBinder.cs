@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -137,7 +136,7 @@ internal static class SyntaxBinder
             IInitializerDefinitionSyntax syn => InitializerDefinition(syn),
             IFieldDefinitionSyntax syn => FieldDefinition(syn),
             IAssociatedFunctionDefinitionSyntax syn => AssociatedFunctionDefinition(syn),
-            IAssociatedTypeDefinitionSyntax _ => throw new NotImplementedException(),
+            IAssociatedTypeDefinitionSyntax syn => AssociatedTypeDefinition(syn),
             _ => throw ExhaustiveMatch.Failed(syntax)
         };
 
@@ -172,6 +171,9 @@ internal static class SyntaxBinder
     private static IAssociatedFunctionDefinitionNode AssociatedFunctionDefinition(IAssociatedFunctionDefinitionSyntax syntax)
         => IAssociatedFunctionDefinitionNode.Create(syntax, NamedParameters(syntax.Parameters),
             Type(syntax.Return?.Type), Body(syntax.Body));
+
+    private static IAssociatedTypeDefinitionNode AssociatedTypeDefinition(IAssociatedTypeDefinitionSyntax syntax)
+        => IAssociatedTypeDefinitionNode.Create(syntax, Type(syntax.Initializer));
     #endregion
 
     #region Attributes
