@@ -152,3 +152,5 @@
 = AssociatedFunctionSymbol.ParameterTypes => Symbol.Type.Parameters;
 = AssociatedFunctionSymbol.ReturnPlainType => Symbol.Type.Return.PlainType;
 = AssociatedFunctionSymbol.ReturnType => Symbol.Type.Return;
+= AssociatedTypeSymbol.TypeConstructor => Symbol.TypeConstructor;
+= AssociatedTypeSymbol.Members => [];

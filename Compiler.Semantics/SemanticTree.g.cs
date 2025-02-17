@@ -972,7 +972,8 @@ public partial interface IAssociatedTypeDefinitionNode : IAssociatedMemberDefini
     IdentifierName IAssociatedTypeDeclarationNode.Name => Name;
     TypeVariance Variance { get; }
     OrdinaryTypeConstructor TypeConstructorContext { get; }
-    OrdinaryAssociatedTypeConstructor TypeConstructor { get; }
+    new OrdinaryAssociatedTypeConstructor TypeConstructor { get; }
+    ITypeConstructor ITypeDeclarationNode.TypeConstructor => TypeConstructor;
     LexicalScope IDefinitionNode.LexicalScope
         => ContainingLexicalScope;
 
@@ -3831,6 +3832,7 @@ public partial interface IFunctionDeclarationNode : INamespaceMemberDeclarationN
     typeof(INonVariableTypeDeclarationNode),
     typeof(IGenericParameterDeclarationNode),
     typeof(IImplicitSelfDeclarationNode),
+    typeof(IAssociatedTypeDeclarationNode),
     typeof(ITypeSymbolNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface ITypeDeclarationNode : INamedDeclarationNode, ISymbolDeclarationNode
@@ -4123,12 +4125,24 @@ public partial interface IAssociatedFunctionDeclarationNode : IAssociatedMemberD
     typeof(IAssociatedTypeDefinitionNode),
     typeof(IAssociatedTypeSymbolNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IAssociatedTypeDeclarationNode : IAssociatedMemberDeclarationNode
+public partial interface IAssociatedTypeDeclarationNode : IAssociatedMemberDeclarationNode, ITypeDeclarationNode
 {
     new IdentifierName Name { get; }
     OrdinaryName? IPackageFacetChildDeclarationNode.Name => Name;
+    UnqualifiedName INamedDeclarationNode.Name => Name;
     new AssociatedTypeSymbol Symbol { get; }
     Symbol? ISymbolDeclarationNode.Symbol => Symbol;
+    TypeSymbol ITypeDeclarationNode.Symbol => Symbol;
+    IEnumerable<IInstanceMemberDeclarationNode> ITypeDeclarationNode.InclusiveInstanceMembersNamed(OrdinaryName name)
+        => [];
+    IEnumerable<IAssociatedMemberDeclarationNode> ITypeDeclarationNode.AssociatedMembersNamed(OrdinaryName name)
+        => [];
+    IFixedSet<BareType> ITypeDeclarationNode.Supertypes
+        => [];
+    IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members
+        => [];
+    IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.InclusiveMembers
+        => [];
 }
 
 [Closed(
@@ -4481,15 +4495,15 @@ public partial interface ISelfSymbolNode : IImplicitSelfDeclarationNode
     typeof(IAssociatedMemberSymbolNode),
     typeof(IMethodSymbolNode),
     typeof(IInitializerSymbolNode),
-    typeof(IFieldSymbolNode))]
+    typeof(IFieldSymbolNode),
+    typeof(IAssociatedTypeSymbolNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface ITypeMemberSymbolNode : ITypeMemberDeclarationNode, IChildSymbolNode
 {
 }
 
 [Closed(
-    typeof(IAssociatedFunctionSymbolNode),
-    typeof(IAssociatedTypeSymbolNode))]
+    typeof(IAssociatedFunctionSymbolNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IAssociatedMemberSymbolNode : IAssociatedMemberDeclarationNode, ITypeMemberSymbolNode
 {
@@ -4642,12 +4656,17 @@ public partial interface IAssociatedFunctionSymbolNode : IAssociatedFunctionDecl
 
 [Closed(typeof(AssociatedTypeSymbolNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IAssociatedTypeSymbolNode : IAssociatedTypeDeclarationNode, IAssociatedMemberSymbolNode
+public partial interface IAssociatedTypeSymbolNode : IAssociatedTypeDeclarationNode, ITypeMemberSymbolNode
 {
     new AssociatedTypeSymbol Symbol { get; }
     AssociatedTypeSymbol IAssociatedTypeDeclarationNode.Symbol => Symbol;
     Symbol? ISymbolDeclarationNode.Symbol => Symbol;
+    TypeSymbol ITypeDeclarationNode.Symbol => Symbol;
     Symbol IChildSymbolNode.Symbol => Symbol;
+    ITypeConstructor ITypeDeclarationNode.TypeConstructor
+        => Symbol.TypeConstructor;
+    IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members
+        => [];
 
     public static IAssociatedTypeSymbolNode Create(
         IdentifierName name,
@@ -7482,6 +7501,11 @@ file class AssociatedTypeDefinitionNode : SemanticNode, IAssociatedTypeDefinitio
         Syntax = syntax;
         Initializer = Child.Attach(this, initializer);
         Variance = DefinitionsAspect.AssociatedTypeDefinition_Variance(this);
+    }
+
+    internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return this;
     }
 }
 
@@ -19382,6 +19406,11 @@ file class AssociatedTypeSymbolNode : SemanticNode, IAssociatedTypeSymbolNode
     {
         Name = name;
         Symbol = symbol;
+    }
+
+    internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return this;
     }
 }
 

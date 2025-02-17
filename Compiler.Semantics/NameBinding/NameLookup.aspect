@@ -48,3 +48,9 @@
     => ContainingDeclaration.InclusiveInstanceMembersNamed(name);
 = ImplicitSelfDeclaration.AssociatedMembersNamed(OrdinaryName name)
     => ContainingDeclaration.AssociatedMembersNamed(name);
+
+// ---------- Member Declarations
+// TODO should look up members based on constraints
+= AssociatedTypeDeclaration.InclusiveInstanceMembersNamed(OrdinaryName name) => [];
+// TODO should look up members based on constraints
+= AssociatedTypeDeclaration.AssociatedMembersNamed(OrdinaryName name) => [];

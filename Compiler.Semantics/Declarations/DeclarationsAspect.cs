@@ -16,7 +16,8 @@ internal static partial class DeclarationsAspect
     #endregion
 
     #region Type Declarations
+    // TODO move to TypeConstructorsAspect and find an implementation without ContainingDeclaration?
     public static partial ITypeConstructor GenericParameterDeclaration_TypeConstructor(IGenericParameterDeclarationNode node)
-        => node.ContainingDeclaration.TypeConstructor.ParameterTypeFactories.Single(p => p.Parameter.Name.Equals(node.Name));
+        => node.ContainingDeclaration.TypeConstructor.ParameterTypeFactories.Single(p => p.Parameter.Name == node.Name);
     #endregion
 }

@@ -85,3 +85,6 @@
 ↑ FieldDeclaration.Symbol: `FieldSymbol`?;
 ↑ AssociatedFunctionDeclaration.Symbol: `FunctionSymbol`?;
 ↑ AssociatedTypeDeclaration.Symbol: `AssociatedTypeSymbol`;
+= AssociatedTypeDeclaration.Supertypes => [];
+= AssociatedTypeDeclaration.Members => [];
+= AssociatedTypeDeclaration.InclusiveMembers => [];

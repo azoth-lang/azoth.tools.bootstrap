@@ -488,7 +488,7 @@ FieldDeclaration <: NamedDeclaration, InstanceMemberDeclaration, NamedBindingDec
     = Name:`IdentifierName`;
 AssociatedFunctionDeclaration <: AssociatedMemberDeclaration, FunctionInvocableDeclaration, AlwaysTypeMemberDeclaration
     = Name:`OrdinaryName`;
-AssociatedTypeDeclaration <: AssociatedMemberDeclaration
+AssociatedTypeDeclaration <: AssociatedMemberDeclaration, TypeDeclaration
     = Name:`IdentifierName`;
 
 // -------------------------------------------------------------------------------------------------
@@ -545,5 +545,5 @@ InitializerSymbol <: InitializerDeclaration, TypeMemberSymbol = Symbol:`Initiali
 FieldSymbol <: FieldDeclaration, TypeMemberSymbol = Symbol:`FieldSymbol`;
 AssociatedFunctionSymbol <: AssociatedFunctionDeclaration, AssociatedMemberSymbol
     = Symbol:`FunctionSymbol`;
-AssociatedTypeSymbol <: AssociatedTypeDeclaration, AssociatedMemberSymbol
+AssociatedTypeSymbol <: AssociatedTypeDeclaration, TypeMemberSymbol
     = Symbol:`AssociatedTypeSymbol`;
