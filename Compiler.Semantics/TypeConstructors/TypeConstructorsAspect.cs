@@ -14,8 +14,7 @@ internal static partial class TypeConstructorsAspect
 
     #region Namespace Definitions
     public static partial NamespaceContext NamespaceDefinition_TypeConstructorContext(INamespaceDefinitionNode node)
-        // TODO don't use symbols to get this
-        => new NamespaceContext(node.Package.Name, node.Symbol.NamespaceName);
+        => new NamespaceContext(node.Package.Name, node.NamespaceName);
     #endregion
 
     #region Type Definitions
