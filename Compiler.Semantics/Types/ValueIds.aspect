@@ -21,16 +21,6 @@ struct `ValueId`;
 = ExecutableDefinition.ValueIdScope;
 = ExecutableDefinition.*.**.ValueIdScope => ValueIdScope;
 
-// ---------- Type Definitions
-/// While type definitions don't truly have a `ValueIdScope`, one is needed for the type names
-↑ eager TypeDefinition.ValueIdScope: `ValueIdScope`;
-= TypeDefinition.ValueIdScope;
-= TypeDefinition.Attributes[*].**.ValueIdScope => ValueIdScope;
-= TypeDefinition.SupertypeNames[*].**.ValueIdScope => ValueIdScope;
-= ClassDefinition.BaseTypeName.**.ValueIdScope => ValueIdScope;
-// Do not inherit the value ValueIdScope to members to avoid a situation where the scope is
-// accidentally used when it shouldn't be.
-
 // ---------- Parameters
 // TODO inheriting this doesn't need to cause cycle with rewritten parent
 ↓ computed Parameter.ValueIdScope: `ValueIdScope`;
@@ -63,3 +53,7 @@ struct `ValueId`;
 // ---------- Control Flow Expressions
 ↑ ForeachExpression.ImplicitRecoveryValueId: `ValueId`;
 ↑ ForeachExpression.IteratorValueId: `ValueId`;
+
+// ---------- Type Names
+/// Type names are not involved with values and don't have ValueIds.
+= TypeName.ValueId => ValueId.None;

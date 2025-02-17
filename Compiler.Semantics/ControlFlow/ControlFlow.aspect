@@ -16,33 +16,18 @@
     => ControlFlowSet.CreateNormal(Exit);
 = FunctionInvocableDefinition.Return.ControlFlowFollowing() => ControlFlowSet.Empty;
 
-// ---------- Type Definitions
-= TypeDefinition.SupertypeNames[*].ControlFlowFollowing() => ControlFlowSet.Empty;
-= ClassDefinition.BaseTypeName.ControlFlowFollowing() => ControlFlowSet.Empty;
-
 // ---------- Member Definitions
 = MethodDefinition.Return.ControlFlowFollowing() => ControlFlowSet.Empty;
-= FieldDefinition.TypeNode.ControlFlowFollowing() => ControlFlowSet.Empty;
 = FieldDefinition.Entry.ControlFlowFollowing()
     => ControlFlowSet.CreateNormal(Initializer ?? (IControlFlowNode)Exit);
 = FieldDefinition.Initializer.ControlFlowFollowing()
     => ControlFlowSet.CreateNormal(Exit);
-
-// ---------- Attributes
-= Attribute.TypeName.ControlFlowFollowing() => ControlFlowSet.Empty;
-
-// ---------- Parameters
-= NamedParameter.TypeNode.ControlFlowFollowing() => ControlFlowSet.Empty;
 
 // ---------- Function Parts
 // TODO it would be better to have a way to specify that the last statement inherits and not emit any code
 // TODO supporting index from end (e.g. [^1]) would allow this to be split into two rules
 = BlockBody.Statements[index].**.ControlFlowFollowing()
     => index < Statements.Count - 1 ? ControlFlowSet.CreateNormal(Statements[index + 1]) : base.Inherited_ControlFlowFollowing(child, descendant, ctx);
-
-// ---------- Types
-= Type.*.ControlFlowFollowing() => ControlFlowSet.Empty;
-= ParameterType.Referent.ControlFlowFollowing() => ControlFlowSet.Empty;
 
 // ---------- Control Flow
 ↓ ControlFlow.ControlFlowEntry(): Entry;
@@ -192,6 +177,11 @@
         ? ControlFlowSet.CreateNormal(Arguments[index + 1])
         : base.Inherited_ControlFlowFollowing(child, descendant, ctx);
 = NonInvocableInvocationExpression.ControlFlowNext;
+
+// ---------- Type Names
+/// Type names are not part of control flow.
+= TypeName.ControlFlowNext => ControlFlowSet.Empty;
+↑ TypeName.ControlFlowFollowing(): `ControlFlowSet` => ControlFlowSet.Empty;
 
 // ---------- Capability Expressions
 = RecoveryExpression.ControlFlowNext;

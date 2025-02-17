@@ -10,11 +10,6 @@ internal static partial class ValueIdsAspect
         => new ValueIdScope();
     #endregion
 
-    #region Type Definitions
-    public static partial ValueIdScope TypeDefinition_ValueIdScope(ITypeDefinitionNode node)
-        => new ValueIdScope();
-    #endregion
-
     #region Member Definitions
     public static partial ValueId FieldDefinition_BindingValueId(IFieldDefinitionNode node)
         => throw new NotImplementedException();

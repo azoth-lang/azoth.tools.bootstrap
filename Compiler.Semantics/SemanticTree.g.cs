@@ -517,7 +517,6 @@ public partial interface ITypeDefinitionNode : ICodeNode, IFacetMemberDefinition
     LexicalScope SupertypesLexicalScope { get; }
     IEnumerable<ITypeNameNode> AllSupertypeNames
         => SupertypeNames;
-    ValueIdScope ValueIdScope { get; }
     bool IsConst
         => Syntax.ConstModifier is not null;
     new OrdinaryName Name
@@ -3261,8 +3260,15 @@ public partial interface ITypeNameNode : ITypeNode, INameNode
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     new LexicalScope ContainingLexicalScope { get; }
     LexicalScope IAmbiguousExpressionNode.ContainingLexicalScope() => ContainingLexicalScope;
+    new ControlFlowSet ControlFlowFollowing()
+        => ControlFlowSet.Empty;
+    ControlFlowSet IControlFlowNode.ControlFlowFollowing() => ControlFlowFollowing();
     ITypeDeclarationNode? ReferencedDeclaration { get; }
     BareType? NamedBareType { get; }
+    ValueId IExpressionNode.ValueId
+        => ValueId.None;
+    ControlFlowSet IControlFlowNode.ControlFlowNext
+        => ControlFlowSet.Empty;
 }
 
 [Closed(
@@ -5629,7 +5635,6 @@ file class ClassDefinitionNode : SemanticNode, IClassDefinitionNode
                 TypeConstructorsAspect.ClassDefinition_TypeConstructor);
     private OrdinaryTypeConstructor? typeConstructor;
     private bool typeConstructorCached;
-    public ValueIdScope ValueIdScope { [DebuggerStepThrough] get; }
 
     public ClassDefinitionNode(
         IClassDefinitionSyntax syntax,
@@ -5645,7 +5650,6 @@ file class ClassDefinitionNode : SemanticNode, IClassDefinitionNode
         BaseTypeName = Child.Attach(this, baseTypeName);
         SupertypeNames = ChildList.Attach(this, supertypeNames);
         SourceMembers = ChildList.Attach(this, sourceMembers);
-        ValueIdScope = ValueIdsAspect.TypeDefinition_ValueIdScope(this);
     }
 
     internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -5679,15 +5683,6 @@ file class ClassDefinitionNode : SemanticNode, IClassDefinitionNode
         return this;
     }
 
-    internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ReferenceEquals(descendant, Self.BaseTypeName))
-            return ControlFlowSet.Empty;
-        if (ContainsNode(Self.SupertypeNames, descendant))
-            return ControlFlowSet.Empty;
-        return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
-    }
-
     internal override bool Inherited_IsAttributeType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         return false;
@@ -5698,17 +5693,6 @@ file class ClassDefinitionNode : SemanticNode, IClassDefinitionNode
         if (ReferenceEquals(child, descendant))
             return Is.OfType<OrdinaryTypeConstructor>(TypeConstructor);
         return base.Inherited_TypeConstructorContext(child, descendant, ctx);
-    }
-
-    internal override ValueIdScope Inherited_ValueIdScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ReferenceEquals(child, Self.BaseTypeName))
-            return ValueIdScope;
-        if (ContainsNode(Self.Attributes, child))
-            return ValueIdScope;
-        if (ContainsNode(Self.SupertypeNames, child))
-            return ValueIdScope;
-        return base.Inherited_ValueIdScope(child, descendant, ctx);
     }
 
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
@@ -5832,7 +5816,6 @@ file class StructDefinitionNode : SemanticNode, IStructDefinitionNode
                 TypeConstructorsAspect.StructDefinition_TypeConstructor);
     private OrdinaryTypeConstructor? typeConstructor;
     private bool typeConstructorCached;
-    public ValueIdScope ValueIdScope { [DebuggerStepThrough] get; }
 
     public StructDefinitionNode(
         IStructDefinitionSyntax syntax,
@@ -5846,7 +5829,6 @@ file class StructDefinitionNode : SemanticNode, IStructDefinitionNode
         GenericParameters = ChildList.Attach(this, genericParameters);
         SupertypeNames = ChildList.Attach(this, supertypeNames);
         SourceMembers = ChildList.Attach(this, sourceMembers);
-        ValueIdScope = ValueIdsAspect.TypeDefinition_ValueIdScope(this);
     }
 
     internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -5880,13 +5862,6 @@ file class StructDefinitionNode : SemanticNode, IStructDefinitionNode
         return this;
     }
 
-    internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ContainsNode(Self.SupertypeNames, descendant))
-            return ControlFlowSet.Empty;
-        return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
-    }
-
     internal override bool Inherited_IsAttributeType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         return false;
@@ -5897,15 +5872,6 @@ file class StructDefinitionNode : SemanticNode, IStructDefinitionNode
         if (ReferenceEquals(child, descendant))
             return Is.OfType<OrdinaryTypeConstructor>(TypeConstructor);
         return base.Inherited_TypeConstructorContext(child, descendant, ctx);
-    }
-
-    internal override ValueIdScope Inherited_ValueIdScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ContainsNode(Self.Attributes, child))
-            return ValueIdScope;
-        if (ContainsNode(Self.SupertypeNames, child))
-            return ValueIdScope;
-        return base.Inherited_ValueIdScope(child, descendant, ctx);
     }
 
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
@@ -6016,7 +5982,6 @@ file class TraitDefinitionNode : SemanticNode, ITraitDefinitionNode
                 TypeConstructorsAspect.TraitDefinition_TypeConstructor);
     private OrdinaryTypeConstructor? typeConstructor;
     private bool typeConstructorCached;
-    public ValueIdScope ValueIdScope { [DebuggerStepThrough] get; }
 
     public TraitDefinitionNode(
         ITraitDefinitionSyntax syntax,
@@ -6030,7 +5995,6 @@ file class TraitDefinitionNode : SemanticNode, ITraitDefinitionNode
         GenericParameters = ChildList.Attach(this, genericParameters);
         SupertypeNames = ChildList.Attach(this, supertypeNames);
         Members = ChildSet.Attach(this, members);
-        ValueIdScope = ValueIdsAspect.TypeDefinition_ValueIdScope(this);
     }
 
     internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -6064,13 +6028,6 @@ file class TraitDefinitionNode : SemanticNode, ITraitDefinitionNode
         return this;
     }
 
-    internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ContainsNode(Self.SupertypeNames, descendant))
-            return ControlFlowSet.Empty;
-        return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
-    }
-
     internal override bool Inherited_IsAttributeType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         return false;
@@ -6081,15 +6038,6 @@ file class TraitDefinitionNode : SemanticNode, ITraitDefinitionNode
         if (ReferenceEquals(child, descendant))
             return Is.OfType<OrdinaryTypeConstructor>(TypeConstructor);
         return base.Inherited_TypeConstructorContext(child, descendant, ctx);
-    }
-
-    internal override ValueIdScope Inherited_ValueIdScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ContainsNode(Self.Attributes, child))
-            return ValueIdScope;
-        if (ContainsNode(Self.SupertypeNames, child))
-            return ValueIdScope;
-        return base.Inherited_ValueIdScope(child, descendant, ctx);
     }
 
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
@@ -7165,8 +7113,6 @@ file class FieldDefinitionNode : SemanticNode, IFieldDefinitionNode
 
     internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
-        if (ReferenceEquals(descendant, Self.TypeNode))
-            return ControlFlowSet.Empty;
         if (ReferenceEquals(descendant, Self.Entry))
             return ControlFlowSet.CreateNormal(Initializer ?? (IControlFlowNode)Exit);
         if (ReferenceEquals(descendant, Self.CurrentInitializer))
@@ -7469,13 +7415,6 @@ file class AttributeNode : SemanticNode, IAttributeNode
         TypeName = Child.Attach(this, typeName);
     }
 
-    internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ReferenceEquals(descendant, Self.TypeName))
-            return ControlFlowSet.Empty;
-        return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
-    }
-
     internal override bool Inherited_IsAttributeType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.TypeName))
@@ -7590,13 +7529,6 @@ file class NamedParameterNode : SemanticNode, INamedParameterNode
     {
         Syntax = syntax;
         TypeNode = Child.Attach(this, typeNode);
-    }
-
-    internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ReferenceEquals(descendant, Self.TypeNode))
-            return ControlFlowSet.Empty;
-        return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
     }
 
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
@@ -7990,13 +7922,6 @@ file class OptionalTypeNode : SemanticNode, IOptionalTypeNode
         Syntax = syntax;
         Referent = Child.Attach(this, referent);
     }
-
-    internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ReferenceEquals(child, descendant))
-            return ControlFlowSet.Empty;
-        return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
-    }
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -8032,13 +7957,6 @@ file class CapabilityTypeNode : SemanticNode, ICapabilityTypeNode
         Syntax = syntax;
         Capability = Child.Attach(this, capability);
         Referent = Child.Attach(this, referent);
-    }
-
-    internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ReferenceEquals(child, descendant))
-            return ControlFlowSet.Empty;
-        return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
     }
 
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
@@ -8088,13 +8006,6 @@ file class CapabilitySetTypeNode : SemanticNode, ICapabilitySetTypeNode
         Referent = Child.Attach(this, referent);
     }
 
-    internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ReferenceEquals(child, descendant))
-            return ControlFlowSet.Empty;
-        return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
-    }
-
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -8141,13 +8052,6 @@ file class FunctionTypeNode : SemanticNode, IFunctionTypeNode
         Parameters = ChildList.Attach(this, parameters);
         Return = Child.Attach(this, @return);
     }
-
-    internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ReferenceEquals(child, descendant))
-            return ControlFlowSet.Empty;
-        return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
-    }
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -8174,13 +8078,6 @@ file class ParameterTypeNode : SemanticNode, IParameterTypeNode
     {
         Syntax = syntax;
         Referent = Child.Attach(this, referent);
-    }
-
-    internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ReferenceEquals(descendant, Self.Referent))
-            return ControlFlowSet.Empty;
-        return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
     }
 }
 
@@ -8217,13 +8114,6 @@ file class CapabilityViewpointTypeNode : SemanticNode, ICapabilityViewpointTypeN
         Syntax = syntax;
         Capability = Child.Attach(this, capability);
         Referent = Child.Attach(this, referent);
-    }
-
-    internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ReferenceEquals(child, descendant))
-            return ControlFlowSet.Empty;
-        return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
     }
 
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
@@ -8276,13 +8166,6 @@ file class SelfViewpointTypeNode : SemanticNode, ISelfViewpointTypeNode
         Referent = Child.Attach(this, referent);
     }
 
-    internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ReferenceEquals(child, descendant))
-            return ControlFlowSet.Empty;
-        return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
-    }
-
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -8325,13 +8208,6 @@ file class RefTypeNode : SemanticNode, IRefTypeNode
     {
         Syntax = syntax;
         Referent = Child.Attach(this, referent);
-    }
-
-    internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ReferenceEquals(child, descendant))
-            return ControlFlowSet.Empty;
-        return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
     }
 }
 
@@ -16885,7 +16761,6 @@ file class UnresolvedTypeQualifiedNameNode : SemanticNode, IUnresolvedTypeQualif
 file class BuiltInTypeNameNode : SemanticNode, IBuiltInTypeNameNode
 {
     private IBuiltInTypeNameNode Self { [Inline] get => this; }
-    private AttributeLock syncLock;
 
     public IBuiltInTypeNameSyntax Syntax { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
@@ -16901,8 +16776,6 @@ file class BuiltInTypeNameNode : SemanticNode, IBuiltInTypeNameNode
     private ControlFlowSet? controlFlowPrevious;
     private bool controlFlowPreviousCached;
     private IFixedSet<SemanticNode>? controlFlowPreviousContributors;
-    public ControlFlowSet ControlFlowFollowing()
-        => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
     public ValueIdScope ValueIdScope
         => Inherited_ValueIdScope(GrammarAttribute.CurrentInheritanceContext());
     public IFlowState FlowStateBefore()
@@ -16913,12 +16786,6 @@ file class BuiltInTypeNameNode : SemanticNode, IBuiltInTypeNameNode
                 Inherited_ContainingLexicalScope);
     private LexicalScope? containingLexicalScope;
     private bool containingLexicalScopeCached;
-    public ControlFlowSet ControlFlowNext
-        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
-            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
-                ControlFlowAspect.Expression_ControlFlowNext);
-    private ControlFlowSet? controlFlowNext;
-    private bool controlFlowNextCached;
     public IFlowState FlowStateAfter
         => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
             : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
@@ -16949,23 +16816,10 @@ file class BuiltInTypeNameNode : SemanticNode, IBuiltInTypeNameNode
                 BindingNamesAspect.BuiltInTypeName_ReferencedDeclaration);
     private ITypeDeclarationNode? referencedDeclaration;
     private bool referencedDeclarationCached;
-    public ValueId ValueId
-        => GrammarAttribute.IsCached(in valueIdCached) ? valueId
-            : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
-                ValueIdsAspect.Expression_ValueId);
-    private ValueId valueId;
-    private bool valueIdCached;
 
     public BuiltInTypeNameNode(IBuiltInTypeNameSyntax syntax)
     {
         Syntax = syntax;
-    }
-
-    internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ReferenceEquals(child, descendant))
-            return ControlFlowSet.Empty;
-        return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
     }
 
     internal override IMaybePlainType? Inherited_ExpectedPlainType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -17029,8 +16883,6 @@ file class IdentifierTypeNameNode : SemanticNode, IIdentifierTypeNameNode
     private ControlFlowSet? controlFlowPrevious;
     private bool controlFlowPreviousCached;
     private IFixedSet<SemanticNode>? controlFlowPreviousContributors;
-    public ControlFlowSet ControlFlowFollowing()
-        => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
     public ValueIdScope ValueIdScope
         => Inherited_ValueIdScope(GrammarAttribute.CurrentInheritanceContext());
     public IFlowState FlowStateBefore()
@@ -17047,12 +16899,6 @@ file class IdentifierTypeNameNode : SemanticNode, IIdentifierTypeNameNode
                 Inherited_IsAttributeType);
     private bool isAttributeType;
     private bool isAttributeTypeCached;
-    public ControlFlowSet ControlFlowNext
-        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
-            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
-                ControlFlowAspect.Expression_ControlFlowNext);
-    private ControlFlowSet? controlFlowNext;
-    private bool controlFlowNextCached;
     public IFlowState FlowStateAfter
         => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
             : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
@@ -17083,23 +16929,10 @@ file class IdentifierTypeNameNode : SemanticNode, IIdentifierTypeNameNode
                 BindingNamesAspect.OrdinaryTypeName_ReferencedDeclaration);
     private ITypeDeclarationNode? referencedDeclaration;
     private bool referencedDeclarationCached;
-    public ValueId ValueId
-        => GrammarAttribute.IsCached(in valueIdCached) ? valueId
-            : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
-                ValueIdsAspect.Expression_ValueId);
-    private ValueId valueId;
-    private bool valueIdCached;
 
     public IdentifierTypeNameNode(IIdentifierNameSyntax syntax)
     {
         Syntax = syntax;
-    }
-
-    internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ReferenceEquals(child, descendant))
-            return ControlFlowSet.Empty;
-        return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
     }
 
     internal override IMaybePlainType? Inherited_ExpectedPlainType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -17175,8 +17008,6 @@ file class GenericTypeNameNode : SemanticNode, IGenericTypeNameNode
     private ControlFlowSet? controlFlowPrevious;
     private bool controlFlowPreviousCached;
     private IFixedSet<SemanticNode>? controlFlowPreviousContributors;
-    public ControlFlowSet ControlFlowFollowing()
-        => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
     public ValueIdScope ValueIdScope
         => Inherited_ValueIdScope(GrammarAttribute.CurrentInheritanceContext());
     public IFlowState FlowStateBefore()
@@ -17193,12 +17024,6 @@ file class GenericTypeNameNode : SemanticNode, IGenericTypeNameNode
                 Inherited_IsAttributeType);
     private bool isAttributeType;
     private bool isAttributeTypeCached;
-    public ControlFlowSet ControlFlowNext
-        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
-            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
-                ControlFlowAspect.Expression_ControlFlowNext);
-    private ControlFlowSet? controlFlowNext;
-    private bool controlFlowNextCached;
     public IFlowState FlowStateAfter
         => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
             : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
@@ -17229,12 +17054,6 @@ file class GenericTypeNameNode : SemanticNode, IGenericTypeNameNode
                 BindingNamesAspect.OrdinaryTypeName_ReferencedDeclaration);
     private ITypeDeclarationNode? referencedDeclaration;
     private bool referencedDeclarationCached;
-    public ValueId ValueId
-        => GrammarAttribute.IsCached(in valueIdCached) ? valueId
-            : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
-                ValueIdsAspect.Expression_ValueId);
-    private ValueId valueId;
-    private bool valueIdCached;
 
     public GenericTypeNameNode(
         IGenericNameSyntax syntax,
@@ -17242,13 +17061,6 @@ file class GenericTypeNameNode : SemanticNode, IGenericTypeNameNode
     {
         Syntax = syntax;
         GenericArguments = ChildList.Attach(this, genericArguments);
-    }
-
-    internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ReferenceEquals(child, descendant))
-            return ControlFlowSet.Empty;
-        return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
     }
 
     internal override IMaybePlainType? Inherited_ExpectedPlainType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -17307,7 +17119,6 @@ file class GenericTypeNameNode : SemanticNode, IGenericTypeNameNode
 file class QualifiedTypeNameNode : SemanticNode, IQualifiedTypeNameNode
 {
     private IQualifiedTypeNameNode Self { [Inline] get => this; }
-    private AttributeLock syncLock;
 
     public IQualifiedNameSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<INameNode> context;
@@ -17331,8 +17142,6 @@ file class QualifiedTypeNameNode : SemanticNode, IQualifiedTypeNameNode
     private ControlFlowSet? controlFlowPrevious;
     private bool controlFlowPreviousCached;
     private IFixedSet<SemanticNode>? controlFlowPreviousContributors;
-    public ControlFlowSet ControlFlowFollowing()
-        => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
     public ValueIdScope ValueIdScope
         => Inherited_ValueIdScope(GrammarAttribute.CurrentInheritanceContext());
     public IFlowState FlowStateBefore()
@@ -17343,12 +17152,6 @@ file class QualifiedTypeNameNode : SemanticNode, IQualifiedTypeNameNode
                 Inherited_ContainingLexicalScope);
     private LexicalScope? containingLexicalScope;
     private bool containingLexicalScopeCached;
-    public ControlFlowSet ControlFlowNext
-        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
-            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
-                ControlFlowAspect.Expression_ControlFlowNext);
-    private ControlFlowSet? controlFlowNext;
-    private bool controlFlowNextCached;
     public IFlowState FlowStateAfter
         => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
             : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
@@ -17367,12 +17170,6 @@ file class QualifiedTypeNameNode : SemanticNode, IQualifiedTypeNameNode
                 BindingNamesAspect.QualifiedTypeName_ReferencedDeclaration);
     private ITypeDeclarationNode? referencedDeclaration;
     private bool referencedDeclarationCached;
-    public ValueId ValueId
-        => GrammarAttribute.IsCached(in valueIdCached) ? valueId
-            : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
-                ValueIdsAspect.Expression_ValueId);
-    private ValueId valueId;
-    private bool valueIdCached;
 
     public QualifiedTypeNameNode(
         IQualifiedNameSyntax syntax,
@@ -17382,13 +17179,6 @@ file class QualifiedTypeNameNode : SemanticNode, IQualifiedTypeNameNode
         Syntax = syntax;
         this.context = Child.Create(this, context);
         GenericArguments = ChildList.Attach(this, genericArguments);
-    }
-
-    internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ReferenceEquals(child, descendant))
-            return ControlFlowSet.Empty;
-        return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
     }
 
     internal override IMaybePlainType? Inherited_ExpectedPlainType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)

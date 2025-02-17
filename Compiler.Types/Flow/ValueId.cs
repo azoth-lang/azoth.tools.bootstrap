@@ -7,7 +7,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Flow;
 [StructLayout(LayoutKind.Auto)]
 public readonly record struct ValueId
 {
-    public ValueIdScope Scope { get; }
+    public static ValueId None { get; } = default;
+
+    public ValueIdScope? Scope { get; }
     public ulong Value { get; }
 
     internal ValueId(ValueIdScope Scope, ulong Value)
