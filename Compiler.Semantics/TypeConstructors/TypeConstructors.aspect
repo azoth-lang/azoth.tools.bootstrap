@@ -1,0 +1,15 @@
+◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.TypeConstructors;
+◊name TypeConstructorsAspect;
+◊using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
+
+// ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
+
+// ---------- Type Definitions
+↑ TypeDefinition.TypeConstructor: `OrdinaryTypeConstructor`;
+
+// ---------- Type Definition Parts
+↑ ImplicitSelfDefinition.TypeConstructor: `SelfTypeConstructor`;
+= ImplicitSelfDefinition.TypeConstructor;
+
+// ---------- Member Definitions
+↑ AssociatedTypeDefinition.TypeConstructor: `OrdinaryAssociatedTypeConstructor`;

@@ -22,6 +22,7 @@ using Azoth.Tools.Bootstrap.Compiler.Semantics.NameBinding;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.PlainTypes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Structure;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.TypeConstructors;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Variables;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
@@ -525,9 +526,6 @@ public partial interface ITypeDefinitionNode : ICodeNode, IFacetMemberDefinition
     new Symbol ContainingSymbol
         => ContainingDeclaration.Symbol!;
     Symbol? IDefinitionNode.ContainingSymbol => ContainingSymbol;
-    new OrdinaryTypeConstructor TypeConstructor { get; }
-    BareTypeConstructor INonVariableTypeDeclarationNode.TypeConstructor => TypeConstructor;
-    ITypeConstructor ITypeDeclarationNode.TypeConstructor => TypeConstructor;
     new IFixedSet<BareType> Supertypes { get; }
     IFixedSet<BareType> ITypeDeclarationNode.Supertypes => Supertypes;
     new IFixedSet<ITypeMemberDefinitionNode> Members { get; }
@@ -535,6 +533,9 @@ public partial interface ITypeDefinitionNode : ICodeNode, IFacetMemberDefinition
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
     new IImplicitSelfDefinitionNode ImplicitSelf { get; }
     IImplicitSelfDeclarationNode INonVariableTypeDeclarationNode.ImplicitSelf => ImplicitSelf;
+    new OrdinaryTypeConstructor TypeConstructor { get; }
+    BareTypeConstructor INonVariableTypeDeclarationNode.TypeConstructor => TypeConstructor;
+    ITypeConstructor ITypeDeclarationNode.TypeConstructor => TypeConstructor;
     new AccessModifier AccessModifier { get; }
     AccessModifier IFacetMemberDefinitionNode.AccessModifier => AccessModifier;
     AccessModifier ITypeMemberDefinitionNode.AccessModifier => AccessModifier;
@@ -5582,7 +5583,7 @@ file class ClassDefinitionNode : SemanticNode, IClassDefinitionNode
     public OrdinaryTypeConstructor TypeConstructor
         => GrammarAttribute.IsCached(in typeConstructorCached) ? typeConstructor!
             : this.Synthetic(ref typeConstructorCached, ref typeConstructor,
-                DefinitionPlainTypesAspect.ClassDefinition_TypeConstructor);
+                TypeConstructorsAspect.ClassDefinition_TypeConstructor);
     private OrdinaryTypeConstructor? typeConstructor;
     private bool typeConstructorCached;
     public ValueIdScope ValueIdScope { [DebuggerStepThrough] get; }
@@ -5772,7 +5773,7 @@ file class StructDefinitionNode : SemanticNode, IStructDefinitionNode
     public OrdinaryTypeConstructor TypeConstructor
         => GrammarAttribute.IsCached(in typeConstructorCached) ? typeConstructor!
             : this.Synthetic(ref typeConstructorCached, ref typeConstructor,
-                DefinitionPlainTypesAspect.StructDefinition_TypeConstructor);
+                TypeConstructorsAspect.StructDefinition_TypeConstructor);
     private OrdinaryTypeConstructor? typeConstructor;
     private bool typeConstructorCached;
     public ValueIdScope ValueIdScope { [DebuggerStepThrough] get; }
@@ -5943,7 +5944,7 @@ file class TraitDefinitionNode : SemanticNode, ITraitDefinitionNode
     public OrdinaryTypeConstructor TypeConstructor
         => GrammarAttribute.IsCached(in typeConstructorCached) ? typeConstructor!
             : this.Synthetic(ref typeConstructorCached, ref typeConstructor,
-                DefinitionPlainTypesAspect.TraitDefinition_TypeConstructor);
+                TypeConstructorsAspect.TraitDefinition_TypeConstructor);
     private OrdinaryTypeConstructor? typeConstructor;
     private bool typeConstructorCached;
     public ValueIdScope ValueIdScope { [DebuggerStepThrough] get; }
@@ -6105,7 +6106,7 @@ file class ImplicitSelfDefinitionNode : SemanticNode, IImplicitSelfDefinitionNod
     public SelfTypeConstructor TypeConstructor
         => GrammarAttribute.IsCached(in typeConstructorCached) ? typeConstructor!
             : this.Synthetic(ref typeConstructorCached, ref typeConstructor,
-                DefinitionPlainTypesAspect.ImplicitSelfDefinition_TypeConstructor);
+                TypeConstructorsAspect.ImplicitSelfDefinition_TypeConstructor);
     private SelfTypeConstructor? typeConstructor;
     private bool typeConstructorCached;
 
@@ -7347,7 +7348,7 @@ file class AssociatedTypeDefinitionNode : SemanticNode, IAssociatedTypeDefinitio
     public OrdinaryAssociatedTypeConstructor TypeConstructor
         => GrammarAttribute.IsCached(in typeConstructorCached) ? typeConstructor!
             : this.Synthetic(ref typeConstructorCached, ref typeConstructor,
-                DefinitionPlainTypesAspect.AssociatedTypeDefinition_TypeConstructor);
+                TypeConstructorsAspect.AssociatedTypeDefinition_TypeConstructor);
     private OrdinaryAssociatedTypeConstructor? typeConstructor;
     private bool typeConstructorCached;
     public TypeVariance Variance { [DebuggerStepThrough] get; }

@@ -1,6 +1,5 @@
 ◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.PlainTypes;
 ◊name DefinitionPlainTypesAspect;
-◊using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 ◊using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 ◊using Azoth.Tools.Bootstrap.Framework;
 
@@ -15,14 +14,6 @@
 // ---------- Function Definition
 = FunctionDefinition.Body.ExpectedPlainType => Self.ReturnPlainType;
 = FunctionDefinition.Body.**.ExpectedReturnPlainType => Self.ReturnPlainType;
-
-// ---------- Type Definitions
-// TODO move the definition of type constructors to their own aspect
-↑ TypeDefinition.TypeConstructor: `OrdinaryTypeConstructor`;
-
-// ---------- Type Definition Parts
-↑ ImplicitSelfDefinition.TypeConstructor: `SelfTypeConstructor`;
-= ImplicitSelfDefinition.TypeConstructor;
 
 // ---------- Member Definitions
 = MethodDefinition.SelfParameterPlainType => SelfParameter.BindingPlainType;
@@ -44,4 +35,3 @@
 = FieldDefinition.Initializer.**.ExpectedReturnPlainType => null;
 = AssociatedFunctionDefinition.Body.ExpectedPlainType => Self.ReturnPlainType;
 = AssociatedFunctionDefinition.Body.**.ExpectedReturnPlainType => Self.ReturnPlainType;
-↑ AssociatedTypeDefinition.TypeConstructor: `OrdinaryAssociatedTypeConstructor`;
