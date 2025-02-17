@@ -4747,11 +4747,6 @@ internal abstract partial class SemanticNode : TreeNode, IChildTreeNode<ISemanti
     protected ValueIdScope Inherited_ValueIdScope(IInheritanceContext ctx)
         => PeekParent()!.Inherited_ValueIdScope(this, this, ctx);
 
-    internal virtual ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-        => (GetParent(ctx) ?? throw Child.InheritFailed("ContainingDeclaration", child, descendant)).Inherited_ContainingDeclaration(this, descendant, ctx);
-    protected ISymbolDeclarationNode Inherited_ContainingDeclaration(IInheritanceContext ctx)
-        => GetParent(ctx)!.Inherited_ContainingDeclaration(this, this, ctx);
-
     protected IFixedSet<SemanticNode> CollectContributors_Diagnostics()
     {
         var contributors = new List<SemanticNode>();
@@ -4794,6 +4789,11 @@ internal abstract partial class SemanticNode : TreeNode, IChildTreeNode<ISemanti
         => (GetParent(ctx) ?? throw Child.InheritFailed("File", child, descendant)).Inherited_File(this, descendant, ctx);
     protected CodeFile Inherited_File(IInheritanceContext ctx)
         => GetParent(ctx)!.Inherited_File(this, this, ctx);
+
+    internal virtual ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+        => (GetParent(ctx) ?? throw Child.InheritFailed("ContainingDeclaration", child, descendant)).Inherited_ContainingDeclaration(this, descendant, ctx);
+    protected ISymbolDeclarationNode Inherited_ContainingDeclaration(IInheritanceContext ctx)
+        => GetParent(ctx)!.Inherited_ContainingDeclaration(this, this, ctx);
 
     internal virtual IPackageFacetDeclarationNode Inherited_Facet(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
         => (GetParent(ctx) ?? throw Child.InheritFailed("Facet", child, descendant)).Inherited_Facet(this, descendant, ctx);
