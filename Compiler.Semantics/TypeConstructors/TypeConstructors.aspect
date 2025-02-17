@@ -5,7 +5,9 @@
 
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
-↓ *.TypeConstructorContext <: `BareTypeConstructorContext`;
+// Type relationship needed to determine most abstract type for TypeConstructorContext
+type `NamespaceContext` <: `BareTypeConstructorContext`;
+type `OrdinaryTypeConstructor` <: `BareTypeConstructorContext`;
 
 // ---------- Code Files
 ↑ CompilationUnit.TypeConstructorContext: `NamespaceContext`;

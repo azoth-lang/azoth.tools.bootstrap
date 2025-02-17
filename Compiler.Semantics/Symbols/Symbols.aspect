@@ -4,6 +4,11 @@
 
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
+// Type relationship needed to determine most abstract type for ContainingSymbol()
+type `NamespaceSymbol` <: `Symbol`;
+type `TypeSymbol` <: `Symbol`;
+type `OrdinaryTypeSymbol` <: `TypeSymbol`;
+
 // ---------- Packages
 = Package.Symbol;
 ↑ Package.PackageSymbols: `IPackageSymbols`;
@@ -13,35 +18,37 @@
 = IntrinsicsPackageReference.PackageSymbols => IntrinsicPackageSymbol.Instance;
 
 // ---------- Code Files
-↑ CompilationUnit.ContainingSymbol: `PackageSymbol` => ContainingDeclaration.PackageSymbol;
+↑ CompilationUnit.ContainingSymbol(): `PackageSymbol` => Package.Symbol;
+= CompilationUnit.*.ContainingSymbol() => Package.Symbol;
 
 // ---------- Definitions
-↑ Definition.ContainingSymbol: `Symbol`? => ContainingDeclaration.Symbol;
+↓ Definition.ContainingSymbol(): `Symbol`;
 
 // ---------- Namespace Definitions
-↑ NamespaceBlockDefinition.ContainingSymbol: `NamespaceSymbol` => ContainingDeclaration.Symbol;
+= NamespaceBlockDefinition.*.ContainingSymbol() => Self.Symbol;
 ↑ NamespaceBlockDefinition.Symbol: `NamespaceSymbol` => Definition.Symbol;
+↓ NamespaceDefinition.ContainingSymbol(): `NamespaceSymbol`;
+= NamespaceDefinition.*.ContainingSymbol() => Symbol;
 = NamespaceDefinition.Symbol;
 
 // ---------- Function Definition
-↑ FunctionDefinition.ContainingSymbol: `NamespaceSymbol` => ContainingDeclaration.Symbol;
+↓ FunctionDefinition.ContainingSymbol(): `NamespaceSymbol`;
 = FunctionDefinition.Symbol;
 
 // ---------- Type Definitions
-↑ TypeDefinition.ContainingSymbol: `Symbol` => ContainingDeclaration.Symbol!; // Never null because not a function/method
+= TypeDefinition.*.ContainingSymbol() => Symbol;
 = TypeDefinition.Symbol;
 
 // ---------- Type Definition Parts
-↑ ImplicitSelfDefinition.ContainingSymbol: `TypeSymbol` => ContainingDeclaration.Symbol!; // Never null because not a function/method
+↓ ImplicitSelfDefinition.ContainingSymbol(): `TypeSymbol`;
 = ImplicitSelfDefinition.Symbol;
 
 // ---------- Type Member Definitions
-↑ AlwaysTypeMemberDefinition.ContainingSymbol: `OrdinaryTypeSymbol` => ContainingDeclaration.Symbol;
+↓ AlwaysTypeMemberDefinition.ContainingSymbol(): `OrdinaryTypeSymbol`;
 
 // ---------- Type Definition Parts
-↑ GenericParameter.ContainingSymbol: `OrdinaryTypeSymbol` => ContainingDeclaration.Symbol;
+↓ GenericParameter.ContainingSymbol(): `OrdinaryTypeSymbol`;
 = GenericParameter.Symbol;
-↑ SelfSymbol.ContainingSymbol: `TypeSymbol` => ContainingDeclaration.Symbol;
 
 // ---------- Member Definitions
 = MethodDefinition.Symbol;
@@ -52,4 +59,5 @@
 = AssociatedTypeDefinition.Symbol;
 
 // ---------- Attributes
+// TODO do not use referenced symbols
 ↑ Attribute.ReferencedSymbol: `InvocableSymbol`?;

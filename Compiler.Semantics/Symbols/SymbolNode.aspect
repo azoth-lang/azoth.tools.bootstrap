@@ -12,7 +12,6 @@
 ↑ child PackageReference.SymbolNode: PackageSymbol;
 = eager PackageReference.SymbolNode;
 
-
 // ---------- Function Definition
 = FunctionDefinition.*.**.IsAttributeType => false;
 

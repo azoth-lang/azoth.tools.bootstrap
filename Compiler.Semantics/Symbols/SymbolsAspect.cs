@@ -31,35 +31,31 @@ internal static partial class SymbolsAspect
     public static partial NamespaceSymbol NamespaceDefinition_Symbol(INamespaceDefinitionNode node)
     {
         if (node.Name is { } name)
-        {
-            var containingSymbol = (NamespaceSymbol)node.ContainingDeclaration.Symbol!;
-            return new LocalNamespaceSymbol(containingSymbol, name);
-        }
+            return new LocalNamespaceSymbol(node.ContainingSymbol(), name);
 
         return node.Package.Symbol;
     }
-
     #endregion
 
     #region Function Definition
     public static partial FunctionSymbol? FunctionDefinition_Symbol(IFunctionDefinitionNode node)
     {
         if (node.Type is not FunctionType type) return null;
-        return new(node.ContainingSymbol, node.Name, type);
+        return new(node.ContainingSymbol(), node.Name, type);
     }
     #endregion
 
     #region Type Definitions
     public static partial OrdinaryTypeSymbol TypeDefinition_Symbol(ITypeDefinitionNode node)
-        => new(node.ContainingSymbol, node.TypeConstructor);
+        => new(node.ContainingSymbol(), node.TypeConstructor);
     #endregion
 
     #region Type Definition Parts
     public static partial GenericParameterTypeSymbol GenericParameter_Symbol(IGenericParameterNode node)
-        => new(node.ContainingSymbol, node.DeclaredType.PlainType);
+        => new(node.ContainingSymbol(), node.DeclaredType.PlainType);
 
     public static partial AssociatedTypeSymbol ImplicitSelfDefinition_Symbol(IImplicitSelfDefinitionNode node)
-        => new AssociatedTypeSymbol(node.ContainingSymbol, node.TypeConstructor);
+        => new AssociatedTypeSymbol(node.ContainingSymbol(), node.TypeConstructor);
     #endregion
 
     #region Member Definitions
@@ -71,33 +67,33 @@ internal static partial class SymbolsAspect
             return null;
         if (node.ParameterTypes.AsKnownFixedList() is not { } parameters)
             return null;
-        return new(node.ContainingSymbol, node.Kind, node.Name, selfParameterType, parameters, returnType);
+        return new(node.ContainingSymbol(), node.Kind, node.Name, selfParameterType, parameters, returnType);
     }
 
     public static partial InitializerSymbol? OrdinaryInitializerDefinition_Symbol(IOrdinaryInitializerDefinitionNode node)
     {
         if (node.ParameterTypes.AsKnownFixedList() is not { } parameters) return null;
-        return new(node.ContainingSymbol, node.Name, node.SelfParameter.BindingType, parameters);
+        return new(node.ContainingSymbol(), node.Name, node.SelfParameter.BindingType, parameters);
     }
 
     public static partial InitializerSymbol? DefaultInitializerDefinition_Symbol(IDefaultInitializerDefinitionNode node)
-        => InitializerSymbol.CreateDefault(node.ContainingSymbol);
+        => InitializerSymbol.CreateDefault(node.ContainingSymbol());
 
     public static partial FieldSymbol? FieldDefinition_Symbol(IFieldDefinitionNode node)
     {
         if (node.BindingType is not NonVoidType bindingType) return null;
-        return new(node.ContainingSymbol, node.IsMutableBinding, node.Name, bindingType);
+        return new(node.ContainingSymbol(), node.IsMutableBinding, node.Name, bindingType);
     }
 
     public static partial FunctionSymbol? AssociatedFunctionDefinition_Symbol(IAssociatedFunctionDefinitionNode node)
     {
         if (node.Type is not FunctionType type)
             return null;
-        return new(node.ContainingSymbol, node.Name, type);
+        return new(node.ContainingSymbol(), node.Name, type);
     }
 
     public static partial AssociatedTypeSymbol AssociatedTypeDefinition_Symbol(IAssociatedTypeDefinitionNode node)
-        => new(node.ContainingSymbol, node.TypeConstructor);
+        => new(node.ContainingSymbol(), node.TypeConstructor);
     #endregion
 
     #region Attributes
