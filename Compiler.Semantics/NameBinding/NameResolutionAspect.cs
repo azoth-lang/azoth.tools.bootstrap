@@ -229,17 +229,18 @@ internal static partial class NameResolutionAspect
             // Cannot resolve namespace member access, no need to process other rewrites
             return node;
 
-        if (referencedDeclarations.TryAllOfType<INamespaceDeclarationNode>(out var referencedNamespaces))
-            return IQualifiedNamespaceNameNode.Create(node.Syntax, node.Context, referencedNamespaces);
-
         if (referencedDeclarations.TryAllOfType<IFunctionDeclarationNode>(out var referencedFunctions))
-            return IFunctionNameExpressionNode.Create(node.Syntax, node.Context, node.MemberName, node.GenericArguments,
-                referencedFunctions);
+            return IFunctionNameExpressionNode.Create(node.Syntax, node.Context, node.MemberName, node.GenericArguments, referencedFunctions);
 
-        // TODO select correct type declaration based on generic arguments
-        if (referencedDeclarations.TrySingle() is ITypeDeclarationNode referencedType)
-            // TODO a way to pass along referenced declarations rather than requiring they be figured out again?
-            return IQualifiedTypeNameNode.Create(node.Syntax, node.Context, node.GenericArguments);
+        switch (referencedDeclarations.TrySingle())
+        {
+            case INamespaceDeclarationNode referencedNamespace:
+                return IQualifiedNamespaceNameNode.Create(node.Syntax, node.Context, referencedNamespace.Yield());
+            case ITypeDeclarationNode referencedType:
+                // TODO select correct type declaration based on generic arguments
+                // TODO a way to pass along referenced declarations rather than requiring they be figured out again?
+                return IQualifiedTypeNameNode.Create(node.Syntax, node.Context, node.GenericArguments);
+        }
 
         return null;
     }
@@ -348,13 +349,16 @@ internal static partial class NameResolutionAspect
             // Cannot resolve namespace member access, no need to process other rewrites
             return node;
 
-        if (referencedDeclarations.TryAllOfType<INamespaceDeclarationNode>(out var referencedNamespaces))
-            return IQualifiedNamespaceNameNode.Create(node.Syntax, node.Context, referencedNamespaces);
+        switch (referencedDeclarations.TrySingle())
+        {
+            case INamespaceDeclarationNode referencedNamespace:
+                return IQualifiedNamespaceNameNode.Create(node.Syntax, node.Context, referencedNamespace.Yield());
 
-        // TODO select correct type declaration based on generic arguments
-        if (referencedDeclarations.TrySingle() is ITypeDeclarationNode referencedType)
-            throw new NotImplementedException();
-        // return IQualifiedTypeNameNode.Create(node.Syntax, node.Context, node.GenericArguments, referencedType);
+            case ITypeDeclarationNode referencedType:
+                // TODO select correct type declaration based on generic arguments
+                // TODO a way to pass along referenced declarations rather than requiring they be figured out again?
+                return IQualifiedTypeNameNode.Create(node.Syntax, node.Context, node.GenericArguments);
+        }
 
         return null;
     }
