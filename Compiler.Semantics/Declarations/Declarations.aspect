@@ -34,7 +34,8 @@
 ↑ FunctionInvocableDeclaration.Type: `IMaybeFunctionType`;
 
 // ---------- Namespace Declarations
-↑ NamespaceDeclaration.Name: `IdentifierName` => Symbol.Name;
+↑ NamespaceDeclaration.NamespaceName: `NamespaceName`;
+↑ NamespaceDeclaration.Name: `IdentifierName`?;
 ↑ NamespaceDeclaration.Symbol: `NamespaceSymbol`;
 ↑ NamespaceDeclaration.Members: NamespaceMemberDeclaration*;
 ↑ NamespaceDeclaration.NestedMembers: NamespaceMemberDeclaration*;

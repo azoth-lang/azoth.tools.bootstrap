@@ -4,6 +4,8 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Numerics;
+using JetBrains.Annotations;
+using NotNullAttribute = System.Diagnostics.CodeAnalysis.NotNullAttribute;
 
 namespace Azoth.Tools.Bootstrap.Framework;
 
@@ -15,14 +17,14 @@ namespace Azoth.Tools.Bootstrap.Framework;
 public static class Requires
 {
     [DebuggerHidden]
-    public static void Positive(int value, string paramName)
+    public static void Positive(int value, [InvokerParameterName] string paramName)
     {
         if (value < 0)
             throw new ArgumentOutOfRangeException(paramName, value, "Must be greater than or equal to zero");
     }
 
     [DebuggerHidden]
-    public static void InString(string paramName, string inString, int value)
+    public static void InString([InvokerParameterName] string paramName, string inString, int value)
     {
         // Start is allowed to be equal to length to allow for a zero length span after the last character
         if (value < 0 || value >= inString.Length)
@@ -30,7 +32,7 @@ public static class Requires
     }
 
     [DebuggerHidden]
-    public static void ValidEnum<TEnum>(TEnum value, string paramName)
+    public static void ValidEnum<TEnum>(TEnum value, [InvokerParameterName] string paramName)
         where TEnum : struct, Enum
     {
         if (!value.IsDefined())
@@ -38,7 +40,7 @@ public static class Requires
     }
 
     [DebuggerHidden]
-    public static void Null<T>(T? value, string paramName, string? message)
+    public static void Null<T>(T? value, [InvokerParameterName] string paramName, string? message)
         where T : class
     {
         if (value is not null)
@@ -46,7 +48,7 @@ public static class Requires
     }
 
     [DebuggerHidden]
-    public static void NotNull<T>([NotNull] T? value, string paramName)
+    public static void NotNull<T>([NotNull] T? value, [InvokerParameterName] string paramName)
         where T : class
     {
         if (value is null)
@@ -54,21 +56,21 @@ public static class Requires
     }
 
     [DebuggerHidden]
-    public static void NotNullOrEmpty([NotNull] string? value, string paramName)
+    public static void NotNullOrEmpty([NotNull] string? value, [InvokerParameterName] string paramName)
     {
         if (string.IsNullOrEmpty(value))
             throw new ArgumentException("Value cannot be null or empty.", paramName);
     }
 
     [DebuggerHidden]
-    public static void That([DoesNotReturnIf(false)] bool condition, string paramName, string message)
+    public static void That([DoesNotReturnIf(false)] bool condition, [InvokerParameterName] string paramName, string message)
     {
         if (!condition)
             throw new ArgumentException(message, paramName);
     }
 
     [DebuggerHidden]
-    public static void Zero<T>(T value, string paramName)
+    public static void Zero<T>(T value, [InvokerParameterName] string paramName)
         where T : IAdditiveIdentity<T, T>, IEquatable<T>
     {
         if (!T.AdditiveIdentity.Equals(value))

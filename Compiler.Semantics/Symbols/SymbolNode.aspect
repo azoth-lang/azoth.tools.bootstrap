@@ -49,6 +49,8 @@
 = eager PackageFacetSymbol.GlobalNamespace;
 
 // ---------- Namespace Symbol Nodes
+= NamespaceSymbol.NamespaceName => Symbol.NamespaceName;
+= NamespaceSymbol.Name => Symbol.Name;
 ↑ child NamespaceSymbol.Members:NamespaceMemberSymbol*;
 
 // ---------- Function Symbol Nodes

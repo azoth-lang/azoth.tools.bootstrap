@@ -2,8 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.Names;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
-using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Structure;
@@ -12,38 +10,38 @@ internal partial class NamespaceDefinitionsAspect
 {
     public static partial INamespaceDefinitionNode PackageFacet_GlobalNamespace(IPackageFacetNode node)
     {
-        var packageSymbol = node.PackageSymbol;
-        var builder = new NamespaceDefinitionNodeBuilder(packageSymbol);
+        var builder = new NamespaceDefinitionNodeBuilder();
         foreach (var cu in node.CompilationUnits)
-            BuildNamespace(packageSymbol, cu.ImplicitNamespaceName, cu.Definitions);
+            BuildNamespace(NamespaceName.Global, cu.ImplicitNamespaceName, cu.Definitions);
         return Child.Attach(node, builder.Build());
 
-        void BuildMember(NamespaceSymbol namespaceSymbol, INamespaceBlockMemberDefinitionNode definition)
+        void BuildMember(NamespaceName ns, INamespaceBlockMemberDefinitionNode definition)
         {
             switch (definition)
             {
                 default:
                     throw ExhaustiveMatch.Failed(definition);
                 case INamespaceBlockDefinitionNode n:
-                    var containingNamespace = n.IsGlobalQualified ? packageSymbol : namespaceSymbol;
+                    var containingNamespace = n.IsGlobalQualified ? NamespaceName.Global : ns;
                     BuildNamespace(containingNamespace, n.DeclaredNames, n.Members);
                     break;
                 case IFunctionDefinitionNode n:
-                    builder.Add(namespaceSymbol, n);
+                    builder.Add(ns, n);
                     break;
                 case ITypeDefinitionNode n:
-                    builder.Add(namespaceSymbol, n);
+                    builder.Add(ns, n);
                     break;
             }
         }
 
         void BuildNamespace(
-            NamespaceSymbol containingNamespace,
-            NamespaceName name,
-            IEnumerable<INamespaceBlockMemberDefinitionNode> declarations)
+            NamespaceName containingNamespace,
+            NamespaceName declaredNamespaceNames,
+            IEnumerable<INamespaceBlockMemberDefinitionNode> definitions)
         {
-            var namespaceSymbol = builder.AddNamespace(containingNamespace, name);
-            foreach (var declaration in declarations) BuildMember(namespaceSymbol, declaration);
+            var ns = builder.AddNamespace(containingNamespace, declaredNamespaceNames);
+            foreach (var declaration in definitions)
+                BuildMember(ns, declaration);
         }
     }
 

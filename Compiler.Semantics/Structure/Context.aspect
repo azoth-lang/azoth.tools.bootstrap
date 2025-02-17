@@ -28,6 +28,7 @@
 // ---------- Namespace Definitions
 ↓ computed NamespaceBlockDefinition.ContainingDeclaration: NamespaceDefinition;
 = NamespaceBlockDefinition.*.ContainingDeclaration;
+= NamespaceDefinition.*.ContainingDeclaration => Self;
 
 // ---------- Type Definitions
 = TypeDefinition.*.**.ContainingTypeDefinition => this;

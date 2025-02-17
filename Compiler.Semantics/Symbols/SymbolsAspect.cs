@@ -27,6 +27,20 @@ internal static partial class SymbolsAspect
     }
     #endregion
 
+    #region Namespace Definitions
+    public static partial NamespaceSymbol NamespaceDefinition_Symbol(INamespaceDefinitionNode node)
+    {
+        if (node.Name is { } name)
+        {
+            var containingSymbol = (NamespaceSymbol)node.ContainingDeclaration.Symbol!;
+            return new LocalNamespaceSymbol(containingSymbol, name);
+        }
+
+        return node.Package.Symbol;
+    }
+
+    #endregion
+
     #region Function Definition
     public static partial FunctionSymbol? FunctionDefinition_Symbol(IFunctionDefinitionNode node)
     {

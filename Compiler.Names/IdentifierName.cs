@@ -1,4 +1,5 @@
 using System;
+using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Names;
 
@@ -8,7 +9,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.Names;
 public sealed class IdentifierName : OrdinaryName
 {
     public IdentifierName(string text)
-        : base(text, 0) { }
+        : base(text, 0)
+    {
+        Requires.NotNullOrEmpty(text, nameof(text));
+    }
 
     #region Equals
     public override bool Equals(UnqualifiedName? other)

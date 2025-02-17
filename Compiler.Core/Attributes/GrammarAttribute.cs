@@ -6,6 +6,7 @@ using System.Threading;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes.Operations;
 using Azoth.Tools.Bootstrap.Framework;
 using InlineMethod;
+using JetBrains.Annotations;
 using Void = Azoth.Tools.Bootstrap.Framework.Void;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
@@ -157,7 +158,7 @@ public static class GrammarAttribute
         this TNode node,
         ref bool cached,
         ref T? value,
-        Func<TNode, T> compute,
+        [RequireStaticDelegate] Func<TNode, T> compute,
         [CallerMemberName] string attributeName = "")
         where TNode : class, ITreeNode
         where T : class?
@@ -173,7 +174,7 @@ public static class GrammarAttribute
         this TNode node,
         ref bool cached,
         ref T? value,
-        Func<TNode, T> compute,
+        [RequireStaticDelegate] Func<TNode, T> compute,
         IEqualityComparer<T> comparer,
         [CallerMemberName] string attributeName = "")
         where TNode : class, ITreeNode
@@ -190,7 +191,7 @@ public static class GrammarAttribute
         ref bool cached,
         ref T value,
         ref AttributeLock syncLock,
-        Func<TNode, T> compute,
+        [RequireStaticDelegate] Func<TNode, T> compute,
         [CallerMemberName] string attributeName = "")
         where TNode : class, ITreeNode
         where T : struct
@@ -207,7 +208,7 @@ public static class GrammarAttribute
         ref bool cached,
         ref T? value,
         ref AttributeLock syncLock,
-        Func<TNode, T?> compute,
+        [RequireStaticDelegate] Func<TNode, T?> compute,
         [CallerMemberName] string attributeName = "")
         where TNode : class, ITreeNode
         where T : struct
@@ -225,7 +226,7 @@ public static class GrammarAttribute
         this TNode node,
         ref bool cached,
         ref T? value,
-        Func<IInheritanceContext, T> compute,
+        [RequireStaticDelegate] Func<IInheritanceContext, T> compute,
         [CallerMemberName] string attributeName = "")
         where TNode : class, ITreeNode
         where T : class?
@@ -241,7 +242,7 @@ public static class GrammarAttribute
         this TNode node,
         ref bool cached,
         ref T? value,
-        Func<IInheritanceContext, T> compute,
+        [RequireStaticDelegate] Func<IInheritanceContext, T> compute,
         IEqualityComparer<T> comparer,
         [CallerMemberName] string attributeName = "")
         where TNode : class, ITreeNode
@@ -259,7 +260,7 @@ public static class GrammarAttribute
         ref bool cached,
         ref T value,
         ref AttributeLock syncLock,
-        Func<IInheritanceContext, T> compute,
+        [RequireStaticDelegate] Func<IInheritanceContext, T> compute,
         [CallerMemberName] string attributeName = "")
         where TNode : class, ITreeNode
         where T : struct
@@ -276,7 +277,7 @@ public static class GrammarAttribute
         ref bool cached,
         ref T? value,
         ref AttributeLock syncLock,
-        Func<IInheritanceContext, T?> compute,
+        [RequireStaticDelegate] Func<IInheritanceContext, T?> compute,
         [CallerMemberName] string attributeName = "")
         where TNode : class, ITreeNode
         where T : struct
@@ -405,7 +406,7 @@ public static class GrammarAttribute
         this TNode node,
         ref bool cached,
         ref Circular<T> value,
-        Func<TNode, T> compute,
+        [RequireStaticDelegate] Func<TNode, T> compute,
         [CallerMemberName] string attributeName = "")
         where TNode : class, ITreeNode
         where T : class?
@@ -421,7 +422,7 @@ public static class GrammarAttribute
         this TNode node,
         ref bool cached,
         ref Circular<T> value,
-        Func<TNode, T> compute,
+        [RequireStaticDelegate] Func<TNode, T> compute,
         IEqualityComparer<TCompare> comparer,
         [CallerMemberName] string attributeName = "")
         where TNode : class, ITreeNode
@@ -438,8 +439,8 @@ public static class GrammarAttribute
         this TNode node,
         ref bool cached,
         ref Circular<T> value,
-        Func<TNode, T> compute,
-        Func<TNode, T> initializer,
+        [RequireStaticDelegate] Func<TNode, T> compute,
+        [RequireStaticDelegate] Func<TNode, T> initializer,
         [CallerMemberName] string attributeName = "")
         where TNode : class, ITreeNode
         where T : class?
@@ -455,8 +456,8 @@ public static class GrammarAttribute
         this TNode node,
         ref bool cached,
         ref Circular<T> value,
-        Func<TNode, T> compute,
-        Func<TNode, T> initializer,
+        [RequireStaticDelegate] Func<TNode, T> compute,
+        [RequireStaticDelegate] Func<TNode, T> initializer,
         IEqualityComparer<TCompare> comparer,
         [CallerMemberName] string attributeName = "")
         where TNode : class, ITreeNode
@@ -489,7 +490,7 @@ public static class GrammarAttribute
         ref bool cached,
         ref TCyclic value,
         TFunc func,
-        Func<TNode, T>? initializer,
+        [RequireStaticDelegate] Func<TNode, T>? initializer,
         IEqualityComparer<TCompare> comparer,
         [CallerMemberName] string attributeName = "")
         where TNode : class, ITreeNode
@@ -510,7 +511,7 @@ public static class GrammarAttribute
         ref bool cached,
         ref TCyclic value,
         TFunc func,
-        Func<TNode, T>? initializer,
+        [RequireStaticDelegate] Func<TNode, T>? initializer,
         IEqualityComparer<TCompare> comparer,
         AttributeId attributeId,
         object? cachedOwner = null)

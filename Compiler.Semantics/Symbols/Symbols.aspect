@@ -21,6 +21,7 @@
 // ---------- Namespace Definitions
 ↑ NamespaceBlockDefinition.ContainingSymbol: `NamespaceSymbol` => ContainingDeclaration.Symbol;
 ↑ NamespaceBlockDefinition.Symbol: `NamespaceSymbol` => Definition.Symbol;
+= NamespaceDefinition.Symbol;
 
 // ---------- Function Definition
 ↑ FunctionDefinition.ContainingSymbol: `NamespaceSymbol` => ContainingDeclaration.Symbol;

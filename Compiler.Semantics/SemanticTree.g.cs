@@ -441,9 +441,8 @@ public partial interface INamespaceBlockMemberDefinitionNode : IDefinitionNode
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface INamespaceDefinitionNode : INamespaceMemberDefinitionNode, INamespaceDeclarationNode
 {
-    new NamespaceSymbol Symbol { get; }
-    Symbol? ISymbolDeclarationNode.Symbol => Symbol;
-    NamespaceSymbol INamespaceDeclarationNode.Symbol => Symbol;
+    new NamespaceName NamespaceName { get; }
+    NamespaceName INamespaceDeclarationNode.NamespaceName => NamespaceName;
     IFixedList<INamespaceDefinitionNode> MemberNamespaces { get; }
     IFixedList<IFacetMemberDefinitionNode> PackageMembers { get; }
     new ISyntax? Syntax
@@ -452,12 +451,14 @@ public partial interface INamespaceDefinitionNode : INamespaceMemberDefinitionNo
     new IFixedList<INamespaceMemberDefinitionNode> Members { get; }
     IFixedList<INamespaceMemberDeclarationNode> INamespaceDeclarationNode.Members => Members;
     NamespaceContext TypeConstructorContext { get; }
+    IdentifierName? INamespaceDeclarationNode.Name
+        => this.NamespaceName.Segments.LastOrDefault();
 
     public static INamespaceDefinitionNode Create(
-        NamespaceSymbol symbol,
+        NamespaceName namespaceName,
         IEnumerable<INamespaceDefinitionNode> memberNamespaces,
         IEnumerable<IFacetMemberDefinitionNode> packageMembers)
-        => new NamespaceDefinitionNode(symbol, memberNamespaces, packageMembers);
+        => new NamespaceDefinitionNode(namespaceName, memberNamespaces, packageMembers);
 }
 
 [Closed(
@@ -482,7 +483,8 @@ public partial interface IFunctionDefinitionNode : IFacetMemberDefinitionNode, I
     new IdentifierName Name
         => Syntax.Name;
     OrdinaryName? IPackageFacetChildDeclarationNode.Name => Name;
-    OrdinaryName INamespaceMemberDeclarationNode.Name => Name;
+    OrdinaryName? INamespaceMemberDeclarationNode.Name => Name;
+    OrdinaryName IFunctionDeclarationNode.Name => Name;
     UnqualifiedName INamedDeclarationNode.Name => Name;
     IdentifierName IFunctionInvocableDefinitionNode.Name => Name;
     IdentifierName? IInvocableDefinitionNode.Name => Name;
@@ -522,9 +524,10 @@ public partial interface ITypeDefinitionNode : ICodeNode, IFacetMemberDefinition
     new OrdinaryName Name
         => Syntax.Name;
     OrdinaryName? IPackageFacetChildDeclarationNode.Name => Name;
-    OrdinaryName INamespaceMemberDeclarationNode.Name => Name;
-    UnqualifiedName INamedDeclarationNode.Name => Name;
+    OrdinaryName? INamespaceMemberDeclarationNode.Name => Name;
     OrdinaryName IAssociatedMemberDefinitionNode.Name => Name;
+    UnqualifiedName INamedDeclarationNode.Name => Name;
+    OrdinaryName IOrdinaryTypeDeclarationNode.Name => Name;
     new Symbol ContainingSymbol
         => ContainingDeclaration.Symbol!;
     Symbol? IDefinitionNode.ContainingSymbol => ContainingSymbol;
@@ -3678,8 +3681,6 @@ public partial interface IChildDeclarationNode : IDeclarationNode, IChildNode
     typeof(IAssociatedMemberDefinitionNode),
     typeof(INamedBindingDeclarationNode),
     typeof(IFunctionInvocableDeclarationNode),
-    typeof(INamespaceOrOrdinaryTypeDeclarationNode),
-    typeof(INamespaceMemberDeclarationNode),
     typeof(ITypeDeclarationNode),
     typeof(IMethodDeclarationNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -3781,8 +3782,9 @@ public partial interface IFunctionInvocableDeclarationNode : INamedDeclarationNo
     typeof(INamespaceDeclarationNode),
     typeof(IOrdinaryTypeDeclarationNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface INamespaceOrOrdinaryTypeDeclarationNode : INamedDeclarationNode, ISymbolDeclarationNode
+public partial interface INamespaceOrOrdinaryTypeDeclarationNode : ISymbolDeclarationNode
 {
+    ISemanticNode Parent => (ISemanticNode)PeekParent()!;
 }
 
 [Closed(
@@ -3797,15 +3799,15 @@ public partial interface INamespaceDeclarationNode : INamespaceMemberDeclaration
         => MembersByName.GetValueOrDefault(name) ?? [];
     IEnumerable<INamespaceMemberDeclarationNode> NestedMembersNamed(OrdinaryName name)
         => NestedMembersByName.GetValueOrDefault(name) ?? [];
-    new IdentifierName Name
-        => Symbol.Name;
-    OrdinaryName INamespaceMemberDeclarationNode.Name => Name;
+    NamespaceName NamespaceName { get; }
+    new IdentifierName? Name { get; }
+    OrdinaryName? INamespaceMemberDeclarationNode.Name => Name;
     OrdinaryName? IPackageFacetChildDeclarationNode.Name => Name;
-    UnqualifiedName INamedDeclarationNode.Name => Name;
     new NamespaceSymbol Symbol { get; }
     Symbol? ISymbolDeclarationNode.Symbol => Symbol;
     IFixedList<INamespaceMemberDeclarationNode> Members { get; }
     IFixedList<INamespaceMemberDeclarationNode> NestedMembers { get; }
+    new ISemanticNode Parent => (ISemanticNode)PeekParent()!;
 }
 
 [Closed(
@@ -3815,11 +3817,10 @@ public partial interface INamespaceDeclarationNode : INamespaceMemberDeclaration
     typeof(IOrdinaryTypeDeclarationNode),
     typeof(INamespaceMemberSymbolNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface INamespaceMemberDeclarationNode : IPackageFacetChildDeclarationNode, INamedDeclarationNode, ISymbolDeclarationNode
+public partial interface INamespaceMemberDeclarationNode : IPackageFacetChildDeclarationNode, ISymbolDeclarationNode
 {
-    new OrdinaryName Name { get; }
+    new OrdinaryName? Name { get; }
     OrdinaryName? IPackageFacetChildDeclarationNode.Name => Name;
-    UnqualifiedName INamedDeclarationNode.Name => Name;
 }
 
 [Closed(
@@ -3828,6 +3829,10 @@ public partial interface INamespaceMemberDeclarationNode : IPackageFacetChildDec
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IFunctionDeclarationNode : INamespaceMemberDeclarationNode, IFunctionInvocableDeclarationNode
 {
+    new OrdinaryName Name { get; }
+    OrdinaryName? INamespaceMemberDeclarationNode.Name => Name;
+    OrdinaryName? IPackageFacetChildDeclarationNode.Name => Name;
+    UnqualifiedName INamedDeclarationNode.Name => Name;
     new INamespaceDeclarationNode ContainingDeclaration { get; }
     ISymbolDeclarationNode IDeclarationNode.ContainingDeclaration => ContainingDeclaration;
 }
@@ -3888,6 +3893,10 @@ public partial interface IBuiltInTypeDeclarationNode : INonVariableTypeDeclarati
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IOrdinaryTypeDeclarationNode : INamespaceMemberDeclarationNode, ITypeMemberDeclarationNode, INonVariableTypeDeclarationNode, INamespaceOrOrdinaryTypeDeclarationNode
 {
+    new OrdinaryName Name { get; }
+    OrdinaryName? INamespaceMemberDeclarationNode.Name => Name;
+    OrdinaryName? IPackageFacetChildDeclarationNode.Name => Name;
+    UnqualifiedName INamedDeclarationNode.Name => Name;
     IFixedList<IGenericParameterDeclarationNode> GenericParameters { get; }
     new IFixedSet<ITypeMemberDeclarationNode> Members { get; }
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
@@ -3896,6 +3905,7 @@ public partial interface IOrdinaryTypeDeclarationNode : INamespaceMemberDeclarat
     new OrdinaryTypeSymbol Symbol { get; }
     Symbol? ISymbolDeclarationNode.Symbol => Symbol;
     TypeSymbol ITypeDeclarationNode.Symbol => Symbol;
+    new ISemanticNode Parent => (ISemanticNode)PeekParent()!;
     IEnumerable<IInstanceMemberDeclarationNode> ITypeDeclarationNode.InclusiveInstanceMembersNamed(OrdinaryName name)
         => InclusiveInstanceMembersByName.GetValueOrDefault(name) ?? [];
     IEnumerable<IAssociatedMemberDeclarationNode> ITypeDeclarationNode.AssociatedMembersNamed(OrdinaryName name)
@@ -4201,6 +4211,10 @@ public partial interface INamespaceSymbolNode : INamespaceDeclarationNode, IName
     Symbol IChildSymbolNode.Symbol => Symbol;
     new IFixedList<INamespaceMemberSymbolNode> Members { get; }
     IFixedList<INamespaceMemberDeclarationNode> INamespaceDeclarationNode.Members => Members;
+    NamespaceName INamespaceDeclarationNode.NamespaceName
+        => Symbol.NamespaceName;
+    IdentifierName? INamespaceDeclarationNode.Name
+        => Symbol.Name;
 
     public static INamespaceSymbolNode Create(NamespaceSymbol symbol)
         => new NamespaceSymbolNode(symbol);
@@ -4226,7 +4240,8 @@ public partial interface IFunctionSymbolNode : IFunctionDeclarationNode, INamesp
     Symbol IChildSymbolNode.Symbol => Symbol;
     new IdentifierName Name
         => Symbol.Name;
-    OrdinaryName INamespaceMemberDeclarationNode.Name => Name;
+    OrdinaryName IFunctionDeclarationNode.Name => Name;
+    OrdinaryName? INamespaceMemberDeclarationNode.Name => Name;
     OrdinaryName? IPackageFacetChildDeclarationNode.Name => Name;
     UnqualifiedName INamedDeclarationNode.Name => Name;
     IFixedList<IMaybeNonVoidPlainType> IInvocableDeclarationNode.ParameterPlainTypes
@@ -4374,7 +4389,8 @@ public partial interface IOrdinaryTypeSymbolNode : IOrdinaryTypeDeclarationNode,
     Symbol IChildSymbolNode.Symbol => Symbol;
     new OrdinaryName Name
         => Symbol.Name;
-    OrdinaryName INamespaceMemberDeclarationNode.Name => Name;
+    OrdinaryName IOrdinaryTypeDeclarationNode.Name => Name;
+    OrdinaryName? INamespaceMemberDeclarationNode.Name => Name;
     OrdinaryName? IPackageFacetChildDeclarationNode.Name => Name;
     UnqualifiedName INamedDeclarationNode.Name => Name;
     new IFixedList<IGenericParameterSymbolNode> GenericParameters { get; }
@@ -5296,7 +5312,7 @@ file class NamespaceDefinitionNode : SemanticNode, INamespaceDefinitionNode
 {
     private INamespaceDefinitionNode Self { [Inline] get => this; }
 
-    public NamespaceSymbol Symbol { [DebuggerStepThrough] get; }
+    public NamespaceName NamespaceName { [DebuggerStepThrough] get; }
     public IFixedList<INamespaceDefinitionNode> MemberNamespaces { [DebuggerStepThrough] get; }
     public IFixedList<IFacetMemberDefinitionNode> PackageMembers { [DebuggerStepThrough] get; }
     public ISymbolDeclarationNode ContainingDeclaration
@@ -5324,6 +5340,12 @@ file class NamespaceDefinitionNode : SemanticNode, INamespaceDefinitionNode
                 NameLookupAspect.NamespaceDeclaration_NestedMembersByName);
     private FixedDictionary<OrdinaryName, IFixedSet<INamespaceMemberDeclarationNode>>? nestedMembersByName;
     private bool nestedMembersByNameCached;
+    public NamespaceSymbol Symbol
+        => GrammarAttribute.IsCached(in symbolCached) ? symbol!
+            : this.Synthetic(ref symbolCached, ref symbol,
+                SymbolsAspect.NamespaceDefinition_Symbol);
+    private NamespaceSymbol? symbol;
+    private bool symbolCached;
     public NamespaceContext TypeConstructorContext
         => GrammarAttribute.IsCached(in typeConstructorContextCached) ? typeConstructorContext!
             : this.Synthetic(ref typeConstructorContextCached, ref typeConstructorContext,
@@ -5332,14 +5354,21 @@ file class NamespaceDefinitionNode : SemanticNode, INamespaceDefinitionNode
     private bool typeConstructorContextCached;
 
     public NamespaceDefinitionNode(
-        NamespaceSymbol symbol,
+        NamespaceName namespaceName,
         IEnumerable<INamespaceDefinitionNode> memberNamespaces,
         IEnumerable<IFacetMemberDefinitionNode> packageMembers)
     {
-        Symbol = symbol;
+        NamespaceName = namespaceName;
         MemberNamespaces = ChildList.Attach(this, memberNamespaces);
         PackageMembers = packageMembers.ToFixedList();
         Members = DefinitionsAspect.NamespaceDefinition_Members(this);
+    }
+
+    internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return Self;
+        return base.Inherited_ContainingDeclaration(child, descendant, ctx);
     }
 }
 

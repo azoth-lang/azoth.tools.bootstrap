@@ -10,6 +10,48 @@ namespace Azoth.Tools.Bootstrap.Framework;
 public static class DictionaryExtensions
 {
     /// <summary>
+    /// Adds a key/value pair to the <see cref="Dictionary{TKey,TValue}"/> by using the specified
+    /// function if the key does not already exist. Returns the new value, or the existing value if
+    /// the key exists.
+    /// </summary>
+    /// <remarks>This method is not thread-safe.</remarks>
+    /// <exception cref="ArgumentException">An element with the same key already exists in the <see cref="Dictionary{TKey,TValue}"/>.</exception>
+    public static TValue GetOrAdd<TKey, TValue>(
+        this Dictionary<TKey, TValue> dictionary,
+        TKey key,
+        Func<TKey, TValue> valueFactory)
+        where TKey : notnull
+    {
+        ref TValue? location = ref CollectionsMarshal.GetValueRefOrAddDefault(dictionary, key, out var exists);
+        if (exists)
+            return location!;
+        var value = valueFactory(key);
+        location = value;
+        return value;
+    }
+
+    /// <summary>
+    /// Adds a key/value pair to the <see cref="Dictionary{TKey,TValue}"/> by using the specified
+    /// function if the key does not already exist. Returns the new value, or the existing value if
+    /// the key exists.
+    /// </summary>
+    /// <returns><see langword="true"/> if the key/value pair was added to the dictionary
+    /// successfully; otherwise, <see langword="false"/>.</returns>
+    public static bool TryAdd<TKey, TValue>(
+        this Dictionary<TKey, TValue> dictionary,
+        TKey key,
+        Func<TKey, TValue> valueFactory)
+        where TKey : notnull
+    {
+        ref TValue? location = ref CollectionsMarshal.GetValueRefOrAddDefault(dictionary, key, out var exists);
+        if (exists)
+            return false;
+
+        location = valueFactory(key);
+        return true;
+    }
+
+    /// <summary>
     /// Try to update an existing entry in a dictionary. If no entry exists, do nothing.
     /// </summary>
     /// <remarks>This provides a more efficient operation than first checking

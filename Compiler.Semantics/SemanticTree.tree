@@ -70,7 +70,7 @@ NamespaceBlockDefinition <: NamespaceBlockMemberDefinition = Syntax:`INamespaceB
     ImportDirectives:ImportDirective* Members:NamespaceBlockMemberDefinition*;
 NamespaceBlockMemberDefinition <: Definition;
 NamespaceDefinition <: NamespaceMemberDefinition, NamespaceDeclaration
-    = Symbol:`NamespaceSymbol` MemberNamespaces:NamespaceDefinition* PackageMembers:`IFacetMemberDefinitionNode`*;
+    = NamespaceName:`NamespaceName` MemberNamespaces:NamespaceDefinition* PackageMembers:`IFacetMemberDefinitionNode`*;
 NamespaceMemberDefinition <: NamespaceMemberDeclaration;
 
 // ---------- Function Definition
@@ -442,15 +442,16 @@ InvocableDeclaration <: SymbolDeclaration, ChildDeclaration;
 FunctionInvocableDeclaration <: NamedDeclaration, InvocableDeclaration;
 /// A declaration that is either a namespace or an ordinary type declaration. This is used as part
 /// of name resolution where it is known that certian names are either namespaces or ordinary types.
-NamespaceOrOrdinaryTypeDeclaration <: NamedDeclaration, SymbolDeclaration;
+NamespaceOrOrdinaryTypeDeclaration <: SymbolDeclaration;
 
 // ---------- Namespace Declarations
 NamespaceDeclaration <: NamespaceMemberDeclaration, NamespaceOrOrdinaryTypeDeclaration;
-NamespaceMemberDeclaration <: PackageFacetChildDeclaration, NamedDeclaration, SymbolDeclaration
-    = Name:`OrdinaryName`;
+NamespaceMemberDeclaration <: PackageFacetChildDeclaration, SymbolDeclaration
+    = Name:`OrdinaryName`?;
 
 // ---------- Function Declaration
-FunctionDeclaration <: NamespaceMemberDeclaration, FunctionInvocableDeclaration;
+FunctionDeclaration <: NamespaceMemberDeclaration, FunctionInvocableDeclaration
+    = Name:`OrdinaryName`;
 
 // ---------- Type Declarations
 TypeDeclaration <: NamedDeclaration, SymbolDeclaration;

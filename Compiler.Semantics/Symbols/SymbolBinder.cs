@@ -16,7 +16,8 @@ internal static class SymbolBinder
     public static IChildDeclarationNode Symbol(Symbol symbol)
        => symbol switch
        {
-           NamespaceSymbol sym => INamespaceSymbolNode.Create(sym),
+           PackageSymbol _ => throw new NotSupportedException($"{nameof(PackageSymbol)} not supported."),
+           LocalNamespaceSymbol sym => INamespaceSymbolNode.Create(sym),
            TypeSymbol sym => TypeSymbol(sym),
            InvocableSymbol sym => InvocableSymbol(sym),
            FieldSymbol sym => FieldSymbol(sym),
