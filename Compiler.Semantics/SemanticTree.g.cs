@@ -3061,7 +3061,7 @@ public partial interface INameNode : INameExpressionNode
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface INamespaceNameNode : INameNode
 {
-    IFixedList<INamespaceDeclarationNode> ReferencedDeclarations { get; }
+    INamespaceDeclarationNode ReferencedDeclaration { get; }
     IMaybePlainType IExpressionNode.PlainType
         => AzothPlainType.Unknown;
 }
@@ -3080,8 +3080,8 @@ public partial interface IUnqualifiedNamespaceNameNode : INamespaceNameNode
 
     public static IUnqualifiedNamespaceNameNode Create(
         IIdentifierNameSyntax syntax,
-        IEnumerable<INamespaceDeclarationNode> referencedDeclarations)
-        => new UnqualifiedNamespaceNameNode(syntax, referencedDeclarations);
+        INamespaceDeclarationNode referencedDeclaration)
+        => new UnqualifiedNamespaceNameNode(syntax, referencedDeclaration);
 }
 
 [Closed(typeof(QualifiedNamespaceNameNode))]
@@ -3100,8 +3100,8 @@ public partial interface IQualifiedNamespaceNameNode : INamespaceNameNode
     public static IQualifiedNamespaceNameNode Create(
         IQualifiedNameSyntax syntax,
         INamespaceNameNode context,
-        IEnumerable<INamespaceDeclarationNode> referencedDeclarations)
-        => new QualifiedNamespaceNameNode(syntax, context, referencedDeclarations);
+        INamespaceDeclarationNode referencedDeclaration)
+        => new QualifiedNamespaceNameNode(syntax, context, referencedDeclaration);
 }
 
 [Closed(
@@ -16105,7 +16105,7 @@ file class UnqualifiedNamespaceNameNode : SemanticNode, IUnqualifiedNamespaceNam
     private AttributeLock syncLock;
 
     public IIdentifierNameSyntax Syntax { [DebuggerStepThrough] get; }
-    public IFixedList<INamespaceDeclarationNode> ReferencedDeclarations { [DebuggerStepThrough] get; }
+    public INamespaceDeclarationNode ReferencedDeclaration { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -16148,10 +16148,10 @@ file class UnqualifiedNamespaceNameNode : SemanticNode, IUnqualifiedNamespaceNam
 
     public UnqualifiedNamespaceNameNode(
         IIdentifierNameSyntax syntax,
-        IEnumerable<INamespaceDeclarationNode> referencedDeclarations)
+        INamespaceDeclarationNode referencedDeclaration)
     {
         Syntax = syntax;
-        ReferencedDeclarations = referencedDeclarations.ToFixedList();
+        ReferencedDeclaration = referencedDeclaration;
     }
 
     internal override IMaybePlainType? Inherited_ExpectedPlainType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -16203,7 +16203,7 @@ file class QualifiedNamespaceNameNode : SemanticNode, IQualifiedNamespaceNameNod
 
     public IQualifiedNameSyntax Syntax { [DebuggerStepThrough] get; }
     public INamespaceNameNode Context { [DebuggerStepThrough] get; }
-    public IFixedList<INamespaceDeclarationNode> ReferencedDeclarations { [DebuggerStepThrough] get; }
+    public INamespaceDeclarationNode ReferencedDeclaration { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -16247,11 +16247,11 @@ file class QualifiedNamespaceNameNode : SemanticNode, IQualifiedNamespaceNameNod
     public QualifiedNamespaceNameNode(
         IQualifiedNameSyntax syntax,
         INamespaceNameNode context,
-        IEnumerable<INamespaceDeclarationNode> referencedDeclarations)
+        INamespaceDeclarationNode referencedDeclaration)
     {
         Syntax = syntax;
         Context = Child.Attach(this, context);
-        ReferencedDeclarations = referencedDeclarations.ToFixedList();
+        ReferencedDeclaration = referencedDeclaration;
     }
 
     internal override IMaybePlainType? Inherited_ExpectedPlainType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)

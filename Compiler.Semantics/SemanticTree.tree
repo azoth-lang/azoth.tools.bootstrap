@@ -340,11 +340,11 @@ UnresolvedTypeQualifiedNameExpression <: UnresolvedQualifiedNameExpression
 // As such these nodes are both types and name expressions.
 
 Name <: NameExpression;
-NamespaceName <: Name = ReferencedDeclarations:`INamespaceDeclarationNode`*;
+NamespaceName <: Name = ReferencedDeclaration:`INamespaceDeclarationNode`;
 UnqualifiedNamespaceName <: NamespaceName
-    = Syntax:`IIdentifierNameSyntax` /ReferencedDeclarations/;
+    = Syntax:`IIdentifierNameSyntax` /ReferencedDeclaration/;
 QualifiedNamespaceName <: NamespaceName
-    = Syntax:`IQualifiedNameSyntax` Context:NamespaceName /ReferencedDeclarations/;
+    = Syntax:`IQualifiedNameSyntax` Context:NamespaceName /ReferencedDeclaration/;
 
 // ---------- Unresolved Names
 // Unresolved names are names that are known from context to only resolve to type or namespace

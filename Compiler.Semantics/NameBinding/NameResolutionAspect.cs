@@ -176,7 +176,7 @@ internal static partial class NameResolutionAspect
             switch (referencedDeclaration)
             {
                 case INamespaceDeclarationNode referencedNamespace:
-                    return IUnqualifiedNamespaceNameNode.Create(node.Syntax, referencedNamespace.Yield());
+                    return IUnqualifiedNamespaceNameNode.Create(node.Syntax, referencedNamespace);
                 case ILocalBindingNode referencedVariable:
                     return IVariableNameExpressionNode.Create(node.Syntax, referencedVariable);
                 case ITypeDeclarationNode referencedType:
@@ -208,7 +208,7 @@ internal static partial class NameResolutionAspect
     public static partial IUnresolvedNamespaceQualifiedNameExpressionNode? UnresolvedNameExpressionQualifiedNameExpression_ReplaceWith_UnresolvedNamespaceQualifiedNameExpression(IUnresolvedNameExpressionQualifiedNameExpressionNode node)
     {
         if (node.Context is not INamespaceNameNode context) return null;
-        var referencedDeclarations = context.ReferencedDeclarations.SelectMany(d => d.MembersNamed(node.MemberName)).ToFixedSet();
+        var referencedDeclarations = context.ReferencedDeclaration.MembersNamed(node.MemberName).ToFixedSet();
         return IUnresolvedNamespaceQualifiedNameExpressionNode.Create(node.Syntax, context, node.GenericArguments, referencedDeclarations);
     }
 
@@ -233,7 +233,7 @@ internal static partial class NameResolutionAspect
         switch (referencedDeclarations.TrySingle())
         {
             case INamespaceDeclarationNode referencedNamespace:
-                return IQualifiedNamespaceNameNode.Create(node.Syntax, node.Context, referencedNamespace.Yield());
+                return IQualifiedNamespaceNameNode.Create(node.Syntax, node.Context, referencedNamespace);
             case ITypeDeclarationNode referencedType:
                 // TODO select correct type declaration based on generic arguments
                 // TODO a way to pass along referenced declarations rather than requiring they be figured out again?
@@ -298,7 +298,7 @@ internal static partial class NameResolutionAspect
             switch (referencedDeclaration)
             {
                 case INamespaceDeclarationNode referencedNamespace:
-                    return IUnqualifiedNamespaceNameNode.Create(node.Syntax, referencedNamespace.Yield());
+                    return IUnqualifiedNamespaceNameNode.Create(node.Syntax, referencedNamespace);
                 case ITypeDeclarationNode referencedType:
                     // TODO a way to pass along referenced declarations rather than requiring they be figured out again?
                     return IIdentifierTypeNameNode.Create(node.Syntax);
@@ -325,7 +325,7 @@ internal static partial class NameResolutionAspect
     public static partial IUnresolvedNamespaceQualifiedNameNode? UnresolvedNameQualifiedName_ReplaceWith_UnresolvedNamespaceQualifiedName(IUnresolvedNameQualifiedNameNode node)
     {
         if (node.Context is not INamespaceNameNode context) return null;
-        var referencedDeclarations = context.ReferencedDeclarations.SelectMany(d => d.MembersNamed(node.MemberName)).ToFixedSet();
+        var referencedDeclarations = context.ReferencedDeclaration.MembersNamed(node.MemberName).ToFixedSet();
         return IUnresolvedNamespaceQualifiedNameNode.Create(node.Syntax, context, node.GenericArguments, referencedDeclarations);
     }
 
@@ -347,7 +347,7 @@ internal static partial class NameResolutionAspect
         switch (referencedDeclarations.TrySingle())
         {
             case INamespaceDeclarationNode referencedNamespace:
-                return IQualifiedNamespaceNameNode.Create(node.Syntax, node.Context, referencedNamespace.Yield());
+                return IQualifiedNamespaceNameNode.Create(node.Syntax, node.Context, referencedNamespace);
 
             case ITypeDeclarationNode referencedType:
                 // TODO select correct type declaration based on generic arguments
