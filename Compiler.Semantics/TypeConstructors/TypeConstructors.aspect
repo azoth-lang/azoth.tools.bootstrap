@@ -1,15 +1,30 @@
 ◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.TypeConstructors;
 ◊name TypeConstructorsAspect;
 ◊using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
+◊using Azoth.Tools.Bootstrap.Compiler.Types.Constructors.Contexts;
 
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
+↓ *.TypeConstructorContext <: `BareTypeConstructorContext`;
+
+// ---------- Code Files
+↑ CompilationUnit.TypeConstructorContext: `NamespaceContext`;
+= CompilationUnit.*.TypeConstructorContext => Self.TypeConstructorContext;
+
+// ---------- Namespace Definitions
+↑ NamespaceDefinition.TypeConstructorContext: `NamespaceContext`;
+= NamespaceBlockDefinition.*.TypeConstructorContext => Definition.TypeConstructorContext;
+
 // ---------- Type Definitions
+↓ TypeDefinition.TypeConstructorContext: `BareTypeConstructorContext`;
+= TypeDefinition.*.TypeConstructorContext => TypeConstructor;
 ↑ TypeDefinition.TypeConstructor: `OrdinaryTypeConstructor`;
 
 // ---------- Type Definition Parts
+↓ computed ImplicitSelfDefinition.TypeConstructorContext: `OrdinaryTypeConstructor`;
 ↑ ImplicitSelfDefinition.TypeConstructor: `SelfTypeConstructor`;
 = ImplicitSelfDefinition.TypeConstructor;
 
 // ---------- Member Definitions
+↓ computed AssociatedTypeDefinition.TypeConstructorContext: `OrdinaryTypeConstructor`;
 ↑ AssociatedTypeDefinition.TypeConstructor: `OrdinaryAssociatedTypeConstructor`;

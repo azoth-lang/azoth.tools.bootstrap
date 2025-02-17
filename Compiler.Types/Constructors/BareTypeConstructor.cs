@@ -50,14 +50,12 @@ public abstract class BareTypeConstructor : BareTypeConstructorContext, IEquatab
 
     #region CreateX(...)
     public static OrdinaryTypeConstructor CreateStruct(
-        IdentifierName containingPackage,
-        NamespaceName containingNamespace,
+        BareTypeConstructorContext context,
         bool isConst,
         OrdinaryName name,
         IFixedList<TypeConstructorParameter> genericParameters,
         IFixedSet<BareType> supertypes)
-        => new(new NamespaceContext(containingPackage, containingNamespace),
-            isAbstract: false, isConst, TypeKind.Struct, name, genericParameters, supertypes);
+        => new(context, isAbstract: false, isConst, TypeKind.Struct, name, genericParameters, supertypes);
 
     public static OrdinaryTypeConstructor CreateClass(
         IdentifierName containingPackage,
@@ -89,25 +87,21 @@ public abstract class BareTypeConstructor : BareTypeConstructorContext, IEquatab
             genericParameters, supertypes);
 
     public static OrdinaryTypeConstructor CreateClass(
-        IdentifierName containingPackage,
-        NamespaceName containingNamespace,
+        BareTypeConstructorContext context,
         bool isAbstract,
         bool isConst,
         OrdinaryName name,
         IFixedList<TypeConstructorParameter> genericParameters,
         IFixedSet<BareType> supertypes)
-        => new(new NamespaceContext(containingPackage, containingNamespace),
-            isAbstract, isConst, TypeKind.Class, name, genericParameters, supertypes);
+        => new(context, isAbstract, isConst, TypeKind.Class, name, genericParameters, supertypes);
 
     public static OrdinaryTypeConstructor CreateTrait(
-        IdentifierName containingPackage,
-        NamespaceName containingNamespace,
+        BareTypeConstructorContext context,
         bool isConst,
         OrdinaryName name,
         IFixedList<TypeConstructorParameter> genericParameters,
         IFixedSet<BareType> supertypes)
-        => new(new NamespaceContext(containingPackage, containingNamespace),
-            isAbstract: true, isConst, TypeKind.Trait, name, genericParameters, supertypes);
+        => new(context, isAbstract: true, isConst, TypeKind.Trait, name, genericParameters, supertypes);
 
     public static OrdinaryTypeConstructor CreateClass(
         IdentifierName containingPackage,

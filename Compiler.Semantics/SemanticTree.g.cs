@@ -31,6 +31,7 @@ using Azoth.Tools.Bootstrap.Compiler.Syntax;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
+using Azoth.Tools.Bootstrap.Compiler.Types.Constructors.Contexts;
 using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 using Azoth.Tools.Bootstrap.Compiler.Types.Flow;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
@@ -302,6 +303,7 @@ public partial interface ICompilationUnitNode : ICodeNode
     PackageSymbol ContainingSymbol
         => ContainingDeclaration.PackageSymbol;
     INamespaceDefinitionNode ImplicitNamespace { get; }
+    NamespaceContext TypeConstructorContext { get; }
 
     public static ICompilationUnitNode Create(
         ICompilationUnitSyntax syntax,
@@ -449,6 +451,7 @@ public partial interface INamespaceDefinitionNode : INamespaceMemberDefinitionNo
     ISyntax? ISemanticNode.Syntax => Syntax;
     new IFixedList<INamespaceMemberDefinitionNode> Members { get; }
     IFixedList<INamespaceMemberDeclarationNode> INamespaceDeclarationNode.Members => Members;
+    NamespaceContext TypeConstructorContext { get; }
 
     public static INamespaceDefinitionNode Create(
         NamespaceSymbol symbol,
@@ -533,6 +536,7 @@ public partial interface ITypeDefinitionNode : ICodeNode, IFacetMemberDefinition
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
     new IImplicitSelfDefinitionNode ImplicitSelf { get; }
     IImplicitSelfDeclarationNode INonVariableTypeDeclarationNode.ImplicitSelf => ImplicitSelf;
+    BareTypeConstructorContext TypeConstructorContext { get; }
     new OrdinaryTypeConstructor TypeConstructor { get; }
     BareTypeConstructor INonVariableTypeDeclarationNode.TypeConstructor => TypeConstructor;
     ITypeConstructor ITypeDeclarationNode.TypeConstructor => TypeConstructor;
@@ -658,6 +662,7 @@ public partial interface IImplicitSelfDefinitionNode : IImplicitSelfDeclarationN
 {
     TypeSymbol ContainingSymbol
         => ContainingDeclaration.Symbol!;
+    OrdinaryTypeConstructor TypeConstructorContext { get; }
     new SelfTypeConstructor TypeConstructor { get; }
     AssociatedTypeConstructor IImplicitSelfDeclarationNode.TypeConstructor => TypeConstructor;
     ITypeConstructor ITypeDeclarationNode.TypeConstructor => TypeConstructor;
@@ -974,6 +979,7 @@ public partial interface IAssociatedTypeDefinitionNode : IAssociatedMemberDefini
     UnqualifiedName INamedDeclarationNode.Name => Name;
     IdentifierName IAssociatedTypeDeclarationNode.Name => Name;
     TypeVariance Variance { get; }
+    OrdinaryTypeConstructor TypeConstructorContext { get; }
     OrdinaryAssociatedTypeConstructor TypeConstructor { get; }
     LexicalScope IDefinitionNode.LexicalScope
         => ContainingLexicalScope;
@@ -4764,6 +4770,11 @@ internal abstract partial class SemanticNode : TreeNode, IChildTreeNode<ISemanti
     internal virtual void Contribute_This_Diagnostics(DiagnosticCollectionBuilder builder) { }
     internal virtual void Contribute_Diagnostics(DiagnosticCollectionBuilder builder) { }
 
+    internal virtual BareTypeConstructorContext Inherited_TypeConstructorContext(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+        => (GetParent(ctx) ?? throw Child.InheritFailed("TypeConstructorContext", child, descendant)).Inherited_TypeConstructorContext(this, descendant, ctx);
+    protected BareTypeConstructorContext Inherited_TypeConstructorContext(IInheritanceContext ctx)
+        => GetParent(ctx)!.Inherited_TypeConstructorContext(this, this, ctx);
+
     internal virtual IPackageDeclarationNode Inherited_Package(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
         => (GetParent(ctx) ?? throw Child.InheritFailed("Package", child, descendant)).Inherited_Package(this, descendant, ctx);
     protected IPackageDeclarationNode Inherited_Package(IInheritanceContext ctx)
@@ -5131,6 +5142,12 @@ file class CompilationUnitNode : SemanticNode, ICompilationUnitNode
                 LexicalScopingAspect.CompilationUnit_LexicalScope);
     private NamespaceSearchScope? lexicalScope;
     private bool lexicalScopeCached;
+    public NamespaceContext TypeConstructorContext
+        => GrammarAttribute.IsCached(in typeConstructorContextCached) ? typeConstructorContext!
+            : this.Synthetic(ref typeConstructorContextCached, ref typeConstructorContext,
+                TypeConstructorsAspect.CompilationUnit_TypeConstructorContext);
+    private NamespaceContext? typeConstructorContext;
+    private bool typeConstructorContextCached;
 
     public CompilationUnitNode(
         ICompilationUnitSyntax syntax,
@@ -5157,6 +5174,13 @@ file class CompilationUnitNode : SemanticNode, ICompilationUnitNode
     internal override CodeFile Inherited_File(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         return ContextAspect.CompilationUnit_Children_Broadcast_File(this);
+    }
+
+    internal override BareTypeConstructorContext Inherited_TypeConstructorContext(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return Self.TypeConstructorContext;
+        return base.Inherited_TypeConstructorContext(child, descendant, ctx);
     }
 
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
@@ -5252,6 +5276,13 @@ file class NamespaceBlockDefinitionNode : SemanticNode, INamespaceBlockDefinitio
     {
         return Is.OfType<NamespaceSearchScope>(LexicalScope);
     }
+
+    internal override BareTypeConstructorContext Inherited_TypeConstructorContext(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return Definition.TypeConstructorContext;
+        return base.Inherited_TypeConstructorContext(child, descendant, ctx);
+    }
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -5287,6 +5318,12 @@ file class NamespaceDefinitionNode : SemanticNode, INamespaceDefinitionNode
                 NameLookupAspect.NamespaceDeclaration_NestedMembersByName);
     private FixedDictionary<OrdinaryName, IFixedSet<INamespaceMemberDeclarationNode>>? nestedMembersByName;
     private bool nestedMembersByNameCached;
+    public NamespaceContext TypeConstructorContext
+        => GrammarAttribute.IsCached(in typeConstructorContextCached) ? typeConstructorContext!
+            : this.Synthetic(ref typeConstructorContextCached, ref typeConstructorContext,
+                TypeConstructorsAspect.NamespaceDefinition_TypeConstructorContext);
+    private NamespaceContext? typeConstructorContext;
+    private bool typeConstructorContextCached;
 
     public NamespaceDefinitionNode(
         NamespaceSymbol symbol,
@@ -5513,6 +5550,12 @@ file class ClassDefinitionNode : SemanticNode, IClassDefinitionNode
                 (ctx) => (IPackageFacetNode)Inherited_Facet(ctx));
     private IPackageFacetNode? facet;
     private bool facetCached;
+    public BareTypeConstructorContext TypeConstructorContext
+        => GrammarAttribute.IsCached(in typeConstructorContextCached) ? typeConstructorContext!
+            : this.Inherited(ref typeConstructorContextCached, ref typeConstructorContext,
+                Inherited_TypeConstructorContext);
+    private BareTypeConstructorContext? typeConstructorContext;
+    private bool typeConstructorContextCached;
     public AccessModifier AccessModifier
         => GrammarAttribute.IsCached(in accessModifierCached) ? accessModifier
             : this.Synthetic(ref accessModifierCached, ref accessModifier, ref syncLock,
@@ -5650,6 +5693,13 @@ file class ClassDefinitionNode : SemanticNode, IClassDefinitionNode
         return false;
     }
 
+    internal override BareTypeConstructorContext Inherited_TypeConstructorContext(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return Is.OfType<OrdinaryTypeConstructor>(TypeConstructor);
+        return base.Inherited_TypeConstructorContext(child, descendant, ctx);
+    }
+
     internal override ValueIdScope Inherited_ValueIdScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, Self.BaseTypeName))
@@ -5703,6 +5753,12 @@ file class StructDefinitionNode : SemanticNode, IStructDefinitionNode
                 (ctx) => (IPackageFacetNode)Inherited_Facet(ctx));
     private IPackageFacetNode? facet;
     private bool facetCached;
+    public BareTypeConstructorContext TypeConstructorContext
+        => GrammarAttribute.IsCached(in typeConstructorContextCached) ? typeConstructorContext!
+            : this.Inherited(ref typeConstructorContextCached, ref typeConstructorContext,
+                Inherited_TypeConstructorContext);
+    private BareTypeConstructorContext? typeConstructorContext;
+    private bool typeConstructorContextCached;
     public AccessModifier AccessModifier
         => GrammarAttribute.IsCached(in accessModifierCached) ? accessModifier
             : this.Synthetic(ref accessModifierCached, ref accessModifier, ref syncLock,
@@ -5836,6 +5892,13 @@ file class StructDefinitionNode : SemanticNode, IStructDefinitionNode
         return false;
     }
 
+    internal override BareTypeConstructorContext Inherited_TypeConstructorContext(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return Is.OfType<OrdinaryTypeConstructor>(TypeConstructor);
+        return base.Inherited_TypeConstructorContext(child, descendant, ctx);
+    }
+
     internal override ValueIdScope Inherited_ValueIdScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ContainsNode(Self.Attributes, child))
@@ -5886,6 +5949,12 @@ file class TraitDefinitionNode : SemanticNode, ITraitDefinitionNode
                 (ctx) => (IPackageFacetNode)Inherited_Facet(ctx));
     private IPackageFacetNode? facet;
     private bool facetCached;
+    public BareTypeConstructorContext TypeConstructorContext
+        => GrammarAttribute.IsCached(in typeConstructorContextCached) ? typeConstructorContext!
+            : this.Inherited(ref typeConstructorContextCached, ref typeConstructorContext,
+                Inherited_TypeConstructorContext);
+    private BareTypeConstructorContext? typeConstructorContext;
+    private bool typeConstructorContextCached;
     public AccessModifier AccessModifier
         => GrammarAttribute.IsCached(in accessModifierCached) ? accessModifier
             : this.Synthetic(ref accessModifierCached, ref accessModifier, ref syncLock,
@@ -6007,6 +6076,13 @@ file class TraitDefinitionNode : SemanticNode, ITraitDefinitionNode
         return false;
     }
 
+    internal override BareTypeConstructorContext Inherited_TypeConstructorContext(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return Is.OfType<OrdinaryTypeConstructor>(TypeConstructor);
+        return base.Inherited_TypeConstructorContext(child, descendant, ctx);
+    }
+
     internal override ValueIdScope Inherited_ValueIdScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ContainsNode(Self.Attributes, child))
@@ -6097,6 +6173,8 @@ file class ImplicitSelfDefinitionNode : SemanticNode, IImplicitSelfDefinitionNod
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public INonVariableTypeDeclarationNode ContainingDeclaration
         => (INonVariableTypeDeclarationNode)Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
+    public OrdinaryTypeConstructor TypeConstructorContext
+        => (OrdinaryTypeConstructor)Inherited_TypeConstructorContext(GrammarAttribute.CurrentInheritanceContext());
     public AssociatedTypeSymbol Symbol
         => GrammarAttribute.IsCached(in symbolCached) ? symbol!
             : this.Synthetic(ref symbolCached, ref symbol,
@@ -7333,6 +7411,8 @@ file class AssociatedTypeDefinitionNode : SemanticNode, IAssociatedTypeDefinitio
                 (ctx) => (IPackageFacetNode)Inherited_Facet(ctx));
     private IPackageFacetNode? facet;
     private bool facetCached;
+    public OrdinaryTypeConstructor TypeConstructorContext
+        => (OrdinaryTypeConstructor)Inherited_TypeConstructorContext(GrammarAttribute.CurrentInheritanceContext());
     public AccessModifier AccessModifier
         => GrammarAttribute.IsCached(in accessModifierCached) ? accessModifier
             : this.Synthetic(ref accessModifierCached, ref accessModifier, ref syncLock,
