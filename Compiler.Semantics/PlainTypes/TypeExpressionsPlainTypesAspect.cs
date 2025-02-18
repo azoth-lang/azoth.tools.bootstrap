@@ -43,28 +43,32 @@ internal static partial class TypeExpressionsPlainTypesAspect
 
     #region Type Names
     public static partial IMaybePlainType BuiltInTypeName_NamedPlainType(IBuiltInTypeNameNode node)
-        => node.ReferencedDeclaration?.TypeConstructor.TryConstructNullaryPlainType(containingType: null) ?? IMaybePlainType.Unknown;
+        => NamedPlainType(containingType: null, node, []);
 
     public static partial IMaybePlainType IdentifierTypeName_NamedPlainType(IIdentifierTypeNameNode node)
-    {
-        // TODO do not use symbols at this stage of the compiler
-        var referencedSymbol = node.ReferencedDeclaration?.Symbol;
-        return referencedSymbol?.TryGetPlainType()
-               ?? referencedSymbol?.TryGetTypeConstructor()?.TryConstructNullaryPlainType(containingType: null)
-               ?? IMaybePlainType.Unknown;
-    }
+        => NamedPlainType(containingType: null, node, []);
 
     public static partial IMaybePlainType GenericTypeName_NamedPlainType(IGenericTypeNameNode node)
+        => NamedPlainType(containingType: null, node, node.GenericArguments);
+
+    public static partial IMaybePlainType QualifiedTypeName_NamedPlainType(IQualifiedTypeNameNode node)
     {
-        // TODO do not use symbols at this stage of the compiler
-        var referencedSymbol = node.ReferencedDeclaration?.Symbol;
-        var declaredPlainType = referencedSymbol?.TryGetTypeConstructor();
-        if (declaredPlainType is null)
-            return PlainType.Unknown;
-        var genericArguments = node.GenericArguments.Select(a => a.NamedPlainType).OfType<PlainType>().ToFixedList();
-        if (genericArguments.Count != node.GenericArguments.Count)
-            return PlainType.Unknown;
-        return declaredPlainType.Construct(containingType: null, genericArguments);
+        // TODO eliminate the `as` here
+        var typeNameContext = node.Context as ITypeNameNode;
+        return NamedPlainType(typeNameContext?.NamedPlainType as BarePlainType, node, node.GenericArguments);
+    }
+
+    private static IMaybePlainType NamedPlainType(
+        BarePlainType? containingType,
+        ITypeNameNode node,
+        IFixedList<ITypeNode> genericArguments)
+    {
+        var referencedDeclaration = node.ReferencedDeclaration;
+        if (referencedDeclaration is null) return PlainType.Unknown;
+        var args = genericArguments.IsEmpty ? FixedList.Empty<PlainType>()
+            : genericArguments.Select(a => a.NamedPlainType).OfType<PlainType>().ToFixedList();
+        if (args.Count != genericArguments.Count) return PlainType.Unknown;
+        return referencedDeclaration.TypeConstructor.Construct(containingType, args);
     }
     #endregion
 }

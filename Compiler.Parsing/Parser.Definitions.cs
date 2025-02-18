@@ -338,7 +338,6 @@ public partial class Parser
 
         switch (Tokens.Current)
         {
-            // TODO parse nested traits
             case IFunctionKeywordToken _:
                 return ParseMemberFunction(modifiers, inTrait);
             case IGetKeywordToken _:
@@ -354,6 +353,13 @@ public partial class Parser
             case IVarianceToken _:
             case ITypeKeywordToken _:
                 return ParseAssociatedType(modifiers, inTrait);
+            // Nested types
+            case IClassKeywordToken _:
+                return ParseClass(modifiers);
+            case IStructKeywordToken _:
+                return ParseStruct(modifiers);
+            case ITraitKeywordToken _:
+                return ParseTrait(modifiers);
             default:
                 Tokens.UnexpectedToken();
                 throw new ParseFailedException();

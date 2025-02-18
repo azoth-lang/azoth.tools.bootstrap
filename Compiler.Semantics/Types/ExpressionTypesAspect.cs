@@ -131,7 +131,7 @@ internal static partial class ExpressionTypesAspect
         var typeDeclarationNode = node.ContainingLexicalScope
                                       .Lookup<ITypeDeclarationNode>(SpecialNames.StringTypeName)
                                       .TrySingle();
-        return typeDeclarationNode?.TypeConstructor.TryConstruct(containingType: null, [])?.With(Capability.Constant) ?? IMaybeType.Unknown;
+        return typeDeclarationNode?.TypeConstructor.TryConstructBareType(containingType: null, [])?.With(Capability.Constant) ?? IMaybeType.Unknown;
     }
 
     public static partial IFlowState LiteralExpression_FlowStateAfter(ILiteralExpressionNode node)
@@ -319,7 +319,10 @@ internal static partial class ExpressionTypesAspect
                 diagnostics.Add(TypeError.SpecialTypeCannotBeUsedHere(node.File, n.Syntax));
                 break;
             case IQualifiedTypeNameNode n:
-                diagnostics.Add(TypeError.TypeParameterCannotBeUsedHere(node.File, n.Syntax));
+                if (n.NamedPlainType is BarePlainType { TypeConstructor: AssociatedTypeConstructor })
+                    diagnostics.Add(TypeError.TypeParameterCannotBeUsedHere(node.File, n.Syntax));
+                else
+                    CheckGenericArgumentsAreConstructable(n, diagnostics);
                 break;
         }
     }

@@ -187,11 +187,12 @@
 ↑ UnresolvedQualifiedName.MemberName: `OrdinaryName` => Syntax.MemberName;
 
 // ---------- Type Names
-↑ UnqualifiedTypeName.Name: `UnqualifiedName` => Syntax.Name;
+↑ TypeName.Name: `UnqualifiedName`;
 ↑ BuiltInTypeName.Name: `BuiltInTypeName` => Syntax.Name;
-↑ OrdinaryTypeName.Name: `OrdinaryName` => Syntax.Name;
+↑ OrdinaryTypeName.Name: `OrdinaryName`;
 ↑ IdentifierTypeName.Name: `IdentifierName` => Syntax.Name;
 ↑ GenericTypeName.Name: `GenericName` => Syntax.Name;
+↑ QualifiedTypeName.Name: `OrdinaryName` => Syntax.MemberName;
 
 // ---------- Capability Expressions
 ↑ PrepareToReturnExpression.Syntax: `IExpressionSyntax` => Value.Syntax;

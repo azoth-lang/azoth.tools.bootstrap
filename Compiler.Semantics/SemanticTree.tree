@@ -440,12 +440,12 @@ PackageFacetChildDeclaration <: ChildDeclaration;
 InvocableDeclaration <: SymbolDeclaration, ChildDeclaration;
 /// A declaration that is some form of function (i.e. it is invocable and has a name).
 FunctionInvocableDeclaration <: NamedDeclaration, InvocableDeclaration;
-/// A declaration that is either a namespace or an ordinary type declaration. This is used as part
-/// of name resolution where it is known that certian names are either namespaces or ordinary types.
-NamespaceOrOrdinaryTypeDeclaration <: SymbolDeclaration;
+/// A declaration that is either a namespace or a type declaration. This is used as part of name
+/// resolution where it is known that certain names are either namespaces or types.
+NamespaceOrTypeDeclaration <: SymbolDeclaration;
 
 // ---------- Namespace Declarations
-NamespaceDeclaration <: NamespaceMemberDeclaration, NamespaceOrOrdinaryTypeDeclaration;
+NamespaceDeclaration <: NamespaceMemberDeclaration, NamespaceOrTypeDeclaration;
 NamespaceMemberDeclaration <: PackageFacetChildDeclaration, SymbolDeclaration
     = Name:`OrdinaryName`?;
 
@@ -454,11 +454,11 @@ FunctionDeclaration <: NamespaceMemberDeclaration, FunctionInvocableDeclaration
     = Name:`OrdinaryName`;
 
 // ---------- Type Declarations
-TypeDeclaration <: NamedDeclaration, SymbolDeclaration;
+TypeDeclaration <: NamedDeclaration, SymbolDeclaration, NamespaceOrTypeDeclaration;
 // TODO this needs a better name
 NonVariableTypeDeclaration <: TypeDeclaration;
 BuiltInTypeDeclaration <: NonVariableTypeDeclaration = Name:`BuiltInTypeName` Members:{TypeMemberDeclaration};
-OrdinaryTypeDeclaration <: NamespaceMemberDeclaration, TypeMemberDeclaration, NonVariableTypeDeclaration, NamespaceOrOrdinaryTypeDeclaration
+OrdinaryTypeDeclaration <: NamespaceMemberDeclaration, TypeMemberDeclaration, NonVariableTypeDeclaration
     = Name:`OrdinaryName` GenericParameters:GenericParameterDeclaration* Members:{TypeMemberDeclaration};
 ClassDeclaration <: OrdinaryTypeDeclaration = Members:{TypeMemberDeclaration};
 StructDeclaration <: OrdinaryTypeDeclaration = Members:{TypeMemberDeclaration};

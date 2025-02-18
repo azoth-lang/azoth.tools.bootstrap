@@ -109,16 +109,29 @@ public sealed class PackageNameScope
 
     public ITypeDeclarationNode Lookup(OrdinaryTypeConstructor typeConstructor)
     {
+        return typeConstructor.Context switch
+        {
+            NamespaceContext c => Lookup(c, typeConstructor.Name),
+            BareTypeConstructor c => Lookup(Lookup(c)!, typeConstructor),
+            BuiltInContext _ => throw new UnreachableException($"`{nameof(OrdinaryTypeConstructor)}` cannot have `{nameof(BuiltInContext)}`."),
+            _ => throw ExhaustiveMatch.Failed(typeConstructor.Context),
+        };
+    }
+
+    private ITypeDeclarationNode Lookup(NamespaceContext context, OrdinaryName name)
+    {
         // TODO is there a problem with types using package names and this using package aliases?
-        // TODO handle nested types that have another type as their context
-        var context = (NamespaceContext)typeConstructor.Context;
         var globalNamespace = GlobalScopeForPackage(context.Package);
         var ns = globalNamespace;
-        foreach (var name in context.Namespace.Segments)
-            ns = ns.GetChildNamespaceScope(name) ?? throw new UnreachableException("Type namespace must exist");
+        foreach (var nsName in context.Namespace.Segments)
+            ns = ns.GetChildNamespaceScope(nsName) ?? throw new UnreachableException("Type namespace must exist");
 
-        return ns.Lookup(typeConstructor.Name).OfType<ITypeDeclarationNode>().Single();
+        return ns.Lookup(name).OfType<ITypeDeclarationNode>().Single();
     }
+
+    private static ITypeDeclarationNode Lookup(ITypeDeclarationNode context, OrdinaryTypeConstructor typeConstructor)
+        => context.TypeMembersNamed(typeConstructor.Name)
+                  .Single(d => d.TypeConstructor.Equals(typeConstructor));
 
     public ITypeDeclarationNode Lookup(AssociatedTypeConstructor typeConstructor)
         => typeConstructor switch

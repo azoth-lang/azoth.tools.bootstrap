@@ -17,4 +17,6 @@ internal static partial class BareTypeAspect
     public static partial BareType? IdentifierTypeName_NamedBareType(IIdentifierTypeNameNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial BareType? GenericTypeName_NamedBareType(IGenericTypeNameNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial BareType? QualifiedTypeName_NamedBareType(IQualifiedTypeNameNode node);
 }

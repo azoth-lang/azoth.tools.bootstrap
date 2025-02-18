@@ -5,6 +5,9 @@
 
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
-// ---------- Types
-↑ TypeName.NamedBareType: `BareType`?;
-= QualifiedTypeName.NamedBareType => throw new NotImplementedException();
+// ---------- Names
+↑ Name.NamedBareType: `BareType`?;
+= NamespaceName.NamedBareType => null;
+
+// ---------- Unresolved Names
+= UnresolvedName.NamedBareType => null;

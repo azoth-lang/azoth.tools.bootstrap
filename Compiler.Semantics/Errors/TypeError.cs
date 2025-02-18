@@ -202,17 +202,10 @@ public static class TypeError
             3030, $"The field `{fieldSyntax.Name}` of type `{type.ToSourceCodeString()}` does not maintain the independence of the type parameters.");
     }
 
-    // TODO remove overload when no longer needed for new object expression
-    public static Diagnostic TypeParameterCannotBeUsedHere(CodeFile file, INameSyntax typeSyntax)
-    {
-        return new(file, typeSyntax.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
-            3031, $"Type parameter `{typeSyntax}` cannot be used here.");
-    }
-
     public static Diagnostic TypeParameterCannotBeUsedHere(CodeFile file, INameExpressionSyntax typeSyntax)
     {
         return new(file, typeSyntax.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
-        3031, $"Type parameter `{typeSyntax}` cannot be used here.");
+            3031, $"Type parameter `{typeSyntax}` cannot be used here.");
     }
 
     public static Diagnostic SpecialTypeCannotBeUsedHere(CodeFile file, INameSyntax typeSyntax)

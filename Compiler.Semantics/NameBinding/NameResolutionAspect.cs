@@ -261,6 +261,11 @@ internal static partial class NameResolutionAspect
             // TODO handle type arguments (which are not allowed for initializers)
             return IInitializerNameExpressionNode.Create(node.Syntax, node.Context, node.MemberName, referencedInitializers);
 
+        // TODO select correct type declaration based on generic arguments
+        if (referencedDeclarations.TrySingle() is ITypeDeclarationNode referencedType)
+            // TODO a way to pass along referenced declarations rather than requiring they be figured out again?
+            return IQualifiedTypeNameNode.Create(node.Syntax, node.Context, node.GenericArguments);
+
         return null;
     }
 
@@ -268,8 +273,8 @@ internal static partial class NameResolutionAspect
     #endregion
 
     #region Unresolved Names
-    public static partial IFixedList<INamespaceOrOrdinaryTypeDeclarationNode> UnresolvedOrdinaryName_ReferencedDeclarations(IUnresolvedOrdinaryNameNode node)
-        => node.ContainingLexicalScope.Lookup<INamespaceOrOrdinaryTypeDeclarationNode>(node.Name).ToFixedList();
+    public static partial IFixedList<INamespaceOrTypeDeclarationNode> UnresolvedOrdinaryName_ReferencedDeclarations(IUnresolvedOrdinaryNameNode node)
+        => node.ContainingLexicalScope.Lookup<INamespaceOrTypeDeclarationNode>(node.Name).ToFixedList();
 
     public static partial void UnresolvedOrdinaryName_Contribute_Diagnostics(IUnresolvedOrdinaryNameNode node, DiagnosticCollectionBuilder diagnostics)
     {

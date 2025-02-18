@@ -215,6 +215,8 @@ public abstract class BareTypeConstructor : BareTypeConstructorContext, IEquatab
     public abstract BarePlainType Construct(
         BarePlainType? containingType,
         IFixedList<PlainType> arguments);
+    PlainType ITypeConstructor.Construct(BarePlainType? containingType, IFixedList<PlainType> arguments)
+        => Construct(containingType, arguments);
 
     /// <summary>
     /// Construct a type using the <see cref="ParameterPlainTypes"/> to create a plain type as it
@@ -276,7 +278,7 @@ public abstract class BareTypeConstructor : BareTypeConstructorContext, IEquatab
     /// Attempt to construct a type from this type constructor with possibly unknown arguments. If
     /// any argument is unknown, the result is <see langword="null"/>.
     /// </summary>
-    public BareType? TryConstruct(BareType? containingType, IFixedList<IMaybeType> arguments)
+    public BareType? TryConstructBareType(BareType? containingType, IFixedList<IMaybeType> arguments)
     {
         var properTypeArguments = arguments.As<Type>();
         if (properTypeArguments is null) return null;

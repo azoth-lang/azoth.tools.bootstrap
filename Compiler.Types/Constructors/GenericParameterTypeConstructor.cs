@@ -27,13 +27,20 @@ public class GenericParameterTypeConstructor : ITypeConstructor
     }
 
     #region ITypeConstructor implementation
+    PlainType ITypeConstructor.Construct(BarePlainType? containingType, IFixedList<PlainType> arguments)
+    {
+        Requires.Null(containingType, nameof(containingType), NoContainingTypeMessage);
+        TypeRequires.NoArgs(arguments, nameof(arguments));
+        return PlainType;
+    }
+
     PlainType ITypeConstructor.TryConstructNullaryPlainType(BarePlainType? containingType)
     {
         Requires.Null(containingType, nameof(containingType), NoContainingTypeMessage);
         return PlainType;
     }
 
-    BareType? ITypeConstructor.TryConstruct(BareType? containingType, IFixedList<IMaybeType> arguments)
+    BareType? ITypeConstructor.TryConstructBareType(BareType? containingType, IFixedList<IMaybeType> arguments)
     {
         Requires.Null(containingType, nameof(containingType), NoContainingTypeMessage);
         TypeRequires.NoArgs(arguments, nameof(arguments));

@@ -8,15 +8,21 @@
 // ---------- Attributes
 = Attribute.↑.Diagnostics;
 
-// ---------- Types
-↑ TypeName.ReferencedDeclaration: TypeDeclaration?;
-= OrdinaryTypeName.ReferencedDeclaration;
-= OrdinaryTypeName.↑.Diagnostics;
-↑ BuiltInTypeName.ReferencedDeclaration: TypeDeclaration?;
-
 // ---------- Parameters
 ↑ FieldParameter.ReferencedField: FieldDefinition?;
 
 // ---------- Name Expressions
 ↑ SelfExpression.ReferencedDefinition: SelfParameter?;
 = SelfExpression.↑.Diagnostics;
+
+// ---------- Names
+↑ Name.ReferencedDeclaration: NamespaceOrTypeDeclaration?;
+
+// ---------- Unresolved Names
+= UnresolvedName.ReferencedDeclaration => null;
+
+// ---------- Type Names
+↑ TypeName.ReferencedDeclaration: TypeDeclaration?;
+↑ BuiltInTypeName.ReferencedDeclaration: TypeDeclaration?;
+= OrdinaryTypeName.ReferencedDeclaration;
+= OrdinaryTypeName.↑.Diagnostics;

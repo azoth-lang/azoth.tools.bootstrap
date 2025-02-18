@@ -5,6 +5,9 @@
 
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
+// ---------- Declarations
++ NamespaceOrTypeDeclaration.TypeMembersNamed(OrdinaryName name): IEnumerable<TypeDeclaration>;
+
 // ---------- Namespace Declarations
 ↑ NamespaceDeclaration.MembersByName: `FixedDictionary<OrdinaryName, IFixedSet<INamespaceMemberDeclarationNode>>`;
 = NamespaceDeclaration.MembersByName;
@@ -14,14 +17,18 @@
     => MembersByName.GetValueOrDefault(name) ?? [];
 + NamespaceDeclaration.NestedMembersNamed(OrdinaryName name): `IEnumerable<INamespaceMemberDeclarationNode>`
     => NestedMembersByName.GetValueOrDefault(name) ?? [];
+= NamespaceDeclaration.TypeMembersNamed(OrdinaryName name)
+    => MembersNamed(name).OfType<ITypeDeclarationNode>();
 
 // ---------- Type Declarations
 /// <summary>
 /// All members of the type with the given name along with inherited members with the given name
 /// if they are not hidden by a member in the type itself.
 /// </summary>
-+ TypeDeclaration.InclusiveInstanceMembersNamed(OrdinaryName name): `IEnumerable<IInstanceMemberDeclarationNode>`;
-+ TypeDeclaration.AssociatedMembersNamed(OrdinaryName name): `IEnumerable<IAssociatedMemberDeclarationNode>`;
++ TypeDeclaration.InclusiveInstanceMembersNamed(OrdinaryName name): IEnumerable<InstanceMemberDeclaration>;
++ TypeDeclaration.AssociatedMembersNamed(OrdinaryName name): IEnumerable<AssociatedMemberDeclaration>;
+= TypeDeclaration.TypeMembersNamed(OrdinaryName name)
+    => AssociatedMembersNamed(name).OfType<ITypeDeclarationNode>();
 ↑ BuiltInTypeDeclaration.InclusiveInstanceMembersByName: `FixedDictionary<OrdinaryName, IFixedSet<IInstanceMemberDeclarationNode>>`;
 = BuiltInTypeDeclaration.InclusiveInstanceMembersByName;
 ↑ BuiltInTypeDeclaration.AssociatedMembersByName: `FixedDictionary<OrdinaryName, IFixedSet<IAssociatedMemberDeclarationNode>>`;

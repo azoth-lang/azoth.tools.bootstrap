@@ -3049,6 +3049,8 @@ public partial interface INameNode : INameExpressionNode
     new UnknownType Type
         => AzothType.Unknown;
     IMaybeType IExpressionNode.Type => Type;
+    INamespaceOrTypeDeclarationNode? ReferencedDeclaration { get; }
+    BareType? NamedBareType { get; }
     IMaybePlainType IExpressionNode.PlainType
         => AzothPlainType.Unknown;
     ExpressionKind IExpressionNode.ExpressionKind
@@ -3061,9 +3063,12 @@ public partial interface INameNode : INameExpressionNode
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface INamespaceNameNode : INameNode
 {
-    INamespaceDeclarationNode ReferencedDeclaration { get; }
+    new INamespaceDeclarationNode ReferencedDeclaration { get; }
+    INamespaceOrTypeDeclarationNode? INameNode.ReferencedDeclaration => ReferencedDeclaration;
     IMaybePlainType IExpressionNode.PlainType
         => AzothPlainType.Unknown;
+    BareType? INameNode.NamedBareType
+        => null;
 }
 
 [Closed(typeof(UnqualifiedNamespaceNameNode))]
@@ -3117,6 +3122,10 @@ public partial interface IUnresolvedNameNode : INameNode, IUnresolvedNameExpress
     UnknownType IUnresolvedNameExpressionNode.Type => Type;
     IMaybePlainType IExpressionNode.PlainType
         => AzothPlainType.Unknown;
+    INamespaceOrTypeDeclarationNode? INameNode.ReferencedDeclaration
+        => null;
+    BareType? INameNode.NamedBareType
+        => null;
     ExpressionKind IExpressionNode.ExpressionKind
         => ExpressionKind.Invalid;
 }
@@ -3133,7 +3142,7 @@ public partial interface IUnresolvedOrdinaryNameNode : IUnresolvedNameNode
     ICodeSyntax ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     OrdinaryName Name { get; }
-    IFixedList<INamespaceOrOrdinaryTypeDeclarationNode> ReferencedDeclarations { get; }
+    IFixedList<INamespaceOrTypeDeclarationNode> ReferencedDeclarations { get; }
 }
 
 [Closed(typeof(UnresolvedIdentifierNameNode))]
@@ -3257,8 +3266,9 @@ public partial interface ITypeNameNode : ITypeNode, INameNode
     new ControlFlowSet ControlFlowFollowing()
         => ControlFlowSet.Empty;
     ControlFlowSet IControlFlowNode.ControlFlowFollowing() => ControlFlowFollowing();
-    ITypeDeclarationNode? ReferencedDeclaration { get; }
-    BareType? NamedBareType { get; }
+    UnqualifiedName Name { get; }
+    new ITypeDeclarationNode? ReferencedDeclaration { get; }
+    INamespaceOrTypeDeclarationNode? INameNode.ReferencedDeclaration => ReferencedDeclaration;
     ValueId IExpressionNode.ValueId
         => ValueId.None;
     ControlFlowSet IControlFlowNode.ControlFlowNext
@@ -3278,8 +3288,6 @@ public partial interface IUnqualifiedTypeNameNode : ITypeNameNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     INameExpressionSyntax INameExpressionNode.Syntax => Syntax;
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
-    UnqualifiedName Name
-        => Syntax.Name;
 }
 
 [Closed(typeof(BuiltInTypeNameNode))]
@@ -3296,7 +3304,7 @@ public partial interface IBuiltInTypeNameNode : IUnqualifiedTypeNameNode
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     new BuiltInTypeName Name
         => Syntax.Name;
-    UnqualifiedName IUnqualifiedTypeNameNode.Name => Name;
+    UnqualifiedName ITypeNameNode.Name => Name;
 
     public static IBuiltInTypeNameNode Create(IBuiltInTypeNameSyntax syntax)
         => new BuiltInTypeNameNode(syntax);
@@ -3317,9 +3325,8 @@ public partial interface IOrdinaryTypeNameNode : IUnqualifiedTypeNameNode
     INameExpressionSyntax INameExpressionNode.Syntax => Syntax;
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     bool IsAttributeType { get; }
-    new OrdinaryName Name
-        => Syntax.Name;
-    UnqualifiedName IUnqualifiedTypeNameNode.Name => Name;
+    new OrdinaryName Name { get; }
+    UnqualifiedName ITypeNameNode.Name => Name;
 }
 
 [Closed(typeof(IdentifierTypeNameNode))]
@@ -3338,7 +3345,7 @@ public partial interface IIdentifierTypeNameNode : IOrdinaryTypeNameNode
     new IdentifierName Name
         => Syntax.Name;
     OrdinaryName IOrdinaryTypeNameNode.Name => Name;
-    UnqualifiedName IUnqualifiedTypeNameNode.Name => Name;
+    UnqualifiedName ITypeNameNode.Name => Name;
 
     public static IIdentifierTypeNameNode Create(IIdentifierNameSyntax syntax)
         => new IdentifierTypeNameNode(syntax);
@@ -3361,7 +3368,7 @@ public partial interface IGenericTypeNameNode : IOrdinaryTypeNameNode
     new GenericName Name
         => Syntax.Name;
     OrdinaryName IOrdinaryTypeNameNode.Name => Name;
-    UnqualifiedName IUnqualifiedTypeNameNode.Name => Name;
+    UnqualifiedName ITypeNameNode.Name => Name;
 
     public static IGenericTypeNameNode Create(
         IGenericNameSyntax syntax,
@@ -3383,10 +3390,9 @@ public partial interface IQualifiedTypeNameNode : ITypeNameNode
     INameNode Context { get; }
     INameNode CurrentContext { get; }
     IFixedList<ITypeNode> GenericArguments { get; }
-    IMaybePlainType ITypeNode.NamedPlainType
-        => throw new NotImplementedException();
-    BareType? ITypeNameNode.NamedBareType
-        => throw new NotImplementedException();
+    new OrdinaryName Name
+        => Syntax.MemberName;
+    UnqualifiedName ITypeNameNode.Name => Name;
 
     public static IQualifiedTypeNameNode Create(
         IQualifiedNameSyntax syntax,
@@ -3645,9 +3651,8 @@ public partial interface IDeclarationNode : ISemanticNode
     typeof(IPackageDeclarationNode),
     typeof(IPackageFacetDeclarationNode),
     typeof(IInvocableDeclarationNode),
-    typeof(INamespaceOrOrdinaryTypeDeclarationNode),
+    typeof(INamespaceOrTypeDeclarationNode),
     typeof(INamespaceMemberDeclarationNode),
-    typeof(ITypeDeclarationNode),
     typeof(ITypeMemberDeclarationNode),
     typeof(IChildSymbolNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -3771,10 +3776,11 @@ public partial interface IFunctionInvocableDeclarationNode : INamedDeclarationNo
 
 [Closed(
     typeof(INamespaceDeclarationNode),
-    typeof(IOrdinaryTypeDeclarationNode))]
+    typeof(ITypeDeclarationNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface INamespaceOrOrdinaryTypeDeclarationNode : ISymbolDeclarationNode
+public partial interface INamespaceOrTypeDeclarationNode : ISymbolDeclarationNode
 {
+    IEnumerable<ITypeDeclarationNode> TypeMembersNamed(OrdinaryName name);
     ISemanticNode Parent => (ISemanticNode)PeekParent()!;
 }
 
@@ -3782,7 +3788,7 @@ public partial interface INamespaceOrOrdinaryTypeDeclarationNode : ISymbolDeclar
     typeof(INamespaceDefinitionNode),
     typeof(INamespaceSymbolNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface INamespaceDeclarationNode : INamespaceMemberDeclarationNode, INamespaceOrOrdinaryTypeDeclarationNode
+public partial interface INamespaceDeclarationNode : INamespaceMemberDeclarationNode, INamespaceOrTypeDeclarationNode
 {
     FixedDictionary<OrdinaryName, IFixedSet<INamespaceMemberDeclarationNode>> MembersByName { get; }
     FixedDictionary<OrdinaryName, IFixedSet<INamespaceMemberDeclarationNode>> NestedMembersByName { get; }
@@ -3799,6 +3805,8 @@ public partial interface INamespaceDeclarationNode : INamespaceMemberDeclaration
     IFixedList<INamespaceMemberDeclarationNode> Members { get; }
     IFixedList<INamespaceMemberDeclarationNode> NestedMembers { get; }
     new ISemanticNode Parent => (ISemanticNode)PeekParent()!;
+    IEnumerable<ITypeDeclarationNode> INamespaceOrTypeDeclarationNode.TypeMembersNamed(OrdinaryName name)
+        => MembersNamed(name).OfType<ITypeDeclarationNode>();
 }
 
 [Closed(
@@ -3835,7 +3843,7 @@ public partial interface IFunctionDeclarationNode : INamespaceMemberDeclarationN
     typeof(IAssociatedTypeDeclarationNode),
     typeof(ITypeSymbolNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface ITypeDeclarationNode : INamedDeclarationNode, ISymbolDeclarationNode
+public partial interface ITypeDeclarationNode : INamedDeclarationNode, INamespaceOrTypeDeclarationNode
 {
     IEnumerable<IInstanceMemberDeclarationNode> InclusiveInstanceMembersNamed(OrdinaryName name);
     IEnumerable<IAssociatedMemberDeclarationNode> AssociatedMembersNamed(OrdinaryName name);
@@ -3845,6 +3853,9 @@ public partial interface ITypeDeclarationNode : INamedDeclarationNode, ISymbolDe
     Symbol? ISymbolDeclarationNode.Symbol => Symbol;
     IFixedSet<ITypeMemberDeclarationNode> Members { get; }
     IFixedSet<ITypeMemberDeclarationNode> InclusiveMembers { get; }
+    new ISemanticNode Parent => (ISemanticNode)PeekParent()!;
+    IEnumerable<ITypeDeclarationNode> INamespaceOrTypeDeclarationNode.TypeMembersNamed(OrdinaryName name)
+        => AssociatedMembersNamed(name).OfType<ITypeDeclarationNode>();
 }
 
 [Closed(
@@ -3883,7 +3894,7 @@ public partial interface IBuiltInTypeDeclarationNode : INonVariableTypeDeclarati
     typeof(ITraitDeclarationNode),
     typeof(IOrdinaryTypeSymbolNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IOrdinaryTypeDeclarationNode : INamespaceMemberDeclarationNode, ITypeMemberDeclarationNode, INonVariableTypeDeclarationNode, INamespaceOrOrdinaryTypeDeclarationNode
+public partial interface IOrdinaryTypeDeclarationNode : INamespaceMemberDeclarationNode, ITypeMemberDeclarationNode, INonVariableTypeDeclarationNode
 {
     new OrdinaryName Name { get; }
     OrdinaryName? INamespaceMemberDeclarationNode.Name => Name;
@@ -3897,7 +3908,6 @@ public partial interface IOrdinaryTypeDeclarationNode : INamespaceMemberDeclarat
     new OrdinaryTypeSymbol Symbol { get; }
     Symbol? ISymbolDeclarationNode.Symbol => Symbol;
     TypeSymbol ITypeDeclarationNode.Symbol => Symbol;
-    new ISemanticNode Parent => (ISemanticNode)PeekParent()!;
     IEnumerable<IInstanceMemberDeclarationNode> ITypeDeclarationNode.InclusiveInstanceMembersNamed(OrdinaryName name)
         => InclusiveInstanceMembersByName.GetValueOrDefault(name) ?? [];
     IEnumerable<IAssociatedMemberDeclarationNode> ITypeDeclarationNode.AssociatedMembersNamed(OrdinaryName name)
@@ -16340,11 +16350,11 @@ file class UnresolvedIdentifierNameNode : SemanticNode, IUnresolvedIdentifierNam
                 ExpressionTypesAspect.UnresolvedNameExpression_FlowStateAfter);
     private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
-    public IFixedList<INamespaceOrOrdinaryTypeDeclarationNode> ReferencedDeclarations
+    public IFixedList<INamespaceOrTypeDeclarationNode> ReferencedDeclarations
         => GrammarAttribute.IsCached(in referencedDeclarationsCached) ? referencedDeclarations!
             : this.Synthetic(ref referencedDeclarationsCached, ref referencedDeclarations,
                 NameResolutionAspect.UnresolvedOrdinaryName_ReferencedDeclarations);
-    private IFixedList<INamespaceOrOrdinaryTypeDeclarationNode>? referencedDeclarations;
+    private IFixedList<INamespaceOrTypeDeclarationNode>? referencedDeclarations;
     private bool referencedDeclarationsCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
@@ -16460,11 +16470,11 @@ file class UnresolvedGenericNameNode : SemanticNode, IUnresolvedGenericNameNode
                 ExpressionTypesAspect.UnresolvedNameExpression_FlowStateAfter);
     private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
-    public IFixedList<INamespaceOrOrdinaryTypeDeclarationNode> ReferencedDeclarations
+    public IFixedList<INamespaceOrTypeDeclarationNode> ReferencedDeclarations
         => GrammarAttribute.IsCached(in referencedDeclarationsCached) ? referencedDeclarations!
             : this.Synthetic(ref referencedDeclarationsCached, ref referencedDeclarations,
                 NameResolutionAspect.UnresolvedOrdinaryName_ReferencedDeclarations);
-    private IFixedList<INamespaceOrOrdinaryTypeDeclarationNode>? referencedDeclarations;
+    private IFixedList<INamespaceOrTypeDeclarationNode>? referencedDeclarations;
     private bool referencedDeclarationsCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
@@ -17278,6 +17288,18 @@ file class QualifiedTypeNameNode : SemanticNode, IQualifiedTypeNameNode
                 ExpressionTypesAspect.TypeName_FlowStateAfter);
     private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
+    public BareType? NamedBareType
+        => GrammarAttribute.IsCached(in namedBareTypeCached) ? namedBareType
+            : this.Synthetic(ref namedBareTypeCached, ref namedBareType,
+                BareTypeAspect.QualifiedTypeName_NamedBareType);
+    private BareType? namedBareType;
+    private bool namedBareTypeCached;
+    public IMaybePlainType NamedPlainType
+        => GrammarAttribute.IsCached(in namedPlainTypeCached) ? namedPlainType!
+            : this.Synthetic(ref namedPlainTypeCached, ref namedPlainType,
+                TypeExpressionsPlainTypesAspect.QualifiedTypeName_NamedPlainType);
+    private IMaybePlainType? namedPlainType;
+    private bool namedPlainTypeCached;
     public IMaybeType NamedType
         => GrammarAttribute.IsCached(in namedTypeCached) ? namedType!
             : this.Synthetic(ref namedTypeCached, ref namedType,

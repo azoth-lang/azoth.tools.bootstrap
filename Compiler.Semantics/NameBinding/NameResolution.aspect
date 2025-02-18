@@ -31,7 +31,7 @@
 ✎ UnresolvedTypeQualifiedNameExpression replace_with NameExpression;
 
 // ---------- Unresolved Names
-↑ UnresolvedOrdinaryName.ReferencedDeclarations: NamespaceOrOrdinaryTypeDeclaration*;
+↑ UnresolvedOrdinaryName.ReferencedDeclarations: NamespaceOrTypeDeclaration*;
 = UnresolvedOrdinaryName.ReferencedDeclarations;
 = UnresolvedOrdinaryName.↑.Diagnostics;
 ✎ UnresolvedIdentifierName replace_with Name;

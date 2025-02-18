@@ -22,13 +22,18 @@ public interface ITypeConstructor
     public static readonly ITypeConstructor Never = NeverTypeConstructor.Instance;
     #endregion
 
+    /// <summary>
+    /// Construct a plain type with the given <paramref name="containingType"/> and <paramref name="arguments"/>.
+    /// </summary>
+    PlainType Construct(BarePlainType? containingType, IFixedList<PlainType> arguments);
+
     PlainType? TryConstructNullaryPlainType(BarePlainType? containingType);
 
     /// <summary>
-    /// Attempt to construct a type from this type constructor with possibly unknown arguments. If
-    /// any argument is unknown, the result is <see langword="null"/>.
+    /// Attempt to construct a bare type from this type constructor with possibly unknown arguments.
+    /// If any argument is unknown, the result is <see langword="null"/>.
     /// </summary>
-    BareType? TryConstruct(BareType? containingType, IFixedList<IMaybeType> arguments);
+    BareType? TryConstructBareType(BareType? containingType, IFixedList<IMaybeType> arguments);
 
     Type? TryConstructNullaryType(BareType? containingType);
 }

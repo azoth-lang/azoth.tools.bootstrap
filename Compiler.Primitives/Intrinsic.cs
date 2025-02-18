@@ -23,7 +23,7 @@ public static class Intrinsic
     public static readonly BareTypeConstructor PromiseTypeConstructor = Promise.TypeConstructor;
 
     public static IMaybeType PromiseOf(IMaybeType type)
-        => PromiseTypeConstructor.TryConstruct(containingType: null, FixedList.Create(type))?.WithDefaultCapability() ?? IMaybeType.Unknown;
+        => PromiseTypeConstructor.TryConstructBareType(containingType: null, FixedList.Create(type))?.WithDefaultCapability() ?? IMaybeType.Unknown;
     public static IMaybePlainType PromiseOf(IMaybePlainType plainType)
         => PromiseTypeConstructor.Construct(containingType: null, FixedList.Create(plainType));
 

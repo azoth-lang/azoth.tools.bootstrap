@@ -14,20 +14,27 @@ internal class NeverTypeConstructor : ITypeConstructor
     private NeverTypeConstructor() { }
     #endregion
 
-    public PlainType TryConstructNullaryPlainType(BarePlainType? containingType)
+    PlainType ITypeConstructor.Construct(BarePlainType? containingType, IFixedList<PlainType> arguments)
+    {
+        Requires.Null(containingType, nameof(containingType), "Never does not have a containing type.");
+        TypeRequires.NoArgs(arguments, nameof(arguments));
+        return PlainType.Never;
+    }
+
+    PlainType ITypeConstructor.TryConstructNullaryPlainType(BarePlainType? containingType)
     {
         Requires.Null(containingType, nameof(containingType), "Never does not have a containing type.");
         return PlainType.Never;
     }
 
-    public BareType? TryConstruct(BareType? containingType, IFixedList<IMaybeType> arguments)
+    BareType? ITypeConstructor.TryConstructBareType(BareType? containingType, IFixedList<IMaybeType> arguments)
     {
         Requires.Null(containingType, nameof(containingType), "Never does not have a containing type.");
         TypeRequires.NoArgs(arguments, nameof(arguments));
         return null;
     }
 
-    public Type TryConstructNullaryType(BareType? containingType)
+    Type ITypeConstructor.TryConstructNullaryType(BareType? containingType)
     {
         Requires.Null(containingType, nameof(containingType), "Never does not have a containing type.");
         return Type.Never;
