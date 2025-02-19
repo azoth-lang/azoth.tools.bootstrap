@@ -42,6 +42,11 @@ internal static partial class ExpressionTypesAspect
     }
     #endregion
 
+    #region Patterns
+    public static partial IFlowState TypePattern_FlowStateAfter(ITypePatternNode node)
+        => node.FlowStateBefore();
+    #endregion
+
     #region Expressions
     public static partial IExpressionNode? OrdinaryTypedExpression_ImplicitMove_Insert(IOrdinaryTypedExpressionNode node)
     {

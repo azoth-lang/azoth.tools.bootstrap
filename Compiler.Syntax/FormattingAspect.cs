@@ -222,6 +222,9 @@ internal static partial class FormattingAspect
     #endregion
 
     #region Patterns
+    public static partial string TypePattern_ToString(ITypePatternSyntax node)
+        => node.Type.ToString();
+
     public static partial string BindingContextPattern_ToString(IBindingContextPatternSyntax node)
     {
         var binding = node.IsMutableBinding ? "var" : "let";

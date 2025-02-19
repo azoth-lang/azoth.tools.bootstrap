@@ -909,11 +909,24 @@ public partial interface IExpressionStatementSyntax : IBodyStatementSyntax
 }
 
 [Closed(
+    typeof(ITypePatternSyntax),
     typeof(IBindingContextPatternSyntax),
     typeof(IOptionalOrBindingPatternSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IPatternSyntax : ICodeSyntax
 {
+}
+
+[Closed(typeof(TypePatternSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
+public partial interface ITypePatternSyntax : IPatternSyntax
+{
+    ITypeSyntax Type { get; }
+
+    public static ITypePatternSyntax Create(
+        TextSpan span,
+        ITypeSyntax type)
+        => new TypePatternSyntax(span, type);
 }
 
 [Closed(typeof(BindingContextPatternSyntax))]
@@ -1184,6 +1197,7 @@ public partial interface IConversionExpressionSyntax : IExpressionSyntax
 public partial interface IPatternMatchExpressionSyntax : IExpressionSyntax
 {
     IExpressionSyntax Referent { get; }
+    IIsKeywordToken IsKeyword { get; }
     IPatternSyntax Pattern { get; }
     OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
         => OperatorPrecedence.Conversion;
@@ -1191,8 +1205,9 @@ public partial interface IPatternMatchExpressionSyntax : IExpressionSyntax
     public static IPatternMatchExpressionSyntax Create(
         TextSpan span,
         IExpressionSyntax referent,
+        IIsKeywordToken isKeyword,
         IPatternSyntax pattern)
-        => new PatternMatchExpressionSyntax(span, referent, pattern);
+        => new PatternMatchExpressionSyntax(span, referent, isKeyword, pattern);
 }
 
 [Closed(typeof(RefExpressionSyntax))]
@@ -2624,6 +2639,25 @@ file class ExpressionStatementSyntax : IExpressionStatementSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
+file class TypePatternSyntax : ITypePatternSyntax
+{
+    private ITypePatternSyntax Self { [Inline] get => this; }
+
+    public TextSpan Span { [DebuggerStepThrough] get; }
+    public ITypeSyntax Type { [DebuggerStepThrough] get; }
+    public override string ToString()
+        => FormattingAspect.TypePattern_ToString(this);
+
+    public TypePatternSyntax(
+        TextSpan span,
+        ITypeSyntax type)
+    {
+        Span = span;
+        Type = type;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
 file class BindingContextPatternSyntax : IBindingContextPatternSyntax
 {
     private IBindingContextPatternSyntax Self { [Inline] get => this; }
@@ -2934,6 +2968,7 @@ file class PatternMatchExpressionSyntax : IPatternMatchExpressionSyntax
 
     public TextSpan Span { [DebuggerStepThrough] get; }
     public IExpressionSyntax Referent { [DebuggerStepThrough] get; }
+    public IIsKeywordToken IsKeyword { [DebuggerStepThrough] get; }
     public IPatternSyntax Pattern { [DebuggerStepThrough] get; }
     public override string ToString()
         => FormattingAspect.PatternMatchExpression_ToString(this);
@@ -2941,10 +2976,12 @@ file class PatternMatchExpressionSyntax : IPatternMatchExpressionSyntax
     public PatternMatchExpressionSyntax(
         TextSpan span,
         IExpressionSyntax referent,
+        IIsKeywordToken isKeyword,
         IPatternSyntax pattern)
     {
         Span = span;
         Referent = referent;
+        IsKeyword = isKeyword;
         Pattern = pattern;
     }
 }

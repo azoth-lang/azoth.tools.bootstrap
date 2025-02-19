@@ -84,6 +84,8 @@ internal static partial class FormattingAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial string ExpressionStatement_ToString(IExpressionStatementSyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial string TypePattern_ToString(ITypePatternSyntax node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial string BindingContextPattern_ToString(IBindingContextPatternSyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial string BindingPattern_ToString(IBindingPatternSyntax node);

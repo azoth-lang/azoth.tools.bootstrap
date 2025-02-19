@@ -1614,6 +1614,7 @@ public partial interface IExpressionStatementNode : IBodyStatementNode
 }
 
 [Closed(
+    typeof(ITypePatternNode),
     typeof(IBindingContextPatternNode),
     typeof(IOptionalOrBindingPatternNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -1627,6 +1628,26 @@ public partial interface IPatternNode : ICodeNode, IControlFlowNode
     IFlowState FlowStateAfter { get; }
     IMaybeNonVoidPlainType ContextBindingPlainType();
     IMaybeNonVoidType ContextBindingType();
+}
+
+[Closed(typeof(TypePatternNode))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
+public partial interface ITypePatternNode : IPatternNode
+{
+    new ITypePatternSyntax Syntax { get; }
+    IPatternSyntax IPatternNode.Syntax => Syntax;
+    ICodeSyntax ICodeNode.Syntax => Syntax;
+    ISyntax? ISemanticNode.Syntax => Syntax;
+    ITypeNode Type { get; }
+    LexicalScope ContainingLexicalScope { get; }
+    IFlowState FlowStateBefore();
+    ConditionalLexicalScope IPatternNode.FlowLexicalScope()
+        => LexicalScopingAspect.TypePattern_FlowLexicalScope(this);
+
+    public static ITypePatternNode Create(
+        ITypePatternSyntax syntax,
+        ITypeNode type)
+        => new TypePatternNode(syntax, type);
 }
 
 [Closed(typeof(BindingContextPatternNode))]
@@ -8817,6 +8838,81 @@ file class ExpressionStatementNode : SemanticNode, IExpressionStatementNode
         if (ReferenceEquals(descendant, Self.CurrentExpression))
             return false;
         return base.Inherited_ShouldPrepareToReturn(child, descendant, ctx);
+    }
+
+    internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
+    {
+        contributors.AddToRange(Self.ControlFlowNext.Keys.Cast<SemanticNode>(), this);
+        base.CollectContributors_ControlFlowPrevious(contributors);
+    }
+
+    internal override void Contribute_ControlFlowPrevious(SemanticNode target, Dictionary<IControlFlowNode, ControlFlowKind> builder)
+    {
+        if (target is IControlFlowNode t)
+            ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class TypePatternNode : SemanticNode, ITypePatternNode
+{
+    private ITypePatternNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
+
+    public ITypePatternSyntax Syntax { [DebuggerStepThrough] get; }
+    public ITypeNode Type { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package
+        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public CodeFile File
+        => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
+    public IEntryNode ControlFlowEntry()
+        => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
+    public ControlFlowSet ControlFlowPrevious
+        => GrammarAttribute.IsCached(in controlFlowPreviousCached) ? controlFlowPrevious!
+            : this.Collection(ref controlFlowPreviousContributors, ref controlFlowPreviousCached, ref controlFlowPrevious,
+                CollectContributors_ControlFlowPrevious<IExecutableDefinitionNode>, Collect_ControlFlowPrevious);
+    private ControlFlowSet? controlFlowPrevious;
+    private bool controlFlowPreviousCached;
+    private IFixedSet<SemanticNode>? controlFlowPreviousContributors;
+    public ControlFlowSet ControlFlowFollowing()
+        => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
+    public ValueId? MatchReferentValueId
+        => GrammarAttribute.IsCached(in matchReferentValueIdCached) ? matchReferentValueId
+            : this.Inherited(ref matchReferentValueIdCached, ref matchReferentValueId, ref syncLock,
+                Inherited_MatchReferentValueId);
+    private ValueId? matchReferentValueId;
+    private bool matchReferentValueIdCached;
+    public IMaybeNonVoidPlainType ContextBindingPlainType()
+        => Inherited_ContextBindingPlainType(GrammarAttribute.CurrentInheritanceContext());
+    public IMaybeNonVoidType ContextBindingType()
+        => Inherited_ContextBindingType(GrammarAttribute.CurrentInheritanceContext());
+    public LexicalScope ContainingLexicalScope
+        => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
+            : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
+                Inherited_ContainingLexicalScope);
+    private LexicalScope? containingLexicalScope;
+    private bool containingLexicalScopeCached;
+    public IFlowState FlowStateBefore()
+        => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.TypePattern_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
+    public IFlowState FlowStateAfter
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
+            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
+                ExpressionTypesAspect.TypePattern_FlowStateAfter);
+    private IFlowState? flowStateAfter;
+    private bool flowStateAfterCached;
+
+    public TypePatternNode(
+        ITypePatternSyntax syntax,
+        ITypeNode type)
+    {
+        Syntax = syntax;
+        Type = Child.Attach(this, type);
     }
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)

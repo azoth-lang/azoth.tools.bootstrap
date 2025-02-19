@@ -473,6 +473,9 @@ public static class ISemanticNodeExtensions
                 foreach (var child in n.Members)
                     yield return child;
                 yield break;
+            case ITypePatternNode n:
+                yield return n.Type;
+                yield break;
             case IUnaryOperatorExpressionNode n:
                 yield return n.TempOperand;
                 yield break;

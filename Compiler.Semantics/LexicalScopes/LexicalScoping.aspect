@@ -70,9 +70,10 @@ type `NamespaceScope` <: `NamespaceSearchScope`;
 ↓ UnresolvedMemberAccessExpression.PackageNameScope(): `PackageNameScope`;
 
 // ---------- Patterns
-↓ BindingPattern.ContainingLexicalScope: `LexicalScope`;
 ↑ Pattern.FlowLexicalScope(): `ConditionalLexicalScope`;
+↓ TypePattern.ContainingLexicalScope: `LexicalScope`;
 = BindingContextPattern.FlowLexicalScope() => Pattern.FlowLexicalScope();
+↓ BindingPattern.ContainingLexicalScope: `LexicalScope`;
 = BindingPattern.FlowLexicalScope();
 = OptionalPattern.FlowLexicalScope() => Pattern.FlowLexicalScope();
 

@@ -340,10 +340,14 @@ internal static class SyntaxBinder
     private static IPatternNode Pattern(IPatternSyntax syntax)
         => syntax switch
         {
+            ITypePatternSyntax syn => TypePattern(syn),
             IBindingContextPatternSyntax syn => BindingContextPattern(syn),
             IOptionalOrBindingPatternSyntax syn => OptionalOrBindingPattern(syn),
             _ => throw ExhaustiveMatch.Failed(syntax)
         };
+
+    private static ITypePatternNode TypePattern(ITypePatternSyntax syntax)
+        => ITypePatternNode.Create(syntax, Type(syntax.Type));
 
     private static IBindingContextPatternNode BindingContextPattern(IBindingContextPatternSyntax syntax)
         => IBindingContextPatternNode.Create(syntax, Pattern(syntax.Pattern), Type(syntax.Type));

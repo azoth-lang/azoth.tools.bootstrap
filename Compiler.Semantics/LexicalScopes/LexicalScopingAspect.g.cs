@@ -50,5 +50,7 @@ internal static partial class LexicalScopingAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial LexicalScope VariableDeclarationStatement_LexicalScope(IVariableDeclarationStatementNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial ConditionalLexicalScope TypePattern_FlowLexicalScope(ITypePatternNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial LexicalScope ForeachExpression_LexicalScope(IForeachExpressionNode node);
 }

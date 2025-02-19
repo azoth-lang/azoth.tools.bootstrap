@@ -55,6 +55,9 @@ internal static partial class ControlFlowAspect
     #endregion
 
     #region Patterns
+    public static partial ControlFlowSet TypePattern_ControlFlowNext(ITypePatternNode node)
+        => node.ControlFlowFollowing();
+
     public static partial ControlFlowSet BindingContextPattern_ControlFlowNext(IBindingContextPatternNode node)
         => ControlFlowSet.CreateNormal(node.Pattern);
 

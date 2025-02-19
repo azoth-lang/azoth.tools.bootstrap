@@ -1018,6 +1018,8 @@ public sealed class InterpreterProcess
         {
             default:
                 throw ExhaustiveMatch.Failed(pattern);
+            case ITypePatternNode pat:
+                throw new NotImplementedException();
             case IBindingContextPatternNode pat:
                 return await ExecuteMatchAsync(value, pat.Pattern, variables).ConfigureAwait(false);
             case IBindingPatternNode pat:

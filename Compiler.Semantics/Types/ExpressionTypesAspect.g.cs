@@ -90,6 +90,8 @@ internal static partial class ExpressionTypesAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFlowState ExpressionStatement_FlowStateAfter(IExpressionStatementNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial IFlowState TypePattern_FlowStateAfter(ITypePatternNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IMaybeType BlockExpression_Type(IBlockExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFlowState BlockExpression_FlowStateAfter(IBlockExpressionNode node);

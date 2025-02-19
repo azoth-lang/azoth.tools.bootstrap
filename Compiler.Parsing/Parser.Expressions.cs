@@ -129,10 +129,10 @@ public partial class Parser
                 case IIsKeywordToken _:
                     if (minPrecedence <= OperatorPrecedence.Relational)
                     {
-                        _ = Tokens.Consume<IIsKeywordToken>();
+                        var isToken = Tokens.ConsumeToken<IIsKeywordToken>();
                         var pattern = ParsePattern();
                         var span = TextSpan.Covering(expression.Span, pattern.Span);
-                        expression = IPatternMatchExpressionSyntax.Create(span, expression, pattern);
+                        expression = IPatternMatchExpressionSyntax.Create(span, expression, isToken, pattern);
                         continue;
                     }
                     break;

@@ -124,6 +124,9 @@ internal static partial class LexicalScopingAspect
     #endregion
 
     #region Patterns
+    public static partial ConditionalLexicalScope TypePattern_FlowLexicalScope(ITypePatternNode node)
+        => ConditionalLexicalScope.Unconditional(node.ContainingLexicalScope);
+
     public static partial ConditionalLexicalScope BindingPattern_FlowLexicalScope(IBindingPatternNode node)
     {
         var containingLexicalScope = node.ContainingLexicalScope;

@@ -297,6 +297,9 @@ public static class ISyntaxExtensions
                 foreach (var child in n.Members)
                     yield return child;
                 yield break;
+            case ITypePatternSyntax n:
+                yield return n.Type;
+                yield break;
             case IUnaryOperatorExpressionSyntax n:
                 yield return n.Operand;
                 yield break;

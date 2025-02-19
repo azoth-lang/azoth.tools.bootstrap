@@ -91,6 +91,8 @@ internal static partial class ControlFlowAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial ControlFlowSet ExpressionStatement_ControlFlowNext(IExpressionStatementNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial ControlFlowSet TypePattern_ControlFlowNext(ITypePatternNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial ControlFlowSet BindingContextPattern_ControlFlowNext(IBindingContextPatternNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial ControlFlowSet BindingPattern_ControlFlowNext(IBindingPatternNode node);

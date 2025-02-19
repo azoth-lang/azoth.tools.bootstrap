@@ -55,6 +55,7 @@
 
 // ---------- Patterns
 ↑ Pattern.FlowStateAfter: `IFlowState`;
+↓ TypePattern.FlowStateBefore(): `IFlowState`;
 = BindingContextPattern.FlowStateAfter => Pattern.FlowStateAfter;
 ↓ BindingPattern.FlowStateBefore(): `IFlowState`;
 = OptionalPattern.FlowStateAfter => Pattern.FlowStateAfter;

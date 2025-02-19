@@ -141,6 +141,7 @@ ExpressionStatement <: BodyStatement = Expression;
 
 // ---------- Patterns
 Pattern <: Code;
+TypePattern <: Pattern = Type;
 BindingContextPattern <: Pattern = IsMutableBinding:`bool` Pattern Type?;
 OptionalOrBindingPattern <: Pattern;
 BindingPattern <: OptionalOrBindingPattern, LocalBinding = Name:`IdentifierName`;
@@ -173,7 +174,7 @@ AssignmentExpression <: Expression = LeftOperand:Expression Operator:`Assignment
 BinaryOperatorExpression <: Expression = LeftOperand:Expression Operator:`BinaryOperator` RightOperand:Expression;
 UnaryOperatorExpression <: Expression = Fixity:`UnaryOperatorFixity` Operator:`UnaryOperator` Operand:Expression;
 ConversionExpression <: Expression = Referent:Expression Operator:`ConversionOperator` ConvertToType:Type;
-PatternMatchExpression <: Expression = Referent:Expression Pattern;
+PatternMatchExpression <: Expression = Referent:Expression IsKeyword:`IIsKeywordToken` Pattern;
 RefExpression <: Expression = IsInternal:`bool` IsMutableBinding:`bool` Referent:Expression;
 
 // ---------- Control Flow Expressions

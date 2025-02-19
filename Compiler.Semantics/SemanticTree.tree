@@ -181,6 +181,7 @@ ExpressionStatement <: BodyStatement
 
 // ---------- Patterns
 Pattern <: Code, ControlFlow = Syntax:`IPatternSyntax`;
+TypePattern <: Pattern = Syntax:`ITypePatternSyntax` Type;
 BindingContextPattern <: Pattern = Syntax:`IBindingContextPatternSyntax` Pattern Type?;
 OptionalOrBindingPattern <: Pattern = Syntax:`IOptionalOrBindingPatternSyntax`;
 BindingPattern <: OptionalOrBindingPattern, VariableBinding = Syntax:`IBindingPatternSyntax`;
