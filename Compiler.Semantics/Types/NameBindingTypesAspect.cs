@@ -57,8 +57,9 @@ internal static partial class NameBindingTypesAspect
         => node.ContextBindingType();
 
     public static partial IFlowState BindingPattern_FlowStateAfter(IBindingPatternNode node)
-        // TODO the match referent value id could be used multiple times and perhaps shouldn't be removed here
-        => node.FlowStateBefore().Declare(node, node.MatchReferentValueId);
+        // Do not drop the initializer value because it can be used by multiple bindings within a
+        // pattern. It is dropped by the pattern match expression when all patterns are complete.
+        => node.FlowStateBefore().Declare(node, node.MatchReferentValueId, dropInitializer: false);
 
     public static partial IMaybeNonVoidType PatternMatchExpression_Pattern_ContextBindingType(IPatternMatchExpressionNode node)
         // TODO report an error for void type

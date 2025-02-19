@@ -19,7 +19,7 @@ public interface IFlowState : IEquatable<IFlowState>
     /// </summary>
     public IFlowState DeclareParameter(bool isLent, ValueId id, IMaybeType type);
 
-    IFlowState DeclareVariable(ValueId id, IMaybeNonVoidType type, ValueId? initializerId);
+    IFlowState DeclareVariable(ValueId id, IMaybeNonVoidType type, ValueId? initializerId, bool dropInitializer = true);
 
     IFlowState Constant(ValueId valueId);
 

@@ -154,7 +154,7 @@ internal sealed class FlowState : IFlowState
         return builder.ToImmutable();
     }
 
-    public IFlowState DeclareVariable(ValueId id, IMaybeNonVoidType type, ValueId? initializerId)
+    public IFlowState DeclareVariable(ValueId id, IMaybeNonVoidType type, ValueId? initializerId, bool dropInitializer = true)
     {
         var builder = ToBuilder();
         var bindingValuePairs = BindingValue.ForType(id, type);
@@ -184,7 +184,7 @@ internal sealed class FlowState : IFlowState
             builder.AddSet(false, value, flowCapability);
         }
 
-        if (initializerId is ValueId initializerValueId)
+        if (dropInitializer && initializerId is ValueId initializerValueId)
             builder.Remove(initializerValueId);
 
         return builder.ToImmutable();

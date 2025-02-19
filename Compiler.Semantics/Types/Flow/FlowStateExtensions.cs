@@ -24,8 +24,8 @@ internal static class FlowStateExtensions
     private static IFlowState Declare(this IFlowState self, bool isLent, IParameterNode parameter)
         => self.DeclareParameter(isLent, parameter.BindingValueId, parameter.BindingType);
 
-    public static IFlowState Declare(this IFlowState self, IVariableBindingNode binding, ValueId? initializerId)
-        => self.DeclareVariable(binding.BindingValueId, binding.BindingType, initializerId);
+    public static IFlowState Declare(this IFlowState self, IVariableBindingNode binding, ValueId? initializerId, bool dropInitializer = true)
+        => self.DeclareVariable(binding.BindingValueId, binding.BindingType, initializerId, dropInitializer);
 
     /// <summary>
     /// Make <paramref name="aliasId"/> an alias to the <paramref name="binding"/>.

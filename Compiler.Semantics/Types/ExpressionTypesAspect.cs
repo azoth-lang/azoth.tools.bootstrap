@@ -422,8 +422,14 @@ internal static partial class ExpressionTypesAspect
     }
 
     public static partial IFlowState PatternMatchExpression_FlowStateAfter(IPatternMatchExpressionNode node)
+    {
+        var flowStateBefore = node.Pattern.FlowStateAfter;
+        if (node.Referent is { } referent)
+            // Drop the value that was being matched now that the match is done
+            flowStateBefore = flowStateBefore.DropValue(referent.ValueId);
         // Constant for the boolean result of the pattern match
-        => node.Pattern.FlowStateAfter.Constant(node.ValueId);
+        return flowStateBefore.Constant(node.ValueId);
+    }
 
     public static partial IMaybeType RefExpression_Type(IRefExpressionNode node)
     {
