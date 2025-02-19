@@ -42,7 +42,12 @@ internal readonly struct AzothValue
     [FieldOffset(0)] public readonly StructLayout StructLayoutValue;
     [FieldOffset(0)] public readonly BareType BareTypeValue;
 
-    public bool IsNone => ReferenceEquals(value.Reference, NoneFlag);
+    public bool IsNone
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        get => ReferenceEquals(value.Reference, NoneFlag);
+    }
+
     public bool BoolValue => value.Simple.BoolValue;
     public sbyte I8Value => value.Simple.I8Value;
     public byte ByteValue => value.Simple.ByteValue;
