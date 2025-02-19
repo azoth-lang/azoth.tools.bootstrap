@@ -20,7 +20,7 @@ internal static partial class TypeModifiersAspect
         => node.Syntax is not null ? EntityDefinitionAccessModifier(node.Syntax) : AccessModifier.Published;
 
     private static AccessModifier EntityDefinitionAccessModifier(IFacetMemberDefinitionSyntax entityDefinitionSyntax)
-        => entityDefinitionSyntax.AccessModifier?.ToAccessModifier() ?? AccessModifier.Private;
+        => entityDefinitionSyntax.AccessModifier.ToAccessModifier();
 
     public static partial void MethodDefinition_Contribute_Diagnostics(IMethodDefinitionNode node, DiagnosticCollectionBuilder diagnostics)
     {

@@ -23,7 +23,7 @@ public readonly struct TextSpan : IEquatable<TextSpan>
         Length = length;
     }
 
-    [System.Diagnostics.Contracts.Pure]
+    [Pure]
     public static TextSpan FromStartEnd(int start, int end)
     {
         Requires.Positive(start, nameof(start));
@@ -31,11 +31,11 @@ public readonly struct TextSpan : IEquatable<TextSpan>
         return new TextSpan(start, end - start);
     }
 
-    [System.Diagnostics.Contracts.Pure]
+    [Pure]
     public static TextSpan Covering(TextSpan left, TextSpan right)
         => FromStartEnd(Math.Min(left.Start, right.Start), Math.Max(left.End, right.End));
 
-    [System.Diagnostics.Contracts.Pure]
+    [Pure]
     public static TextSpan Covering(TextSpan left, TextSpan? right)
     {
         if (right is not TextSpan y) return left;
@@ -43,7 +43,7 @@ public readonly struct TextSpan : IEquatable<TextSpan>
         return Covering(left, y);
     }
 
-    [System.Diagnostics.Contracts.Pure]
+    [Pure]
     public static TextSpan Covering(TextSpan? left, TextSpan right)
     {
         if (left is not TextSpan x) return right;
@@ -51,7 +51,7 @@ public readonly struct TextSpan : IEquatable<TextSpan>
         return Covering(x, right);
     }
 
-    [System.Diagnostics.Contracts.Pure]
+    [Pure]
     public static TextSpan? Covering(TextSpan? left, TextSpan? right)
     {
         if (left is not TextSpan xNew)
@@ -63,11 +63,11 @@ public readonly struct TextSpan : IEquatable<TextSpan>
         return Covering(xNew, yNew);
     }
 
-    [System.Diagnostics.Contracts.Pure]
+    [Pure]
     public static TextSpan Covering(params TextSpan?[] spans)
         => spans.Where(s => s is not null).Cast<TextSpan>().Aggregate(Covering);
 
-    [System.Diagnostics.Contracts.Pure]
+    [Pure]
     public static TextSpan? Covering(IEnumerable<TextSpan> spans)
         => spans.Aggregate(default(TextSpan?), (left, right) => Covering(left, right));
 
@@ -79,7 +79,7 @@ public readonly struct TextSpan : IEquatable<TextSpan>
     /// <summary>
     /// Returns a zero length span that occurs at the end of the current span
     /// </summary>
-    [System.Diagnostics.Contracts.Pure]
+    [Pure]
     public TextSpan AtEnd() => new(End, 0);
 
     [Pure]

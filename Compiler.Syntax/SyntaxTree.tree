@@ -45,7 +45,7 @@ ImportDirective <: Code = Name:`NamespaceName`;
 // ---------- Facets
 /// All top-level non-namespace definitions since a namespace doesn't really create a thing, it just
 /// defines a group of names.
-FacetMemberDefinition <: Definition = AccessModifier:`IAccessModifierToken`?;
+FacetMemberDefinition <: Definition = AccessModifier:`AccessModifierSyntax`;
 
 // ---------- Definitions
 Definition <: Code = File:`CodeFile` Name:`UnqualifiedName`? NameSpan:`TextSpan`;

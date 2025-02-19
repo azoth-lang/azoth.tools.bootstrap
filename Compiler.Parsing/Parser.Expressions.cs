@@ -289,7 +289,8 @@ public partial class Parser
             // that exhaustive matching will properly report when an added keyword ought to have
             // expression parsing.
             case IBindingToken _:
-            case IAccessModifierToken _:
+            case IPublishedKeywordToken _:
+            case IPackageAccessModifierToken _:
             case ITypeKindKeywordToken _:
             case ICapabilityToken _:
             case ICapabilitySetToken _:

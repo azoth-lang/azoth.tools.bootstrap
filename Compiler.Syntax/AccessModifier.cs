@@ -1,5 +1,4 @@
 using System;
-using Azoth.Tools.Bootstrap.Compiler.Tokens;
 using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Syntax;
@@ -16,19 +15,6 @@ public enum AccessModifier
 
 public static class AccessModifierExtensions
 {
-    // TODO this doesn't work right because `published protected` is two tokens
-    public static AccessModifier ToAccessModifier(this IAccessModifierToken? accessModifier)
-    {
-        return accessModifier switch
-        {
-            null => AccessModifier.Private,
-            IPublicKeywordToken _ => AccessModifier.Public,
-            IPublishedKeywordToken _ => AccessModifier.Published,
-            IProtectedKeywordToken _ => AccessModifier.Public,
-            _ => throw ExhaustiveMatch.Failed(accessModifier)
-        };
-    }
-
     public static string ToSourceString(this AccessModifier accessModifier)
     {
         return accessModifier switch

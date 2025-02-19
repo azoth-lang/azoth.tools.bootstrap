@@ -3,7 +3,8 @@ using ExhaustiveMatching;
 namespace Azoth.Tools.Bootstrap.Compiler.Tokens;
 
 [Closed(
-    typeof(IAccessModifierToken),
+    typeof(IPublishedKeywordToken),
+    typeof(IPackageAccessModifierToken),
     typeof(IConstKeywordToken),
     typeof(IMoveKeywordToken),
     typeof(ISafeKeywordToken),
@@ -11,7 +12,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Tokens;
     typeof(IAbstractKeywordToken))]
 public partial interface IModifierToken : IKeywordToken;
 
-public partial interface IAccessModifierToken : IModifierToken;
+public partial interface IPublishedKeywordToken : IModifierToken;
+public partial interface IPackageAccessModifierToken : IModifierToken;
 public partial interface IConstKeywordToken : IModifierToken;
 public partial interface IMoveKeywordToken : IModifierToken;
 public partial interface ISafeKeywordToken : IModifierToken;
