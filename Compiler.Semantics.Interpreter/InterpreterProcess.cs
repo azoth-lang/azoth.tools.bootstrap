@@ -482,14 +482,10 @@ public sealed class InterpreterProcess
     private async ValueTask<AzothResult> ExecuteAsync(IExpressionNode expression, LocalVariables variables)
     {
         // A switch on type compiles to essentially a long if/else change of `is Type t` pattern
-        // matches. This code spends most of its time determining the node type. To really make this
-        // faster would require some kind of dictionary lookup on type or an enum of node types etc.
-        // Another thing that could help is an LRU cache of the proper code to run for a given node
-        // since most nodes are run repeatedly. Lacking all that, the switch has been broken into
-        // nested switches that can then compress multiple checks into a single check for a base
-        // type.
-
-        // Also, more common operations should be earlier in the switch
+        // matches. It was thought that this code spends most of its time determining the node type.
+        // To avoid type checks, this code now switches on an enum of node types. However, that
+        // change as not led to any appreciable performance improvement. The profiler still shows
+        // that the interpreter spends most of its time in this method.
 
         switch (expression.ExpressionKind)
         {

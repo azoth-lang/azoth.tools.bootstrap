@@ -28,10 +28,7 @@ public class DotNetFrameworkTests
         Assert.NotEqual(lambda1, lambda2);
     }
 
-    private static MethodInfo GetMethodInfo(Func<int, int> f)
-    {
-        return f.Method;
-    }
+    private static MethodInfo GetMethodInfo(Func<int, int> f) => f.Method;
 
     [Fact]
     public void LazyCycleThrowsInvalidOperation()
@@ -182,7 +179,6 @@ public class Ref<T>
     {
         Value = value;
     }
-
 }
 
 public static class RefExtensions

@@ -9,6 +9,7 @@
     <IsTestProject>true</IsTestProject>
     <AssemblyName>Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Semantics.Interpreter</AssemblyName>
     <RootNamespace>Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Semantics.Interpreter</RootNamespace>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

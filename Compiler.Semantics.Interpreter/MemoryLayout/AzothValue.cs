@@ -20,9 +20,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.MemoryLayout;
 [StructLayout(LayoutKind.Explicit)]
 internal readonly struct AzothValue
 {
-    public static AzothValue True = new(true);
-    public static AzothValue False = new(false);
-
     private static readonly object NoneFlag = new();
 
     [FieldOffset(0)] public readonly AzothInstance InstanceValue;
@@ -63,6 +60,8 @@ internal readonly struct AzothValue
     public nuint NUIntValue => value.Simple.NUIntValue;
 
     #region Static Factory Methods/Properties
+    public static AzothValue True = new(true);
+    public static AzothValue False = new(false);
     public static readonly AzothValue None = new();
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

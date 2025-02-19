@@ -1,4 +1,6 @@
+using System;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.MemoryLayout;
 using Xunit;
 
@@ -6,6 +8,15 @@ namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Semantics.Interpreter.Memory
 
 public class AzothValueTests
 {
+    [Fact]
+    public unsafe void SizeOfAzothValue()
+    {
+        var size = Unsafe.SizeOf<AzothValue>();
+
+        var expectedSize = sizeof(IntPtr) + sizeof(long);
+        Assert.Equal(expectedSize, size);
+    }
+
     [Fact]
     public void NoneIsNone()
     {

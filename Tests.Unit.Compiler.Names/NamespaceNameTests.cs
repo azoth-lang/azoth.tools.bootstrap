@@ -128,8 +128,5 @@ public class NamespaceNameTests
         Assert.Equal(ns1.GetHashCode(), ns2.GetHashCode());
     }
 
-    private static NamespaceName Namespace(params string[] segments)
-    {
-        return new NamespaceName(segments);
-    }
+    private static NamespaceName Namespace(params string[] segments) => new(segments);
 }
