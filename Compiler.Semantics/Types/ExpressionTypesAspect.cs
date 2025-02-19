@@ -21,136 +21,28 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 
 internal static partial class ExpressionTypesAspect
 {
-    public static partial void OrdinaryTypedExpression_Contribute_Diagnostics(IOrdinaryTypedExpressionNode node, DiagnosticCollectionBuilder diagnostics)
-    {
-        // Expected type can be void (e.g. when a function returns void)
-        if (node.ExpectedType is not Type expectedType)
-            return;
-
-        if (!node.Type.IsSubtypeOf(expectedType))
-            diagnostics.Add(TypeError.CannotImplicitlyConvert(node.File, node.Syntax, node.Type, expectedType));
-    }
-
-    #region Unresolved Expressions
-    public static partial IFlowState UnresolvedMemberAccessExpression_FlowStateAfter(IUnresolvedMemberAccessExpressionNode node)
-        => node.Context?.FlowStateAfter.Transform(node.Context.ValueId, node.ValueId, node.Type) ?? IFlowState.Empty;
-    #endregion
-
-    public static partial IMaybeType VariableNameExpression_Type(IVariableNameExpressionNode node)
-        => node.FlowStateAfter.AliasType(node.ReferencedDefinition);
-
-    public static partial IFlowState VariableNameExpression_FlowStateAfter(IVariableNameExpressionNode node)
-        => node.FlowStateBefore().Alias(node.ReferencedDefinition, node.ValueId);
-
+    #region Parameters
     public static partial IFlowState NamedParameter_FlowStateAfter(INamedParameterNode node)
         => node.FlowStateBefore().Declare(node);
 
     public static partial IFlowState SelfParameter_FlowStateAfter(ISelfParameterNode node)
         => node.FlowStateBefore().Declare(node);
+    #endregion
 
-    public static partial IMaybeType UnsafeExpression_Type(IUnsafeExpressionNode node)
-        => node.Expression?.Type ?? Type.Unknown;
+    #region Statements
+    public static partial IMaybeType ResultStatement_Type(IResultStatementNode node)
+        => node.Expression?.Type.ToNonLiteral() ?? Type.Unknown;
 
-    public static partial IFlowState UnsafeExpression_FlowStateAfter(IUnsafeExpressionNode node)
-        => node.Expression?.FlowStateAfter.Transform(node.Expression.ValueId, node.ValueId, node.Type)
-           ?? IFlowState.Empty;
-
-    public static partial IMaybeType FunctionInvocationExpression_Type(IFunctionInvocationExpressionNode node)
-        => node.Function.ReferencedDeclaration?.Type.Return ?? IMaybeType.Unknown;
-
-    public static partial ContextualizedCall? FunctionInvocationExpression_ContextualizedCall(
-        IFunctionInvocationExpressionNode node)
-        => node.Function.ReferencedDeclaration is not null
-            ? ContextualizedCall.Create(node.Function.ReferencedDeclaration)
-            : null;
-
-    public static partial IFlowState FunctionInvocationExpression_FlowStateAfter(IFunctionInvocationExpressionNode node)
+    public static partial IFlowState ExpressionStatement_FlowStateAfter(IExpressionStatementNode node)
     {
-        // The flow state just before the function is called is the state after all arguments have evaluated
-        var flowStateBefore = node.Arguments.LastOrDefault()?.FlowStateAfter ?? node.FlowStateBefore();
-        var argumentValueIds = ArgumentValueIds(node.ContextualizedCall, null, node.Arguments);
-        return flowStateBefore.CombineArguments(argumentValueIds, node.ValueId, node.Type);
+        var expression = node.Expression;
+        if (expression is null) return IFlowState.Empty;
+
+        return expression.FlowStateAfter.DropValue(expression.ValueId);
     }
+    #endregion
 
-    public static partial void FunctionInvocationExpression_Contribute_Diagnostics(IFunctionInvocationExpressionNode node, DiagnosticCollectionBuilder diagnostics)
-    {
-        var flowStateBefore = node.Arguments.LastOrDefault()?.FlowStateAfter ?? node.FlowStateBefore();
-        var argumentValueIds = ArgumentValueIds(node.ContextualizedCall, null, node.Arguments);
-        ContributeCannotUnionDiagnostics(node, flowStateBefore, argumentValueIds, diagnostics);
-    }
-
-    private static void ContributeCannotUnionDiagnostics(
-        IInvocationExpressionNode node,
-        IFlowState flowStateBefore,
-        IEnumerable<ArgumentValueId> argumentValueIds,
-        DiagnosticCollectionBuilder diagnostics)
-    {
-        var valueIds = flowStateBefore.CombineArgumentsDisallowedDueToLent(argumentValueIds);
-        foreach (var valueId in valueIds)
-        {
-            var arg = node.AllArguments.Single(a => a?.ValueId == valueId)!;
-            diagnostics.Add(FlowTypingError.CannotUnion(arg.File, arg.Syntax.Span));
-        }
-    }
-
-    public static partial FunctionType FunctionReferenceInvocationExpression_FunctionType(IFunctionReferenceInvocationExpressionNode node)
-        => (FunctionType)node.Expression.Type;
-
-    public static partial IMaybeType FunctionReferenceInvocationExpression_Type(IFunctionReferenceInvocationExpressionNode node)
-        => node.FunctionType.Return;
-
-    public static partial IFlowState FunctionReferenceInvocationExpression_FlowStateAfter(IFunctionReferenceInvocationExpressionNode node)
-    {
-        // The flow state just before the function is called is the state after all arguments have evaluated
-        var flowStateBefore = node.Arguments.LastOrDefault()?.FlowStateAfter ?? node.Expression.FlowStateAfter;
-        // TODO handle the fact that the function reference itself must be combined too
-        var contextualizedOverload = ContextualizedCall.Create(node.FunctionType);
-        var argumentValueIds = ArgumentValueIds(contextualizedOverload, null, node.Arguments);
-        return flowStateBefore.CombineArguments(argumentValueIds, node.ValueId, node.Type);
-    }
-
-    public static partial void FunctionReferenceInvocationExpression_Contribute_Diagnostics(IFunctionReferenceInvocationExpressionNode node, DiagnosticCollectionBuilder diagnostics)
-    {
-        var flowStateBefore = node.Arguments.LastOrDefault()?.FlowStateAfter ?? node.Expression.FlowStateAfter;
-        var contextualizedOverload = ContextualizedCall.Create(node.FunctionType);
-        var argumentValueIds = ArgumentValueIds(contextualizedOverload, null, node.Arguments);
-        ContributeCannotUnionDiagnostics(node, flowStateBefore, argumentValueIds, diagnostics);
-    }
-
-    public static partial CapabilityType BoolLiteralExpression_Type(IBoolLiteralExpressionNode node)
-        => node.Value ? Type.True : Type.False;
-
-    public static partial CapabilityType IntegerLiteralExpression_Type(IIntegerLiteralExpressionNode node)
-        => CapabilityType.Create(Capability.Constant, new IntegerLiteralTypeConstructor(node.Value).PlainType);
-
-    public static partial OptionalType NoneLiteralExpression_Type(INoneLiteralExpressionNode node)
-        => Type.None;
-
-    public static partial IMaybeType StringLiteralExpression_Type(IStringLiteralExpressionNode node)
-    {
-        var typeDeclarationNode = node.ContainingLexicalScope
-                                      .Lookup<ITypeDeclarationNode>(SpecialNames.StringTypeName)
-                                      .TrySingle();
-        return typeDeclarationNode?.TypeConstructor.TryConstructBareType(containingType: null, [])?.With(Capability.Constant) ?? IMaybeType.Unknown;
-    }
-
-    public static partial IFlowState LiteralExpression_FlowStateAfter(ILiteralExpressionNode node)
-        => node.FlowStateBefore().Constant(node.ValueId);
-
-    public static partial void StringLiteralExpression_Contribute_Diagnostics(
-        IStringLiteralExpressionNode node,
-        DiagnosticCollectionBuilder diagnostics)
-    {
-        if (node.Type is UnknownType)
-            diagnostics.Add(TypeError.NotImplemented(node.File, node.Syntax.Span, "Could not find string type for string literal."));
-    }
-
-    public static partial ContextualizedCall? MethodInvocationExpression_ContextualizedCall(
-        IMethodInvocationExpressionNode node)
-        => node.Method.ReferencedDeclaration is not null
-            ? ContextualizedCall.Create(node.Method.Context.Type, node.Method.ReferencedDeclaration)
-            : null;
-
+    #region Expressions
     public static partial IExpressionNode? OrdinaryTypedExpression_ImplicitMove_Insert(IOrdinaryTypedExpressionNode node)
     {
         if (!node.ImplicitRecoveryAllowed())
@@ -212,174 +104,133 @@ internal static partial class ExpressionTypesAspect
         return IPrepareToReturnExpressionNode.Create(node);
     }
 
-    public static partial IMaybeType MethodInvocationExpression_Type(IMethodInvocationExpressionNode node)
-        // TODO does this need to be modified by flow typing?
-        => node.ContextualizedCall?.ReturnType ?? Type.Unknown;
-
-    public static partial IFlowState MethodInvocationExpression_FlowStateAfter(IMethodInvocationExpressionNode node)
+    public static partial void OrdinaryTypedExpression_Contribute_Diagnostics(IOrdinaryTypedExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
-        // The flow state just before the method is called is the state after all arguments have evaluated
-        var flowStateBefore = node.Arguments.LastOrDefault()?.FlowStateAfter ?? node.Method.Context.FlowStateAfter;
-        var argumentValueIds = ArgumentValueIds(node.ContextualizedCall, node.Method.Context, node.Arguments);
-        return flowStateBefore.CombineArguments(argumentValueIds, node.ValueId, node.Type);
+        // Expected type can be void (e.g. when a function returns void)
+        if (node.ExpectedType is not Type expectedType)
+            return;
+
+        if (!node.Type.IsSubtypeOf(expectedType))
+            diagnostics.Add(TypeError.CannotImplicitlyConvert(node.File, node.Syntax, node.Type, expectedType));
     }
 
-    public static partial void MethodInvocationExpression_Contribute_Diagnostics(IMethodInvocationExpressionNode node, DiagnosticCollectionBuilder diagnostics)
+    public static partial IMaybeType BlockExpression_Type(IBlockExpressionNode node)
     {
-        var flowStateBefore = node.Arguments.LastOrDefault()?.FlowStateAfter ?? node.Method.Context.FlowStateAfter;
-        var argumentValueIds = ArgumentValueIds(node.ContextualizedCall, node.Method.Context, node.Arguments);
-        ContributeCannotUnionDiagnostics(node, flowStateBefore, argumentValueIds, diagnostics);
+        // TODO what about blocks that contain a return etc. and never return?
+        foreach (var statement in node.Statements)
+            if (statement.ResultType is not null and var resultType)
+                return resultType;
+
+        // If there was no result expression, then the block type is void
+        return Type.Void;
     }
 
-    public static partial ContextualizedCall? GetterInvocationExpression_ContextualizedCall(IGetterInvocationExpressionNode node)
-        => node.ReferencedDeclaration is not null
-            ? ContextualizedCall.Create(node.Context.Type, node.ReferencedDeclaration)
-            : null;
-
-    public static partial IMaybeType GetterInvocationExpression_Type(IGetterInvocationExpressionNode node)
-        => node.ContextualizedCall?.ReturnType ?? Type.Unknown;
-
-    public static partial IFlowState GetterInvocationExpression_FlowStateAfter(IGetterInvocationExpressionNode node)
+    public static partial IFlowState BlockExpression_FlowStateAfter(IBlockExpressionNode node)
     {
-        var flowStateBefore = node.Context.FlowStateAfter;
-        var argumentValueIds = ArgumentValueIds(node.ContextualizedCall, node.Context, []);
-        return flowStateBefore.CombineArguments(argumentValueIds, node.ValueId, node.Type);
+        var flowState = node.Statements.LastOrDefault()?.FlowStateAfter ?? node.FlowStateBefore();
+        flowState = flowState.DropBindings(node.Statements.OfType<IVariableDeclarationStatementNode>());
+        foreach (var statement in node.Statements)
+            if (statement.ResultValueId is ValueId resultValueId)
+                return flowState.Transform(resultValueId, node.ValueId, node.Type);
+
+        return flowState.Constant(node.ValueId);
     }
 
-    public static partial void GetterInvocationExpression_Contribute_Diagnostics(IGetterInvocationExpressionNode node, DiagnosticCollectionBuilder diagnostics)
+    public static partial IMaybeType UnsafeExpression_Type(IUnsafeExpressionNode node)
+        => node.Expression?.Type ?? Type.Unknown;
+
+    public static partial IFlowState UnsafeExpression_FlowStateAfter(IUnsafeExpressionNode node)
+        => node.Expression?.FlowStateAfter.Transform(node.Expression.ValueId, node.ValueId, node.Type)
+           ?? IFlowState.Empty;
+    #endregion
+
+    #region Unresolved Expressions
+    public static partial IFlowState UnresolvedMemberAccessExpression_FlowStateAfter(IUnresolvedMemberAccessExpressionNode node)
+        => node.Context?.FlowStateAfter.Transform(node.Context.ValueId, node.ValueId, node.Type) ?? IFlowState.Empty;
+    #endregion
+
+    #region Instance Member Access Expressions
+    public static partial IMaybeType FieldAccessExpression_Type(IFieldAccessExpressionNode node)
     {
-        var flowStateBefore = node.Context.FlowStateAfter;
-        var argumentValueIds = ArgumentValueIds(node.ContextualizedCall, node.Context, []);
-        ContributeCannotUnionDiagnostics(node, flowStateBefore, argumentValueIds, diagnostics);
+        var contextType = node.Context.Type;
+        var fieldType = node.ReferencedDeclaration.BindingType;
+        // Access must be applied first, so it can account for independent generic parameters.
+        var type = fieldType.AccessedVia(contextType);
+        // Then type parameters can be replaced now that they have the correct access
+        if (contextType is NonVoidType nonVoidContext)
+            // resolve generic type fields
+            type = nonVoidContext.TypeReplacements.ApplyTo(type);
+
+        return type;
     }
 
-    public static partial ContextualizedCall? SetterInvocationExpression_ContextualizedCall(ISetterInvocationExpressionNode node)
-        => node.ReferencedDeclaration is not null
-            ? ContextualizedCall.Create(node.Context.Type, node.ReferencedDeclaration)
-            : null;
+    public static partial IFlowState FieldAccessExpression_FlowStateAfter(IFieldAccessExpressionNode node)
+        => node.Context.FlowStateAfter.AccessField(node);
 
-    public static partial IMaybeType SetterInvocationExpression_Type(ISetterInvocationExpressionNode node)
-        => node.ContextualizedCall?.ParameterTypes[0].Type ?? Type.Unknown;
-
-    public static partial IFlowState SetterInvocationExpression_FlowStateAfter(ISetterInvocationExpressionNode node)
+    public static partial void FieldAccessExpression_Contribute_Diagnostics(
+        IFieldAccessExpressionNode node,
+        DiagnosticCollectionBuilder diagnostics)
     {
-        if (node.Value is not IExpressionNode value)
-            return IFlowState.Empty;
-        // The flow state just before the setter is called is the state after the argument has been evaluated
-        var flowStateBefore = value.FlowStateAfter;
-        var argumentValueIds = ArgumentValueIds(node.ContextualizedCall, node.Context, [value]);
-        return flowStateBefore.CombineArguments(argumentValueIds, node.ValueId, node.Type);
+        if (node.Parent is IAssignmentExpressionNode assignmentNode && assignmentNode.TempLeftOperand == node)
+            // In this case, a different error will be reported and CannotAccessMutableBindingFieldOfIdentityReference
+            // should not be reported.
+            return;
+
+        var fieldHasMutableBinding = node.ReferencedDeclaration.IsMutableBinding;
+        if (fieldHasMutableBinding
+            && node.Context.Type is CapabilityType { Capability: var contextCapability }
+            && contextCapability == Capability.Identity)
+            diagnostics.Add(TypeError.CannotAccessMutableBindingFieldOfIdentityReference(node.File, node.Syntax, node.Context.Type));
     }
 
-    public static partial void SetterInvocationExpression_Contribute_Diagnostics(ISetterInvocationExpressionNode node, DiagnosticCollectionBuilder diagnostics)
+    public static partial IMaybeType MethodAccessExpression_Type(IMethodAccessExpressionNode node)
+        => node.ReferencedDeclaration?.MethodGroupType ?? IMaybeType.Unknown;
+
+    // TODO this is strange and maybe a hack
+    public static partial IMaybeType? MethodAccessExpression_Context_ExpectedType(IMethodAccessExpressionNode node)
     {
-        var value = node.Value!;
-        var flowStateBefore = value.FlowStateAfter;
-        var argumentValueIds = ArgumentValueIds(node.ContextualizedCall, node.Context, [value]);
-        ContributeCannotUnionDiagnostics(node, flowStateBefore, argumentValueIds, diagnostics);
+        // TODO the below should be equivalent to what is being run, but is a little less of a hack. However
+        // it duplicates code.
+
+        // var contextType = node.Context.Type as NonVoidType;
+        // var selfParameterType = node.ReferencedDeclaration?.SelfParameterType;
+        // if (selfParameterType is null) return null;
+        // return contextType?.TypeReplacements.ApplyTo(selfParameterType);
+
+        return (node.Parent as IMethodInvocationExpressionNode)?.ContextualizedCall?.SelfParameterType?.ToUpperBound();
+    }
+    #endregion
+
+    #region Literal Expressions
+    public static partial IFlowState LiteralExpression_FlowStateAfter(ILiteralExpressionNode node)
+        => node.FlowStateBefore().Constant(node.ValueId);
+
+    public static partial CapabilityType BoolLiteralExpression_Type(IBoolLiteralExpressionNode node)
+        => node.Value ? Type.True : Type.False;
+
+    public static partial CapabilityType IntegerLiteralExpression_Type(IIntegerLiteralExpressionNode node)
+        => CapabilityType.Create(Capability.Constant, new IntegerLiteralTypeConstructor(node.Value).PlainType);
+
+    public static partial OptionalType NoneLiteralExpression_Type(INoneLiteralExpressionNode node) => Type.None;
+
+    public static partial IMaybeType StringLiteralExpression_Type(IStringLiteralExpressionNode node)
+    {
+        var typeDeclarationNode = node.ContainingLexicalScope
+                                      .Lookup<ITypeDeclarationNode>(SpecialNames.StringTypeName)
+                                      .TrySingle();
+        return typeDeclarationNode?.TypeConstructor.TryConstructBareType(containingType: null, [])
+                                  ?.With(Capability.Constant) ?? IMaybeType.Unknown;
     }
 
-    private static IEnumerable<ArgumentValueId> ArgumentValueIds(
-        ContextualizedCall? overload,
-        IExpressionNode? selfArgument,
-        IEnumerable<IExpressionNode?> arguments)
+    public static partial void StringLiteralExpression_Contribute_Diagnostics(IStringLiteralExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
-        var allArguments = arguments.Prepend(selfArgument).WhereNotNull();
-        if (overload is null)
-            return allArguments.Select(a => new ArgumentValueId(false, a.ValueId));
-
-        var parameterTypes = overload.ParameterTypes.AsEnumerable();
-        if (selfArgument is not null)
-        {
-            if (overload.SelfParameterType is not NonVoidType selfParameterType)
-                throw new InvalidOperationException("Self argument provided for overload without self parameter");
-            // TODO this assumes that the self parameter is not lent, but it can be lent!
-            parameterTypes = parameterTypes.Prepend(ParameterType.Create(false, selfParameterType));
-        }
-        return parameterTypes.EquiZip(allArguments)
-                             .Select((p, a) => new ArgumentValueId(p.IsLent, a.ValueId));
+        if (node.Type is UnknownType)
+            diagnostics.Add(
+                TypeError.NotImplemented(node.File, node.Syntax.Span, "Could not find string type for string literal."));
     }
+    #endregion
 
-    public static partial IFlowState SelfExpression_FlowStateAfter(ISelfExpressionNode node)
-        => node.FlowStateBefore().Alias(node.ReferencedDefinition, node.ValueId);
-
-    public static partial IMaybeType SelfExpression_Type(ISelfExpressionNode node)
-        => node.FlowStateAfter.AliasType(node.ReferencedDefinition);
-
-    private static void CheckInitializingType(ITypeNameNode node, DiagnosticCollectionBuilder diagnostics)
-    {
-        switch (node)
-        {
-            default:
-                throw ExhaustiveMatch.Failed(node);
-            case IOrdinaryTypeNameNode n:
-                CheckGenericArgumentsAreConstructable(n, diagnostics);
-                break;
-            case IBuiltInTypeNameNode n:
-                diagnostics.Add(TypeError.SpecialTypeCannotBeUsedHere(node.File, n.Syntax));
-                break;
-            case IQualifiedTypeNameNode n:
-                if (n.NamedPlainType is BarePlainType { TypeConstructor: AssociatedTypeConstructor })
-                    diagnostics.Add(TypeError.TypeParameterCannotBeUsedHere(node.File, n.Syntax));
-                else
-                    CheckGenericArgumentsAreConstructable(n, diagnostics);
-                break;
-        }
-    }
-
-    public static void CheckGenericArgumentsAreConstructable(ITypeNameNode node, DiagnosticCollectionBuilder diagnostics)
-    {
-        var bareType = node.NamedBareType;
-        if (bareType is null) return;
-
-        foreach (TypeParameterArgument arg in bareType.TypeParameterArguments)
-            if (!arg.IsConstructable())
-                diagnostics.Add(TypeError.CapabilityNotCompatibleWithConstraint(node.File, node.Syntax, arg.Parameter, arg.Argument));
-    }
-
-    public static partial ContextualizedCall? InitializerInvocationExpression_ContextualizedCall(IInitializerInvocationExpressionNode node)
-        => node.Initializer.ReferencedDeclaration is not null
-           && node.Initializer.Context.NamedBareType is not null and var initializingType
-            ? ContextualizedCall.Create(initializingType.With(Capability.Mutable), node.Initializer.ReferencedDeclaration)
-            : null;
-
-    public static partial IMaybeType InitializerInvocationExpression_Type(IInitializerInvocationExpressionNode node)
-        // TODO does this need to be modified by flow typing?
-        => node.ContextualizedCall?.ReturnType ?? IMaybeType.Unknown;
-
-    public static partial IFlowState InitializerInvocationExpression_FlowStateAfter(IInitializerInvocationExpressionNode node)
-    {
-        // The flow state just before the initializer is called is the state after all arguments have evaluated
-        var flowState = node.Arguments.LastOrDefault()?.FlowStateAfter ?? node.FlowStateBefore();
-        var argumentValueIds = ArgumentValueIds(node.ContextualizedCall, null, node.Arguments);
-        return flowState.CombineArguments(argumentValueIds, node.ValueId, node.Type);
-    }
-
-    public static partial void InitializerInvocationExpression_Contribute_Diagnostics(IInitializerInvocationExpressionNode node, DiagnosticCollectionBuilder diagnostics)
-    {
-        CheckInitializingType(node.Initializer.Context, diagnostics);
-
-        var flowStateBefore = node.Arguments.LastOrDefault()?.FlowStateAfter ?? node.FlowStateBefore();
-        var argumentValueIds = ArgumentValueIds(node.ContextualizedCall, null, node.Arguments);
-        ContributeCannotUnionDiagnostics(node, flowStateBefore, argumentValueIds, diagnostics);
-    }
-
-    public static partial IFlowState UnresolvedInvocationExpression_FlowStateAfter(IUnresolvedInvocationExpressionNode node)
-    {
-        // The flow state just before the invocation happens is the state after all arguments have evaluated
-        var flowState = node.Arguments.LastOrDefault()?.FlowStateAfter ?? node.FlowStateBefore();
-        var argumentValueIds = ArgumentValueIds(null, null, node.Arguments);
-        return flowState.CombineArguments(argumentValueIds, node.ValueId, node.Type);
-    }
-
-    public static partial IFlowState NonInvocableInvocationExpression_FlowStateAfter(INonInvocableInvocationExpressionNode node)
-    {
-        // The flow state just before the invocation happens is the state after all arguments have evaluated
-        var flowState = node.Arguments.LastOrDefault()?.FlowStateAfter ?? node.FlowStateBefore();
-        var argumentValueIds = ArgumentValueIds(null, null, node.Arguments);
-        return flowState.CombineArguments(argumentValueIds, node.ValueId, node.Type);
-    }
-
+    #region Operator Expressions
     public static partial IMaybeType AssignmentExpression_Type(IAssignmentExpressionNode node)
         => node.LeftOperand?.Type ?? Type.Unknown;
 
@@ -519,13 +370,104 @@ internal static partial class ExpressionTypesAspect
                 node.Syntax.Span, node.Operator, node.LeftOperand!.Type, node.RightOperand!.Type));
     }
 
-    public static partial IMaybeType ResultStatement_Type(IResultStatementNode node)
-        => node.Expression?.Type.ToNonLiteral() ?? Type.Unknown;
+    public static partial IMaybeType UnaryOperatorExpression_Type(IUnaryOperatorExpressionNode node)
+        => node.PlainType switch
+        {
+            BarePlainType { TypeConstructor: SimpleOrLiteralTypeConstructor t } => t.Type,
+            UnknownPlainType => Type.Unknown,
+            _ => throw new InvalidOperationException($"Unexpected plainType {node.PlainType}")
+        };
 
+    public static partial IFlowState UnaryOperatorExpression_FlowStateAfter(IUnaryOperatorExpressionNode node)
+    {
+        var operand = node.Operand; // Avoids repeated access
+        return operand?.FlowStateAfter.Transform(operand.ValueId, node.ValueId, node.Type) ?? IFlowState.Empty;
+    }
+
+    public static partial IMaybeType ConversionExpression_Type(IConversionExpressionNode node)
+    {
+        var convertToType = node.ConvertToType.NamedType;
+        if (node.Operator == ConversionOperator.Optional)
+            convertToType = OptionalType.Create(node.PlainType, convertToType);
+        return convertToType;
+    }
+
+    public static partial IFlowState ConversionExpression_FlowStateAfter(IConversionExpressionNode node)
+    {
+        var referent = node.Referent; // Avoids repeated access
+        if (referent is null) return IFlowState.Empty;
+        return referent.FlowStateAfter.Transform(referent.ValueId, node.ValueId, node.Type);
+    }
+
+    public static partial void ConversionExpression_Contribute_Diagnostics(
+        IConversionExpressionNode node,
+        DiagnosticCollectionBuilder diagnostics)
+    {
+        var convertFromType = node.Referent!.Type;
+        var convertToType = node.ConvertToType.NamedType;
+        if (!convertFromType.CanBeExplicitlyConvertedTo(convertToType, node.Operator == ConversionOperator.Safe))
+            diagnostics.Add(TypeError.CannotExplicitlyConvert(node.File, node.Referent.Syntax, convertFromType,
+                convertToType));
+    }
+
+    public static partial IMaybeType ImplicitConversionExpression_Type(IImplicitConversionExpressionNode node)
+        // the type will always be a simple type which will be an IMaybeType
+        // TODO eliminate the need for a cast
+        => ((SimpleTypeConstructor)node.PlainType.TypeConstructor).Type;
+
+    public static partial IFlowState ImplicitConversionExpression_FlowStateAfter(IImplicitConversionExpressionNode node)
+    {
+        var referent = node.Referent; // Avoids repeated access
+        return referent.FlowStateAfter.Transform(referent.ValueId, node.ValueId, node.Type);
+    }
+
+    public static partial IFlowState PatternMatchExpression_FlowStateAfter(IPatternMatchExpressionNode node)
+        // Constant for the boolean result of the pattern match
+        => node.Pattern.FlowStateAfter.Constant(node.ValueId);
+
+    public static partial IMaybeType RefExpression_Type(IRefExpressionNode node)
+    {
+        var referentType = node.Referent?.Type ?? Type.Unknown;
+        if (referentType is not NonVoidType nonVoidType) return referentType;
+
+        // The net effect of this is to place the `ref` type inside of any self viewpoint
+
+        // TODO this all seems rather adhoc. Is there a principled way to do this?
+
+        CapabilitySet? capabilitySet = null;
+        if (nonVoidType is SelfViewpointType selfViewpointType)
+        {
+            capabilitySet = selfViewpointType.CapabilitySet;
+            nonVoidType = selfViewpointType.Referent;
+        }
+
+        nonVoidType = RefType.Create(node.PlainType, nonVoidType);
+
+        if (capabilitySet is not null) nonVoidType = new SelfViewpointType(capabilitySet, nonVoidType);
+
+        return nonVoidType;
+    }
+
+    public static partial IFlowState RefExpression_FlowStateAfter(IRefExpressionNode node)
+    {
+        var referent = node.Referent; // Avoids repeated access
+        return referent?.FlowStateAfter.Transform(referent.ValueId, node.ValueId, node.Type) ?? IFlowState.Empty;
+    }
+
+    public static partial IMaybeType ImplicitDerefExpression_Type(IImplicitDerefExpressionNode node)
+        => (node.Referent.Type as RefType)?.Referent ?? IMaybeType.Unknown;
+
+    public static partial IFlowState ImplicitDerefExpression_FlowStateAfter(IImplicitDerefExpressionNode node)
+    {
+        var referent = node.Referent; // Avoid repeated access
+        return referent.FlowStateAfter.Transform(referent.ValueId, node.ValueId, node.Type);
+    }
+    #endregion
+
+    #region Control Flow Expressions
     public static partial IMaybeType IfExpression_Type(IIfExpressionNode node)
     {
-        if (node.ElseClause is null)
-            return OptionalType.Create(node.PlainType, node.ThenBlock.Type.ToNonLiteral());
+        if (node.ElseClause is null) return OptionalType.Create(node.PlainType, node.ThenBlock.Type.ToNonLiteral());
 
         // TODO unify with else clause
         return node.ThenBlock.Type;
@@ -564,27 +506,15 @@ internal static partial class ExpressionTypesAspect
         }
     }
 
-    public static partial IMaybeType BlockExpression_Type(IBlockExpressionNode node)
-    {
-        // TODO what about blocks that contain a return etc. and never return?
-        foreach (var statement in node.Statements)
-            if (statement.ResultType is not null and var resultType)
-                return resultType;
+    public static partial IMaybeType LoopExpression_Type(ILoopExpressionNode node)
+        // TODO assign correct type to the expression
+        => Type.Void;
 
-        // If there was no result expression, then the block type is void
-        return Type.Void;
-    }
-
-    public static partial IFlowState BlockExpression_FlowStateAfter(IBlockExpressionNode node)
-    {
-        var flowState = node.Statements.LastOrDefault()?.FlowStateAfter ?? node.FlowStateBefore();
-        flowState = flowState.DropBindings(node.Statements.OfType<IVariableDeclarationStatementNode>());
-        foreach (var statement in node.Statements)
-            if (statement.ResultValueId is ValueId resultValueId)
-                return flowState.Transform(resultValueId, node.ValueId, node.Type);
-
-        return flowState.Constant(node.ValueId);
-    }
+    public static partial IFlowState LoopExpression_FlowStateAfter(ILoopExpressionNode node)
+        // Body is always executes at least once
+        => node.Block.FlowStateAfter
+               // TODO when the `loop` has a type other than void, correctly handle the value id
+               .Constant(node.ValueId);
 
     public static partial IMaybeType WhileExpression_Type(IWhileExpressionNode node)
         // TODO assign correct type to the expression
@@ -603,147 +533,314 @@ internal static partial class ExpressionTypesAspect
                // TODO when the `while` has a type other than void, correctly handle the value id
                .Constant(node.ValueId);
 
-    public static partial IMaybeType LoopExpression_Type(ILoopExpressionNode node)
-        // TODO assign correct type to the expression
-        => Type.Void;
+    public static partial IFlowState BreakExpression_FlowStateAfter(IBreakExpressionNode node)
+        // Whatever the previous flow state, now nothing exists except the constant for the `never` typed value
+        => IFlowState.Empty.Constant(node.ValueId);
 
-    public static partial IFlowState LoopExpression_FlowStateAfter(ILoopExpressionNode node)
-        // Body is always executes at least once
-        => node.Block.FlowStateAfter
-               // TODO when the `loop` has a type other than void, correctly handle the value id
-               .Constant(node.ValueId);
+    public static partial IFlowState NextExpression_FlowStateAfter(INextExpressionNode node)
+        // Whatever the previous flow state, now nothing exists except the constant for the `never` typed value
+        => IFlowState.Empty.Constant(node.ValueId);
 
-    public static partial IMaybeType ConversionExpression_Type(IConversionExpressionNode node)
+    public static partial IFlowState ReturnExpression_FlowStateAfter(IReturnExpressionNode node)
+        // Whatever the previous flow state, now nothing exists except the constant for the `never` typed value
+        => IFlowState.Empty.Constant(node.ValueId);
+
+    public static partial void ReturnExpression_Contribute_Diagnostics(IReturnExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
-        var convertToType = node.ConvertToType.NamedType;
-        if (node.Operator == ConversionOperator.Optional)
-            convertToType = OptionalType.Create(node.PlainType, convertToType);
-        return convertToType;
+        if (node.Value is not { } value) return;
+        var flowStateBefore = value.FlowStateAfter;
+        if (flowStateBefore.IsLent(value.ValueId))
+            diagnostics.Add(FlowTypingError.CannotReturnLent(node.File, node.Syntax));
+    }
+    #endregion
+
+    #region Invocation Expressions
+    public static partial IFlowState UnresolvedInvocationExpression_FlowStateAfter(IUnresolvedInvocationExpressionNode node)
+    {
+        // The flow state just before the invocation happens is the state after all arguments have evaluated
+        var flowState = node.Arguments.LastOrDefault()?.FlowStateAfter ?? node.FlowStateBefore();
+        var argumentValueIds = ArgumentValueIds(null, null, node.Arguments);
+        return flowState.CombineArguments(argumentValueIds, node.ValueId, node.Type);
     }
 
-    public static partial IFlowState ConversionExpression_FlowStateAfter(IConversionExpressionNode node)
+    public static partial IMaybeType FunctionInvocationExpression_Type(IFunctionInvocationExpressionNode node)
+        => node.Function.ReferencedDeclaration?.Type.Return ?? IMaybeType.Unknown;
+
+    public static partial ContextualizedCall? FunctionInvocationExpression_ContextualizedCall(IFunctionInvocationExpressionNode node)
+        => node.Function.ReferencedDeclaration is not null
+            ? ContextualizedCall.Create(node.Function.ReferencedDeclaration) : null;
+
+    public static partial IFlowState FunctionInvocationExpression_FlowStateAfter(IFunctionInvocationExpressionNode node)
     {
-        var referent = node.Referent; // Avoids repeated access
-        if (referent is null)
-            return IFlowState.Empty;
-        return referent.FlowStateAfter.Transform(referent.ValueId, node.ValueId, node.Type);
+        // The flow state just before the function is called is the state after all arguments have evaluated
+        var flowStateBefore = node.Arguments.LastOrDefault()?.FlowStateAfter ?? node.FlowStateBefore();
+        var argumentValueIds = ArgumentValueIds(node.ContextualizedCall, null, node.Arguments);
+        return flowStateBefore.CombineArguments(argumentValueIds, node.ValueId, node.Type);
     }
 
-    public static partial void ConversionExpression_Contribute_Diagnostics(IConversionExpressionNode node, DiagnosticCollectionBuilder diagnostics)
+    public static partial void FunctionInvocationExpression_Contribute_Diagnostics(IFunctionInvocationExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
-        var convertFromType = node.Referent!.Type;
-        var convertToType = node.ConvertToType.NamedType;
-        if (!convertFromType.CanBeExplicitlyConvertedTo(convertToType, node.Operator == ConversionOperator.Safe))
-            diagnostics.Add(TypeError.CannotExplicitlyConvert(node.File, node.Referent.Syntax, convertFromType, convertToType));
+        var flowStateBefore = node.Arguments.LastOrDefault()?.FlowStateAfter ?? node.FlowStateBefore();
+        var argumentValueIds = ArgumentValueIds(node.ContextualizedCall, null, node.Arguments);
+        ContributeCannotUnionDiagnostics(node, flowStateBefore, argumentValueIds, diagnostics);
     }
 
-    public static partial IMaybeType ImplicitConversionExpression_Type(IImplicitConversionExpressionNode node)
-        // the type will always be a simple type which will be an IMaybeType
-        // TODO eliminate the need for a cast
-        => ((SimpleTypeConstructor)node.PlainType.TypeConstructor).Type;
-
-    public static partial IFlowState ImplicitConversionExpression_FlowStateAfter(IImplicitConversionExpressionNode node)
+    private static void ContributeCannotUnionDiagnostics(
+        IInvocationExpressionNode node,
+        IFlowState flowStateBefore,
+        IEnumerable<ArgumentValueId> argumentValueIds,
+        DiagnosticCollectionBuilder diagnostics)
     {
-        var referent = node.Referent; // Avoids repeated access
-        return referent.FlowStateAfter.Transform(referent.ValueId, node.ValueId, node.Type);
-    }
-
-    public static partial IMaybeType AsyncStartExpression_Type(IAsyncStartExpressionNode node)
-        => Intrinsic.PromiseOf(node.Expression?.Type.ToNonLiteral() ?? Type.Unknown);
-
-    public static partial IFlowState AsyncStartExpression_FlowStateAfter(IAsyncStartExpressionNode node)
-    {
-        var expression = node.Expression; // Avoids repeated access
-        // TODO this isn't correct, async start can act like a delayed lambda. It is also a transform that wraps
-        return expression?.FlowStateAfter.Combine(expression.ValueId, null, node.ValueId) ?? IFlowState.Empty;
-    }
-
-    public static partial IMaybeType AwaitExpression_Type(IAwaitExpressionNode node)
-    {
-        if (node.Expression?.Type is CapabilityType { TypeConstructor: var typeConstructor } type
-            && Intrinsic.PromiseTypeConstructor.Equals(typeConstructor))
-            return type.Arguments[0];
-
-        return Type.Unknown;
-    }
-
-    public static partial IFlowState AwaitExpression_FlowStateAfter(IAwaitExpressionNode node)
-    {
-        var expression = node.Expression; // Avoids repeated access
-        // TODO actually this is a transform that unwraps
-        return expression?.FlowStateAfter.Combine(expression.ValueId, null, node.ValueId) ?? IFlowState.Empty;
-    }
-
-    public static partial IMaybeType UnaryOperatorExpression_Type(IUnaryOperatorExpressionNode node)
-        => node.PlainType switch
+        var valueIds = flowStateBefore.CombineArgumentsDisallowedDueToLent(argumentValueIds);
+        foreach (var valueId in valueIds)
         {
-            BarePlainType { TypeConstructor: SimpleOrLiteralTypeConstructor t }
-                => t.Type,
-            UnknownPlainType => Type.Unknown,
-            _ => throw new InvalidOperationException($"Unexpected plainType {node.PlainType}")
-        };
-
-    public static partial IFlowState UnaryOperatorExpression_FlowStateAfter(IUnaryOperatorExpressionNode node)
-    {
-        var operand = node.Operand; // Avoids repeated access
-        return operand?.FlowStateAfter.Transform(operand.ValueId, node.ValueId, node.Type)
-               ?? IFlowState.Empty;
+            var arg = node.AllArguments.Single(a => a?.ValueId == valueId)!;
+            diagnostics.Add(FlowTypingError.CannotUnion(arg.File, arg.Syntax.Span));
+        }
     }
 
-    public static partial IMaybeType FreezeExpression_Type(IFreezeExpressionNode node)
+    public static partial ContextualizedCall? MethodInvocationExpression_ContextualizedCall(IMethodInvocationExpressionNode node)
+        => node.Method.ReferencedDeclaration is not null
+            ? ContextualizedCall.Create(node.Method.Context.Type, node.Method.ReferencedDeclaration)
+            : null;
+
+    public static partial IMaybeType MethodInvocationExpression_Type(IMethodInvocationExpressionNode node)
+        // TODO does this need to be modified by flow typing?
+        => node.ContextualizedCall?.ReturnType ?? Type.Unknown;
+
+    public static partial IFlowState MethodInvocationExpression_FlowStateAfter(IMethodInvocationExpressionNode node)
     {
-        if (node.Referent.Type is not CapabilityType capabilityType)
-            return Type.Unknown;
-
-        // Even if the capability doesn't allow freeze, a freeze expression always results in a
-        // constant reference. A diagnostic is generated if the capability doesn't allow freeze.
-
-        var capability = node.IsTemporary ? Capability.TemporarilyConstant : Capability.Constant;
-        return capabilityType.With(capability);
+        // The flow state just before the method is called is the state after all arguments have evaluated
+        var flowStateBefore = node.Arguments.LastOrDefault()?.FlowStateAfter ?? node.Method.Context.FlowStateAfter;
+        var argumentValueIds = ArgumentValueIds(node.ContextualizedCall, node.Method.Context, node.Arguments);
+        return flowStateBefore.CombineArguments(argumentValueIds, node.ValueId, node.Type);
     }
 
-    public static partial IFlowState FreezeVariableExpression_FlowStateAfter(IFreezeVariableExpressionNode node)
+    public static partial void MethodInvocationExpression_Contribute_Diagnostics(IMethodInvocationExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
-        var referent = node.Referent; // Avoids repeated access
-        var flowStateBefore = referent.FlowStateAfter;
-        var referentValueId = referent.ValueId;
-        return node.IsTemporary
-            // TODO this implies that temp freeze is a fundamentally different operation and ought to have its own node type
-            ? flowStateBefore.TempFreeze(referentValueId, node.ValueId)
-            : flowStateBefore.FreezeVariable(referent.ReferencedDefinition, referentValueId, node.ValueId);
+        var flowStateBefore = node.Arguments.LastOrDefault()?.FlowStateAfter ?? node.Method.Context.FlowStateAfter;
+        var argumentValueIds = ArgumentValueIds(node.ContextualizedCall, node.Method.Context, node.Arguments);
+        ContributeCannotUnionDiagnostics(node, flowStateBefore, argumentValueIds, diagnostics);
     }
 
-    public static partial IFlowState FreezeValueExpression_FlowStateAfter(IFreezeValueExpressionNode node)
+    public static partial ContextualizedCall? GetterInvocationExpression_ContextualizedCall(IGetterInvocationExpressionNode node)
+        => node.ReferencedDeclaration is not null
+            ? ContextualizedCall.Create(node.Context.Type, node.ReferencedDeclaration) : null;
+
+    public static partial IMaybeType GetterInvocationExpression_Type(IGetterInvocationExpressionNode node)
+        => node.ContextualizedCall?.ReturnType ?? Type.Unknown;
+
+    public static partial IFlowState GetterInvocationExpression_FlowStateAfter(IGetterInvocationExpressionNode node)
     {
-        var referent = node.Referent; // Avoids repeated access
-        var flowStateBefore = referent.FlowStateAfter;
-        var referentValueId = referent.ValueId;
-        return node.IsTemporary
-            ? flowStateBefore.TempFreeze(referentValueId, node.ValueId)
-            : flowStateBefore.FreezeValue(referentValueId, node.ValueId);
+        var flowStateBefore = node.Context.FlowStateAfter;
+        var argumentValueIds = ArgumentValueIds(node.ContextualizedCall, node.Context, []);
+        return flowStateBefore.CombineArguments(argumentValueIds, node.ValueId, node.Type);
     }
 
-    public static partial void FreezeVariableExpression_Contribute_Diagnostics(IFreezeVariableExpressionNode node, DiagnosticCollectionBuilder diagnostics)
+    public static partial void GetterInvocationExpression_Contribute_Diagnostics(IGetterInvocationExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
-        if (node.Referent.Type is not CapabilityType capabilityType)
-            return;
-
-        if (!capabilityType.Capability.AllowsFreeze)
-            diagnostics.Add(TypeError.NotImplemented(node.File, node.Syntax.Span, "Reference capability does not allow freezing"));
-        else if (!node.IsTemporary && !node.Referent.FlowStateAfter.CanFreezeExceptFor(node.Referent.ReferencedDefinition, node.Referent.ValueId))
-            diagnostics.Add(FlowTypingError.CannotFreezeValue(node.File, node.Syntax, node.Referent.Syntax));
+        var flowStateBefore = node.Context.FlowStateAfter;
+        var argumentValueIds = ArgumentValueIds(node.ContextualizedCall, node.Context, []);
+        ContributeCannotUnionDiagnostics(node, flowStateBefore, argumentValueIds, diagnostics);
     }
 
-    public static partial void FreezeValueExpression_Contribute_Diagnostics(IFreezeValueExpressionNode node, DiagnosticCollectionBuilder diagnostics)
-    {
-        if (node.Referent.Type is not CapabilityType capabilityType) return;
+    public static partial ContextualizedCall? SetterInvocationExpression_ContextualizedCall(ISetterInvocationExpressionNode node)
+        => node.ReferencedDeclaration is not null
+            ? ContextualizedCall.Create(node.Context.Type, node.ReferencedDeclaration) : null;
 
-        if (!capabilityType.Capability.AllowsFreeze)
-            diagnostics.Add(TypeError.NotImplemented(node.File, node.Syntax.Span, "Reference capability does not allow freezing"));
-        else if (!node.IsTemporary && !node.Referent.FlowStateAfter.CanFreeze(node.Referent.ValueId))
-            diagnostics.Add(FlowTypingError.CannotFreezeValue(node.File, node.Syntax, node.Referent.Syntax));
+    public static partial IMaybeType SetterInvocationExpression_Type(ISetterInvocationExpressionNode node)
+        => node.ContextualizedCall?.ParameterTypes[0].Type ?? Type.Unknown;
+
+    public static partial IFlowState SetterInvocationExpression_FlowStateAfter(ISetterInvocationExpressionNode node)
+    {
+        if (node.Value is not IExpressionNode value)
+            return IFlowState.Empty;
+        // The flow state just before the setter is called is the state after the argument has been evaluated
+        var flowStateBefore = value.FlowStateAfter;
+        var argumentValueIds = ArgumentValueIds(node.ContextualizedCall, node.Context, [value]);
+        return flowStateBefore.CombineArguments(argumentValueIds, node.ValueId, node.Type);
     }
 
+    public static partial void SetterInvocationExpression_Contribute_Diagnostics(ISetterInvocationExpressionNode node, DiagnosticCollectionBuilder diagnostics)
+    {
+        var value = node.Value!;
+        var flowStateBefore = value.FlowStateAfter;
+        var argumentValueIds = ArgumentValueIds(node.ContextualizedCall, node.Context, [value]);
+        ContributeCannotUnionDiagnostics(node, flowStateBefore, argumentValueIds, diagnostics);
+    }
+
+    private static IEnumerable<ArgumentValueId> ArgumentValueIds(
+        ContextualizedCall? overload,
+        IExpressionNode? selfArgument,
+        IEnumerable<IExpressionNode?> arguments)
+    {
+        var allArguments = arguments.Prepend(selfArgument).WhereNotNull();
+        if (overload is null)
+            return allArguments.Select(a => new ArgumentValueId(false, a.ValueId));
+
+        var parameterTypes = overload.ParameterTypes.AsEnumerable();
+        if (selfArgument is not null)
+        {
+            if (overload.SelfParameterType is not NonVoidType selfParameterType)
+                throw new InvalidOperationException("Self argument provided for overload without self parameter");
+            // TODO this assumes that the self parameter is not lent, but it can be lent!
+            parameterTypes = parameterTypes.Prepend(ParameterType.Create(false, selfParameterType));
+        }
+        return parameterTypes.EquiZip(allArguments)
+                             .Select((p, a) => new ArgumentValueId(p.IsLent, a.ValueId));
+    }
+
+    public static partial FunctionType FunctionReferenceInvocationExpression_FunctionType(IFunctionReferenceInvocationExpressionNode node)
+        => (FunctionType)node.Expression.Type;
+
+    public static partial IMaybeType FunctionReferenceInvocationExpression_Type(IFunctionReferenceInvocationExpressionNode node)
+        => node.FunctionType.Return;
+
+    public static partial IFlowState FunctionReferenceInvocationExpression_FlowStateAfter(IFunctionReferenceInvocationExpressionNode node)
+    {
+        // The flow state just before the function is called is the state after all arguments have evaluated
+        var flowStateBefore = node.Arguments.LastOrDefault()?.FlowStateAfter ?? node.Expression.FlowStateAfter;
+        // TODO handle the fact that the function reference itself must be combined too
+        var contextualizedOverload = ContextualizedCall.Create(node.FunctionType);
+        var argumentValueIds = ArgumentValueIds(contextualizedOverload, null, node.Arguments);
+        return flowStateBefore.CombineArguments(argumentValueIds, node.ValueId, node.Type);
+    }
+
+    public static partial void FunctionReferenceInvocationExpression_Contribute_Diagnostics(IFunctionReferenceInvocationExpressionNode node, DiagnosticCollectionBuilder diagnostics)
+    {
+        var flowStateBefore = node.Arguments.LastOrDefault()?.FlowStateAfter ?? node.Expression.FlowStateAfter;
+        var contextualizedOverload = ContextualizedCall.Create(node.FunctionType);
+        var argumentValueIds = ArgumentValueIds(contextualizedOverload, null, node.Arguments);
+        ContributeCannotUnionDiagnostics(node, flowStateBefore, argumentValueIds, diagnostics);
+    }
+
+    public static partial ContextualizedCall? InitializerInvocationExpression_ContextualizedCall(IInitializerInvocationExpressionNode node)
+        => node.Initializer.ReferencedDeclaration is not null
+           && node.Initializer.Context.NamedBareType is not null and var initializingType
+            ? ContextualizedCall.Create(initializingType.With(Capability.Mutable), node.Initializer.ReferencedDeclaration)
+            : null;
+
+    public static partial IMaybeType InitializerInvocationExpression_Type(IInitializerInvocationExpressionNode node)
+        // TODO does this need to be modified by flow typing?
+        => node.ContextualizedCall?.ReturnType ?? IMaybeType.Unknown;
+
+    public static partial IFlowState InitializerInvocationExpression_FlowStateAfter(IInitializerInvocationExpressionNode node)
+    {
+        // The flow state just before the initializer is called is the state after all arguments have evaluated
+        var flowState = node.Arguments.LastOrDefault()?.FlowStateAfter ?? node.FlowStateBefore();
+        var argumentValueIds = ArgumentValueIds(node.ContextualizedCall, null, node.Arguments);
+        return flowState.CombineArguments(argumentValueIds, node.ValueId, node.Type);
+    }
+
+    public static partial void InitializerInvocationExpression_Contribute_Diagnostics(IInitializerInvocationExpressionNode node, DiagnosticCollectionBuilder diagnostics)
+    {
+        CheckInitializingType(node.Initializer.Context, diagnostics);
+
+        var flowStateBefore = node.Arguments.LastOrDefault()?.FlowStateAfter ?? node.FlowStateBefore();
+        var argumentValueIds = ArgumentValueIds(node.ContextualizedCall, null, node.Arguments);
+        ContributeCannotUnionDiagnostics(node, flowStateBefore, argumentValueIds, diagnostics);
+    }
+
+    private static void CheckInitializingType(ITypeNameNode node, DiagnosticCollectionBuilder diagnostics)
+    {
+        switch (node)
+        {
+            default:
+                throw ExhaustiveMatch.Failed(node);
+            case IOrdinaryTypeNameNode n:
+                CheckGenericArgumentsAreConstructable(n, diagnostics);
+                break;
+            case IBuiltInTypeNameNode n:
+                diagnostics.Add(TypeError.SpecialTypeCannotBeUsedHere(node.File, n.Syntax));
+                break;
+            case IQualifiedTypeNameNode n:
+                if (n.NamedPlainType is BarePlainType { TypeConstructor: AssociatedTypeConstructor })
+                    diagnostics.Add(TypeError.TypeParameterCannotBeUsedHere(node.File, n.Syntax));
+                else
+                    CheckGenericArgumentsAreConstructable(n, diagnostics);
+                break;
+        }
+    }
+
+    public static void CheckGenericArgumentsAreConstructable(ITypeNameNode node, DiagnosticCollectionBuilder diagnostics)
+    {
+        var bareType = node.NamedBareType;
+        if (bareType is null) return;
+
+        foreach (TypeParameterArgument arg in bareType.TypeParameterArguments)
+            if (!arg.IsConstructable())
+                diagnostics.Add(
+                    TypeError.CapabilityNotCompatibleWithConstraint(node.File, node.Syntax, arg.Parameter, arg.Argument));
+    }
+
+    public static partial IFlowState NonInvocableInvocationExpression_FlowStateAfter(INonInvocableInvocationExpressionNode node)
+    {
+        // The flow state just before the invocation happens is the state after all arguments have evaluated
+        var flowState = node.Arguments.LastOrDefault()?.FlowStateAfter ?? node.FlowStateBefore();
+        var argumentValueIds = ArgumentValueIds(null, null, node.Arguments);
+        return flowState.CombineArguments(argumentValueIds, node.ValueId, node.Type);
+    }
+    #endregion
+
+    #region Name Expressions
+    public static partial IMaybeType VariableNameExpression_Type(IVariableNameExpressionNode node)
+        => node.FlowStateAfter.AliasType(node.ReferencedDefinition);
+
+    public static partial IFlowState VariableNameExpression_FlowStateAfter(IVariableNameExpressionNode node)
+        => node.FlowStateBefore().Alias(node.ReferencedDefinition, node.ValueId);
+
+    public static partial IFlowState SelfExpression_FlowStateAfter(ISelfExpressionNode node)
+        => node.FlowStateBefore().Alias(node.ReferencedDefinition, node.ValueId);
+
+    public static partial IMaybeType SelfExpression_Type(ISelfExpressionNode node)
+        => node.FlowStateAfter.AliasType(node.ReferencedDefinition);
+
+    public static partial IMaybeType FunctionNameExpression_Type(IFunctionNameExpressionNode node)
+        => node.ReferencedDeclaration?.Type ?? IMaybeType.Unknown;
+
+    public static partial IFlowState FunctionNameExpression_FlowStateAfter(IFunctionNameExpressionNode node)
+        => node.FlowStateBefore().Constant(node.ValueId);
+
+    public static partial IMaybeType InitializerNameExpression_Type(IInitializerNameExpressionNode node)
+        // TODO proper type
+        // => node.ReferencedDeclaration?.InitializerGroupType ?? IMaybeType.Unknown;
+        => IMaybeType.Unknown;
+
+    public static partial IFlowState InitializerNameExpression_FlowStateAfter(IInitializerNameExpressionNode node)
+        => node.FlowStateBefore().Constant(node.ValueId);
+
+    public static partial IFlowState MissingNameExpression_FlowStateAfter(IMissingNameExpressionNode node)
+        // The flow state needs to contain something for this nodes value id. By treating it as a
+        // constant, it will be added to the untracked values and hopefully not cause issues for the
+        // analysis of invalid code.
+        => node.FlowStateBefore().Constant(node.ValueId);
+    #endregion
+
+    #region Unresolved Name Expressions
+    public static partial IFlowState UnresolvedNameExpression_FlowStateAfter(IUnresolvedNameExpressionNode node)
+        // Things with unknown type are inherently untracked, this just adds it to the untracked list
+        => node.FlowStateBefore().Alias(null, node.ValueId);
+
+    public static partial IFlowState UnresolvedQualifiedNameExpression_FlowStateAfter(IUnresolvedQualifiedNameExpressionNode node)
+    {
+        var context = node.Context; // Avoid repeated access
+        return context.FlowStateAfter.Transform(context.ValueId, node.ValueId, node.Type);
+    }
+    #endregion
+
+    #region Names
+    public static partial IFlowState NamespaceName_FlowStateAfter(INamespaceNameNode node)
+        // Namespace names don't produce values and therefore have no effect on flow state.
+        => node.FlowStateBefore();
+    #endregion
+
+    #region Type Names
+    public static partial IFlowState TypeName_FlowStateAfter(ITypeNameNode node)
+        // Type names don't produce values and therefore have no effect on flow state.
+        => node.FlowStateBefore();
+    #endregion
+
+    #region Capability Expressions
     public static partial IMaybeType MoveExpression_Type(IMoveExpressionNode node)
     {
         if (node.Referent.Type is not CapabilityType capabilityType)
@@ -808,186 +905,93 @@ internal static partial class ExpressionTypesAspect
         return flowStateBefore.TempMove(referent.ValueId, node.ValueId);
     }
 
-    public static partial IFlowState ExpressionStatement_FlowStateAfter(IExpressionStatementNode node)
+    public static partial IMaybeType FreezeExpression_Type(IFreezeExpressionNode node)
     {
-        var expression = node.Expression;
-        if (expression is null)
-            return IFlowState.Empty;
+        if (node.Referent.Type is not CapabilityType capabilityType)
+            return Type.Unknown;
 
-        return expression.FlowStateAfter.DropValue(expression.ValueId);
+        // Even if the capability doesn't allow freeze, a freeze expression always results in a
+        // constant reference. A diagnostic is generated if the capability doesn't allow freeze.
+
+        var capability = node.IsTemporary ? Capability.TemporarilyConstant : Capability.Constant;
+        return capabilityType.With(capability);
     }
 
-    public static partial IFlowState ReturnExpression_FlowStateAfter(IReturnExpressionNode node)
-        // Whatever the previous flow state, now nothing exists except the constant for the `never` typed value
-        => IFlowState.Empty.Constant(node.ValueId);
-
-    public static partial void ReturnExpression_Contribute_Diagnostics(IReturnExpressionNode node, DiagnosticCollectionBuilder diagnostics)
+    public static partial IFlowState FreezeVariableExpression_FlowStateAfter(IFreezeVariableExpressionNode node)
     {
-        if (node.Value is not { } value)
+        var referent = node.Referent; // Avoids repeated access
+        var flowStateBefore = referent.FlowStateAfter;
+        var referentValueId = referent.ValueId;
+        return node.IsTemporary
+            // TODO this implies that temp freeze is a fundamentally different operation and ought to have its own node type
+            ? flowStateBefore.TempFreeze(referentValueId, node.ValueId)
+            : flowStateBefore.FreezeVariable(referent.ReferencedDefinition, referentValueId, node.ValueId);
+    }
+
+    public static partial IFlowState FreezeValueExpression_FlowStateAfter(IFreezeValueExpressionNode node)
+    {
+        var referent = node.Referent; // Avoids repeated access
+        var flowStateBefore = referent.FlowStateAfter;
+        var referentValueId = referent.ValueId;
+        return node.IsTemporary
+            ? flowStateBefore.TempFreeze(referentValueId, node.ValueId)
+            : flowStateBefore.FreezeValue(referentValueId, node.ValueId);
+    }
+
+    public static partial void FreezeVariableExpression_Contribute_Diagnostics(IFreezeVariableExpressionNode node, DiagnosticCollectionBuilder diagnostics)
+    {
+        if (node.Referent.Type is not CapabilityType capabilityType)
             return;
-        var flowStateBefore = value.FlowStateAfter;
-        if (flowStateBefore.IsLent(value.ValueId))
-            diagnostics.Add(FlowTypingError.CannotReturnLent(node.File, node.Syntax));
+
+        if (!capabilityType.Capability.AllowsFreeze)
+            diagnostics.Add(TypeError.NotImplemented(node.File, node.Syntax.Span, "Reference capability does not allow freezing"));
+        else if (!node.IsTemporary && !node.Referent.FlowStateAfter.CanFreezeExceptFor(node.Referent.ReferencedDefinition, node.Referent.ValueId))
+            diagnostics.Add(FlowTypingError.CannotFreezeValue(node.File, node.Syntax, node.Referent.Syntax));
     }
 
-    public static partial IFlowState BreakExpression_FlowStateAfter(IBreakExpressionNode node)
-        // Whatever the previous flow state, now nothing exists except the constant for the `never` typed value
-        => IFlowState.Empty.Constant(node.ValueId);
+    public static partial void FreezeValueExpression_Contribute_Diagnostics(IFreezeValueExpressionNode node, DiagnosticCollectionBuilder diagnostics)
+    {
+        if (node.Referent.Type is not CapabilityType capabilityType) return;
 
-    public static partial IFlowState NextExpression_FlowStateAfter(INextExpressionNode node)
-        // Whatever the previous flow state, now nothing exists except the constant for the `never` typed value
-        => IFlowState.Empty.Constant(node.ValueId);
-
-    public static partial IFlowState PatternMatchExpression_FlowStateAfter(IPatternMatchExpressionNode node)
-        // Constant for the boolean result of the pattern match
-        => node.Pattern.FlowStateAfter.Constant(node.ValueId);
+        if (!capabilityType.Capability.AllowsFreeze)
+            diagnostics.Add(TypeError.NotImplemented(node.File, node.Syntax.Span, "Reference capability does not allow freezing"));
+        else if (!node.IsTemporary && !node.Referent.FlowStateAfter.CanFreeze(node.Referent.ValueId))
+            diagnostics.Add(FlowTypingError.CannotFreezeValue(node.File, node.Syntax, node.Referent.Syntax));
+    }
 
     public static partial IFlowState PrepareToReturnExpression_FlowStateAfter(IPrepareToReturnExpressionNode node)
     {
         var value = node.Value; // Avoids repeated access
         var flowStateBefore = value.FlowStateAfter;
-        return flowStateBefore.Transform(value.ValueId, node.ValueId, node.Type)
-                              .DropBindingsForReturn();
-    }
-
-    #region Operator Expressions
-    public static partial IMaybeType RefExpression_Type(IRefExpressionNode node)
-    {
-        var referentType = node.Referent?.Type ?? Type.Unknown;
-        if (referentType is not NonVoidType nonVoidType) return referentType;
-
-        // The net effect of this is to place the `ref` type inside of any self viewpoint
-
-        // TODO this all seems rather adhoc. Is there a principled way to do this?
-
-        CapabilitySet? capabilitySet = null;
-        if (nonVoidType is SelfViewpointType selfViewpointType)
-        {
-            capabilitySet = selfViewpointType.CapabilitySet;
-            nonVoidType = selfViewpointType.Referent;
-        }
-
-        nonVoidType = RefType.Create(node.PlainType, nonVoidType);
-
-        if (capabilitySet is not null)
-            nonVoidType = new SelfViewpointType(capabilitySet, nonVoidType);
-
-        return nonVoidType;
-    }
-
-    public static partial IFlowState RefExpression_FlowStateAfter(IRefExpressionNode node)
-    {
-        var referent = node.Referent; // Avoids repeated access
-        return referent?.FlowStateAfter.Transform(referent.ValueId, node.ValueId, node.Type)
-               ?? IFlowState.Empty;
-    }
-
-    public static partial IMaybeType ImplicitDerefExpression_Type(IImplicitDerefExpressionNode node)
-        => (node.Referent.Type as RefType)?.Referent ?? IMaybeType.Unknown;
-
-    public static partial IFlowState ImplicitDerefExpression_FlowStateAfter(IImplicitDerefExpressionNode node)
-    {
-        var referent = node.Referent; // Avoid repeated access
-        return referent.FlowStateAfter.Transform(referent.ValueId, node.ValueId, node.Type);
+        return flowStateBefore.Transform(value.ValueId, node.ValueId, node.Type).DropBindingsForReturn();
     }
     #endregion
 
-    #region Unresolved Name Expressions
-    public static partial IFlowState UnresolvedNameExpression_FlowStateAfter(IUnresolvedNameExpressionNode node)
-        // Things with unknown type are inherently untracked, this just adds it to the untracked list
-        => node.FlowStateBefore().Alias(null, node.ValueId);
+    #region Async Expressions
+    public static partial IMaybeType AsyncStartExpression_Type(IAsyncStartExpressionNode node)
+        => Intrinsic.PromiseOf(node.Expression?.Type.ToNonLiteral() ?? Type.Unknown);
 
-    public static partial IFlowState UnresolvedQualifiedNameExpression_FlowStateAfter(IUnresolvedQualifiedNameExpressionNode node)
+    public static partial IFlowState AsyncStartExpression_FlowStateAfter(IAsyncStartExpressionNode node)
     {
-        var context = node.Context; // Avoid repeated access
-        return context.FlowStateAfter.Transform(context.ValueId, node.ValueId, node.Type);
+        var expression = node.Expression; // Avoids repeated access
+        // TODO this isn't correct, async start can act like a delayed lambda. It is also a transform that wraps
+        return expression?.FlowStateAfter.Combine(expression.ValueId, null, node.ValueId) ?? IFlowState.Empty;
     }
 
-    #endregion
-
-    #region Instance Member Access Expressions
-    public static partial IMaybeType FieldAccessExpression_Type(IFieldAccessExpressionNode node)
+    public static partial IMaybeType AwaitExpression_Type(IAwaitExpressionNode node)
     {
-        var contextType = node.Context.Type;
-        var fieldType = node.ReferencedDeclaration.BindingType;
-        // Access must be applied first, so it can account for independent generic parameters.
-        var type = fieldType.AccessedVia(contextType);
-        // Then type parameters can be replaced now that they have the correct access
-        if (contextType is NonVoidType nonVoidContext)
-            // resolve generic type fields
-            type = nonVoidContext.TypeReplacements.ApplyTo(type);
+        if (node.Expression?.Type is CapabilityType { TypeConstructor: var typeConstructor } type
+            && Intrinsic.PromiseTypeConstructor.Equals(typeConstructor))
+            return type.Arguments[0];
 
-        return type;
+        return Type.Unknown;
     }
 
-    public static partial IFlowState FieldAccessExpression_FlowStateAfter(IFieldAccessExpressionNode node)
-        => node.Context.FlowStateAfter.AccessField(node);
-
-    public static partial void FieldAccessExpression_Contribute_Diagnostics(
-        IFieldAccessExpressionNode node,
-        DiagnosticCollectionBuilder diagnostics)
+    public static partial IFlowState AwaitExpression_FlowStateAfter(IAwaitExpressionNode node)
     {
-        if (node.Parent is IAssignmentExpressionNode assignmentNode && assignmentNode.TempLeftOperand == node)
-            // In this case, a different error will be reported and CannotAccessMutableBindingFieldOfIdentityReference
-            // should not be reported.
-            return;
-
-        var fieldHasMutableBinding = node.ReferencedDeclaration.IsMutableBinding;
-        if (fieldHasMutableBinding
-            && node.Context.Type is CapabilityType { Capability: var contextCapability }
-            && contextCapability == Capability.Identity)
-            diagnostics.Add(TypeError.CannotAccessMutableBindingFieldOfIdentityReference(node.File, node.Syntax, node.Context.Type));
+        var expression = node.Expression; // Avoids repeated access
+        // TODO actually this is a transform that unwraps
+        return expression?.FlowStateAfter.Combine(expression.ValueId, null, node.ValueId) ?? IFlowState.Empty;
     }
-
-    public static partial IMaybeType MethodAccessExpression_Type(IMethodAccessExpressionNode node)
-        => node.ReferencedDeclaration?.MethodGroupType ?? IMaybeType.Unknown;
-
-    // TODO this is strange and maybe a hack
-    public static partial IMaybeType? MethodAccessExpression_Context_ExpectedType(IMethodAccessExpressionNode node)
-    {
-        // TODO the below should be equivalent to what is being run, but is a little less of a hack. However
-        // it duplicates code.
-
-        // var contextType = node.Context.Type as NonVoidType;
-        // var selfParameterType = node.ReferencedDeclaration?.SelfParameterType;
-        // if (selfParameterType is null) return null;
-        // return contextType?.TypeReplacements.ApplyTo(selfParameterType);
-
-        return (node.Parent as IMethodInvocationExpressionNode)?.ContextualizedCall?.SelfParameterType?.ToUpperBound();
-    }
-    #endregion
-
-    #region Name Expressions
-    public static partial IMaybeType FunctionNameExpression_Type(IFunctionNameExpressionNode node)
-        => node.ReferencedDeclaration?.Type ?? IMaybeType.Unknown;
-
-    public static partial IFlowState FunctionNameExpression_FlowStateAfter(IFunctionNameExpressionNode node)
-        => node.FlowStateBefore().Constant(node.ValueId);
-
-    public static partial IMaybeType InitializerNameExpression_Type(IInitializerNameExpressionNode node)
-        // TODO proper type
-        // => node.ReferencedDeclaration?.InitializerGroupType ?? IMaybeType.Unknown;
-        => IMaybeType.Unknown;
-
-    public static partial IFlowState InitializerNameExpression_FlowStateAfter(IInitializerNameExpressionNode node)
-        => node.FlowStateBefore().Constant(node.ValueId);
-
-    public static partial IFlowState MissingNameExpression_FlowStateAfter(IMissingNameExpressionNode node)
-        // The flow state needs to contain something for this nodes value id. By treating it as a
-        // constant, it will be added to the untracked values and hopefully not cause issues for the
-        // analysis of invalid code.
-        => node.FlowStateBefore().Constant(node.ValueId);
-    #endregion
-
-    #region Names
-    public static partial IFlowState NamespaceName_FlowStateAfter(INamespaceNameNode node)
-        // Namespace names don't produce values and therefore have no effect on flow state.
-        => node.FlowStateBefore();
-    #endregion
-
-    #region Type Names
-    public static partial IFlowState TypeName_FlowStateAfter(ITypeNameNode node)
-        // Type names don't produce values and therefore have no effect on flow state.
-        => node.FlowStateBefore();
     #endregion
 }
