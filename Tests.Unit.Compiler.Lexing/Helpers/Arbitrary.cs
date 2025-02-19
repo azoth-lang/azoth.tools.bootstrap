@@ -249,7 +249,7 @@ public static class Arbitrary
         { "|>", typeof(IRightTriangleToken) },
         { "published", typeof(IPublishedKeywordToken) },
         { "public", typeof(IPublicKeywordToken) },
-        //{ "protected", typeof(IProtectedKeywordToken) },
+        { "protected", typeof(IProtectedKeywordToken) },
         { "let", typeof(ILetKeywordToken) },
         { "var", typeof(IVarKeywordToken) },
         { "void", typeof(IVoidKeywordToken) },

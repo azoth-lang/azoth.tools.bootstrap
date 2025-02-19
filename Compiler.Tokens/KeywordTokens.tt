@@ -9,7 +9,7 @@
     {
         "Published",
         "Public",
-        //"Protected",
+        "Protected",
         "Let",
         "Var",
         "Void",

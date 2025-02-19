@@ -11,6 +11,7 @@ public static partial class TokenTypes
     {
         typeof(PublishedKeywordToken),
         typeof(PublicKeywordToken),
+        typeof(ProtectedKeywordToken),
         typeof(LetKeywordToken),
         typeof(VarKeywordToken),
         typeof(VoidKeywordToken),
@@ -100,6 +101,9 @@ public static partial class TokenFactory
 
     public static IPublicKeywordToken PublicKeyword(TextSpan span)
         => new PublicKeywordToken(span);
+
+    public static IProtectedKeywordToken ProtectedKeyword(TextSpan span)
+        => new ProtectedKeywordToken(span);
 
     public static ILetKeywordToken LetKeyword(TextSpan span)
         => new LetKeywordToken(span);
@@ -343,6 +347,7 @@ public static partial class TokenFactory
 [Closed(
     typeof(IPublishedKeywordToken),
     typeof(IPublicKeywordToken),
+    typeof(IProtectedKeywordToken),
     typeof(ILetKeywordToken),
     typeof(IVarKeywordToken),
     typeof(IVoidKeywordToken),
@@ -438,6 +443,15 @@ public partial interface IPublicKeywordToken : IKeywordToken;
 internal partial class PublicKeywordToken : Token, IPublicKeywordToken
 {
     public PublicKeywordToken(TextSpan span)
+        : base(span)
+    {
+    }
+}
+
+public partial interface IProtectedKeywordToken : IKeywordToken;
+internal partial class ProtectedKeywordToken : Token, IProtectedKeywordToken
+{
+    public ProtectedKeywordToken(TextSpan span)
         : base(span)
     {
     }
