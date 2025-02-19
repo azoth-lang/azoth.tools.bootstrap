@@ -56,13 +56,13 @@ public sealed class MethodSymbol : InvocableSymbol
     {
         var kind = Kind switch
         {
-            MethodKind.Getter => "get ",
-            MethodKind.Setter => "set ",
+            MethodKind.Getter => ".get",
+            MethodKind.Setter => ".set",
             MethodKind.Standard => "",
             _ => throw ExhaustiveMatch.Failed(Kind),
         };
         var parameterSeparator = ParameterTypes.Any() ? ", " : "";
         string parameters = string.Join(", ", ParameterTypes.Select(d => d.ToILString()));
-        return $"{kind}{ContainingSymbol.ToILString()}::{Name}({SelfParameterType.ToILString()}{parameterSeparator}{parameters}) -> {ReturnType.ToILString()}";
+        return $"{ContainingSymbol.ToILString()}::{Name}{kind}({SelfParameterType.ToILString()}{parameterSeparator}{parameters}) -> {ReturnType.ToILString()}";
     }
 }

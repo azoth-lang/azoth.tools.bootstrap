@@ -5239,7 +5239,7 @@ file class CompilationUnitNode : SemanticNode, ICompilationUnitNode
     internal override Symbol Inherited_ContainingSymbol(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, descendant))
-            return Is.OfType<NamespaceSymbol>(Package.Symbol);
+            return Is.OfType<NamespaceSymbol>(Self.ImplicitNamespaceSymbol);
         return base.Inherited_ContainingSymbol(child, descendant, ctx);
     }
 
