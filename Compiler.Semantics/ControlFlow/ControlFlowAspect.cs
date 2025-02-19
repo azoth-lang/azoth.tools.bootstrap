@@ -17,6 +17,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.ControlFlow;
 /// flow graph, that indicates that whole expression is next.</para></remarks>
 internal static partial class ControlFlowAspect
 {
+    #region Definitions
     public static partial IEntryNode ExecutableDefinition_Entry(IExecutableDefinitionNode node)
         => IEntryNode.Create();
 
@@ -25,26 +26,59 @@ internal static partial class ControlFlowAspect
 
     public static partial ControlFlowSet InvocableDefinition_Entry_ControlFlowFollowing(IInvocableDefinitionNode node)
         => ControlFlowSet.CreateNormal(node.Body?.Statements.FirstOrDefault() ?? (IControlFlowNode)node.Exit);
+    #endregion
+
+    #region Control Flow
+    public static partial void ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(IControlFlowNode node, IControlFlowNode target, Dictionary<IControlFlowNode, ControlFlowKind> controlFlowPrevious)
+    {
+        if (node.ControlFlowNext.TryGetValue(target, out var kind))
+            controlFlowPrevious.Add(node, kind);
+    }
 
     public static partial ControlFlowSet Entry_ControlFlowNext(IEntryNode node)
         => node.ControlFlowFollowing();
+    #endregion
 
-    public static partial ControlFlowSet ExpressionStatement_ControlFlowNext(IExpressionStatementNode node)
+    #region Statements
+    public static partial ControlFlowSet ResultStatement_ControlFlowNext(IResultStatementNode node)
         => ControlFlowSet.CreateNormal(node.Expression);
 
-    public static partial ControlFlowSet VariableDeclarationStatement_ControlFlowNext(
-        IVariableDeclarationStatementNode node)
+    public static partial ControlFlowSet VariableDeclarationStatement_ControlFlowNext(IVariableDeclarationStatementNode node)
     {
         if (node.TempInitializer is not null)
             return ControlFlowSet.CreateNormal(node.Initializer);
         return node.ControlFlowFollowing();
     }
 
-    public static partial ControlFlowSet ResultStatement_ControlFlowNext(IResultStatementNode node)
+    public static partial ControlFlowSet ExpressionStatement_ControlFlowNext(IExpressionStatementNode node)
         => ControlFlowSet.CreateNormal(node.Expression);
+    #endregion
 
+    #region Patterns
+    public static partial ControlFlowSet BindingContextPattern_ControlFlowNext(IBindingContextPatternNode node)
+        => ControlFlowSet.CreateNormal(node.Pattern);
+
+    public static partial ControlFlowSet BindingPattern_ControlFlowNext(IBindingPatternNode node)
+        => node.ControlFlowFollowing();
+
+    public static partial ControlFlowSet OptionalPattern_ControlFlowNext(IOptionalPatternNode node)
+        => ControlFlowSet.CreateNormal(node.Pattern);
+    #endregion
+
+    #region Expressions
     public static partial ControlFlowSet Expression_ControlFlowNext(IExpressionNode node)
         => node.ControlFlowFollowing();
+
+    public static partial ControlFlowSet BlockExpression_ControlFlowNext(IBlockExpressionNode node)
+    {
+        if (!node.Statements.IsEmpty)
+            return ControlFlowSet.CreateNormal(node.Statements[0]);
+        return node.ControlFlowFollowing();
+    }
+
+    public static partial ControlFlowSet UnsafeExpression_ControlFlowNext(IUnsafeExpressionNode node)
+        => ControlFlowSet.CreateNormal(node.Expression);
+    #endregion
 
     #region Unresolved Expressions
     public static partial ControlFlowSet UnresolvedMemberAccessExpression_ControlFlowNext(IUnresolvedMemberAccessExpressionNode node)
@@ -66,11 +100,43 @@ internal static partial class ControlFlowAspect
     public static partial ControlFlowSet RefAssignmentExpression_ControlFlowNext(IRefAssignmentExpressionNode node)
         => ControlFlowSet.CreateNormal(node.LeftOperand);
 
+    public static partial ControlFlowSet BinaryOperatorExpression_ControlFlowNext(IBinaryOperatorExpressionNode node)
+        => ControlFlowSet.CreateNormal(node.LeftOperand);
+
+    public static partial ControlFlowSet UnaryOperatorExpression_ControlFlowNext(IUnaryOperatorExpressionNode node)
+        => ControlFlowSet.CreateNormal(node.Operand);
+
+    public static partial ControlFlowSet ConversionExpression_ControlFlowNext(IConversionExpressionNode node)
+        => ControlFlowSet.CreateNormal(node.Referent);
+
+    public static partial ControlFlowSet ImplicitConversionExpression_ControlFlowNext(IImplicitConversionExpressionNode node)
+        => ControlFlowSet.CreateNormal(node.Referent);
+
+    public static partial ControlFlowSet PatternMatchExpression_ControlFlowNext(IPatternMatchExpressionNode node)
+        => ControlFlowSet.CreateNormal(node.Referent);
+
     public static partial ControlFlowSet RefExpression_ControlFlowNext(IRefExpressionNode node)
         => ControlFlowSet.CreateNormal(node.Referent);
 
     public static partial ControlFlowSet ImplicitDerefExpression_ControlFlowNext(IImplicitDerefExpressionNode node)
         => ControlFlowSet.CreateNormal(node.Referent);
+    #endregion
+
+    #region Control Flow Expressions
+    public static partial ControlFlowSet IfExpression_ControlFlowNext(IIfExpressionNode node)
+        => ControlFlowSet.CreateNormal(node.Condition);
+
+    public static partial ControlFlowSet LoopExpression_ControlFlowNext(ILoopExpressionNode node)
+        => ControlFlowSet.CreateNormal(node.Block);
+
+    public static partial ControlFlowSet WhileExpression_ControlFlowNext(IWhileExpressionNode node)
+        => ControlFlowSet.CreateNormal(node.Condition);
+
+    public static partial ControlFlowSet ForeachExpression_ControlFlowNext(IForeachExpressionNode node)
+        => ControlFlowSet.CreateNormal(node.InExpression);
+
+    public static partial ControlFlowSet ReturnExpression_ControlFlowNext(IReturnExpressionNode node)
+        => ControlFlowSet.CreateNormal(node.TempValue is not null ? node.Value : node.ControlFlowExit());
     #endregion
 
     #region Invocation Expressions
@@ -99,83 +165,19 @@ internal static partial class ControlFlowAspect
         => ControlFlowSet.CreateNormal(node.Expression);
     #endregion
 
-    #region Name Expressions
-
-    #endregion
-
-    public static partial ControlFlowSet UnsafeExpression_ControlFlowNext(IUnsafeExpressionNode node)
-        => ControlFlowSet.CreateNormal(node.Expression);
-
-    public static partial ControlFlowSet IfExpression_ControlFlowNext(
-        IIfExpressionNode node)
-        => ControlFlowSet.CreateNormal(node.Condition);
-
-    public static partial ControlFlowSet BinaryOperatorExpression_ControlFlowNext(
-        IBinaryOperatorExpressionNode node)
-        => ControlFlowSet.CreateNormal(node.LeftOperand);
-
-    public static partial ControlFlowSet ImplicitConversionExpression_ControlFlowNext(IImplicitConversionExpressionNode node)
-        => ControlFlowSet.CreateNormal(node.Referent);
-
-    public static partial ControlFlowSet ConversionExpression_ControlFlowNext(IConversionExpressionNode node)
-        => ControlFlowSet.CreateNormal(node.Referent);
-
-    public static partial ControlFlowSet ReturnExpression_ControlFlowNext(IReturnExpressionNode node)
-    {
-        if (node.TempValue is not null)
-            return ControlFlowSet.CreateNormal(node.Value);
-        return ControlFlowSet.CreateNormal(node.ControlFlowExit());
-    }
-
-    public static partial ControlFlowSet WhileExpression_ControlFlowNext(IWhileExpressionNode node)
-        => ControlFlowSet.CreateNormal(node.Condition);
-
-    public static partial ControlFlowSet LoopExpression_ControlFlowNext(ILoopExpressionNode node)
-        => ControlFlowSet.CreateNormal(node.Block);
-
-    public static partial ControlFlowSet ForeachExpression_ControlFlowNext(IForeachExpressionNode node)
-        => ControlFlowSet.CreateNormal(node.InExpression);
-
-    public static partial ControlFlowSet UnaryOperatorExpression_ControlFlowNext(IUnaryOperatorExpressionNode node)
-        => ControlFlowSet.CreateNormal(node.Operand);
-
-    public static partial ControlFlowSet BlockExpression_ControlFlowNext(IBlockExpressionNode node)
-    {
-        if (!node.Statements.IsEmpty)
-            return ControlFlowSet.CreateNormal(node.Statements[0]);
-        return node.ControlFlowFollowing();
-    }
-
+    #region Capability Expressions
     public static partial ControlFlowSet RecoveryExpression_ControlFlowNext(IRecoveryExpressionNode node)
         => ControlFlowSet.CreateNormal(node.Referent);
 
     public static partial ControlFlowSet ImplicitTempMoveExpression_ControlFlowNext(IImplicitTempMoveExpressionNode node)
         => ControlFlowSet.CreateNormal(node.Referent);
 
-    public static partial ControlFlowSet AwaitExpression_ControlFlowNext(IAwaitExpressionNode node)
-        => ControlFlowSet.CreateNormal(node.Expression);
-
-    public static partial ControlFlowSet PatternMatchExpression_ControlFlowNext(IPatternMatchExpressionNode node)
-        => ControlFlowSet.CreateNormal(node.Referent);
-
-    public static partial ControlFlowSet BindingPattern_ControlFlowNext(IBindingPatternNode node)
-        => node.ControlFlowFollowing();
-
-    public static partial ControlFlowSet OptionalPattern_ControlFlowNext(IOptionalPatternNode node)
-        => ControlFlowSet.CreateNormal(node.Pattern);
-
-    public static partial ControlFlowSet BindingContextPattern_ControlFlowNext(IBindingContextPatternNode node)
-        => ControlFlowSet.CreateNormal(node.Pattern);
-
     public static partial ControlFlowSet PrepareToReturnExpression_ControlFlowNext(IPrepareToReturnExpressionNode node)
         => ControlFlowSet.CreateNormal(node.Value);
+    #endregion
 
-    public static partial void ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(
-        IControlFlowNode node,
-        IControlFlowNode target,
-        Dictionary<IControlFlowNode, ControlFlowKind> controlFlowPrevious)
-    {
-        if (node.ControlFlowNext.TryGetValue(target, out var kind))
-            controlFlowPrevious.Add(node, kind);
-    }
+    #region Async Expressions
+    public static partial ControlFlowSet AwaitExpression_ControlFlowNext(IAwaitExpressionNode node)
+        => ControlFlowSet.CreateNormal(node.Expression);
+    #endregion
 }
