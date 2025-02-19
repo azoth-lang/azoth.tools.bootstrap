@@ -1,8 +1,10 @@
 using System;
+using System.Diagnostics;
 using System.Numerics;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.MemoryLayout;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
+using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
@@ -133,7 +135,15 @@ internal static class Operations
     public static AzothValue IncrementInt(this AzothValue value)
         => AzothValue.Int(value.IntValue + 1);
 
-    public static bool IsOfType(this AzothValue value, Type type)
+    public static bool IsOfType(this AzothValue value, Type type, BareType? bareSelfType)
+    {
+        // TODO using isolated here is a hack to take the capability of the type without modification.
+        // This is part of the lack of clarity about how capabilities should work when doing type checks.
+        type = bareSelfType?.With(Capability.Isolated).TypeReplacements.ApplyTo(type) ?? type;
+        return value.IsOfType(type);
+    }
+
+    private static bool IsOfType(this AzothValue value, Type type)
     {
         switch (type)
         {
@@ -141,9 +151,9 @@ internal static class Operations
                 throw ExhaustiveMatch.Failed(type);
             case CapabilityType t:
                 return value.IsOfType(t.BareType, t.Capability.AllowsWrite);
-            case GenericParameterType t:
-                // TODO need to be able to map the generic type to the type argument
-                throw new NotImplementedException();
+            case GenericParameterType _:
+                // Should be unreachable since type replacement should have removed all generic parameter types.
+                throw new UnreachableException();
             case RefType t:
                 // TODO what about `iref` vs `ref` and `var` vs not?
                 if (value.AsRef() is not { } refValue)
