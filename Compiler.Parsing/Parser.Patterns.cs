@@ -7,16 +7,26 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing;
 
 public partial class Parser
 {
-    private IPatternSyntax ParsePattern(bool? isMutableBinding = null, bool refutable = true)
+    /// <summary>
+    /// Parse a pattern.
+    /// </summary>
+    /// <param name="inMutableBindingContext">Whether the pattern is inside a binding context and
+    /// whether that context is mutable. <see langword="null"/> indicates it is not in a binding
+    /// context.</param>
+    /// <param name="refutable">Whether the pattern is allowed to be refutable.</param>
+    // TODO do not enforce refutableness in the parser. Enforce it in the semantics.
+    private IPatternSyntax ParsePattern(bool? inMutableBindingContext = null, bool refutable = true)
     {
         switch (Tokens.Current)
         {
-            case IBindingToken _ when isMutableBinding is null:
+            case IBindingToken when inMutableBindingContext is null:
                 return ParseBindingContextPattern(refutable);
-            case IIdentifierToken _ when isMutableBinding is not null:
-                return ParseBindingPattern(isMutableBinding.Value);
-            default:
-                Add(ParseError.UnexpectedEndOfPattern(File, Tokens.Current.Span.AtStart()));
+            case IIdentifierToken when inMutableBindingContext is not null:
+                return ParseBindingPattern(inMutableBindingContext.Value);
+            case var _ when inMutableBindingContext is null:
+                return ParseTypePattern();
+            case var token:
+                Add(ParseError.UnexpectedEndOfPattern(File, token.Span.AtStart()));
                 throw new ParseFailedException("Unexpected end of pattern");
         }
     }
@@ -43,7 +53,7 @@ public partial class Parser
 
     private IOptionalOrBindingPatternSyntax ParseBindingPattern(bool isMutableBinding)
     {
-        var identifier = Tokens.RequiredToken<IIdentifierToken>();
+        var identifier = Tokens.ConsumeToken<IIdentifierToken>();
         var name = identifier.Value;
         IOptionalOrBindingPatternSyntax pattern = IBindingPatternSyntax.Create(isMutableBinding, identifier.Span, name);
         while (TryParseOptionalPattern(ref pattern))
@@ -76,5 +86,11 @@ public partial class Parser
             default:
                 return false;
         }
+    }
+
+    private ITypePatternSyntax ParseTypePattern()
+    {
+        var type = ParseType();
+        return ITypePatternSyntax.Create(type.Span, type);
     }
 }
