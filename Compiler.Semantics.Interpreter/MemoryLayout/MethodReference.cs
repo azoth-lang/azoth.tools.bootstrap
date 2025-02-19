@@ -12,6 +12,8 @@ internal sealed class MethodReference : FunctionReference
     private readonly AzothValue self;
     private readonly MethodSymbol methodSymbol;
 
+    public override FunctionType FunctionType => methodSymbol.MethodGroupType;
+
     public MethodReference(
         InterpreterProcess interpreterProcess,
         Type selfType,

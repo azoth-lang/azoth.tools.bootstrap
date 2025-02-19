@@ -10,14 +10,16 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.MemoryLayout;
 
 internal abstract class TypeLayout
 {
+    private readonly int fieldOffset;
     private readonly FrozenDictionary<FieldSymbol, int> fieldLayout;
     private readonly ConcurrentDictionary<IFieldDeclarationNode, int> fieldIndexes
         = new(ReferenceEqualityComparer.Instance);
 
-    public TypeLayout(ITypeDefinitionNode typeDefinition)
+    protected TypeLayout(ITypeDefinitionNode typeDefinition, int fieldOffset)
     {
+        this.fieldOffset = fieldOffset;
         var fields = typeDefinition.InclusiveMembers.OfType<IFieldDefinitionNode>();
-        fieldLayout = fields.Enumerate().ToFrozenDictionary(x => x.Value.Symbol.Assigned(), x => x.Index + 1);
+        fieldLayout = fields.Enumerate().ToFrozenDictionary(x => x.Value.Symbol.Assigned(), x => x.Index + fieldOffset);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -27,9 +29,9 @@ internal abstract class TypeLayout
     private static int Factory(IFieldDeclarationNode field, FrozenDictionary<FieldSymbol, int> fieldLayout)
         => fieldLayout[field.Symbol.Assigned()];
 
-    public AzothValue[] CreateInstanceFields()
+    protected AzothValue[] CreateInstanceFields()
     {
-        var size = fieldLayout.Count + 1;
+        var size = fieldLayout.Count + fieldOffset;
         var fields = new AzothValue[size];
         fields[0] = AzothValue.TypeLayout(this);
         return fields;

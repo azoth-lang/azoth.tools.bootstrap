@@ -56,7 +56,7 @@ public static partial class TypeOperations
         => self.CapabilitySet.IsSubtypeOf(other.CapabilitySet)
            && self.Referent.IsSubtypeOf(other.Referent);
 
-    private static bool IsSubtypeOf(this BareType self, BareType other, bool otherAllowsWrite)
+    public static bool IsSubtypeOf(this BareType self, BareType other, bool otherAllowsWrite)
     {
         if (self.Equals(other) || self.Supertypes.Contains(other))
             return true;

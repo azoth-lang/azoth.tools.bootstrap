@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.MemoryLayout.BoundedLists;
+using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.MemoryLayout;
 
@@ -39,6 +40,7 @@ internal readonly struct AzothValue
     [FieldOffset(0)] public readonly TypeLayout TypeLayoutValue;
     [FieldOffset(0)] public readonly VTable VTableValue;
     [FieldOffset(0)] public readonly StructLayout StructLayoutValue;
+    [FieldOffset(0)] public readonly BareType BareTypeValue;
 
     public bool IsNone => ReferenceEquals(value.Reference, NoneFlag);
     public bool BoolValue => value.Simple.BoolValue;
@@ -76,6 +78,8 @@ internal readonly struct AzothValue
     public static AzothValue Arguments(List<AzothValue> value) => new(value);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static AzothValue TypeLayout(TypeLayout typeLayout) => new(typeLayout);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static AzothValue BareType(BareType bareType) => new(bareType);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static AzothValue Bool(bool value) => new(value);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -146,6 +150,10 @@ internal readonly struct AzothValue
     {
         TypeLayoutValue = typeLayout;
     }
+    private AzothValue(BareType bareType)
+    {
+        BareTypeValue = bareType;
+    }
     private AzothValue(bool value)
     {
         this.value.Simple.BoolValue = value;
@@ -193,6 +201,15 @@ internal readonly struct AzothValue
     }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     #endregion
+
+    public FunctionReference? AsFunctionReference() => value.Reference as FunctionReference;
+
+    public AzothRef? AsRef()
+    {
+        if (value.Reference is IRawBoundedList or not IList<AzothValue> || I32Value < 0)
+            return null;
+        return RefValue;
+    }
 
     [StructLayout(LayoutKind.Explicit)]
     private struct SimpleValue

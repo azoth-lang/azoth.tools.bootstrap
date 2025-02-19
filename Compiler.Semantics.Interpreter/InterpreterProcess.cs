@@ -18,6 +18,7 @@ using Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.MemoryLayout.BoundedL
 using Azoth.Tools.Bootstrap.Compiler.Semantics.InterpreterHelpers;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types;
+using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
@@ -206,7 +207,7 @@ public sealed class InterpreterProcess
         // TODO support passing structs to main?
         var @class = userTypes.Values.OfType<IClassDefinitionNode>().Single(c => c.Symbol.TypeConstructor.Equals(type.TypeConstructor));
         var initializerSymbol = NoArgInitializerSymbol(@class);
-        return CallInitializerAsync(initializerSymbol, []);
+        return CallInitializerAsync(type.BareType, initializerSymbol, []);
     }
 
     internal ValueTask<AzothValue> CallFunctionAsync(FunctionSymbol functionSymbol, IReadOnlyList<AzothValue> arguments)
@@ -230,14 +231,17 @@ public sealed class InterpreterProcess
         return result.ReturnValue;
     }
 
-    internal ValueTask<AzothValue> CallInitializerAsync(InitializerSymbol initializerSymbol, IReadOnlyList<AzothValue> arguments)
+    internal ValueTask<AzothValue> CallInitializerAsync(
+        BareType bareType,
+        InitializerSymbol initializerSymbol,
+        IReadOnlyList<AzothValue> arguments)
     {
         if (ReferenceEquals(initializerSymbol.Package, Intrinsic.SymbolTree.Package))
             return CallIntrinsicAsync(initializerSymbol, arguments);
         var typeDefinition = userTypes[initializerSymbol.ContextTypeSymbol];
         return typeDefinition switch
         {
-            IClassDefinitionNode @class => CallClassInitializerAsync(@class, initializerSymbol, arguments),
+            IClassDefinitionNode @class => CallClassInitializerAsync(@class, bareType, initializerSymbol, arguments),
             IStructDefinitionNode @struct => CallStructInitializerAsync(@struct, initializerSymbol, arguments),
             ITraitDefinitionNode _ => throw new UnreachableException("Traits don't have initializers."),
             _ => throw ExhaustiveMatch.Failed(typeDefinition)
@@ -246,11 +250,12 @@ public sealed class InterpreterProcess
 
     private ValueTask<AzothValue> CallClassInitializerAsync(
         IClassDefinitionNode @class,
+        BareType bareType,
         InitializerSymbol initializerSymbol,
         IReadOnlyList<AzothValue> arguments)
     {
         var vTable = vTables.GetOrAdd(@class, CreateVTable);
-        var self = AzothValue.Object(new(vTable));
+        var self = AzothValue.Object(new(vTable, bareType));
         return CallInitializerAsync(@class, initializerSymbol, self, arguments);
     }
 
@@ -639,14 +644,14 @@ public sealed class InterpreterProcess
                     {
                         var leftResult = await ExecuteAsync(exp.LeftOperand!, variables).ConfigureAwait(false);
                         if (leftResult.ShouldExit(out var left)) return leftResult;
-                        if (!left.BoolValue) return AzothValue.Bool(false);
+                        if (!left.BoolValue) return AzothValue.False;
                         return await ExecuteAsync(exp.RightOperand!, variables).ConfigureAwait(false);
                     }
                     case BinaryOperator.Or:
                     {
                         var leftResult = await ExecuteAsync(exp.LeftOperand!, variables).ConfigureAwait(false);
                         if (leftResult.ShouldExit(out var left)) return leftResult;
-                        if (left.BoolValue) return AzothValue.Bool(true);
+                        if (left.BoolValue) return AzothValue.True;
                         return await ExecuteAsync(exp.RightOperand!, variables).ConfigureAwait(false);
                     }
                     case BinaryOperator.DotDot:
@@ -656,10 +661,10 @@ public sealed class InterpreterProcess
                     {
                         var leftResult = await ExecuteAsync(exp.LeftOperand!, variables).ConfigureAwait(false);
                         if (leftResult.ShouldExit(out var left)) return leftResult;
-                        if (!exp.Operator.RangeInclusiveOfStart()) left = left.Increment(Type.Int);
+                        if (!exp.Operator.RangeInclusiveOfStart()) left = left.IncrementInt();
                         var rightResult = await ExecuteAsync(exp.RightOperand!, variables).ConfigureAwait(false);
                         if (rightResult.ShouldExit(out var right)) return rightResult;
-                        if (exp.Operator.RangeInclusiveOfEnd()) right = right.Increment(Type.Int);
+                        if (exp.Operator.RangeInclusiveOfEnd()) right = right.IncrementInt();
                         return await CallStructInitializerAsync(rangeStruct!, rangeInitializer!, [left, right]);
                     }
                     case BinaryOperator.QuestionQuestion:
@@ -912,8 +917,10 @@ public sealed class InterpreterProcess
                 var exp = (IInitializerInvocationExpressionNode)expression;
                 var argumentsResult = await ExecuteArgumentsAsync(exp.Arguments!, variables).ConfigureAwait(false);
                 if (argumentsResult.ShouldExit(out var arguments)) return argumentsResult;
-                var initializerSymbol = exp.Initializer.ReferencedDeclaration!.Symbol.Assigned();
-                return await CallInitializerAsync(initializerSymbol, arguments.ArgumentsValue).ConfigureAwait(false);
+                var initializer = exp.Initializer; // Avoids repeated access
+                var bareType = initializer.Context.NamedBareType!;
+                var initializerSymbol = initializer.ReferencedDeclaration!.Symbol.Assigned();
+                return await CallInitializerAsync(bareType, initializerSymbol, arguments.ArgumentsValue).ConfigureAwait(false);
             }
             #endregion
 
@@ -937,8 +944,9 @@ public sealed class InterpreterProcess
             case ExpressionKind.InitializerName:
             {
                 var exp = (IInitializerNameExpressionNode)expression;
+                var bareType = exp.Context.NamedBareType!;
                 var initializerSymbol = exp.ReferencedDeclaration!.Symbol.Assigned();
-                return AzothValue.FunctionReference(new InitializerReference(this, initializerSymbol));
+                return AzothValue.FunctionReference(new InitializerReference(this, bareType, initializerSymbol));
             }
             #endregion
 
@@ -1019,15 +1027,17 @@ public sealed class InterpreterProcess
             default:
                 throw ExhaustiveMatch.Failed(pattern);
             case ITypePatternNode pat:
-                throw new NotImplementedException();
+                return AzothValue.Bool(value.IsOfType(pat.Type.NamedType.Known()));
             case IBindingContextPatternNode pat:
+                if (pat.Type is { } type && !value.IsOfType(type.NamedType.Known()))
+                    return AzothValue.False;
                 return await ExecuteMatchAsync(value, pat.Pattern, variables).ConfigureAwait(false);
             case IBindingPatternNode pat:
                 variables.Add(pat, value);
-                return AzothValue.Bool(true);
+                return AzothValue.True;
             case IOptionalPatternNode pat:
                 if (value.IsNone)
-                    return AzothValue.Bool(false);
+                    return AzothValue.False;
                 return await ExecuteMatchAsync(value, pat.Pattern, variables).ConfigureAwait(false);
         }
     }

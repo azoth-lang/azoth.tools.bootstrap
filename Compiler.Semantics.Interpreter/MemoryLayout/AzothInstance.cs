@@ -1,14 +1,20 @@
+using System;
 using System.Runtime.CompilerServices;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.MemoryLayout;
 
+/// <summary>
+/// Acts as a "base class" for <see cref="AzothObject"/> and <see cref="AzothValue"/>.
+/// </summary>
 internal readonly struct AzothInstance
 {
     private readonly AzothValue[] fields;
 
+    [Obsolete($"Must construct an {nameof(AzothObject)} or {nameof(AzothValue)} instead. ", error: true)]
     public AzothInstance(TypeLayout layout)
     {
-        fields = layout.CreateInstanceFields();
+        fields = null!;
+        throw new NotSupportedException($"Must construct an {nameof(AzothObject)} or {nameof(AzothValue)} instead.");
     }
 
     public bool IsObject

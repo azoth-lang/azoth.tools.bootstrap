@@ -1,9 +1,12 @@
 using System;
 using System.Numerics;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.MemoryLayout;
+using Azoth.Tools.Bootstrap.Compiler.Types;
+using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
+using ExhaustiveMatching;
 using Type = Azoth.Tools.Bootstrap.Compiler.Types.Decorated.Type;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter;
@@ -126,6 +129,63 @@ internal static class Operations
         throw new NotImplementedException($"Conversion from {from.ToILString()} to {to.ToILString()}");
     }
 
+    // TODO [Inline(InlineBehavior.Remove)]
+    public static AzothValue IncrementInt(this AzothValue value)
+        => AzothValue.Int(value.IntValue + 1);
+
+    public static bool IsOfType(this AzothValue value, Type type)
+    {
+        switch (type)
+        {
+            default:
+                throw ExhaustiveMatch.Failed(type);
+            case CapabilityType t:
+                return value.IsOfType(t.BareType, t.Capability.AllowsWrite);
+            case GenericParameterType t:
+                // TODO need to be able to map the generic type to the type argument
+                throw new NotImplementedException();
+            case RefType t:
+                // TODO what about `iref` vs `ref` and `var` vs not?
+                if (value.AsRef() is not { } refValue)
+                    return false;
+                return refValue.Value.IsOfType(t.Referent);
+            case CapabilitySetSelfType t:
+                return value.IsOfType(t.BareType, t.CapabilitySet.AnyCapabilityAllowsWrite);
+            case CapabilitySetRestrictedType t:
+                return value.IsOfType(t.Referent);
+            case CapabilityViewpointType t:
+                // TODO what about when the viewpoint removes `var` from `ref var`?
+                return value.IsOfType(t.Referent);
+            case SelfViewpointType t:
+                // TODO what about when the viewpoint removes `var` from `ref var`?
+                return value.IsOfType(t.Referent);
+            case FunctionType t:
+                return value.AsFunctionReference() is { } r && r.FunctionType.IsSubtypeOf(t);
+            case OptionalType t:
+                if (value.IsNone) return true;
+                return value.IsOfType(t.Referent);
+            case NeverType _:
+                return false;
+            case VoidType _:
+                return true;
+        }
+    }
+
+    private static bool IsOfType(this AzothValue value, BareType bareType, bool otherAllowsWrite)
+    {
+        if (bareType.TypeConstructor.Semantics != TypeSemantics.Reference)
+            // TODO support checking value types, and associated types
+            throw new NotImplementedException();
+
+        // It is a reference type
+        if (!value.InstanceValue.IsObject)
+            return false;
+
+        var obj = value.ObjectValue;
+        return obj.BareType.IsSubtypeOf(bareType, otherAllowsWrite);
+    }
+
+    // TODO will this be needed or should it be removed?
     public static AzothValue Increment(this AzothValue value, CapabilityType type)
     {
         var plainType = type.PlainType;

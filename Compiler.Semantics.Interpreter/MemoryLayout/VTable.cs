@@ -4,6 +4,7 @@ using System.Collections.Frozen;
 using System.Diagnostics;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
+using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.MemoryLayout;
 
@@ -18,7 +19,7 @@ internal sealed class VTable : TypeLayout
         IClassDefinitionNode @class,
         MethodSignatureCache methodSignatures,
         FrozenDictionary<OrdinaryTypeSymbol, ITypeDefinitionNode> types)
-        : base(@class)
+        : base(@class, 2)
     {
         Class = @class;
         this.methodSignatures = methodSignatures;
@@ -27,6 +28,13 @@ internal sealed class VTable : TypeLayout
 
     public IMethodDefinitionNode this[MethodSignature signature]
         => methods.GetOrAdd(signature, LookupMethod);
+
+    public AzothValue[] CreateInstanceFields(BareType bareType)
+    {
+        var fields = base.CreateInstanceFields();
+        fields[1] = AzothValue.BareType(bareType);
+        return fields;
+    }
 
     private IMethodDefinitionNode LookupMethod(MethodSignature signature)
     {
