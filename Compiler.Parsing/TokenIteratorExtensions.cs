@@ -97,17 +97,17 @@ public static class TokenIteratorExtensions
         return new TextSpan(tokens.Current.Span.Start, 0);
     }
 
-    public static (T?, TextSpan) ExpectToken<T>(this ITokenIterator<IToken> tokens)
+    public static T? ExpectToken<T>(this ITokenIterator<IToken> tokens)
         where T : class, IToken
     {
         if (tokens.Current is T token)
         {
             tokens.Next();
-            return (token, token.Span);
+            return token;
         }
 
         tokens.Context.Diagnostics.Add(ParseError.MissingToken(tokens.Context.File, typeof(T), tokens.Current));
-        return (null, new TextSpan(tokens.Current.Span.Start, 0));
+        return null;
     }
     #endregion
 

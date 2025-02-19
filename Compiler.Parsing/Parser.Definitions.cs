@@ -102,11 +102,11 @@ public partial class Parser
         var span = firstSegment.Span;
         NamespaceName name = firstSegment.Value;
 
-        while (Tokens.Accept<IDotToken>())
+        while (Tokens.AcceptToken<IDotToken>() is { } dot)
         {
-            var (nameSegment, segmentSpan) = Tokens.ExpectToken<IIdentifierToken>();
+            var nameSegment = Tokens.ExpectToken<IIdentifierToken>();
             // We need the span to cover a trailing dot
-            span = TextSpan.Covering(span, segmentSpan);
+            span = TextSpan.Covering(span, dot.Span, nameSegment?.Span);
             if (nameSegment is null)
                 break;
             name = name.Qualify(nameSegment.Value);

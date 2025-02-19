@@ -13,17 +13,16 @@ public partial class Parser
 
     public IImportDirectiveSyntax? AcceptImportDirective()
     {
-        var accept = Tokens.AcceptToken<IImportKeywordToken>();
-        if (accept is null)
+        var import = Tokens.AcceptToken<IImportKeywordToken>();
+        if (import is null)
             return null;
-        var identifiers = ParseManySeparated<(IIdentifierToken?, TextSpan), IDotToken>(
-            () => Tokens.ExpectToken<IIdentifierToken>());
+        var identifiers = ParseManySeparated<IIdentifierToken?, IDotToken>(
+            Tokens.ExpectToken<IIdentifierToken>);
         NamespaceName name = NamespaceName.Global;
-        foreach (var (identifier, _) in identifiers)
-            if (identifier is not null)
-                name = name.Qualify(identifier.Value);
+        foreach (var identifier in identifiers.WhereNotNull())
+            name = name.Qualify(identifier.Value);
         var semicolon = Tokens.Expect<ISemicolonToken>();
-        var span = TextSpan.Covering(accept.Span, semicolon);
+        var span = TextSpan.Covering(import.Span, semicolon);
         return IImportDirectiveSyntax.Create(span, name);
     }
 }
