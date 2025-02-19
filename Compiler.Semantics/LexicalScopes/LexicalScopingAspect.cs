@@ -8,6 +8,16 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 
 internal static partial class LexicalScopingAspect
 {
+    #region Special Parts
+    public static partial LexicalScope BodyOrBlock_Statements_Broadcast_ContainingLexicalScope(IBodyOrBlockNode node, int statementIndex)
+    {
+        if (statementIndex == 0)
+            return node.ContainingLexicalScope();
+        return node.Statements[statementIndex - 1].LexicalScope();
+    }
+    #endregion
+
+    #region Packages
     public static partial PackageNameScope Package_MainFacet_PackageNameScope(IPackageNode node)
         => new([node.MainFacet],
             node.References.Append(node.IntrinsicsReference).Select(r => r.SymbolNode.MainFacet),
@@ -18,7 +28,9 @@ internal static partial class LexicalScopingAspect
             node.References.Append(node.IntrinsicsReference).Select(r => r.SymbolNode.MainFacet)
                 .Concat(node.References.Select(r => r.SymbolNode.TestingFacet)),
             node.PrimitivesDeclarations);
+    #endregion
 
+    #region Code Files
     public static partial NamespaceSearchScope CompilationUnit_LexicalScope(ICompilationUnitNode node)
         => BuildNamespaceScope(node.ContainingLexicalScope, node.ImplicitNamespaceName, node.ImportDirectives);
 
@@ -57,7 +69,9 @@ internal static partial class LexicalScopingAspect
 
         return new ImportDirectivesScope(containingScope, namespaceScopes);
     }
+    #endregion
 
+    #region Namespace Definitions
     public static partial NamespaceSearchScope NamespaceBlockDefinition_LexicalScope(INamespaceBlockDefinitionNode node)
     {
         var containingLexicalScope = node.ContainingLexicalScope;
@@ -65,7 +79,9 @@ internal static partial class LexicalScopingAspect
             containingLexicalScope = containingLexicalScope.PackageNames.PackageGlobalScope;
         return BuildNamespaceScope(containingLexicalScope, node.DeclaredNames, node.ImportDirectives);
     }
+    #endregion
 
+    #region Type Definitions
     public static partial LexicalScope TypeDefinition_SupertypesLexicalScope(ITypeDefinitionNode node)
         // The `Self` type is always available even if there are no generic parameters
         => new DeclarationScope(node.ContainingLexicalScope,
@@ -81,37 +97,55 @@ internal static partial class LexicalScopingAspect
 
     public static partial LexicalScope TypeDefinition_Members_Broadcast_ContainingLexicalScope(ITypeDefinitionNode node)
         => node.LexicalScope;
+    #endregion
 
+    #region Function Definition
     public static partial LexicalScope FunctionDefinition_LexicalScope(IFunctionDefinitionNode node)
         // TODO create a type parameter scope when type parameters are supported
         => new DeclarationScope(node.ContainingLexicalScope, node.Parameters);
+    #endregion
 
+    #region Member Definitions
     public static partial LexicalScope MethodDefinition_LexicalScope(IMethodDefinitionNode node)
-        // TODO create a type parameter scope when type parameters are supported
-        => new DeclarationScope(node.ContainingLexicalScope, node.Parameters);
-
-    public static partial LexicalScope AssociatedFunctionDefinition_LexicalScope(IAssociatedFunctionDefinitionNode node)
         // TODO create a type parameter scope when type parameters are supported
         => new DeclarationScope(node.ContainingLexicalScope, node.Parameters);
 
     public static partial LexicalScope InitializerDefinition_LexicalScope(IInitializerDefinitionNode node)
         => new DeclarationScope(node.ContainingLexicalScope, node.Parameters.OfType<INamedDeclarationNode>());
 
-    public static partial LexicalScope BodyOrBlock_Statements_Broadcast_ContainingLexicalScope(IBodyOrBlockNode node, int statementIndex)
-    {
-        if (statementIndex == 0)
-            return node.ContainingLexicalScope();
-        return node.Statements[statementIndex - 1].LexicalScope();
-    }
+    public static partial LexicalScope AssociatedFunctionDefinition_LexicalScope(IAssociatedFunctionDefinitionNode node)
+        // TODO create a type parameter scope when type parameters are supported
+        => new DeclarationScope(node.ContainingLexicalScope, node.Parameters);
+    #endregion
 
+    #region Statements
     public static partial LexicalScope VariableDeclarationStatement_LexicalScope(IVariableDeclarationStatementNode node)
         => new DeclarationScope(node.ContainingLexicalScope, node);
+    #endregion
 
+    #region Patterns
+    public static partial ConditionalLexicalScope BindingPattern_FlowLexicalScope(IBindingPatternNode node)
+    {
+        var containingLexicalScope = node.ContainingLexicalScope;
+        var variableScope = new DeclarationScope(containingLexicalScope, node);
+        return new(variableScope, containingLexicalScope);
+    }
+    #endregion
+
+    #region Expressions
     /// <summary>
     /// Default implementation for expressions that can't introduce a new scope.
     /// </summary>
     public static partial ConditionalLexicalScope AmbiguousExpression_FlowLexicalScope(IAmbiguousExpressionNode node)
         => ConditionalLexicalScope.Unconditional(node.ContainingLexicalScope());
+    #endregion
+
+    #region Operator Expressions
+    /// <remarks>In an assignment, the left hand side cannot use variables declared in the right-hand
+    /// side because parts of it will be evaluated first. For simplicity, both sides are evaluated
+    /// in the containing lexical scope and only the right hand scope is used.</remarks>
+    public static partial ConditionalLexicalScope AssignmentExpression_FlowLexicalScope(IAssignmentExpressionNode node)
+        => node.TempRightOperand.FlowLexicalScope();
 
     public static partial ConditionalLexicalScope BinaryOperatorExpression_FlowLexicalScope(IBinaryOperatorExpressionNode node)
     {
@@ -130,28 +164,18 @@ internal static partial class LexicalScopingAspect
         return node.Operator == BinaryOperator.Or ? flowScope.False : flowScope.True;
     }
 
-    /// <remarks>In an assignment, the left hand side cannot use variables declared in the right-hand
-    /// side because parts of it will be evaluated first. For simplicity, both sides are evaluated
-    /// in the containing lexical scope and only the right hand scope is used.</remarks>
-    public static partial ConditionalLexicalScope AssignmentExpression_FlowLexicalScope(IAssignmentExpressionNode node)
-        => node.TempRightOperand.FlowLexicalScope();
-
     public static partial ConditionalLexicalScope UnaryOperatorExpression_FlowLexicalScope(IUnaryOperatorExpressionNode node)
     {
         var flow = node.TempOperand.FlowLexicalScope();
         return node.Operator == UnaryOperator.Not ? flow.Swapped() : flow;
     }
+    #endregion
 
+    #region Control Flow Expressions
     public static partial LexicalScope ForeachExpression_LexicalScope(IForeachExpressionNode node)
     {
         var flowScope = node.TempInExpression.FlowLexicalScope().True;
         return new DeclarationScope(flowScope, node);
     }
-
-    public static partial ConditionalLexicalScope BindingPattern_FlowLexicalScope(IBindingPatternNode node)
-    {
-        var containingLexicalScope = node.ContainingLexicalScope;
-        var variableScope = new DeclarationScope(containingLexicalScope, node);
-        return new(variableScope, containingLexicalScope);
-    }
+    #endregion
 }
