@@ -119,15 +119,6 @@ public class Lexer
                         _ => TokenFactory.Question(SymbolSpan())
                     };
                     break;
-                case '→':
-                    yield return TokenFactory.RightArrow(SymbolSpan());
-                    break;
-                case '⇒':
-                    yield return TokenFactory.RightDoubleArrow(SymbolSpan());
-                    break;
-                case '▷':
-                    yield return TokenFactory.RightTriangle(SymbolSpan());
-                    break;
                 case '^':
                     if (NextChar() is '.')
                         // it is `^.`
@@ -238,9 +229,6 @@ public class Lexer
                             break;
                     }
                     break;
-                case '≠':
-                    yield return TokenFactory.NotEqual(SymbolSpan());
-                    break;
                 case '≡':
                     switch (NextChar())
                     {
@@ -261,9 +249,6 @@ public class Lexer
                             break;
                     }
                     break;
-                case '≢':
-                    yield return TokenFactory.NotReferenceEquals(SymbolSpan());
-                    break;
                 case '!' when NextChar() is '=':
                 {
                     var span = SymbolSpan(2);
@@ -278,9 +263,6 @@ public class Lexer
                     else
                         // it is `>`
                         yield return TokenFactory.GreaterThan(SymbolSpan());
-                    break;
-                case '≥':
-                    yield return TokenFactory.GreaterThanOrEqual(SymbolSpan());
                     break;
                 case '<':
                     switch (NextChar())
@@ -311,9 +293,6 @@ public class Lexer
                             yield return TokenFactory.LessThan(SymbolSpan());
                             break;
                     }
-                    break;
-                case '≤':
-                    yield return TokenFactory.LessThanOrEqual(SymbolSpan());
                     break;
                 case '"':
                     yield return LexString();
