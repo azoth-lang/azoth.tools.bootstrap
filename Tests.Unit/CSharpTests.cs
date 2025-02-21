@@ -4,6 +4,35 @@ namespace Azoth.Tools.Bootstrap.Tests.Unit;
 
 public class CSharpTests
 {
+    [Fact]
+    public void LogicalOperatorsOnNullableBooleans()
+    {
+        bool? n1 = null;
+        bool? n2 = null;
+        bool? t = true;
+        bool? f = false;
+
+        Assert.True(n1 == n2);
+        Assert.Null(n1 & t);
+        Assert.False(n1 & f);
+        Assert.Null(n1 & n2);
+        // Operator not allowed
+        //Assert.True(n && t);
+    }
+
+    [Fact]
+    public void ComparisonOnNullableInts()
+    {
+        int? n1 = null;
+        int? n2 = null;
+        int? one = 1;
+
+        Assert.True(n1 == n2);
+        Assert.False(n1 <= n2);
+        Assert.False(n1 < one);
+        Assert.False(one < n1);
+    }
+
     /// <summary>
     /// This test was meant to see whether exposing <c>Child&lt;T></c> properties could be done
     /// and have the <c>.Value</c> not be required.
