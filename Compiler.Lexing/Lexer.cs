@@ -56,8 +56,30 @@ public class Lexer
                         // it is `|`
                         yield return NewReservedOperator();
                     break;
-                case '&':
                 case '@':
+                    if (NextChar() is '=')
+                        switch (CharAt(2))
+                        {
+                            case '=':
+                                // it is `@==`
+                                yield return TokenFactory.ReferenceEquals(SymbolSpan(3));
+                                break;
+                            case '/':
+                                if (CharAt(3) is '=')
+                                    // it is `@=/=`
+                                    yield return TokenFactory.NotReferenceEquals(SymbolSpan(4));
+                                else
+                                    goto default;
+                                break;
+                            default:
+                                // it is `@=` but not `@==` or `@=/=`, lex as `@` ...
+                                yield return NewReservedOperator();
+                                break;
+                        }
+                    else
+                        yield return NewReservedOperator();
+                    break;
+                case '&':
                 case '`':
                 case '$':
                     yield return NewReservedOperator();
@@ -226,26 +248,6 @@ public class Lexer
                         default:
                             // it is `=`
                             yield return TokenFactory.Equals(SymbolSpan());
-                            break;
-                    }
-                    break;
-                case '≡':
-                    switch (NextChar())
-                    {
-                        case '≡':
-                            // it is `≡≡`
-                            yield return TokenFactory.ReferenceEquals(SymbolSpan(2));
-                            break;
-                        case '/':
-                            if (CharAt(2) is '≡')
-                                // it is `≡/≡`
-                                yield return TokenFactory.NotReferenceEquals(SymbolSpan(3));
-                            else
-                                goto default;
-                            break;
-                        default:
-                            // it is `≡` alone which is illegal
-                            yield return NewUnexpectedCharacter();
                             break;
                     }
                     break;

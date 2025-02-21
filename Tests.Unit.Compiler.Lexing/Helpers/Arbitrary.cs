@@ -70,6 +70,8 @@ public static class Arbitrary
             case "/":
                 return t2.Text is "=" or "==" or "=/=" or "=>" or "*" or "*=" or "/" or "/="
                        || t2.TokenType == typeof(ICommentToken);
+            case "@":
+                return t2.Text is "==" or "=/=";
             case "=":
                 return t2.Text is "=" or "==" or "=/=" or "=>" or "/=" or ">" or ">=";
             case "?":
@@ -228,8 +230,8 @@ public static class Arbitrary
         { "=", typeof(IEqualsToken) },
         { "==", typeof(IEqualsEqualsToken) },
         { "=/=", typeof(INotEqualToken) },
-        { "≡≡", typeof(IReferenceEqualsToken) },
-        { "≡/≡", typeof(INotReferenceEqualsToken) },
+        { "@==", typeof(IReferenceEqualsToken) },
+        { "@=/=", typeof(INotReferenceEqualsToken) },
         { ">", typeof(IGreaterThanToken) },
         { ">=", typeof(IGreaterThanOrEqualToken) },
         { "<", typeof(ILessThanToken) },
