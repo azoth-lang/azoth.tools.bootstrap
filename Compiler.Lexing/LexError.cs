@@ -27,7 +27,7 @@ internal static class LexError
     public static Diagnostic CStyleNotEquals(CodeFile file, TextSpan span)
     {
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Lexing,
-            1004, "Use `≠` or `=/=` for not equal instead of `!=`");
+            1004, "Use `=/=` for not equal instead of `!=`");
     }
 
     public static Diagnostic UnexpectedCharacter(CodeFile file, TextSpan span, char character)

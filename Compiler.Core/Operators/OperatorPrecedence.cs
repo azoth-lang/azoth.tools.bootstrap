@@ -9,10 +9,10 @@ public enum OperatorPrecedence
     LogicalOr, // `or`
     LogicalAnd, // `and`
     LogicalNot, // `not`
-    Equality, // `==` `=/=` `≠`
-    // Note `≡≡` `≡/≡` `≢` are relational, not equality because they act more like immediate
+    Equality, // `==` `=/=`
+    // Note `@==` `=/=` are relational, not equality because they act more like immediate
     // comparisons that you would then want to further compare the results of.
-    Relational, // `<` `<=` `>` `>=` `≡≡` `≡/≡` `≢` `<:` `is`
+    Relational, // `<` `<=` `>` `>=` `@==` `=/=` `<:` `is`
     Range, // `..` `..<` `<..` `<..<`
     Conversion, // `as` `as!` `as?`
     Additive, // `+` `-`
