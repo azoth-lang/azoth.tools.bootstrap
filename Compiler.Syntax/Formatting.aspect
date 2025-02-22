@@ -25,7 +25,8 @@
 // ---------- Operator Expressions
 = AssignmentExpression.ExpressionPrecedence => OperatorPrecedence.Assignment;
 = BinaryOperatorExpression.ExpressionPrecedence => Operator.Precedence();
-= UnaryOperatorExpression.ExpressionPrecedence => OperatorPrecedence.Unary;
+= UnaryOperatorExpression.ExpressionPrecedence
+    => Operator == UnaryOperator.Not ? OperatorPrecedence.LogicalNot : OperatorPrecedence.Unary;
 = ConversionExpression.ExpressionPrecedence => OperatorPrecedence.Conversion;
 = PatternMatchExpression.ExpressionPrecedence => OperatorPrecedence.Conversion;
 = RefExpression.ExpressionPrecedence => OperatorPrecedence.Unary;

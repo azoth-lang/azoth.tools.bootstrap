@@ -280,9 +280,10 @@ internal static partial class FormattingAspect
     public static partial string UnaryOperatorExpression_ToString(IUnaryOperatorExpressionSyntax node)
         => node.Fixity switch
         {
-            UnaryOperatorFixity.Prefix => $"{node.Operator.ToSymbolString()}{node.Operand.ToGroupedString(node.ExpressionPrecedence)}",
-            UnaryOperatorFixity.Postfix =>
-                $"{node.Operand.ToGroupedString(node.ExpressionPrecedence)}{node.Operator.ToSymbolString()}",
+            UnaryOperatorFixity.Prefix
+                => $"{node.Operator.ToSymbolString()}{node.Operand.ToGroupedString(node.ExpressionPrecedence)}",
+            UnaryOperatorFixity.Postfix
+                => $"{node.Operand.ToGroupedString(node.ExpressionPrecedence)}{node.Operator.ToSymbolString()}",
             _ => throw ExhaustiveMatch.Failed(node.Fixity)
         };
 

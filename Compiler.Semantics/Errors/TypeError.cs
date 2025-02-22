@@ -37,7 +37,7 @@ public static class TypeError
         IMaybeType operandType)
     {
         return new(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
-            3002, $"Operator `{@operator}` cannot be applied to operand of type `{operandType.ToSourceCodeString()}`.");
+            3002, $"Operator `{@operator.ToSymbolString().TrimEnd()}` cannot be applied to operand of type `{operandType.ToSourceCodeString()}`.");
     }
 
     public static Diagnostic MustBeATypeExpression(CodeFile file, TextSpan span)

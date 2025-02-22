@@ -1164,7 +1164,7 @@ public partial interface IUnaryOperatorExpressionSyntax : IExpressionSyntax
     UnaryOperator Operator { get; }
     IExpressionSyntax Operand { get; }
     OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
-        => OperatorPrecedence.Unary;
+        => Operator == UnaryOperator.Not ? OperatorPrecedence.LogicalNot : OperatorPrecedence.Unary;
 
     public static IUnaryOperatorExpressionSyntax Create(
         TextSpan span,

@@ -94,17 +94,22 @@ internal static partial class ExpressionPlainTypesAspect
                 or BinaryOperator.LessThanOrEqual
                 or BinaryOperator.GreaterThan
                 or BinaryOperator.GreaterThanOrEqual,
-                BarePlainType { TypeConstructor: IntegerLiteralTypeConstructor }) => null,
+                BarePlainType { TypeConstructor: IntegerLiteralTypeConstructor })
+                // Don't apply any common type casting in this case.
+                => null,
 
             (BarePlainType { TypeConstructor: BoolLiteralTypeConstructor },
                 BinaryOperator.EqualsEquals
                 or BinaryOperator.NotEqual
                 or BinaryOperator.And
                 or BinaryOperator.Or,
-                BarePlainType { TypeConstructor: BoolLiteralTypeConstructor }) => null,
+                BarePlainType { TypeConstructor: BoolLiteralTypeConstructor })
+                // Don't apply any common type casting in this case.
+                => null,
 
             (NonVoidPlainType { Semantics: TypeSemantics.Reference }, BinaryOperator.ReferenceEquals, NonVoidPlainType { Semantics: TypeSemantics.Reference })
                 or (NonVoidPlainType { Semantics: TypeSemantics.Reference }, BinaryOperator.NotReferenceEqual, NonVoidPlainType { Semantics: TypeSemantics.Reference })
+                // Don't apply any common type casting in this case.
                 => null,
 
             (BarePlainType { TypeConstructor: BoolTypeConstructor },
@@ -113,6 +118,7 @@ internal static partial class ExpressionPlainTypesAspect
                 or BinaryOperator.And
                 or BinaryOperator.Or,
                 BarePlainType { TypeConstructor: BoolTypeConstructor })
+                // Don't apply any common type casting in this case.
                 => null,
 
             (PlainType, BinaryOperator.Plus, PlainType)
@@ -146,9 +152,44 @@ internal static partial class ExpressionPlainTypesAspect
         var rightPlainType = node.RightOperand?.PlainType ?? PlainType.Unknown;
         return (leftPlainType, node.Operator, rightPlainType) switch
         {
+            // TODO this is a hack
+            (BarePlainType { TypeConstructor: BoolLiteralTypeConstructor },
+                BinaryOperator.EqualsEquals
+                or BinaryOperator.NotEqual
+                or BinaryOperator.And
+                or BinaryOperator.Or,
+                BarePlainType { TypeConstructor: BoolLiteralTypeConstructor })
+                => PlainType.Bool,
+
+            // TODO this is a hack
+            (BarePlainType { TypeConstructor: IntegerLiteralTypeConstructor left },
+                BinaryOperator.Plus
+                or BinaryOperator.Minus
+                or BinaryOperator.Asterisk
+                or BinaryOperator.Slash,
+                BarePlainType { TypeConstructor: IntegerLiteralTypeConstructor right })
+                => left.IsSigned || right.IsSigned ? PlainType.Int : PlainType.UInt,
+
+            // TODO this is a hack
+            (BarePlainType { TypeConstructor: IntegerLiteralTypeConstructor },
+                BinaryOperator.EqualsEquals
+                or BinaryOperator.NotEqual
+                or BinaryOperator.LessThan
+                or BinaryOperator.LessThanOrEqual
+                or BinaryOperator.GreaterThan
+                or BinaryOperator.GreaterThanOrEqual,
+                BarePlainType { TypeConstructor: IntegerLiteralTypeConstructor })
+                => PlainType.Bool,
+
+            // TODO whether the expression type is known is being used to report errors for whether
+            // the operator can be used on the operands. That is wrong. For example, `@==` always
+            // produces a `bool` and that should be the type even when it is applied to invalid operands.
             (NonVoidPlainType { Semantics: TypeSemantics.Reference }, BinaryOperator.ReferenceEquals, NonVoidPlainType { Semantics: TypeSemantics.Reference })
                 or (NonVoidPlainType { Semantics: TypeSemantics.Reference }, BinaryOperator.NotReferenceEqual, NonVoidPlainType { Semantics: TypeSemantics.Reference })
                 => PlainType.Bool,
+
+            // TODO whether the expression type is known is being used to report errors for whether
+            // the operator can be used on the operands. That is wrong.
 
             (BarePlainType { TypeConstructor: BoolTypeConstructor },
                 BinaryOperator.EqualsEquals
@@ -165,7 +206,6 @@ internal static partial class ExpressionPlainTypesAspect
                 => InferNumericOperatorType(node.NumericOperatorCommonPlainType),
             (PlainType, BinaryOperator.EqualsEquals, PlainType)
                 or (PlainType, BinaryOperator.NotEqual, PlainType)
-                or (OptionalPlainType { Referent: PlainType }, BinaryOperator.NotEqual, OptionalPlainType { Referent: PlainType })
                 or (PlainType, BinaryOperator.LessThan, PlainType)
                 or (PlainType, BinaryOperator.LessThanOrEqual, PlainType)
                 or (PlainType, BinaryOperator.GreaterThan, PlainType)

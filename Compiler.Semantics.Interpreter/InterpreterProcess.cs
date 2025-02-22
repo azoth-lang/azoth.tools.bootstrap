@@ -1403,6 +1403,8 @@ public sealed class InterpreterProcess
         if (ReferenceEquals(plainType, PlainType.Size)) return AzothValue.I32(left.SizeValue.CompareTo(right.SizeValue));
         if (ReferenceEquals(plainType, PlainType.NInt)) return AzothValue.I32(left.NIntValue.CompareTo(right.NIntValue));
         if (ReferenceEquals(plainType, PlainType.NUInt)) return AzothValue.I32(left.NUIntValue.CompareTo(right.NUIntValue));
+        if (plainType is BarePlainType { TypeConstructor: IntegerLiteralTypeConstructor })
+            return AzothValue.I32(left.IntValue.CompareTo(right.IntValue));
         throw new NotImplementedException($"Compare `{type.ToILString()}`.");
     }
 

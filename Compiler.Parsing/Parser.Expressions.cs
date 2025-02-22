@@ -330,8 +330,7 @@ public partial class Parser
             case IMinusToken _:
                 return ParsePrefixUnaryOperator(UnaryOperator.Minus);
             case INotKeywordToken _:
-                // TODO fix precedence to be LogicalNot
-                return ParsePrefixUnaryOperator(UnaryOperator.Not);
+                return ParsePrefixUnaryOperator(UnaryOperator.Not, OperatorPrecedence.LogicalNot);
             case IBooleanLiteralToken _:
             {
                 var literal = Tokens.ConsumeToken<IBooleanLiteralToken>();
@@ -457,10 +456,10 @@ public partial class Parser
         return IUnsafeExpressionSyntax.Create(span, expression);
     }
 
-    private IUnaryOperatorExpressionSyntax ParsePrefixUnaryOperator(UnaryOperator @operator)
+    private IUnaryOperatorExpressionSyntax ParsePrefixUnaryOperator(UnaryOperator @operator, OperatorPrecedence precedence = OperatorPrecedence.Unary)
     {
         var operatorSpan = Tokens.Consume<IOperatorToken>();
-        var operand = ParseExpression(OperatorPrecedence.Unary);
+        var operand = ParseExpression(precedence);
         var span = TextSpan.Covering(operatorSpan, operand.Span);
         return IUnaryOperatorExpressionSyntax.Create(span, UnaryOperatorFixity.Prefix, @operator, operand);
     }
