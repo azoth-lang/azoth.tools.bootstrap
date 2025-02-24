@@ -13,8 +13,7 @@ internal readonly struct AzothResult
     public readonly AzothValue Value;
     public readonly AzothResultType Type;
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    // TODO [Inline(InlineBehavior.Remove)] causes invalid program
+    [Inline(InlineBehavior.Remove)]
     public bool ShouldExit() => Type != AzothResultType.Ordinary;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -27,8 +26,7 @@ internal readonly struct AzothResult
 
     public bool IsReturn
     {
-        // TODO [Inline(InlineBehavior.Remove)] causes invalid program
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [Inline(InlineBehavior.Remove)]
         get => Type == AzothResultType.Return;
     }
 
