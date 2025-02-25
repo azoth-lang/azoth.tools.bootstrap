@@ -17,6 +17,7 @@ namespace Azoth.Tools.Bootstrap.Framework;
 public static class Requires
 {
     [DebuggerHidden]
+    [Conditional("DEBUG")]
     public static void Positive(int value, [InvokerParameterName] string paramName)
     {
         if (value < 0)
@@ -24,6 +25,7 @@ public static class Requires
     }
 
     [DebuggerHidden]
+    [Conditional("DEBUG")]
     public static void InString([InvokerParameterName] string paramName, string inString, int value)
     {
         // Start is allowed to be equal to length to allow for a zero length span after the last character
@@ -32,6 +34,7 @@ public static class Requires
     }
 
     [DebuggerHidden]
+    [Conditional("DEBUG")]
     public static void ValidEnum<TEnum>(TEnum value, [InvokerParameterName] string paramName)
         where TEnum : struct, Enum
     {
@@ -40,6 +43,7 @@ public static class Requires
     }
 
     [DebuggerHidden]
+    [Conditional("DEBUG")]
     public static void Null<T>(T? value, [InvokerParameterName] string paramName, string? message)
         where T : class
     {
@@ -48,6 +52,7 @@ public static class Requires
     }
 
     [DebuggerHidden]
+    [Conditional("DEBUG")]
     public static void NotNull<T>([NotNull] T? value, [InvokerParameterName] string paramName)
         where T : class
     {
@@ -56,6 +61,7 @@ public static class Requires
     }
 
     [DebuggerHidden]
+    [Conditional("DEBUG")]
     public static void NotNullOrEmpty([NotNull] string? value, [InvokerParameterName] string paramName)
     {
         if (string.IsNullOrEmpty(value))
@@ -63,6 +69,7 @@ public static class Requires
     }
 
     [DebuggerHidden]
+    [Conditional("DEBUG")]
     public static void That([DoesNotReturnIf(false)] bool condition, [InvokerParameterName] string paramName, string message)
     {
         if (!condition)
@@ -70,6 +77,7 @@ public static class Requires
     }
 
     [DebuggerHidden]
+    [Conditional("DEBUG")]
     public static void Zero<T>(T value, [InvokerParameterName] string paramName)
         where T : IAdditiveIdentity<T, T>, IEquatable<T>
     {
