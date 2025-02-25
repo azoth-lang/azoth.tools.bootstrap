@@ -1,7 +1,6 @@
 using System;
 using System.Diagnostics;
 using System.Numerics;
-using System.Runtime.CompilerServices;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.MemoryLayout;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
@@ -10,6 +9,7 @@ using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using ExhaustiveMatching;
+using InlineMethod;
 using Type = Azoth.Tools.Bootstrap.Compiler.Types.Decorated.Type;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter;
@@ -132,8 +132,7 @@ internal static class Operations
         throw new NotImplementedException($"Conversion from {from.ToILString()} to {to.ToILString()}");
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    // TODO [Inline(InlineBehavior.Remove)]
+    [Inline(InlineBehavior.Remove)]
     public static AzothValue IncrementInt(this AzothValue value)
         => AzothValue.Int(value.IntValue + 1);
 

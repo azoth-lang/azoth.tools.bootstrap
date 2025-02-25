@@ -6,7 +6,6 @@ using System.Diagnostics;
 using System.IO;
 using System.IO.Pipelines;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
@@ -1408,13 +1407,9 @@ public sealed class InterpreterProcess
         throw new NotImplementedException($"Compare `{type.ToILString()}`.");
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    // TODO [Inline] causes invalid program
+    [Inline]
     private static AzothResult Not(AzothResult result)
-    {
-        if (result.ShouldExit(out var value)) return result;
-        return AzothValue.Bool(!value.BoolValue);
-    }
+        => result.ShouldExit(out var value) ? result : AzothValue.Bool(!value.BoolValue);
 
     private async ValueTask<AzothResult> NegateAsync(
         BareType? selfBareType,
