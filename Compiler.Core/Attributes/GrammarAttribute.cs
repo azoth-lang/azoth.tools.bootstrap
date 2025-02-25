@@ -589,7 +589,8 @@ public static class GrammarAttribute
                     // Use next. It is the new value because current hasn't changed yet.
                     return next;
                 }
-                // TODO does this line make sense if (!ReferenceEquals(original, current) above?
+                // The `next` value is now part of the same rewrite context as the `current` was
+                // even if another thread set the value and `next` was taken from that.
                 attributeScope.AddToRewriteContext(current!, next);
             }
 
