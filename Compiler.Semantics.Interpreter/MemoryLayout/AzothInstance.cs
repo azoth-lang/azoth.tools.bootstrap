@@ -1,5 +1,5 @@
 using System;
-using System.Runtime.CompilerServices;
+using InlineMethod;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.MemoryLayout;
 
@@ -19,25 +19,25 @@ internal readonly struct AzothInstance
 
     public bool IsObject
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [Inline(InlineBehavior.Remove)]
         get => Layout is VTable;
     }
 
     public TypeLayout Layout
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [Inline(InlineBehavior.Remove)]
         get => fields[0].TypeLayoutValue;
     }
 
     public AzothValue this[IFieldDeclarationNode field]
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [Inline(InlineBehavior.Remove)]
         get => fields[Layout.GetIndex(field)];
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [Inline(InlineBehavior.Remove)]
         set => fields[Layout.GetIndex(field)] = value;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [Inline(InlineBehavior.Remove)]
     public AzothRef Ref(IFieldDeclarationNode field)
         => new(fields, Layout.GetIndex(field));
 }
