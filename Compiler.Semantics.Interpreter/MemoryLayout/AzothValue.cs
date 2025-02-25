@@ -41,7 +41,7 @@ internal readonly struct AzothValue
 
     public bool IsNone
     {
-        [Inline(InlineBehavior.Remove)]
+        [Inline(export: true)]
         get => ReferenceEquals(value.Reference, NoneFlag);
     }
 
@@ -68,7 +68,7 @@ internal readonly struct AzothValue
     public static AzothValue Object(AzothObject value) => new(value);
     [Inline(InlineBehavior.Remove)]
     public static AzothValue Struct(AzothStruct value) => new(value);
-    [Inline(InlineBehavior.Remove)]
+    [Inline(export: true)]
     public static AzothValue Int(BigInteger value) => new(value);
     [Inline(InlineBehavior.Remove)]
     public static AzothValue Ref(AzothRef value) => new(value);
