@@ -1,9 +1,11 @@
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.PlainTypes;
 
+[StructLayout(LayoutKind.Auto)]
 public readonly record struct ArgumentPlainTypes
 {
     public static ArgumentPlainTypes ForFunction(IEnumerable<IMaybePlainType> arguments)

@@ -1,7 +1,9 @@
 using System;
+using System.Runtime.InteropServices;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Core.Code;
 
+[StructLayout(LayoutKind.Auto)]
 public readonly struct TextPosition : IEquatable<TextPosition>, IComparable<TextPosition>
 {
     public int CharacterOffset { get; } // Zero based

@@ -1,8 +1,10 @@
 using System;
+using System.Runtime.InteropServices;
 using System.Threading;
 
 namespace Azoth.Tools.Bootstrap.Framework;
 
+[StructLayout(LayoutKind.Auto)]
 public readonly struct PersistentDisjointSets<T>
 {
     public static readonly PersistentDisjointSets<T> Empty = default;
@@ -75,7 +77,7 @@ public readonly struct PersistentDisjointSets<T>
         return new(items.Set(set1, set1Node, set2, set2Node));
     }
 
-
+    [StructLayout(LayoutKind.Auto)]
     private record struct Node
     {
         public static Node CreateRoot(uint item) => new Node(item);

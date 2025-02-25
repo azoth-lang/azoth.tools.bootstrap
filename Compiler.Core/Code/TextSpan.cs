@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Linq;
+using System.Runtime.InteropServices;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Core.Code;
 
 [DebuggerDisplay("positions {Start} to {End}")]
+[StructLayout(LayoutKind.Auto)]
 public readonly struct TextSpan : IEquatable<TextSpan>
 {
     public int Start { get; }

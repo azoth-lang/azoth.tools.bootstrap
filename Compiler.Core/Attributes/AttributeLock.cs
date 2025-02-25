@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Threading;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 
+[StructLayout(LayoutKind.Auto)]
 public struct AttributeLock
 {
     private static readonly UIntPtr LockedState = nuint.MaxValue;

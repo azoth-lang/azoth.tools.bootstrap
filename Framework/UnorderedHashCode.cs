@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 
 namespace Azoth.Tools.Bootstrap.Framework;
 
+[StructLayout(LayoutKind.Auto)]
 public struct UnorderedHashCode
 {
     private int value;

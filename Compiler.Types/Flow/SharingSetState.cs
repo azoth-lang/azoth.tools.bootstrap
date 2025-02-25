@@ -1,9 +1,11 @@
 using System.Collections.Immutable;
+using System.Runtime.InteropServices;
 using Azoth.Tools.Bootstrap.Compiler.Types.Flow.Sharing;
 using Azoth.Tools.Bootstrap.Framework.Collections;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Flow;
 
+[StructLayout(LayoutKind.Auto)]
 public readonly struct SharingSetState : IMergeable<SharingSetState>, IEquatable<SharingSetState>
 {
     public bool IsLent { get; }

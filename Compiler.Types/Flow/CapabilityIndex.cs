@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Flow;
@@ -13,6 +14,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Flow;
 /// `∅` because there is no list to index at that level and hence no index. It also provides a clear
 /// starting point to the index.</remarks>
 [DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
+[StructLayout(LayoutKind.Auto)]
 public readonly struct CapabilityIndex : IEquatable<CapabilityIndex>
 {
     public static readonly CapabilityIndex TopLevel = new(FixedList.Empty<int>());

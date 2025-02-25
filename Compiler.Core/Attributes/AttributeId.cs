@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
@@ -13,6 +14,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 /// through nameof or the <see cref="CallerMemberNameAttribute"/>. Otherwise, callers will need
 /// to use string interning.</remarks>
 [DebuggerStepThrough]
+[StructLayout(LayoutKind.Auto)]
 internal readonly struct AttributeId(ITreeNode node, string attributeName, int index) : IEquatable<AttributeId>
 {
     public readonly ITreeNode Node = node;

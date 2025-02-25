@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 using Azoth.Tools.Bootstrap.Framework;
 
@@ -10,6 +11,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Core;
 /// </summary>
 /// <remarks>The presence of diagnostics generally doesn't mean the result cannot be used. Rather
 /// that should be indicated with a special value like <see langword="null"/> or the unknown type.</remarks>
+[StructLayout(LayoutKind.Auto)]
 public readonly struct CompilerResult<T>
 {
     public T Value { get; }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 
 namespace Azoth.Tools.Bootstrap.Framework;
 
@@ -8,6 +9,7 @@ namespace Azoth.Tools.Bootstrap.Framework;
 /// Generates an infinite <see cref="IEnumerable{T}"/> by repeatedly calling
 /// a generator function.
 /// </summary>
+[StructLayout(LayoutKind.Auto)]
 public readonly struct Generator<T> : IEnumerable<T>
 {
     private readonly Func<T> generator;

@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using System.Runtime.InteropServices;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
@@ -754,6 +755,7 @@ internal sealed class FlowState : IFlowState
 
     private Builder ToBuilder() => new(valuesForId, values, untrackedValues);
 
+    [StructLayout(LayoutKind.Auto)]
     private readonly struct Builder
     {
         private readonly ImmutableDictionary<ValueId, IFixedSet<ICapabilityValue>>.Builder valuesForId;

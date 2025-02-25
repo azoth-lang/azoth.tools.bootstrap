@@ -1,11 +1,12 @@
 using System;
-using System.Buffers;
+using System.Runtime.InteropServices;
 
 namespace Azoth.Tools.Bootstrap.Framework;
 
 /// <summary>
 /// A buffer holding values. Similar to an array, but always uses <see langword="ref"/> access.
 /// </summary>
+[StructLayout(LayoutKind.Auto)]
 public readonly struct Buffer<T>
 {
     public static readonly Buffer<T> Empty = default;

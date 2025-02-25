@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace Azoth.Tools.Bootstrap.Framework;
 
@@ -116,6 +117,7 @@ public abstract class PersistentList<T> : IReadOnlyList<T>
         ref T Modify(uint shiftedIndex);
     }
 
+    [StructLayout(LayoutKind.Auto)]
     private struct Node<TChild>(Buffer<TChild> children) : INode<Node<TChild>>
         where TChild : struct, INode<TChild>
     {
@@ -167,6 +169,7 @@ public abstract class PersistentList<T> : IReadOnlyList<T>
             => ref children[shiftedIndex >> (32 - BitsPerLevel)].Modify(shiftedIndex << BitsPerLevel);
     }
 
+    [StructLayout(LayoutKind.Auto)]
     private struct LeafNode(T item) : INode<LeafNode>
     {
         public static LeafNode Create(T value) => new(value);

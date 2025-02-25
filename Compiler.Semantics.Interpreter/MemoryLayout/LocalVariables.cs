@@ -3,13 +3,16 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.Async;
 using Microsoft.Extensions.ObjectPool;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.MemoryLayout;
 
+[StructLayout(LayoutKind.Auto)]
 internal readonly struct LocalVariables
 {
+    [StructLayout(LayoutKind.Auto)]
     internal readonly struct Scope : IDisposable
     {
         private readonly DefaultObjectPool<List<AzothValue>> pool;
@@ -57,6 +60,7 @@ internal readonly struct LocalVariables
         }
     }
 
+    [StructLayout(LayoutKind.Auto)]
     internal readonly struct NestedScope : IDisposable
     {
         private readonly LocalVariables localVariables;

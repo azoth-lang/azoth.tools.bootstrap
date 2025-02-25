@@ -1,9 +1,11 @@
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace Azoth.Tools.Bootstrap.Framework;
 
 [DebuggerStepThrough]
+[StructLayout(LayoutKind.Auto)]
 public readonly struct InteriorRef<T>
     where T : struct
 {

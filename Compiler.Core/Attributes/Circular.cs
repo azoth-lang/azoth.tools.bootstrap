@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Threading;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes.Operations;
 
@@ -8,6 +9,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 [DebuggerDisplay($"{{{nameof(DebuggerDisplay)}(),nq}}")]
 [DebuggerTypeProxy(typeof(Circular<>.CircularDebugView))]
 [DebuggerStepThrough]
+[StructLayout(LayoutKind.Auto)]
 public struct Circular<T> : ICyclic<T>
     where T : class?
 {

@@ -1,9 +1,11 @@
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using Azoth.Tools.Bootstrap.Compiler.Core.Code;
 using Azoth.Tools.Bootstrap.Compiler.Tokens;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Syntax;
 
+[StructLayout(LayoutKind.Auto)]
 public readonly struct AccessModifierSyntax
 {
     public static readonly AccessModifierSyntax Private = default;
