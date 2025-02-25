@@ -16,6 +16,16 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.PlainTypes;
 
 internal static partial class ExpressionPlainTypesAspect
 {
+    #region Function Parts
+    public static partial IMaybePlainType? ExpressionBody_ResultStatement_ExpectedPlainType(IExpressionBodyNode node)
+    {
+        var expectedPlainType = node.ExpectedPlainType; // Avoids repeated access
+        // A void return is allowed to have an expression body resulting in any value since the
+        // value will just be discarded.
+        return expectedPlainType is VoidPlainType ? null : expectedPlainType;
+    }
+    #endregion
+
     #region Expressions
     public static partial IImplicitDerefExpressionNode? OrdinaryTypedExpression_Insert_ImplicitDerefExpression(IOrdinaryTypedExpressionNode node)
     {

@@ -7113,6 +7113,13 @@ file class OrdinaryInitializerDefinitionNode : SemanticNode, IOrdinaryInitialize
         return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
     }
 
+    internal override IMaybePlainType? Inherited_ExpectedPlainType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(descendant, Self.Body))
+            return PlainType.Void;
+        return base.Inherited_ExpectedPlainType(child, descendant, ctx);
+    }
+
     internal override IMaybePlainType? Inherited_ExpectedReturnPlainType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, Self.Body))
@@ -8016,14 +8023,14 @@ file class ExpressionBodyNode : SemanticNode, IExpressionBodyNode
     internal override IMaybePlainType? Inherited_ExpectedPlainType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.ResultStatement))
-            return ExpectedPlainType;
+            return ExpressionPlainTypesAspect.ExpressionBody_ResultStatement_ExpectedPlainType(this);
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
     }
 
     internal override IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.ResultStatement))
-            return ExpectedType;
+            return ExpressionTypesAspect.ExpressionBody_ResultStatement_ExpectedType(this);
         return base.Inherited_ExpectedType(child, descendant, ctx);
     }
 

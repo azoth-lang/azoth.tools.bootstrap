@@ -21,6 +21,16 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 
 internal static partial class ExpressionTypesAspect
 {
+    #region Function Parts
+    public static partial IMaybeType? ExpressionBody_ResultStatement_ExpectedType(IExpressionBodyNode node)
+    {
+        var expectedType = node.ExpectedType; // Avoids repeated access
+        // A void return is allowed to have an expression body resulting in any value since the
+        // value will just be discarded.
+        return expectedType is VoidType ? null : expectedType;
+    }
+    #endregion
+
     #region Parameters
     public static partial IFlowState NamedParameter_FlowStateAfter(INamedParameterNode node)
         => node.FlowStateBefore().Declare(node);

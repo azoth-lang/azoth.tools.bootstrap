@@ -14,6 +14,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 internal static partial class ExpressionTypesAspect
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial IMaybeType? ExpressionBody_ResultStatement_ExpectedType(IExpressionBodyNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFlowState SelfParameter_FlowStateAfter(ISelfParameterNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IMaybeType ResultStatement_Type(IResultStatementNode node);

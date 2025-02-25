@@ -14,7 +14,7 @@
 
 // ---------- Function Parts
 ↓ ExpressionBody.ExpectedType: `IMaybeType`?;
-= ExpressionBody.ResultStatement.ExpectedType => ExpectedType;
+= ExpressionBody.ResultStatement.ExpectedType;
 // It is really the expression inside the result statement that this should apply to, but the
 // ResultStatement will forward it to the expression.
 = ExpressionBody.ResultStatement.ImplicitRecoveryAllowed() => true;

@@ -22,16 +22,21 @@
     => Self.ReturnPlainType;
 = MethodDefinition.ReturnPlainType => Return?.NamedPlainType ?? AzothPlainType.Void;
 
-= FieldDefinition.BindingPlainType;
 // TODO it would be good to refactor to not depend on Type
 = OrdinaryMethodDefinition.MethodGroupPlainType => MethodGroupType.PlainType;
+
 = InitializerDefinition.ReturnPlainType
     => ContainingTypeDefinition.TypeConstructor.ConstructWithParameterPlainTypes();
 = DefaultInitializerDefinition.SelfParameterPlainType
     => ContainingTypeDefinition.TypeConstructor.ConstructWithParameterPlainTypes();
 = OrdinaryInitializerDefinition.SelfParameterPlainType => SelfParameter.BindingPlainType;
+= OrdinaryInitializerDefinition.Body.ExpectedPlainType => PlainType.Void;
 = OrdinaryInitializerDefinition.Body.**.ExpectedReturnPlainType => AzothPlainType.Void;
+
+= FieldDefinition.BindingPlainType;
+// TODO FieldDefinition.Initializer.ExpectedPlainType
 // Null is the signal that this is a field initializer and not a method body
 = FieldDefinition.Initializer.**.ExpectedReturnPlainType => null;
+
 = AssociatedFunctionDefinition.Body.ExpectedPlainType => Self.ReturnPlainType;
 = AssociatedFunctionDefinition.Body.**.ExpectedReturnPlainType => Self.ReturnPlainType;

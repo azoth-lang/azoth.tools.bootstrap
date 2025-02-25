@@ -13,6 +13,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.PlainTypes;
 internal static partial class ExpressionPlainTypesAspect
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial IMaybePlainType? ExpressionBody_ResultStatement_ExpectedPlainType(IExpressionBodyNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial void OptionalPattern_Contribute_Diagnostics(IOptionalPatternNode node, DiagnosticCollectionBuilder diagnostics);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IMaybePlainType? MethodAccessExpression_Context_ExpectedPlainType(IMethodAccessExpressionNode node);
