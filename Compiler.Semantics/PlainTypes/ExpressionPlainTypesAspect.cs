@@ -26,6 +26,19 @@ internal static partial class ExpressionPlainTypesAspect
     }
     #endregion
 
+    #region Statements
+    public static partial IMaybePlainType ResultStatement_PlainType(IResultStatementNode node)
+        => node.Expression?.PlainType ?? PlainType.Unknown;
+    #endregion
+
+    #region Patterns
+    public static partial void OptionalPattern_Contribute_Diagnostics(IOptionalPatternNode node, DiagnosticCollectionBuilder diagnostics)
+    {
+        if (node.ContextBindingType() is not OptionalType and var type)
+            diagnostics.Add(TypeError.OptionalPatternOnNonOptionalType(node.File, node.Syntax, type));
+    }
+    #endregion
+
     #region Expressions
     public static partial IImplicitDerefExpressionNode? OrdinaryTypedExpression_Insert_ImplicitDerefExpression(IOrdinaryTypedExpressionNode node)
     {
@@ -41,23 +54,120 @@ internal static partial class ExpressionPlainTypesAspect
 
         return null;
     }
-    #endregion
+
+    public static partial IImplicitConversionExpressionNode? OrdinaryTypedExpression_Insert_ImplicitConversionExpression(IOrdinaryTypedExpressionNode node)
+    {
+        // TODO can this be dropped? All those things should have an unknown plain type and so be skipped
+        if (node.ShouldNotBeExpression()) return null;
+
+        // To minimize outstanding rewrites, first check whether node.PlainType could possibly
+        // support conversion. If node.ExpectedPlainType is checked, that is inherited and if a
+        // rewrite is in progress, that can't be cached. Note: this requires thoroughly treating
+        // T <: T? as a subtype and not an implicit conversion.
+        if (!CanPossiblyImplicitlyConvertFrom(node.PlainType)) return null;
+
+        // TODO what about self argument context? Shouldn't implicit conversion be disallowed there?
+
+        if (ImplicitlyConvertToType(node.ExpectedPlainType, node.PlainType) is SimpleTypeConstructor convertToTypeConstructor)
+            return IImplicitConversionExpressionNode.Create(node, convertToTypeConstructor.PlainType);
+
+        return null;
+    }
+
+    private static bool CanPossiblyImplicitlyConvertFrom(IMaybePlainType fromType)
+    => fromType switch
+    {
+        UnknownPlainType => false,
+        BarePlainType { TypeConstructor: var typeConstructor }
+            => CanPossiblyImplicitlyConvertFrom(typeConstructor),
+        OptionalPlainType { Referent: var referent } => CanPossiblyImplicitlyConvertFrom(referent),
+        _ => false,
+    };
+
+    private static bool CanPossiblyImplicitlyConvertFrom(BareTypeConstructor fromTypeConstructor)
+        => fromTypeConstructor switch
+        {
+            BoolLiteralTypeConstructor => true,
+            IntegerLiteralTypeConstructor => true,
+            // Can't convert from signed because there is not a larger type to convert to
+            BigIntegerTypeConstructor t => !t.IsSigned,
+            PointerSizedIntegerTypeConstructor => true,
+            FixedSizeIntegerTypeConstructor => true,
+            _ => false,
+        };
+
+    private static SimpleTypeConstructor? ImplicitlyConvertToType(IMaybePlainType? toType, IMaybePlainType fromType)
+    {
+        switch (toType, fromType)
+        {
+            case (null, _):
+            case (UnknownPlainType, _):
+            case (_, UnknownPlainType):
+            case (PlainType to, PlainType from) when from.Equals(to):
+                return null;
+            case (BarePlainType { TypeConstructor: FixedSizeIntegerTypeConstructor to },
+                BarePlainType { TypeConstructor: FixedSizeIntegerTypeConstructor from }):
+                if (to.Bits > from.Bits && (!from.IsSigned || to.IsSigned))
+                    return to;
+                return null;
+            case (BarePlainType { TypeConstructor: FixedSizeIntegerTypeConstructor to },
+                BarePlainType { TypeConstructor: IntegerLiteralTypeConstructor from }):
+            {
+                // TODO make a method on plain types for this check
+                var requireSigned = from.Value < 0;
+                var bits = from.Value.GetByteCount(!to.IsSigned) * 8;
+                return to.Bits >= bits && (!requireSigned || to.IsSigned) ? to : null;
+            }
+            case (BarePlainType { TypeConstructor: PointerSizedIntegerTypeConstructor to },
+                BarePlainType { TypeConstructor: IntegerLiteralTypeConstructor from }):
+            {
+                // TODO make a method on plain types for this check
+                var requireSigned = from.Value < 0;
+                var bits = from.Value.GetByteCount(!to.IsSigned) * 8;
+                // Must fit in 32 bits so that it will fit on all platforms
+                return bits <= 32 && (!requireSigned || to.IsSigned) ? to : null;
+            }
+            // Note: Both signed BigIntegerTypeConstructor has already been covered
+            case (BarePlainType { TypeConstructor: BigIntegerTypeConstructor { IsSigned: true } },
+                BarePlainType { TypeConstructor: IntegerTypeConstructor }):
+            case (BarePlainType { TypeConstructor: BigIntegerTypeConstructor { IsSigned: true } },
+                BarePlainType { TypeConstructor: IntegerLiteralTypeConstructor }):
+                return BareTypeConstructor.Int;
+            case (BarePlainType { TypeConstructor: BigIntegerTypeConstructor to },
+                BarePlainType
+                {
+                    TypeConstructor: IntegerTypeConstructor { IsSigned: false }
+                                        or IntegerLiteralTypeConstructor { IsSigned: false }
+                }):
+                return to;
+            case (BarePlainType { TypeConstructor: BoolTypeConstructor },
+                BarePlainType { TypeConstructor: BoolLiteralTypeConstructor }):
+                return BareTypeConstructor.Bool;
+            // TODO support lifted implicit conversions
+            //case (OptionalPlainType { Referent: var to }, OptionalPlainType { Referent: var from }):
+            //    return OptionalPlainType.Create(ImplicitlyConvertToType(to, from));
+            case (OptionalPlainType { Referent: var to }, _):
+                return ImplicitlyConvertToType(to, fromType);
+            default:
+                return null;
+        }
+    }
+
+    public static partial IMaybePlainType BlockExpression_PlainType(IBlockExpressionNode node)
+    {
+        foreach (var statement in node.Statements)
+            if (statement.ResultPlainType is not null and var resultPlainType)
+                return resultPlainType;
+
+        // If there was no result expression, then the block type is void
+        return PlainType.Void;
+    }
 
     public static partial IMaybePlainType UnsafeExpression_PlainType(IUnsafeExpressionNode node)
         => node.Expression?.PlainType ?? PlainType.Unknown;
+    #endregion
 
-    public static partial IMaybePlainType FunctionInvocationExpression_PlainType(IFunctionInvocationExpressionNode node)
-        => node.Function.SelectedCallCandidate?.ReturnPlainType ?? PlainType.Unknown;
-
-    public static partial IMaybePlainType MethodInvocationExpression_PlainType(IMethodInvocationExpressionNode node)
-        => node.Method.SelectedCallCandidate?.ReturnPlainType ?? PlainType.Unknown;
-
-    public static partial IMaybePlainType VariableNameExpression_PlainType(IVariableNameExpressionNode node)
-        => node.ReferencedDefinition.BindingPlainType;
-
-    public static partial IMaybePlainType SelfExpression_PlainType(ISelfExpressionNode node)
-        => node.ReferencedDefinition?.BindingPlainType ?? IMaybePlainType.Unknown;
-
+    #region Instance Member Access Expressions
     public static partial IMaybePlainType FieldAccessExpression_PlainType(IFieldAccessExpressionNode node)
     {
         // TODO should probably use PlainType on the declaration
@@ -66,6 +176,36 @@ internal static partial class ExpressionPlainTypesAspect
         return boundPlainType;
     }
 
+    public static partial IMaybePlainType MethodAccessExpression_PlainType(IMethodAccessExpressionNode node)
+        // TODO should MethodGroupPlainType be renamed to just MethodPlainType? The declaration is one method
+        => node.ReferencedDeclaration?.MethodGroupPlainType ?? PlainType.Unknown;
+
+    // TODO this is strange and maybe a hack
+    // TODO this ought to be accounting for generic arguments
+    public static partial IMaybePlainType? MethodAccessExpression_Context_ExpectedPlainType(IMethodAccessExpressionNode node)
+        => (node.Parent as IMethodInvocationExpressionNode)?.SelectedCallCandidate?.SelfParameterPlainType;
+    #endregion
+
+    #region Literal Expressions
+    public static partial IMaybePlainType BoolLiteralExpression_PlainType(IBoolLiteralExpressionNode node)
+        => node.Value ? PlainType.True : PlainType.False;
+
+    public static partial IMaybePlainType IntegerLiteralExpression_PlainType(IIntegerLiteralExpressionNode node)
+        => new IntegerLiteralTypeConstructor(node.Value).PlainType;
+
+    public static partial IMaybePlainType NoneLiteralExpression_PlainType(INoneLiteralExpressionNode node)
+        => PlainType.None;
+
+    public static partial IMaybePlainType StringLiteralExpression_PlainType(IStringLiteralExpressionNode node)
+    {
+        var typeDeclarationNode = node.ContainingLexicalScope
+                                      .Lookup<ITypeDeclarationNode>(SpecialNames.StringTypeName)
+                                      .TrySingle();
+        return typeDeclarationNode?.TypeConstructor.TryConstructNullaryPlainType(containingType: null) ?? IMaybePlainType.Unknown;
+    }
+    #endregion
+
+    #region Operator Expressions
     public static partial IMaybePlainType AssignmentExpression_PlainType(IAssignmentExpressionNode node)
         => node.LeftOperand?.PlainType ?? PlainType.Unknown;
 
@@ -83,9 +223,6 @@ internal static partial class ExpressionPlainTypesAspect
 
     public static partial IMaybePlainType RefAssignmentExpression_PlainType(IRefAssignmentExpressionNode node)
         => (node.LeftOperand?.PlainType as RefPlainType)?.Referent ?? IMaybePlainType.Unknown;
-
-    public static partial IMaybePlainType ResultStatement_PlainType(IResultStatementNode node)
-        => node.Expression?.PlainType ?? PlainType.Unknown;
 
     public static partial PlainType? BinaryOperatorExpression_NumericOperatorCommonPlainType(IBinaryOperatorExpressionNode node)
     {
@@ -261,85 +398,14 @@ internal static partial class ExpressionPlainTypesAspect
         return rangePlainType;
     }
 
-    public static partial IMaybePlainType StringLiteralExpression_PlainType(IStringLiteralExpressionNode node)
-    {
-        var typeDeclarationNode = node.ContainingLexicalScope
-                                      .Lookup<ITypeDeclarationNode>(SpecialNames.StringTypeName)
-                                      .TrySingle();
-        return typeDeclarationNode?.TypeConstructor.TryConstructNullaryPlainType(containingType: null) ?? IMaybePlainType.Unknown;
-    }
-
-    public static partial IMaybePlainType IfExpression_PlainType(IIfExpressionNode node)
-    {
-        if (node.ElseClause is null) return OptionalPlainType.Create(node.ThenBlock.PlainType);
-
-        // TODO unify with else clause
-        return node.ThenBlock.PlainType;
-    }
-
-    public static partial IMaybePlainType WhileExpression_PlainType(IWhileExpressionNode node)
-        // TODO assign correct type to the expression
-        => PlainType.Void;
-
-    public static partial IMaybePlainType LoopExpression_PlainType(ILoopExpressionNode node)
-        // TODO assign correct type to the expression
-        => PlainType.Void;
-
-    public static partial IMaybePlainType ForeachExpression_PlainType(IForeachExpressionNode node)
-        // TODO assign correct type to the expression
-        => PlainType.Void;
-
-    public static partial IMaybePlainType BlockExpression_PlainType(IBlockExpressionNode node)
-    {
-        foreach (var statement in node.Statements)
-            if (statement.ResultPlainType is not null and var resultPlainType)
-                return resultPlainType;
-
-        // If there was no result expression, then the block type is void
-        return PlainType.Void;
-    }
-
-    public static partial IMaybePlainType ConversionExpression_PlainType(IConversionExpressionNode node)
-    {
-        var convertToPlainType = node.ConvertToType.NamedPlainType;
-        if (node.Operator == ConversionOperator.Optional)
-            convertToPlainType = OptionalPlainType.Create(convertToPlainType);
-        return convertToPlainType;
-    }
-
-    public static partial IMaybePlainType NoneLiteralExpression_PlainType(INoneLiteralExpressionNode node)
-        => PlainType.None;
-
-    public static partial IMaybePlainType AsyncStartExpression_PlainType(IAsyncStartExpressionNode node)
-        => Intrinsic.PromiseOf(node.Expression?.PlainType ?? PlainType.Unknown);
-
-    public static partial IMaybePlainType AwaitExpression_PlainType(IAwaitExpressionNode node)
-    {
-        if (node.Expression?.PlainType is BarePlainType { TypeConstructor: var typeConstructor } plainType
-            && Intrinsic.PromiseTypeConstructor.Equals(typeConstructor))
-            return plainType.Arguments[0];
-
-        return PlainType.Unknown;
-    }
-
-    public static partial void AwaitExpression_Contribute_Diagnostics(IAwaitExpressionNode node, DiagnosticCollectionBuilder diagnostics)
-    {
-        // TODO eliminate code duplication with AwaitExpression_PlainType
-        if (node.Expression?.PlainType is BarePlainType { TypeConstructor: var typeConstructor }
-            && Intrinsic.PromiseTypeConstructor.Equals(typeConstructor))
-            return;
-
-        diagnostics.Add(TypeError.CannotAwaitType(node.File, node.Syntax.Span, node.Expression!.Type));
-    }
-
     public static partial IMaybePlainType UnaryOperatorExpression_PlainType(IUnaryOperatorExpressionNode node)
-        => node.Operator switch
-        {
-            UnaryOperator.Not => UnaryOperatorExpression_PlainType_Not(node),
-            UnaryOperator.Minus => UnaryOperatorExpression_PlainType_Minus(node),
-            UnaryOperator.Plus => UnaryOperatorExpression_PlainType_Plus(node),
-            _ => throw ExhaustiveMatch.Failed(node.Operator),
-        };
+    => node.Operator switch
+    {
+        UnaryOperator.Not => UnaryOperatorExpression_PlainType_Not(node),
+        UnaryOperator.Minus => UnaryOperatorExpression_PlainType_Minus(node),
+        UnaryOperator.Plus => UnaryOperatorExpression_PlainType_Plus(node),
+        _ => throw ExhaustiveMatch.Failed(node.Operator),
+    };
 
     private static IMaybePlainType UnaryOperatorExpression_PlainType_Not(IUnaryOperatorExpressionNode node)
         => PlainType.Bool;
@@ -366,9 +432,7 @@ internal static partial class ExpressionPlainTypesAspect
             _ => PlainType.Unknown,
         };
 
-    public static partial void UnaryOperatorExpression_Contribute_Diagnostics(
-        IUnaryOperatorExpressionNode node,
-        DiagnosticCollectionBuilder diagnostics)
+    public static partial void UnaryOperatorExpression_Contribute_Diagnostics(IUnaryOperatorExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
         var operandPlainType = node.Operand!.PlainType;
         var cannotBeAppliedToOperandType
@@ -385,6 +449,50 @@ internal static partial class ExpressionPlainTypesAspect
             diagnostics.Add(TypeError.OperatorCannotBeAppliedToOperandOfType(node.File,
                 node.Syntax.Span, node.Operator, node.Operand!.Type));
     }
+
+    public static partial IMaybePlainType ConversionExpression_PlainType(IConversionExpressionNode node)
+    {
+        var convertToPlainType = node.ConvertToType.NamedPlainType;
+        if (node.Operator == ConversionOperator.Optional)
+            convertToPlainType = OptionalPlainType.Create(convertToPlainType);
+        return convertToPlainType;
+    }
+
+    public static partial IMaybePlainType RefExpression_PlainType(IRefExpressionNode node)
+        => RefPlainType.Create(node.IsInternal, node.IsMutableBinding, node.Referent?.PlainType) ?? PlainType.Unknown;
+
+    public static partial IMaybePlainType ImplicitDerefExpression_PlainType(IImplicitDerefExpressionNode node)
+        => (node.Referent.PlainType as RefPlainType)?.Referent ?? IMaybePlainType.Unknown;
+    #endregion
+
+    #region Control Flow Expressions
+    public static partial IMaybePlainType IfExpression_PlainType(IIfExpressionNode node)
+    {
+        if (node.ElseClause is null) return OptionalPlainType.Create(node.ThenBlock.PlainType);
+
+        // TODO unify with else clause
+        return node.ThenBlock.PlainType;
+    }
+
+    public static partial IMaybePlainType LoopExpression_PlainType(ILoopExpressionNode node)
+        // TODO assign correct type to the expression
+        => PlainType.Void;
+
+    public static partial IMaybePlainType WhileExpression_PlainType(IWhileExpressionNode node)
+        // TODO assign correct type to the expression
+        => PlainType.Void;
+
+    public static partial IMaybePlainType ForeachExpression_PlainType(IForeachExpressionNode node)
+        // TODO assign correct type to the expression
+        => PlainType.Void;
+    #endregion
+
+    #region Invocation Expressions
+    public static partial IMaybePlainType FunctionInvocationExpression_PlainType(IFunctionInvocationExpressionNode node)
+        => node.Function.SelectedCallCandidate?.ReturnPlainType ?? PlainType.Unknown;
+
+    public static partial IMaybePlainType MethodInvocationExpression_PlainType(IMethodInvocationExpressionNode node)
+        => node.Method.SelectedCallCandidate?.ReturnPlainType ?? PlainType.Unknown;
 
     public static partial IMaybePlainType GetterInvocationExpression_PlainType(IGetterInvocationExpressionNode node)
     {
@@ -410,142 +518,45 @@ internal static partial class ExpressionPlainTypesAspect
 
     public static partial IMaybePlainType InitializerInvocationExpression_PlainType(IInitializerInvocationExpressionNode node)
         => node.SelectedCallCandidate?.ReturnPlainType ?? PlainType.Unknown;
+    #endregion
+
+    #region Name Expressions
+    public static partial IMaybePlainType VariableNameExpression_PlainType(IVariableNameExpressionNode node)
+        => node.ReferencedDefinition.BindingPlainType;
+
+    public static partial IMaybePlainType SelfExpression_PlainType(ISelfExpressionNode node)
+        => node.ReferencedDefinition?.BindingPlainType ?? IMaybePlainType.Unknown;
 
     public static partial IMaybePlainType FunctionNameExpression_PlainType(IFunctionNameExpressionNode node)
         => node.ReferencedDeclaration?.PlainType ?? PlainType.Unknown;
-
-    #region Instance Member Access Expressions
-    public static partial IMaybePlainType MethodAccessExpression_PlainType(IMethodAccessExpressionNode node)
-        // TODO should MethodGroupPlainType be renamed to just MethodPlainType? The declaration is one method
-        => node.ReferencedDeclaration?.MethodGroupPlainType ?? PlainType.Unknown;
-
-    // TODO this is strange and maybe a hack
-    // TODO this ought to be accounting for generic arguments
-    public static partial IMaybePlainType? MethodAccessExpression_Context_ExpectedPlainType(IMethodAccessExpressionNode node)
-        => (node.Parent as IMethodInvocationExpressionNode)?.SelectedCallCandidate?.SelfParameterPlainType;
-    #endregion
-
-    #region Operator Expressions
-    public static partial IMaybePlainType RefExpression_PlainType(IRefExpressionNode node)
-        => RefPlainType.Create(node.IsInternal, node.IsMutableBinding, node.Referent?.PlainType) ?? PlainType.Unknown;
-
-    public static partial IMaybePlainType ImplicitDerefExpression_PlainType(IImplicitDerefExpressionNode node)
-        => (node.Referent.PlainType as RefPlainType)?.Referent ?? IMaybePlainType.Unknown;
-    #endregion
 
     public static partial IMaybePlainType InitializerNameExpression_PlainType(IInitializerNameExpressionNode node)
         // TODO proper plain type
         // => node.ReferencedDeclaration?.InitializerGroupPlainType ?? PlainType.Unknown;
         => PlainType.Unknown;
+    #endregion
 
-    public static partial IImplicitConversionExpressionNode? OrdinaryTypedExpression_Insert_ImplicitConversionExpression(IOrdinaryTypedExpressionNode node)
+    #region Async Expressions
+    public static partial IMaybePlainType AsyncStartExpression_PlainType(IAsyncStartExpressionNode node)
+        => Intrinsic.PromiseOf(node.Expression?.PlainType ?? PlainType.Unknown);
+
+    public static partial IMaybePlainType AwaitExpression_PlainType(IAwaitExpressionNode node)
     {
-        // TODO can this be dropped? All those things should have an unknown plain type and so be skipped
-        if (node.ShouldNotBeExpression()) return null;
+        if (node.Expression?.PlainType is BarePlainType { TypeConstructor: var typeConstructor } plainType
+            && Intrinsic.PromiseTypeConstructor.Equals(typeConstructor))
+            return plainType.Arguments[0];
 
-        // To minimize outstanding rewrites, first check whether node.PlainType could possibly
-        // support conversion. If node.ExpectedPlainType is checked, that is inherited and if a
-        // rewrite is in progress, that can't be cached. Note: this requires thoroughly treating
-        // T <: T? as a subtype and not an implicit conversion.
-        if (!CanPossiblyImplicitlyConvertFrom(node.PlainType))
-            return null;
-
-        // TODO what about self argument context? Shouldn't implicit conversion be disallowed there?
-
-        if (ImplicitlyConvertToType(node.ExpectedPlainType, node.PlainType) is SimpleTypeConstructor convertToTypeConstructor)
-            return IImplicitConversionExpressionNode.Create(node, convertToTypeConstructor.PlainType);
-
-        return null;
+        return PlainType.Unknown;
     }
 
-    private static bool CanPossiblyImplicitlyConvertFrom(IMaybePlainType fromType)
-        => fromType switch
-        {
-            UnknownPlainType => false,
-            BarePlainType { TypeConstructor: var typeConstructor }
-                => CanPossiblyImplicitlyConvertFrom(typeConstructor),
-            OptionalPlainType { Referent: var referent } => CanPossiblyImplicitlyConvertFrom(referent),
-            _ => false,
-        };
-
-    private static bool CanPossiblyImplicitlyConvertFrom(BareTypeConstructor fromTypeConstructor)
-        => fromTypeConstructor switch
-        {
-            BoolLiteralTypeConstructor => true,
-            IntegerLiteralTypeConstructor => true,
-            // Can't convert from signed because there is not a larger type to convert to
-            BigIntegerTypeConstructor t => !t.IsSigned,
-            PointerSizedIntegerTypeConstructor => true,
-            FixedSizeIntegerTypeConstructor => true,
-            _ => false,
-        };
-
-    private static SimpleTypeConstructor? ImplicitlyConvertToType(IMaybePlainType? toType, IMaybePlainType fromType)
+    public static partial void AwaitExpression_Contribute_Diagnostics(IAwaitExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
-        switch (toType, fromType)
-        {
-            case (null, _):
-            case (UnknownPlainType, _):
-            case (_, UnknownPlainType):
-            case (PlainType to, PlainType from) when from.Equals(to):
-                return null;
-            case (BarePlainType { TypeConstructor: FixedSizeIntegerTypeConstructor to },
-                BarePlainType { TypeConstructor: FixedSizeIntegerTypeConstructor from }):
-                if (to.Bits > from.Bits && (!from.IsSigned || to.IsSigned))
-                    return to;
-                return null;
-            case (BarePlainType { TypeConstructor: FixedSizeIntegerTypeConstructor to },
-                BarePlainType { TypeConstructor: IntegerLiteralTypeConstructor from }):
-            {
-                // TODO make a method on plain types for this check
-                var requireSigned = from.Value < 0;
-                var bits = from.Value.GetByteCount(!to.IsSigned) * 8;
-                return to.Bits >= bits && (!requireSigned || to.IsSigned) ? to : null;
-            }
-            case (BarePlainType { TypeConstructor: PointerSizedIntegerTypeConstructor to },
-                BarePlainType { TypeConstructor: IntegerLiteralTypeConstructor from }):
-            {
-                // TODO make a method on plain types for this check
-                var requireSigned = from.Value < 0;
-                var bits = from.Value.GetByteCount(!to.IsSigned) * 8;
-                // Must fit in 32 bits so that it will fit on all platforms
-                return bits <= 32 && (!requireSigned || to.IsSigned) ? to : null;
-            }
-            // Note: Both signed BigIntegerTypeConstructor has already been covered
-            case (BarePlainType { TypeConstructor: BigIntegerTypeConstructor { IsSigned: true } },
-                BarePlainType { TypeConstructor: IntegerTypeConstructor }):
-            case (BarePlainType { TypeConstructor: BigIntegerTypeConstructor { IsSigned: true } },
-                BarePlainType { TypeConstructor: IntegerLiteralTypeConstructor }):
-                return BareTypeConstructor.Int;
-            case (BarePlainType { TypeConstructor: BigIntegerTypeConstructor to },
-                BarePlainType
-                {
-                    TypeConstructor: IntegerTypeConstructor { IsSigned: false }
-                                        or IntegerLiteralTypeConstructor { IsSigned: false }
-                }):
-                return to;
-            case (BarePlainType { TypeConstructor: BoolTypeConstructor },
-                BarePlainType { TypeConstructor: BoolLiteralTypeConstructor }):
-                return BareTypeConstructor.Bool;
-            // TODO support lifted implicit conversions
-            //case (OptionalPlainType { Referent: var to }, OptionalPlainType { Referent: var from }):
-            //    return OptionalPlainType.Create(ImplicitlyConvertToType(to, from));
-            case (OptionalPlainType { Referent: var to }, _):
-                return ImplicitlyConvertToType(to, fromType);
-            default:
-                return null;
-        }
+        // TODO eliminate code duplication with AwaitExpression_PlainType
+        if (node.Expression?.PlainType is BarePlainType { TypeConstructor: var typeConstructor }
+            && Intrinsic.PromiseTypeConstructor.Equals(typeConstructor))
+            return;
+
+        diagnostics.Add(TypeError.CannotAwaitType(node.File, node.Syntax.Span, node.Expression!.Type));
     }
-
-    public static partial void OptionalPattern_Contribute_Diagnostics(IOptionalPatternNode node, DiagnosticCollectionBuilder diagnostics)
-    {
-        if (node.ContextBindingType() is not OptionalType and var type)
-            diagnostics.Add(TypeError.OptionalPatternOnNonOptionalType(node.File, node.Syntax, type));
-    }
-
-    public static partial IMaybePlainType IntegerLiteralExpression_PlainType(IIntegerLiteralExpressionNode node)
-        => new IntegerLiteralTypeConstructor(node.Value).PlainType;
-
-    public static partial IMaybePlainType BoolLiteralExpression_PlainType(IBoolLiteralExpressionNode node)
-        => node.Value ? PlainType.True : PlainType.False;
+    #endregion
 }
