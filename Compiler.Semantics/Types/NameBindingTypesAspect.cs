@@ -1,4 +1,3 @@
-using System;
 using Azoth.Tools.Bootstrap.Compiler.Core.Code;
 using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Core.Types;
@@ -18,29 +17,18 @@ internal static partial class NameBindingTypesAspect
 {
     public static partial IMaybeNonVoidType VariableDeclarationStatement_BindingType(IVariableDeclarationStatementNode node)
         // TODO report an error for void type
-        => node.Type?.NamedType.ToNonVoidType() ?? InferDeclarationType(node, node.Capability) ?? Type.Unknown;
+        => node.Type?.NamedType.ToNonVoid() ?? node.Initializer?.InferredDeclarationType(node.Capability) ?? Type.Unknown;
 
-    private static IMaybeNonVoidType? InferDeclarationType(
-        IVariableDeclarationStatementNode node,
-        ICapabilityNode? capability)
+    // TODO move this logic into the types project
+
+    private static IMaybeNonVoidType? InferredDeclarationType(this IExpressionNode initializer, ICapabilityNode? capability)
     {
-        if (node.Initializer?.Type.ToNonLiteral() is not NonVoidType type)
-            return null;
+        var type = initializer.Type;
+        if (capability is null && initializer is IMoveExpressionNode)
+            // If no capability is specified and it is an explicit move, then take the mutable type.
+            return type.ToNonLiteral().ToNonVoid();
 
-        if (capability is null)
-        {
-            if (node.Initializer is IMoveExpressionNode)
-                // If no capability is specified and it is an explicit move, then take the mutable type.
-                return type;
-
-            // Assume read only on variables unless explicitly stated
-            return type.WithoutWrite();
-        }
-
-        if (type is not CapabilityType capabilityType)
-            throw new NotImplementedException("Compile error: can't infer mutability for non-capability type.");
-
-        return capabilityType.With(capability.DeclaredCapability);
+        return type.InferredDeclarationType(capability?.DeclaredCapability);
     }
 
     public static partial IFlowState VariableDeclarationStatement_FlowStateAfter(IVariableDeclarationStatementNode node)
@@ -51,7 +39,7 @@ internal static partial class NameBindingTypesAspect
 
     public static partial IMaybeNonVoidType ForeachExpression_BindingType(IForeachExpressionNode node)
         // TODO report an error for void type
-        => node.DeclaredType?.NamedType.ToNonVoidType() ?? node.IteratedType.ToNonLiteral();
+        => node.DeclaredType?.NamedType.ToNonVoid() ?? node.IteratedType.ToNonLiteral();
 
     public static partial IMaybeNonVoidType BindingPattern_BindingType(IBindingPatternNode node)
         => node.ContextBindingType();
@@ -63,7 +51,7 @@ internal static partial class NameBindingTypesAspect
 
     public static partial IMaybeNonVoidType PatternMatchExpression_Pattern_ContextBindingType(IPatternMatchExpressionNode node)
         // TODO report an error for void type
-        => node.Referent?.Type.ToNonLiteral().ToNonVoidType() ?? Type.Unknown;
+        => node.Referent?.Type.ToNonLiteral().ToNonVoid() ?? Type.Unknown;
 
     public static partial IMaybeNonVoidType OptionalPattern_Pattern_ContextBindingType(IOptionalPatternNode node)
     {
@@ -75,11 +63,11 @@ internal static partial class NameBindingTypesAspect
 
     public static partial IMaybeNonVoidType BindingContextPattern_Pattern_ContextBindingType(IBindingContextPatternNode node)
         // TODO report an error for void type
-        => node.Type?.NamedType.ToNonVoidType() ?? node.ContextBindingType();
+        => node.Type?.NamedType.ToNonVoid() ?? node.ContextBindingType();
 
     public static partial IMaybeNonVoidType NamedParameter_BindingType(INamedParameterNode node)
         // TODO report an error for void type
-        => node.TypeNode.NamedType.ToNonVoidType();
+        => node.TypeNode.NamedType.ToNonVoid();
 
     public static partial IMaybeParameterType NamedParameter_ParameterType(INamedParameterNode node)
     {
@@ -143,7 +131,7 @@ internal static partial class NameBindingTypesAspect
     }
 
     public static partial IMaybeNonVoidType SelfParameter_ParameterType(ISelfParameterNode node)
-        => node.BindingType.ToNonVoidType();
+        => node.BindingType.ToNonVoid();
 
     public static partial void MethodSelfParameter_Contribute_Diagnostics(IMethodSelfParameterNode node, DiagnosticCollectionBuilder diagnostics)
     {
@@ -188,5 +176,5 @@ internal static partial class NameBindingTypesAspect
 
     public static partial IMaybeNonVoidType FieldDefinition_BindingType(IFieldDefinitionNode node)
         // TODO report an error for void type
-        => node.TypeNode.NamedType.ToNonVoidType();
+        => node.TypeNode.NamedType.ToNonVoid();
 }

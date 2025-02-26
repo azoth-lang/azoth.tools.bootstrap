@@ -32,7 +32,7 @@ internal static partial class NameBindingPlainTypesAspect
         => node.ContextBindingPlainType();
 
     public static partial IMaybeNonVoidPlainType VariableDeclarationStatement_BindingPlainType(IVariableDeclarationStatementNode node)
-        => node.Type?.NamedPlainType.ToNonVoid() ?? node.Initializer?.PlainType.ToNonLiteral().ToNonVoid() ?? PlainType.Unknown;
+        => node.Type?.NamedPlainType.ToNonVoid() ?? node.Initializer?.PlainType.InferredDeclarationType() ?? PlainType.Unknown;
 
     public static partial void VariableDeclarationStatement_Contribute_Diagnostics(
         IVariableDeclarationStatementNode node,

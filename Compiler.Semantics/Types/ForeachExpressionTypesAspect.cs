@@ -11,7 +11,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 internal static partial class ForeachExpressionTypesAspect
 {
     public static partial IMaybeNonVoidType ForeachExpression_IterableType(IForeachExpressionNode node)
-        => node.InExpression?.Type.ToNonLiteral().ToNonVoidType() ?? Type.Unknown;
+        => node.InExpression?.Type.ToNonLiteral().ToNonVoid() ?? Type.Unknown;
 
     public static partial ContextualizedCall? ForeachExpression_IterateContextualizedCall(IForeachExpressionNode node)
         => node.ReferencedIterateMethod is { } iterateMethod
@@ -19,7 +19,7 @@ internal static partial class ForeachExpressionTypesAspect
 
     public static partial IMaybeNonVoidType ForeachExpression_IteratorType(IForeachExpressionNode node)
         // TODO report an error for void type
-        => node.IterateContextualizedCall?.ReturnType.ToNonVoidType() ?? node.IterableType;
+        => node.IterateContextualizedCall?.ReturnType.ToNonVoid() ?? node.IterableType;
 
     public static partial IMaybeNonVoidType ForeachExpression_IteratedType(IForeachExpressionNode node)
     {
@@ -32,7 +32,7 @@ internal static partial class ForeachExpressionTypesAspect
             return iteratedType;
 
         // TODO report an error for void type
-        return nonVoidIteratorType.TypeReplacements.ApplyTo(iteratedType).ToNonVoidType();
+        return nonVoidIteratorType.TypeReplacements.ApplyTo(iteratedType).ToNonVoid();
     }
 
     public static partial IMaybeType ForeachExpression_Type(IForeachExpressionNode node)

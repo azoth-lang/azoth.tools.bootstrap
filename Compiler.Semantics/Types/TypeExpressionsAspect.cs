@@ -67,7 +67,7 @@ internal static partial class TypeExpressionsAspect
 
     public static partial IMaybeParameterType ParameterType_Parameter(IParameterTypeNode node)
         // TODO report an error for void type
-        => ParameterType.Create(node.IsLent, node.Referent.NamedType.ToNonVoidType());
+        => ParameterType.Create(node.IsLent, node.Referent.NamedType.ToNonVoid());
 
     public static partial IMaybeType CapabilityViewpointType_NamedType(ICapabilityViewpointTypeNode node)
         // A capability viewpoint type cannot be the default capability, hence not null is safe
