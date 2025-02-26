@@ -33,11 +33,12 @@ internal static partial class OverloadResolutionAspect
 
     public static partial IFixedSet<ICallCandidate<IOrdinaryMethodDeclarationNode>> MethodAccessExpression_CompatibleCallCandidates(IMethodAccessExpressionNode node)
     {
-        if (node.ExpectedPlainType is null or UnknownPlainType) return node.CallCandidates;
-        if (node.ExpectedPlainType is not FunctionPlainType expectedPlainType) return [];
+        var expectedPlainType = node.ExpectedPlainType; // Avoids repeated access
+        if (expectedPlainType is null or UnknownPlainType) return node.CallCandidates;
+        if (expectedPlainType is not FunctionPlainType { Parameters: var expectedParameters }) return [];
 
         var contextPlainType = node.Context.PlainType;
-        var argumentPlainTypes = ArgumentPlainTypes.ForMethod(contextPlainType, expectedPlainType.Parameters);
+        var argumentPlainTypes = ArgumentPlainTypes.ForMethod(contextPlainType, expectedParameters);
         return node.CallCandidates.Where(o => o.CompatibleWith(argumentPlainTypes)).ToFixedSet();
     }
 
