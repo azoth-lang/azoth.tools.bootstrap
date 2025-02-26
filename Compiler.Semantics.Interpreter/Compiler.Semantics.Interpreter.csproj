@@ -29,12 +29,12 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="8.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="9.0.2" />
     <PackageReference Include="Microsoft.Extensions.ObjectPool" Version="9.0.2" />
     <PackageReference Include="Publicize.Fody" Version="1.8.0">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="System.IO.Pipelines" Version="8.0.0" />
+    <PackageReference Include="System.IO.Pipelines" Version="9.0.2" />
   </ItemGroup>
 
   <ItemGroup>
