@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using InlineMethod;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.MemoryLayout;
 
@@ -16,7 +17,7 @@ internal readonly struct AzothRef
 
     public AzothValue Value
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [Inline(InlineBehavior.Remove)]
         get => context[offset];
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         set => context[offset] = value;

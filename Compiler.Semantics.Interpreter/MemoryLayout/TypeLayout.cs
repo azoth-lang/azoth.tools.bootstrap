@@ -2,9 +2,9 @@ using System.Collections.Concurrent;
 using System.Collections.Frozen;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Framework;
+using InlineMethod;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.MemoryLayout;
 
@@ -22,7 +22,7 @@ internal abstract class TypeLayout
         fieldLayout = fields.Enumerate().ToFrozenDictionary(x => x.Value.Symbol.Assigned(), x => x.Index + fieldOffset);
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [Inline(InlineBehavior.Remove)]
     public int GetIndex(IFieldDeclarationNode field)
         => fieldIndexes.GetOrAdd(field, Factory, fieldLayout);
 

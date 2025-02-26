@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
+using InlineMethod;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.MemoryLayout;
 
@@ -27,7 +28,10 @@ internal sealed class VTable : TypeLayout
     }
 
     public IMethodDefinitionNode this[MethodSignature signature]
-        => methods.GetOrAdd(signature, LookupMethod);
+    {
+        [Inline(InlineBehavior.Remove)]
+        get => methods.GetOrAdd(signature, LookupMethod);
+    }
 
     public AzothValue[] CreateInstanceFields(BareType bareType)
     {

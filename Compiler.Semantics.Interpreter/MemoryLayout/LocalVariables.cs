@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.Async;
+using InlineMethod;
 using Microsoft.Extensions.ObjectPool;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.MemoryLayout;
@@ -26,11 +27,11 @@ internal readonly struct LocalVariables
             this.pool = pool;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [Inline(InlineBehavior.Remove)]
         public void Add(IBindingNode binding, AzothValue value)
             => localVariables.Add(binding, value);
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [Inline(InlineBehavior.Remove)]
         public static implicit operator LocalVariables(Scope scope) => scope.localVariables;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -73,11 +74,11 @@ internal readonly struct LocalVariables
             beforeScopeCount = localVariables.variableStack.Count;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [Inline(InlineBehavior.Remove)]
         public void Add(IBindingNode binding, AzothValue value)
             => localVariables.Add(binding, value);
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [Inline(InlineBehavior.Remove)]
         public static implicit operator LocalVariables(NestedScope scope) => scope.localVariables;
 
         public void Dispose()
@@ -102,18 +103,19 @@ internal readonly struct LocalVariables
         AsyncScope = asyncScope;
     }
 
+    [Inline(InlineBehavior.Remove)]
     public NestedScope CreateNestedScope(AsyncScope? asyncScope = null)
         => new NestedScope(this, asyncScope);
 
     public AzothValue this[IBindingNode binding]
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [Inline(InlineBehavior.Remove)]
         get => variableStack[bindingIndexes[binding]];
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [Inline(InlineBehavior.Remove)]
         set => variableStack[bindingIndexes[binding]] = value;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [Inline(InlineBehavior.Remove)]
     public void Add(IBindingNode binding, AzothValue value)
     {
         var index = variableStack.Count;
@@ -123,7 +125,7 @@ internal readonly struct LocalVariables
         variableStack.Add(value);
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [Inline(InlineBehavior.Remove)]
     public AzothRef Ref(IBindingNode binding)
         => new(variableStack, bindingIndexes[binding]);
 }

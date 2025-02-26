@@ -1,7 +1,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
+using InlineMethod;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.MemoryLayout;
 
@@ -11,7 +11,7 @@ internal sealed class MethodSignatureCache
 
     public MethodSignature this[MethodSymbol symbol]
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [Inline(InlineBehavior.Remove)]
         get => methods.GetOrAdd(symbol, Factory);
     }
 

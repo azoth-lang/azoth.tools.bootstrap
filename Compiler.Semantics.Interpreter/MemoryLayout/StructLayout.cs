@@ -1,5 +1,5 @@
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
+using InlineMethod;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.MemoryLayout;
 
@@ -12,6 +12,6 @@ internal sealed class StructLayout : TypeLayout
         Struct = @struct;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [Inline(InlineBehavior.Remove)]
     public new AzothValue[] CreateInstanceFields() => base.CreateInstanceFields();
 }
