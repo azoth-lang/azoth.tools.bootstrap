@@ -174,6 +174,10 @@ internal sealed class AttributeGrammarThreadState : IInheritanceContext
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void MarkChanged() => state.Changed = true;
 
+        /// <summary>
+        /// Mark that this attribute is final. That is, the current value is the final value and
+        /// will not be replaced with a different value.
+        /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void MarkFinal() => state.lowLink = null;
 
@@ -197,7 +201,7 @@ internal sealed class AttributeGrammarThreadState : IInheritanceContext
         }
 
         public void AddToRewriteContext(object current, object? next)
-            => state.rewriteContexts.AddRewriteToContext((IChildTreeNode)current, (IChildTreeNode?)next);
+            => state.rewriteContexts.AddRewriteToContext((IChildTreeNode)current, (IChildTreeNode?)next, attributeIndex);
 
         /// <summary>
         /// Must be called before successfully leaving the attribute scope.

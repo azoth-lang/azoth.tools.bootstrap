@@ -14,8 +14,19 @@ public struct RewritableChild<T> : ICyclic<T>
 {
     public static bool IsRewritableAttribute => true;
 
-    /// <remarks>A rewritable attribute is final if it can't have rewrites or is null.</remarks>
-    public static bool IsFinalValue(T value) => !value?.MayHaveRewrite ?? true;
+    /// <remarks>There are two cases when a rewritable attribute can be known to be final. First,
+    /// if it is null or can't have rewrites. Second, if it has been marked as being in the final
+    /// tree. In the latter case, the rewrite contexts are sometimes able to determine a rewrite to
+    /// be final and mark is as <see cref="ITreeNode.InFinalTree"/> even though otherwise it would
+    /// not be clear that the rewrite is final.</remarks>
+    // TODO understand and validate the second case. Is there not some code that could hold a
+    // reference into an incomplete tree and then visit it after stepping out of the rewrite context
+    // and thereby incorrectly mark the referenced tree as InFinalTree when it shouldn't be?
+    public static bool IsFinalValue(T value)
+    {
+        if (value is null) return true;
+        return !value.MayHaveRewrite || value.InFinalTree;
+    }
 
     private T rawValue;
 

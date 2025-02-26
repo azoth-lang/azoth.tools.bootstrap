@@ -559,6 +559,12 @@ public static class GrammarAttribute
                 // current == next, so use old value to avoid duplicate objects referenced
                 continue;
 
+#if DEBUG
+            // Once a node is marked `InFinalTree` it must never be changed
+            if (TCyclic.IsRewritableAttribute && current is ITreeNode { InFinalTree: true })
+                throw new InvalidOperationException("Cannot rewrite final node.");
+#endif
+
             // This attribute changed
             attributeScope.MarkChanged();
 

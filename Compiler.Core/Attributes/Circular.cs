@@ -15,7 +15,8 @@ public struct Circular<T> : ICyclic<T>
 {
     public static bool IsRewritableAttribute => false;
 
-    /// <remarks>Circular attribute values are never final. They must be evaluated to see if they </remarks>
+    /// <remarks>Circular attribute values are never final. They must be evaluated to see if they
+    /// have reached a fixed point.</remarks>
     public static bool IsFinalValue(T _) => false;
 
     private object? rawValue;
