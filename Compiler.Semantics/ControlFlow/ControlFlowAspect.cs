@@ -69,9 +69,6 @@ internal static partial class ControlFlowAspect
     #endregion
 
     #region Expressions
-    public static partial ControlFlowSet Expression_ControlFlowNext(IExpressionNode node)
-        => node.ControlFlowFollowing();
-
     public static partial ControlFlowSet BlockExpression_ControlFlowNext(IBlockExpressionNode node)
     {
         if (!node.Statements.IsEmpty)
@@ -94,6 +91,11 @@ internal static partial class ControlFlowAspect
 
     public static partial ControlFlowSet MethodAccessExpression_ControlFlowNext(IMethodAccessExpressionNode node)
         => ControlFlowSet.CreateNormal(node.Context);
+    #endregion
+
+    #region Literal Expressions
+    public static partial ControlFlowSet LiteralExpression_ControlFlowNext(ILiteralExpressionNode node)
+        => node.ControlFlowFollowing();
     #endregion
 
     #region Operator Expressions
@@ -141,6 +143,14 @@ internal static partial class ControlFlowAspect
     public static partial ControlFlowSet ForeachExpression_ControlFlowNext(IForeachExpressionNode node)
         => ControlFlowSet.CreateNormal(node.InExpression);
 
+    public static partial ControlFlowSet BreakExpression_ControlFlowNext(IBreakExpressionNode node)
+        // TODO this ought to be the ControlFlowNext of the loop being broken
+        => node.ControlFlowFollowing();
+
+    public static partial ControlFlowSet NextExpression_ControlFlowNext(INextExpressionNode node)
+        // TODO this ought to be the next control flow node in a loop iteration of the loop being referred to
+        => node.ControlFlowFollowing();
+
     public static partial ControlFlowSet ReturnExpression_ControlFlowNext(IReturnExpressionNode node)
         => ControlFlowSet.CreateNormal(node.TempValue is not null ? node.Value : node.ControlFlowExit());
     #endregion
@@ -171,6 +181,16 @@ internal static partial class ControlFlowAspect
         => ControlFlowSet.CreateNormal(node.Expression);
     #endregion
 
+    #region Name Expressions
+    public static partial ControlFlowSet NameExpression_ControlFlowNext(INameExpressionNode node)
+        => node.ControlFlowFollowing();
+    #endregion
+
+    #region Unresolved Name Expressions
+    public static partial ControlFlowSet UnresolvedQualifiedNameExpression_ControlFlowNext(IUnresolvedQualifiedNameExpressionNode node)
+        => ControlFlowSet.CreateNormal(node.Context);
+    #endregion
+
     #region Capability Expressions
     public static partial ControlFlowSet RecoveryExpression_ControlFlowNext(IRecoveryExpressionNode node)
         => ControlFlowSet.CreateNormal(node.Referent);
@@ -183,6 +203,12 @@ internal static partial class ControlFlowAspect
     #endregion
 
     #region Async Expressions
+    public static partial ControlFlowSet AsyncBlockExpression_ControlFlowNext(IAsyncBlockExpressionNode node)
+        => ControlFlowSet.CreateNormal(node.Block);
+
+    public static partial ControlFlowSet AsyncStartExpression_ControlFlowNext(IAsyncStartExpressionNode node)
+        => ControlFlowSet.CreateNormal(node.Expression);
+
     public static partial ControlFlowSet AwaitExpression_ControlFlowNext(IAwaitExpressionNode node)
         => ControlFlowSet.CreateNormal(node.Expression);
     #endregion

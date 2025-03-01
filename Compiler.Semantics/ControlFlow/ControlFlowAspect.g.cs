@@ -19,13 +19,35 @@ internal static partial class ControlFlowAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial void ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(IControlFlowNode node, IControlFlowNode target, Dictionary<IControlFlowNode, ControlFlowKind> controlFlowPrevious);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial ControlFlowSet Expression_ControlFlowNext(IExpressionNode node);
+    public static partial ControlFlowSet UnresolvedMemberAccessExpression_ControlFlowNext(IUnresolvedMemberAccessExpressionNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial ControlFlowSet LiteralExpression_ControlFlowNext(ILiteralExpressionNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial ControlFlowSet NameExpression_ControlFlowNext(INameExpressionNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial ControlFlowSet UnresolvedQualifiedNameExpression_ControlFlowNext(IUnresolvedQualifiedNameExpressionNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial ControlFlowSet RecoveryExpression_ControlFlowNext(IRecoveryExpressionNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial ControlFlowSet Entry_ControlFlowNext(IEntryNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial ControlFlowSet ResultStatement_ControlFlowNext(IResultStatementNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial ControlFlowSet VariableDeclarationStatement_ControlFlowNext(IVariableDeclarationStatementNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial ControlFlowSet ExpressionStatement_ControlFlowNext(IExpressionStatementNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial ControlFlowSet TypePattern_ControlFlowNext(ITypePatternNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial ControlFlowSet BindingContextPattern_ControlFlowNext(IBindingContextPatternNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial ControlFlowSet BindingPattern_ControlFlowNext(IBindingPatternNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial ControlFlowSet OptionalPattern_ControlFlowNext(IOptionalPatternNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial ControlFlowSet BlockExpression_ControlFlowNext(IBlockExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial ControlFlowSet UnsafeExpression_ControlFlowNext(IUnsafeExpressionNode node);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial ControlFlowSet UnresolvedMemberAccessExpression_ControlFlowNext(IUnresolvedMemberAccessExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial ControlFlowSet FieldAccessExpression_ControlFlowNext(IFieldAccessExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -59,6 +81,10 @@ internal static partial class ControlFlowAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial ControlFlowSet ForeachExpression_ControlFlowNext(IForeachExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial ControlFlowSet BreakExpression_ControlFlowNext(IBreakExpressionNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial ControlFlowSet NextExpression_ControlFlowNext(INextExpressionNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial ControlFlowSet ReturnExpression_ControlFlowNext(IReturnExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial ControlFlowSet UnresolvedInvocationExpression_ControlFlowNext(IUnresolvedInvocationExpressionNode node);
@@ -77,27 +103,13 @@ internal static partial class ControlFlowAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial ControlFlowSet NonInvocableInvocationExpression_ControlFlowNext(INonInvocableInvocationExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial ControlFlowSet RecoveryExpression_ControlFlowNext(IRecoveryExpressionNode node);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial ControlFlowSet ImplicitTempMoveExpression_ControlFlowNext(IImplicitTempMoveExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial ControlFlowSet PrepareToReturnExpression_ControlFlowNext(IPrepareToReturnExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial ControlFlowSet AsyncBlockExpression_ControlFlowNext(IAsyncBlockExpressionNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial ControlFlowSet AsyncStartExpression_ControlFlowNext(IAsyncStartExpressionNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial ControlFlowSet AwaitExpression_ControlFlowNext(IAwaitExpressionNode node);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial ControlFlowSet Entry_ControlFlowNext(IEntryNode node);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial ControlFlowSet ResultStatement_ControlFlowNext(IResultStatementNode node);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial ControlFlowSet VariableDeclarationStatement_ControlFlowNext(IVariableDeclarationStatementNode node);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial ControlFlowSet ExpressionStatement_ControlFlowNext(IExpressionStatementNode node);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial ControlFlowSet TypePattern_ControlFlowNext(ITypePatternNode node);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial ControlFlowSet BindingContextPattern_ControlFlowNext(IBindingContextPatternNode node);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial ControlFlowSet BindingPattern_ControlFlowNext(IBindingPatternNode node);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial ControlFlowSet OptionalPattern_ControlFlowNext(IOptionalPatternNode node);
 }

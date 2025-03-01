@@ -22,6 +22,9 @@ public class ControlFlowSet : IReadOnlyCollection<IControlFlowNode>, IReadOnlyDi
     public static ControlFlowSet CreateNormal(IControlFlowNode node1, IControlFlowNode node2)
         => new([node1, node2], ControlFlowKind.Normal);
 
+    /// <summary>
+    /// Create a control flow set for a node that can loop back onto itself.
+    /// </summary>
     public static ControlFlowSet CreateLoop(IControlFlowNode? node)
         => node is null ? Empty : new([node], ControlFlowKind.Loop);
 
