@@ -27,7 +27,8 @@
 // TODO it would be better to have a way to specify that the last statement inherits and not emit any code
 // TODO supporting index from end (e.g. [^1]) would allow this to be split into two rules
 = BlockBody.Statements[index].**.ControlFlowFollowing()
-    => index < Statements.Count - 1 ? ControlFlowSet.CreateNormal(Statements[index + 1]) : base.Inherited_ControlFlowFollowing(child, descendant, ctx);
+    => index < Statements.Count - 1 ? ControlFlowSet.CreateNormal(Statements[index + 1])
+        : base.Inherited_ControlFlowFollowing(child, descendant, ctx);
 
 // ---------- Control Flow
 ↓ ControlFlow.ControlFlowEntry(): Entry;
@@ -47,72 +48,48 @@
 ↓ ControlFlow.ControlFlowFollowing(): `ControlFlowSet`;
 
 // ---------- Expressions
-// TODO having this default means that newly added expressions do not report that they need control
-// flow to be properly handled.
-// Default for expressions is just whatever the context says is the following node.
-//= Expression.ControlFlowNext;
-//= BlockExpression.ControlFlowNext;
 // TODO it would be better to have a way to specify that the last statement inherits and not emit any code
 // TODO supporting index from end (e.g. [^1]) would allow this to be split into two rules
 = BlockExpression.Statements[index].**.ControlFlowFollowing()
-    => index < Statements.Count - 1 ? ControlFlowSet.CreateNormal(Statements[index + 1]) : base.Inherited_ControlFlowFollowing(child, descendant, ctx);
-//= UnsafeExpression.ControlFlowNext;
+    => index < Statements.Count - 1 ? ControlFlowSet.CreateNormal(Statements[index + 1])
+        : base.Inherited_ControlFlowFollowing(child, descendant, ctx);
 
 // ---------- Unresolved Expressions
 = UnresolvedMemberAccessExpression.ControlFlowNext;
-
-// ---------- Instance Member Access Expressions
-//= FieldAccessExpression.ControlFlowNext;
-//= MethodAccessExpression.ControlFlowNext;
 
 // ---------- Literal Expressions
 = LiteralExpression.ControlFlowNext;
 
 // ---------- Operator Expressions
-//= AssignmentExpression.ControlFlowNext;
 = AssignmentExpression.LeftOperand.**.ControlFlowFollowing()
     => ControlFlowSet.CreateNormal(RightOperand);
-//= RefAssignmentExpression.ControlFlowNext;
 = RefAssignmentExpression.LeftOperand.**.ControlFlowFollowing()
     => ControlFlowSet.CreateNormal(RightOperand);
-//= BinaryOperatorExpression.ControlFlowNext;
 = BinaryOperatorExpression.LeftOperand.**.ControlFlowFollowing()
     => ControlFlowSet.CreateNormal(RightOperand);
-//= UnaryOperatorExpression.ControlFlowNext;
-//= ConversionExpression.ControlFlowNext;
-//= ImplicitConversionExpression.ControlFlowNext;
-//= OptionalConversionExpression.ControlFlowNext;
 = PatternMatchExpression.Referent.**.ControlFlowFollowing()
     => ControlFlowSet.CreateNormal(Pattern);
-//= PatternMatchExpression.ControlFlowNext;
-//= RefExpression.ControlFlowNext;
-//= ImplicitDerefExpression.ControlFlowNext;
 
 // ---------- Control Flow Expressions
 = IfExpression.Condition.**.ControlFlowFollowing()
     => CurrentElseClause is not null
         ? ControlFlowSet.CreateNormal(ThenBlock, ElseClause!)
         : ControlFlowSet.CreateNormal(ThenBlock).Union(ControlFlowFollowing());
-//= IfExpression.ControlFlowNext;
 = LoopExpression.Block.**.ControlFlowFollowing()
     => ControlFlowSet.CreateLoop(CurrentBlock).Union(ControlFlowFollowing());
-//= LoopExpression.ControlFlowNext;
 = WhileExpression.Condition.**.ControlFlowFollowing()
     => ControlFlowSet.CreateNormal(Block).Union(ControlFlowFollowing());
 = WhileExpression.Block.**.ControlFlowFollowing()
     => ControlFlowSet.CreateLoop(Condition).Union(ControlFlowFollowing());
-//= WhileExpression.ControlFlowNext;
 = ForeachExpression.InExpression.**.ControlFlowFollowing()
     => ControlFlowSet.CreateNormal(Block);
 // Technically, `next()` is called on the iterator before the block is looped. But there
 // is no node that corresponds to that and it has no effect on the control flow.
 = ForeachExpression.Block.**.ControlFlowFollowing()
     => ControlFlowSet.CreateLoop(Block).Union(ControlFlowFollowing());
-//= ForeachExpression.ControlFlowNext;
 = ReturnExpression.Value.**.ControlFlowFollowing()
     => ControlFlowSet.CreateNormal(ControlFlowExit());
 ↓ ReturnExpression.ControlFlowExit(): Exit;
-//= ReturnExpression.ControlFlowNext;
 
 // ---------- Invocation Expressions
 = UnresolvedInvocationExpression.Expression.**.ControlFlowFollowing()
@@ -123,7 +100,6 @@
     => index < Arguments.Count - 1
         ? ControlFlowSet.CreateNormal(Arguments[index + 1])
         : base.Inherited_ControlFlowFollowing(child, descendant, ctx);
-//= UnresolvedInvocationExpression.ControlFlowNext;
 = FunctionInvocationExpression.Function.**.ControlFlowFollowing()
     => !TempArguments.IsEmpty
         ? ControlFlowSet.CreateNormal(Arguments[0])
@@ -134,7 +110,6 @@
     => index < Arguments.Count - 1
         ? ControlFlowSet.CreateNormal(Arguments[index + 1])
         : base.Inherited_ControlFlowFollowing(child, descendant, ctx);
-//= FunctionInvocationExpression.ControlFlowNext;
 = MethodInvocationExpression.Method.**.ControlFlowFollowing()
     => !TempArguments.IsEmpty
         ? ControlFlowSet.CreateNormal(Arguments[0])
@@ -144,11 +119,8 @@
 = MethodInvocationExpression.Arguments[index].**.ControlFlowFollowing()
     => index < Arguments.Count - 1 ? ControlFlowSet.CreateNormal(Arguments[index + 1])
                                    : base.Inherited_ControlFlowFollowing(child, descendant, ctx);
-//= MethodInvocationExpression.ControlFlowNext;
-//= GetterInvocationExpression.ControlFlowNext;
 = SetterInvocationExpression.Context.**.ControlFlowFollowing()
     => ControlFlowSet.CreateNormal(Value);
-//= SetterInvocationExpression.ControlFlowNext;
 = FunctionReferenceInvocationExpression.Expression.**.ControlFlowFollowing()
     => !TempArguments.IsEmpty
         ? ControlFlowSet.CreateNormal(Arguments[0])
@@ -158,7 +130,6 @@
 = FunctionReferenceInvocationExpression.Arguments[index].**.ControlFlowFollowing()
     => index < Arguments.Count - 1 ? ControlFlowSet.CreateNormal(Arguments[index + 1])
                                    : base.Inherited_ControlFlowFollowing(child, descendant, ctx);
-//= FunctionReferenceInvocationExpression.ControlFlowNext;
 = InitializerInvocationExpression.Initializer.**.ControlFlowFollowing()
     => !TempArguments.IsEmpty
         ? ControlFlowSet.CreateNormal(Arguments[0])
@@ -169,7 +140,6 @@
     => index < Arguments.Count - 1
         ? ControlFlowSet.CreateNormal(Arguments[index + 1])
         : base.Inherited_ControlFlowFollowing(child, descendant, ctx);
-//= InitializerInvocationExpression.ControlFlowNext;
 = NonInvocableInvocationExpression.Expression.**.ControlFlowFollowing()
     => !TempArguments.IsEmpty
         ? ControlFlowSet.CreateNormal(Arguments[0])
@@ -180,7 +150,6 @@
     => index < Arguments.Count - 1
         ? ControlFlowSet.CreateNormal(Arguments[index + 1])
         : base.Inherited_ControlFlowFollowing(child, descendant, ctx);
-//= NonInvocableInvocationExpression.ControlFlowNext;
 
 // ---------- Name Expressions
 = NameExpression.ControlFlowNext;
@@ -196,5 +165,3 @@
 
 // ---------- Capability Expressions
 = RecoveryExpression.ControlFlowNext;
-//= ImplicitTempMoveExpression.ControlFlowNext;
-//= PrepareToReturnExpression.ControlFlowNext;
