@@ -6,6 +6,16 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 
+/// <summary>
+/// Defines lexical scopes. The <c>LexicalScope()</c> attribute gives the lexical scope defined by
+/// or in effect on a node. The <c>ContainingLexicalScope()</c> attribute gives the lexical scope
+/// that a node is inside of. The <c>FlowLexicalScope()</c> attribute provides a means of managing
+/// lexical scopes as they flow through expressions. For example, the condition of an <c>if</c>
+/// might contain a pattern match that declares a new binding. It is a <see
+/// cref="ConditionalLexicalScope"/> because what variables are in scope can depend on the truth
+/// value of the expression. The <c>FlowLexicalScope()</c> of a node gives the lexical scope(s) in
+/// effect after the expression is evaluated.
+/// </summary>
 internal static partial class LexicalScopingAspect
 {
     #region Special Parts
@@ -140,7 +150,7 @@ internal static partial class LexicalScopingAspect
     /// Default implementation for expressions that can't introduce a new scope.
     /// </summary>
     public static partial ConditionalLexicalScope AmbiguousExpression_FlowLexicalScope(IAmbiguousExpressionNode node)
-        => ConditionalLexicalScope.Unconditional(node.ContainingLexicalScope());
+       => ConditionalLexicalScope.Unconditional(node.ContainingLexicalScope());
     #endregion
 
     #region Operator Expressions

@@ -1980,6 +1980,8 @@ public partial interface ILiteralExpressionNode : IOrdinaryTypedExpressionNode
     ICodeSyntax ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     IFlowState FlowStateBefore();
+    ConditionalLexicalScope IAmbiguousExpressionNode.FlowLexicalScope()
+        => ConditionalLexicalScope.Unconditional(ContainingLexicalScope());
 }
 
 [Closed(typeof(BoolLiteralExpressionNode))]
