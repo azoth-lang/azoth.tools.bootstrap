@@ -9,37 +9,47 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 public static partial class PlainTypeOperations
 {
     /// <summary>
-    /// Whether this plainType is a subtype of the other plainType.
+    /// Whether this <see cref="PlainType"/> is a subtype of the other <see cref="PlainType"/>. By
+    /// default, this checks whether a type is a substitutable subtype of another. The
+    /// <paramref name="substitutable"/> parameter can be used to include non-substitutable
+    /// subtyping. Value types implement traits and are thus subtypes of them. However, because
+    /// boxing is an explicit conversion, a value type cannot be directly passed where a trait it
+    /// implements is expected. Thus value types are non-substitutable subtypes of traits they
+    /// implement.
     /// </summary>
-    public static bool IsSubtypeOf(this IMaybePlainType self, IMaybePlainType other)
+    public static bool IsSubtypeOf(this IMaybePlainType self, IMaybePlainType other, bool substitutable = true)
         => (self, other) switch
         {
             (UnknownPlainType, _) or (_, UnknownPlainType)
                 => true,
             (PlainType s, PlainType o)
-                => s.IsSubtypeOf(o),
+                => s.IsSubtypeOf(o, substitutable),
             _ => throw new UnreachableException()
         };
 
-    public static bool IsSubtypeOf(this PlainType self, PlainType other)
+    /// <inheritdoc cref="IsSubtypeOf(IMaybePlainType,IMaybePlainType,bool)"/>
+    public static bool IsSubtypeOf(this PlainType self, PlainType other, bool substitutable = true)
         => (self, other) switch
         {
             (_, _) when self.Equals(other) => true,
             // Never is even a subtype of void
             (NeverPlainType, _) => true,
             (VoidPlainType, _) => false,
-            (OptionalPlainType s, OptionalPlainType o) => s.Referent.IsSubtypeOf(o.Referent),
-            (_, OptionalPlainType o) => self.IsSubtypeOf(o.Referent),
-            (BarePlainType s, BarePlainType t) => s.IsSubtypeOf(t),
+            (OptionalPlainType s, OptionalPlainType o) => s.Referent.IsSubtypeOf(o.Referent, substitutable),
+            (_, OptionalPlainType o) => self.IsSubtypeOf(o.Referent, substitutable),
+            (BarePlainType s, BarePlainType t) => s.IsSubtypeOf(t, substitutable),
             (FunctionPlainType s, FunctionPlainType o) => s.IsSubtypeOf(o),
-            (RefPlainType s, RefPlainType o) => s.IsSubtypeOf(o),
+            (RefPlainType s, RefPlainType o) => s.IsSubtypeOf(o, substitutable),
             _ => false
         };
 
+    /// <inheritdoc cref="IsSubtypeOf(IMaybePlainType,IMaybePlainType,bool)"/>
     public static bool IsSubtypeOf(
         this BarePlainType self,
-        BarePlainType other)
+        BarePlainType other,
+        bool substitutable = true)
     {
+        // TODO apply substitutable
         if (self.Equals(other) || self.Supertypes.Contains(other))
             return true;
 
@@ -83,11 +93,11 @@ public static partial class PlainTypeOperations
                         return false;
                     break;
                 case TypeParameterVariance.Covariant:
-                    if (!self.IsSubtypeOf(other))
+                    if (!self.IsSubtypeOf(other, substitutable: false))
                         return false;
                     break;
                 case TypeParameterVariance.Contravariant:
-                    if (!other.IsSubtypeOf(self))
+                    if (!other.IsSubtypeOf(self, substitutable: false))
                         return false;
                     break;
             }
@@ -95,6 +105,11 @@ public static partial class PlainTypeOperations
         return true;
     }
 
+    /// <summary>
+    /// Whether one <see cref="FunctionPlainType"/> is a subtype of another <see cref="FunctionPlainType"/>.
+    /// </summary>
+    /// <remarks><see cref="FunctionPlainType"/>s never allow substitutability in their parameters
+    /// or return types.</remarks>
     public static bool IsSubtypeOf(this FunctionPlainType self, FunctionPlainType other)
     {
         if (self.Parameters.Count != other.Parameters.Count)
@@ -102,13 +117,14 @@ public static partial class PlainTypeOperations
 
         foreach (var (selfParameter, otherParameter) in self.Parameters.EquiZip(other.Parameters))
             // Parameter types are contravariant
-            if (!otherParameter.IsSubtypeOf(selfParameter))
+            if (!otherParameter.IsSubtypeOf(selfParameter, substitutable: false))
                 return false;
 
-        return self.Return.IsSubtypeOf(other.Return);
+        return self.Return.IsSubtypeOf(other.Return, substitutable: false);
     }
 
-    public static bool IsSubtypeOf(this RefPlainType self, RefPlainType other)
+    /// <inheritdoc cref="IsSubtypeOf(IMaybePlainType,IMaybePlainType,bool)"/>
+    public static bool IsSubtypeOf(this RefPlainType self, RefPlainType other, bool substitutable = true)
     {
         // `iref var T <: ref var T`
         if ((self, other)
