@@ -1,4 +1,5 @@
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
+using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 
@@ -11,27 +12,40 @@ public static partial class TypeOperations
     // TODO maybe these explicit conversions should be handled by adding conversion members to the types
     public static bool CanBeExplicitlyConvertedTo(this IMaybeType fromType, IMaybeType toType, bool safeOnly)
     {
-        return (fromType, toType) switch
-        {
-            // Safe conversions
-            (CapabilityType { TypeConstructor: BoolTypeConstructor }, CapabilityType { TypeConstructor: IntegerTypeConstructor }) => true,
-            (CapabilityType { TypeConstructor: BoolLiteralTypeConstructor }, CapabilityType { TypeConstructor: IntegerTypeConstructor }) => true,
-            (CapabilityType { TypeConstructor: IntegerTypeConstructor { IsSigned: false } }, CapabilityType { TypeConstructor: BigIntegerTypeConstructor })
-                => true,
-            (CapabilityType { TypeConstructor: IntegerTypeConstructor }, CapabilityType { TypeConstructor: BigIntegerTypeConstructor { IsSigned: true } })
-                => true,
-            (CapabilityType { TypeConstructor: FixedSizeIntegerTypeConstructor from }, CapabilityType { TypeConstructor: FixedSizeIntegerTypeConstructor to })
-                when from.Bits < to.Bits
-                     || (from.Bits == to.Bits && from.IsSigned == to.IsSigned)
-                => true,
+        return CanBeExplicitlyConverted(fromType, toType, safeOnly, false);
 
-            // TODO conversions for constants
-            // Unsafe conversions
-            (CapabilityType { TypeConstructor: IntegerTypeConstructor }, CapabilityType { TypeConstructor: IntegerTypeConstructor }) => !safeOnly,
+        static bool CanBeExplicitlyConverted(IMaybeType fromType, IMaybeType toType, bool safeOnly, bool recursive)
+            => (fromType, toType) switch
+            {
+                // TODO organize conversion code and remove any duplication between types and plain types
 
-            // TODO this is a little odd, if it is a subtype, it doesn't need converted
-            // Of course, anything that can be assigned is also fine
-            _ => fromType.IsSubtypeOf(toType),
-        };
+                // Unsafe conversions
+                (CapabilityType { TypeConstructor: IntegerTypeConstructor }, CapabilityType { TypeConstructor: IntegerTypeConstructor }) when !safeOnly
+                    => true,
+
+                // Safe conversions
+                // TODO add floating point conversions
+                (CapabilityType { TypeConstructor: BoolTypeConstructor }, CapabilityType { TypeConstructor: IntegerTypeConstructor }) => true,
+                (CapabilityType { TypeConstructor: BoolLiteralTypeConstructor }, CapabilityType { TypeConstructor: IntegerTypeConstructor }) => true,
+                // All implicit conversions are valid explicit conversions
+                (CapabilityType { TypeConstructor: SimpleOrLiteralTypeConstructor } from, CapabilityType { TypeConstructor: SimpleOrLiteralTypeConstructor } to)
+                    => from.PlainType.IsImplicitlyConvertibleTo(to.PlainType),
+
+                // Lifted conversions
+                (OptionalType from, OptionalType to)
+                    => CanBeExplicitlyConverted(from.Referent, to.Referent, safeOnly, recursive: true),
+
+                // An optional conversion is fine as long as the underlying types are convertible
+                (Type from, OptionalType toOptionalType)
+                    // TODO this should be IsAssignableTo or something
+                    => (recursive || from.Semantics != TypeSemantics.Reference)
+                       && CanBeExplicitlyConverted(fromType, toOptionalType.Referent, safeOnly, recursive: true),
+
+                // TODO this is a little odd, if it is a subtype, it doesn't need converted
+                // Of course, anything that can be assigned is also fine
+                _ when recursive => fromType.IsSubtypeOf(toType),
+
+                _ => false,
+            };
     }
 }

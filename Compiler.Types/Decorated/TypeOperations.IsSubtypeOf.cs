@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Core.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
@@ -11,72 +12,84 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 // TODO the logic here mostly duplicates the logic in PlainType.IsSubtypeOf is there a way to eliminate the duplication?
 public static partial class TypeOperations
 {
-    public static bool IsSubtypeOf(this IMaybeType self, IMaybeType other)
+    public static bool IsSubtypeOf(this IMaybeType self, IMaybeType other, bool substitutable = true)
+        => (self, other) switch
+        {
+            (UnknownType, _) or (_, UnknownType) => true,
+            (Type s, Type o) => s.IsSubtypeOf(o, substitutable),
+            _ => throw new UnreachableException()
+        };
+
+    public static bool IsSubtypeOf(this Type self, Type other, bool substitutable = true)
         => (self, other) switch
         {
             (_, _) when self.Equals(other) => true,
-            (UnknownType, _) or (_, UnknownType) => true,
             (NeverType, _) => true,
             (CapabilityType s, CapabilityType o)
-                => s.IsSubtypeOf(o),
+                => s.IsSubtypeOf(o, substitutable),
             (CapabilityType s, SelfViewpointType o)
-                => s.IsSubtypeOf(o),
+                => s.IsSubtypeOf(o, substitutable),
             (SelfViewpointType s, CapabilityType o)
-                => s.IsSubtypeOf(o),
+                => s.IsSubtypeOf(o, substitutable),
             (SelfViewpointType s, SelfViewpointType o)
-                => s.IsSubtypeOf(o),
+                => s.IsSubtypeOf(o, substitutable),
             (OptionalType s, OptionalType o)
-                => s.Referent.IsSubtypeOf(o.Referent),
+                => s.Referent.IsSubtypeOf(o.Referent, substitutable),
             (_, OptionalType o)
-                => self.IsSubtypeOf(o.Referent),
+                => self.Semantics == TypeSemantics.Reference && self.IsSubtypeOf(o.Referent, substitutable),
             (FunctionType s, FunctionType o)
                 => s.IsSubtypeOf(o),
             (RefType s, RefType o) => s.IsSubtypeOf(o),
             _ => false,
         };
 
-    public static bool IsSubtypeOf(this CapabilityType self, CapabilityType other)
+    public static bool IsSubtypeOf(this CapabilityType self, CapabilityType other, bool substitutable = true)
         => self.Capability.IsSubtypeOf(other.Capability)
-           && self.BareType.IsSubtypeOf(other.BareType, other.Capability.AllowsWrite);
+           && self.BareType.IsSubtypeOf(other.BareType, other.Capability.AllowsWrite, substitutable);
 
-    public static bool IsSubtypeOf(this CapabilityType self, SelfViewpointType other)
+    public static bool IsSubtypeOf(this CapabilityType self, SelfViewpointType other, bool substitutable = true)
     {
         if (!self.Capability.IsSubtypeOf(other.CapabilitySet)) return false;
 
         // TODO this is incorrect, it doesn't account for capabilities in the referent
-        return self.PlainType.IsSubtypeOf(other.PlainType);
+        return self.PlainType.IsSubtypeOf(other.PlainType, substitutable);
     }
 
-    public static bool IsSubtypeOf(this SelfViewpointType self, CapabilityType other)
+    public static bool IsSubtypeOf(this SelfViewpointType self, CapabilityType other, bool substitutable = true)
         => self.CapabilitySet.IsSubtypeOf(other.Capability)
            // Capabilities on the referent also need to satisfy other.Capability
-           && self.Referent.IsSubtypeOf(other);
+           && self.Referent.IsSubtypeOf(other, substitutable);
 
-    public static bool IsSubtypeOf(this SelfViewpointType self, SelfViewpointType other)
+    public static bool IsSubtypeOf(this SelfViewpointType self, SelfViewpointType other, bool substitutable = true)
         => self.CapabilitySet.IsSubtypeOf(other.CapabilitySet)
-           && self.Referent.IsSubtypeOf(other.Referent);
+           && self.Referent.IsSubtypeOf(other.Referent, substitutable);
 
-    public static bool IsSubtypeOf(this BareType self, BareType other, bool otherAllowsWrite)
+    public static bool IsSubtypeOf(this BareType self, BareType other, bool otherAllowsWrite, bool substitutable = true)
     {
-        if (self.Equals(other) || self.Supertypes.Contains(other))
+        if (self.Equals(other))
             return true;
+        if (self.Supertypes.Contains(other))
+            return IsSubstitutable();
 
         // TODO remove hack to allow string to exist in both primitives and stdlib
         if (self.PlainType.IsStringType() && other.PlainType.IsStringType()) return true;
 
-        var typeConstructor = other.TypeConstructor;
-        if (typeConstructor.AllowsVariance || typeConstructor.HasIndependentParameters)
+        var otherTypeConstructor = other.TypeConstructor;
+        if (otherTypeConstructor.AllowsVariance || otherTypeConstructor.HasIndependentParameters)
         {
-            var matchingSupertypes
-                = self.Supertypes
-                      // Adding self covers cases where the types are identical except for parameters
-                      .Prepend(self)
-                      .Where(s => s.TypeConstructor.Equals(typeConstructor));
-            return matchingSupertypes
-                .Any(matchingSupertype => IsSubtypeOf(typeConstructor, matchingSupertype.Arguments, other.Arguments, otherAllowsWrite));
+            // Adding self covers cases where the types are identical except for parameters
+            var selfTypes = self.Supertypes.Prepend(self)
+                                         .Where(s => s.TypeConstructor.Equals(otherTypeConstructor));
+            if (selfTypes.Any(selfType => IsSubtypeOf(otherTypeConstructor, selfType.Arguments, other.Arguments, otherAllowsWrite)))
+                return IsSubstitutable();
         }
 
         return false;
+
+        bool IsSubstitutable()
+            => !substitutable
+               || self.Semantics == TypeSemantics.Reference
+               || self.Semantics == TypeSemantics.Value && other.Semantics == TypeSemantics.Value;
     }
 
     private static bool IsSubtypeOf(
@@ -150,11 +163,11 @@ public static partial class TypeOperations
 
                     goto case TypeParameterVariance.Invariant;
                 case TypeParameterVariance.Covariant:
-                    if (!from.IsSubtypeOf(to))
+                    if (!from.IsSubtypeOf(to, substitutable: true))
                         return false;
                     break;
                 case TypeParameterVariance.Contravariant:
-                    if (!to.IsSubtypeOf(from))
+                    if (!to.IsSubtypeOf(from, substitutable: true))
                         return false;
                     break;
             }
@@ -188,7 +201,7 @@ public static partial class TypeOperations
         // `iref var S <: iref T`
         // when S <: T
         if (!other.IsMutableBinding && other.IsInternal.Implies(self.IsInternal))
-            return self.Referent.IsSubtypeOf(other.Referent);
+            return self.Referent.IsSubtypeOf(other.Referent, substitutable: true);
 
         // If this method is directly called, then the case where they are equal must be covered
         return self.Equals(other);

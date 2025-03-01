@@ -26,7 +26,7 @@ public static partial class PlainTypeOperations
     // TODO what about the rules against multiple implicit conversions?
     /// <remarks>This is not publicly exposed because implicit conversions can inherently entail
     /// subtyping so the name doesn't quite make sense.</remarks>
-    private static bool IsImplicitlyConvertibleTo(this IMaybePlainType self, IMaybePlainType other)
+    internal static bool IsImplicitlyConvertibleTo(this IMaybePlainType self, IMaybePlainType other)
     {
         return (self, other) switch
         {
@@ -34,7 +34,8 @@ public static partial class PlainTypeOperations
             // While subtyping exists between optional types, this handles lifted implicit conversions
             (OptionalPlainType s, OptionalPlainType o)
                 => s.Referent.IsAssignableTo(o.Referent),
-            (_, OptionalPlainType o) => self.IsAssignableTo(o.Referent),
+            (PlainType s, OptionalPlainType o)
+                => s.Semantics != TypeSemantics.Reference && s.IsAssignableTo(o.Referent),
             (BarePlainType { TypeConstructor: BoolLiteralTypeConstructor },
                 BarePlainType { TypeConstructor: BoolTypeConstructor }) => true,
             (BarePlainType { TypeConstructor: SimpleOrLiteralTypeConstructor s },

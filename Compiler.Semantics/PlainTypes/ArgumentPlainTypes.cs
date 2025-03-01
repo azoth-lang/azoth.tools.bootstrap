@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using Azoth.Tools.Bootstrap.Framework;
@@ -24,8 +25,8 @@ public readonly record struct ArgumentPlainTypes
     /// <remarks>This is <see langword="null"/> for functions, but also for constructors and
     /// initializers because the value will be created as part of the call and will therefore always
     /// be of the correct type.</remarks>
-    public IMaybePlainType? Self { get; init; }
-    public IFixedList<IMaybePlainType> Arguments { get; init; }
+    public IMaybePlainType? Self { [DebuggerStepThrough] get; [DebuggerStepThrough] init; }
+    public IFixedList<IMaybePlainType> Arguments { [DebuggerStepThrough] get; [DebuggerStepThrough] init; }
 
     private ArgumentPlainTypes(IMaybePlainType? self, IEnumerable<IMaybePlainType> arguments)
     {

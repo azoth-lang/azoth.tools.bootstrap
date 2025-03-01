@@ -115,6 +115,9 @@ internal static partial class ControlFlowAspect
     public static partial ControlFlowSet ImplicitConversionExpression_ControlFlowNext(IImplicitConversionExpressionNode node)
         => ControlFlowSet.CreateNormal(node.Referent);
 
+    public static partial ControlFlowSet OptionalConversionExpression_ControlFlowNext(IOptionalConversionExpressionNode node)
+        => ControlFlowSet.CreateNormal(node.Referent);
+
     public static partial ControlFlowSet PatternMatchExpression_ControlFlowNext(IPatternMatchExpressionNode node)
         => ControlFlowSet.CreateNormal(node.Referent);
 

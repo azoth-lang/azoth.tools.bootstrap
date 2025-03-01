@@ -1775,6 +1775,7 @@ public partial interface IExpressionNode : IAmbiguousExpressionNode, IControlFlo
     typeof(IUnaryOperatorExpressionNode),
     typeof(IConversionExpressionNode),
     typeof(IImplicitConversionExpressionNode),
+    typeof(IOptionalConversionExpressionNode),
     typeof(IPatternMatchExpressionNode),
     typeof(IRefExpressionNode),
     typeof(IImplicitDerefExpressionNode),
@@ -2216,6 +2217,29 @@ public partial interface IImplicitConversionExpressionNode : IOrdinaryTypedExpre
         IExpressionNode referent,
         BarePlainType plainType)
         => new ImplicitConversionExpressionNode(referent, plainType);
+}
+
+[Closed(typeof(OptionalConversionExpressionNode))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
+public partial interface IOptionalConversionExpressionNode : IOrdinaryTypedExpressionNode
+{
+    IExpressionNode Referent { get; }
+    IExpressionNode CurrentReferent { get; }
+    uint Depth { get; }
+    new IExpressionSyntax Syntax
+        => Referent.Syntax;
+    IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
+    ICodeSyntax ICodeNode.Syntax => Syntax;
+    ISyntax? ISemanticNode.Syntax => Syntax;
+    ConditionalLexicalScope IAmbiguousExpressionNode.FlowLexicalScope()
+        => Referent.FlowLexicalScope();
+    ExpressionKind IExpressionNode.ExpressionKind
+        => ExpressionKind.OptionalConversionExpression;
+
+    public static IOptionalConversionExpressionNode Create(
+        IExpressionNode referent,
+        uint depth)
+        => new OptionalConversionExpressionNode(referent, depth);
 }
 
 [Closed(typeof(PatternMatchExpressionNode))]
@@ -9392,6 +9416,7 @@ file class BlockExpressionNode : SemanticNode, IBlockExpressionNode
         ?? ExpressionTypesAspect.OrdinaryTypedExpression_Insert_PrepareToReturnExpression(this)
         ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitConversionExpression(this)
         ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitDerefExpression(this)
+        ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_OptionalConversion_Rewrite_OptionalConversionExpression(this)
         ?? base.Rewrite();
 }
 
@@ -9543,6 +9568,7 @@ file class UnsafeExpressionNode : SemanticNode, IUnsafeExpressionNode
         ?? ExpressionTypesAspect.OrdinaryTypedExpression_Insert_PrepareToReturnExpression(this)
         ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitConversionExpression(this)
         ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitDerefExpression(this)
+        ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_OptionalConversion_Rewrite_OptionalConversionExpression(this)
         ?? base.Rewrite();
 }
 
@@ -9821,6 +9847,7 @@ file class FieldAccessExpressionNode : SemanticNode, IFieldAccessExpressionNode
         ?? ExpressionTypesAspect.OrdinaryTypedExpression_Insert_PrepareToReturnExpression(this)
         ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitConversionExpression(this)
         ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitDerefExpression(this)
+        ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_OptionalConversion_Rewrite_OptionalConversionExpression(this)
         ?? base.Rewrite();
 }
 
@@ -9996,6 +10023,7 @@ file class MethodAccessExpressionNode : SemanticNode, IMethodAccessExpressionNod
         ?? ExpressionTypesAspect.OrdinaryTypedExpression_Insert_PrepareToReturnExpression(this)
         ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitConversionExpression(this)
         ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitDerefExpression(this)
+        ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_OptionalConversion_Rewrite_OptionalConversionExpression(this)
         ?? base.Rewrite();
 }
 
@@ -10137,6 +10165,7 @@ file class BoolLiteralExpressionNode : SemanticNode, IBoolLiteralExpressionNode
         ?? ExpressionTypesAspect.OrdinaryTypedExpression_Insert_PrepareToReturnExpression(this)
         ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitConversionExpression(this)
         ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitDerefExpression(this)
+        ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_OptionalConversion_Rewrite_OptionalConversionExpression(this)
         ?? base.Rewrite();
 }
 
@@ -10278,6 +10307,7 @@ file class IntegerLiteralExpressionNode : SemanticNode, IIntegerLiteralExpressio
         ?? ExpressionTypesAspect.OrdinaryTypedExpression_Insert_PrepareToReturnExpression(this)
         ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitConversionExpression(this)
         ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitDerefExpression(this)
+        ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_OptionalConversion_Rewrite_OptionalConversionExpression(this)
         ?? base.Rewrite();
 }
 
@@ -10419,6 +10449,7 @@ file class NoneLiteralExpressionNode : SemanticNode, INoneLiteralExpressionNode
         ?? ExpressionTypesAspect.OrdinaryTypedExpression_Insert_PrepareToReturnExpression(this)
         ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitConversionExpression(this)
         ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitDerefExpression(this)
+        ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_OptionalConversion_Rewrite_OptionalConversionExpression(this)
         ?? base.Rewrite();
 }
 
@@ -10565,6 +10596,7 @@ file class StringLiteralExpressionNode : SemanticNode, IStringLiteralExpressionN
         ?? ExpressionTypesAspect.OrdinaryTypedExpression_Insert_PrepareToReturnExpression(this)
         ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitConversionExpression(this)
         ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitDerefExpression(this)
+        ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_OptionalConversion_Rewrite_OptionalConversionExpression(this)
         ?? base.Rewrite();
 }
 
@@ -10770,6 +10802,7 @@ file class AssignmentExpressionNode : SemanticNode, IAssignmentExpressionNode
         ?? ExpressionTypesAspect.OrdinaryTypedExpression_Insert_PrepareToReturnExpression(this)
         ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitConversionExpression(this)
         ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitDerefExpression(this)
+        ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_OptionalConversion_Rewrite_OptionalConversionExpression(this)
         ?? base.Rewrite();
 }
 
@@ -10954,6 +10987,7 @@ file class RefAssignmentExpressionNode : SemanticNode, IRefAssignmentExpressionN
         ?? ExpressionTypesAspect.OrdinaryTypedExpression_Insert_PrepareToReturnExpression(this)
         ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitConversionExpression(this)
         ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitDerefExpression(this)
+        ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_OptionalConversion_Rewrite_OptionalConversionExpression(this)
         ?? base.Rewrite();
 }
 
@@ -11154,6 +11188,7 @@ file class BinaryOperatorExpressionNode : SemanticNode, IBinaryOperatorExpressio
         ?? ExpressionTypesAspect.OrdinaryTypedExpression_Insert_PrepareToReturnExpression(this)
         ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitConversionExpression(this)
         ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitDerefExpression(this)
+        ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_OptionalConversion_Rewrite_OptionalConversionExpression(this)
         ?? base.Rewrite();
 }
 
@@ -11306,6 +11341,7 @@ file class UnaryOperatorExpressionNode : SemanticNode, IUnaryOperatorExpressionN
         ?? ExpressionTypesAspect.OrdinaryTypedExpression_Insert_PrepareToReturnExpression(this)
         ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitConversionExpression(this)
         ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitDerefExpression(this)
+        ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_OptionalConversion_Rewrite_OptionalConversionExpression(this)
         ?? base.Rewrite();
 }
 
@@ -11461,6 +11497,7 @@ file class ConversionExpressionNode : SemanticNode, IConversionExpressionNode
         ?? ExpressionTypesAspect.OrdinaryTypedExpression_Insert_PrepareToReturnExpression(this)
         ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitConversionExpression(this)
         ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitDerefExpression(this)
+        ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_OptionalConversion_Rewrite_OptionalConversionExpression(this)
         ?? base.Rewrite();
 }
 
@@ -11608,6 +11645,159 @@ file class ImplicitConversionExpressionNode : SemanticNode, IImplicitConversionE
         ?? ExpressionTypesAspect.OrdinaryTypedExpression_Insert_PrepareToReturnExpression(this)
         ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitConversionExpression(this)
         ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitDerefExpression(this)
+        ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_OptionalConversion_Rewrite_OptionalConversionExpression(this)
+        ?? base.Rewrite();
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class OptionalConversionExpressionNode : SemanticNode, IOptionalConversionExpressionNode
+{
+    private IOptionalConversionExpressionNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
+    protected override bool MayHaveRewrite { [DebuggerStepThrough] get => true; }
+
+    private RewritableChild<IExpressionNode> referent;
+    private bool referentCached;
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    public IExpressionNode Referent
+        => GrammarAttribute.IsCached(in referentCached) ? referent.UnsafeValue
+            : this.RewritableChild(ref referentCached, ref referent);
+    public IExpressionNode CurrentReferent => referent.UnsafeValue;
+    public uint Depth { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package
+        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public CodeFile File
+        => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
+    public LexicalScope ContainingLexicalScope()
+        => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
+    public IEntryNode ControlFlowEntry()
+        => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
+    public ControlFlowSet ControlFlowPrevious
+        => GrammarAttribute.IsCached(in controlFlowPreviousCached) ? controlFlowPrevious!
+            : this.Collection(ref controlFlowPreviousContributors, ref controlFlowPreviousCached, ref controlFlowPrevious,
+                CollectContributors_ControlFlowPrevious<IExecutableDefinitionNode>, Collect_ControlFlowPrevious);
+    private ControlFlowSet? controlFlowPrevious;
+    private bool controlFlowPreviousCached;
+    private IFixedSet<SemanticNode>? controlFlowPreviousContributors;
+    public ControlFlowSet ControlFlowFollowing()
+        => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
+    public ValueIdScope ValueIdScope
+        => Inherited_ValueIdScope(GrammarAttribute.CurrentInheritanceContext());
+    public IMaybeType? ExpectedType
+        => GrammarAttribute.IsCached(in expectedTypeCached) ? expectedType
+            : this.Inherited(ref expectedTypeCached, ref expectedType,
+                Inherited_ExpectedType);
+    private IMaybeType? expectedType;
+    private bool expectedTypeCached;
+    public bool ImplicitRecoveryAllowed()
+        => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
+    public bool ShouldPrepareToReturn()
+        => Inherited_ShouldPrepareToReturn(GrammarAttribute.CurrentInheritanceContext());
+    public IMaybePlainType? ExpectedPlainType
+        => GrammarAttribute.IsCached(in expectedPlainTypeCached) ? expectedPlainType
+            : this.Inherited(ref expectedPlainTypeCached, ref expectedPlainType,
+                Inherited_ExpectedPlainType);
+    private IMaybePlainType? expectedPlainType;
+    private bool expectedPlainTypeCached;
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.OptionalConversionExpression_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
+    public IFlowState FlowStateAfter
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
+            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
+                ExpressionTypesAspect.OptionalConversionExpression_FlowStateAfter);
+    private IFlowState? flowStateAfter;
+    private bool flowStateAfterCached;
+    public IMaybePlainType PlainType
+        => GrammarAttribute.IsCached(in plainTypeCached) ? plainType!
+            : this.Synthetic(ref plainTypeCached, ref plainType,
+                ExpressionPlainTypesAspect.OptionalConversionExpression_PlainType);
+    private IMaybePlainType? plainType;
+    private bool plainTypeCached;
+    public IMaybeType Type
+        => GrammarAttribute.IsCached(in typeCached) ? type!
+            : this.Synthetic(ref typeCached, ref type,
+                ExpressionTypesAspect.OptionalConversionExpression_Type);
+    private IMaybeType? type;
+    private bool typeCached;
+    public ValueId ValueId
+        => GrammarAttribute.IsCached(in valueIdCached) ? valueId
+            : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
+                ValueIdsAspect.Expression_ValueId);
+    private ValueId valueId;
+    private bool valueIdCached;
+
+    public OptionalConversionExpressionNode(
+        IExpressionNode referent,
+        uint depth)
+    {
+        this.referent = Child.Create(this, referent);
+        Depth = depth;
+    }
+
+    internal override IMaybePlainType? Inherited_ExpectedPlainType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(descendant, Self.CurrentReferent))
+            return null;
+        if (ReferenceEquals(child, descendant))
+            return null;
+        return base.Inherited_ExpectedPlainType(child, descendant, ctx);
+    }
+
+    internal override IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return null;
+        return base.Inherited_ExpectedType(child, descendant, ctx);
+    }
+
+    internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return false;
+        return base.Inherited_ImplicitRecoveryAllowed(child, descendant, ctx);
+    }
+
+    internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return false;
+        return base.Inherited_ShouldPrepareToReturn(child, descendant, ctx);
+    }
+
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+    {
+        contributors.Add(this);
+        base.CollectContributors_Diagnostics(contributors);
+    }
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
+    {
+        ExpressionTypesAspect.OrdinaryTypedExpression_Contribute_Diagnostics(this, builder);
+    }
+
+    internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
+    {
+        contributors.AddToRange(Self.ControlFlowNext.Keys.Cast<SemanticNode>(), this);
+        base.CollectContributors_ControlFlowPrevious(contributors);
+    }
+
+    internal override void Contribute_ControlFlowPrevious(SemanticNode target, Dictionary<IControlFlowNode, ControlFlowKind> builder)
+    {
+        if (target is IControlFlowNode t)
+            ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
+    }
+
+    protected override IChildTreeNode Rewrite()
+        => ExpressionTypesAspect.OrdinaryTypedExpression_ImplicitMove_Insert(this)
+        ?? ExpressionTypesAspect.OrdinaryTypedExpression_Insert_FreezeExpression(this)
+        ?? ExpressionTypesAspect.OrdinaryTypedExpression_Insert_PrepareToReturnExpression(this)
+        ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitConversionExpression(this)
+        ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitDerefExpression(this)
+        ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_OptionalConversion_Rewrite_OptionalConversionExpression(this)
         ?? base.Rewrite();
 }
 
@@ -11794,6 +11984,7 @@ file class PatternMatchExpressionNode : SemanticNode, IPatternMatchExpressionNod
         ?? ExpressionTypesAspect.OrdinaryTypedExpression_Insert_PrepareToReturnExpression(this)
         ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitConversionExpression(this)
         ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitDerefExpression(this)
+        ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_OptionalConversion_Rewrite_OptionalConversionExpression(this)
         ?? base.Rewrite();
 }
 
@@ -11947,6 +12138,7 @@ file class RefExpressionNode : SemanticNode, IRefExpressionNode
         ?? ExpressionTypesAspect.OrdinaryTypedExpression_Insert_PrepareToReturnExpression(this)
         ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitConversionExpression(this)
         ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitDerefExpression(this)
+        ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_OptionalConversion_Rewrite_OptionalConversionExpression(this)
         ?? base.Rewrite();
 }
 
@@ -12094,6 +12286,7 @@ file class ImplicitDerefExpressionNode : SemanticNode, IImplicitDerefExpressionN
         ?? ExpressionTypesAspect.OrdinaryTypedExpression_Insert_PrepareToReturnExpression(this)
         ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitConversionExpression(this)
         ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitDerefExpression(this)
+        ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_OptionalConversion_Rewrite_OptionalConversionExpression(this)
         ?? base.Rewrite();
 }
 
@@ -12231,7 +12424,7 @@ file class IfExpressionNode : SemanticNode, IIfExpressionNode
     internal override IMaybePlainType? Inherited_ExpectedPlainType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.CurrentCondition))
-            return AzothPlainType.OptionalBool;
+            return AzothPlainType.Bool.Equals((CurrentCondition as IExpressionNode)?.PlainType) ? AzothPlainType.Bool : AzothPlainType.OptionalBool;
         if (ReferenceEquals(child, descendant))
             return null;
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
@@ -12240,7 +12433,7 @@ file class IfExpressionNode : SemanticNode, IIfExpressionNode
     internal override IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.CurrentCondition))
-            return AzothType.OptionalBool;
+            return AzothType.Bool.Equals((CurrentCondition as IExpressionNode)?.Type) ? AzothType.Bool : AzothType.OptionalBool;
         if (ReferenceEquals(child, descendant))
             return null;
         return base.Inherited_ExpectedType(child, descendant, ctx);
@@ -12299,6 +12492,7 @@ file class IfExpressionNode : SemanticNode, IIfExpressionNode
         ?? ExpressionTypesAspect.OrdinaryTypedExpression_Insert_PrepareToReturnExpression(this)
         ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitConversionExpression(this)
         ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitDerefExpression(this)
+        ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_OptionalConversion_Rewrite_OptionalConversionExpression(this)
         ?? base.Rewrite();
 }
 
@@ -12462,6 +12656,7 @@ file class LoopExpressionNode : SemanticNode, ILoopExpressionNode
         ?? ExpressionTypesAspect.OrdinaryTypedExpression_Insert_PrepareToReturnExpression(this)
         ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitConversionExpression(this)
         ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitDerefExpression(this)
+        ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_OptionalConversion_Rewrite_OptionalConversionExpression(this)
         ?? base.Rewrite();
 }
 
@@ -12590,7 +12785,7 @@ file class WhileExpressionNode : SemanticNode, IWhileExpressionNode
     internal override IMaybePlainType? Inherited_ExpectedPlainType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.CurrentCondition))
-            return AzothPlainType.OptionalBool;
+            return AzothPlainType.Bool.Equals((CurrentCondition as IExpressionNode)?.PlainType) ? AzothPlainType.Bool : AzothPlainType.OptionalBool;
         if (ReferenceEquals(child, descendant))
             return null;
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
@@ -12599,7 +12794,7 @@ file class WhileExpressionNode : SemanticNode, IWhileExpressionNode
     internal override IMaybeType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.CurrentCondition))
-            return AzothType.OptionalBool;
+            return AzothType.Bool.Equals((CurrentCondition as IExpressionNode)?.Type) ? AzothType.Bool : AzothType.OptionalBool;
         if (ReferenceEquals(child, descendant))
             return null;
         return base.Inherited_ExpectedType(child, descendant, ctx);
@@ -12655,6 +12850,7 @@ file class WhileExpressionNode : SemanticNode, IWhileExpressionNode
         ?? ExpressionTypesAspect.OrdinaryTypedExpression_Insert_PrepareToReturnExpression(this)
         ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitConversionExpression(this)
         ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitDerefExpression(this)
+        ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_OptionalConversion_Rewrite_OptionalConversionExpression(this)
         ?? base.Rewrite();
 }
 
@@ -12983,6 +13179,7 @@ file class ForeachExpressionNode : SemanticNode, IForeachExpressionNode
         ?? ExpressionTypesAspect.OrdinaryTypedExpression_Insert_PrepareToReturnExpression(this)
         ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitConversionExpression(this)
         ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitDerefExpression(this)
+        ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_OptionalConversion_Rewrite_OptionalConversionExpression(this)
         ?? base.Rewrite();
 }
 
@@ -13510,6 +13707,7 @@ file class UnresolvedInvocationExpressionNode : SemanticNode, IUnresolvedInvocat
         ?? ExpressionTypesAspect.OrdinaryTypedExpression_Insert_PrepareToReturnExpression(this)
         ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitConversionExpression(this)
         ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitDerefExpression(this)
+        ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_OptionalConversion_Rewrite_OptionalConversionExpression(this)
         ?? base.Rewrite();
 }
 
@@ -13709,6 +13907,7 @@ file class FunctionInvocationExpressionNode : SemanticNode, IFunctionInvocationE
         ?? ExpressionTypesAspect.OrdinaryTypedExpression_Insert_PrepareToReturnExpression(this)
         ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitConversionExpression(this)
         ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitDerefExpression(this)
+        ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_OptionalConversion_Rewrite_OptionalConversionExpression(this)
         ?? base.Rewrite();
 }
 
@@ -13895,6 +14094,7 @@ file class MethodInvocationExpressionNode : SemanticNode, IMethodInvocationExpre
         ?? ExpressionTypesAspect.OrdinaryTypedExpression_Insert_PrepareToReturnExpression(this)
         ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitConversionExpression(this)
         ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitDerefExpression(this)
+        ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_OptionalConversion_Rewrite_OptionalConversionExpression(this)
         ?? base.Rewrite();
 }
 
@@ -14070,6 +14270,7 @@ file class GetterInvocationExpressionNode : SemanticNode, IGetterInvocationExpre
         ?? ExpressionTypesAspect.OrdinaryTypedExpression_Insert_PrepareToReturnExpression(this)
         ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitConversionExpression(this)
         ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitDerefExpression(this)
+        ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_OptionalConversion_Rewrite_OptionalConversionExpression(this)
         ?? base.Rewrite();
 }
 
@@ -14277,6 +14478,7 @@ file class SetterInvocationExpressionNode : SemanticNode, ISetterInvocationExpre
         ?? ExpressionTypesAspect.OrdinaryTypedExpression_Insert_PrepareToReturnExpression(this)
         ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitConversionExpression(this)
         ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitDerefExpression(this)
+        ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_OptionalConversion_Rewrite_OptionalConversionExpression(this)
         ?? base.Rewrite();
 }
 
@@ -14469,6 +14671,7 @@ file class FunctionReferenceInvocationExpressionNode : SemanticNode, IFunctionRe
         ?? ExpressionTypesAspect.OrdinaryTypedExpression_Insert_PrepareToReturnExpression(this)
         ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitConversionExpression(this)
         ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitDerefExpression(this)
+        ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_OptionalConversion_Rewrite_OptionalConversionExpression(this)
         ?? base.Rewrite();
 }
 
@@ -14659,6 +14862,7 @@ file class InitializerInvocationExpressionNode : SemanticNode, IInitializerInvoc
         ?? ExpressionTypesAspect.OrdinaryTypedExpression_Insert_PrepareToReturnExpression(this)
         ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitConversionExpression(this)
         ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitDerefExpression(this)
+        ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_OptionalConversion_Rewrite_OptionalConversionExpression(this)
         ?? base.Rewrite();
 }
 
@@ -14828,6 +15032,7 @@ file class NonInvocableInvocationExpressionNode : SemanticNode, INonInvocableInv
         ?? ExpressionTypesAspect.OrdinaryTypedExpression_Insert_PrepareToReturnExpression(this)
         ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitConversionExpression(this)
         ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitDerefExpression(this)
+        ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_OptionalConversion_Rewrite_OptionalConversionExpression(this)
         ?? base.Rewrite();
 }
 
@@ -14982,6 +15187,7 @@ file class VariableNameExpressionNode : SemanticNode, IVariableNameExpressionNod
         ?? ExpressionTypesAspect.OrdinaryTypedExpression_Insert_PrepareToReturnExpression(this)
         ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitConversionExpression(this)
         ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitDerefExpression(this)
+        ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_OptionalConversion_Rewrite_OptionalConversionExpression(this)
         ?? base.Rewrite();
 }
 
@@ -15136,6 +15342,7 @@ file class SelfExpressionNode : SemanticNode, ISelfExpressionNode
         ?? ExpressionTypesAspect.OrdinaryTypedExpression_Insert_PrepareToReturnExpression(this)
         ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitConversionExpression(this)
         ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitDerefExpression(this)
+        ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_OptionalConversion_Rewrite_OptionalConversionExpression(this)
         ?? base.Rewrite();
 }
 
@@ -15317,6 +15524,7 @@ file class FunctionNameExpressionNode : SemanticNode, IFunctionNameExpressionNod
         ?? ExpressionTypesAspect.OrdinaryTypedExpression_Insert_PrepareToReturnExpression(this)
         ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitConversionExpression(this)
         ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitDerefExpression(this)
+        ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_OptionalConversion_Rewrite_OptionalConversionExpression(this)
         ?? base.Rewrite();
 }
 
@@ -15488,6 +15696,7 @@ file class InitializerNameExpressionNode : SemanticNode, IInitializerNameExpress
         ?? ExpressionTypesAspect.OrdinaryTypedExpression_Insert_PrepareToReturnExpression(this)
         ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitConversionExpression(this)
         ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitDerefExpression(this)
+        ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_OptionalConversion_Rewrite_OptionalConversionExpression(this)
         ?? base.Rewrite();
 }
 
@@ -17676,6 +17885,7 @@ file class MoveVariableExpressionNode : SemanticNode, IMoveVariableExpressionNod
         ?? ExpressionTypesAspect.OrdinaryTypedExpression_Insert_PrepareToReturnExpression(this)
         ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitConversionExpression(this)
         ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitDerefExpression(this)
+        ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_OptionalConversion_Rewrite_OptionalConversionExpression(this)
         ?? base.Rewrite();
 }
 
@@ -17825,6 +18035,7 @@ file class MoveValueExpressionNode : SemanticNode, IMoveValueExpressionNode
         ?? ExpressionTypesAspect.OrdinaryTypedExpression_Insert_PrepareToReturnExpression(this)
         ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitConversionExpression(this)
         ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitDerefExpression(this)
+        ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_OptionalConversion_Rewrite_OptionalConversionExpression(this)
         ?? base.Rewrite();
 }
 
@@ -17968,6 +18179,7 @@ file class ImplicitTempMoveExpressionNode : SemanticNode, IImplicitTempMoveExpre
         ?? ExpressionTypesAspect.OrdinaryTypedExpression_Insert_PrepareToReturnExpression(this)
         ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitConversionExpression(this)
         ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitDerefExpression(this)
+        ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_OptionalConversion_Rewrite_OptionalConversionExpression(this)
         ?? base.Rewrite();
 }
 
@@ -18183,6 +18395,7 @@ file class FreezeVariableExpressionNode : SemanticNode, IFreezeVariableExpressio
         ?? ExpressionTypesAspect.OrdinaryTypedExpression_Insert_PrepareToReturnExpression(this)
         ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitConversionExpression(this)
         ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitDerefExpression(this)
+        ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_OptionalConversion_Rewrite_OptionalConversionExpression(this)
         ?? base.Rewrite();
 }
 
@@ -18335,6 +18548,7 @@ file class FreezeValueExpressionNode : SemanticNode, IFreezeValueExpressionNode
         ?? ExpressionTypesAspect.OrdinaryTypedExpression_Insert_PrepareToReturnExpression(this)
         ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitConversionExpression(this)
         ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitDerefExpression(this)
+        ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_OptionalConversion_Rewrite_OptionalConversionExpression(this)
         ?? base.Rewrite();
 }
 
@@ -18470,6 +18684,7 @@ file class PrepareToReturnExpressionNode : SemanticNode, IPrepareToReturnExpress
         ?? ExpressionTypesAspect.OrdinaryTypedExpression_Insert_PrepareToReturnExpression(this)
         ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitConversionExpression(this)
         ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitDerefExpression(this)
+        ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_OptionalConversion_Rewrite_OptionalConversionExpression(this)
         ?? base.Rewrite();
 }
 
@@ -18601,6 +18816,7 @@ file class AsyncBlockExpressionNode : SemanticNode, IAsyncBlockExpressionNode
         ?? ExpressionTypesAspect.OrdinaryTypedExpression_Insert_PrepareToReturnExpression(this)
         ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitConversionExpression(this)
         ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitDerefExpression(this)
+        ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_OptionalConversion_Rewrite_OptionalConversionExpression(this)
         ?? base.Rewrite();
 }
 
@@ -18752,6 +18968,7 @@ file class AsyncStartExpressionNode : SemanticNode, IAsyncStartExpressionNode
         ?? ExpressionTypesAspect.OrdinaryTypedExpression_Insert_PrepareToReturnExpression(this)
         ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitConversionExpression(this)
         ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitDerefExpression(this)
+        ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_OptionalConversion_Rewrite_OptionalConversionExpression(this)
         ?? base.Rewrite();
 }
 
@@ -18904,6 +19121,7 @@ file class AwaitExpressionNode : SemanticNode, IAwaitExpressionNode
         ?? ExpressionTypesAspect.OrdinaryTypedExpression_Insert_PrepareToReturnExpression(this)
         ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitConversionExpression(this)
         ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_Insert_ImplicitDerefExpression(this)
+        ?? ExpressionPlainTypesAspect.OrdinaryTypedExpression_OptionalConversion_Rewrite_OptionalConversionExpression(this)
         ?? base.Rewrite();
 }
 

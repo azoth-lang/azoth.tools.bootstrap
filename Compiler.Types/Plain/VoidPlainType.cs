@@ -17,6 +17,8 @@ public sealed class VoidPlainType : PlainType
 
     public BuiltInTypeName Name => BuiltInTypeName.Void;
 
+    public override TypeSemantics? Semantics => TypeSemantics.Value;
+
     #region Equality
     public override bool Equals(IMaybePlainType? other)
         // This is a singleton, so we can use reference equality.

@@ -25,6 +25,7 @@ public sealed class BareType : IEquatable<BareType>
     public static readonly IFixedSet<BareType> AnySet = Any.Yield().ToFixedSet();
 
     public BarePlainType PlainType { [DebuggerStepThrough] get; }
+    public TypeSemantics? Semantics => PlainType.Semantics;
     public BareTypeConstructor TypeConstructor => PlainType.TypeConstructor;
     public BareType? ContainingType { [DebuggerStepThrough] get; }
     public IFixedList<Type> Arguments { [DebuggerStepThrough] get; }

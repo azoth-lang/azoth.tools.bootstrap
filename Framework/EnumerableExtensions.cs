@@ -85,13 +85,16 @@ public static class EnumerableExtensions
     {
         private readonly IEnumerable<T> source;
 
+        [DebuggerStepThrough]
         public ImplicitCastEnumerable(IEnumerable<T> source)
         {
             this.source = source;
         }
 
+        [DebuggerStepThrough]
         public IEnumerator<T> GetEnumerator() => source.GetEnumerator();
 
+        [DebuggerStepThrough]
         IEnumerator IEnumerable.GetEnumerator() => source.GetEnumerator();
     }
 
@@ -111,23 +114,29 @@ public static class EnumerableExtensions
         where T : struct
         => values.Where(v => v is not null).Select(v => v!.Value);
 
+    [DebuggerStepThrough]
     public static IEnumerable<(T1, T2)> Where<T1, T2>(this IEnumerable<(T1, T2)> source, Func<T1, T2, bool> predicate)
         => source.Where(tuple => predicate(tuple.Item1, tuple.Item2));
 
+    [DebuggerStepThrough]
     public static IEnumerable<TResult> Select<T1, T2, TResult>(this IEnumerable<KeyValuePair<T1, T2>> source, Func<T1, T2, TResult> selector)
         => source.Select(pair => selector(pair.Key, pair.Value));
 
+    [DebuggerStepThrough]
     public static IEnumerable<TResult> SelectMany<T1, T2, TResult>(
         this IEnumerable<KeyValuePair<T1, T2>> source,
         Func<T1, T2, IEnumerable<TResult>> selector)
         => source.SelectMany(pair => selector(pair.Key, pair.Value));
 
+    [DebuggerStepThrough]
     public static IEnumerable<TResult> Select<T1, T2, TResult>(this IEnumerable<(T1, T2)> source, Func<T1, T2, TResult> selector)
         => source.Select(tuple => selector(tuple.Item1, tuple.Item2));
 
+    [DebuggerStepThrough]
     public static IEnumerable<(T1, T2)> EquiZip<T1, T2>(this IEnumerable<T1> first, IEnumerable<T2> second)
         => first.EquiZip(second, (f, s) => (f, s));
 
+    [DebuggerStepThrough]
     public static bool All<T1, T2>(this IEnumerable<(T1, T2)> source, Func<T1, T2, bool> predicate)
         => source.All(tuple => predicate(tuple.Item1, tuple.Item2));
 

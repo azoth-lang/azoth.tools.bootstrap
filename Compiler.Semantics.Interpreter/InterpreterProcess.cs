@@ -720,6 +720,15 @@ public sealed class InterpreterProcess
                 if (result.ShouldExit(out var value)) return result;
                 return value.Convert(referent.Type.Known(), (CapabilityType)exp.Type, true);
             }
+            case ExpressionKind.OptionalConversionExpression:
+            {
+                var exp = (IOptionalConversionExpressionNode)expression;
+                var referent = exp.Referent;
+                var result = await ExecuteAsync(selfBareType, referent, variables).ConfigureAwait(false);
+                if (result.ShouldExit(out var value)) return result;
+                // TODO handle real conversion for `T??` etc.
+                return value;
+            }
             case ExpressionKind.PatternMatch:
             {
                 var exp = (IPatternMatchExpressionNode)expression;

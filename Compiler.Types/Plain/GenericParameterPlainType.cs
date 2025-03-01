@@ -10,6 +10,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 public sealed class GenericParameterPlainType : NonVoidPlainType
 {
     public OrdinaryTypeConstructor DeclaringTypeConstructor { [DebuggerStepThrough] get; }
+    /// <summary>
+    /// Generic parameters have unknown value semantics because they could be instantiated by a
+    /// value or reference type.
+    /// </summary>
     public override TypeSemantics? Semantics => null;
     public TypeConstructorParameter Parameter { [DebuggerStepThrough] get; }
     public IdentifierName Name => Parameter.Name;

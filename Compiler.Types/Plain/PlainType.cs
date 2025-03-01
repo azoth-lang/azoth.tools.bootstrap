@@ -1,6 +1,5 @@
 using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
-using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
@@ -18,9 +17,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 [DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
 public abstract class PlainType : IMaybePlainType
 {
-    internal static readonly IFixedSet<BarePlainType> AnySet
-        = AnyTypeConstructor.PlainType.Yield().ToFixedSet();
-
     #region Standard Types
     public static readonly UnknownPlainType Unknown = UnknownPlainType.Instance;
     public static readonly VoidPlainType Void = VoidPlainType.Instance;
@@ -53,6 +49,12 @@ public abstract class PlainType : IMaybePlainType
     public static readonly BarePlainType True = BareTypeConstructor.True.PlainType;
     public static readonly BarePlainType False = BareTypeConstructor.False.PlainType;
     #endregion
+
+    /// <summary>
+    /// The semantics of values of this type or <see langword="null"/> if it is a variable and the
+    /// semantics are not known.
+    /// </summary>
+    public abstract TypeSemantics? Semantics { get; }
 
     public virtual PlainTypeReplacements TypeReplacements => PlainTypeReplacements.None;
 

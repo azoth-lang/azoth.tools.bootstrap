@@ -240,7 +240,10 @@ UnaryOperatorExpression <: OrdinaryTypedExpression = Syntax:`IUnaryOperatorExpre
      Operand:AmbiguousExpression;
 ConversionExpression <: OrdinaryTypedExpression = Syntax:`IConversionExpressionSyntax`
     Referent:AmbiguousExpression ConvertToType:Type;
+// TODO rename to StandardImplicitConversionExpression?
 ImplicitConversionExpression <: OrdinaryTypedExpression = Referent:Expression PlainType:`BarePlainType`;
+OptionalConversionExpression <: OrdinaryTypedExpression = Referent:Expression Depth:`uint`;
+// TODO eventually add nodes for implicit and explicit user defined conversions. Separate nodes because they need overload resolution etc.
 PatternMatchExpression <: OrdinaryTypedExpression
     = Syntax:`IPatternMatchExpressionSyntax` Referent:AmbiguousExpression Pattern;
 RefExpression <: OrdinaryTypedExpression = Syntax:`IRefExpressionSyntax` Referent:AmbiguousExpression;

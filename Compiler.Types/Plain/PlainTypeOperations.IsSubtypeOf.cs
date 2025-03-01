@@ -20,10 +20,8 @@ public static partial class PlainTypeOperations
     public static bool IsSubtypeOf(this IMaybePlainType self, IMaybePlainType other, bool substitutable = true)
         => (self, other) switch
         {
-            (UnknownPlainType, _) or (_, UnknownPlainType)
-                => true,
-            (PlainType s, PlainType o)
-                => s.IsSubtypeOf(o, substitutable),
+            (UnknownPlainType, _) or (_, UnknownPlainType) => true,
+            (PlainType s, PlainType o) => s.IsSubtypeOf(o, substitutable),
             _ => throw new UnreachableException()
         };
 
@@ -35,11 +33,13 @@ public static partial class PlainTypeOperations
             // Never is even a subtype of void
             (NeverPlainType, _) => true,
             (VoidPlainType, _) => false,
-            (OptionalPlainType s, OptionalPlainType o) => s.Referent.IsSubtypeOf(o.Referent, substitutable),
-            (_, OptionalPlainType o) => self.IsSubtypeOf(o.Referent, substitutable),
+            (OptionalPlainType s, OptionalPlainType o)
+                => s.Referent.IsSubtypeOf(o.Referent, substitutable),
+            (_, OptionalPlainType o)
+                => self.Semantics == TypeSemantics.Reference && self.IsSubtypeOf(o.Referent, substitutable),
             (BarePlainType s, BarePlainType t) => s.IsSubtypeOf(t, substitutable),
             (FunctionPlainType s, FunctionPlainType o) => s.IsSubtypeOf(o),
-            (RefPlainType s, RefPlainType o) => s.IsSubtypeOf(o, substitutable),
+            (RefPlainType s, RefPlainType o) => s.IsSubtypeOf(o),
             _ => false
         };
 
@@ -49,25 +49,33 @@ public static partial class PlainTypeOperations
         BarePlainType other,
         bool substitutable = true)
     {
-        // TODO apply substitutable
-        if (self.Equals(other) || self.Supertypes.Contains(other))
+        if (self.Equals(other))
             return true;
+        if (self.Supertypes.Contains(other))
+            return IsSubstitutable();
 
         // TODO remove hack to allow string to exist in both primitives and stdlib
         if (self.IsStringType() && other.IsStringType())
             return true;
 
         var otherTypeConstructor = other.TypeConstructor;
-        if (other.AllowsVariance)
+        if (otherTypeConstructor.AllowsVariance || otherTypeConstructor.HasIndependentParameters)
         {
+            // Adding self covers cases where the types are identical except for parameters
             var selfPlainTypes = self.Supertypes.Prepend(self)
-                                    .Where(t => otherTypeConstructor.Equals(t.TypeConstructor));
-            foreach (var selfPlainType in selfPlainTypes)
-                if (IsSubtypeOf(otherTypeConstructor, selfPlainType.Arguments, other.Arguments))
-                    return true;
+                                     .Where(t => otherTypeConstructor.Equals(t.TypeConstructor));
+            if (selfPlainTypes.Any(selfPlainType => IsSubtypeOf(otherTypeConstructor, selfPlainType.Arguments, other.Arguments)))
+            {
+                return IsSubstitutable();
+            }
         }
 
         return false;
+
+        bool IsSubstitutable()
+            => !substitutable
+               || self.Semantics == TypeSemantics.Reference
+               || self.Semantics == TypeSemantics.Value && other.Semantics == TypeSemantics.Value;
     }
 
     private static bool IsSubtypeOf(
@@ -124,7 +132,7 @@ public static partial class PlainTypeOperations
     }
 
     /// <inheritdoc cref="IsSubtypeOf(IMaybePlainType,IMaybePlainType,bool)"/>
-    public static bool IsSubtypeOf(this RefPlainType self, RefPlainType other, bool substitutable = true)
+    public static bool IsSubtypeOf(this RefPlainType self, RefPlainType other)
     {
         // `iref var T <: ref var T`
         if ((self, other)
@@ -138,7 +146,7 @@ public static partial class PlainTypeOperations
         // `iref var S <: iref T`
         // when S <: T
         if (!other.IsMutableBinding && other.IsInternal.Implies(self.IsInternal))
-            return self.Referent.IsSubtypeOf(other.Referent);
+            return self.Referent.IsSubtypeOf(other.Referent, substitutable: true);
 
         // If this method is directly called, then the case where they are equal must be covered
         return self.Equals(other);

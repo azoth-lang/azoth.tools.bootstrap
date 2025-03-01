@@ -35,6 +35,7 @@
 ↓ OrdinaryTypedExpression.ExpectedPlainType: `IMaybePlainType`?;
 ✎ OrdinaryTypedExpression insert ImplicitConversionExpression;
 ✎ OrdinaryTypedExpression insert ImplicitDerefExpression;
+✎ OrdinaryTypedExpression OptionalConversion rewrite OptionalConversionExpression;
 ↑ BlockExpression.PlainType: `IMaybePlainType`;
 = NeverTypedExpression.PlainType => AzothPlainType.Never;
 
@@ -58,13 +59,19 @@
 = UnaryOperatorExpression.↑.Diagnostics;
 // No expected plain type for the referent. If one were given, it could cause another implicit conversion.
 = ImplicitConversionExpression.Referent.ExpectedPlainType => null;
+= OptionalConversionExpression.Referent.ExpectedPlainType => null;
 = PatternMatchExpression.PlainType => AzothPlainType.Bool;
 = RefExpression.Referent.ExpectedPlainType => null;
 = ImplicitDerefExpression.Referent.ExpectedPlainType => null;
 
 // ---------- Control Flow Expressions
-= IfExpression.Condition.ExpectedPlainType => AzothPlainType.OptionalBool;
-= WhileExpression.Condition.ExpectedPlainType => AzothPlainType.OptionalBool;
+// To avoid implicit conversion to `bool?` the expected type is `bool` when the condition type is `bool`
+= IfExpression.Condition.ExpectedPlainType
+    => AzothPlainType.Bool.Equals((CurrentCondition as IExpressionNode)?.PlainType)
+        ? AzothPlainType.Bool : AzothPlainType.OptionalBool;
+= WhileExpression.Condition.ExpectedPlainType
+    => AzothPlainType.Bool.Equals((CurrentCondition as IExpressionNode)?.PlainType)
+        ? AzothPlainType.Bool : AzothPlainType.OptionalBool;
 ↓ ReturnExpression.ExpectedReturnPlainType: `IMaybePlainType`?;
 = ReturnExpression.Value.ExpectedPlainType => ExpectedReturnPlainType;
 

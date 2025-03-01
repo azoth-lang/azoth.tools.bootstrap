@@ -22,6 +22,9 @@ public sealed class NeverPlainType : NonVoidPlainType
     #endregion
 
     public BareTypeConstructor? TypeConstructor => null;
+    /// <summary>
+    /// Never has unknown semantics because it is a subtype of both value and reference types.
+    /// </summary>
     public override TypeSemantics? Semantics => null;
     public BuiltInTypeName Name => BuiltInTypeName.Never;
 

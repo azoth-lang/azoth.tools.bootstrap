@@ -324,6 +324,9 @@ public static class ISemanticNodeExtensions
                 foreach (var child in n.TempArguments)
                     yield return child;
                 yield break;
+            case IOptionalConversionExpressionNode n:
+                yield return n.Referent;
+                yield break;
             case IOptionalPatternNode n:
                 yield return n.Pattern;
                 yield break;

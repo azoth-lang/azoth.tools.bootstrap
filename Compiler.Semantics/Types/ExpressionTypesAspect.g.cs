@@ -138,6 +138,10 @@ internal static partial class ExpressionTypesAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IMaybeType ImplicitConversionExpression_Type(IImplicitConversionExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial IMaybeType OptionalConversionExpression_Type(IOptionalConversionExpressionNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial IFlowState OptionalConversionExpression_FlowStateAfter(IOptionalConversionExpressionNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFlowState PatternMatchExpression_FlowStateAfter(IPatternMatchExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IMaybeType RefExpression_Type(IRefExpressionNode node);

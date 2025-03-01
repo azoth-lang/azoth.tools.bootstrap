@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using Azoth.Tools.Bootstrap.Framework;
@@ -23,12 +24,12 @@ public interface ICallCandidate<out TDeclaration> : IEquatable<ICallCandidate<II
 internal sealed class CallCandidate<TDeclaration> : ICallCandidate<TDeclaration>
     where TDeclaration : IInvocableDeclarationNode
 {
-    public IMaybePlainType? ContextPlainType { get; }
-    public TDeclaration Declaration { get; }
-    public IMaybeNonVoidPlainType? SelfParameterPlainType { get; }
-    public IFixedList<IMaybeNonVoidPlainType> ParameterPlainTypes { get; }
+    public IMaybePlainType? ContextPlainType { [DebuggerStepThrough] get; }
+    public TDeclaration Declaration { [DebuggerStepThrough] get; }
+    public IMaybeNonVoidPlainType? SelfParameterPlainType { [DebuggerStepThrough] get; }
+    public IFixedList<IMaybeNonVoidPlainType> ParameterPlainTypes { [DebuggerStepThrough] get; }
     public int Arity => ParameterPlainTypes.Count;
-    public IMaybePlainType ReturnPlainType { get; }
+    public IMaybePlainType ReturnPlainType { [DebuggerStepThrough] get; }
 
     internal CallCandidate(
         IMaybePlainType? contextPlainType,

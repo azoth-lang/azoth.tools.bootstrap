@@ -29,6 +29,7 @@
 = UnaryOperatorExpression.ExpressionKind => ExpressionKind.UnaryOperator;
 = ConversionExpression.ExpressionKind => ExpressionKind.Conversion;
 = ImplicitConversionExpression.ExpressionKind => ExpressionKind.ImplicitConversion;
+= OptionalConversionExpression.ExpressionKind => ExpressionKind.OptionalConversionExpression;
 = PatternMatchExpression.ExpressionKind => ExpressionKind.PatternMatch;
 = RefExpression.ExpressionKind => ExpressionKind.Ref;
 = ImplicitDerefExpression.ExpressionKind => ExpressionKind.ImplicitDeref;

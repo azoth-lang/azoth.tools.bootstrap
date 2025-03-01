@@ -136,7 +136,10 @@
 = PatternMatchExpression.Type => AzothType.Bool;
 
 // ---------- Control Flow Expressions
-= IfExpression.Condition.ExpectedType => AzothType.OptionalBool;
+// To avoid implicit conversion to `bool?` the expected type is `bool` when the condition type is `bool`
+= IfExpression.Condition.ExpectedType
+    => AzothType.Bool.Equals((CurrentCondition as IExpressionNode)?.Type)
+        ? AzothType.Bool : AzothType.OptionalBool;
 ↑ IfExpression.FlowStateAfterCondition: `IFlowState`;
 = IfExpression.ThenBlock.**.FlowStateBefore => FlowStateAfterCondition;
 = IfExpression.ElseClause.**.FlowStateBefore => FlowStateAfterCondition;
@@ -144,7 +147,9 @@
 = IfExpression.↑.Diagnostics;
 = LoopExpression.Block.**.FlowStateBefore()
     => base.Inherited_FlowStateBefore(child, descendant, ctx).Merge(Block.FlowStateAfter);
-= WhileExpression.Condition.ExpectedType => AzothType.OptionalBool;
+= WhileExpression.Condition.ExpectedType
+    => AzothType.Bool.Equals((CurrentCondition as IExpressionNode)?.Type)
+        ? AzothType.Bool : AzothType.OptionalBool;
 ↑ WhileExpression.FlowStateAfterCondition: `IFlowState`;
 = WhileExpression.Block.**.FlowStateBefore
     => FlowStateAfterCondition.Merge(Block.FlowStateAfter);

@@ -436,6 +436,24 @@ internal static partial class ExpressionTypesAspect
         return referent.FlowStateAfter.Transform(referent.ValueId, node.ValueId, node.Type);
     }
 
+    public static partial IMaybeType OptionalConversionExpression_Type(IOptionalConversionExpressionNode node)
+        => node.PlainType is OptionalPlainType plainType
+            ? OptionalConversionType(plainType, node.Depth, node.Referent.Type) : Type.Unknown;
+
+    private static IMaybeType OptionalConversionType(OptionalPlainType plainType, uint depth, IMaybeType referentType)
+    {
+        Requires.That(depth > 0, nameof(depth), "Must be greater than zero.");
+        var type = depth == 1 ? referentType
+            : OptionalConversionType((OptionalPlainType)plainType.Referent, depth - 1, referentType);
+        return OptionalType.Create(plainType, type);
+    }
+
+    public static partial IFlowState OptionalConversionExpression_FlowStateAfter(IOptionalConversionExpressionNode node)
+    {
+        var referent = node.Referent; // Avoids repeated access
+        return referent.FlowStateAfter.Transform(referent.ValueId, node.ValueId, node.Type);
+    }
+
     public static partial IFlowState PatternMatchExpression_FlowStateAfter(IPatternMatchExpressionNode node)
     {
         var flowStateBefore = node.Pattern.FlowStateAfter;

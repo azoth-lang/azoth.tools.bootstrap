@@ -43,6 +43,8 @@ public abstract class Type : IMaybeType
     public static readonly CapabilityType False = BareTypeConstructor.False.Type;
     #endregion
 
+    public TypeSemantics? Semantics => PlainType.Semantics;
+
     public abstract PlainType PlainType { get; }
     IMaybePlainType IMaybeType.PlainType => PlainType;
 

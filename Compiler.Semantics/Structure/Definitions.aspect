@@ -142,6 +142,7 @@
 ↑ UnaryOperatorExpression.Fixity: `UnaryOperatorFixity` => Syntax.Fixity;
 ↑ ConversionExpression.Operator: `ConversionOperator` => Syntax.Operator;
 ↑ ImplicitConversionExpression.Syntax: `IExpressionSyntax` => Referent.Syntax;
+↑ OptionalConversionExpression.Syntax: `IExpressionSyntax` => Referent.Syntax;
 ↑ RefExpression.IsInternal: `bool` => Syntax.IsInternal;
 ↑ RefExpression.IsMutableBinding: `bool` => Syntax.IsMutableBinding;
 ↑ ImplicitDerefExpression.Syntax: `IExpressionSyntax` => Referent.Syntax;

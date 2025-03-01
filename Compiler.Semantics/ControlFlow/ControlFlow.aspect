@@ -78,6 +78,7 @@
 = UnaryOperatorExpression.ControlFlowNext;
 = ConversionExpression.ControlFlowNext;
 = ImplicitConversionExpression.ControlFlowNext;
+= OptionalConversionExpression.ControlFlowNext;
 = PatternMatchExpression.Referent.**.ControlFlowFollowing()
     => ControlFlowSet.CreateNormal(Pattern);
 = PatternMatchExpression.ControlFlowNext;

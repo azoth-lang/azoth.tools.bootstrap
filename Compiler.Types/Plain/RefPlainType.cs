@@ -32,7 +32,8 @@ public sealed class RefPlainType : NonVoidPlainType
         };
 
     /// <remarks>A ref type acts as a value type. This prevents comparing if two refs refer to the
-    /// same variable. However, it avoids an ambiguity where </remarks>
+    /// same variable. However, it avoids ambiguity when comparing reference equality through ref
+    /// types.</remarks>
     public override TypeSemantics? Semantics => TypeSemantics.Value;
 
     public bool IsInternal { [DebuggerStepThrough] get; }

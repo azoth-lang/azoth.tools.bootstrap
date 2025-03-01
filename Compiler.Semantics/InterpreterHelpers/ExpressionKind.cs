@@ -33,6 +33,7 @@ public enum ExpressionKind
     UnaryOperator,
     Conversion,
     ImplicitConversion,
+    OptionalConversionExpression,
     PatternMatch,
     Ref,
     ImplicitDeref,

@@ -60,20 +60,26 @@ internal static partial class ExpressionPlainTypesAspect
         // TODO can this be dropped? All those things should have an unknown plain type and so be skipped
         if (node.ShouldNotBeExpression()) return null;
 
+        var plainType = node.PlainType; // Avoids repeated access
+
         // To minimize outstanding rewrites, first check whether node.PlainType could possibly
         // support conversion. If node.ExpectedPlainType is checked, that is inherited and if a
-        // rewrite is in progress, that can't be cached. Note: this requires thoroughly treating
-        // T <: T? as a subtype and not an implicit conversion.
-        if (!CanPossiblyImplicitlyConvertFrom(node.PlainType)) return null;
+        // rewrite is in progress, that can't be cached. Note that optional type conversion (i.e.
+        // `T` to `T?`) is a separate operation so doesn't need to be checked for here.
+        if (!CanPossiblyImplicitlyConvertFrom(plainType)) return null;
 
         // TODO what about self argument context? Shouldn't implicit conversion be disallowed there?
 
-        if (ImplicitlyConvertToType(node.ExpectedPlainType, node.PlainType) is SimpleTypeConstructor convertToTypeConstructor)
+        if (ImplicitlyConvertToType(node.ExpectedPlainType, plainType) is { } convertToTypeConstructor)
             return IImplicitConversionExpressionNode.Create(node, convertToTypeConstructor.PlainType);
 
         return null;
     }
 
+    /// <summary>
+    /// Whether it is possible that an implicit conversion could exist from this type to some other
+    /// type.
+    /// </summary>
     private static bool CanPossiblyImplicitlyConvertFrom(IMaybePlainType fromType)
     => fromType switch
     {
@@ -152,6 +158,41 @@ internal static partial class ExpressionPlainTypesAspect
                 return null;
         }
     }
+
+    public static partial IOptionalConversionExpressionNode? OrdinaryTypedExpression_OptionalConversion_Rewrite_OptionalConversionExpression(IOrdinaryTypedExpressionNode node)
+    {
+        var plainType = node.PlainType; // Avoids repeated access
+
+        // To minimize outstanding rewrites, first check whether node.PlainType could possibly
+        // support optional conversion. If node.ExpectedPlainType is checked, that is inherited and
+        // if a rewrite is in progress, that can't be cached. Unfortunately, for most types there is
+        // an implicit optional conversion from `T` to `T?` so not many cases cane be eliminated.
+        if (!CanPossiblyImplicitlyOptionalConvertFrom(plainType)) return null;
+
+        if (ImplicitlyOptionalConvertToType(node.ExpectedPlainType, plainType) is { } depth and > 0)
+            return IOptionalConversionExpressionNode.Create(node, depth);
+
+        return null;
+    }
+
+    private static uint? ImplicitlyOptionalConvertToType(IMaybePlainType? toType, IMaybePlainType fromType)
+    {
+        if (toType is not OptionalPlainType toOptionalType)
+            return null;
+
+        if (toOptionalType.Referent.Equals(fromType))
+            // If it is a reference type, then a subtype relation exists but additional layers above
+            // that may need to be implicit conversions.
+            return toOptionalType.Referent.Semantics == TypeSemantics.Reference ? 0u : 1;
+        return ImplicitlyOptionalConvertToType(toOptionalType.Referent, fromType) + 1;
+    }
+
+    /// <remarks>Even though for a reference type <c>R</c>, <c>R &lt;: R?</c>, it is still possible
+    /// for an implicit optional conversion to be needed if the expected type is <c>R??</c>. Thus,
+    /// the only type that is guaranteed to not have an optional conversion is <see
+    /// cref="UnknownPlainType"/>.</remarks>
+    private static bool CanPossiblyImplicitlyOptionalConvertFrom(IMaybePlainType fromType)
+        => fromType is not UnknownPlainType;
 
     public static partial IMaybePlainType BlockExpression_PlainType(IBlockExpressionNode node)
     {
@@ -456,6 +497,14 @@ internal static partial class ExpressionPlainTypesAspect
         if (node.Operator == ConversionOperator.Optional)
             convertToPlainType = OptionalPlainType.Create(convertToPlainType);
         return convertToPlainType;
+    }
+
+    public static partial IMaybePlainType OptionalConversionExpression_PlainType(IOptionalConversionExpressionNode node)
+    {
+        var plainType = node.Referent.PlainType;
+        for (int i = 0; i < node.Depth; i++)
+            plainType = OptionalPlainType.Create(plainType);
+        return plainType;
     }
 
     public static partial IMaybePlainType RefExpression_PlainType(IRefExpressionNode node)
