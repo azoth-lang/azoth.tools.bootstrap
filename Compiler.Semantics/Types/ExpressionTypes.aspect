@@ -136,6 +136,7 @@
 = ImplicitConversionExpression.Referent.ExpectedType => null;
 = PatternMatchExpression.Pattern.**.FlowStateBefore => Referent?.FlowStateAfter ?? IFlowState.Empty;
 = PatternMatchExpression.Type => AzothType.Bool;
+= ImplicitDerefExpression.LocatorType;
 
 // ---------- Control Flow Expressions
 // To avoid implicit conversion to `bool?` the expected type is `bool` when the condition type is `bool`

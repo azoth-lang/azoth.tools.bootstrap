@@ -2309,6 +2309,8 @@ public partial interface IImplicitDerefExpressionNode : IOrdinaryTypedExpression
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ICodeSyntax ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
+    IMaybeType IExpressionNode.LocatorType
+        => ExpressionTypesAspect.ImplicitDerefExpression_LocatorType(this);
     ExpressionKind IExpressionNode.ExpressionKind
         => ExpressionKind.ImplicitDeref;
 

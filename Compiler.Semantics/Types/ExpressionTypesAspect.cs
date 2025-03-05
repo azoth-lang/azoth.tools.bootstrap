@@ -497,6 +497,10 @@ internal static partial class ExpressionTypesAspect
     public static partial IMaybeType ImplicitDerefExpression_Type(IImplicitDerefExpressionNode node)
         => (node.Referent.Type as RefType)?.Referent ?? IMaybeType.Unknown;
 
+    public static partial IMaybeType ImplicitDerefExpression_LocatorType(IImplicitDerefExpressionNode node)
+        // If a deref is used as a locator, then the type is just the underlying ref type.
+        => node.Referent.Type;
+
     public static partial IFlowState ImplicitDerefExpression_FlowStateAfter(IImplicitDerefExpressionNode node)
     {
         var referent = node.Referent; // Avoid repeated access
