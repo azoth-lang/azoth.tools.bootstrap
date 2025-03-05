@@ -140,6 +140,7 @@ public static class EnumerableExtensions
     public static bool All<T1, T2>(this IEnumerable<(T1, T2)> source, Func<T1, T2, bool> predicate)
         => source.All(tuple => predicate(tuple.Item1, tuple.Item2));
 
+    [DebuggerStepThrough]
     public static T? TrySingle<T>(this IEnumerable<T> source)
     {
         using var enumerator = source.GetEnumerator();

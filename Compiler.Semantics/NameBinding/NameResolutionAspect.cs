@@ -113,7 +113,7 @@ internal static partial class NameResolutionAspect
     #endregion
 
     #region Operator Expressions
-    public static partial IExpressionNode? AssignmentExpression_PropertyNameLeftOperand_Rewrite(IAssignmentExpressionNode node)
+    public static partial ISetterInvocationExpressionNode? AssignmentExpression_Rewrite_SetterInvocationExpression(IAssignmentExpressionNode node)
     {
         // TODO refactor to a replacement of the getter node based on an inherited attribute. That
         // should allow optimization of caching compared to a full rewrite.

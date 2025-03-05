@@ -272,7 +272,7 @@ public sealed class GenericParameterTypeReplacements
     private static NonVoidType SelfReplacement(NonVoidType selfReplacement, Capability withCapability)
         => selfReplacement switch
         {
-            CapabilitySetSelfType t => throw new NotSupportedException("Cannot replace `Self` with another `Self`."),
+            CapabilitySetSelfType t => t.BareType.WithModified(withCapability),
             CapabilityType t => t.BareType.WithModified(withCapability),
             CapabilityViewpointType t => CapabilityViewpointType.Create(withCapability, t.Referent),
             // TODO combine withCapability with the capability set somehow

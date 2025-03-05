@@ -14,7 +14,7 @@
 = UnresolvedMemberAccessExpression.↑.Diagnostics;
 
 // ---------- Operator Expressions
-✎ AssignmentExpression PropertyNameLeftOperand rewrite;
+✎ AssignmentExpression rewrite SetterInvocationExpression;
 
 // ---------- Name Expressions
 + FunctionNameExpression.new.Validate;

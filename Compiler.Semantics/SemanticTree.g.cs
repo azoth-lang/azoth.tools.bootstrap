@@ -10798,7 +10798,7 @@ file class AssignmentExpressionNode : SemanticNode, IAssignmentExpressionNode
 
     protected override IChildTreeNode Rewrite()
         => ExpressionPlainTypesAspect.AssignmentExpression_ReplaceWith_RefAssignmentExpression(this)
-        ?? NameResolutionAspect.AssignmentExpression_PropertyNameLeftOperand_Rewrite(this)
+        ?? NameResolutionAspect.AssignmentExpression_Rewrite_SetterInvocationExpression(this)
         ?? ExpressionTypesAspect.OrdinaryTypedExpression_ImplicitMove_Insert(this)
         ?? ExpressionTypesAspect.OrdinaryTypedExpression_Insert_FreezeExpression(this)
         ?? ExpressionTypesAspect.OrdinaryTypedExpression_Insert_PrepareToReturnExpression(this)
