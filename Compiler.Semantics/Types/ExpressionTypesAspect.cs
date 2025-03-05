@@ -125,8 +125,9 @@ internal static partial class ExpressionTypesAspect
         if (node.ExpectedType is not Type expectedType)
             return;
 
-        if (!node.Type.IsSubtypeOf(expectedType))
-            diagnostics.Add(TypeError.CannotImplicitlyConvert(node.File, node.Syntax, node.Type, expectedType));
+        var type = node.Type; // Avoids repeated access
+        if (!type.IsSubtypeOf(expectedType))
+            diagnostics.Add(TypeError.CannotImplicitlyConvert(node.File, node.Syntax, type, expectedType));
     }
 
     public static partial IMaybeType BlockExpression_Type(IBlockExpressionNode node)
@@ -992,9 +993,13 @@ internal static partial class ExpressionTypesAspect
     {
         if (node.Referent.Type is not CapabilityType capabilityType) return;
 
+        if (node.IsTemporary)
+            // TODO shouldn't there be some validation of temp freeze?
+            return;
+
         if (!capabilityType.Capability.AllowsFreeze)
             diagnostics.Add(TypeError.NotImplemented(node.File, node.Syntax.Span, "Reference capability does not allow freezing"));
-        else if (!node.IsTemporary && !node.Referent.FlowStateAfter.CanFreeze(node.Referent.ValueId))
+        else if (!node.Referent.FlowStateAfter.CanFreeze(node.Referent.ValueId))
             diagnostics.Add(FlowTypingError.CannotFreezeValue(node.File, node.Syntax, node.Referent.Syntax));
     }
 
