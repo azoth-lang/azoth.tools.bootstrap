@@ -26,6 +26,8 @@ public static class ISemanticNodeExtensions
                 yield return n.TempRightOperand;
                 yield break;
             case IAssociatedFunctionDefinitionNode n:
+                foreach (var child in n.Attributes)
+                    yield return child;
                 foreach (var child in n.Parameters)
                     yield return child;
                 if (n.Return is not null)
@@ -38,6 +40,8 @@ public static class ISemanticNodeExtensions
             case IAssociatedFunctionSymbolNode n:
                 yield break;
             case IAssociatedTypeDefinitionNode n:
+                foreach (var child in n.Attributes)
+                    yield return child;
                 if (n.Initializer is not null)
                     yield return n.Initializer;
                 yield break;
@@ -153,6 +157,8 @@ public static class ISemanticNodeExtensions
                 yield return n.Context;
                 yield break;
             case IFieldDefinitionNode n:
+                foreach (var child in n.Attributes)
+                    yield return child;
                 yield return n.TypeNode;
                 yield return n.Entry;
                 if (n.TempInitializer is not null)
@@ -222,6 +228,8 @@ public static class ISemanticNodeExtensions
                 yield return n.Context;
                 yield break;
             case IGetterMethodDefinitionNode n:
+                foreach (var child in n.Attributes)
+                    yield return child;
                 yield return n.SelfParameter;
                 foreach (var child in n.Parameters)
                     yield return child;
@@ -334,6 +342,8 @@ public static class ISemanticNodeExtensions
                 yield return n.Referent;
                 yield break;
             case IOrdinaryInitializerDefinitionNode n:
+                foreach (var child in n.Attributes)
+                    yield return child;
                 yield return n.SelfParameter;
                 foreach (var child in n.Parameters)
                     yield return child;
@@ -342,6 +352,8 @@ public static class ISemanticNodeExtensions
                 yield return n.Exit;
                 yield break;
             case IOrdinaryMethodDefinitionNode n:
+                foreach (var child in n.Attributes)
+                    yield return child;
                 yield return n.SelfParameter;
                 foreach (var child in n.Parameters)
                     yield return child;
@@ -421,6 +433,8 @@ public static class ISemanticNodeExtensions
                 yield return n.TempValue;
                 yield break;
             case ISetterMethodDefinitionNode n:
+                foreach (var child in n.Attributes)
+                    yield return child;
                 yield return n.SelfParameter;
                 foreach (var child in n.Parameters)
                     yield return child;

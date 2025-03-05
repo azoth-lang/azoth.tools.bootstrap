@@ -535,6 +535,9 @@ public partial interface ITypeDefinitionNode : ICodeNode, IFacetMemberDefinition
     new OrdinaryTypeConstructor TypeConstructor { get; }
     BareTypeConstructor INonVariableTypeDeclarationNode.TypeConstructor => TypeConstructor;
     ITypeConstructor ITypeDeclarationNode.TypeConstructor => TypeConstructor;
+    new IFixedList<IAttributeNode> Attributes { get; }
+    IFixedList<IAttributeNode> IFacetMemberDefinitionNode.Attributes => Attributes;
+    IFixedList<IAttributeNode> ITypeMemberDefinitionNode.Attributes => Attributes;
     new AccessModifier AccessModifier { get; }
     AccessModifier IFacetMemberDefinitionNode.AccessModifier => AccessModifier;
     AccessModifier ITypeMemberDefinitionNode.AccessModifier => AccessModifier;
@@ -673,6 +676,7 @@ public partial interface ITypeMemberDefinitionNode : IDefinitionNode, ITypeMembe
     new IMemberDefinitionSyntax? Syntax { get; }
     IDefinitionSyntax? IDefinitionNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
+    IFixedList<IAttributeNode> Attributes { get; }
     AccessModifier AccessModifier { get; }
 }
 
@@ -761,11 +765,12 @@ public partial interface IOrdinaryMethodDefinitionNode : IMethodDefinitionNode, 
 
     public static IOrdinaryMethodDefinitionNode Create(
         IOrdinaryMethodDefinitionSyntax syntax,
+        IEnumerable<IAttributeNode> attributes,
         IMethodSelfParameterNode selfParameter,
         IEnumerable<INamedParameterNode> parameters,
         ITypeNode? @return,
         IBodyNode? body)
-        => new OrdinaryMethodDefinitionNode(syntax, selfParameter, parameters, @return, body);
+        => new OrdinaryMethodDefinitionNode(syntax, attributes, selfParameter, parameters, @return, body);
 }
 
 [Closed(typeof(GetterMethodDefinitionNode))]
@@ -785,11 +790,12 @@ public partial interface IGetterMethodDefinitionNode : IMethodDefinitionNode, IG
 
     public static IGetterMethodDefinitionNode Create(
         IGetterMethodDefinitionSyntax syntax,
+        IEnumerable<IAttributeNode> attributes,
         IMethodSelfParameterNode selfParameter,
         IEnumerable<INamedParameterNode> parameters,
         ITypeNode @return,
         IBodyNode? body)
-        => new GetterMethodDefinitionNode(syntax, selfParameter, parameters, @return, body);
+        => new GetterMethodDefinitionNode(syntax, attributes, selfParameter, parameters, @return, body);
 }
 
 [Closed(typeof(SetterMethodDefinitionNode))]
@@ -807,11 +813,12 @@ public partial interface ISetterMethodDefinitionNode : IMethodDefinitionNode, IS
 
     public static ISetterMethodDefinitionNode Create(
         ISetterMethodDefinitionSyntax syntax,
+        IEnumerable<IAttributeNode> attributes,
         IMethodSelfParameterNode selfParameter,
         IEnumerable<INamedParameterNode> parameters,
         ITypeNode? @return,
         IBodyNode? body)
-        => new SetterMethodDefinitionNode(syntax, selfParameter, parameters, @return, body);
+        => new SetterMethodDefinitionNode(syntax, attributes, selfParameter, parameters, @return, body);
 }
 
 [Closed(
@@ -846,6 +853,9 @@ public partial interface IDefaultInitializerDefinitionNode : IInitializerDefinit
     IDefinitionSyntax? IDefinitionNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     IMemberDefinitionSyntax? ITypeMemberDefinitionNode.Syntax => Syntax;
+    new IFixedList<IAttributeNode> Attributes
+        => [];
+    IFixedList<IAttributeNode> ITypeMemberDefinitionNode.Attributes => Attributes;
     new IFixedList<IInitializerParameterNode> Parameters
         => FixedList.Empty<IInitializerParameterNode>();
     IFixedList<IInitializerParameterNode> IInvocableDefinitionNode.Parameters => Parameters;
@@ -881,10 +891,11 @@ public partial interface IOrdinaryInitializerDefinitionNode : ICodeNode, IInitia
 
     public static IOrdinaryInitializerDefinitionNode Create(
         IInitializerDefinitionSyntax syntax,
+        IEnumerable<IAttributeNode> attributes,
         IInitializerSelfParameterNode selfParameter,
         IEnumerable<IInitializerParameterNode> parameters,
         IBlockBodyNode body)
-        => new OrdinaryInitializerDefinitionNode(syntax, selfParameter, parameters, body);
+        => new OrdinaryInitializerDefinitionNode(syntax, attributes, selfParameter, parameters, body);
 }
 
 [Closed(typeof(FieldDefinitionNode))]
@@ -923,9 +934,10 @@ public partial interface IFieldDefinitionNode : ICodeNode, IAlwaysTypeMemberDefi
 
     public static IFieldDefinitionNode Create(
         IFieldDefinitionSyntax syntax,
+        IEnumerable<IAttributeNode> attributes,
         ITypeNode typeNode,
         IAmbiguousExpressionNode? initializer)
-        => new FieldDefinitionNode(syntax, typeNode, initializer);
+        => new FieldDefinitionNode(syntax, attributes, typeNode, initializer);
 }
 
 [Closed(typeof(AssociatedFunctionDefinitionNode))]
@@ -949,10 +961,11 @@ public partial interface IAssociatedFunctionDefinitionNode : IFunctionInvocableD
 
     public static IAssociatedFunctionDefinitionNode Create(
         IAssociatedFunctionDefinitionSyntax syntax,
+        IEnumerable<IAttributeNode> attributes,
         IEnumerable<INamedParameterNode> parameters,
         ITypeNode? @return,
         IBodyNode? body)
-        => new AssociatedFunctionDefinitionNode(syntax, parameters, @return, body);
+        => new AssociatedFunctionDefinitionNode(syntax, attributes, parameters, @return, body);
 }
 
 [Closed(typeof(AssociatedTypeDefinitionNode))]
@@ -979,8 +992,9 @@ public partial interface IAssociatedTypeDefinitionNode : IAssociatedMemberDefini
 
     public static IAssociatedTypeDefinitionNode Create(
         IAssociatedTypeDefinitionSyntax syntax,
+        IEnumerable<IAttributeNode> attributes,
         ITypeNode? initializer)
-        => new AssociatedTypeDefinitionNode(syntax, initializer);
+        => new AssociatedTypeDefinitionNode(syntax, attributes, initializer);
 }
 
 [Closed(typeof(AttributeNode))]
@@ -6317,6 +6331,7 @@ file class OrdinaryMethodDefinitionNode : SemanticNode, IOrdinaryMethodDefinitio
     private AttributeLock syncLock;
 
     public IOrdinaryMethodDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
+    public IFixedList<IAttributeNode> Attributes { [DebuggerStepThrough] get; }
     public IMethodSelfParameterNode SelfParameter { [DebuggerStepThrough] get; }
     public IFixedList<INamedParameterNode> Parameters { [DebuggerStepThrough] get; }
     public ITypeNode? Return { [DebuggerStepThrough] get; }
@@ -6389,12 +6404,14 @@ file class OrdinaryMethodDefinitionNode : SemanticNode, IOrdinaryMethodDefinitio
 
     public OrdinaryMethodDefinitionNode(
         IOrdinaryMethodDefinitionSyntax syntax,
+        IEnumerable<IAttributeNode> attributes,
         IMethodSelfParameterNode selfParameter,
         IEnumerable<INamedParameterNode> parameters,
         ITypeNode? @return,
         IBodyNode? body)
     {
         Syntax = syntax;
+        Attributes = ChildList.Attach(this, attributes);
         SelfParameter = Child.Attach(this, selfParameter);
         Parameters = ChildList.Attach(this, parameters);
         Return = Child.Attach(this, @return);
@@ -6515,6 +6532,7 @@ file class GetterMethodDefinitionNode : SemanticNode, IGetterMethodDefinitionNod
     private AttributeLock syncLock;
 
     public IGetterMethodDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
+    public IFixedList<IAttributeNode> Attributes { [DebuggerStepThrough] get; }
     public IMethodSelfParameterNode SelfParameter { [DebuggerStepThrough] get; }
     public IFixedList<INamedParameterNode> Parameters { [DebuggerStepThrough] get; }
     public ITypeNode Return { [DebuggerStepThrough] get; }
@@ -6587,12 +6605,14 @@ file class GetterMethodDefinitionNode : SemanticNode, IGetterMethodDefinitionNod
 
     public GetterMethodDefinitionNode(
         IGetterMethodDefinitionSyntax syntax,
+        IEnumerable<IAttributeNode> attributes,
         IMethodSelfParameterNode selfParameter,
         IEnumerable<INamedParameterNode> parameters,
         ITypeNode @return,
         IBodyNode? body)
     {
         Syntax = syntax;
+        Attributes = ChildList.Attach(this, attributes);
         SelfParameter = Child.Attach(this, selfParameter);
         Parameters = ChildList.Attach(this, parameters);
         Return = Child.Attach(this, @return);
@@ -6713,6 +6733,7 @@ file class SetterMethodDefinitionNode : SemanticNode, ISetterMethodDefinitionNod
     private AttributeLock syncLock;
 
     public ISetterMethodDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
+    public IFixedList<IAttributeNode> Attributes { [DebuggerStepThrough] get; }
     public IMethodSelfParameterNode SelfParameter { [DebuggerStepThrough] get; }
     public IFixedList<INamedParameterNode> Parameters { [DebuggerStepThrough] get; }
     public ITypeNode? Return { [DebuggerStepThrough] get; }
@@ -6785,12 +6806,14 @@ file class SetterMethodDefinitionNode : SemanticNode, ISetterMethodDefinitionNod
 
     public SetterMethodDefinitionNode(
         ISetterMethodDefinitionSyntax syntax,
+        IEnumerable<IAttributeNode> attributes,
         IMethodSelfParameterNode selfParameter,
         IEnumerable<INamedParameterNode> parameters,
         ITypeNode? @return,
         IBodyNode? body)
     {
         Syntax = syntax;
+        Attributes = ChildList.Attach(this, attributes);
         SelfParameter = Child.Attach(this, selfParameter);
         Parameters = ChildList.Attach(this, parameters);
         Return = Child.Attach(this, @return);
@@ -7032,6 +7055,7 @@ file class OrdinaryInitializerDefinitionNode : SemanticNode, IOrdinaryInitialize
     private AttributeLock syncLock;
 
     public IInitializerDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
+    public IFixedList<IAttributeNode> Attributes { [DebuggerStepThrough] get; }
     public IInitializerSelfParameterNode SelfParameter { [DebuggerStepThrough] get; }
     public IFixedList<IInitializerParameterNode> Parameters { [DebuggerStepThrough] get; }
     public IBlockBodyNode Body { [DebuggerStepThrough] get; }
@@ -7103,11 +7127,13 @@ file class OrdinaryInitializerDefinitionNode : SemanticNode, IOrdinaryInitialize
 
     public OrdinaryInitializerDefinitionNode(
         IInitializerDefinitionSyntax syntax,
+        IEnumerable<IAttributeNode> attributes,
         IInitializerSelfParameterNode selfParameter,
         IEnumerable<IInitializerParameterNode> parameters,
         IBlockBodyNode body)
     {
         Syntax = syntax;
+        Attributes = ChildList.Attach(this, attributes);
         SelfParameter = Child.Attach(this, selfParameter);
         Parameters = ChildList.Attach(this, parameters);
         Body = Child.Attach(this, body);
@@ -7201,6 +7227,7 @@ file class FieldDefinitionNode : SemanticNode, IFieldDefinitionNode
     private AttributeLock syncLock;
 
     public IFieldDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
+    public IFixedList<IAttributeNode> Attributes { [DebuggerStepThrough] get; }
     public ITypeNode TypeNode { [DebuggerStepThrough] get; }
     private RewritableChild<IAmbiguousExpressionNode?> initializer;
     private bool initializerCached;
@@ -7273,10 +7300,12 @@ file class FieldDefinitionNode : SemanticNode, IFieldDefinitionNode
 
     public FieldDefinitionNode(
         IFieldDefinitionSyntax syntax,
+        IEnumerable<IAttributeNode> attributes,
         ITypeNode typeNode,
         IAmbiguousExpressionNode? initializer)
     {
         Syntax = syntax;
+        Attributes = ChildList.Attach(this, attributes);
         TypeNode = Child.Attach(this, typeNode);
         this.initializer = Child.Create(this, initializer);
         Entry = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Entry(this));
@@ -7348,6 +7377,7 @@ file class AssociatedFunctionDefinitionNode : SemanticNode, IAssociatedFunctionD
     private AttributeLock syncLock;
 
     public IAssociatedFunctionDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
+    public IFixedList<IAttributeNode> Attributes { [DebuggerStepThrough] get; }
     public IFixedList<INamedParameterNode> Parameters { [DebuggerStepThrough] get; }
     public ITypeNode? Return { [DebuggerStepThrough] get; }
     public IBodyNode? Body { [DebuggerStepThrough] get; }
@@ -7425,11 +7455,13 @@ file class AssociatedFunctionDefinitionNode : SemanticNode, IAssociatedFunctionD
 
     public AssociatedFunctionDefinitionNode(
         IAssociatedFunctionDefinitionSyntax syntax,
+        IEnumerable<IAttributeNode> attributes,
         IEnumerable<INamedParameterNode> parameters,
         ITypeNode? @return,
         IBodyNode? body)
     {
         Syntax = syntax;
+        Attributes = ChildList.Attach(this, attributes);
         Parameters = ChildList.Attach(this, parameters);
         Return = Child.Attach(this, @return);
         Body = Child.Attach(this, body);
@@ -7525,6 +7557,7 @@ file class AssociatedTypeDefinitionNode : SemanticNode, IAssociatedTypeDefinitio
     private AttributeLock syncLock;
 
     public IAssociatedTypeDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
+    public IFixedList<IAttributeNode> Attributes { [DebuggerStepThrough] get; }
     public ITypeNode? Initializer { [DebuggerStepThrough] get; }
     public IOrdinaryTypeDeclarationNode ContainingDeclaration
         => (IOrdinaryTypeDeclarationNode)Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
@@ -7568,9 +7601,11 @@ file class AssociatedTypeDefinitionNode : SemanticNode, IAssociatedTypeDefinitio
 
     public AssociatedTypeDefinitionNode(
         IAssociatedTypeDefinitionSyntax syntax,
+        IEnumerable<IAttributeNode> attributes,
         ITypeNode? initializer)
     {
         Syntax = syntax;
+        Attributes = ChildList.Attach(this, attributes);
         Initializer = Child.Attach(this, initializer);
         Variance = DefinitionsAspect.AssociatedTypeDefinition_Variance(this);
     }

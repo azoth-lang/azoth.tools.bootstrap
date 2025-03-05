@@ -75,7 +75,7 @@ NamespaceMemberDefinition <: NamespaceMemberDeclaration;
 
 // ---------- Function Definition
 FunctionDefinition <: FacetMemberDefinition, FunctionDeclaration, FunctionInvocableDefinition
-    = Syntax:`IFunctionDefinitionSyntax` Attributes:Attribute* /Parameters/ /Return/ /Entry/ Body /Exit/;
+    = Syntax:`IFunctionDefinitionSyntax` /Attributes/ /Parameters/ /Return/ /Entry/ Body /Exit/;
 
 // ---------- Type Definitions
 TypeDefinition <: Code, FacetMemberDefinition, AssociatedMemberDefinition, OrdinaryTypeDeclaration
@@ -97,33 +97,34 @@ GenericParameter <: Code, GenericParameterDeclaration
 ImplicitSelfDefinition <: ImplicitSelfDeclaration;
 
 // ---------- Type Member Definitions (i.e. definitions that can be contained in a type)
-TypeMemberDefinition <: Definition, TypeMemberDeclaration = Syntax:`IMemberDefinitionSyntax`?;
+TypeMemberDefinition <: Definition, TypeMemberDeclaration
+    = Syntax:`IMemberDefinitionSyntax`? Attributes:Attribute*;
 AlwaysTypeMemberDefinition <: TypeMemberDefinition, AlwaysTypeMemberDeclaration;
 AssociatedMemberDefinition <: TypeMemberDefinition, NamedDeclaration, AssociatedMemberDeclaration
     = Name:`OrdinaryName`;
 
 // ---------- Member Definitions
 MethodDefinition <: Code, AlwaysTypeMemberDefinition, InvocableDefinition, MethodDeclaration
-    = Syntax:`IMethodDefinitionSyntax`
+    = Syntax:`IMethodDefinitionSyntax` /Attributes/
     SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return:Type? Body?;
 OrdinaryMethodDefinition <: MethodDefinition, OrdinaryMethodDeclaration
-    = Syntax:`IOrdinaryMethodDefinitionSyntax` /SelfParameter/ /Parameters/ /Return/ /Entry/ /Body/ /Exit/;
+    = Syntax:`IOrdinaryMethodDefinitionSyntax` /Attributes/ /SelfParameter/ /Parameters/ /Return/ /Entry/ /Body/ /Exit/;
 GetterMethodDefinition <: MethodDefinition, GetterMethodDeclaration
-    = Syntax:`IGetterMethodDefinitionSyntax` /SelfParameter/ /Parameters/ Return:Type /Entry/ /Body/ /Exit/;
+    = Syntax:`IGetterMethodDefinitionSyntax` /Attributes/ /SelfParameter/ /Parameters/ Return:Type /Entry/ /Body/ /Exit/;
 SetterMethodDefinition <: MethodDefinition, SetterMethodDeclaration
-    = Syntax:`ISetterMethodDefinitionSyntax` /SelfParameter/ /Parameters/ /Return/ /Entry/ /Body/ /Exit/;
+    = Syntax:`ISetterMethodDefinitionSyntax` /Attributes/ /SelfParameter/ /Parameters/ /Return/ /Entry/ /Body/ /Exit/;
 InitializerDefinition <: InvocableDefinition, AlwaysTypeMemberDefinition, InitializerDeclaration
-    = Syntax:`IInitializerDefinitionSyntax`? Parameters:InitializerParameter*;
+    = Syntax:`IInitializerDefinitionSyntax`? /Attributes/ Parameters:InitializerParameter*;
 DefaultInitializerDefinition <: InitializerDefinition;
 OrdinaryInitializerDefinition <: Code, InitializerDefinition
-    = Syntax:`IInitializerDefinitionSyntax`
+    = Syntax:`IInitializerDefinitionSyntax` /Attributes/
     SelfParameter:InitializerSelfParameter /Parameters/ /Entry/ Body:BlockBody /Exit/;
 FieldDefinition <: Code, AlwaysTypeMemberDefinition, NamedBinding, FieldDeclaration, ExecutableDefinition
-    = Syntax:`IFieldDefinitionSyntax` TypeNode:Type /Entry/ Initializer:AmbiguousExpression? /Exit/;
+    = Syntax:`IFieldDefinitionSyntax` /Attributes/ TypeNode:Type /Entry/ Initializer:AmbiguousExpression? /Exit/;
 AssociatedFunctionDefinition <: FunctionInvocableDefinition, AlwaysTypeMemberDefinition, AssociatedMemberDefinition, AssociatedFunctionDeclaration
-    = Syntax:`IAssociatedFunctionDefinitionSyntax` /Parameters/ /Return/ /Entry/ /Body/ /Exit/;
+    = Syntax:`IAssociatedFunctionDefinitionSyntax` /Attributes/ /Parameters/ /Return/ /Entry/ /Body/ /Exit/;
 AssociatedTypeDefinition <: AssociatedMemberDefinition, AlwaysTypeMemberDefinition, AssociatedTypeDeclaration
-    = Syntax:`IAssociatedTypeDefinitionSyntax` Initializer:Type?;
+    = Syntax:`IAssociatedTypeDefinitionSyntax` /Attributes/ Initializer:Type?;
 
 // ---------- Attributes
 Attribute <: Code = Syntax:`IAttributeSyntax` TypeName:TypeName;

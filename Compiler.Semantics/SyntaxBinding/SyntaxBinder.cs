@@ -97,20 +97,19 @@ internal static class SyntaxBinder
         };
 
     private static IClassDefinitionNode ClassDefinition(IClassDefinitionSyntax syntax)
-        // TODO support attributes on class
-        => IClassDefinitionNode.Create(syntax, [], GenericParameters(syntax.GenericParameters),
-            TypeName(syntax.BaseTypeName), SupertypeNames(syntax.SupertypeNames),
-            MemberDefinitions(syntax.Members));
+        => IClassDefinitionNode.Create(syntax, Attributes(syntax.Attributes),
+            GenericParameters(syntax.GenericParameters), TypeName(syntax.BaseTypeName),
+            SupertypeNames(syntax.SupertypeNames), MemberDefinitions(syntax.Members));
 
     private static IStructDefinitionNode StructDefinition(IStructDefinitionSyntax syntax)
-        // TODO support attributes on struct
-        => IStructDefinitionNode.Create(syntax, [], GenericParameters(syntax.GenericParameters),
-            SupertypeNames(syntax.SupertypeNames), MemberDefinitions(syntax.Members));
+        => IStructDefinitionNode.Create(syntax, Attributes(syntax.Attributes),
+            GenericParameters(syntax.GenericParameters), SupertypeNames(syntax.SupertypeNames),
+            MemberDefinitions(syntax.Members));
 
     private static ITraitDefinitionNode TraitDefinition(ITraitDefinitionSyntax syntax)
-        // TODO support attributes on trait
-        => ITraitDefinitionNode.Create(syntax, [], GenericParameters(syntax.GenericParameters),
-            SupertypeNames(syntax.SupertypeNames), MemberDefinitions(syntax.Members));
+        => ITraitDefinitionNode.Create(syntax, Attributes(syntax.Attributes),
+            GenericParameters(syntax.GenericParameters), SupertypeNames(syntax.SupertypeNames),
+            MemberDefinitions(syntax.Members));
 
     private static IEnumerable<ITypeNameNode> SupertypeNames(IEnumerable<INameSyntax> syntax)
         => syntax.Select(syn => TypeName(syn));
@@ -150,30 +149,36 @@ internal static class SyntaxBinder
         };
 
     private static IOrdinaryMethodDefinitionNode OrdinaryMethodDefinition(IOrdinaryMethodDefinitionSyntax syntax)
-        => IOrdinaryMethodDefinitionNode.Create(syntax, MethodSelfParameter(syntax.SelfParameter),
-            NamedParameters(syntax.Parameters), Type(syntax.Return?.Type), Body(syntax.Body));
-
-    private static IGetterMethodDefinitionNode GetterMethodDefinition(IGetterMethodDefinitionSyntax syntax)
-        => IGetterMethodDefinitionNode.Create(syntax, MethodSelfParameter(syntax.SelfParameter),
-            NamedParameters(syntax.Parameters), Type(syntax.Return.Type), Body(syntax.Body));
-
-    private static ISetterMethodDefinitionNode SetterMethodDefinition(ISetterMethodDefinitionSyntax syntax)
-        => ISetterMethodDefinitionNode.Create(syntax, MethodSelfParameter(syntax.SelfParameter),
-            NamedParameters(syntax.Parameters), Type(syntax.Return?.Type), Body(syntax.Body));
-
-    private static IInitializerDefinitionNode InitializerDefinition(IInitializerDefinitionSyntax syntax)
-        => IOrdinaryInitializerDefinitionNode.Create(syntax, InitializerSelfParameter(syntax.SelfParameter),
-            InitializerParameters(syntax.Parameters), BlockBody(syntax.Body));
-
-    private static IFieldDefinitionNode FieldDefinition(IFieldDefinitionSyntax syntax)
-        => IFieldDefinitionNode.Create(syntax, Type(syntax.Type), Expression(syntax.Initializer));
-
-    private static IAssociatedFunctionDefinitionNode AssociatedFunctionDefinition(IAssociatedFunctionDefinitionSyntax syntax)
-        => IAssociatedFunctionDefinitionNode.Create(syntax, NamedParameters(syntax.Parameters),
+        => IOrdinaryMethodDefinitionNode.Create(syntax, Attributes(syntax.Attributes),
+            MethodSelfParameter(syntax.SelfParameter), NamedParameters(syntax.Parameters),
             Type(syntax.Return?.Type), Body(syntax.Body));
 
+    private static IGetterMethodDefinitionNode GetterMethodDefinition(IGetterMethodDefinitionSyntax syntax)
+        => IGetterMethodDefinitionNode.Create(syntax, Attributes(syntax.Attributes),
+            MethodSelfParameter(syntax.SelfParameter), NamedParameters(syntax.Parameters),
+            Type(syntax.Return.Type), Body(syntax.Body));
+
+    private static ISetterMethodDefinitionNode SetterMethodDefinition(ISetterMethodDefinitionSyntax syntax)
+        => ISetterMethodDefinitionNode.Create(syntax, Attributes(syntax.Attributes),
+            MethodSelfParameter(syntax.SelfParameter), NamedParameters(syntax.Parameters),
+            Type(syntax.Return?.Type), Body(syntax.Body));
+
+    private static IInitializerDefinitionNode InitializerDefinition(IInitializerDefinitionSyntax syntax)
+        => IOrdinaryInitializerDefinitionNode.Create(syntax, Attributes(syntax.Attributes),
+            InitializerSelfParameter(syntax.SelfParameter), InitializerParameters(syntax.Parameters),
+            BlockBody(syntax.Body));
+
+    private static IFieldDefinitionNode FieldDefinition(IFieldDefinitionSyntax syntax)
+        => IFieldDefinitionNode.Create(syntax, Attributes(syntax.Attributes), Type(syntax.Type),
+            Expression(syntax.Initializer));
+
+    private static IAssociatedFunctionDefinitionNode AssociatedFunctionDefinition(IAssociatedFunctionDefinitionSyntax syntax)
+        => IAssociatedFunctionDefinitionNode.Create(syntax, Attributes(syntax.Attributes),
+            NamedParameters(syntax.Parameters), Type(syntax.Return?.Type), Body(syntax.Body));
+
     private static IAssociatedTypeDefinitionNode AssociatedTypeDefinition(IAssociatedTypeDefinitionSyntax syntax)
-        => IAssociatedTypeDefinitionNode.Create(syntax, Type(syntax.Initializer));
+        => IAssociatedTypeDefinitionNode.Create(syntax, Attributes(syntax.Attributes),
+            Type(syntax.Initializer));
     #endregion
 
     #region Attributes

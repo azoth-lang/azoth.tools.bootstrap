@@ -68,6 +68,7 @@
 = SetterMethodDefinition.Kind => MethodKind.Setter;
 ↑ InitializerDefinition.Name: `IdentifierName`? => Syntax?.Name;
 ↑ DefaultInitializerDefinition.Syntax: `IInitializerDefinitionSyntax`? => null;
+↑ DefaultInitializerDefinition.Attributes: Attribute* => [];
 ↑ DefaultInitializerDefinition.Parameters: InitializerParameter*
     => FixedList.Empty<IInitializerParameterNode>();
 ↑ DefaultInitializerDefinition.Body: Body? => null;
