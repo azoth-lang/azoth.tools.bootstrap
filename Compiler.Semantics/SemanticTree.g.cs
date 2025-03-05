@@ -1758,6 +1758,8 @@ public partial interface IExpressionNode : IAmbiguousExpressionNode, IControlFlo
     ValueIdScope ValueIdScope { get; }
     ValueId ValueId { get; }
     IMaybeType Type { get; }
+    IMaybeType LocatorType
+        => Type;
     IFlowState FlowStateAfter { get; }
     IMaybePlainType PlainType { get; }
     ExpressionKind ExpressionKind { get; }

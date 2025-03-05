@@ -70,6 +70,8 @@
 // TODO remove once all nodes properly provide the expected type
 = AmbiguousExpression.*.ExpectedType => null;
 ↑ Expression.Type: `IMaybeType`;
+/// The type of this expression when it is used as a locator (e.g. to assign into or take a reference to)
+↑ Expression.LocatorType: `IMaybeType` => Type;
 ↑ Expression.FlowStateAfter: `IFlowState`;
 ↓ OrdinaryTypedExpression.ExpectedType:`IMaybeType`?;
 /// <summary>
