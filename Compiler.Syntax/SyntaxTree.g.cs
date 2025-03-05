@@ -280,6 +280,7 @@ public partial interface IClassDefinitionSyntax : ITypeDefinitionSyntax
         TextSpan span,
         CodeFile file,
         TextSpan nameSpan,
+        IEnumerable<IAttributeSyntax> attributes,
         AccessModifierSyntax accessModifier,
         IConstKeywordToken? constModifier,
         IMoveKeywordToken? moveModifier,
@@ -289,7 +290,7 @@ public partial interface IClassDefinitionSyntax : ITypeDefinitionSyntax
         INameSyntax? baseTypeName,
         IEnumerable<INameSyntax> supertypeNames,
         IEnumerable<IMemberDefinitionSyntax> members)
-        => new ClassDefinitionSyntax(span, file, nameSpan, accessModifier, constModifier, moveModifier, name, abstractModifier, genericParameters, baseTypeName, supertypeNames, members);
+        => new ClassDefinitionSyntax(span, file, nameSpan, attributes, accessModifier, constModifier, moveModifier, name, abstractModifier, genericParameters, baseTypeName, supertypeNames, members);
 }
 
 [Closed(typeof(StructDefinitionSyntax))]
@@ -301,6 +302,7 @@ public partial interface IStructDefinitionSyntax : ITypeDefinitionSyntax
         TextSpan span,
         CodeFile file,
         TextSpan nameSpan,
+        IEnumerable<IAttributeSyntax> attributes,
         AccessModifierSyntax accessModifier,
         IConstKeywordToken? constModifier,
         IMoveKeywordToken? moveModifier,
@@ -308,7 +310,7 @@ public partial interface IStructDefinitionSyntax : ITypeDefinitionSyntax
         IEnumerable<IGenericParameterSyntax> genericParameters,
         IEnumerable<INameSyntax> supertypeNames,
         IEnumerable<IMemberDefinitionSyntax> members)
-        => new StructDefinitionSyntax(span, file, nameSpan, accessModifier, constModifier, moveModifier, name, genericParameters, supertypeNames, members);
+        => new StructDefinitionSyntax(span, file, nameSpan, attributes, accessModifier, constModifier, moveModifier, name, genericParameters, supertypeNames, members);
 }
 
 [Closed(typeof(TraitDefinitionSyntax))]
@@ -320,6 +322,7 @@ public partial interface ITraitDefinitionSyntax : ITypeDefinitionSyntax
         TextSpan span,
         CodeFile file,
         TextSpan nameSpan,
+        IEnumerable<IAttributeSyntax> attributes,
         AccessModifierSyntax accessModifier,
         IConstKeywordToken? constModifier,
         IMoveKeywordToken? moveModifier,
@@ -327,7 +330,7 @@ public partial interface ITraitDefinitionSyntax : ITypeDefinitionSyntax
         IEnumerable<IGenericParameterSyntax> genericParameters,
         IEnumerable<INameSyntax> supertypeNames,
         IEnumerable<IMemberDefinitionSyntax> members)
-        => new TraitDefinitionSyntax(span, file, nameSpan, accessModifier, constModifier, moveModifier, name, genericParameters, supertypeNames, members);
+        => new TraitDefinitionSyntax(span, file, nameSpan, attributes, accessModifier, constModifier, moveModifier, name, genericParameters, supertypeNames, members);
 }
 
 [Closed(typeof(GenericParameterSyntax))]
@@ -358,6 +361,7 @@ public partial interface IGenericParameterSyntax : ICodeSyntax
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IMemberDefinitionSyntax : IFacetMemberDefinitionSyntax
 {
+    IFixedList<IAttributeSyntax> Attributes { get; }
 }
 
 [Closed(
@@ -385,6 +389,7 @@ public partial interface IOrdinaryMethodDefinitionSyntax : IMethodDefinitionSynt
         TextSpan span,
         CodeFile file,
         TextSpan nameSpan,
+        IEnumerable<IAttributeSyntax> attributes,
         AccessModifierSyntax accessModifier,
         IAbstractKeywordToken? abstractKeyword,
         IdentifierName name,
@@ -392,7 +397,7 @@ public partial interface IOrdinaryMethodDefinitionSyntax : IMethodDefinitionSynt
         IEnumerable<INamedParameterSyntax> parameters,
         IReturnSyntax? @return,
         IBodySyntax? body)
-        => new OrdinaryMethodDefinitionSyntax(span, file, nameSpan, accessModifier, abstractKeyword, name, selfParameter, parameters, @return, body);
+        => new OrdinaryMethodDefinitionSyntax(span, file, nameSpan, attributes, accessModifier, abstractKeyword, name, selfParameter, parameters, @return, body);
 }
 
 [Closed(typeof(GetterMethodDefinitionSyntax))]
@@ -410,13 +415,14 @@ public partial interface IGetterMethodDefinitionSyntax : IMethodDefinitionSyntax
         TextSpan span,
         CodeFile file,
         TextSpan nameSpan,
+        IEnumerable<IAttributeSyntax> attributes,
         AccessModifierSyntax accessModifier,
         IAbstractKeywordToken? abstractKeyword,
         IdentifierName name,
         IMethodSelfParameterSyntax selfParameter,
         IReturnSyntax @return,
         IBodySyntax? body)
-        => new GetterMethodDefinitionSyntax(span, file, nameSpan, accessModifier, abstractKeyword, name, selfParameter, @return, body);
+        => new GetterMethodDefinitionSyntax(span, file, nameSpan, attributes, accessModifier, abstractKeyword, name, selfParameter, @return, body);
 }
 
 [Closed(typeof(SetterMethodDefinitionSyntax))]
@@ -431,13 +437,14 @@ public partial interface ISetterMethodDefinitionSyntax : IMethodDefinitionSyntax
         TextSpan span,
         CodeFile file,
         TextSpan nameSpan,
+        IEnumerable<IAttributeSyntax> attributes,
         AccessModifierSyntax accessModifier,
         IAbstractKeywordToken? abstractKeyword,
         IdentifierName name,
         IMethodSelfParameterSyntax selfParameter,
         IEnumerable<INamedParameterSyntax> parameters,
         IBodySyntax? body)
-        => new SetterMethodDefinitionSyntax(span, file, nameSpan, accessModifier, abstractKeyword, name, selfParameter, parameters, body);
+        => new SetterMethodDefinitionSyntax(span, file, nameSpan, attributes, accessModifier, abstractKeyword, name, selfParameter, parameters, body);
 }
 
 [Closed(typeof(InitializerDefinitionSyntax))]
@@ -454,12 +461,13 @@ public partial interface IInitializerDefinitionSyntax : IMemberDefinitionSyntax,
         TextSpan span,
         CodeFile file,
         TextSpan nameSpan,
+        IEnumerable<IAttributeSyntax> attributes,
         AccessModifierSyntax accessModifier,
         IdentifierName? name,
         IInitializerSelfParameterSyntax selfParameter,
         IEnumerable<IInitializerParameterSyntax> parameters,
         IBlockBodySyntax body)
-        => new InitializerDefinitionSyntax(span, file, nameSpan, accessModifier, name, selfParameter, parameters, body);
+        => new InitializerDefinitionSyntax(span, file, nameSpan, attributes, accessModifier, name, selfParameter, parameters, body);
 }
 
 [Closed(typeof(FieldDefinitionSyntax))]
@@ -475,12 +483,13 @@ public partial interface IFieldDefinitionSyntax : IMemberDefinitionSyntax, IBind
         TextSpan span,
         CodeFile file,
         TextSpan nameSpan,
+        IEnumerable<IAttributeSyntax> attributes,
         AccessModifierSyntax accessModifier,
         bool isMutableBinding,
         IdentifierName name,
         ITypeSyntax type,
         IExpressionSyntax? initializer)
-        => new FieldDefinitionSyntax(span, file, nameSpan, accessModifier, isMutableBinding, name, type, initializer);
+        => new FieldDefinitionSyntax(span, file, nameSpan, attributes, accessModifier, isMutableBinding, name, type, initializer);
 }
 
 [Closed(typeof(AssociatedFunctionDefinitionSyntax))]
@@ -498,13 +507,14 @@ public partial interface IAssociatedFunctionDefinitionSyntax : IMemberDefinition
         TextSpan span,
         CodeFile file,
         TextSpan nameSpan,
+        IEnumerable<IAttributeSyntax> attributes,
         AccessModifierSyntax accessModifier,
         IAbstractKeywordToken? abstractKeyword,
         IdentifierName name,
         IEnumerable<INamedParameterSyntax> parameters,
         IReturnSyntax? @return,
         IBodySyntax? body)
-        => new AssociatedFunctionDefinitionSyntax(span, file, nameSpan, accessModifier, abstractKeyword, name, parameters, @return, body);
+        => new AssociatedFunctionDefinitionSyntax(span, file, nameSpan, attributes, accessModifier, abstractKeyword, name, parameters, @return, body);
 }
 
 [Closed(typeof(AssociatedTypeDefinitionSyntax))]
@@ -523,6 +533,7 @@ public partial interface IAssociatedTypeDefinitionSyntax : IMemberDefinitionSynt
         TextSpan span,
         CodeFile file,
         TextSpan nameSpan,
+        IEnumerable<IAttributeSyntax> attributes,
         AccessModifierSyntax accessModifier,
         IAbstractKeywordToken? abstractKeyword,
         IVarianceToken? variance,
@@ -530,7 +541,7 @@ public partial interface IAssociatedTypeDefinitionSyntax : IMemberDefinitionSynt
         IdentifierName name,
         IEqualsToken? equalsOperator,
         ITypeSyntax? initializer)
-        => new AssociatedTypeDefinitionSyntax(span, file, nameSpan, accessModifier, abstractKeyword, variance, typeKeyword, name, equalsOperator, initializer);
+        => new AssociatedTypeDefinitionSyntax(span, file, nameSpan, attributes, accessModifier, abstractKeyword, variance, typeKeyword, name, equalsOperator, initializer);
 }
 
 [Closed(typeof(AttributeSyntax))]
@@ -1739,6 +1750,7 @@ file class ClassDefinitionSyntax : IClassDefinitionSyntax
     public TextSpan Span { [DebuggerStepThrough] get; }
     public CodeFile File { [DebuggerStepThrough] get; }
     public TextSpan NameSpan { [DebuggerStepThrough] get; }
+    public IFixedList<IAttributeSyntax> Attributes { [DebuggerStepThrough] get; }
     public AccessModifierSyntax AccessModifier { [DebuggerStepThrough] get; }
     public IConstKeywordToken? ConstModifier { [DebuggerStepThrough] get; }
     public IMoveKeywordToken? MoveModifier { [DebuggerStepThrough] get; }
@@ -1755,6 +1767,7 @@ file class ClassDefinitionSyntax : IClassDefinitionSyntax
         TextSpan span,
         CodeFile file,
         TextSpan nameSpan,
+        IEnumerable<IAttributeSyntax> attributes,
         AccessModifierSyntax accessModifier,
         IConstKeywordToken? constModifier,
         IMoveKeywordToken? moveModifier,
@@ -1768,6 +1781,7 @@ file class ClassDefinitionSyntax : IClassDefinitionSyntax
         Span = span;
         File = file;
         NameSpan = nameSpan;
+        Attributes = attributes.ToFixedList();
         AccessModifier = accessModifier;
         ConstModifier = constModifier;
         MoveModifier = moveModifier;
@@ -1788,6 +1802,7 @@ file class StructDefinitionSyntax : IStructDefinitionSyntax
     public TextSpan Span { [DebuggerStepThrough] get; }
     public CodeFile File { [DebuggerStepThrough] get; }
     public TextSpan NameSpan { [DebuggerStepThrough] get; }
+    public IFixedList<IAttributeSyntax> Attributes { [DebuggerStepThrough] get; }
     public AccessModifierSyntax AccessModifier { [DebuggerStepThrough] get; }
     public IConstKeywordToken? ConstModifier { [DebuggerStepThrough] get; }
     public IMoveKeywordToken? MoveModifier { [DebuggerStepThrough] get; }
@@ -1802,6 +1817,7 @@ file class StructDefinitionSyntax : IStructDefinitionSyntax
         TextSpan span,
         CodeFile file,
         TextSpan nameSpan,
+        IEnumerable<IAttributeSyntax> attributes,
         AccessModifierSyntax accessModifier,
         IConstKeywordToken? constModifier,
         IMoveKeywordToken? moveModifier,
@@ -1813,6 +1829,7 @@ file class StructDefinitionSyntax : IStructDefinitionSyntax
         Span = span;
         File = file;
         NameSpan = nameSpan;
+        Attributes = attributes.ToFixedList();
         AccessModifier = accessModifier;
         ConstModifier = constModifier;
         MoveModifier = moveModifier;
@@ -1831,6 +1848,7 @@ file class TraitDefinitionSyntax : ITraitDefinitionSyntax
     public TextSpan Span { [DebuggerStepThrough] get; }
     public CodeFile File { [DebuggerStepThrough] get; }
     public TextSpan NameSpan { [DebuggerStepThrough] get; }
+    public IFixedList<IAttributeSyntax> Attributes { [DebuggerStepThrough] get; }
     public AccessModifierSyntax AccessModifier { [DebuggerStepThrough] get; }
     public IConstKeywordToken? ConstModifier { [DebuggerStepThrough] get; }
     public IMoveKeywordToken? MoveModifier { [DebuggerStepThrough] get; }
@@ -1845,6 +1863,7 @@ file class TraitDefinitionSyntax : ITraitDefinitionSyntax
         TextSpan span,
         CodeFile file,
         TextSpan nameSpan,
+        IEnumerable<IAttributeSyntax> attributes,
         AccessModifierSyntax accessModifier,
         IConstKeywordToken? constModifier,
         IMoveKeywordToken? moveModifier,
@@ -1856,6 +1875,7 @@ file class TraitDefinitionSyntax : ITraitDefinitionSyntax
         Span = span;
         File = file;
         NameSpan = nameSpan;
+        Attributes = attributes.ToFixedList();
         AccessModifier = accessModifier;
         ConstModifier = constModifier;
         MoveModifier = moveModifier;
@@ -1902,6 +1922,7 @@ file class OrdinaryMethodDefinitionSyntax : IOrdinaryMethodDefinitionSyntax
     public TextSpan Span { [DebuggerStepThrough] get; }
     public CodeFile File { [DebuggerStepThrough] get; }
     public TextSpan NameSpan { [DebuggerStepThrough] get; }
+    public IFixedList<IAttributeSyntax> Attributes { [DebuggerStepThrough] get; }
     public AccessModifierSyntax AccessModifier { [DebuggerStepThrough] get; }
     public IAbstractKeywordToken? AbstractKeyword { [DebuggerStepThrough] get; }
     public IdentifierName Name { [DebuggerStepThrough] get; }
@@ -1916,6 +1937,7 @@ file class OrdinaryMethodDefinitionSyntax : IOrdinaryMethodDefinitionSyntax
         TextSpan span,
         CodeFile file,
         TextSpan nameSpan,
+        IEnumerable<IAttributeSyntax> attributes,
         AccessModifierSyntax accessModifier,
         IAbstractKeywordToken? abstractKeyword,
         IdentifierName name,
@@ -1927,6 +1949,7 @@ file class OrdinaryMethodDefinitionSyntax : IOrdinaryMethodDefinitionSyntax
         Span = span;
         File = file;
         NameSpan = nameSpan;
+        Attributes = attributes.ToFixedList();
         AccessModifier = accessModifier;
         AbstractKeyword = abstractKeyword;
         Name = name;
@@ -1945,6 +1968,7 @@ file class GetterMethodDefinitionSyntax : IGetterMethodDefinitionSyntax
     public TextSpan Span { [DebuggerStepThrough] get; }
     public CodeFile File { [DebuggerStepThrough] get; }
     public TextSpan NameSpan { [DebuggerStepThrough] get; }
+    public IFixedList<IAttributeSyntax> Attributes { [DebuggerStepThrough] get; }
     public AccessModifierSyntax AccessModifier { [DebuggerStepThrough] get; }
     public IAbstractKeywordToken? AbstractKeyword { [DebuggerStepThrough] get; }
     public IdentifierName Name { [DebuggerStepThrough] get; }
@@ -1958,6 +1982,7 @@ file class GetterMethodDefinitionSyntax : IGetterMethodDefinitionSyntax
         TextSpan span,
         CodeFile file,
         TextSpan nameSpan,
+        IEnumerable<IAttributeSyntax> attributes,
         AccessModifierSyntax accessModifier,
         IAbstractKeywordToken? abstractKeyword,
         IdentifierName name,
@@ -1968,6 +1993,7 @@ file class GetterMethodDefinitionSyntax : IGetterMethodDefinitionSyntax
         Span = span;
         File = file;
         NameSpan = nameSpan;
+        Attributes = attributes.ToFixedList();
         AccessModifier = accessModifier;
         AbstractKeyword = abstractKeyword;
         Name = name;
@@ -1985,6 +2011,7 @@ file class SetterMethodDefinitionSyntax : ISetterMethodDefinitionSyntax
     public TextSpan Span { [DebuggerStepThrough] get; }
     public CodeFile File { [DebuggerStepThrough] get; }
     public TextSpan NameSpan { [DebuggerStepThrough] get; }
+    public IFixedList<IAttributeSyntax> Attributes { [DebuggerStepThrough] get; }
     public AccessModifierSyntax AccessModifier { [DebuggerStepThrough] get; }
     public IAbstractKeywordToken? AbstractKeyword { [DebuggerStepThrough] get; }
     public IdentifierName Name { [DebuggerStepThrough] get; }
@@ -1998,6 +2025,7 @@ file class SetterMethodDefinitionSyntax : ISetterMethodDefinitionSyntax
         TextSpan span,
         CodeFile file,
         TextSpan nameSpan,
+        IEnumerable<IAttributeSyntax> attributes,
         AccessModifierSyntax accessModifier,
         IAbstractKeywordToken? abstractKeyword,
         IdentifierName name,
@@ -2008,6 +2036,7 @@ file class SetterMethodDefinitionSyntax : ISetterMethodDefinitionSyntax
         Span = span;
         File = file;
         NameSpan = nameSpan;
+        Attributes = attributes.ToFixedList();
         AccessModifier = accessModifier;
         AbstractKeyword = abstractKeyword;
         Name = name;
@@ -2025,6 +2054,7 @@ file class InitializerDefinitionSyntax : IInitializerDefinitionSyntax
     public TextSpan Span { [DebuggerStepThrough] get; }
     public CodeFile File { [DebuggerStepThrough] get; }
     public TextSpan NameSpan { [DebuggerStepThrough] get; }
+    public IFixedList<IAttributeSyntax> Attributes { [DebuggerStepThrough] get; }
     public AccessModifierSyntax AccessModifier { [DebuggerStepThrough] get; }
     public IdentifierName? Name { [DebuggerStepThrough] get; }
     public IInitializerSelfParameterSyntax SelfParameter { [DebuggerStepThrough] get; }
@@ -2037,6 +2067,7 @@ file class InitializerDefinitionSyntax : IInitializerDefinitionSyntax
         TextSpan span,
         CodeFile file,
         TextSpan nameSpan,
+        IEnumerable<IAttributeSyntax> attributes,
         AccessModifierSyntax accessModifier,
         IdentifierName? name,
         IInitializerSelfParameterSyntax selfParameter,
@@ -2046,6 +2077,7 @@ file class InitializerDefinitionSyntax : IInitializerDefinitionSyntax
         Span = span;
         File = file;
         NameSpan = nameSpan;
+        Attributes = attributes.ToFixedList();
         AccessModifier = accessModifier;
         Name = name;
         SelfParameter = selfParameter;
@@ -2062,6 +2094,7 @@ file class FieldDefinitionSyntax : IFieldDefinitionSyntax
     public TextSpan Span { [DebuggerStepThrough] get; }
     public CodeFile File { [DebuggerStepThrough] get; }
     public TextSpan NameSpan { [DebuggerStepThrough] get; }
+    public IFixedList<IAttributeSyntax> Attributes { [DebuggerStepThrough] get; }
     public AccessModifierSyntax AccessModifier { [DebuggerStepThrough] get; }
     public bool IsMutableBinding { [DebuggerStepThrough] get; }
     public IdentifierName Name { [DebuggerStepThrough] get; }
@@ -2074,6 +2107,7 @@ file class FieldDefinitionSyntax : IFieldDefinitionSyntax
         TextSpan span,
         CodeFile file,
         TextSpan nameSpan,
+        IEnumerable<IAttributeSyntax> attributes,
         AccessModifierSyntax accessModifier,
         bool isMutableBinding,
         IdentifierName name,
@@ -2083,6 +2117,7 @@ file class FieldDefinitionSyntax : IFieldDefinitionSyntax
         Span = span;
         File = file;
         NameSpan = nameSpan;
+        Attributes = attributes.ToFixedList();
         AccessModifier = accessModifier;
         IsMutableBinding = isMutableBinding;
         Name = name;
@@ -2099,6 +2134,7 @@ file class AssociatedFunctionDefinitionSyntax : IAssociatedFunctionDefinitionSyn
     public TextSpan Span { [DebuggerStepThrough] get; }
     public CodeFile File { [DebuggerStepThrough] get; }
     public TextSpan NameSpan { [DebuggerStepThrough] get; }
+    public IFixedList<IAttributeSyntax> Attributes { [DebuggerStepThrough] get; }
     public AccessModifierSyntax AccessModifier { [DebuggerStepThrough] get; }
     public IAbstractKeywordToken? AbstractKeyword { [DebuggerStepThrough] get; }
     public IdentifierName Name { [DebuggerStepThrough] get; }
@@ -2112,6 +2148,7 @@ file class AssociatedFunctionDefinitionSyntax : IAssociatedFunctionDefinitionSyn
         TextSpan span,
         CodeFile file,
         TextSpan nameSpan,
+        IEnumerable<IAttributeSyntax> attributes,
         AccessModifierSyntax accessModifier,
         IAbstractKeywordToken? abstractKeyword,
         IdentifierName name,
@@ -2122,6 +2159,7 @@ file class AssociatedFunctionDefinitionSyntax : IAssociatedFunctionDefinitionSyn
         Span = span;
         File = file;
         NameSpan = nameSpan;
+        Attributes = attributes.ToFixedList();
         AccessModifier = accessModifier;
         AbstractKeyword = abstractKeyword;
         Name = name;
@@ -2139,6 +2177,7 @@ file class AssociatedTypeDefinitionSyntax : IAssociatedTypeDefinitionSyntax
     public TextSpan Span { [DebuggerStepThrough] get; }
     public CodeFile File { [DebuggerStepThrough] get; }
     public TextSpan NameSpan { [DebuggerStepThrough] get; }
+    public IFixedList<IAttributeSyntax> Attributes { [DebuggerStepThrough] get; }
     public AccessModifierSyntax AccessModifier { [DebuggerStepThrough] get; }
     public IAbstractKeywordToken? AbstractKeyword { [DebuggerStepThrough] get; }
     public IVarianceToken? Variance { [DebuggerStepThrough] get; }
@@ -2153,6 +2192,7 @@ file class AssociatedTypeDefinitionSyntax : IAssociatedTypeDefinitionSyntax
         TextSpan span,
         CodeFile file,
         TextSpan nameSpan,
+        IEnumerable<IAttributeSyntax> attributes,
         AccessModifierSyntax accessModifier,
         IAbstractKeywordToken? abstractKeyword,
         IVarianceToken? variance,
@@ -2164,6 +2204,7 @@ file class AssociatedTypeDefinitionSyntax : IAssociatedTypeDefinitionSyntax
         Span = span;
         File = file;
         NameSpan = nameSpan;
+        Attributes = attributes.ToFixedList();
         AccessModifier = accessModifier;
         AbstractKeyword = abstractKeyword;
         Variance = variance;

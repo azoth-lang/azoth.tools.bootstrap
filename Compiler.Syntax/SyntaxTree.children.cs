@@ -20,6 +20,8 @@ public static class ISyntaxExtensions
                 yield return n.RightOperand;
                 yield break;
             case IAssociatedFunctionDefinitionSyntax n:
+                foreach (var child in n.Attributes)
+                    yield return child;
                 foreach (var child in n.Parameters)
                     yield return child;
                 if (n.Return is not null)
@@ -28,6 +30,8 @@ public static class ISyntaxExtensions
                     yield return n.Body;
                 yield break;
             case IAssociatedTypeDefinitionSyntax n:
+                foreach (var child in n.Attributes)
+                    yield return child;
                 if (n.Initializer is not null)
                     yield return n.Initializer;
                 yield break;
@@ -87,6 +91,8 @@ public static class ISyntaxExtensions
                 yield return n.Referent;
                 yield break;
             case IClassDefinitionSyntax n:
+                foreach (var child in n.Attributes)
+                    yield return child;
                 foreach (var child in n.GenericParameters)
                     yield return child;
                 if (n.BaseTypeName is not null)
@@ -113,6 +119,8 @@ public static class ISyntaxExtensions
                 yield return n.Expression;
                 yield break;
             case IFieldDefinitionSyntax n:
+                foreach (var child in n.Attributes)
+                    yield return child;
                 yield return n.Type;
                 if (n.Initializer is not null)
                     yield return n.Initializer;
@@ -152,6 +160,8 @@ public static class ISyntaxExtensions
                 yield return n.Constraint;
                 yield break;
             case IGetterMethodDefinitionSyntax n:
+                foreach (var child in n.Attributes)
+                    yield return child;
                 yield return n.SelfParameter;
                 yield return n.Return;
                 if (n.Body is not null)
@@ -168,6 +178,8 @@ public static class ISyntaxExtensions
             case IImportDirectiveSyntax n:
                 yield break;
             case IInitializerDefinitionSyntax n:
+                foreach (var child in n.Attributes)
+                    yield return child;
                 yield return n.SelfParameter;
                 foreach (var child in n.Parameters)
                     yield return child;
@@ -216,6 +228,8 @@ public static class ISyntaxExtensions
                 yield return n.Referent;
                 yield break;
             case IOrdinaryMethodDefinitionSyntax n:
+                foreach (var child in n.Attributes)
+                    yield return child;
                 yield return n.SelfParameter;
                 foreach (var child in n.Parameters)
                     yield return child;
@@ -273,6 +287,8 @@ public static class ISyntaxExtensions
                 yield return n.Referent;
                 yield break;
             case ISetterMethodDefinitionSyntax n:
+                foreach (var child in n.Attributes)
+                    yield return child;
                 yield return n.SelfParameter;
                 foreach (var child in n.Parameters)
                     yield return child;
@@ -282,6 +298,8 @@ public static class ISyntaxExtensions
             case IStringLiteralExpressionSyntax n:
                 yield break;
             case IStructDefinitionSyntax n:
+                foreach (var child in n.Attributes)
+                    yield return child;
                 foreach (var child in n.GenericParameters)
                     yield return child;
                 foreach (var child in n.SupertypeNames)
@@ -290,6 +308,8 @@ public static class ISyntaxExtensions
                     yield return child;
                 yield break;
             case ITraitDefinitionSyntax n:
+                foreach (var child in n.Attributes)
+                    yield return child;
                 foreach (var child in n.GenericParameters)
                     yield return child;
                 foreach (var child in n.SupertypeNames)

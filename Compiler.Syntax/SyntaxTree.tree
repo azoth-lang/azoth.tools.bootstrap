@@ -64,7 +64,8 @@ FunctionDefinition <: InvocableDefinition, NamespaceBlockMemberDefinition
 
 // ---------- Type Definitions
 TypeDefinition <: NamespaceBlockMemberDefinition, MemberDefinition
-    = ConstModifier:`IConstKeywordToken`? MoveModifier:`IMoveKeywordToken`? Name:`OrdinaryName` GenericParameters:GenericParameter* SupertypeNames:Name* Members:MemberDefinition*;
+    = Attributes:Attribute* /AccessModifier/ ConstModifier:`IConstKeywordToken`? MoveModifier:`IMoveKeywordToken`?
+        Name:`OrdinaryName` GenericParameters:GenericParameter* SupertypeNames:Name* Members:MemberDefinition*;
 ClassDefinition <: TypeDefinition
     = AbstractModifier:`IAbstractKeywordToken`? /GenericParameters/ BaseTypeName:Name? /SupertypeNames/ /Members/;
 StructDefinition <: TypeDefinition;
@@ -74,7 +75,7 @@ TraitDefinition <: TypeDefinition;
 GenericParameter <: Code = Constraint:CapabilityConstraint Name:`IdentifierName` Independence:`TypeParameterIndependence` Variance:`TypeParameterVariance`;
 
 // ---------- Member Definitions (i.e. definitions that can be contained in a type)
-MemberDefinition <: FacetMemberDefinition;
+MemberDefinition <: FacetMemberDefinition = Attributes:Attribute* /AccessModifier/;
 MethodDefinition <: MemberDefinition, InvocableDefinition
     = AbstractKeyword:`IAbstractKeywordToken`? Name:`IdentifierName`
         SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return? Body?;

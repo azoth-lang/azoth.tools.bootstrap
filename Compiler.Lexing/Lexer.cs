@@ -442,13 +442,13 @@ public class Lexer
         char? NextChar()
         {
             var index = tokenStart + 1;
-            return index < text.Length ? text[index] : default;
+            return index < text.Length ? text[index] : null;
         }
 
         char? CharAt(int offset)
         {
             var index = tokenStart + offset;
-            return index < text.Length ? text[index] : default;
+            return index < text.Length ? text[index] : null;
         }
 
         IStringLiteralToken LexString()
@@ -494,7 +494,7 @@ public class Lexer
                     // Just the slash is invalid
                     var errorSpan = TextSpan.FromStartEnd(tokenEnd - 1, tokenEnd);
                     diagnostics.Add(LexError.InvalidEscapeSequence(file, errorSpan));
-                    break; // we hit the end of file and need to not add to tokenEnd any more
+                    break; // we hit the end of file and need to not add to tokenEnd anymore
                 }
 
                 // Escape Sequence with next char (i.e. "\\x")
@@ -597,21 +597,17 @@ public class Lexer
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-
     private static bool IsIntegerCharacter(char c) => c is >= '0' and <= '9';
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-
     private static bool IsIdentifierStartCharacter(char c)
         => c is (>= 'a' and <= 'z') or (>= 'A' and <= 'Z') or '_';
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-
     private static bool IsIdentifierCharacter(char c)
         => c is (>= 'a' and <= 'z') or (>= 'A' and <= 'Z') or '_' || char.IsNumber(c);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-
     private static bool IsHexDigit(char c)
         => c is (>= '0' and <= '9') or (>= 'a' and <= 'f') or (>= 'A' and <= 'F');
 }
