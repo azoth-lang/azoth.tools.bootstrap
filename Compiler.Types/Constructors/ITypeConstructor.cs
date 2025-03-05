@@ -23,6 +23,12 @@ public interface ITypeConstructor
     #endregion
 
     /// <summary>
+    /// The semantics of types created with this constructor or <see langword="null"/> if the
+    /// semantics can't be determined (e.g. because this is a type variable).
+    /// </summary>
+    TypeSemantics? Semantics { get; }
+
+    /// <summary>
     /// Construct a plain type with the given <paramref name="containingType"/> and <paramref name="arguments"/>.
     /// </summary>
     PlainType Construct(BarePlainType? containingType, IFixedList<PlainType> arguments);

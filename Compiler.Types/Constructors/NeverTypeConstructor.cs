@@ -14,6 +14,10 @@ internal class NeverTypeConstructor : ITypeConstructor
     private NeverTypeConstructor() { }
     #endregion
 
+
+    /// <remarks>Since `never` is a subtype of all types, it has no clear semantics.</remarks>
+    public TypeSemantics? Semantics => null;
+
     PlainType ITypeConstructor.Construct(BarePlainType? containingType, IFixedList<PlainType> arguments)
     {
         Requires.Null(containingType, nameof(containingType), "Never does not have a containing type.");

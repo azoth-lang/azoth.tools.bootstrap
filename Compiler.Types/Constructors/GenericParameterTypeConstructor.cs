@@ -27,6 +27,9 @@ public class GenericParameterTypeConstructor : ITypeConstructor
     }
 
     #region ITypeConstructor implementation
+    // TODO if the parameter is constrained, then the semantics might be known
+    TypeSemantics? ITypeConstructor.Semantics => null;
+
     PlainType ITypeConstructor.Construct(BarePlainType? containingType, IFixedList<PlainType> arguments)
     {
         Requires.Null(containingType, nameof(containingType), NoContainingTypeMessage);

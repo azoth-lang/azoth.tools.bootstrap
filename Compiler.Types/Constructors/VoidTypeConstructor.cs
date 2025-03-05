@@ -14,6 +14,8 @@ internal sealed class VoidTypeConstructor : ITypeConstructor
     private VoidTypeConstructor() { }
     #endregion
 
+    public TypeSemantics? Semantics => TypeSemantics.Value;
+
     PlainType ITypeConstructor.Construct(BarePlainType? containingType, IFixedList<PlainType> arguments)
     {
         Requires.Null(containingType, nameof(containingType), "Void does not have a containing type.");
