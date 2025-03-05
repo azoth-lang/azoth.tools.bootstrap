@@ -363,18 +363,22 @@ public sealed class InterpreterProcess
 
         switch (selfType)
         {
-            case CapabilityType capabilityType:
-                return CallMethodAsync(methodSymbol, capabilityType, self, arguments);
+            case CapabilityType t:
+                return CallMethodAsync(methodSymbol, t.BareType, self, arguments);
+            case SelfViewpointType t:
+                return CallMethodAsync(methodSymbol, t.Referent, self, arguments);
+            case CapabilitySetSelfType t:
+                return CallMethodAsync(methodSymbol, t.BareType, self, arguments);
+            case CapabilityViewpointType t:
+                return CallMethodAsync(methodSymbol, t.Referent, self, arguments);
+            case CapabilitySetRestrictedType t:
+                return CallMethodAsync(methodSymbol, t.Referent, self, arguments);
             case VoidType _:
             case NeverType _:
             case OptionalType _:
             case GenericParameterType _:
             case FunctionType _:
-            case CapabilitySetSelfType _:
-            case CapabilityViewpointType _:
-            case SelfViewpointType _:
             case RefType _:
-            case CapabilitySetRestrictedType _:
                 var methodSignature = methodSignatures[methodSymbol];
                 throw new InvalidOperationException($"Can't call {methodSignature} on {selfType}");
             default:
@@ -384,17 +388,17 @@ public sealed class InterpreterProcess
 
     private ValueTask<AzothValue> CallMethodAsync(
         MethodSymbol methodSymbol,
-        CapabilityType selfType,
+        BareType selfType,
         AzothValue self,
         IReadOnlyList<AzothValue> arguments)
     {
-        var referenceCall = selfType.TypeConstructor.Semantics switch
+        var referenceCall = selfType.Semantics switch
         {
             // TODO this is an odd case, generic instantiation should avoid it but this works for now
             null => self.InstanceValue.IsObject,
             TypeSemantics.Value => false,
             TypeSemantics.Reference => true,
-            _ => throw ExhaustiveMatch.Failed(selfType.TypeConstructor.Semantics),
+            _ => throw ExhaustiveMatch.Failed(selfType.Semantics),
         };
 
         return referenceCall
@@ -404,19 +408,19 @@ public sealed class InterpreterProcess
 
     private ValueTask<AzothValue> CallClassMethodAsync(
         MethodSymbol methodSymbol,
-        CapabilityType selfType,
+        BareType selfType,
         AzothValue self,
         IReadOnlyList<AzothValue> arguments)
     {
         var methodSignature = methodSignatures[methodSymbol];
         var vtable = self.ObjectValue.VTable;
         var method = vtable[methodSignature];
-        return CallMethodAsync(method, self, selfType.BareType, arguments);
+        return CallMethodAsync(method, self, selfType, arguments);
     }
 
     private ValueTask<AzothValue> CallStructMethod(
         MethodSymbol methodSymbol,
-        CapabilityType selfType,
+        BareType selfType,
         AzothValue self,
         IReadOnlyList<AzothValue> arguments)
     {
@@ -424,7 +428,7 @@ public sealed class InterpreterProcess
         {
             "remainder" => ValueTask.FromResult(Remainder(self, arguments.Single(), selfType)),
             "to_display_string" => ToDisplayStringAsync(self, selfType),
-            _ => CallMethodAsync(structMethods[methodSymbol], self, selfType.BareType, arguments),
+            _ => CallMethodAsync(structMethods[methodSymbol], self, selfType, arguments),
         };
     }
 
@@ -1447,9 +1451,9 @@ public sealed class InterpreterProcess
     private static AzothValue Remainder(
         AzothValue dividend,
         AzothValue divisor,
-        CapabilityType type)
+        BareType selfType)
     {
-        var plainType = type.PlainType;
+        var plainType = selfType.PlainType;
         if (ReferenceEquals(plainType, PlainType.Int)) return AzothValue.Int(dividend.IntValue % divisor.IntValue);
         if (ReferenceEquals(plainType, PlainType.UInt)) return AzothValue.Int(dividend.IntValue % divisor.IntValue);
         if (ReferenceEquals(plainType, PlainType.Int8)) return AzothValue.I8((sbyte)(dividend.I8Value % divisor.I8Value));
@@ -1464,12 +1468,12 @@ public sealed class InterpreterProcess
         if (ReferenceEquals(plainType, PlainType.Size)) return AzothValue.Size(dividend.SizeValue % divisor.SizeValue);
         if (ReferenceEquals(plainType, PlainType.NInt)) return AzothValue.Offset(dividend.NIntValue % divisor.NIntValue);
         if (ReferenceEquals(plainType, PlainType.NUInt)) return AzothValue.Size(dividend.NUIntValue % divisor.NUIntValue);
-        throw new NotImplementedException($"Remainder {type.ToILString()}");
+        throw new NotImplementedException($"Remainder {selfType.ToILString()}");
     }
 
-    private async ValueTask<AzothValue> ToDisplayStringAsync(AzothValue value, CapabilityType type)
+    private async ValueTask<AzothValue> ToDisplayStringAsync(AzothValue value, BareType selfType)
     {
-        var plainType = type.PlainType;
+        var plainType = selfType.PlainType;
         string displayString;
         if (ReferenceEquals(plainType, PlainType.Int)) displayString = value.IntValue.ToString();
         else if (ReferenceEquals(plainType, PlainType.UInt)) displayString = value.IntValue.ToString();
@@ -1480,7 +1484,7 @@ public sealed class InterpreterProcess
         else if (ReferenceEquals(plainType, PlainType.Size)) displayString = value.SizeValue.ToString();
         else if (ReferenceEquals(plainType, PlainType.NInt)) displayString = value.NIntValue.ToString();
         else if (ReferenceEquals(plainType, PlainType.NUInt)) displayString = value.NUIntValue.ToString();
-        else throw new NotImplementedException($"to_display_string({type.ToILString()})");
+        else throw new NotImplementedException($"to_display_string({selfType.ToILString()})");
 
         return await InitializeStringAsync(displayString).ConfigureAwait(false);
     }

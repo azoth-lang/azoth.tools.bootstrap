@@ -8,6 +8,7 @@ using Azoth.Tools.Bootstrap.Compiler.Primitives;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
+using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
@@ -168,10 +169,32 @@ internal static partial class ExpressionTypesAspect
     #region Instance Member Access Expressions
     public static partial IMaybeType FieldAccessExpression_Type(IFieldAccessExpressionNode node)
     {
-        var contextType = node.Context.Type;
+        var contextType = node.Context.Type; // Avoids repeated access
         var fieldType = node.ReferencedDeclaration.BindingType;
         // Access must be applied first, so it can account for independent generic parameters.
         var type = fieldType.AccessedVia(contextType);
+        // Then type parameters can be replaced now that they have the correct access
+        if (contextType is NonVoidType nonVoidContext)
+            // resolve generic type fields
+            type = nonVoidContext.TypeReplacements.ApplyTo(type);
+
+        return type;
+    }
+
+    public static partial IMaybeType FieldAccessExpression_LocatorType(IFieldAccessExpressionNode node)
+    {
+        var contextType = node.Context.Type;
+        //var isInternal = contextType
+        var field = node.ReferencedDeclaration; // Avoids repeated access
+        // TODO what about value type fields within reference types. Really this is recursively defined by the context
+        var isInternal = field.ContainingDeclaration.TypeConstructor.Semantics == TypeSemantics.Reference;
+        var isMutableBinding = field.IsMutableBinding;
+        var fieldType = field.BindingType;
+        // TODO avoid creating types without matching plain types
+        var type = RefType.CreateWithoutPlainType(isInternal, isMutableBinding, fieldType);
+
+        // Access must be applied first, so it can account for independent generic parameters.
+        type = type.AccessedVia(contextType);
         // Then type parameters can be replaced now that they have the correct access
         if (contextType is NonVoidType nonVoidContext)
             // resolve generic type fields
@@ -467,25 +490,38 @@ internal static partial class ExpressionTypesAspect
 
     public static partial IMaybeType RefExpression_Type(IRefExpressionNode node)
     {
-        var referentType = node.Referent?.Type ?? Type.Unknown;
-        if (referentType is not NonVoidType nonVoidType) return referentType;
+        var referentLocatorType = node.Referent?.LocatorType ?? Type.Unknown;
+        if (referentLocatorType is not NonVoidType type) return referentLocatorType;
 
         // The net effect of this is to place the `ref` type inside of any self viewpoint
 
-        // TODO this all seems rather adhoc. Is there a principled way to do this?
+        // TODO this all seems somewhat adhoc. Is there a more principled way to do this?
 
+        NonVoidType t;
         CapabilitySet? capabilitySet = null;
-        if (nonVoidType is SelfViewpointType selfViewpointType)
+        if (type is SelfViewpointType { Referent: RefType r } selfViewpointType)
         {
             capabilitySet = selfViewpointType.CapabilitySet;
-            nonVoidType = selfViewpointType.Referent;
+            t = r;
+        }
+        else
+            t = type;
+
+        if (t is not RefType refType)
+            throw new InvalidOperationException(
+                $"Locator type must be a {nameof(RefType)}. Found: {type.GetType().GetFriendlyName()}");
+
+        // Make sure the RefType is the kind that is needed
+        var plainType = (RefPlainType)node.PlainType; // Avoids repeated access
+        if (refType.IsInternal != plainType.IsInternal
+            || refType.IsMutableBinding != plainType.IsMutableBinding)
+        {
+            refType = RefType.Create(plainType, refType.Referent);
+            if (capabilitySet is not null)
+                type = refType.AccessedVia(capabilitySet);
         }
 
-        nonVoidType = RefType.Create(node.PlainType, nonVoidType);
-
-        if (capabilitySet is not null) nonVoidType = new SelfViewpointType(capabilitySet, nonVoidType);
-
-        return nonVoidType;
+        return type;
     }
 
     public static partial IFlowState RefExpression_FlowStateAfter(IRefExpressionNode node)
@@ -829,6 +865,10 @@ internal static partial class ExpressionTypesAspect
     #region Name Expressions
     public static partial IMaybeType VariableNameExpression_Type(IVariableNameExpressionNode node)
         => node.FlowStateAfter.AliasType(node.ReferencedDefinition);
+
+    public static partial IMaybeType VariableNameExpression_LocatorType(IVariableNameExpressionNode node)
+        // TODO avoid creating types without matching plain types
+        => RefType.CreateWithoutPlainType(isInternal: false, node.ReferencedDefinition.IsMutableBinding, node.Type);
 
     public static partial IFlowState VariableNameExpression_FlowStateAfter(IVariableNameExpressionNode node)
         => node.FlowStateBefore().Alias(node.ReferencedDefinition, node.ValueId);

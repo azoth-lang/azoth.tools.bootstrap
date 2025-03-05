@@ -1927,6 +1927,8 @@ public partial interface IFieldAccessExpressionNode : IOrdinaryTypedExpressionNo
     IFieldDeclarationNode ReferencedDeclaration { get; }
     IdentifierName FieldName
         => (IdentifierName)Syntax.MemberName;
+    IMaybeType IExpressionNode.LocatorType
+        => ExpressionTypesAspect.FieldAccessExpression_LocatorType(this);
     ExpressionKind IExpressionNode.ExpressionKind
         => ExpressionKind.FieldAccess;
 
@@ -2826,6 +2828,8 @@ public partial interface IVariableNameExpressionNode : ILocalBindingNameExpressi
     IdentifierName Name
         => Syntax.Name;
     IFixedSet<IDataFlowNode> DataFlowPrevious { get; }
+    IMaybeType IExpressionNode.LocatorType
+        => ExpressionTypesAspect.VariableNameExpression_LocatorType(this);
     ExpressionKind IExpressionNode.ExpressionKind
         => ExpressionKind.VariableName;
 

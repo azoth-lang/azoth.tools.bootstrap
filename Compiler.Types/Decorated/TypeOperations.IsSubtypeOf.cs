@@ -29,6 +29,8 @@ public static partial class TypeOperations
                 => s.IsSubtypeOf(o, substitutable),
             (CapabilityType s, SelfViewpointType o)
                 => s.IsSubtypeOf(o, substitutable),
+            (CapabilityType s, CapabilitySetSelfType o)
+                => s.IsSubtypeOf(o, substitutable),
             (SelfViewpointType s, CapabilityType o)
                 => s.IsSubtypeOf(o, substitutable),
             (SelfViewpointType s, SelfViewpointType o)
@@ -53,6 +55,13 @@ public static partial class TypeOperations
 
         // TODO this is incorrect, it doesn't account for capabilities in the referent
         return self.PlainType.IsSubtypeOf(other.PlainType, substitutable);
+    }
+
+    public static bool IsSubtypeOf(this CapabilityType self, CapabilitySetSelfType other, bool substitutable = true)
+    {
+        if (!self.Capability.IsSubtypeOf(other.CapabilitySet)) return false;
+
+        return self.BareType.IsSubtypeOf(other.BareType, other.CapabilitySet.AnyCapabilityAllowsWrite, substitutable);
     }
 
     public static bool IsSubtypeOf(this SelfViewpointType self, CapabilityType other, bool substitutable = true)

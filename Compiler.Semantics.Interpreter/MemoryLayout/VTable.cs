@@ -43,9 +43,13 @@ internal sealed class VTable : TypeLayout
     private IMethodDefinitionNode LookupMethod(MethodSignature signature)
     {
         var method = LookupMethod(Class, signature);
-        if (method is not null) return method;
-
-        throw new InvalidOperationException($"No method found for {signature} on {Class}");
+        if (method is null)
+            throw new InvalidOperationException($"No method found for {signature} on {Class}");
+#if DEBUG
+        if (method.Body is null)
+            throw new InvalidOperationException("Method lookup should not resolve to abstract method.");
+#endif
+        return method;
     }
 
     private IMethodDefinitionNode? LookupMethod(ITypeDefinitionNode type, MethodSignature signature)

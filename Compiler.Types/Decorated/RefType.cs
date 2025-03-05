@@ -54,6 +54,18 @@ public sealed class RefType : NonVoidType
             _ => throw ExhaustiveMatch.Failed(referent),
         };
 
+    /// <summary>
+    /// Create a ref type for the given type (e.g. `ref T` given `T`).
+    /// </summary>
+    /// <remarks>`void` and `never` types are not changed.</remarks>
+    public static NonVoidType CreateWithoutPlainType(bool isInternal, bool isMutableBinding, NonVoidType referent)
+        => referent switch
+        {
+            NeverType _ => Never,
+            NonVoidType t => new RefType(new(isInternal, isMutableBinding, t.PlainType), t),
+            _ => throw ExhaustiveMatch.Failed(referent),
+        };
+
     public override RefPlainType PlainType { [DebuggerStepThrough] get; }
 
     public bool IsInternal

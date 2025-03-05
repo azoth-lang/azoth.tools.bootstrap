@@ -510,6 +510,8 @@ internal static partial class ExpressionPlainTypesAspect
     public static partial IMaybePlainType RefExpression_PlainType(IRefExpressionNode node)
         => RefPlainType.Create(node.IsInternal, node.IsMutableBinding, node.Referent?.PlainType) ?? PlainType.Unknown;
 
+    // TODO diagnostics for using `iref` or `var` when it isn not valid
+
     public static partial IMaybePlainType ImplicitDerefExpression_PlainType(IImplicitDerefExpressionNode node)
         => (node.Referent.PlainType as RefPlainType)?.Referent ?? IMaybePlainType.Unknown;
     #endregion

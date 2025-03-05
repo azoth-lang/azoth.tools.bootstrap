@@ -38,11 +38,18 @@ public static partial class TypeOperations
     public static Type AccessedVia(this Type type, ICapabilityConstraint capability)
         => type switch
         {
+            VoidType t => t,
+            NonVoidType t => t.AccessedVia(capability),
+            _ => throw ExhaustiveMatch.Failed(type),
+        };
+
+    public static NonVoidType AccessedVia(this NonVoidType type, ICapabilityConstraint capability)
+        => type switch
+        {
             CapabilityType t => t.AccessedVia(capability),
             GenericParameterType t => t.AccessedVia(capability),
             FunctionType t => t,
             NeverType t => t,
-            VoidType t => t,
             RefType t => t.AccessedVia(capability),
             // TODO shouldn't this combine with the capability set?
             CapabilitySetSelfType t => t,
@@ -58,17 +65,17 @@ public static partial class TypeOperations
             _ => throw ExhaustiveMatch.Failed(type),
         };
 
-    public static Type AccessedVia(this CapabilityType self, ICapabilityConstraint capability)
+    public static NonVoidType AccessedVia(this CapabilityType self, ICapabilityConstraint capability)
     {
-        switch (capability)
+        var newCapability = self.Capability.AccessedVia(capability);
+        switch (newCapability)
         {
             case Capability c:
-                var newCapability = self.Capability.AccessedVia(c);
                 // Access can affect type arguments
-                var newArguments = self.ArgumentsAccessedVia(c);
+                var newArguments = self.ArgumentsAccessedVia(capability);
                 if (ReferenceEquals(newArguments, self.Arguments)
-                    && ReferenceEquals(newCapability, self.Capability)) return self;
-                return self.BareType.WithReplacement(newArguments).WithModified(newCapability);
+                    && ReferenceEquals(c, self.Capability)) return self;
+                return self.BareType.WithReplacement(newArguments).WithModified(c);
             case CapabilitySet c:
                 return new SelfViewpointType(c, self);
             default:
@@ -76,7 +83,7 @@ public static partial class TypeOperations
         }
     }
 
-    private static IFixedList<Type> ArgumentsAccessedVia(this CapabilityType self, Capability capability)
+    private static IFixedList<Type> ArgumentsAccessedVia(this CapabilityType self, ICapabilityConstraint capability)
     {
         if (!self.HasIndependentTypeArguments) return self.Arguments;
         var newTypeArguments = new List<Type>(self.Arguments.Count);
@@ -91,7 +98,7 @@ public static partial class TypeOperations
         return typesReplaced ? newTypeArguments.ToFixedList() : self.Arguments;
     }
 
-    public static Type AccessedVia(this GenericParameterType self, ICapabilityConstraint capability)
+    public static NonVoidType AccessedVia(this GenericParameterType self, ICapabilityConstraint capability)
     {
         // Independent type parameters are not affected by the capability
         if (self.Parameter.HasIndependence) return self;
@@ -103,7 +110,7 @@ public static partial class TypeOperations
         };
     }
 
-    public static Type AccessedVia(this RefType self, ICapabilityConstraint capability)
+    public static NonVoidType AccessedVia(this RefType self, ICapabilityConstraint capability)
     {
         switch (capability)
         {

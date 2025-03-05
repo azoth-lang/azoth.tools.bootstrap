@@ -103,6 +103,7 @@
 = UnresolvedMemberAccessExpression.FlowStateAfter;
 
 // ---------- Instance Member Access Expressions
+= FieldAccessExpression.LocatorType;
 = FieldAccessExpression.FlowStateAfter;
 = FieldAccessExpression.↑.Diagnostics;
 = MethodAccessExpression.Context.ExpectedType;
@@ -224,6 +225,7 @@
 
 // ---------- Name Expressions
 ↓ NameExpression.FlowStateBefore(): `IFlowState`;
+= VariableNameExpression.LocatorType;
 = VariableNameExpression.FlowStateAfter;
 = SelfExpression.FlowStateAfter;
 = FunctionNameExpression.FlowStateAfter;

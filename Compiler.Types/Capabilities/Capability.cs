@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
+using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
@@ -216,6 +217,18 @@ public sealed class Capability : ICapabilityConstraint
     /// The effective capability on a member with the current capability when it is accessed from a
     /// value with the given capability.
     /// </summary>
+    public ICapabilityConstraint AccessedVia(ICapabilityConstraint capability)
+        => capability switch
+        {
+            Capability c => AccessedVia(c),
+            CapabilitySet c => AccessedVia(c),
+            _ => throw ExhaustiveMatch.Failed(),
+        };
+
+    /// <summary>
+    /// The effective capability on a member with the current capability when it is accessed from a
+    /// value with the given capability.
+    /// </summary>
     public Capability AccessedVia(Capability capability)
     {
         if (AllowsInit)
@@ -237,6 +250,16 @@ public sealed class Capability : ICapabilityConstraint
 
         return this;
     }
+
+    /// <summary>
+    /// The effective capability on a member with the current capability when it is accessed from a
+    /// value with the given capability set.
+    /// </summary>
+    public ICapabilityConstraint AccessedVia(CapabilitySet capabilitySet)
+        // TODO is there a more efficient way to do this?
+        => (ICapabilityConstraint?)capabilitySet.AllowedCapabilities
+                                                .Select(c => AccessedVia(c.OfAlias()))
+                                                .Distinct().TrySingle() ?? capabilitySet;
 
     /// <summary>
     /// The reference capability after a possibly temporary alias has been made to it.
