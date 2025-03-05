@@ -155,11 +155,11 @@ public sealed class GenericParameterTypeReplacements
         switch (selfReplacement)
         {
             case CapabilitySetSelfType r:
-                return ApplyTo(type, r);
+                return ApplyTo(type, r, r.CapabilitySet);
             case SelfViewpointType r:
-                return ApplyTo(type, r);
+                return ApplyTo(type, r, r.CapabilitySet);
             case CapabilityType r:
-                return ApplyTo(type, r);
+                return ApplyTo(type, r, r.Capability);
         }
 
         var replacementType = ApplyTo(type.Referent, selfReplacement);
@@ -169,25 +169,19 @@ public sealed class GenericParameterTypeReplacements
         return type;
     }
 
-    internal Type ApplyTo(SelfViewpointType type, CapabilitySetSelfType selfReplacement)
+    private Type ApplyTo(SelfViewpointType type, NonVoidType selfReplacement, CapabilitySet selfCapabilitySet)
     {
         var replacementType = ApplyTo(type.Referent, selfReplacement);
         // regardless of whether the replacement type changes, we need to apply the new capability
-        return replacementType.AccessedVia(selfReplacement.CapabilitySet);
+        return replacementType.AccessedVia(selfCapabilitySet);
     }
 
-    internal Type ApplyTo(SelfViewpointType type, SelfViewpointType selfReplacement)
+    private Type ApplyTo(SelfViewpointType type, NonVoidType selfReplacement, Capability selfCapability)
     {
-        var replacementType = ApplyTo(type.Referent, selfReplacement.Referent);
-        // regardless of whether the replacement type changes, we need to apply the new capability
-        return replacementType.AccessedVia(selfReplacement.CapabilitySet);
-    }
-
-    internal Type ApplyTo(SelfViewpointType type, CapabilityType selfReplacement)
-    {
-        var replacementType = ApplyTo(type.Referent, selfReplacement);
-        // regardless of whether the replacement type changes, we need to apply the new capability
-        return replacementType.AccessedVia(selfReplacement.Capability);
+        // Capability access must be applied before replacement because things like independence of
+        // generic types must be evaluated before replacement.
+        var referent = type.Referent.AccessedVia(selfCapability);
+        return ApplyTo(referent, selfReplacement);
     }
 
     internal Type ApplyTo(GenericParameterType type)
