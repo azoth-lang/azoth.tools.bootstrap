@@ -151,7 +151,7 @@ public static class Intrinsic
         var readType = bareType.WithDefaultCapability();
         var mutType = bareType.With(Capability.Mutable);
         var itemType = typeConstructor.ParameterTypes[1];
-        var irefVarItemType = new RefType(new(isInternal: true, isMutableBinding: true, itemType.PlainType), itemType);
+        var irefVarItemType = RefType.Create(new(isInternal: true, isMutableBinding: true, itemType.PlainType), itemType);
         var selfViewIRefVarItemType = new SelfViewpointType(CapabilitySet.Readable, irefVarItemType);
         var classSymbol = new OrdinaryTypeSymbol(@namespace, typeConstructor);
         tree.Add(classSymbol);

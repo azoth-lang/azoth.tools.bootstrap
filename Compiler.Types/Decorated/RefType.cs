@@ -26,6 +26,9 @@ public sealed class RefType : NonVoidType
             _ => throw new ArgumentException($"Plain type '{plainType}' does not match referent type '{referent}'."),
         };
 
+    public static RefType Create(RefPlainType plainType, NonVoidType referent)
+        => new(plainType, referent);
+
     [return: NotNullIfNotNull(nameof(referent))]
     public static IMaybeType? CreateWithoutPlainType(bool isInternal, bool isMutableBinding, IMaybeType? referent)
         => referent switch
@@ -71,7 +74,7 @@ public sealed class RefType : NonVoidType
 
     public override bool HasIndependentTypeArguments => Referent.HasIndependentTypeArguments;
 
-    public RefType(RefPlainType plainType, NonVoidType referent)
+    private RefType(RefPlainType plainType, NonVoidType referent)
     {
         Requires.That(plainType.Referent.Equals(referent.PlainType), nameof(referent),
             "Referent must match the plain type.");
