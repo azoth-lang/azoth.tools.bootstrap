@@ -243,14 +243,16 @@ public sealed class Capability : ICapabilityConstraint
     /// </summary>
     /// <remarks>Even though the behavior is the same as <see cref="OfAlias"/> the operation is
     /// logically distinct.</remarks>
-    public Capability WhenAliased() => this == Isolated ? Mutable : this;
+    public Capability WhenAliased()
+        => this == Isolated || this == TemporarilyIsolated ? Mutable : this;
 
     /// <summary>
     /// The reference capability of an alias to this type.
     /// </summary>
     /// <remarks>Even though the behavior is the same as <see cref="WhenAliased"/> the operation is
     /// logically distinct.</remarks>
-    public Capability OfAlias() => this == Isolated ? Mutable : this;
+    public Capability OfAlias()
+        => this == Isolated || this == TemporarilyIsolated ? Mutable : this;
 
     /// <summary>
     /// The reference capability if the referenced object were frozen.
