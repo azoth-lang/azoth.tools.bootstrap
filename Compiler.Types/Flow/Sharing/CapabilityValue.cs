@@ -2,6 +2,8 @@ using System.Collections.Concurrent;
 using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
+using Azoth.Tools.Bootstrap.Framework;
+using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Flow.Sharing;
 
@@ -12,7 +14,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Flow.Sharing;
 /// <see cref="CapabilityIndex"/> of the tracked value within that result.
 /// </summary>
 [DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
-public sealed class CapabilityValue : ICapabilityValue
+public sealed class CapabilityValue : Comparable<ICapabilityValue>, ICapabilityValue
 {
     #region Cache
     private static readonly ConcurrentDictionary<ulong, CapabilityValue> TopLevelCache = new();
@@ -46,15 +48,24 @@ public sealed class CapabilityValue : ICapabilityValue
         Index = index;
     }
 
-    #region Equality
+    #region Equality and Comparison
     public bool Equals(IValue? other)
         => ReferenceEquals(this, other)
            || other is CapabilityValue value
                 && Value.Equals(value.Value)
                 && Index.Equals(value.Index);
 
-    public override bool Equals(object? obj)
-        => ReferenceEquals(this, obj) || obj is CapabilityValue other && Equals(other);
+    public override int CompareTo(ICapabilityValue? other)
+    {
+        if (other == null) return 1;
+        if (ReferenceEquals(this, other)) return 0;
+        return other switch
+        {
+            BindingValue _ => 1,
+            CapabilityValue v => Value.CompareTo(v.Value).ThenCompareBy(Index.CompareTo(v.Index)),
+            _ => throw ExhaustiveMatch.Failed(other)
+        };
+    }
 
     public override int GetHashCode() => HashCode.Combine(Value, Index);
     #endregion

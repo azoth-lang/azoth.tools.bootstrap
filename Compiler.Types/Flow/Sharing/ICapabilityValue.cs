@@ -1,13 +1,15 @@
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 using Azoth.Tools.Bootstrap.Framework;
+using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Flow.Sharing;
 
 /// <summary>
 /// A <see cref="IValue"/> that has its capability affected by flow typing and sharing.
 /// </summary>
-public interface ICapabilityValue : IValue
+[Closed(typeof(BindingValue), typeof(CapabilityValue))]
+public interface ICapabilityValue : IValue, IComparable<ICapabilityValue>
 {
     /// <summary>
     /// Whether this is a declared variable or parameter (as opposed to a temp reference etc.)
@@ -20,8 +22,9 @@ public interface ICapabilityValue : IValue
         where T : ICapabilityValue
     {
         var index = new Stack<int>();
-        // TODO would this be more efficient if it were a SortedList<T, FlowCapability>? There aren't normally many items
-        var values = new Dictionary<T, Capability>();
+        // The majority of these contain only 1 item and those that contain more than one have very
+        // few items. Thus, it is much more efficient to use SortedList<,> in this case.
+        var values = new SortedList<T, Capability>();
         // TODO why was it `type.ToUpperBound()` before?
         ForType(id, type, index, capture: true, values, create);
         return values.AsReadOnly();
@@ -32,7 +35,7 @@ public interface ICapabilityValue : IValue
         IMaybeType type,
         Stack<int> index,
         bool capture,
-        Dictionary<T, Capability> values,
+        SortedList<T, Capability> values,
         Func<ValueId, CapabilityIndex, T> create)
         where T : ICapabilityValue
     {

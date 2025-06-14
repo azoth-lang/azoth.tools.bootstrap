@@ -15,7 +15,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Flow;
 /// starting point to the index.</remarks>
 [DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
 [StructLayout(LayoutKind.Auto)]
-public readonly struct CapabilityIndex : IEquatable<CapabilityIndex>
+public readonly struct CapabilityIndex : IEquatable<CapabilityIndex>, IComparable<CapabilityIndex>
 {
     public static readonly CapabilityIndex TopLevel = new(FixedList.Empty<int>());
 
@@ -31,10 +31,22 @@ public readonly struct CapabilityIndex : IEquatable<CapabilityIndex>
     public CapabilityIndex Append(int index)
         => new(TreeIndex.Append(index));
 
-    #region Equality
+    #region Equality and Comparison
     public bool Equals(CapabilityIndex other) => TreeIndex.Equals(other.TreeIndex);
 
     public override bool Equals(object? obj) => obj is CapabilityIndex other && Equals(other);
+
+    public int CompareTo(CapabilityIndex other)
+    {
+        var cmp = TreeIndex.Count.CompareTo(other.TreeIndex.Count);
+        if (cmp != 0) return cmp;
+        for (int i = 0; i < TreeIndex.Count; i++)
+        {
+            cmp = TreeIndex[i].CompareTo(other.TreeIndex[i]);
+            if (cmp != 0) return cmp;
+        }
+        return 0;
+    }
 
     public override int GetHashCode() => TreeIndex.GetHashCode();
 

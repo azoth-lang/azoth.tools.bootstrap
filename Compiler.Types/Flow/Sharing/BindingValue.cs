@@ -2,6 +2,8 @@ using System.Collections.Concurrent;
 using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
+using Azoth.Tools.Bootstrap.Framework;
+using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Flow.Sharing;
 
@@ -9,7 +11,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Flow.Sharing;
 /// A value for a binding (i.e. a variable, parameter, or field).
 /// </summary>
 [DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
-public sealed class BindingValue : ICapabilityValue
+public sealed class BindingValue : Comparable<ICapabilityValue>, ICapabilityValue
 {
     #region Cache
     private static readonly ConcurrentDictionary<ulong, BindingValue> TopLevelCache = new();
@@ -36,15 +38,24 @@ public sealed class BindingValue : ICapabilityValue
         Index = index;
     }
 
-    #region Equality
+    #region Equality and Comparison
     public bool Equals(IValue? other)
         => ReferenceEquals(this, other)
            || other is BindingValue value
-                && Value.Equals(value.Value)
-                && Index.Equals(value.Index);
+               && Value.Equals(value.Value)
+               && Index.Equals(value.Index);
 
-    public override bool Equals(object? obj)
-        => ReferenceEquals(this, obj) || obj is BindingValue other && Equals(other);
+    public override int CompareTo(ICapabilityValue? other)
+    {
+        if (other == null) return 1;
+        if (ReferenceEquals(this, other)) return 0;
+        return other switch
+        {
+            BindingValue v => Value.CompareTo(v.Value).ThenCompareBy(Index.CompareTo(v.Index)),
+            CapabilityValue _ => -1,
+            _ => throw ExhaustiveMatch.Failed(other)
+        };
+    }
 
     public override int GetHashCode() => HashCode.Combine(Value, Index);
     #endregion
