@@ -21,12 +21,16 @@ namespace Azoth.Tools.Bootstrap.Lab.Build;
 /// </summary>
 internal class ProjectSet : IEnumerable<Project>
 {
-    private readonly Dictionary<string, Project> projects = new();
+    private readonly Dictionary<string, Project> projects = [];
 
     public void AddAll(ProjectConfigSet configs)
     {
         foreach (var config in configs)
             GetOrAdd(config, configs);
+
+        foreach (var (_, project) in projects)
+            // Force dev references to be evaluated
+            _ = project.DevReferences;
     }
 
     private Project Get(ProjectConfig config)
@@ -45,19 +49,28 @@ internal class ProjectSet : IEnumerable<Project>
         projects.Add(projectDir, null!);
 
         // TODO be more exact about selecting distinct references or possibly even merging them
-        var references = config.Dependencies!.SelectMany(CreateReferences).DistinctBy(r => r.Project.Name).ToList();
-
-        var project = new Project(config, references);
+        var references = config.Dependencies!.Where(p => p.Value?.Relation >= ProjectRelation.Build)
+                               .SelectMany(CreateReferences).DistinctBy(r => r.Project.Name).ToList();
+        var devReferences = Lazy.Create(() => config.Dependencies!
+                                                    .Where(p => p.Value?.Relation == ProjectRelation.Dev)
+                                                    .SelectMany(CreateReferences).DistinctBy(r => r.Project.Name)
+                                                    .ToFixedList());
+        var project = new Project(config, references, devReferences);
         projects[projectDir] = project;
         return project;
 
         IEnumerable<ProjectReference> CreateReferences(string alias, ProjectDependencyConfig? dependencyConfig)
         {
-            if (dependencyConfig is null) throw new ArgumentNullException(nameof(dependencyConfig));
+            // Note: these are input validations
+            // TODO do these validations earlier
+            if (dependencyConfig is null)
+                throw new InvalidOperationException("Dependency must not be null.");
+            if (dependencyConfig.Relation == ProjectRelation.None)
+                throw new InvalidOperationException("None is not a valid relation.");
             var dependencyProjectConfig = configs[config, alias];
-            var dependencyProject = GetOrAdd(dependencyProjectConfig, configs);
+            var dependencyProject = GetOrAdd(dependencyProjectConfig, configs)
+                ?? throw new InvalidOperationException("Dependency cycle detected.");
             var isTrusted = dependencyConfig.Trusted ?? throw new InvalidOperationException();
-            if (dependencyConfig.Relation == ProjectRelation.None) throw new InvalidOperationException();
             yield return new(alias, dependencyProject, isTrusted, dependencyConfig.Relation, dependencyConfig.Bundle);
             foreach (var bundledReference in dependencyProject.References.Where(r => r.Bundle != ProjectRelation.None))
             {

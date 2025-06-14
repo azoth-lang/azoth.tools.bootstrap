@@ -1,5 +1,6 @@
 using System;
 using System.Threading;
+using InlineMethod;
 
 namespace Azoth.Tools.Bootstrap.Framework;
 
@@ -11,6 +12,12 @@ namespace Azoth.Tools.Bootstrap.Framework;
 /// <remarks>Code based on <c>NonCapturingLazyInitializer</c> from EF core.</remarks>
 public static class Lazy
 {
+    /// <summary>
+    /// A shorthand for creating instances of <see cref="Lazy{T}"/> without specifying the type.
+    /// </summary>
+    [Inline(export: true)]
+    public static Lazy<T> Create<T>(Func<T> valueFactory) => new(valueFactory);
+
     /// <summary>
     /// Initializes a target reference type with a specified function if it has not already been
     /// initialized. Important use a <b>static lambda</b> as the parameter for good performance.

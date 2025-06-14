@@ -1,5 +1,10 @@
+using System.Diagnostics;
+using System.IO;
+using Azoth.Tools.Bootstrap.Framework;
+
 namespace Azoth.Tools.Bootstrap.Lab.Build;
 
+[DebuggerDisplay($"ProjectReference: {{{nameof(Alias)},nq}} = {{{nameof(Path)}}}")]
 internal class ProjectReference
 {
     public string Alias { get; }
@@ -10,6 +15,7 @@ internal class ProjectReference
 
     public ProjectReference(string alias, Project project, bool isTrusted, ProjectRelation relation, ProjectRelation bundle)
     {
+        Requires.NotNull(project, nameof(project));
         Alias = alias;
         Project = project;
         IsTrusted = isTrusted;

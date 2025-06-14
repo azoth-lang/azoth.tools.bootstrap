@@ -1,8 +1,10 @@
+using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Lab.Build;
 using Newtonsoft.Json;
 
 namespace Azoth.Tools.Bootstrap.Lab.Config;
 
+[DebuggerDisplay($"ProjectDependencyConfig: {{{nameof(Path)}}}")]
 internal class ProjectDependencyConfig
 {
     [JsonProperty("path")]

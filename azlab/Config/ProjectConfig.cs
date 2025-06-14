@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using Newtonsoft.Json;
@@ -8,6 +9,7 @@ namespace Azoth.Tools.Bootstrap.Lab.Config;
 
 [SuppressMessage("Performance", "CA1812: Avoid uninstantiated internal classes",
     Justification = "Instantiated by JSON converter")]
+[DebuggerDisplay($"ProjectConfig: {{{nameof(Name)},nq}}")]
 internal class ProjectConfig
 {
     public const string FileName = "azlab-project.vson";
