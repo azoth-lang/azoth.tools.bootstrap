@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
+using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Flow;
@@ -12,13 +13,22 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Flow;
 /// has independent type parameters, then this may apply to the type parameters as well.</remarks>
 [DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
 [StructLayout(LayoutKind.Auto)]
-public readonly record struct FlowCapability(Capability Original)
+public readonly record struct FlowCapability
 {
+    public FlowCapability(Capability original)
+    {
+        Requires.NotNull(original, nameof(original));
+        Original = original;
+        Modified = original;
+    }
+
+    public Capability Original { get; }
+
     /// <summary>
     /// The capability after it has been modified by aliasing, freezing, etc.
     /// </summary>
     /// <remarks>This is not the actual capability at the moment. That is <see cref="Current"/>.</remarks>
-    public Capability Modified { get; init; } = Original;
+    public Capability Modified { get; init; }
 
     /// <summary>
     /// Any temporary restrictions on the capability (i.e. from a temporary freeze or move).
@@ -71,4 +81,6 @@ public readonly record struct FlowCapability(Capability Original)
         };
         return $"{Original!.ToILString()} {restricted}-> {Current.ToILString()}";
     }
+
+    public void Deconstruct(out Capability original) => original = Original;
 }

@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using System.Diagnostics;
+using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Flow.Sharing;
@@ -25,7 +26,14 @@ public sealed class CapabilityValue : ICapabilityValue
     public static CapabilityValue CreateTopLevel(ValueId id)
         => TopLevelCache.GetOrAdd(id.Value, TopLevelFactory);
 
-    public static IReadOnlyDictionary<CapabilityValue, FlowCapability> ForType(ValueId id, IMaybeType type)
+    /// <summary>
+    /// Get all the <see cref="CapabilityValue"/>s for a given <see cref="ValueId"/> with a
+    /// particular type. For each, it also provides the <see cref="Capability"/> as determined by
+    /// the type.
+    /// </summary>
+    /// <remarks>Typically there is one <see cref="CapabilityValue"/> at the root. However, if there
+    /// are independent parameters than each of those is also a <see cref="CapabilityValue"/>.</remarks>
+    public static IReadOnlyDictionary<CapabilityValue, Capability> ForType(ValueId id, IMaybeType type)
         => ICapabilityValue.ForType(id, type, Create);
 
     public bool IsVariableOrParameter => false;

@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using System.Diagnostics;
+using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Flow.Sharing;
@@ -22,7 +23,7 @@ public sealed class BindingValue : ICapabilityValue
     public static BindingValue CreateTopLevel(ValueId id)
         => TopLevelCache.GetOrAdd(id.Value, TopLevelFactory);
 
-    public static IReadOnlyDictionary<BindingValue, FlowCapability> ForType(ValueId id, IMaybeType type)
+    public static IReadOnlyDictionary<BindingValue, Capability> ForType(ValueId id, IMaybeType type)
         => ICapabilityValue.ForType(id, type, Create);
 
     public bool IsVariableOrParameter => true;

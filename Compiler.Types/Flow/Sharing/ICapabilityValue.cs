@@ -1,3 +1,4 @@
+using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 using Azoth.Tools.Bootstrap.Framework;
 
@@ -15,11 +16,12 @@ public interface ICapabilityValue : IValue
     ulong Value { get; }
     CapabilityIndex Index { get; }
 
-    protected static IReadOnlyDictionary<T, FlowCapability> ForType<T>(ValueId id, IMaybeType type, Func<ValueId, CapabilityIndex, T> create)
+    protected static IReadOnlyDictionary<T, Capability> ForType<T>(ValueId id, IMaybeType type, Func<ValueId, CapabilityIndex, T> create)
         where T : ICapabilityValue
     {
         var index = new Stack<int>();
-        var values = new Dictionary<T, FlowCapability>();
+        // TODO would this be more efficient if it were a SortedList<T, FlowCapability>? There aren't normally many items
+        var values = new Dictionary<T, Capability>();
         // TODO why was it `type.ToUpperBound()` before?
         ForType(id, type, index, capture: true, values, create);
         return values.AsReadOnly();
@@ -30,7 +32,7 @@ public interface ICapabilityValue : IValue
         IMaybeType type,
         Stack<int> index,
         bool capture,
-        Dictionary<T, FlowCapability> values,
+        Dictionary<T, Capability> values,
         Func<ValueId, CapabilityIndex, T> create)
         where T : ICapabilityValue
     {

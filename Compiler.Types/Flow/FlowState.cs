@@ -132,9 +132,8 @@ internal sealed class FlowState : IFlowState
         var builder = ToBuilder();
         var bindingValuePairs = BindingValue.ForType(id, type);
         builder.AddValueId(id, bindingValuePairs.Keys);
-        foreach (var (value, flowCapability) in bindingValuePairs)
+        foreach (var (value, capability) in bindingValuePairs)
         {
-            var capability = flowCapability.Original;
             var sharingIsTracked = capability.SharingIsTracked();
             // These capabilities don't have to worry about external references
             var needsExternalReference = capability != Capability.Isolated
@@ -143,13 +142,13 @@ internal sealed class FlowState : IFlowState
             if (!sharingIsTracked)
                 builder.AddUntracked(value);
             else if (!needsExternalReference)
-                builder.AddSet(isLent, value, flowCapability);
+                builder.AddSet(isLent, value, capability);
             else if (isLent)
                 // Lent parameters each have their own external reference
-                builder.AddSet(isLent, value, flowCapability, ExternalReference.CreateLentParameter(value));
+                builder.AddSet(isLent, value, capability, ExternalReference.CreateLentParameter(value));
             else
                 // Non-lent parameters share the same external reference
-                builder.AddToNonLentParameterSet(value, flowCapability);
+                builder.AddToNonLentParameterSet(value, capability);
         }
 
         return builder.ToImmutable();
@@ -160,9 +159,9 @@ internal sealed class FlowState : IFlowState
         var builder = ToBuilder();
         var bindingValuePairs = BindingValue.ForType(id, type);
         builder.AddValueId(id, bindingValuePairs.Keys);
-        foreach (var (value, flowCapability) in bindingValuePairs)
+        foreach (var (value, capability) in bindingValuePairs)
         {
-            if (!flowCapability.Original.SharingIsTracked())
+            if (!capability.SharingIsTracked())
             {
                 builder.AddUntracked(value);
                 continue;
@@ -176,13 +175,13 @@ internal sealed class FlowState : IFlowState
                 {
                     var initializerSet = builder.TrySetFor(initializerValue)
                                          ?? throw new InvalidOperationException("Value should be in a set");
-                    builder.AddToSet(initializerSet, value, flowCapability);
+                    builder.AddToSet(initializerSet, value, capability);
                     continue;
                 }
             }
 
             // Otherwise, add the value to a new set
-            builder.AddSet(false, value, flowCapability);
+            builder.AddSet(false, value, capability);
         }
 
         if (dropInitializer && initializerId is ValueId initializerValueId)
@@ -330,9 +329,9 @@ internal sealed class FlowState : IFlowState
 
         // Add the return value(s) to the unioned set
         var capabilityValuePairs = CapabilityValue.ForType(returnValueId, returnType);
-        foreach (var (returnValue, flowCapability) in capabilityValuePairs)
+        foreach (var (returnValue, capability) in capabilityValuePairs)
         {
-            if (flowCapability.Original.SharingIsTracked())
+            if (capability.SharingIsTracked())
                 builder.AddToSet(set, false, returnValue, default);
             else
                 builder.AddUntracked(returnValue);
@@ -345,6 +344,12 @@ internal sealed class FlowState : IFlowState
         return builder.ToImmutable();
     }
 
+    /// <summary>
+    /// Determine which value ids cannot be combined due to lent sharing sets.
+    /// </summary>
+    /// <remarks>Two lent sharing sets cannot be combined. In addition, a lent sharing set cannot be
+    /// combined with a non-lent, non-isolated sharing set. Isolated sharing sets are not a problem
+    /// because they just become part of the lent set and nothing else references them.</remarks>
     public IEnumerable<ValueId> CombineArgumentsDisallowedDueToLent(IEnumerable<ArgumentValueId> arguments)
     {
         var valueIds = arguments.Where(a => !a.IsLent).Select(a => a.ValueId).ToFixedList();
@@ -390,13 +395,13 @@ internal sealed class FlowState : IFlowState
         var newValueCapabilities = CapabilityValue.ForType(id, memberType);
         var valueMap = AccessFieldValueMapping(contextId, contextType, declaringTypeConstructor,
             bindingType, id, newValueCapabilities.Keys);
-        foreach (var (newValue, flowCapability) in newValueCapabilities)
+        foreach (var (newValue, capability) in newValueCapabilities)
         {
-            if (flowCapability.Original.SharingIsTracked())
+            if (capability.SharingIsTracked())
             {
                 var set = builder.Union(valueMap[newValue]);
                 // TODO is `isLent: false` correct?
-                builder.AddToSet(set, isLent: false, newValue, flowCapability);
+                builder.AddToSet(set, isLent: false, newValue, capability);
             }
             else
                 builder.AddUntracked(newValue);
@@ -599,7 +604,7 @@ internal sealed class FlowState : IFlowState
 
     public IFlowState MoveVariable(ValueId bindingId, IMaybeType bindingType, ValueId valueId, ValueId intoValueId)
         => Move(BindingValue.ForType(bindingId, bindingType)
-                           .Where(p => p.Value.Original.SharingIsTracked())
+                           .Where(p => p.Value.SharingIsTracked())
                            .Select(p => p.Key), valueId, intoValueId);
 
     public IFlowState MoveValue(ValueId valueId, ValueId intoValueId)
