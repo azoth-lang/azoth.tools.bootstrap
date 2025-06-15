@@ -52,14 +52,17 @@ internal static class SyntaxBinder
     #region Packages
     private static IPackageNode Package(IPackageFacetSyntax packageMainSyntax, IPackageFacetSyntax packageTestsSyntax)
         => IPackageNode.Create(PackageReferences(packageMainSyntax.References),
-            PackageFacet(packageMainSyntax, packageMainSyntax.CompilationUnits),
-            PackageFacet(packageTestsSyntax, packageTestsSyntax.CompilationUnits));
-
-    private static IPackageFacetNode PackageFacet(IPackageFacetSyntax syntax, IFixedSet<ICompilationUnitSyntax> compilationUnits)
-        => IPackageFacetNode.Create(syntax, CompilationUnits(compilationUnits));
+            PackageFacet(packageMainSyntax),
+            PackageFacet(packageTestsSyntax));
 
     private static IEnumerable<IStandardPackageReferenceNode> PackageReferences(IEnumerable<IPackageReferenceSyntax> syntax)
         => syntax.Select(IStandardPackageReferenceNode.Create);
+
+    private static IPackageFacetNode PackageFacet(IPackageFacetSyntax syntax)
+        => IPackageFacetNode.Create(syntax, CompilationUnits(syntax.CompilationUnits), PackageFacetReferences(syntax.References));
+
+    private static IEnumerable<IStandardPackageFacetReferenceNode> PackageFacetReferences(IEnumerable<IPackageReferenceSyntax> syntax)
+        => syntax.Select(IStandardPackageFacetReferenceNode.Create);
     #endregion
 
     #region Namespace Definitions

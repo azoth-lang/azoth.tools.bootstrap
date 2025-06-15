@@ -277,6 +277,8 @@ public static class ISemanticNodeExtensions
                 yield break;
             case IIntegerLiteralExpressionNode n:
                 yield break;
+            case IIntrinsicsPackageFacetReferenceNode n:
+                yield break;
             case IIntrinsicsPackageReferenceNode n:
                 yield return n.SymbolNode;
                 yield break;
@@ -369,9 +371,13 @@ public static class ISemanticNodeExtensions
             case IPackageFacetNode n:
                 foreach (var child in n.CompilationUnits)
                     yield return child;
+                foreach (var child in n.References)
+                    yield return child;
                 yield break;
             case IPackageFacetSymbolNode n:
                 yield return n.GlobalNamespace;
+                yield break;
+            case IPackageMainFacetReferenceNode n:
                 yield break;
             case IPackageNode n:
                 foreach (var child in n.References)
@@ -446,6 +452,8 @@ public static class ISemanticNodeExtensions
                 yield return n.Exit;
                 yield break;
             case ISetterMethodSymbolNode n:
+                yield break;
+            case IStandardPackageFacetReferenceNode n:
                 yield break;
             case IStandardPackageReferenceNode n:
                 yield return n.SymbolNode;

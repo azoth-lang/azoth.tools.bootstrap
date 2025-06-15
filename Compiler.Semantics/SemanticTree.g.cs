@@ -60,6 +60,7 @@ public partial interface ISemanticNode : ITreeNode
 
 [Closed(
     typeof(IPackageReferenceNode),
+    typeof(IPackageFacetReferenceNode),
     typeof(ICodeNode),
     typeof(IControlFlowNode),
     typeof(IChildDeclarationNode))]
@@ -231,6 +232,7 @@ public partial interface IPackageFacetNode : IPackageFacetDeclarationNode
     new IPackageFacetSyntax Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
     IFixedSet<ICompilationUnitNode> CompilationUnits { get; }
+    IFixedSet<IPackageFacetReferenceNode> References { get; }
     PackageNameScope PackageNameScope { get; }
     IFixedSet<IFacetMemberDefinitionNode> Definitions { get; }
     new INamespaceDefinitionNode GlobalNamespace { get; }
@@ -238,8 +240,50 @@ public partial interface IPackageFacetNode : IPackageFacetDeclarationNode
 
     public static IPackageFacetNode Create(
         IPackageFacetSyntax syntax,
-        IEnumerable<ICompilationUnitNode> compilationUnits)
-        => new PackageFacetNode(syntax, compilationUnits);
+        IEnumerable<ICompilationUnitNode> compilationUnits,
+        IEnumerable<IPackageFacetReferenceNode> references)
+        => new PackageFacetNode(syntax, compilationUnits, references);
+}
+
+[Closed(
+    typeof(IStandardPackageFacetReferenceNode),
+    typeof(IPackageMainFacetReferenceNode),
+    typeof(IIntrinsicsPackageFacetReferenceNode))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
+public partial interface IPackageFacetReferenceNode : IChildNode
+{
+    new IPackageReferenceSyntax? Syntax { get; }
+    ISyntax? ISemanticNode.Syntax => Syntax;
+}
+
+[Closed(typeof(StandardPackageFacetReferenceNode))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
+public partial interface IStandardPackageFacetReferenceNode : IPackageFacetReferenceNode
+{
+    new IPackageReferenceSyntax Syntax { get; }
+    IPackageReferenceSyntax? IPackageFacetReferenceNode.Syntax => Syntax;
+    ISyntax? ISemanticNode.Syntax => Syntax;
+
+    public static IStandardPackageFacetReferenceNode Create(IPackageReferenceSyntax syntax)
+        => new StandardPackageFacetReferenceNode(syntax);
+}
+
+[Closed(typeof(PackageMainFacetReferenceNode))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
+public partial interface IPackageMainFacetReferenceNode : IPackageFacetReferenceNode
+{
+
+    public static IPackageMainFacetReferenceNode Create(IPackageReferenceSyntax? syntax)
+        => new PackageMainFacetReferenceNode(syntax);
+}
+
+[Closed(typeof(IntrinsicsPackageFacetReferenceNode))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
+public partial interface IIntrinsicsPackageFacetReferenceNode : IPackageFacetReferenceNode
+{
+
+    public static IIntrinsicsPackageFacetReferenceNode Create(IPackageReferenceSyntax? syntax)
+        => new IntrinsicsPackageFacetReferenceNode(syntax);
 }
 
 [Closed(
@@ -5159,6 +5203,7 @@ file class PackageFacetNode : SemanticNode, IPackageFacetNode
 
     public IPackageFacetSyntax Syntax { [DebuggerStepThrough] get; }
     public IFixedSet<ICompilationUnitNode> CompilationUnits { [DebuggerStepThrough] get; }
+    public IFixedSet<IPackageFacetReferenceNode> References { [DebuggerStepThrough] get; }
     public ISymbolDeclarationNode ContainingDeclaration
         => Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
     public IPackageDeclarationNode Package
@@ -5184,10 +5229,12 @@ file class PackageFacetNode : SemanticNode, IPackageFacetNode
 
     public PackageFacetNode(
         IPackageFacetSyntax syntax,
-        IEnumerable<ICompilationUnitNode> compilationUnits)
+        IEnumerable<ICompilationUnitNode> compilationUnits,
+        IEnumerable<IPackageFacetReferenceNode> references)
     {
         Syntax = syntax;
         CompilationUnits = ChildSet.Attach(this, compilationUnits);
+        References = ChildSet.Attach(this, references);
     }
 
     internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -5212,6 +5259,51 @@ file class PackageFacetNode : SemanticNode, IPackageFacetNode
     internal override PackageNameScope Inherited_PackageNameScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         return PackageNameScope;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class StandardPackageFacetReferenceNode : SemanticNode, IStandardPackageFacetReferenceNode
+{
+    private IStandardPackageFacetReferenceNode Self { [Inline] get => this; }
+
+    public IPackageReferenceSyntax Syntax { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package
+        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+
+    public StandardPackageFacetReferenceNode(IPackageReferenceSyntax syntax)
+    {
+        Syntax = syntax;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class PackageMainFacetReferenceNode : SemanticNode, IPackageMainFacetReferenceNode
+{
+    private IPackageMainFacetReferenceNode Self { [Inline] get => this; }
+
+    public IPackageReferenceSyntax? Syntax { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package
+        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+
+    public PackageMainFacetReferenceNode(IPackageReferenceSyntax? syntax)
+    {
+        Syntax = syntax;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class IntrinsicsPackageFacetReferenceNode : SemanticNode, IIntrinsicsPackageFacetReferenceNode
+{
+    private IIntrinsicsPackageFacetReferenceNode Self { [Inline] get => this; }
+
+    public IPackageReferenceSyntax? Syntax { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package
+        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+
+    public IntrinsicsPackageFacetReferenceNode(IPackageReferenceSyntax? syntax)
+    {
+        Syntax = syntax;
     }
 }
 

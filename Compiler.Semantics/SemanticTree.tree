@@ -44,7 +44,13 @@ StandardPackageReference <: PackageReference = Syntax:`IPackageReferenceSyntax`;
 IntrinsicsPackageReference <: PackageReference;
 
 // ---------- Facets
-PackageFacet <: PackageFacetDeclaration = Syntax:`IPackageFacetSyntax` CompilationUnits:{CompilationUnit};
+PackageFacet <: PackageFacetDeclaration = Syntax:`IPackageFacetSyntax`
+    CompilationUnits:{CompilationUnit} References:{PackageFacetReference};
+
+PackageFacetReference <: Child = Syntax:`IPackageReferenceSyntax`?;
+StandardPackageFacetReference <: PackageFacetReference = Syntax:`IPackageReferenceSyntax`;
+PackageMainFacetReference <: PackageFacetReference;
+IntrinsicsPackageFacetReference <: PackageFacetReference;
 
 FacetMemberDefinition <: NamespaceBlockMemberDefinition, NamespaceMemberDefinition
     = Attributes:Attribute*;
