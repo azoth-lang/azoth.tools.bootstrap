@@ -59,8 +59,7 @@ public class AzothCompiler
             var parseBlock = new TransformBlock<ICodeFileSource, ICompilationUnitSyntax>(async fileSource =>
             {
                 var file = await fileSource.LoadAsync().ConfigureAwait(false);
-                var context = new ParseContext(file, new DiagnosticCollectionBuilder());
-                var tokens = lexer.Lex(context).WhereNotTrivia();
+                var tokens = lexer.Lex(new ParseContext(file)).WhereNotTrivia();
                 return parser.Parse(tokens);
             }, new() { TaskScheduler = taskScheduler, EnsureOrdered = false, });
 
@@ -109,8 +108,7 @@ public class AzothCompiler
             return codeFiles
                    .Select(file =>
                    {
-                       var context = new ParseContext(file, new DiagnosticCollectionBuilder());
-                       var tokens = lexer.Lex(context).WhereNotTrivia();
+                       var tokens = lexer.Lex(new ParseContext(file)).WhereNotTrivia();
                        return parser.Parse(tokens);
                    })
                    .ToFixedSet();
