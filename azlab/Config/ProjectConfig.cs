@@ -34,14 +34,16 @@ internal class ProjectConfig
 
     public static ProjectConfig Load(string path)
     {
-        var extension = Path.GetExtension(path);
         string projectFilePath;
         if (Directory.Exists(path))
             projectFilePath = Path.Combine(path, FileName);
-        else if (extension == "vson")
-            projectFilePath = path;
         else
-            throw new Exception($"Unexpected project file extension '.{extension}'");
+        {
+            var extension = Path.GetExtension(path);
+            if (extension != "vson")
+                throw new Exception($"Unexpected project file extension '.{extension}'");
+            projectFilePath = path;
+        }
 
         projectFilePath = Path.GetFullPath(projectFilePath);
 

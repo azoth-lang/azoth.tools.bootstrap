@@ -48,18 +48,18 @@ internal class ProjectSet : IEnumerable<Project>
         // Add a placeholder to prevent cycles (safe because we will replace it below)
         projects.Add(projectDir, null!);
 
-        // TODO be more exact about selecting distinct references or possibly even merging them
-        var references = config.Dependencies!.Where(p => p.Value?.Relation >= ProjectRelation.Build)
-                               .SelectMany(CreateReferences).DistinctBy(r => r.Project.Name).ToList();
-        var devReferences = Lazy.Create(() => config.Dependencies!
-                                                    .Where(p => p.Value?.Relation == ProjectRelation.Dev)
-                                                    .SelectMany(CreateReferences).DistinctBy(r => r.Project.Name)
-                                                    .ToFixedList());
+        var references = CreateReferences(config, ProjectRelation.Build).ToList();
+        var devReferences = Lazy.Create(() => CreateReferences(config, ProjectRelation.Dev).ToFixedList());
         var project = new Project(config, references, devReferences);
         projects[projectDir] = project;
         return project;
 
-        IEnumerable<ProjectReference> CreateReferences(string alias, ProjectDependencyConfig? dependencyConfig)
+        IEnumerable<ProjectReference> CreateReferences(ProjectConfig projectConfig, ProjectRelation relation)
+            // TODO be more exact about selecting distinct references or possibly even merging them
+            => projectConfig.Dependencies!.Where(p => p.Value?.Relation >= relation)
+                .SelectMany(CreateReferencesForDependency).DistinctBy(r => r.Project.Name);
+
+        IEnumerable<ProjectReference> CreateReferencesForDependency(string alias, ProjectDependencyConfig? dependencyConfig)
         {
             // Note: these are input validations
             // TODO do these validations earlier
@@ -111,7 +111,7 @@ internal class ProjectSet : IEnumerable<Project>
         var projectBuildsSource = new TaskCompletionSource<FixedDictionary<Project, Task<IPackageNode?>>>();
         var projectBuildsTask = projectBuildsSource.Task;
 
-        // Sort projects to detect cycles and so we can assume the tasks already exist
+        // Sort projects to detect cycles, and so we can assume the tasks already exist
         var sortedProjects = TopologicalSort();
         var compiler = new AzothCompiler();
         var consoleLock = new AsyncLock();
@@ -354,7 +354,7 @@ internal class ProjectSet : IEnumerable<Project>
 
     private List<Project> TopologicalSort()
     {
-        var projectAlive = projects.Values.ToDictionary(p => p, _ => SortState.Alive);
+        var projectAlive = projects.Values.ToDictionary(p => p, _ => SortState.Unvisited);
         var sorted = new List<Project>(projects.Count);
         foreach (var project in projects.Values)
             TopologicalSortVisit(project, projectAlive, sorted);
@@ -368,17 +368,17 @@ internal class ProjectSet : IEnumerable<Project>
     {
         switch (state[project])
         {
-            case SortState.Dead: // Already visited
+            case SortState.Visited:
                 return;
 
-            case SortState.Undead:// Cycle
+            case SortState.Visiting:// Cycle
                 throw new Exception("Dependency Cycle");
 
-            case SortState.Alive:
-                state[project] = SortState.Undead;
+            case SortState.Unvisited:
+                state[project] = SortState.Visiting;
                 foreach (var referencedProject in project.References.Select(r => r.Project))
                     TopologicalSortVisit(referencedProject, state, sorted);
-                state[project] = SortState.Dead;
+                state[project] = SortState.Visited;
                 sorted.Add(project);
                 return;
 
@@ -389,8 +389,8 @@ internal class ProjectSet : IEnumerable<Project>
 
     private enum SortState
     {
-        Alive,
-        Undead,
-        Dead,
+        Unvisited,
+        Visiting,
+        Visited,
     }
 }
