@@ -17,8 +17,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.SyntaxBinding;
 /// to reflect that.</remarks>
 internal static class SyntaxBinder
 {
-    public static IPackageNode Bind(IPackageSyntax syntax)
-        => Package(syntax);
+    public static IPackageNode Bind(IPackageFacetSyntax packageMainSyntax, IPackageFacetSyntax packageTestsSyntax)
+        => Package(packageMainSyntax, packageTestsSyntax);
 
     #region Top Level
     private static IEnumerable<ICompilationUnitNode> CompilationUnits(IEnumerable<ICompilationUnitSyntax> syntax)
@@ -50,12 +50,12 @@ internal static class SyntaxBinder
     #endregion
 
     #region Packages
-    private static IPackageNode Package(IPackageSyntax syntax)
-        => IPackageNode.Create(syntax, PackageReferences(syntax.References),
-            PackageFacet(syntax, syntax.CompilationUnits),
-            PackageFacet(syntax, syntax.TestingCompilationUnits));
+    private static IPackageNode Package(IPackageFacetSyntax packageMainSyntax, IPackageFacetSyntax packageTestsSyntax)
+        => IPackageNode.Create(PackageReferences(packageMainSyntax.References),
+            PackageFacet(packageMainSyntax, packageMainSyntax.CompilationUnits),
+            PackageFacet(packageTestsSyntax, packageTestsSyntax.CompilationUnits));
 
-    private static IPackageFacetNode PackageFacet(IPackageSyntax syntax, IFixedSet<ICompilationUnitSyntax> compilationUnits)
+    private static IPackageFacetNode PackageFacet(IPackageFacetSyntax syntax, IFixedSet<ICompilationUnitSyntax> compilationUnits)
         => IPackageFacetNode.Create(syntax, CompilationUnits(compilationUnits));
 
     private static IEnumerable<IStandardPackageReferenceNode> PackageReferences(IEnumerable<IPackageReferenceSyntax> syntax)

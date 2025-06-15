@@ -2,6 +2,7 @@ using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Numerics;
+using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Code;
 using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
@@ -23,7 +24,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Syntax;
 // ReSharper disable ConvertToPrimaryConstructor
 
 [Closed(
-    typeof(IPackageSyntax),
+    typeof(IPackageFacetSyntax),
     typeof(IPackageReferenceSyntax),
     typeof(ICodeSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -77,22 +78,22 @@ public partial interface ILocalBindingSyntax : IBindingSyntax
     TextSpan NameSpan { get; }
 }
 
-[Closed(typeof(PackageSyntax))]
+[Closed(typeof(PackageFacetSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IPackageSyntax : ISyntax
+public partial interface IPackageFacetSyntax : ISyntax
 {
     IdentifierName Name { get; }
+    FacetKind Kind { get; }
     IFixedSet<ICompilationUnitSyntax> CompilationUnits { get; }
-    IFixedSet<ICompilationUnitSyntax> TestingCompilationUnits { get; }
     IFixedSet<IPackageReferenceSyntax> References { get; }
     DiagnosticCollection Diagnostics { get; }
 
-    public static IPackageSyntax Create(
+    public static IPackageFacetSyntax Create(
         IdentifierName name,
+        FacetKind kind,
         IEnumerable<ICompilationUnitSyntax> compilationUnits,
-        IEnumerable<ICompilationUnitSyntax> testingCompilationUnits,
         IEnumerable<IPackageReferenceSyntax> references)
-        => new PackageSyntax(name, compilationUnits, testingCompilationUnits, references);
+        => new PackageFacetSyntax(name, kind, compilationUnits, references);
 }
 
 [Closed(typeof(PackageReferenceSyntax))]
@@ -1567,29 +1568,29 @@ public partial interface IAwaitExpressionSyntax : IExpressionSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class PackageSyntax : IPackageSyntax
+file class PackageFacetSyntax : IPackageFacetSyntax
 {
-    private IPackageSyntax Self { [Inline] get => this; }
+    private IPackageFacetSyntax Self { [Inline] get => this; }
 
     public IdentifierName Name { [DebuggerStepThrough] get; }
+    public FacetKind Kind { [DebuggerStepThrough] get; }
     public IFixedSet<ICompilationUnitSyntax> CompilationUnits { [DebuggerStepThrough] get; }
-    public IFixedSet<ICompilationUnitSyntax> TestingCompilationUnits { [DebuggerStepThrough] get; }
     public IFixedSet<IPackageReferenceSyntax> References { [DebuggerStepThrough] get; }
     public DiagnosticCollection Diagnostics { [DebuggerStepThrough] get; }
     public override string ToString()
-        => FormattingAspect.Package_ToString(this);
+        => FormattingAspect.PackageFacet_ToString(this);
 
-    public PackageSyntax(
+    public PackageFacetSyntax(
         IdentifierName name,
+        FacetKind kind,
         IEnumerable<ICompilationUnitSyntax> compilationUnits,
-        IEnumerable<ICompilationUnitSyntax> testingCompilationUnits,
         IEnumerable<IPackageReferenceSyntax> references)
     {
         Name = name;
+        Kind = kind;
         CompilationUnits = compilationUnits.ToFixedSet();
-        TestingCompilationUnits = testingCompilationUnits.ToFixedSet();
         References = references.ToFixedSet();
-        Diagnostics = ComputedAspect.Package_Diagnostics(this);
+        Diagnostics = ComputedAspect.PackageFacet_Diagnostics(this);
     }
 }
 

@@ -12,7 +12,7 @@ internal static partial class FormattingAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial string SelfParameter_ToString(ISelfParameterSyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial string Package_ToString(IPackageSyntax node);
+    public static partial string PackageFacet_ToString(IPackageFacetSyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial string PackageReference_ToString(IPackageReferenceSyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

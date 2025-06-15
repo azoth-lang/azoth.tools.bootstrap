@@ -146,18 +146,19 @@ public partial interface IVariableBindingNode : ILocalBindingNode, IDataFlowNode
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IPackageNode : IPackageDeclarationNode
 {
-    new IPackageSyntax Syntax { get; }
-    ISyntax? ISemanticNode.Syntax => Syntax;
     IFixedSet<IPackageReferenceNode> References { get; }
     new IPackageFacetNode MainFacet { get; }
     IPackageFacetDeclarationNode IPackageDeclarationNode.MainFacet => MainFacet;
     new IPackageFacetNode TestingFacet { get; }
     IPackageFacetDeclarationNode IPackageDeclarationNode.TestingFacet => TestingFacet;
+    new ISyntax? Syntax
+        => null;
+    ISyntax? ISemanticNode.Syntax => Syntax;
     new IdentifierName? AliasOrName
         => null;
     IdentifierName? IPackageDeclarationNode.AliasOrName => AliasOrName;
     new IdentifierName Name
-        => Syntax.Name;
+        => MainFacet.Syntax.Name;
     IdentifierName IPackageDeclarationNode.Name => Name;
     IFunctionDefinitionNode? EntryPoint { get; }
     DiagnosticCollection Diagnostics { get; }
@@ -166,11 +167,10 @@ public partial interface IPackageNode : IPackageDeclarationNode
     IFixedSet<ITypeDeclarationNode> PrimitivesDeclarations { get; }
 
     public static IPackageNode Create(
-        IPackageSyntax syntax,
         IEnumerable<IPackageReferenceNode> references,
         IPackageFacetNode mainFacet,
         IPackageFacetNode testingFacet)
-        => new PackageNode(syntax, references, mainFacet, testingFacet);
+        => new PackageNode(references, mainFacet, testingFacet);
 }
 
 [Closed(
@@ -228,7 +228,7 @@ public partial interface IIntrinsicsPackageReferenceNode : IPackageReferenceNode
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IPackageFacetNode : IPackageFacetDeclarationNode
 {
-    new IPackageSyntax Syntax { get; }
+    new IPackageFacetSyntax Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
     IFixedSet<ICompilationUnitNode> CompilationUnits { get; }
     PackageNameScope PackageNameScope { get; }
@@ -237,7 +237,7 @@ public partial interface IPackageFacetNode : IPackageFacetDeclarationNode
     INamespaceDeclarationNode IPackageFacetDeclarationNode.GlobalNamespace => GlobalNamespace;
 
     public static IPackageFacetNode Create(
-        IPackageSyntax syntax,
+        IPackageFacetSyntax syntax,
         IEnumerable<ICompilationUnitNode> compilationUnits)
         => new PackageFacetNode(syntax, compilationUnits);
 }
@@ -5045,7 +5045,6 @@ file class PackageNode : SemanticNode, IPackageNode
 {
     private IPackageNode Self { [Inline] get => this; }
 
-    public IPackageSyntax Syntax { [DebuggerStepThrough] get; }
     public IFixedSet<IPackageReferenceNode> References { [DebuggerStepThrough] get; }
     public IPackageFacetNode MainFacet { [DebuggerStepThrough] get; }
     public IPackageFacetNode TestingFacet { [DebuggerStepThrough] get; }
@@ -5090,13 +5089,11 @@ file class PackageNode : SemanticNode, IPackageNode
     private bool symbolCached;
 
     public PackageNode(
-        IPackageSyntax syntax,
         IEnumerable<IPackageReferenceNode> references,
         IPackageFacetNode mainFacet,
         IPackageFacetNode testingFacet)
         : base(true)
     {
-        Syntax = syntax;
         References = ChildSet.Attach(this, references);
         MainFacet = Child.Attach(this, mainFacet);
         TestingFacet = Child.Attach(this, testingFacet);
@@ -5160,7 +5157,7 @@ file class PackageFacetNode : SemanticNode, IPackageFacetNode
 {
     private IPackageFacetNode Self { [Inline] get => this; }
 
-    public IPackageSyntax Syntax { [DebuggerStepThrough] get; }
+    public IPackageFacetSyntax Syntax { [DebuggerStepThrough] get; }
     public IFixedSet<ICompilationUnitNode> CompilationUnits { [DebuggerStepThrough] get; }
     public ISymbolDeclarationNode ContainingDeclaration
         => Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
@@ -5186,7 +5183,7 @@ file class PackageFacetNode : SemanticNode, IPackageFacetNode
     private bool globalNamespaceCached;
 
     public PackageFacetNode(
-        IPackageSyntax syntax,
+        IPackageFacetSyntax syntax,
         IEnumerable<ICompilationUnitNode> compilationUnits)
     {
         Syntax = syntax;

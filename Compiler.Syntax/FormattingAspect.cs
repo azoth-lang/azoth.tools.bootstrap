@@ -11,8 +11,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Syntax;
 internal static partial class FormattingAspect
 {
     #region Packages
-    public static partial string Package_ToString(IPackageSyntax node)
-        => $"package {node.Name.Text}: {node.CompilationUnits.Count} Compilation Units";
+    public static partial string PackageFacet_ToString(IPackageFacetSyntax node)
+        => $"package {node.Name.Text} facet {node.Kind}: {node.CompilationUnits.Count} Compilation Units";
 
     public static partial string PackageReference_ToString(IPackageReferenceSyntax node)
         => $"reference {node.AliasOrName}: {{ \"package\": \"{node.Package.PackageSymbol}\" \"trusted\": {node.IsTrusted} }}";

@@ -8,7 +8,7 @@
 // few cases where it makes sense and so these have been lumped together in this aspect.
 
 // ---------- Packages
-↑ eager Package.Diagnostics: `DiagnosticCollection`;
+↑ eager PackageFacet.Diagnostics: `DiagnosticCollection`;
 
 // ---------- Member Definitions
 ↑ GetterMethodDefinition.Parameters: NamedParameter* => [];

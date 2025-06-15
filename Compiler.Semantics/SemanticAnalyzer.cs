@@ -12,13 +12,14 @@ public class SemanticAnalyzer
     /// </summary>
     public bool SaveReachabilityGraphs { get; set; }
 
-    public IPackageNode Check(IPackageSyntax packageSyntax)
+    public IPackageNode Check(IPackageFacetSyntax packageMainSyntax, IPackageFacetSyntax packageTestsSyntax)
     {
         // If there are errors from the lex and parse phase, don't continue on
-        packageSyntax.Diagnostics.ThrowIfFatalErrors();
+        packageMainSyntax.Diagnostics.ThrowIfFatalErrors();
+        packageTestsSyntax.Diagnostics.ThrowIfFatalErrors();
 
         // Build a semantic tree from the syntax tree
-        var packageNode = SyntaxBinder.Bind(packageSyntax);
+        var packageNode = SyntaxBinder.Bind(packageMainSyntax, packageTestsSyntax);
 
 #if DEBUG
         // Since the tree is lazy evaluated, walk it and force evaluation of many attributes to catch bugs

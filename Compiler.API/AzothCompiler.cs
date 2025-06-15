@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Code;
-using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Lexing;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Parsing;
@@ -44,15 +43,15 @@ public class AzothCompiler
         var referenceSyntax = (await Task.WhenAll(
             references.Select(r => r.ToSyntaxAsync())).ConfigureAwait(false)).ToFixedSet();
 
-        // TODO add the references to the package syntax
-        var packageSyntax = IPackageSyntax.Create(name, compilationUnits, testingCompilationUnits, referenceSyntax);
+        var packageMainSyntax = IPackageFacetSyntax.Create(name, FacetKind.Main, compilationUnits, referenceSyntax);
+        var packageTestsSyntax = IPackageFacetSyntax.Create(name, FacetKind.Tests, testingCompilationUnits, referenceSyntax);
 
         var analyzer = new SemanticAnalyzer()
         {
             SaveReachabilityGraphs = SaveReachabilityGraphs,
         };
 
-        return analyzer.Check(packageSyntax);
+        return analyzer.Check(packageMainSyntax, packageTestsSyntax);
 
         async Task<IFixedSet<ICompilationUnitSyntax>> ParseFilesAsync(IEnumerable<ICodeFileSource> codeFileSources)
         {
@@ -94,14 +93,15 @@ public class AzothCompiler
         var compilationUnits = ParseFiles(files);
         var testingCompilationUnits = ParseFiles(testingFiles);
         var referenceSyntax = references.Select(r => r.ToSyntax()).ToFixedSet();
-        var packageSyntax = IPackageSyntax.Create(name, compilationUnits, testingCompilationUnits, referenceSyntax);
+        var packageMainSyntax = IPackageFacetSyntax.Create(name, FacetKind.Main, compilationUnits, referenceSyntax);
+        var packageTestsSyntax = IPackageFacetSyntax.Create(name, FacetKind.Tests, testingCompilationUnits, referenceSyntax);
 
         var analyzer = new SemanticAnalyzer()
         {
             SaveReachabilityGraphs = SaveReachabilityGraphs,
         };
 
-        return analyzer.Check(packageSyntax);
+        return analyzer.Check(packageMainSyntax, packageTestsSyntax);
 
         IFixedSet<ICompilationUnitSyntax> ParseFiles(IEnumerable<CodeFile> codeFiles)
         {

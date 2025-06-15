@@ -5,6 +5,7 @@
 ◊class-suffix Syntax;
 ◊simplified-tree true;
 ◊using System.Numerics;
+◊using Azoth.Tools.Bootstrap.Compiler.Core;
 ◊using Azoth.Tools.Bootstrap.Compiler.Core.Code;
 ◊using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 ◊using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
@@ -31,7 +32,7 @@ Binding <: Code = IsMutableBinding:`bool`;
 LocalBinding <: Binding = NameSpan:`TextSpan`;
 
 // ---------- Packages
-Package = Name:`IdentifierName` CompilationUnits:{CompilationUnit} TestingCompilationUnits:{CompilationUnit}
+PackageFacet = Name:`IdentifierName` Kind:`FacetKind` CompilationUnits:{CompilationUnit}
     References:{PackageReference};
 PackageReference = AliasOrName:`IdentifierName` Package:`IPackageSymbols` IsTrusted:`bool`;
 

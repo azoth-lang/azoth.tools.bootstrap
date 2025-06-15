@@ -238,15 +238,13 @@ public static class ISyntaxExtensions
                 if (n.Body is not null)
                     yield return n.Body;
                 yield break;
-            case IPackageReferenceSyntax n:
-                yield break;
-            case IPackageSyntax n:
+            case IPackageFacetSyntax n:
                 foreach (var child in n.CompilationUnits)
-                    yield return child;
-                foreach (var child in n.TestingCompilationUnits)
                     yield return child;
                 foreach (var child in n.References)
                     yield return child;
+                yield break;
+            case IPackageReferenceSyntax n:
                 yield break;
             case IParameterTypeSyntax n:
                 yield return n.Referent;

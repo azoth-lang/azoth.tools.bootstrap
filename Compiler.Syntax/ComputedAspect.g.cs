@@ -12,7 +12,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Syntax;
 internal static partial class ComputedAspect
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial DiagnosticCollection Package_Diagnostics(IPackageSyntax node);
+    public static partial DiagnosticCollection PackageFacet_Diagnostics(IPackageFacetSyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFixedList<IStatementSyntax> ExpressionBody_Statements(IExpressionBodySyntax node);
 }

@@ -6,11 +6,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Syntax;
 
 internal static partial class ComputedAspect
 {
-    public static partial DiagnosticCollection Package_Diagnostics(IPackageSyntax node)
+    public static partial DiagnosticCollection PackageFacet_Diagnostics(IPackageFacetSyntax node)
     {
         var builder = new DiagnosticCollectionBuilder
         {
-            node.CompilationUnits.Concat(node.TestingCompilationUnits).Select(cu => cu.Diagnostics)
+            node.CompilationUnits.Select(cu => cu.Diagnostics)
         };
         return builder.Build();
     }

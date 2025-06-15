@@ -36,7 +36,7 @@ LocalBinding <: NamedBinding = Syntax:`ILocalBindingSyntax`;
 VariableBinding <: LocalBinding, DataFlow;
 
 // ---------- Packages
-Package <: PackageDeclaration = Syntax:`IPackageSyntax` References:{PackageReference}
+Package <: PackageDeclaration = References:{PackageReference}
     MainFacet:PackageFacet TestingFacet:PackageFacet;
 
 PackageReference <: Child = Syntax:`IPackageReferenceSyntax`?;
@@ -44,7 +44,7 @@ StandardPackageReference <: PackageReference = Syntax:`IPackageReferenceSyntax`;
 IntrinsicsPackageReference <: PackageReference;
 
 // ---------- Facets
-PackageFacet <: PackageFacetDeclaration = Syntax:`IPackageSyntax` CompilationUnits:{CompilationUnit};
+PackageFacet <: PackageFacetDeclaration = Syntax:`IPackageFacetSyntax` CompilationUnits:{CompilationUnit};
 
 FacetMemberDefinition <: NamespaceBlockMemberDefinition, NamespaceMemberDefinition
     = Attributes:Attribute*;
