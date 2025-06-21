@@ -15,7 +15,7 @@ internal static partial class FormattingAspect
         => $"package {node.Name.Text} facet {node.Kind}: {node.CompilationUnits.Count} Compilation Units";
 
     public static partial string PackageReference_ToString(IPackageReferenceSyntax node)
-        => $"reference {node.AliasOrName}: {{ \"package\": \"{node.Package.PackageSymbol}\" \"trusted\": {node.IsTrusted} }}";
+        => $"reference {node.AliasOrName}: {{ \"package\": \"{node.PackageSymbol}\" \"trusted\": {node.IsTrusted} }}";
     #endregion
 
     #region Code Files
