@@ -6,7 +6,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
 
 public class SemanticAnalyzer
 {
-    public IPackageNode Check(IPackageFacetSyntax packageMainSyntax, IPackageFacetSyntax packageTestsSyntax)
+    public IPackageNode Check(
+        IPackageFacetSyntax packageMainSyntax,
+        IPackageFacetSyntax packageTestsSyntax)
     {
         // If there are errors from the lex and parse phase, don't continue on
         packageMainSyntax.Diagnostics.ThrowIfFatalErrors();

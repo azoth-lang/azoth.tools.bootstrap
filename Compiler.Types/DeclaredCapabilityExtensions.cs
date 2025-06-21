@@ -39,7 +39,4 @@ public static class DeclaredCapabilityExtensions
             DeclaredCapability.Identity => Capability.InitReadOnly,
             _ => throw ExhaustiveMatch.Failed(capability)
         };
-
-    public static string ToSourceCodeString(this DeclaredCapability capability)
-        => capability.ToCapability(null)?.ToSourceCodeString() ?? "";
 }
