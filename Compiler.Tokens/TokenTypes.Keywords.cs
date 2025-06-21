@@ -39,7 +39,7 @@ public static partial class TokenTypes
                 nameof(AsExclamationKeywordToken) => "as!",
                 nameof(AsQuestionKeywordToken) => "as?",
                 nameof(IndependentKeywordToken) => "ind",
-                "UnderscoreKeywordToken" => "_",
+                "UnderscoreKeywordToken" => "_", // TODO why does this need to be a string?
                 _ => tokenTypeName[..^KeywordTokenLength]
                                   .ToLower(CultureInfo.InvariantCulture)
             };
