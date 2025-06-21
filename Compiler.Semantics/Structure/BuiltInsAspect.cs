@@ -9,7 +9,7 @@ internal static partial class BuiltInsAspect
 {
     // If there is already a reference to the intrinsics package, use it. Otherwise, create a new one.
     public static partial IPackageFacetReferenceNode PackageFacet_IntrinsicsReference(IPackageFacetNode node)
-        => node.References.SingleOrDefault(r => Intrinsic.Package.Equals(r.PackageSymbols.PackageSymbol))
+        => node.References.SingleOrDefault(r => Intrinsic.Package.Equals(r.Symbols.Package))
             ?? IIntrinsicsPackageFacetReferenceNode.Create();
 
     public static partial IFixedSet<ITypeDeclarationNode> Package_PrimitivesDeclarations(IPackageNode node)

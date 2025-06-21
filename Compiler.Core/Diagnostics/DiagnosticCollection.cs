@@ -14,6 +14,7 @@ public sealed class DiagnosticCollection : IReadOnlyList<Diagnostic>
     private readonly IReadOnlyList<Diagnostic> diagnostics;
 
     public int Count => diagnostics.Count;
+    public bool IsEmpty => diagnostics.Count == 0;
     public int FatalErrorCount { get; }
 
     public DiagnosticCollection(DiagnosticCollectionBuilder diagnostics)

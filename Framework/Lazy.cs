@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using InlineMethod;
 
@@ -22,6 +23,71 @@ public static class Lazy
     /// Initializes a target reference type with a specified function if it has not already been
     /// initialized. Important use a <b>static lambda</b> as the parameter for good performance.
     /// </summary>
+    /// <remarks>If called concurrently, the <paramref name="valueFactory"/> will only be called
+    /// once. To accomplish this, <paramref name="target"/> is temporarily set to an invalid value.
+    /// One must never use that value. Always access via <see cref="InitializeOnce{TValue}"/>.</remarks>
+    public static TValue InitializeOnce<TValue>(ref TValue? target, Func<TValue> valueFactory)
+        where TValue : class
+    {
+        // Fast path
+        var tmp = Volatile.Read(ref target);
+        if (tmp is not null && !ReferenceEquals(tmp, InProgressValue)) return tmp;
+
+        tmp = Interlocked.CompareExchange(ref target, Unsafe.As<TValue>(InProgressValue), null);
+        if (tmp is not null)
+        {
+            // Another thread is initializing, wait for it to complete
+            SpinWait sw = new SpinWait();
+            do
+            {
+                sw.SpinOnce();
+            } while (ReferenceEquals(tmp = target, InProgressValue));
+        }
+        else
+            // We've acquired the lock to do the initialization
+            Volatile.Write(ref target, tmp = valueFactory());
+
+        return tmp;
+    }
+
+    /// <summary>
+    /// Initializes a target reference type with a specified function if it has not already been
+    /// initialized. Important use a <b>static lambda</b> as the parameter for good performance.
+    /// </summary>
+    /// <remarks>If called concurrently, the <paramref name="valueFactory"/> will only be called
+    /// once. To accomplish this, <paramref name="target"/> is temporarily set to an invalid value.
+    /// One must never use that value. Always access via <see cref="InitializeOnce{TValue}"/>.</remarks>
+    public static TValue InitializeOnce<TParam, TValue>(ref TValue? target, TParam param, Func<TParam, TValue> valueFactory)
+        where TValue : class
+    {
+        // Fast path
+        var tmp = Volatile.Read(ref target);
+        if (tmp is not null && !ReferenceEquals(tmp, InProgressValue)) return tmp;
+
+        tmp = Interlocked.CompareExchange(ref target, Unsafe.As<TValue>(InProgressValue), null);
+        if (tmp is not null)
+        {
+            // Another thread is initializing, wait for it to complete
+            SpinWait sw = new SpinWait();
+            do
+            {
+                sw.SpinOnce();
+            } while (ReferenceEquals(tmp = target, InProgressValue));
+        }
+        else
+            // We've acquired the lock to do the initialization
+            Volatile.Write(ref target, tmp = valueFactory(param));
+
+        return tmp;
+    }
+
+
+    /// <summary>
+    /// Initializes a target reference type with a specified function if it has not already been
+    /// initialized. Important use a <b>static lambda</b> as the parameter for good performance.
+    /// </summary>
+    /// <remarks>If called concurrently, the <paramref name="valueFactory"/> could be called
+    /// multiple times but only one value will be used.</remarks>
     public static TValue Initialize<TValue>(ref TValue? target, Func<TValue> valueFactory)
         where TValue : class
     {
@@ -44,8 +110,7 @@ public static class Lazy
        where TValue : class
     {
         var tmp = Volatile.Read(ref target);
-        if (tmp != null)
-            return tmp;
+        if (tmp is not null) return tmp;
 
         Interlocked.CompareExchange(ref target, valueFactory(param), null);
 
@@ -64,7 +129,7 @@ public static class Lazy
         where TValue : class
     {
         var tmp = Volatile.Read(ref target);
-        if (tmp != null) return tmp;
+        if (tmp is not null) return tmp;
 
         Interlocked.CompareExchange(ref target, valueFactory(param1, param2), null);
 
@@ -84,7 +149,7 @@ public static class Lazy
         where TValue : class
     {
         var tmp = Volatile.Read(ref target);
-        if (tmp != null) return tmp;
+        if (tmp is not null) return tmp;
 
         Interlocked.CompareExchange(ref target, valueFactory(param1, param2, param3), null);
 
@@ -103,9 +168,12 @@ public static class Lazy
         where TValue : class?
     {
         var alreadyInitialized = Volatile.Read(ref initialized);
-        if (alreadyInitialized) return Volatile.Read(ref target);
+        if (alreadyInitialized) return target;
 
-        Volatile.Write(ref target, valueFactory(param));
+        var oldValue = target;
+        var newValue = valueFactory(param);
+        // Try to avoid changing to a new value by using atomic compare exchange
+        Interlocked.CompareExchange(ref target!, newValue, oldValue);
         Volatile.Write(ref initialized, true);
 
         return target;
@@ -123,4 +191,6 @@ public static class Lazy
 
         return target;
     }
+
+    private static readonly object InProgressValue = new();
 }

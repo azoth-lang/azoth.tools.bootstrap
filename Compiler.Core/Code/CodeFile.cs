@@ -1,12 +1,13 @@
 using System;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Core.Code;
 
 /// A CodeFile represents the combination of CodeText and CodeReference
-public class CodeFile : IComparable<CodeFile>
+public class CodeFile : IComparable<CodeFile>, ICodeFileSource
 {
     /// Source code files are encoded with UTF-8 without a BOM. C# UTF-8 include
     /// the BOM by default. So we make our own Encoding object.
@@ -25,13 +26,14 @@ public class CodeFile : IComparable<CodeFile>
         Reference = reference;
     }
 
-    public static CodeFile Load(string path, bool isTest)
-        => Load(path, FixedList.Empty<string>(), isTest);
+    public static ValueTask<CodeFile> LoadAsync(string path, bool isTest)
+        => LoadAsync(path, FixedList.Empty<string>(), isTest);
 
-    public static CodeFile Load(string path, IFixedList<string> @namespace, bool isTest)
+    public static ValueTask<CodeFile> LoadAsync(string path, IFixedList<string> @namespace, bool isTest)
     {
         var fullPath = Path.GetFullPath(path);
-        return new CodeFile(new CodePath(fullPath, @namespace, isTest), new CodeText(File.ReadAllText(fullPath, Encoding)));
+        var codePath = new CodePath(fullPath, @namespace, isTest, preload: true);
+        return codePath.LoadAsync();
     }
 
     public int CompareTo(CodeFile? other)
@@ -40,4 +42,6 @@ public class CodeFile : IComparable<CodeFile>
         if (other is null) return 1;
         return Reference.CompareTo(other.Reference);
     }
+
+    ValueTask<CodeFile> ICodeFileSource.LoadAsync() => ValueTask.FromResult(this);
 }

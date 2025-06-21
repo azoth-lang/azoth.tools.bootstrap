@@ -6,12 +6,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
 
 public class SemanticAnalyzer
 {
-    /// <summary>
-    /// Whether to store the reachability graphs for each function and method.
-    /// Default Value: false
-    /// </summary>
-    public bool SaveReachabilityGraphs { get; set; }
-
     public IPackageNode Check(IPackageFacetSyntax packageMainSyntax, IPackageFacetSyntax packageTestsSyntax)
     {
         // If there are errors from the lex and parse phase, don't continue on

@@ -9,6 +9,7 @@ using Azoth.Tools.Bootstrap.Compiler.Core.Code;
 using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Semantics;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter;
+using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Framework;
 using Azoth.Tools.Bootstrap.Lab.Config;
 using ExhaustiveMatching;
@@ -88,13 +89,22 @@ internal class ProjectSet : IEnumerable<Project>
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
     public async Task BuildAsync(TaskScheduler taskScheduler, bool verbose)
-        => await ProcessProjects(taskScheduler, verbose, outputTests: false, BuildAsync, null);
+    {
+        try
+        {
+            await ProcessProjects(taskScheduler, verbose, outputTests: false, BuildAsync, null);
+        }
+        catch (FatalCompilationErrorException)
+        {
+            // Errors already output, nothing to do
+        }
+    }
 
-    private delegate Task<IPackageNode?> ProcessAsync(
+    private delegate Task<IPackageNode> ProcessAsync(
         AzothCompiler compiler,
         Project project,
         bool outputTests,
-        Task<FixedDictionary<Project, Task<IPackageNode?>>> projectBuildsTask,
+        Task<FixedDictionary<Project, Task<IPackageNode>>> projectBuildsTask,
         AsyncLock consoleLock);
 
     private async Task<(IPackageNode, IFixedSet<IPackageNode>)?> ProcessProjects(
@@ -106,9 +116,9 @@ internal class ProjectSet : IEnumerable<Project>
     {
         _ = verbose; // verbose parameter will be needed in the future
         var taskFactory = new TaskFactory(taskScheduler);
-        var projectBuilds = new Dictionary<Project, Task<IPackageNode?>>();
+        var projectBuilds = new Dictionary<Project, Task<IPackageNode>>();
 
-        var projectBuildsSource = new TaskCompletionSource<FixedDictionary<Project, Task<IPackageNode?>>>();
+        var projectBuildsSource = new TaskCompletionSource<FixedDictionary<Project, Task<IPackageNode>>>();
         var projectBuildsTask = projectBuildsSource.Task;
 
         // Sort projects to detect cycles, and so we can assume the tasks already exist
@@ -131,57 +141,57 @@ internal class ProjectSet : IEnumerable<Project>
 
         var entryProject = Get(entryProjectConfig);
         var entryPackage = await projectBuilds[entryProject];
-        if (entryPackage is null)
-            return null;
         var referencedPackages = allBuilds.WhereNotNull().Except(entryPackage).ToFixedSet();
         return (entryPackage, referencedPackages);
     }
 
     public async Task InterpretAsync(TaskScheduler taskScheduler, bool verbose, ProjectConfig entryProjectConfig)
     {
-        var packages = await ProcessProjects(taskScheduler, verbose, outputTests: false, CompileAsync, entryProjectConfig);
-
-        if (packages is not var (entryPackageNode, referencedPackages))
-            // Fatal Compile Errors
-            return;
-
-        var interpreter = new AzothTreeInterpreter();
-        var process = interpreter.Execute(entryPackageNode, referencedPackages);
-        while (await process.StandardOutput.ReadLineAsync() is { } line)
-            Console.WriteLine(line);
-        await process.WaitForExitAsync();
-        var stderr = await process.StandardError.ReadToEndAsync();
-        await Console.Error.WriteLineAsync(stderr);
-        Console.WriteLine($"Run took {process.RunTime}");
+        try
+        {
+            var (entryPackageNode, referencedPackages) = (await ProcessProjects(taskScheduler, verbose,
+                outputTests: false, CompileAsync, entryProjectConfig))!.Value;
+            var interpreter = new AzothTreeInterpreter();
+            var process = interpreter.Execute(entryPackageNode, referencedPackages);
+            while (await process.StandardOutput.ReadLineAsync() is { } line) Console.WriteLine(line);
+            await process.WaitForExitAsync();
+            var stderr = await process.StandardError.ReadToEndAsync();
+            await Console.Error.WriteLineAsync(stderr);
+            Console.WriteLine($"Run took {process.RunTime}");
+        }
+        catch (FatalCompilationErrorException)
+        {
+            // Errors already output, nothing to do
+        }
     }
 
     public async Task TestAsync(TaskScheduler taskScheduler, bool verbose, ProjectConfig testProjectConfig)
     {
-        var packages = await ProcessProjects(taskScheduler, verbose, outputTests: true, CompileAsync, testProjectConfig);
-
-        if (packages is not var (testPackageNode, referencedPackages))
-            // Fatal Compile Errors
-            return;
-
-        var interpreter = new AzothTreeInterpreter();
-        var process = interpreter.ExecuteTests(testPackageNode, referencedPackages);
-        while (await process.StandardOutput.ReadLineAsync() is { } line)
-            Console.WriteLine(line);
-        await process.WaitForExitAsync();
-        var stderr = await process.StandardError.ReadToEndAsync();
-        await Console.Error.WriteLineAsync(stderr);
+        try
+        {
+            var (testPackageNode, referencedPackages) =
+                (await ProcessProjects(taskScheduler, verbose, outputTests: true, CompileAsync, testProjectConfig))!.Value;
+            var interpreter = new AzothTreeInterpreter();
+            var process = interpreter.ExecuteTests(testPackageNode, referencedPackages);
+            while (await process.StandardOutput.ReadLineAsync() is { } line) Console.WriteLine(line);
+            await process.WaitForExitAsync();
+            var stderr = await process.StandardError.ReadToEndAsync();
+            await Console.Error.WriteLineAsync(stderr);
+        }
+        catch (FatalCompilationErrorException)
+        {
+            // Errors already output, nothing to do
+        }
     }
 
-    private static async Task<IPackageNode?> BuildAsync(
+    private static async Task<IPackageNode> BuildAsync(
         AzothCompiler compiler,
         Project project,
         bool outputTests,
-        Task<FixedDictionary<Project, Task<IPackageNode?>>> projectBuildsTask,
+        Task<FixedDictionary<Project, Task<IPackageNode>>> projectBuildsTask,
         AsyncLock consoleLock)
     {
         var package = await CompileAsync(compiler, project, outputTests, projectBuildsTask, consoleLock);
-        if (package is null) return null;
-
         var cacheDir = PrepareCacheDir(project);
         var codePath = EmitIL(project, package, outputTests, cacheDir);
 
@@ -193,11 +203,11 @@ internal class ProjectSet : IEnumerable<Project>
         return package;
     }
 
-    private static async Task<IPackageNode?> CompileAsync(
+    private static async Task<IPackageNode> CompileAsync(
         AzothCompiler compiler,
         Project project,
         bool outputTests,
-        Task<FixedDictionary<Project, Task<IPackageNode?>>> projectBuildsTask,
+        Task<FixedDictionary<Project, Task<IPackageNode>>> projectBuildsTask,
         AsyncLock consoleLock)
     {
         // Doesn't affect compilation, only IL emitting
@@ -209,27 +219,19 @@ internal class ProjectSet : IEnumerable<Project>
         var testSourcePaths = Directory.EnumerateFiles(sourceDir, "*.azt", SearchOption.AllDirectories);
         // Wait for the references, unfortunately, this requires an ugly loop.
         var referenceTasks = project.References.ToDictionaryWithValue(r => projectBuilds[r.Project]);
-        var references = new HashSet<PackageReference>();
+        var references = new HashSet<PackageReferenceAsync>();
         foreach (var (reference, packageTask) in referenceTasks)
-        {
-            var package = await packageTask.ConfigureAwait(false);
-            if (package is not null)
-                references.Add(new PackageReference(reference.Alias, package.PackageSymbols, reference.IsTrusted));
-        }
+            references.Add(new PackageReferenceAsync(reference.Alias, GetPackageSymbolsAsync(packageTask), reference.IsTrusted));
 
         using (await consoleLock.LockAsync())
         {
             Console.WriteLine($"Compiling {project.Name} ({project.Path})...");
         }
-        var codeFiles = LoadCode(sourcePaths, isTest: false);
-        var testCodeFiles = LoadCode(testSourcePaths, isTest: true);
+        var codeFiles = CreateCodePaths(sourcePaths, isTest: false);
+        var testCodeFiles = CreateCodePaths(testSourcePaths, isTest: true);
         try
         {
-            var package = compiler.CompilePackage(project.Name, codeFiles, testCodeFiles, references);
-            // TODO switch to the async version of the compiler
-            //var codeFiles = sourcePaths.Select(p => new CodePath(p)).ToList();
-            //var references = project.References.ToDictionary(r => r.Name, r => projectBuilds[r.Project]);
-            //var package = await compiler.CompilePackageAsync(project.Name, codeFiles, references);
+            var package = await compiler.CompilePackageAsync(project.Name, codeFiles, testCodeFiles, references);
 
             if (OutputDiagnostics(project, package.Diagnostics, consoleLock))
                 return package;
@@ -244,22 +246,29 @@ internal class ProjectSet : IEnumerable<Project>
         catch (FatalCompilationErrorException ex)
         {
             OutputDiagnostics(project, ex.Diagnostics, consoleLock);
-            return null;
+            throw;
         }
 
-        IEnumerable<CodeFile> LoadCode(IEnumerable<string> paths, bool isTest)
-            => paths.Select(p => ProjectSet.LoadCode(p, sourceDir, project.RootNamespace, isTest));
-    }
+        async Task<IPackageSymbols> GetPackageSymbolsAsync(Task<IPackageNode> packageTask)
+        {
+            var package = await packageTask;
+            return package.PackageSymbols;
+        }
 
-    private static CodeFile LoadCode(
-        string path,
-        string sourceDir,
-        IFixedList<string> rootNamespace,
-        bool isTest)
-    {
-        var relativeDirectory = Path.GetDirectoryName(Path.GetRelativePath(sourceDir, path)) ?? throw new InvalidOperationException("Null directory name");
-        var ns = rootNamespace.Concat(relativeDirectory.SplitOrEmpty(Path.DirectorySeparatorChar)).ToFixedList();
-        return CodeFile.Load(path, ns, isTest);
+        IEnumerable<CodePath> CreateCodePaths(IEnumerable<string> paths, bool isTest)
+            => paths.Select(p => CreateCodePath(p, sourceDir, project.RootNamespace, isTest));
+
+        static CodePath CreateCodePath(
+            string path,
+            string sourceDir,
+            IFixedList<string> rootNamespace,
+            bool isTest)
+        {
+            var relativeDirectory = Path.GetDirectoryName(Path.GetRelativePath(sourceDir, path))
+                                    ?? throw new InvalidOperationException("Null directory name");
+            var ns = rootNamespace.Concat(relativeDirectory.SplitOrEmpty(Path.DirectorySeparatorChar)).ToFixedList();
+            return new(path, ns, isTest);
+        }
     }
 
     private static string PrepareCacheDir(Project project)
@@ -279,7 +288,7 @@ internal class ProjectSet : IEnumerable<Project>
 
     private static bool OutputDiagnostics(Project project, DiagnosticCollection diagnostics, AsyncLock consoleLock)
     {
-        if (!diagnostics.Any())
+        if (diagnostics.IsEmpty)
             return false;
         using (consoleLock.Lock())
         {

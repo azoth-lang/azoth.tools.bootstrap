@@ -54,23 +54,20 @@ public partial class ConformanceTests
     public async Task Test_cases(TestCase testCase)
     {
         // Setup
-        var codeFile = CodeFile.Load(testCase.FullCodePath, isTest: false);
+        var codeFile = await CodeFile.LoadAsync(testCase.FullCodePath, isTest: false);
         var code = codeFile.Code.Text;
-        var compiler = new AzothCompiler()
-        {
-            SaveReachabilityGraphs = true,
-        };
-        var references = new List<PackageReference>();
+        var compiler = new AzothCompiler();
+        var references = new List<PackageReferenceAsync>();
 
         // Reference Standard Library
-        var supportPackage = CompileSupportPackage(compiler);
-        references.Add(new(TestsSupportPackage.Name, supportPackage.PackageSymbols, true));
+        var supportPackage = await CompileSupportPackageAsync(compiler);
+        references.Add(new(TestsSupportPackage.Name, Task.FromResult(supportPackage.PackageSymbols), true));
 
         string? expectedAbortMessage = ExpectedAbort(code);
         try
         {
             // Analyze
-            var package = compiler.CompilePackage("testPackage", codeFile.Yield(), [], references);
+            var package = await compiler.CompilePackageAsync("testPackage", codeFile.Yield(), [], references);
 
             // Check for compiler errors
             Assert.NotNull(package.Diagnostics);
@@ -116,15 +113,16 @@ public partial class ConformanceTests
         }
     }
 
-    private IPackageNode CompileSupportPackage(AzothCompiler compiler)
+    private async ValueTask<IPackageNode> CompileSupportPackageAsync(AzothCompiler compiler)
     {
         try
         {
             var sourceDir = TestsSupportPackage.GetDirectory();
             var sourcePaths = CodeFiles.GetIn(sourceDir);
             var rootNamespace = FixedList.Empty<string>();
-            var codeFiles = sourcePaths.Select(p => LoadCode(p, sourceDir, rootNamespace)).ToList();
-            var package = compiler.CompilePackage(TestsSupportPackage.Name, codeFiles, [], []);
+            var codeFiles = (await Task.WhenAll(sourcePaths.Select(p
+                => LoadCodeAsync(p, sourceDir, rootNamespace).AsTask()))).ToList();
+            var package = await compiler.CompilePackageAsync(TestsSupportPackage.Name, codeFiles, [], []);
             if (package.Diagnostics.Any(d => d.Level >= DiagnosticLevel.CompilationError))
                 ReportSupportCompilationErrors(package.Diagnostics);
             return package;
@@ -149,14 +147,14 @@ public partial class ConformanceTests
         Assert.True(false, "Compilation Errors in Test Support Package");
     }
 
-    private static CodeFile LoadCode(
+    private static ValueTask<CodeFile> LoadCodeAsync(
         string path,
         string sourceDir,
         IFixedList<string> rootNamespace)
     {
         var relativeDirectory = Path.GetDirectoryName(Path.GetRelativePath(sourceDir, path)) ?? throw new InvalidOperationException();
         var ns = rootNamespace.Concat(relativeDirectory.SplitOrEmpty(Path.DirectorySeparatorChar)).ToFixedList();
-        return CodeFile.Load(path, ns, isTest: false);
+        return CodeFile.LoadAsync(path, ns, isTest: false);
     }
 
     private List<Diagnostic> CheckErrorsExpected(

@@ -1,8 +1,6 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Threading.Tasks.Dataflow;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Code;
 using Azoth.Tools.Bootstrap.Compiler.Lexing;
@@ -16,12 +14,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.API;
 
 public class AzothCompiler
 {
-    /// <summary>
-    /// Whether to store the borrow checker claims for each function and method.
-    /// Default Value: false
-    /// </summary>
-    public bool SaveReachabilityGraphs { get; set; }
-
     public Task<IPackageNode> CompilePackageAsync(
         IdentifierName name,
         IEnumerable<ICodeFileSource> files,
@@ -46,72 +38,20 @@ public class AzothCompiler
         var packageMainSyntax = IPackageFacetSyntax.Create(name, FacetKind.Main, compilationUnits, referenceSyntax);
         var packageTestsSyntax = IPackageFacetSyntax.Create(name, FacetKind.Tests, testingCompilationUnits, referenceSyntax);
 
-        var analyzer = new SemanticAnalyzer()
-        {
-            SaveReachabilityGraphs = SaveReachabilityGraphs,
-        };
-
+        var analyzer = new SemanticAnalyzer();
         return analyzer.Check(packageMainSyntax, packageTestsSyntax);
 
         async Task<IFixedSet<ICompilationUnitSyntax>> ParseFilesAsync(IEnumerable<ICodeFileSource> codeFileSources)
         {
-            var parseBlock = new TransformBlock<ICodeFileSource, ICompilationUnitSyntax>(async fileSource =>
-            {
-                var file = await fileSource.LoadAsync().ConfigureAwait(false);
-                var tokens = lexer.Lex(new ParseContext(file)).WhereNotTrivia();
-                return parser.Parse(tokens);
-            }, new() { TaskScheduler = taskScheduler, EnsureOrdered = false, });
-
-            foreach (var fileSource in codeFileSources) parseBlock.Post(fileSource);
-
-            parseBlock.Complete();
-
-            await parseBlock.Completion.ConfigureAwait(false);
-
-            if (!parseBlock.TryReceiveAll(out var compilationUnits))
-                throw new Exception("Not all compilation units are ready");
-
-            return compilationUnits.ToFixedSet();
+            // TODO manage degree of parallelism
+            return (await Task.WhenAll(codeFileSources.Select(ParseFileAsync))).ToFixedSet();
         }
-    }
 
-    public IPackageNode CompilePackage(
-        string name,
-        IEnumerable<ICodeFileSource> fileSources,
-        IEnumerable<ICodeFileSource> testingFileSources,
-        IEnumerable<PackageReference> references)
-        => CompilePackage(name, fileSources.Select(s => s.Load()), testingFileSources.Select(s => s.Load()), references);
-
-    public IPackageNode CompilePackage(
-        string name,
-        IEnumerable<CodeFile> files,
-        IEnumerable<CodeFile> testingFiles,
-        IEnumerable<PackageReference> references)
-    {
-        var lexer = new Lexer();
-        var parser = new CompilationUnitParser();
-        var compilationUnits = ParseFiles(files);
-        var testingCompilationUnits = ParseFiles(testingFiles);
-        var referenceSyntax = references.Select(r => r.ToSyntax()).ToFixedSet();
-        var packageMainSyntax = IPackageFacetSyntax.Create(name, FacetKind.Main, compilationUnits, referenceSyntax);
-        var packageTestsSyntax = IPackageFacetSyntax.Create(name, FacetKind.Tests, testingCompilationUnits, referenceSyntax);
-
-        var analyzer = new SemanticAnalyzer()
+        async Task<ICompilationUnitSyntax> ParseFileAsync(ICodeFileSource fileSource)
         {
-            SaveReachabilityGraphs = SaveReachabilityGraphs,
-        };
-
-        return analyzer.Check(packageMainSyntax, packageTestsSyntax);
-
-        IFixedSet<ICompilationUnitSyntax> ParseFiles(IEnumerable<CodeFile> codeFiles)
-        {
-            return codeFiles
-                   .Select(file =>
-                   {
-                       var tokens = lexer.Lex(new ParseContext(file)).WhereNotTrivia();
-                       return parser.Parse(tokens);
-                   })
-                   .ToFixedSet();
+            var file = await fileSource.LoadAsync().ConfigureAwait(false);
+            var tokens = lexer.Lex(new ParseContext(file)).WhereNotTrivia();
+            return parser.Parse(tokens);
         }
     }
 }
