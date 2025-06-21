@@ -8,9 +8,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Structure;
 internal static partial class BuiltInsAspect
 {
     // If there is already a reference to the intrinsics package, use it. Otherwise, create a new one.
-    public static partial IPackageReferenceNode Package_IntrinsicsReference(IPackageNode node)
+    public static partial IPackageFacetReferenceNode PackageFacet_IntrinsicsReference(IPackageFacetNode node)
         => node.References.SingleOrDefault(r => Intrinsic.Package.Equals(r.PackageSymbols.PackageSymbol))
-            ?? IIntrinsicsPackageReferenceNode.Create();
+            ?? IIntrinsicsPackageFacetReferenceNode.Create();
 
     public static partial IFixedSet<ITypeDeclarationNode> Package_PrimitivesDeclarations(IPackageNode node)
         => Primitive.SymbolTree.GlobalSymbols.Select(SymbolBinder.Symbol)

@@ -2,6 +2,7 @@
 ◊name DefinitionsAspect;
 ◊using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 ◊using Azoth.Tools.Bootstrap.Compiler.Core.Types;
+◊using Azoth.Tools.Bootstrap.Compiler.Names;
 ◊using Azoth.Tools.Bootstrap.Framework;
 
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
@@ -20,13 +21,18 @@
 ↑ Package.Name: `IdentifierName` => MainFacet.Syntax.Name;
 ↑ Package.EntryPoint: FunctionDefinition?;
 ↗↖ Package.Diagnostics;
-↑ PackageReference.AliasOrName: `IdentifierName`;
-↑ PackageReference.IsTrusted: `bool`;
-= StandardPackageReference.AliasOrName => Syntax.AliasOrName;
-= StandardPackageReference.IsTrusted => Syntax.IsTrusted;
-= IntrinsicsPackageReference.AliasOrName => PackageSymbols.PackageSymbol.Name;
-= IntrinsicsPackageReference.IsTrusted => true;
-↑ IntrinsicsPackageReference.Syntax: `IPackageReferenceSyntax`? => null;
+
+// ---------- Facets
+↑ PackageFacetReference.AliasOrName: `IdentifierName`;
+↑ PackageFacetReference.IsTrusted: `bool`;
+= OrdinaryPackageFacetReference.AliasOrName => Syntax.AliasOrName;
+= OrdinaryPackageFacetReference.IsTrusted => Syntax.IsTrusted;
+// The tests facet always trusts the main facet
+= PackageMainFacetReference.IsTrusted => true;
+↑ PackageMainFacetReference.Syntax: `IPackageReferenceSyntax`? => null;
+= IntrinsicsPackageFacetReference.AliasOrName => Symbols.Package.Name;
+= IntrinsicsPackageFacetReference.IsTrusted => true;
+↑ IntrinsicsPackageFacetReference.Syntax: `IPackageReferenceSyntax`? => null;
 
 // ---------- Facets
 ↑ PackageFacet.Definitions: {FacetMemberDefinition};

@@ -18,10 +18,10 @@ internal static partial class SymbolsAspect
     public static partial IPackageSymbols Package_PackageSymbols(IPackageNode node)
     {
         var mainTreeBuilder = new SymbolTreeBuilder(node.Symbol);
-        var mainForest = BuiltIn.CreateSymbolForest(mainTreeBuilder, node.References.Select(p => p.PackageSymbols.SymbolTree));
+        var mainForest = BuiltIn.CreateSymbolForest(mainTreeBuilder, node.MainFacet.References.Select(p => p.Symbols));
         var mainTree = new PackageSymbolTreeBuilder(mainTreeBuilder, node.MainFacet, mainForest).Build();
         var testingTreeBuilder = new TestingSymbolTreeBuilder(mainTreeBuilder);
-        var testingForest = BuiltIn.CreateSymbolForest(testingTreeBuilder, node.References.Select(p => p.PackageSymbols.TestingSymbolTree));
+        var testingForest = BuiltIn.CreateSymbolForest(testingTreeBuilder, node.TestingFacet.References.Select(p => p.Symbols));
         var testingTree = new PackageSymbolTreeBuilder(testingTreeBuilder, node.MainFacet, testingForest).Build();
         return new PackageSymbols(node.Symbol, mainTree, testingTree);
     }
@@ -55,7 +55,7 @@ internal static partial class SymbolsAspect
         => new(node.ContainingSymbol(), node.DeclaredType.PlainType);
 
     public static partial AssociatedTypeSymbol ImplicitSelfDefinition_Symbol(IImplicitSelfDefinitionNode node)
-        => new AssociatedTypeSymbol(node.ContainingSymbol(), node.TypeConstructor);
+        => new(node.ContainingSymbol(), node.TypeConstructor);
     #endregion
 
     #region Member Definitions

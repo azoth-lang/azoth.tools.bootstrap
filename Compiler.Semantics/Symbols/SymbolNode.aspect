@@ -8,9 +8,9 @@
 
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
-// ---------- Packages
-↑ child PackageReference.SymbolNode: PackageSymbol;
-= eager PackageReference.SymbolNode;
+// ---------- Facets
+↑ PackageFacetReference.SymbolNode: PackageFacetSymbol;
+= eager PackageFacetReference.SymbolNode;
 
 // ---------- Function Definition
 = FunctionDefinition.*.**.IsAttributeType => false;
@@ -35,11 +35,7 @@
 ↑ ChildSymbol.Syntax: `ISyntax`? => null;
 
 // ---------- Package Symbol Nodes
-↑ PackageSymbol.Symbol: `PackageSymbol` => PackageReference.PackageSymbols.PackageSymbol;
 ↑ PackageSymbol.Name: `IdentifierName` => Symbol.Name;
-↑ PackageSymbol.AliasOrName: `IdentifierName` => PackageReference.AliasOrName;
-↑ child eager PackageSymbol.MainFacet: PackageFacetSymbol;
-↑ child eager PackageSymbol.TestingFacet: PackageFacetSymbol;
 
 // ---------- Facet Symbol Nodes
 ↑ PackageFacetSymbol.Symbol: `PackageSymbol` => PackageSymbol;

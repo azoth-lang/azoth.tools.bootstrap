@@ -5,6 +5,8 @@
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
 // ---------- Packages
-// TODO this should be included in children only if it isn't a duplicate
-↑ child Package.IntrinsicsReference: PackageReference;
 ↑ child Package.PrimitivesDeclarations: {TypeDeclaration};
+
+// ---------- Facets
+// TODO this should be included in children only if it isn't a duplicate
+↑ child PackageFacet.IntrinsicsReference: PackageFacetReference;

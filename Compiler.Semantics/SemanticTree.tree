@@ -36,20 +36,15 @@ LocalBinding <: NamedBinding = Syntax:`ILocalBindingSyntax`;
 VariableBinding <: LocalBinding, DataFlow;
 
 // ---------- Packages
-Package <: PackageDeclaration = References:{PackageReference}
-    MainFacet:PackageFacet TestingFacet:PackageFacet;
-
-PackageReference <: Child = Syntax:`IPackageReferenceSyntax`?;
-StandardPackageReference <: PackageReference = Syntax:`IPackageReferenceSyntax`;
-IntrinsicsPackageReference <: PackageReference;
+Package <: PackageDeclaration = MainFacet:PackageFacet TestingFacet:PackageFacet;
 
 // ---------- Facets
 PackageFacet <: PackageFacetDeclaration = Syntax:`IPackageFacetSyntax`
     CompilationUnits:{CompilationUnit} References:{PackageFacetReference};
 
 PackageFacetReference <: Child = Syntax:`IPackageReferenceSyntax`?;
-StandardPackageFacetReference <: PackageFacetReference = Syntax:`IPackageReferenceSyntax`;
-PackageMainFacetReference <: PackageFacetReference;
+OrdinaryPackageFacetReference <: PackageFacetReference = Syntax:`IPackageReferenceSyntax`;
+PackageMainFacetReference <: PackageFacetReference = AliasOrName:`IdentifierName` Symbols:`FixedSymbolTree`;
 IntrinsicsPackageFacetReference <: PackageFacetReference;
 
 FacetMemberDefinition <: NamespaceBlockMemberDefinition, NamespaceMemberDefinition
@@ -421,7 +416,7 @@ AwaitExpression <: OrdinaryTypedExpression = Syntax:`IAwaitExpressionSyntax` Exp
 // TODO move into separate aspect
 
 Declaration;
-/// A declaration that may have an associated symbol.
+/// A declaration that may have an associated symbol. (Symbol attribute added in aspect.)
 SymbolDeclaration <: Declaration;
 /// A declaration that is definitly a child node. Note, this is not a `SymbolDeclaration` because
 /// bindings don't have symbols.
@@ -514,7 +509,7 @@ ChildSymbol <: SymbolDeclaration, ChildDeclaration;
 
 // ---------- Package Symbol Nodes
 PackageSymbol <: PackageDeclaration, ChildSymbol
-    = PackageReference:`IPackageReferenceNode` /MainFacet/ /TestingFacet/;
+    = Symbol:`PackageSymbol` MainFacet:PackageFacetSymbol TestingFacet:PackageFacetSymbol;
 
 // ---------- Facet Symbol Nodes
 // Facets separate the testing and non-testing aspects of a package. They do no have their own symbol.

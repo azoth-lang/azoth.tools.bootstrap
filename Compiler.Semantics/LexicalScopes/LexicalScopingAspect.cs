@@ -30,13 +30,13 @@ internal static partial class LexicalScopingAspect
     #region Packages
     public static partial PackageNameScope Package_MainFacet_PackageNameScope(IPackageNode node)
         => new([node.MainFacet],
-            node.References.Append(node.IntrinsicsReference).Select(r => r.SymbolNode.MainFacet),
+            node.MainFacet.References.Append(node.MainFacet.IntrinsicsReference).Select(r => r.SymbolNode),
             node.PrimitivesDeclarations);
 
     public static partial PackageNameScope Package_TestingFacet_PackageNameScope(IPackageNode node)
-        => new([node.MainFacet, node.TestingFacet],
-            node.References.Append(node.IntrinsicsReference).Select(r => r.SymbolNode.MainFacet)
-                .Concat(node.References.Select(r => r.SymbolNode.TestingFacet)),
+        => new([node.TestingFacet],
+            // TODO append main facet reference
+            node.TestingFacet.References.Append(node.TestingFacet.IntrinsicsReference).Select(r => r.SymbolNode),
             node.PrimitivesDeclarations);
     #endregion
 
@@ -70,7 +70,7 @@ internal static partial class LexicalScopingAspect
         NamespaceScope containingScope,
         IFixedList<IImportDirectiveNode> importDirectives)
     {
-        if (!importDirectives.Any()) return containingScope;
+        if (importDirectives.IsEmpty) return containingScope;
 
         var globalScope = containingScope.PackageNames.ImportGlobalScope;
         // TODO put a NamespaceScope attribute on the using directive node for this

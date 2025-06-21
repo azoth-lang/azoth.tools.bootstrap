@@ -13,9 +13,10 @@ type `OrdinaryTypeSymbol` <: `TypeSymbol`;
 = Package.Symbol;
 ↑ Package.PackageSymbols: `IPackageSymbols`;
 
-↑ PackageReference.PackageSymbols:`IPackageSymbols`;
-= StandardPackageReference.PackageSymbols => Syntax.Package;
-= IntrinsicsPackageReference.PackageSymbols => IntrinsicPackageSymbol.Instance;
+// ---------- Facets
+↑ PackageFacetReference.Symbols:`FixedSymbolTree`;
+= OrdinaryPackageFacetReference.Symbols => Syntax.Package.SymbolTree;
+= IntrinsicsPackageFacetReference.Symbols => Intrinsic.SymbolTree;
 
 // ---------- Code Files
 ↑ CompilationUnit.ContainingSymbol(): `PackageSymbol` => Package.Symbol;

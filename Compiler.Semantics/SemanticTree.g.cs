@@ -59,7 +59,6 @@ public partial interface ISemanticNode : ITreeNode
 }
 
 [Closed(
-    typeof(IPackageReferenceNode),
     typeof(IPackageFacetReferenceNode),
     typeof(ICodeNode),
     typeof(IControlFlowNode),
@@ -68,7 +67,6 @@ public partial interface ISemanticNode : ITreeNode
 public partial interface IChildNode : IChildTreeNode<ISemanticNode>, ISemanticNode
 {
     IPackageDeclarationNode Package { get; }
-    ISemanticNode Parent => (ISemanticNode)PeekParent()!;
 }
 
 [Closed(
@@ -89,6 +87,7 @@ public partial interface IElseClauseNode : ICodeNode, IControlFlowNode
 {
     ValueId ValueId { get; }
     IFlowState FlowStateAfter { get; }
+    new ISemanticNode Parent => (ISemanticNode)PeekParent()!;
 }
 
 [Closed(
@@ -111,6 +110,7 @@ public partial interface IBindingNode : ICodeNode, IBindingDeclarationNode
     IMaybeNonVoidPlainType BindingPlainType { get; }
     IMaybeNonVoidType BindingType { get; }
     bool IsLentBinding { get; }
+    new ISemanticNode Parent => (ISemanticNode)PeekParent()!;
 }
 
 [Closed(
@@ -121,6 +121,7 @@ public partial interface INamedBindingNode : IBindingNode, INamedBindingDeclarat
 {
     LexicalScope ContainingLexicalScope { get; }
     bool IsMutableBinding { get; }
+    new ISemanticNode Parent => (ISemanticNode)PeekParent()!;
 }
 
 [Closed(
@@ -141,13 +142,13 @@ public partial interface ILocalBindingNode : INamedBindingNode
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IVariableBindingNode : ILocalBindingNode, IDataFlowNode
 {
+    new ISemanticNode Parent => (ISemanticNode)PeekParent()!;
 }
 
 [Closed(typeof(PackageNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IPackageNode : IPackageDeclarationNode
 {
-    IFixedSet<IPackageReferenceNode> References { get; }
     new IPackageFacetNode MainFacet { get; }
     IPackageFacetDeclarationNode IPackageDeclarationNode.MainFacet => MainFacet;
     new IPackageFacetNode TestingFacet { get; }
@@ -164,65 +165,12 @@ public partial interface IPackageNode : IPackageDeclarationNode
     IFunctionDefinitionNode? EntryPoint { get; }
     DiagnosticCollection Diagnostics { get; }
     IPackageSymbols PackageSymbols { get; }
-    IPackageReferenceNode IntrinsicsReference { get; }
     IFixedSet<ITypeDeclarationNode> PrimitivesDeclarations { get; }
 
     public static IPackageNode Create(
-        IEnumerable<IPackageReferenceNode> references,
         IPackageFacetNode mainFacet,
         IPackageFacetNode testingFacet)
-        => new PackageNode(references, mainFacet, testingFacet);
-}
-
-[Closed(
-    typeof(IStandardPackageReferenceNode),
-    typeof(IIntrinsicsPackageReferenceNode))]
-[GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IPackageReferenceNode : IChildNode
-{
-    new IPackageReferenceSyntax? Syntax { get; }
-    ISyntax? ISemanticNode.Syntax => Syntax;
-    IPackageSymbolNode SymbolNode { get; }
-    IdentifierName AliasOrName { get; }
-    bool IsTrusted { get; }
-    IPackageSymbols PackageSymbols { get; }
-}
-
-[Closed(typeof(StandardPackageReferenceNode))]
-[GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IStandardPackageReferenceNode : IPackageReferenceNode
-{
-    new IPackageReferenceSyntax Syntax { get; }
-    IPackageReferenceSyntax? IPackageReferenceNode.Syntax => Syntax;
-    ISyntax? ISemanticNode.Syntax => Syntax;
-    IdentifierName IPackageReferenceNode.AliasOrName
-        => Syntax.AliasOrName;
-    bool IPackageReferenceNode.IsTrusted
-        => Syntax.IsTrusted;
-    IPackageSymbols IPackageReferenceNode.PackageSymbols
-        => Syntax.Package;
-
-    public static IStandardPackageReferenceNode Create(IPackageReferenceSyntax syntax)
-        => new StandardPackageReferenceNode(syntax);
-}
-
-[Closed(typeof(IntrinsicsPackageReferenceNode))]
-[GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IIntrinsicsPackageReferenceNode : IPackageReferenceNode
-{
-    new IPackageReferenceSyntax? Syntax
-        => null;
-    IPackageReferenceSyntax? IPackageReferenceNode.Syntax => Syntax;
-    ISyntax? ISemanticNode.Syntax => Syntax;
-    IdentifierName IPackageReferenceNode.AliasOrName
-        => PackageSymbols.PackageSymbol.Name;
-    bool IPackageReferenceNode.IsTrusted
-        => true;
-    IPackageSymbols IPackageReferenceNode.PackageSymbols
-        => IntrinsicPackageSymbol.Instance;
-
-    public static IIntrinsicsPackageReferenceNode Create()
-        => new IntrinsicsPackageReferenceNode();
+        => new PackageNode(mainFacet, testingFacet);
 }
 
 [Closed(typeof(PackageFacetNode))]
@@ -235,6 +183,7 @@ public partial interface IPackageFacetNode : IPackageFacetDeclarationNode
     IFixedSet<IPackageFacetReferenceNode> References { get; }
     PackageNameScope PackageNameScope { get; }
     IFixedSet<IFacetMemberDefinitionNode> Definitions { get; }
+    IPackageFacetReferenceNode IntrinsicsReference { get; }
     new INamespaceDefinitionNode GlobalNamespace { get; }
     INamespaceDeclarationNode IPackageFacetDeclarationNode.GlobalNamespace => GlobalNamespace;
 
@@ -246,7 +195,7 @@ public partial interface IPackageFacetNode : IPackageFacetDeclarationNode
 }
 
 [Closed(
-    typeof(IStandardPackageFacetReferenceNode),
+    typeof(IOrdinaryPackageFacetReferenceNode),
     typeof(IPackageMainFacetReferenceNode),
     typeof(IIntrinsicsPackageFacetReferenceNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -254,36 +203,69 @@ public partial interface IPackageFacetReferenceNode : IChildNode
 {
     new IPackageReferenceSyntax? Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
+    IPackageFacetSymbolNode SymbolNode { get; }
+    IdentifierName AliasOrName { get; }
+    bool IsTrusted { get; }
+    FixedSymbolTree Symbols { get; }
+    ISemanticNode Parent => (ISemanticNode)PeekParent()!;
 }
 
-[Closed(typeof(StandardPackageFacetReferenceNode))]
+[Closed(typeof(OrdinaryPackageFacetReferenceNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IStandardPackageFacetReferenceNode : IPackageFacetReferenceNode
+public partial interface IOrdinaryPackageFacetReferenceNode : IPackageFacetReferenceNode
 {
     new IPackageReferenceSyntax Syntax { get; }
     IPackageReferenceSyntax? IPackageFacetReferenceNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
+    IdentifierName IPackageFacetReferenceNode.AliasOrName
+        => Syntax.AliasOrName;
+    bool IPackageFacetReferenceNode.IsTrusted
+        => Syntax.IsTrusted;
+    FixedSymbolTree IPackageFacetReferenceNode.Symbols
+        => Syntax.Package.SymbolTree;
 
-    public static IStandardPackageFacetReferenceNode Create(IPackageReferenceSyntax syntax)
-        => new StandardPackageFacetReferenceNode(syntax);
+    public static IOrdinaryPackageFacetReferenceNode Create(IPackageReferenceSyntax syntax)
+        => new OrdinaryPackageFacetReferenceNode(syntax);
 }
 
 [Closed(typeof(PackageMainFacetReferenceNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IPackageMainFacetReferenceNode : IPackageFacetReferenceNode
 {
+    new IdentifierName AliasOrName { get; }
+    IdentifierName IPackageFacetReferenceNode.AliasOrName => AliasOrName;
+    new FixedSymbolTree Symbols { get; }
+    FixedSymbolTree IPackageFacetReferenceNode.Symbols => Symbols;
+    new IPackageReferenceSyntax? Syntax
+        => null;
+    IPackageReferenceSyntax? IPackageFacetReferenceNode.Syntax => Syntax;
+    ISyntax? ISemanticNode.Syntax => Syntax;
+    bool IPackageFacetReferenceNode.IsTrusted
+        => true;
 
-    public static IPackageMainFacetReferenceNode Create(IPackageReferenceSyntax? syntax)
-        => new PackageMainFacetReferenceNode(syntax);
+    public static IPackageMainFacetReferenceNode Create(
+        IdentifierName aliasOrName,
+        FixedSymbolTree symbols)
+        => new PackageMainFacetReferenceNode(aliasOrName, symbols);
 }
 
 [Closed(typeof(IntrinsicsPackageFacetReferenceNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IIntrinsicsPackageFacetReferenceNode : IPackageFacetReferenceNode
 {
+    new IPackageReferenceSyntax? Syntax
+        => null;
+    IPackageReferenceSyntax? IPackageFacetReferenceNode.Syntax => Syntax;
+    ISyntax? ISemanticNode.Syntax => Syntax;
+    IdentifierName IPackageFacetReferenceNode.AliasOrName
+        => Symbols.Package.Name;
+    bool IPackageFacetReferenceNode.IsTrusted
+        => true;
+    FixedSymbolTree IPackageFacetReferenceNode.Symbols
+        => Intrinsic.SymbolTree;
 
-    public static IIntrinsicsPackageFacetReferenceNode Create(IPackageReferenceSyntax? syntax)
-        => new IntrinsicsPackageFacetReferenceNode(syntax);
+    public static IIntrinsicsPackageFacetReferenceNode Create()
+        => new IntrinsicsPackageFacetReferenceNode();
 }
 
 [Closed(
@@ -322,6 +304,7 @@ public partial interface ICodeNode : IChildNode
     new ICodeSyntax Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
     CodeFile File { get; }
+    ISemanticNode Parent => (ISemanticNode)PeekParent()!;
 }
 
 [Closed(typeof(CompilationUnitNode))]
@@ -411,6 +394,7 @@ public partial interface IInvocableDefinitionNode : IExecutableDefinitionNode, I
     IBodyNode? Body { get; }
     IFlowState FlowStateBefore()
         => TypeMemberDeclarationsAspect.InvocableDefinition_FlowStateBefore(this);
+    new ISemanticNode Parent => (ISemanticNode)PeekParent()!;
 }
 
 [Closed(
@@ -430,6 +414,7 @@ public partial interface IFunctionInvocableDefinitionNode : ICodeNode, IInvocabl
     new IFixedList<INamedParameterNode> Parameters { get; }
     IFixedList<IInitializerParameterNode> IInvocableDefinitionNode.Parameters => Parameters;
     ITypeNode? Return { get; }
+    new ISemanticNode Parent => (ISemanticNode)PeekParent()!;
     IMaybeType IInvocableDeclarationNode.ReturnType
         => Return?.NamedType ?? AzothType.Void;
     IMaybePlainType IInvocableDeclarationNode.ReturnPlainType
@@ -531,6 +516,7 @@ public partial interface IFunctionDefinitionNode : IFacetMemberDefinitionNode, I
     IdentifierName? IInvocableDefinitionNode.Name => Name;
     new NamespaceSymbol ContainingSymbol();
     Symbol IDefinitionNode.ContainingSymbol() => ContainingSymbol();
+    new ISemanticNode Parent => (ISemanticNode)PeekParent()!;
 
     public static IFunctionDefinitionNode Create(
         IFunctionDefinitionSyntax syntax,
@@ -579,6 +565,7 @@ public partial interface ITypeDefinitionNode : ICodeNode, IFacetMemberDefinition
     new OrdinaryTypeConstructor TypeConstructor { get; }
     BareTypeConstructor INonVariableTypeDeclarationNode.TypeConstructor => TypeConstructor;
     ITypeConstructor ITypeDeclarationNode.TypeConstructor => TypeConstructor;
+    new ISemanticNode Parent => (ISemanticNode)PeekParent()!;
     new IFixedList<IAttributeNode> Attributes { get; }
     IFixedList<IAttributeNode> IFacetMemberDefinitionNode.Attributes => Attributes;
     IFixedList<IAttributeNode> ITypeMemberDefinitionNode.Attributes => Attributes;
@@ -686,6 +673,7 @@ public partial interface IGenericParameterNode : ICodeNode, IGenericParameterDec
         => [];
     IFixedSet<ITypeMemberDeclarationNode> IGenericParameterDeclarationNode.Members => Members;
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
+    new ISemanticNode Parent => (ISemanticNode)PeekParent()!;
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.InclusiveMembers
         => [];
     IFixedSet<BareType> ITypeDeclarationNode.Supertypes
@@ -750,6 +738,7 @@ public partial interface IAssociatedMemberDefinitionNode : ITypeMemberDefinition
     new OrdinaryName Name { get; }
     OrdinaryName? IPackageFacetChildDeclarationNode.Name => Name;
     UnqualifiedName INamedDeclarationNode.Name => Name;
+    new ISemanticNode Parent => (ISemanticNode)PeekParent()!;
 }
 
 [Closed(
@@ -778,6 +767,7 @@ public partial interface IMethodDefinitionNode : ICodeNode, IAlwaysTypeMemberDef
     bool IsAbstract
         => Body is null;
     OrdinaryTypeConstructor ContainingTypeConstructor { get; }
+    new ISemanticNode Parent => (ISemanticNode)PeekParent()!;
     IMaybeNonVoidType IMethodDeclarationNode.SelfParameterType
         => SelfParameter.ParameterType;
     IMaybeType IInvocableDeclarationNode.ReturnType
@@ -881,6 +871,7 @@ public partial interface IInitializerDefinitionNode : IInvocableDefinitionNode, 
     IdentifierName? IInvocableDefinitionNode.Name => Name;
     OrdinaryName? IPackageFacetChildDeclarationNode.Name => Name;
     IdentifierName? IInitializerDeclarationNode.Name => Name;
+    new ISemanticNode Parent => (ISemanticNode)PeekParent()!;
     IMaybeType IInvocableDeclarationNode.ReturnType
         => Symbol?.ReturnType ?? IMaybeType.Unknown;
     IMaybePlainType IInvocableDeclarationNode.ReturnPlainType
@@ -928,6 +919,7 @@ public partial interface IOrdinaryInitializerDefinitionNode : ICodeNode, IInitia
     IInitializerSelfParameterNode SelfParameter { get; }
     new IBlockBodyNode Body { get; }
     IBodyNode? IInvocableDefinitionNode.Body => Body;
+    new ISemanticNode Parent => (ISemanticNode)PeekParent()!;
     IMaybeNonVoidType IInitializerDeclarationNode.SelfParameterType
         => SelfParameter.ParameterType;
     IMaybeNonVoidPlainType IInitializerDeclarationNode.SelfParameterPlainType
@@ -971,6 +963,7 @@ public partial interface IFieldDefinitionNode : ICodeNode, IAlwaysTypeMemberDefi
     IdentifierName INamedBindingDeclarationNode.Name => Name;
     UnqualifiedName INamedDeclarationNode.Name => Name;
     IdentifierName IFieldDeclarationNode.Name => Name;
+    new ISemanticNode Parent => (ISemanticNode)PeekParent()!;
     LexicalScope IDefinitionNode.LexicalScope
         => ContainingLexicalScope;
     bool IBindingNode.IsLentBinding
@@ -1002,6 +995,7 @@ public partial interface IAssociatedFunctionDefinitionNode : IFunctionInvocableD
     UnqualifiedName INamedDeclarationNode.Name => Name;
     OrdinaryName IAssociatedMemberDefinitionNode.Name => Name;
     OrdinaryName IAssociatedFunctionDeclarationNode.Name => Name;
+    new ISemanticNode Parent => (ISemanticNode)PeekParent()!;
 
     public static IAssociatedFunctionDefinitionNode Create(
         IAssociatedFunctionDefinitionSyntax syntax,
@@ -1031,6 +1025,7 @@ public partial interface IAssociatedTypeDefinitionNode : IAssociatedMemberDefini
     OrdinaryTypeConstructor TypeConstructorContext { get; }
     new OrdinaryAssociatedTypeConstructor TypeConstructor { get; }
     ITypeConstructor ITypeDeclarationNode.TypeConstructor => TypeConstructor;
+    new ISemanticNode Parent => (ISemanticNode)PeekParent()!;
     LexicalScope IDefinitionNode.LexicalScope
         => ContainingLexicalScope;
 
@@ -1494,6 +1489,7 @@ public partial interface IControlFlowNode : IChildNode
     ControlFlowSet ControlFlowNext { get; }
     ControlFlowSet ControlFlowPrevious { get; }
     ControlFlowSet ControlFlowFollowing();
+    ISemanticNode Parent => (ISemanticNode)PeekParent()!;
 }
 
 [Closed(typeof(EntryNode))]
@@ -1563,6 +1559,7 @@ public partial interface IStatementNode : ICodeNode, IControlFlowNode
     IFlowState FlowStateAfter { get; }
     IMaybePlainType? ResultPlainType
         => null;
+    new ISemanticNode Parent => (ISemanticNode)PeekParent()!;
 }
 
 [Closed(typeof(ResultStatementNode))]
@@ -1584,6 +1581,7 @@ public partial interface IResultStatementNode : IStatementNode, IBlockOrResultNo
     IFlowState IStatementNode.FlowStateAfter => FlowStateAfter;
     IFlowState IElseClauseNode.FlowStateAfter => FlowStateAfter;
     IMaybePlainType? ExpectedPlainType { get; }
+    new ISemanticNode Parent => (ISemanticNode)PeekParent()!;
     ValueId? IStatementNode.ResultValueId
         => ValueId;
     ValueId IElseClauseNode.ValueId
@@ -1633,6 +1631,7 @@ public partial interface IVariableDeclarationStatementNode : IBodyStatementNode,
     LexicalScope IStatementNode.LexicalScope() => LexicalScope;
     ValueIdScope ValueIdScope { get; }
     IFlowState FlowStateBefore();
+    new ISemanticNode Parent => (ISemanticNode)PeekParent()!;
     ValueId? IStatementNode.ResultValueId
         => null;
     bool IBindingNode.IsLentBinding
@@ -1686,6 +1685,7 @@ public partial interface IPatternNode : ICodeNode, IControlFlowNode
     IFlowState FlowStateAfter { get; }
     IMaybeNonVoidPlainType ContextBindingPlainType();
     IMaybeNonVoidType ContextBindingType();
+    new ISemanticNode Parent => (ISemanticNode)PeekParent()!;
 }
 
 [Closed(typeof(TypePatternNode))]
@@ -1756,6 +1756,7 @@ public partial interface IBindingPatternNode : IOptionalOrBindingPatternNode, IV
     ILocalBindingSyntax ILocalBindingNode.Syntax => Syntax;
     ValueIdScope ValueIdScope { get; }
     IFlowState FlowStateBefore();
+    new ISemanticNode Parent => (ISemanticNode)PeekParent()!;
     ConditionalLexicalScope IPatternNode.FlowLexicalScope()
         => LexicalScopingAspect.BindingPattern_FlowLexicalScope(this);
     bool IBindingNode.IsLentBinding
@@ -1821,6 +1822,7 @@ public partial interface IExpressionNode : IAmbiguousExpressionNode, IControlFlo
     IFlowState FlowStateAfter { get; }
     IMaybePlainType PlainType { get; }
     ExpressionKind ExpressionKind { get; }
+    new ISemanticNode Parent => (ISemanticNode)PeekParent()!;
 }
 
 [Closed(
@@ -1880,6 +1882,7 @@ public partial interface IBlockExpressionNode : IOrdinaryTypedExpressionNode, IB
     new IMaybePlainType PlainType { get; }
     IMaybePlainType IExpressionNode.PlainType => PlainType;
     IMaybePlainType IBlockOrResultNode.PlainType => PlainType;
+    new ISemanticNode Parent => (ISemanticNode)PeekParent()!;
     new LexicalScope ContainingLexicalScope();
     LexicalScope IAmbiguousExpressionNode.ContainingLexicalScope() => ContainingLexicalScope();
     LexicalScope IBodyOrBlockNode.ContainingLexicalScope() => ContainingLexicalScope();
@@ -2397,6 +2400,7 @@ public partial interface IIfExpressionNode : IOrdinaryTypedExpressionNode, IElse
     new IFlowState FlowStateAfter { get; }
     IFlowState IExpressionNode.FlowStateAfter => FlowStateAfter;
     IFlowState IElseClauseNode.FlowStateAfter => FlowStateAfter;
+    new ISemanticNode Parent => (ISemanticNode)PeekParent()!;
     new ValueId ValueId { get; }
     ValueId IExpressionNode.ValueId => ValueId;
     ValueId IElseClauseNode.ValueId => ValueId;
@@ -2490,6 +2494,7 @@ public partial interface IForeachExpressionNode : IOrdinaryTypedExpressionNode, 
     ITypeDeclarationNode? ReferencedIteratorDeclaration { get; }
     IOrdinaryMethodDeclarationNode? ReferencedNextMethod { get; }
     IMaybeNonVoidPlainType IteratedPlainType { get; }
+    new ISemanticNode Parent => (ISemanticNode)PeekParent()!;
     bool IBindingNode.IsLentBinding
         => false;
     bool INamedBindingNode.IsMutableBinding
@@ -3796,6 +3801,7 @@ public partial interface IChildDeclarationNode : IDeclarationNode, IChildNode
 public partial interface INamedDeclarationNode : IChildDeclarationNode
 {
     UnqualifiedName Name { get; }
+    ISemanticNode Parent => (ISemanticNode)PeekParent()!;
 }
 
 [Closed(
@@ -3804,6 +3810,7 @@ public partial interface INamedDeclarationNode : IChildDeclarationNode
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IBindingDeclarationNode : IChildDeclarationNode
 {
+    ISemanticNode Parent => (ISemanticNode)PeekParent()!;
 }
 
 [Closed(
@@ -3814,6 +3821,7 @@ public partial interface INamedBindingDeclarationNode : IBindingDeclarationNode,
 {
     new IdentifierName Name { get; }
     UnqualifiedName INamedDeclarationNode.Name => Name;
+    new ISemanticNode Parent => (ISemanticNode)PeekParent()!;
 }
 
 [Closed(
@@ -3844,6 +3852,7 @@ public partial interface IPackageFacetDeclarationNode : IChildDeclarationNode, I
         => PackageSymbol;
     Symbol? ISymbolDeclarationNode.Symbol => Symbol;
     INamespaceDeclarationNode GlobalNamespace { get; }
+    ISemanticNode Parent => (ISemanticNode)PeekParent()!;
 }
 
 [Closed(
@@ -3855,6 +3864,7 @@ public partial interface IPackageFacetChildDeclarationNode : IChildDeclarationNo
 {
     IPackageFacetDeclarationNode Facet { get; }
     OrdinaryName? Name { get; }
+    ISemanticNode Parent => (ISemanticNode)PeekParent()!;
 }
 
 [Closed(
@@ -3871,6 +3881,7 @@ public partial interface IInvocableDeclarationNode : ISymbolDeclarationNode, ICh
     IMaybeType ReturnType { get; }
     new InvocableSymbol? Symbol { get; }
     Symbol? ISymbolDeclarationNode.Symbol => Symbol;
+    ISemanticNode Parent => (ISemanticNode)PeekParent()!;
 }
 
 [Closed(
@@ -3885,6 +3896,7 @@ public partial interface IFunctionInvocableDeclarationNode : INamedDeclarationNo
     Symbol? ISymbolDeclarationNode.Symbol => Symbol;
     IMaybeFunctionPlainType PlainType { get; }
     IMaybeFunctionType Type { get; }
+    new ISemanticNode Parent => (ISemanticNode)PeekParent()!;
 }
 
 [Closed(
@@ -3947,6 +3959,7 @@ public partial interface IFunctionDeclarationNode : INamespaceMemberDeclarationN
     UnqualifiedName INamedDeclarationNode.Name => Name;
     new INamespaceDeclarationNode ContainingDeclaration { get; }
     ISymbolDeclarationNode IDeclarationNode.ContainingDeclaration => ContainingDeclaration;
+    new ISemanticNode Parent => (ISemanticNode)PeekParent()!;
 }
 
 [Closed(
@@ -4021,6 +4034,7 @@ public partial interface IOrdinaryTypeDeclarationNode : INamespaceMemberDeclarat
     new OrdinaryTypeSymbol Symbol { get; }
     Symbol? ISymbolDeclarationNode.Symbol => Symbol;
     TypeSymbol ITypeDeclarationNode.Symbol => Symbol;
+    new ISemanticNode Parent => (ISemanticNode)PeekParent()!;
     IEnumerable<IInstanceMemberDeclarationNode> ITypeDeclarationNode.InclusiveInstanceMembersNamed(OrdinaryName name)
         => InclusiveInstanceMembersByName.GetValueOrDefault(name) ?? [];
     IEnumerable<IAssociatedMemberDeclarationNode> ITypeDeclarationNode.AssociatedMembersNamed(OrdinaryName name)
@@ -4067,6 +4081,7 @@ public partial interface IGenericParameterDeclarationNode : ITypeDeclarationNode
     new GenericParameterTypeSymbol Symbol { get; }
     TypeSymbol ITypeDeclarationNode.Symbol => Symbol;
     Symbol? ISymbolDeclarationNode.Symbol => Symbol;
+    new ISemanticNode Parent => (ISemanticNode)PeekParent()!;
     IEnumerable<IInstanceMemberDeclarationNode> ITypeDeclarationNode.InclusiveInstanceMembersNamed(OrdinaryName name)
         => [];
     IEnumerable<IAssociatedMemberDeclarationNode> ITypeDeclarationNode.AssociatedMembersNamed(OrdinaryName name)
@@ -4165,6 +4180,7 @@ public partial interface IMethodDeclarationNode : INamedDeclarationNode, IInstan
     new MethodSymbol? Symbol { get; }
     Symbol? ISymbolDeclarationNode.Symbol => Symbol;
     InvocableSymbol? IInvocableDeclarationNode.Symbol => Symbol;
+    new ISemanticNode Parent => (ISemanticNode)PeekParent()!;
 }
 
 [Closed(
@@ -4215,6 +4231,7 @@ public partial interface IInitializerDeclarationNode : IAssociatedMemberDeclarat
     new InitializerSymbol? Symbol { get; }
     Symbol? ISymbolDeclarationNode.Symbol => Symbol;
     InvocableSymbol? IInvocableDeclarationNode.Symbol => Symbol;
+    new ISemanticNode Parent => (ISemanticNode)PeekParent()!;
 }
 
 [Closed(
@@ -4231,6 +4248,7 @@ public partial interface IFieldDeclarationNode : IInstanceMemberDeclarationNode,
     IMaybeNonVoidType BindingType { get; }
     new FieldSymbol? Symbol { get; }
     Symbol? ISymbolDeclarationNode.Symbol => Symbol;
+    new ISemanticNode Parent => (ISemanticNode)PeekParent()!;
 }
 
 [Closed(
@@ -4242,6 +4260,7 @@ public partial interface IAssociatedFunctionDeclarationNode : IAssociatedMemberD
     new OrdinaryName Name { get; }
     OrdinaryName? IPackageFacetChildDeclarationNode.Name => Name;
     UnqualifiedName INamedDeclarationNode.Name => Name;
+    new ISemanticNode Parent => (ISemanticNode)PeekParent()!;
 }
 
 [Closed(
@@ -4256,6 +4275,7 @@ public partial interface IAssociatedTypeDeclarationNode : IAssociatedMemberDecla
     new AssociatedTypeSymbol Symbol { get; }
     Symbol? ISymbolDeclarationNode.Symbol => Symbol;
     TypeSymbol ITypeDeclarationNode.Symbol => Symbol;
+    new ISemanticNode Parent => (ISemanticNode)PeekParent()!;
     IEnumerable<IInstanceMemberDeclarationNode> ITypeDeclarationNode.InclusiveInstanceMembersNamed(OrdinaryName name)
         => [];
     IEnumerable<IAssociatedMemberDeclarationNode> ITypeDeclarationNode.AssociatedMembersNamed(OrdinaryName name)
@@ -4289,25 +4309,24 @@ public partial interface IChildSymbolNode : ISymbolDeclarationNode, IChildDeclar
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IPackageSymbolNode : IPackageDeclarationNode, IChildSymbolNode
 {
-    IPackageReferenceNode PackageReference { get; }
-    new PackageSymbol Symbol
-        => PackageReference.PackageSymbols.PackageSymbol;
+    new PackageSymbol Symbol { get; }
     PackageSymbol IPackageDeclarationNode.Symbol => Symbol;
     Symbol? ISymbolDeclarationNode.Symbol => Symbol;
     Symbol IChildSymbolNode.Symbol => Symbol;
-    new IdentifierName Name
-        => Symbol.Name;
-    IdentifierName IPackageDeclarationNode.Name => Name;
-    new IdentifierName AliasOrName
-        => PackageReference.AliasOrName;
-    IdentifierName? IPackageDeclarationNode.AliasOrName => AliasOrName;
     new IPackageFacetSymbolNode MainFacet { get; }
     IPackageFacetDeclarationNode IPackageDeclarationNode.MainFacet => MainFacet;
     new IPackageFacetSymbolNode TestingFacet { get; }
     IPackageFacetDeclarationNode IPackageDeclarationNode.TestingFacet => TestingFacet;
+    new IdentifierName Name
+        => Symbol.Name;
+    IdentifierName IPackageDeclarationNode.Name => Name;
 
-    public static IPackageSymbolNode Create(IPackageReferenceNode packageReference)
-        => new PackageSymbolNode(packageReference);
+    public static IPackageSymbolNode Create(
+        IdentifierName? aliasOrName,
+        PackageSymbol symbol,
+        IPackageFacetSymbolNode mainFacet,
+        IPackageFacetSymbolNode testingFacet)
+        => new PackageSymbolNode(aliasOrName, symbol, mainFacet, testingFacet);
 }
 
 [Closed(typeof(PackageFacetSymbolNode))]
@@ -5089,7 +5108,6 @@ file class PackageNode : SemanticNode, IPackageNode
 {
     private IPackageNode Self { [Inline] get => this; }
 
-    public IFixedSet<IPackageReferenceNode> References { [DebuggerStepThrough] get; }
     public IPackageFacetNode MainFacet { [DebuggerStepThrough] get; }
     public IPackageFacetNode TestingFacet { [DebuggerStepThrough] get; }
     public ISymbolDeclarationNode ContainingDeclaration
@@ -5107,12 +5125,6 @@ file class PackageNode : SemanticNode, IPackageNode
                 DefinitionsAspect.Package_EntryPoint);
     private IFunctionDefinitionNode? entryPoint;
     private bool entryPointCached;
-    public IPackageReferenceNode IntrinsicsReference
-        => GrammarAttribute.IsCached(in intrinsicsReferenceCached) ? intrinsicsReference!
-            : this.Synthetic(ref intrinsicsReferenceCached, ref intrinsicsReference,
-                n => Child.Attach(this, BuiltInsAspect.Package_IntrinsicsReference(n)));
-    private IPackageReferenceNode? intrinsicsReference;
-    private bool intrinsicsReferenceCached;
     public IPackageSymbols PackageSymbols
         => GrammarAttribute.IsCached(in packageSymbolsCached) ? packageSymbols!
             : this.Synthetic(ref packageSymbolsCached, ref packageSymbols,
@@ -5133,12 +5145,10 @@ file class PackageNode : SemanticNode, IPackageNode
     private bool symbolCached;
 
     public PackageNode(
-        IEnumerable<IPackageReferenceNode> references,
         IPackageFacetNode mainFacet,
         IPackageFacetNode testingFacet)
         : base(true)
     {
-        References = ChildSet.Attach(this, references);
         MainFacet = Child.Attach(this, mainFacet);
         TestingFacet = Child.Attach(this, testingFacet);
     }
@@ -5162,38 +5172,6 @@ file class PackageNode : SemanticNode, IPackageNode
 
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
         => contributors.Add(this);
-}
-
-[GeneratedCode("AzothCompilerCodeGen", null)]
-file class StandardPackageReferenceNode : SemanticNode, IStandardPackageReferenceNode
-{
-    private IStandardPackageReferenceNode Self { [Inline] get => this; }
-
-    public IPackageReferenceSyntax Syntax { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
-    public IPackageSymbolNode SymbolNode { [DebuggerStepThrough] get; }
-
-    public StandardPackageReferenceNode(IPackageReferenceSyntax syntax)
-    {
-        Syntax = syntax;
-        SymbolNode = Child.Attach(this, SymbolNodeAspect.PackageReference_SymbolNode(this));
-    }
-}
-
-[GeneratedCode("AzothCompilerCodeGen", null)]
-file class IntrinsicsPackageReferenceNode : SemanticNode, IIntrinsicsPackageReferenceNode
-{
-    private IIntrinsicsPackageReferenceNode Self { [Inline] get => this; }
-
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
-    public IPackageSymbolNode SymbolNode { [DebuggerStepThrough] get; }
-
-    public IntrinsicsPackageReferenceNode()
-    {
-        SymbolNode = Child.Attach(this, SymbolNodeAspect.PackageReference_SymbolNode(this));
-    }
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -5226,6 +5204,12 @@ file class PackageFacetNode : SemanticNode, IPackageFacetNode
                 NamespaceDefinitionsAspect.PackageFacet_GlobalNamespace);
     private INamespaceDefinitionNode? globalNamespace;
     private bool globalNamespaceCached;
+    public IPackageFacetReferenceNode IntrinsicsReference
+        => GrammarAttribute.IsCached(in intrinsicsReferenceCached) ? intrinsicsReference!
+            : this.Synthetic(ref intrinsicsReferenceCached, ref intrinsicsReference,
+                n => Child.Attach(this, BuiltInsAspect.PackageFacet_IntrinsicsReference(n)));
+    private IPackageFacetReferenceNode? intrinsicsReference;
+    private bool intrinsicsReferenceCached;
 
     public PackageFacetNode(
         IPackageFacetSyntax syntax,
@@ -5263,17 +5247,19 @@ file class PackageFacetNode : SemanticNode, IPackageFacetNode
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class StandardPackageFacetReferenceNode : SemanticNode, IStandardPackageFacetReferenceNode
+file class OrdinaryPackageFacetReferenceNode : SemanticNode, IOrdinaryPackageFacetReferenceNode
 {
-    private IStandardPackageFacetReferenceNode Self { [Inline] get => this; }
+    private IOrdinaryPackageFacetReferenceNode Self { [Inline] get => this; }
 
     public IPackageReferenceSyntax Syntax { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public IPackageFacetSymbolNode SymbolNode { [DebuggerStepThrough] get; }
 
-    public StandardPackageFacetReferenceNode(IPackageReferenceSyntax syntax)
+    public OrdinaryPackageFacetReferenceNode(IPackageReferenceSyntax syntax)
     {
         Syntax = syntax;
+        SymbolNode = SymbolNodeAspect.PackageFacetReference_SymbolNode(this);
     }
 }
 
@@ -5282,13 +5268,19 @@ file class PackageMainFacetReferenceNode : SemanticNode, IPackageMainFacetRefere
 {
     private IPackageMainFacetReferenceNode Self { [Inline] get => this; }
 
-    public IPackageReferenceSyntax? Syntax { [DebuggerStepThrough] get; }
+    public IdentifierName AliasOrName { [DebuggerStepThrough] get; }
+    public FixedSymbolTree Symbols { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public IPackageFacetSymbolNode SymbolNode { [DebuggerStepThrough] get; }
 
-    public PackageMainFacetReferenceNode(IPackageReferenceSyntax? syntax)
+    public PackageMainFacetReferenceNode(
+        IdentifierName aliasOrName,
+        FixedSymbolTree symbols)
     {
-        Syntax = syntax;
+        AliasOrName = aliasOrName;
+        Symbols = symbols;
+        SymbolNode = SymbolNodeAspect.PackageFacetReference_SymbolNode(this);
     }
 }
 
@@ -5297,13 +5289,13 @@ file class IntrinsicsPackageFacetReferenceNode : SemanticNode, IIntrinsicsPackag
 {
     private IIntrinsicsPackageFacetReferenceNode Self { [Inline] get => this; }
 
-    public IPackageReferenceSyntax? Syntax { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public IPackageFacetSymbolNode SymbolNode { [DebuggerStepThrough] get; }
 
-    public IntrinsicsPackageFacetReferenceNode(IPackageReferenceSyntax? syntax)
+    public IntrinsicsPackageFacetReferenceNode()
     {
-        Syntax = syntax;
+        SymbolNode = SymbolNodeAspect.PackageFacetReference_SymbolNode(this);
     }
 }
 
@@ -19264,21 +19256,28 @@ file class PackageSymbolNode : SemanticNode, IPackageSymbolNode
 {
     private IPackageSymbolNode Self { [Inline] get => this; }
 
-    public IPackageReferenceNode PackageReference { [DebuggerStepThrough] get; }
+    public IdentifierName? AliasOrName { [DebuggerStepThrough] get; }
+    public PackageSymbol Symbol { [DebuggerStepThrough] get; }
+    public IPackageFacetSymbolNode MainFacet { [DebuggerStepThrough] get; }
+    public IPackageFacetSymbolNode TestingFacet { [DebuggerStepThrough] get; }
     public ISymbolDeclarationNode ContainingDeclaration
         => Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public ISymbolTree SymbolTree()
         => Inherited_SymbolTree(GrammarAttribute.CurrentInheritanceContext());
-    public IPackageFacetSymbolNode MainFacet { [DebuggerStepThrough] get; }
-    public IPackageFacetSymbolNode TestingFacet { [DebuggerStepThrough] get; }
 
-    public PackageSymbolNode(IPackageReferenceNode packageReference)
+    public PackageSymbolNode(
+        IdentifierName? aliasOrName,
+        PackageSymbol symbol,
+        IPackageFacetSymbolNode mainFacet,
+        IPackageFacetSymbolNode testingFacet)
+        : base(true)
     {
-        PackageReference = packageReference;
-        MainFacet = Child.Attach(this, SymbolNodeAspect.PackageSymbol_MainFacet(this));
-        TestingFacet = Child.Attach(this, SymbolNodeAspect.PackageSymbol_TestingFacet(this));
+        AliasOrName = aliasOrName;
+        Symbol = symbol;
+        MainFacet = Child.Attach(this, mainFacet);
+        TestingFacet = Child.Attach(this, testingFacet);
     }
 
     internal override IPackageDeclarationNode Inherited_Package(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
