@@ -173,6 +173,7 @@ public partial interface IPackageFacetNode : IPackageFacetDeclarationNode
     IFixedSet<ICompilationUnitNode> CompilationUnits { get; }
     IFixedSet<IPackageFacetReferenceNode> References { get; }
     PackageNameScope PackageNameScope { get; }
+    DiagnosticCollection Diagnostics { get; }
     IFunctionDefinitionNode? EntryPoint { get; }
     IFixedSet<IFacetMemberDefinitionNode> Definitions { get; }
     FixedSymbolTree Symbols { get; }
@@ -5110,11 +5111,10 @@ file class PackageNode : SemanticNode, IPackageNode
         => Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
     public DiagnosticCollection Diagnostics
         => GrammarAttribute.IsCached(in diagnosticsCached) ? diagnostics!
-            : this.Aggregate(ref diagnosticsContributors, ref diagnosticsCached, ref diagnostics,
-                CollectContributors_Diagnostics, Collect_Diagnostics);
+            : this.Synthetic(ref diagnosticsCached, ref diagnostics,
+                DefinitionsAspect.Package_Diagnostics);
     private DiagnosticCollection? diagnostics;
     private bool diagnosticsCached;
-    private IFixedSet<SemanticNode>? diagnosticsContributors;
     public PackageSymbol Symbol
         => GrammarAttribute.IsCached(in symbolCached) ? symbol!
             : this.Synthetic(ref symbolCached, ref symbol,
@@ -5130,12 +5130,6 @@ file class PackageNode : SemanticNode, IPackageNode
         MainFacet = Child.Attach(this, mainFacet);
         TestsFacet = Child.Attach(this, testsFacet);
     }
-
-    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
-        => builder.Add(Diagnostics);
-
-    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
-        => contributors.Add(this);
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -5148,6 +5142,13 @@ file class PackageFacetNode : SemanticNode, IPackageFacetNode
     public IFixedSet<IPackageFacetReferenceNode> References { [DebuggerStepThrough] get; }
     public ISymbolDeclarationNode ContainingDeclaration
         => Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
+    public DiagnosticCollection Diagnostics
+        => GrammarAttribute.IsCached(in diagnosticsCached) ? diagnostics!
+            : this.Aggregate(ref diagnosticsContributors, ref diagnosticsCached, ref diagnostics,
+                CollectContributors_Diagnostics, Collect_Diagnostics);
+    private DiagnosticCollection? diagnostics;
+    private bool diagnosticsCached;
+    private IFixedSet<SemanticNode>? diagnosticsContributors;
     public IFixedSet<IFacetMemberDefinitionNode> Definitions
         => GrammarAttribute.IsCached(in definitionsCached) ? definitions!
             : this.Synthetic(ref definitionsCached, ref definitions,
@@ -5235,6 +5236,12 @@ file class PackageFacetNode : SemanticNode, IPackageFacetNode
     {
         return Self.PackageSymbol;
     }
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
+        => builder.Add(Diagnostics);
+
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+        => contributors.Add(this);
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]

@@ -8,7 +8,7 @@
 
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
-↗↖ *.Diagnostics:`DiagnosticCollection` from `DiagnosticCollectionBuilder` done Build;
+↗↖ *.Diagnostics: `DiagnosticCollection` from `DiagnosticCollectionBuilder` done Build;
 
 // ---------- Bindings
 ↑ Binding.IsLentBinding: `bool`;
@@ -16,9 +16,10 @@
 
 // ---------- Packages
 ↑ Package.Syntax: `ISyntax`? => null;
-↗↖ Package.Diagnostics;
+↑ Package.Diagnostics: `DiagnosticCollection`;
 
 // ---------- Facets
+↗↖ PackageFacet.Diagnostics;
 = PackageFacet.PackageSymbol;
 ↑ PackageFacet.EntryPoint: FunctionDefinition?;
 ↑ PackageFacetReference.AliasOrName: `IdentifierName`;

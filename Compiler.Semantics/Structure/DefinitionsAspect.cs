@@ -12,6 +12,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Structure;
 
 internal static partial class DefinitionsAspect
 {
+    #region Package
+    public static partial DiagnosticCollection Package_Diagnostics(IPackageNode node)
+        => new DiagnosticCollectionBuilder() { node.MainFacet.Diagnostics, node.TestsFacet.Diagnostics }.Build();
+    #endregion
+
     #region Facets
     public static partial PackageSymbol PackageFacet_PackageSymbol(IPackageFacetNode node)
         => new(node.Syntax.Name);

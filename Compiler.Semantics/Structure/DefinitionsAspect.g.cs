@@ -19,6 +19,8 @@ internal static partial class DefinitionsAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial void CompilationUnit_Contribute_Diagnostics(ICompilationUnitNode node, DiagnosticCollectionBuilder diagnostics);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial DiagnosticCollection Package_Diagnostics(IPackageNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFunctionDefinitionNode? PackageFacet_EntryPoint(IPackageFacetNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFixedSet<IFacetMemberDefinitionNode> PackageFacet_Definitions(IPackageFacetNode node);
