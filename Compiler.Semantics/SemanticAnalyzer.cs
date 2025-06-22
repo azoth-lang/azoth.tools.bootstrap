@@ -51,7 +51,7 @@ public class SemanticAnalyzer
 
         foreach (var reference in references)
         {
-            var symbolTree = await symbolLoader.LoadSymbolsAsync(reference.PackageSymbol.Name, FacetKind.Main);
+            var symbolTree = await symbolLoader.LoadSymbolsAsync(reference.PackageName, FacetKind.Main);
             symbolTrees.Add(reference, symbolTree);
         }
 

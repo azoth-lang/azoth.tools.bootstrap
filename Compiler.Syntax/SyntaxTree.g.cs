@@ -101,16 +101,14 @@ public partial interface IPackageFacetSyntax : ISyntax
 public partial interface IPackageReferenceSyntax : ISyntax
 {
     IdentifierName AliasOrName { get; }
-    PackageSymbol PackageSymbol { get; }
-    IPackageSymbols Package { get; }
+    IdentifierName PackageName { get; }
     bool IsTrusted { get; }
 
     public static IPackageReferenceSyntax Create(
         IdentifierName aliasOrName,
-        PackageSymbol packageSymbol,
-        IPackageSymbols package,
+        IdentifierName packageName,
         bool isTrusted)
-        => new PackageReferenceSyntax(aliasOrName, packageSymbol, package, isTrusted);
+        => new PackageReferenceSyntax(aliasOrName, packageName, isTrusted);
 }
 
 [Closed(
@@ -1602,21 +1600,18 @@ file class PackageReferenceSyntax : IPackageReferenceSyntax
     private IPackageReferenceSyntax Self { [Inline] get => this; }
 
     public IdentifierName AliasOrName { [DebuggerStepThrough] get; }
-    public PackageSymbol PackageSymbol { [DebuggerStepThrough] get; }
-    public IPackageSymbols Package { [DebuggerStepThrough] get; }
+    public IdentifierName PackageName { [DebuggerStepThrough] get; }
     public bool IsTrusted { [DebuggerStepThrough] get; }
     public override string ToString()
         => FormattingAspect.PackageReference_ToString(this);
 
     public PackageReferenceSyntax(
         IdentifierName aliasOrName,
-        PackageSymbol packageSymbol,
-        IPackageSymbols package,
+        IdentifierName packageName,
         bool isTrusted)
     {
         AliasOrName = aliasOrName;
-        PackageSymbol = packageSymbol;
-        Package = package;
+        PackageName = packageName;
         IsTrusted = isTrusted;
     }
 }
