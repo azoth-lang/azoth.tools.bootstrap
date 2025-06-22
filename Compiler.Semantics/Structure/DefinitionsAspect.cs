@@ -12,16 +12,14 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Structure;
 
 internal static partial class DefinitionsAspect
 {
-    #region Packages
-    public static partial IFunctionDefinitionNode? Package_EntryPoint(IPackageNode node)
-        // TODO warn on and remove main functions that don't have correct parameters or types
-        // TODO compiler error on multiple main functions
-        => node.MainFacet.Definitions.OfType<IFunctionDefinitionNode>().SingleOrDefault(f => f.Name == "main");
-    #endregion
-
     #region Facets
     public static partial PackageSymbol PackageFacet_PackageSymbol(IPackageFacetNode node)
         => new(node.Syntax.Name);
+
+    public static partial IFunctionDefinitionNode? PackageFacet_EntryPoint(IPackageFacetNode node)
+        // TODO warn on and remove main functions that don't have correct parameters or types
+        // TODO compiler error on multiple main functions
+        => node.Definitions.OfType<IFunctionDefinitionNode>().SingleOrDefault(f => f.Name == "main");
 
     public static partial IFixedSet<IFacetMemberDefinitionNode> PackageFacet_Definitions(IPackageFacetNode node)
     {

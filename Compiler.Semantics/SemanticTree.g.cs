@@ -162,7 +162,6 @@ public partial interface IPackageNode : IPackageDeclarationNode
     new IdentifierName Name
         => MainFacet.Syntax.Name;
     IdentifierName IPackageDeclarationNode.Name => Name;
-    IFunctionDefinitionNode? EntryPoint { get; }
     DiagnosticCollection Diagnostics { get; }
 
     public static IPackageNode Create(
@@ -180,6 +179,7 @@ public partial interface IPackageFacetNode : IPackageFacetDeclarationNode
     IFixedSet<ICompilationUnitNode> CompilationUnits { get; }
     IFixedSet<IPackageFacetReferenceNode> References { get; }
     PackageNameScope PackageNameScope { get; }
+    IFunctionDefinitionNode? EntryPoint { get; }
     IFixedSet<IFacetMemberDefinitionNode> Definitions { get; }
     FixedSymbolTree Symbols { get; }
     IFixedSet<ITypeDeclarationNode> PrimitivesDeclarations { get; }
@@ -5125,12 +5125,6 @@ file class PackageNode : SemanticNode, IPackageNode
     private DiagnosticCollection? diagnostics;
     private bool diagnosticsCached;
     private IFixedSet<SemanticNode>? diagnosticsContributors;
-    public IFunctionDefinitionNode? EntryPoint
-        => GrammarAttribute.IsCached(in entryPointCached) ? entryPoint
-            : this.Synthetic(ref entryPointCached, ref entryPoint,
-                DefinitionsAspect.Package_EntryPoint);
-    private IFunctionDefinitionNode? entryPoint;
-    private bool entryPointCached;
     public PackageSymbol Symbol
         => GrammarAttribute.IsCached(in symbolCached) ? symbol!
             : this.Synthetic(ref symbolCached, ref symbol,
@@ -5170,6 +5164,12 @@ file class PackageFacetNode : SemanticNode, IPackageFacetNode
                 DefinitionsAspect.PackageFacet_Definitions);
     private IFixedSet<IFacetMemberDefinitionNode>? definitions;
     private bool definitionsCached;
+    public IFunctionDefinitionNode? EntryPoint
+        => GrammarAttribute.IsCached(in entryPointCached) ? entryPoint
+            : this.Synthetic(ref entryPointCached, ref entryPoint,
+                DefinitionsAspect.PackageFacet_EntryPoint);
+    private IFunctionDefinitionNode? entryPoint;
+    private bool entryPointCached;
     public INamespaceDefinitionNode GlobalNamespace
         => GrammarAttribute.IsCached(in globalNamespaceCached) ? globalNamespace!
             : this.Synthetic(ref globalNamespaceCached, ref globalNamespace,

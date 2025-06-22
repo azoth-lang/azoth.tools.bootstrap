@@ -20,11 +20,11 @@
 /// should be <see langword="null"/> for the current package.</remarks>
 ↑ Package.AliasOrName: `IdentifierName`? => null;
 ↑ Package.Name: `IdentifierName` => MainFacet.Syntax.Name;
-↑ Package.EntryPoint: FunctionDefinition?;
 ↗↖ Package.Diagnostics;
 
 // ---------- Facets
 = PackageFacet.PackageSymbol;
+↑ PackageFacet.EntryPoint: FunctionDefinition?;
 ↑ PackageFacetReference.AliasOrName: `IdentifierName`;
 ↑ PackageFacetReference.IsTrusted: `bool`;
 = OrdinaryPackageFacetReference.AliasOrName => Syntax.AliasOrName;

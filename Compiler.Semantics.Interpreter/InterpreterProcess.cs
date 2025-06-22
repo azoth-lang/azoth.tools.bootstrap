@@ -32,7 +32,7 @@ public sealed class InterpreterProcess
 {
     public static InterpreterProcess StartEntryPoint(IPackageNode package, IEnumerable<IPackageNode> referencedPackages)
     {
-        if (package.EntryPoint is null)
+        if (package.MainFacet.EntryPoint is null)
             throw new ArgumentException("Cannot execute package without an entry point");
 
         return new InterpreterProcess(package, referencedPackages, runTests: false);
@@ -133,7 +133,7 @@ public sealed class InterpreterProcess
         runStopwatch.Start();
         await using var _ = standardOutputWriter;
 
-        var entryPoint = package.EntryPoint!;
+        var entryPoint = package.MainFacet.EntryPoint!;
         var parameterTypes = entryPoint.Symbol.Assigned().ParameterTypes;
         var arguments = new List<AzothValue>(parameterTypes.Count);
         foreach (var parameterType in parameterTypes)
