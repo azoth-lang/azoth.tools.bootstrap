@@ -12,8 +12,12 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.API;
 
+// TODO add support in the API for handling multiple projects and assembling facets into packages
 public class AzothCompiler
 {
+    private readonly Lexer lexer = new();
+    private readonly CompilationUnitParser parser = new();
+
     public Task<IPackageNode> CompilePackageAsync(
         IdentifierName name,
         IEnumerable<ICodeFileSource> files,
@@ -21,6 +25,9 @@ public class AzothCompiler
         IEnumerable<PackageReferenceAsync> references)
         => CompilePackageAsync(name, files, testingFileSources, references, TaskScheduler.Default);
 
+    // TODO replace with CompilePackageFacetAsync
+    // TODO change references into a proper representation of the syntax
+    // TODO add a parameter for loading symbols for references
     public async Task<IPackageNode> CompilePackageAsync(
         IdentifierName name,
         IEnumerable<ICodeFileSource> fileSources,
@@ -28,8 +35,6 @@ public class AzothCompiler
         IEnumerable<PackageReferenceAsync> references,
         TaskScheduler taskScheduler)
     {
-        var lexer = new Lexer();
-        var parser = new CompilationUnitParser();
         var compilationUnits = await ParseFilesAsync(fileSources);
         var testingCompilationUnits = await ParseFilesAsync(testingFileSources);
         var referenceSyntax = (await Task.WhenAll(
@@ -40,18 +45,17 @@ public class AzothCompiler
 
         var analyzer = new SemanticAnalyzer();
         return analyzer.Check(packageMainSyntax, packageTestsSyntax);
+    }
 
-        async Task<IFixedSet<ICompilationUnitSyntax>> ParseFilesAsync(IEnumerable<ICodeFileSource> codeFileSources)
-        {
-            // TODO manage degree of parallelism
-            return (await Task.WhenAll(codeFileSources.Select(ParseFileAsync))).ToFixedSet();
-        }
+    private async Task<IFixedSet<ICompilationUnitSyntax>> ParseFilesAsync(IEnumerable<ICodeFileSource> codeFileSources)
+        // TODO manage degree of parallelism
+        // TODO Task.WhenAll has issues when errors and cancellation occur
+        => (await Task.WhenAll(codeFileSources.Select(ParseFileAsync))).ToFixedSet();
 
-        async Task<ICompilationUnitSyntax> ParseFileAsync(ICodeFileSource fileSource)
-        {
-            var file = await fileSource.LoadAsync().ConfigureAwait(false);
-            var tokens = lexer.Lex(new ParseContext(file)).WhereNotTrivia();
-            return parser.Parse(tokens);
-        }
+    private async Task<ICompilationUnitSyntax> ParseFileAsync(ICodeFileSource fileSource)
+    {
+        var file = await fileSource.LoadAsync().ConfigureAwait(false);
+        var tokens = lexer.Lex(new ParseContext(file)).WhereNotTrivia();
+        return parser.Parse(tokens);
     }
 }

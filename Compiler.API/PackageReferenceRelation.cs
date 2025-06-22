@@ -1,22 +1,11 @@
-namespace Azoth.Tools.Bootstrap.Lab.Build;
+namespace Azoth.Tools.Bootstrap.Compiler.API;
 
-internal enum ProjectRelation
+public enum PackageReferenceRelation
 {
-    /// <summary>
-    /// A package that is not used by this package.
-    /// </summary>
-    /// <remarks>This exists so that packages can be bundled.</remarks>
-    None,
-
     /// <summary>
     /// A dependency that is only used for and available to tests, examples, and benchmarks.
     /// </summary>
-    Dev,
-
-    ///// <summary>
-    ///// A dependency that is used by the build process, including code analysis.
-    ///// </summary>
-    //Build,
+    Dev = 1,
 
     /// <summary>
     /// A dependency that is used internally by the implementation of this package but is not exposed

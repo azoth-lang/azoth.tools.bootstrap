@@ -49,15 +49,15 @@ internal class ProjectSet : IEnumerable<Project>
         // Add a placeholder to prevent cycles (safe because we will replace it below)
         projects.Add(projectDir, null!);
 
-        var references = CreateReferences(config, ProjectRelation.Build).ToList();
+        var references = CreateReferences(config, minimumRelation: ProjectRelation.Internal).ToList();
         var devReferences = Lazy.Create(() => CreateReferences(config, ProjectRelation.Dev).ToFixedList());
         var project = new Project(config, references, devReferences);
         projects[projectDir] = project;
         return project;
 
-        IEnumerable<ProjectReference> CreateReferences(ProjectConfig projectConfig, ProjectRelation relation)
+        IEnumerable<ProjectReference> CreateReferences(ProjectConfig projectConfig, ProjectRelation minimumRelation)
             // TODO be more exact about selecting distinct references or possibly even merging them
-            => projectConfig.Dependencies!.Where(p => p.Value?.Relation >= relation)
+            => projectConfig.Dependencies!.Where(p => p.Value?.Relation > minimumRelation)
                 .SelectMany(CreateReferencesForDependency).DistinctBy(r => r.Project.Name);
 
         IEnumerable<ProjectReference> CreateReferencesForDependency(string alias, ProjectDependencyConfig? dependencyConfig)
