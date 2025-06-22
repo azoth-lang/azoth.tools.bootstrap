@@ -39,11 +39,12 @@ public class AzothCompiler
         TaskScheduler taskScheduler)
     {
         var compilationUnits = await ParseFilesAsync(fileSources);
-        var testingCompilationUnits = await ParseFilesAsync(testingFileSources);
-        var referenceSyntax = references.Select(r => r.ToSyntax()).ToFixedSet();
+        var mainReferencesSyntax = references.Select(r => r.ToSyntax()).ToFixedSet();
+        var packageMainSyntax = IPackageFacetSyntax.Create(name, FacetKind.Main, compilationUnits, mainReferencesSyntax);
 
-        var packageMainSyntax = IPackageFacetSyntax.Create(name, FacetKind.Main, compilationUnits, referenceSyntax);
-        var packageTestsSyntax = IPackageFacetSyntax.Create(name, FacetKind.Tests, testingCompilationUnits, referenceSyntax);
+        var testsCompilationUnits = await ParseFilesAsync(testingFileSources);
+        var testsReferencesSyntax = references.Select(r => r.ToSyntax()).ToFixedSet();
+        var packageTestsSyntax = IPackageFacetSyntax.Create(name, FacetKind.Tests, testsCompilationUnits, testsReferencesSyntax);
 
         var analyzer = new SemanticAnalyzer(symbolLoader);
         return await analyzer.CheckAsync(packageMainSyntax, packageTestsSyntax);
