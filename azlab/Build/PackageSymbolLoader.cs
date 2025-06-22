@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Names;
@@ -5,27 +6,18 @@ using Azoth.Tools.Bootstrap.Compiler.Semantics;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 using Azoth.Tools.Bootstrap.Framework;
-using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Lab.Build;
 
 internal class PackageSymbolLoader : IPackageSymbolLoader
 {
-    private readonly FixedDictionary<IdentifierName, Task<IPackageNode>> packages;
+    private readonly FixedDictionary<(IdentifierName, FacetKind), Task<IPackageFacetNode>> packageFacets;
 
-    public PackageSymbolLoader(FixedDictionary<IdentifierName, Task<IPackageNode>> packages)
+    public PackageSymbolLoader(IEnumerable<KeyValuePair<(IdentifierName, FacetKind), Task<IPackageFacetNode>>> packageFacets)
     {
-        this.packages = packages;
+        this.packageFacets = new(packageFacets);
     }
 
     public async ValueTask<FixedSymbolTree> LoadSymbolsAsync(IdentifierName packageName, FacetKind facet)
-    {
-        var packageNode = await packages[packageName];
-        return facet switch
-        {
-            FacetKind.Main => packageNode.MainFacet.Symbols,
-            FacetKind.Tests => packageNode.TestsFacet.Symbols,
-            _ => throw ExhaustiveMatch.Failed(facet),
-        };
-    }
+        => (await packageFacets[(packageName, facet)]).Symbols;
 }

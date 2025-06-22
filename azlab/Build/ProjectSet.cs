@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Azoth.Tools.Bootstrap.Compiler.API;
+using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Code;
 using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Names;
@@ -217,7 +218,7 @@ internal class ProjectSet : IEnumerable<Project>
         var sourceDir = Path.Combine(project.Path, "src");
         var sourcePaths = Directory.EnumerateFiles(sourceDir, "*.az", SearchOption.AllDirectories);
         var testSourcePaths = Directory.EnumerateFiles(sourceDir, "*.azt", SearchOption.AllDirectories);
-        var symbolLoader = new PackageSymbolLoader(projectBuilds.ToFixedDictionary(e => (IdentifierName)e.Key.Name, e => e.Value));
+        var symbolLoader = CreateSymbolLoader(projectBuilds);
         var references = project.References.Select(r => r.ToPackageReference()).WhereNotNull();
 
         using (await consoleLock.LockAsync())
@@ -245,6 +246,21 @@ internal class ProjectSet : IEnumerable<Project>
             OutputDiagnostics(project, ex.Diagnostics, consoleLock);
             throw;
         }
+
+        static PackageSymbolLoader CreateSymbolLoader(FixedDictionary<Project, Task<IPackageNode>> projectBuilds)
+        {
+            var mainFacets = projectBuilds.Select(
+                p => KeyValuePair.Create(((IdentifierName)p.Key.Name, FacetKind.Main), GetMainFacetAsync(p.Value)));
+            var testsFacets = projectBuilds.Select(p
+                => KeyValuePair.Create(((IdentifierName)p.Key.Name, FacetKind.Tests), GetTestsFacetAsync(p.Value)));
+            return new(mainFacets.Concat(testsFacets));
+        }
+
+        static async Task<IPackageFacetNode> GetMainFacetAsync(Task<IPackageNode> packageNode)
+            => (await packageNode).MainFacet;
+
+        static async Task<IPackageFacetNode> GetTestsFacetAsync(Task<IPackageNode> packageNode)
+            => (await packageNode).TestsFacet;
 
         IEnumerable<CodePath> CreateCodePaths(IEnumerable<string> paths, bool isTest)
             => paths.Select(p => CreateCodePath(p, sourceDir, project.RootNamespace, isTest));
