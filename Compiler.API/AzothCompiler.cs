@@ -7,6 +7,7 @@ using Azoth.Tools.Bootstrap.Compiler.Lexing;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Parsing;
 using Azoth.Tools.Bootstrap.Compiler.Semantics;
+using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Syntax;
 using Azoth.Tools.Bootstrap.Framework;
 
@@ -45,8 +46,8 @@ public class AzothCompiler
         var packageMainSyntax = IPackageFacetSyntax.Create(name, FacetKind.Main, compilationUnits, referenceSyntax);
         var packageTestsSyntax = IPackageFacetSyntax.Create(name, FacetKind.Tests, testingCompilationUnits, referenceSyntax);
 
-        var analyzer = new SemanticAnalyzer();
-        return analyzer.Check(packageMainSyntax, packageTestsSyntax);
+        var analyzer = new SemanticAnalyzer(symbolLoader);
+        return await analyzer.CheckAsync(packageMainSyntax, packageTestsSyntax);
     }
 
     private async Task<IFixedSet<ICompilationUnitSyntax>> ParseFilesAsync(IEnumerable<ICodeFileSource> codeFileSources)

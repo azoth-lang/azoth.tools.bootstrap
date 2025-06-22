@@ -43,7 +43,7 @@ PackageFacet <: PackageFacetDeclaration = Syntax:`IPackageFacetSyntax`
     CompilationUnits:{CompilationUnit} References:{PackageFacetReference};
 
 PackageFacetReference <: Child = Syntax:`IPackageReferenceSyntax`?;
-OrdinaryPackageFacetReference <: PackageFacetReference = Syntax:`IPackageReferenceSyntax`;
+OrdinaryPackageFacetReference <: PackageFacetReference = Syntax:`IPackageReferenceSyntax` Symbols:`FixedSymbolTree`;
 PackageMainFacetReference <: PackageFacetReference = AliasOrName:`IdentifierName` Symbols:`FixedSymbolTree`;
 IntrinsicsPackageFacetReference <: PackageFacetReference;
 

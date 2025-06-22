@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 using Azoth.Tools.Bootstrap.Compiler.Syntax;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
@@ -17,8 +18,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.SyntaxBinding;
 /// to reflect that.</remarks>
 internal static class SyntaxBinder
 {
-    public static IPackageNode Bind(IPackageFacetSyntax packageMainSyntax, IPackageFacetSyntax packageTestsSyntax)
-        => Package(packageMainSyntax, packageTestsSyntax);
+    public static IPackageNode Bind(
+        IPackageFacetSyntax packageMainSyntax,
+        IPackageFacetSyntax packageTestsSyntax,
+        IReadOnlyDictionary<IPackageReferenceSyntax, FixedSymbolTree> referenceSymbols)
+        => Package(packageMainSyntax, packageTestsSyntax, referenceSymbols);
 
     #region Top Level
     private static IEnumerable<ICompilationUnitNode> CompilationUnits(IEnumerable<ICompilationUnitSyntax> syntax)
@@ -50,14 +54,23 @@ internal static class SyntaxBinder
     #endregion
 
     #region Packages
-    private static IPackageNode Package(IPackageFacetSyntax packageMainSyntax, IPackageFacetSyntax packageTestsSyntax)
-        => IPackageNode.Create(PackageFacet(packageMainSyntax), PackageFacet(packageTestsSyntax));
+    private static IPackageNode Package(
+        IPackageFacetSyntax packageMainSyntax,
+        IPackageFacetSyntax packageTestsSyntax,
+        IReadOnlyDictionary<IPackageReferenceSyntax, FixedSymbolTree> referenceSymbols)
+        => IPackageNode.Create(PackageFacet(packageMainSyntax, referenceSymbols),
+            PackageFacet(packageTestsSyntax, referenceSymbols));
 
-    private static IPackageFacetNode PackageFacet(IPackageFacetSyntax syntax)
-        => IPackageFacetNode.Create(syntax, CompilationUnits(syntax.CompilationUnits), PackageFacetReferences(syntax.References));
+    private static IPackageFacetNode PackageFacet(
+        IPackageFacetSyntax syntax,
+        IReadOnlyDictionary<IPackageReferenceSyntax, FixedSymbolTree> referenceSymbols)
+        => IPackageFacetNode.Create(syntax, CompilationUnits(syntax.CompilationUnits),
+            PackageFacetReferences(syntax.References, referenceSymbols));
 
-    private static IEnumerable<IOrdinaryPackageFacetReferenceNode> PackageFacetReferences(IEnumerable<IPackageReferenceSyntax> syntax)
-        => syntax.Select(IOrdinaryPackageFacetReferenceNode.Create);
+    private static IEnumerable<IOrdinaryPackageFacetReferenceNode> PackageFacetReferences(
+        IEnumerable<IPackageReferenceSyntax> syntax,
+        IReadOnlyDictionary<IPackageReferenceSyntax, FixedSymbolTree> referenceSymbols)
+        => syntax.Select(s => IOrdinaryPackageFacetReferenceNode.Create(s, referenceSymbols[s]));
     #endregion
 
     #region Namespace Definitions

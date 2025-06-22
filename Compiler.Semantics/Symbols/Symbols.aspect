@@ -15,7 +15,6 @@ type `OrdinaryTypeSymbol` <: `TypeSymbol`;
 
 // ---------- Facets
 ↑ PackageFacetReference.Symbols:`FixedSymbolTree`;
-= OrdinaryPackageFacetReference.Symbols => Syntax.Package.SymbolTree;
 = IntrinsicsPackageFacetReference.Symbols => Intrinsic.SymbolTree;
 
 // ---------- Code Files

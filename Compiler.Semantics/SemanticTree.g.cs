@@ -217,15 +217,17 @@ public partial interface IOrdinaryPackageFacetReferenceNode : IPackageFacetRefer
     new IPackageReferenceSyntax Syntax { get; }
     IPackageReferenceSyntax? IPackageFacetReferenceNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
+    new FixedSymbolTree Symbols { get; }
+    FixedSymbolTree IPackageFacetReferenceNode.Symbols => Symbols;
     IdentifierName IPackageFacetReferenceNode.AliasOrName
         => Syntax.AliasOrName;
     bool IPackageFacetReferenceNode.IsTrusted
         => Syntax.IsTrusted;
-    FixedSymbolTree IPackageFacetReferenceNode.Symbols
-        => Syntax.Package.SymbolTree;
 
-    public static IOrdinaryPackageFacetReferenceNode Create(IPackageReferenceSyntax syntax)
-        => new OrdinaryPackageFacetReferenceNode(syntax);
+    public static IOrdinaryPackageFacetReferenceNode Create(
+        IPackageReferenceSyntax syntax,
+        FixedSymbolTree symbols)
+        => new OrdinaryPackageFacetReferenceNode(syntax, symbols);
 }
 
 [Closed(typeof(PackageMainFacetReferenceNode))]
@@ -5252,13 +5254,17 @@ file class OrdinaryPackageFacetReferenceNode : SemanticNode, IOrdinaryPackageFac
     private IOrdinaryPackageFacetReferenceNode Self { [Inline] get => this; }
 
     public IPackageReferenceSyntax Syntax { [DebuggerStepThrough] get; }
+    public FixedSymbolTree Symbols { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public IPackageFacetSymbolNode SymbolNode { [DebuggerStepThrough] get; }
 
-    public OrdinaryPackageFacetReferenceNode(IPackageReferenceSyntax syntax)
+    public OrdinaryPackageFacetReferenceNode(
+        IPackageReferenceSyntax syntax,
+        FixedSymbolTree symbols)
     {
         Syntax = syntax;
+        Symbols = symbols;
         SymbolNode = SymbolNodeAspect.PackageFacetReference_SymbolNode(this);
     }
 }
