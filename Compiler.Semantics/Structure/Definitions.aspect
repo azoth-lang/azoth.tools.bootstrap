@@ -22,6 +22,7 @@
 ↗↖ PackageFacet.Diagnostics;
 = PackageFacet.PackageSymbol;
 ↑ PackageFacet.EntryPoint: FunctionDefinition?;
+= PackageFacet.Kind => Syntax.Kind;
 ↑ PackageFacetReference.AliasOrName: `IdentifierName`;
 ↑ PackageFacetReference.IsTrusted: `bool`;
 = OrdinaryPackageFacetReference.AliasOrName => Syntax.AliasOrName;

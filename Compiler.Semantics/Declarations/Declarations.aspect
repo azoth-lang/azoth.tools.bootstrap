@@ -21,6 +21,7 @@
 ↑ PackageFacetDeclaration.PackageSymbol: `PackageSymbol`;
 // TODO "Rename" the inherited "Symbol" attribute to "PackageSymbol"?
 ↑ PackageFacetDeclaration.Symbol: `PackageSymbol` => PackageSymbol;
+↑ PackageFacetDeclaration.Kind: `FacetKind`;
 ↑ child PackageFacetDeclaration.GlobalNamespace: NamespaceDeclaration;
 
 // ---------- Declarations

@@ -181,6 +181,8 @@ public partial interface IPackageFacetNode : IPackageFacetDeclarationNode
     IPackageFacetReferenceNode IntrinsicsReference { get; }
     new INamespaceDefinitionNode GlobalNamespace { get; }
     INamespaceDeclarationNode IPackageFacetDeclarationNode.GlobalNamespace => GlobalNamespace;
+    FacetKind IPackageFacetDeclarationNode.Kind
+        => Syntax.Kind;
 
     public static IPackageFacetNode Create(
         IPackageFacetSyntax syntax,
@@ -3846,6 +3848,7 @@ public partial interface IPackageFacetDeclarationNode : IChildDeclarationNode, I
     new PackageSymbol Symbol
         => PackageSymbol;
     Symbol? ISymbolDeclarationNode.Symbol => Symbol;
+    FacetKind Kind { get; }
     INamespaceDeclarationNode GlobalNamespace { get; }
     ISemanticNode Parent => (ISemanticNode)PeekParent()!;
 }
@@ -4326,6 +4329,8 @@ public partial interface IPackageSymbolNode : IPackageDeclarationNode, IChildSym
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IPackageFacetSymbolNode : IPackageFacetDeclarationNode, IChildSymbolNode
 {
+    new FacetKind Kind { get; }
+    FacetKind IPackageFacetDeclarationNode.Kind => Kind;
     new FixedSymbolTree SymbolTree { get; }
     ISymbolTree IChildSymbolNode.SymbolTree() => SymbolTree;
     new PackageSymbol Symbol
@@ -4340,8 +4345,10 @@ public partial interface IPackageFacetSymbolNode : IPackageFacetDeclarationNode,
     PackageSymbol IPackageFacetDeclarationNode.PackageSymbol
         => SymbolTree.Package;
 
-    public static IPackageFacetSymbolNode Create(FixedSymbolTree symbolTree)
-        => new PackageFacetSymbolNode(symbolTree);
+    public static IPackageFacetSymbolNode Create(
+        FacetKind kind,
+        FixedSymbolTree symbolTree)
+        => new PackageFacetSymbolNode(kind, symbolTree);
 }
 
 [Closed(typeof(NamespaceSymbolNode))]
@@ -19285,13 +19292,17 @@ file class PackageFacetSymbolNode : SemanticNode, IPackageFacetSymbolNode
 {
     private IPackageFacetSymbolNode Self { [Inline] get => this; }
 
+    public FacetKind Kind { [DebuggerStepThrough] get; }
     public FixedSymbolTree SymbolTree { [DebuggerStepThrough] get; }
     public ISymbolDeclarationNode ContainingDeclaration
         => Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
     public INamespaceSymbolNode GlobalNamespace { [DebuggerStepThrough] get; }
 
-    public PackageFacetSymbolNode(FixedSymbolTree symbolTree)
+    public PackageFacetSymbolNode(
+        FacetKind kind,
+        FixedSymbolTree symbolTree)
     {
+        Kind = kind;
         SymbolTree = symbolTree;
         GlobalNamespace = Child.Attach(this, SymbolNodeAspect.PackageFacetSymbol_GlobalNamespace(this));
     }

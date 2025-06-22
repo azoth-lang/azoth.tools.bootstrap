@@ -514,7 +514,7 @@ PackageSymbol <: PackageDeclaration, ChildSymbol
 
 // ---------- Facet Symbol Nodes
 // Facets separate the testing and non-testing aspects of a package. They do no have their own symbol.
-PackageFacetSymbol <: PackageFacetDeclaration, ChildSymbol = SymbolTree:`FixedSymbolTree`;
+PackageFacetSymbol <: PackageFacetDeclaration, ChildSymbol = Kind:`FacetKind` SymbolTree:`FixedSymbolTree`;
 
 // ---------- Namespace Symbol Nodes
 NamespaceSymbol <: NamespaceDeclaration, NamespaceMemberSymbol = Symbol:`NamespaceSymbol`;
