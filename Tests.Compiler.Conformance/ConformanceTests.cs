@@ -61,9 +61,9 @@ public partial class ConformanceTests
         var references = new List<PackageReference>();
 
         // Reference Standard Library
-        var supportPackage = await CompileSupportPackageAsync(compiler);
+        var supportPackageFacet = await CompileSupportPackageFacetAsync(compiler);
         references.Add(new(TestsSupportPackage.Name, null, true, PackageReferenceRelation.Internal));
-        var symbolLoader = new PackageSymbolLoader(supportPackage.MainFacet);
+        var symbolLoader = new PackageSymbolLoader(supportPackageFacet);
 
         string? expectedAbortMessage = ExpectedAbort(code);
         try
@@ -88,7 +88,7 @@ public partial class ConformanceTests
             //packageIL.Position = 0;
 
             // Execute and check results
-            var process = Execute(package, supportPackage);
+            var process = Execute(package.MainFacet, supportPackageFacet);
             //var process = Execute(packageIL, stdLibIL);
 
             await process.WaitForExitAsync();
@@ -115,7 +115,7 @@ public partial class ConformanceTests
         }
     }
 
-    private async ValueTask<IPackageNode> CompileSupportPackageAsync(AzothCompiler compiler)
+    private async ValueTask<IPackageFacetNode> CompileSupportPackageFacetAsync(AzothCompiler compiler)
     {
         try
         {
@@ -127,7 +127,7 @@ public partial class ConformanceTests
             var package = await compiler.CompilePackageAsync(TestsSupportPackage.Name, codeFiles, [], [], IPackageSymbolLoader.None);
             if (package.Diagnostics.Any(d => d.Level >= DiagnosticLevel.CompilationError))
                 ReportSupportCompilationErrors(package.Diagnostics);
-            return package;
+            return package.MainFacet;
         }
         catch (FatalCompilationErrorException ex)
         {
@@ -238,10 +238,10 @@ public partial class ConformanceTests
         }
     }
 
-    private static InterpreterProcess Execute(IPackageNode package, IPackageNode supportPackage)
+    private static InterpreterProcess Execute(IPackageFacetNode packageFacet, IPackageFacetNode supportPackageFacet)
     {
         var interpreter = new AzothTreeInterpreter();
-        return interpreter.Execute(package, [supportPackage]);
+        return interpreter.Execute(packageFacet, [supportPackageFacet]);
     }
 
     private static string? ExpectedAbort(string code)

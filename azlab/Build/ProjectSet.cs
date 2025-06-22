@@ -152,7 +152,7 @@ internal class ProjectSet : IEnumerable<Project>
             var (entryPackageNode, referencedPackages) = (await ProcessProjects(taskScheduler, verbose,
                 outputTests: false, CompileAsync, entryProjectConfig))!.Value;
             var interpreter = new AzothTreeInterpreter();
-            var process = interpreter.Execute(entryPackageNode, referencedPackages);
+            var process = interpreter.Execute(entryPackageNode.MainFacet, referencedPackages.Select(p => p.MainFacet));
             while (await process.StandardOutput.ReadLineAsync() is { } line) Console.WriteLine(line);
             await process.WaitForExitAsync();
             var stderr = await process.StandardError.ReadToEndAsync();
@@ -172,7 +172,7 @@ internal class ProjectSet : IEnumerable<Project>
             var (testPackageNode, referencedPackages) =
                 (await ProcessProjects(taskScheduler, verbose, outputTests: true, CompileAsync, testProjectConfig))!.Value;
             var interpreter = new AzothTreeInterpreter();
-            var process = interpreter.ExecuteTests(testPackageNode, referencedPackages);
+            var process = interpreter.ExecuteTests(testPackageNode.TestsFacet, referencedPackages.Select(p => p.TestsFacet));
             while (await process.StandardOutput.ReadLineAsync() is { } line) Console.WriteLine(line);
             await process.WaitForExitAsync();
             var stderr = await process.StandardError.ReadToEndAsync();

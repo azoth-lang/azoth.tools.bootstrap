@@ -30,20 +30,20 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter;
 
 public sealed class InterpreterProcess
 {
-    public static InterpreterProcess StartEntryPoint(IPackageNode package, IEnumerable<IPackageNode> referencedPackages)
+    public static InterpreterProcess StartEntryPoint(IPackageFacetNode packageFacet, IEnumerable<IPackageFacetNode> referencedPackageFacets)
     {
-        if (package.MainFacet.EntryPoint is null)
+        if (packageFacet.EntryPoint is null)
             throw new ArgumentException("Cannot execute package without an entry point");
 
-        return new InterpreterProcess(package, referencedPackages, runTests: false);
+        return new InterpreterProcess(packageFacet, referencedPackageFacets, runTests: false);
     }
 
-    public static InterpreterProcess StartTests(IPackageNode package, IEnumerable<IPackageNode> referencedPackages)
-        => new(package, referencedPackages, runTests: true);
+    public static InterpreterProcess StartTests(IPackageFacetNode packageFacet, IEnumerable<IPackageFacetNode> referencedPackageFacets)
+        => new(packageFacet, referencedPackageFacets, runTests: true);
 
     public TimeSpan RunTime => runStopwatch.Elapsed;
 
-    private readonly IPackageNode package;
+    private readonly IPackageFacetNode packageFacet;
     private readonly Task executionTask;
     private readonly FrozenDictionary<FunctionSymbol, IFunctionInvocableDefinitionNode> functions;
     private readonly FrozenDictionary<MethodSymbol, IMethodDefinitionNode> structMethods;
@@ -65,11 +65,10 @@ public sealed class InterpreterProcess
     private readonly LocalVariables.Scope.Pool localVariableScopePool = new();
     private readonly Stopwatch runStopwatch = new();
 
-    private InterpreterProcess(IPackageNode package, IEnumerable<IPackageNode> referencedPackages, bool runTests)
+    private InterpreterProcess(IPackageFacetNode packageFacet, IEnumerable<IPackageFacetNode> referencedPackageFacets, bool runTests)
     {
-        this.package = package;
-        var allDefinitions = GetAllDefinitions(package, referencedPackages,
-            runTests ? r => r.MainFacet.Definitions.Concat(r.TestsFacet.Definitions) : r => r.MainFacet.Definitions);
+        this.packageFacet = packageFacet;
+        var allDefinitions = GetAllDefinitions(packageFacet, referencedPackageFacets);
         functions = allDefinitions
                     .OfType<IFunctionInvocableDefinitionNode>()
                     .ToFrozenDictionary(f => f.Symbol.Assigned());
@@ -110,10 +109,9 @@ public sealed class InterpreterProcess
     }
 
     private static IFixedList<IDefinitionNode> GetAllDefinitions(
-        IPackageNode package,
-        IEnumerable<IPackageNode> referencedPackages,
-        Func<IPackageNode, IEnumerable<IFacetMemberDefinitionNode>> getPackageMemberDefinitions)
-        => GetAllDefinitions(referencedPackages.Prepend(package).SelectMany(getPackageMemberDefinitions)).ToFixedList();
+        IPackageFacetNode packageFacet,
+        IEnumerable<IPackageFacetNode> referencedPackageFacets)
+        => GetAllDefinitions(referencedPackageFacets.Prepend(packageFacet).SelectMany(f => f.Definitions)).ToFixedList();
 
     private static IEnumerable<IDefinitionNode> GetAllDefinitions(
         IEnumerable<IFacetMemberDefinitionNode> packageMemberDefinitions)
@@ -133,7 +131,7 @@ public sealed class InterpreterProcess
         runStopwatch.Start();
         await using var _ = standardOutputWriter;
 
-        var entryPoint = package.MainFacet.EntryPoint!;
+        var entryPoint = packageFacet.EntryPoint!;
         var parameterTypes = entryPoint.Symbol.Assigned().ParameterTypes;
         var arguments = new List<AzothValue>(parameterTypes.Count);
         foreach (var parameterType in parameterTypes)
@@ -158,11 +156,10 @@ public sealed class InterpreterProcess
         runStopwatch.Start();
         await using var _ = standardOutputWriter;
 
-        var testsFacet = package.TestsFacet;
-        var testFunctions = testsFacet.Definitions.OfType<IFunctionDefinitionNode>()
-                                             .Where(f => f.Attributes.Any(IsTestAttribute)).ToFixedSet();
+        var testFunctions = packageFacet.Definitions.OfType<IFunctionDefinitionNode>()
+                                        .Where(f => f.Attributes.Any(IsTestAttribute)).ToFixedSet();
 
-        await standardOutputWriter.WriteLineAsync($"Testing {testsFacet.PackageName} package...");
+        await standardOutputWriter.WriteLineAsync($"Testing {packageFacet.PackageName} package...");
         await standardOutputWriter.WriteLineAsync($"  Found {testFunctions.Count} tests");
         await standardOutputWriter.WriteLineAsync();
 
@@ -189,7 +186,7 @@ public sealed class InterpreterProcess
         }
 
         await standardOutputWriter.WriteLineAsync();
-        await standardOutputWriter.WriteLineAsync($"Tested {testsFacet.PackageName} package");
+        await standardOutputWriter.WriteLineAsync($"Tested {packageFacet.PackageName} package");
         await standardOutputWriter.WriteLineAsync($"{failed} failed tests out of {testFunctions.Count} total");
 
         // Flush any buffered output
