@@ -26,7 +26,7 @@ public sealed class PackageReference
     /// </summary>
     public bool IsTrusted { get; }
 
-    // TODO add path etc that identifies the package more
+    // TODO add Package ID here which could be either a hash or path (hash is used when there is a lock file)
 
     public PackageReferenceRelation Relation { get; }
 
@@ -37,5 +37,4 @@ public sealed class PackageReference
         IsTrusted = isTrusted;
         Relation = relation;
     }
-
 }

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Azoth.Tools.Bootstrap.Compiler.API;
 using Azoth.Tools.Bootstrap.Compiler.Core.Code;
 using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
+using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Semantics;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
@@ -217,6 +218,7 @@ internal class ProjectSet : IEnumerable<Project>
         var sourceDir = Path.Combine(project.Path, "src");
         var sourcePaths = Directory.EnumerateFiles(sourceDir, "*.az", SearchOption.AllDirectories);
         var testSourcePaths = Directory.EnumerateFiles(sourceDir, "*.azt", SearchOption.AllDirectories);
+        var symbolLoader = new PackageSymbolLoader(projectBuilds.ToFixedDictionary(e => (IdentifierName)e.Key.Name, e => e.Value));
         // Wait for the references, unfortunately, this requires an ugly loop.
         var referenceTasks = project.References.ToDictionaryWithValue(r => projectBuilds[r.Project]);
         var references = new HashSet<PackageReferenceWithSymbols>();
@@ -231,7 +233,8 @@ internal class ProjectSet : IEnumerable<Project>
         var testCodeFiles = CreateCodePaths(testSourcePaths, isTest: true);
         try
         {
-            var package = await compiler.CompilePackageAsync(project.Name, codeFiles, testCodeFiles, references);
+            var package = await compiler.CompilePackageAsync(project.Name, codeFiles, testCodeFiles, references,
+                symbolLoader);
 
             if (OutputDiagnostics(project, package.Diagnostics, consoleLock))
                 return package;

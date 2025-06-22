@@ -62,12 +62,13 @@ public partial class ConformanceTests
         // Reference Standard Library
         var supportPackage = await CompileSupportPackageAsync(compiler);
         references.Add(new(TestsSupportPackage.Name, Task.FromResult(supportPackage.PackageSymbols), true));
+        var symbolLoader = new PackageSymbolLoader(supportPackage);
 
         string? expectedAbortMessage = ExpectedAbort(code);
         try
         {
             // Analyze
-            var package = await compiler.CompilePackageAsync("testPackage", codeFile.Yield(), [], references);
+            var package = await compiler.CompilePackageAsync("testPackage", codeFile.Yield(), [], references, symbolLoader);
 
             // Check for compiler errors
             Assert.NotNull(package.Diagnostics);
@@ -122,7 +123,7 @@ public partial class ConformanceTests
             var rootNamespace = FixedList.Empty<string>();
             var codeFiles = (await Task.WhenAll(sourcePaths.Select(p
                 => LoadCodeAsync(p, sourceDir, rootNamespace).AsTask()))).ToList();
-            var package = await compiler.CompilePackageAsync(TestsSupportPackage.Name, codeFiles, [], []);
+            var package = await compiler.CompilePackageAsync(TestsSupportPackage.Name, codeFiles, [], [], IPackageSymbolLoader.None);
             if (package.Diagnostics.Any(d => d.Level >= DiagnosticLevel.CompilationError))
                 ReportSupportCompilationErrors(package.Diagnostics);
             return package;

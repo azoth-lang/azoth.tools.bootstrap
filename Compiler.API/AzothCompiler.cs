@@ -22,8 +22,9 @@ public class AzothCompiler
         IdentifierName name,
         IEnumerable<ICodeFileSource> files,
         IEnumerable<ICodeFileSource> testingFileSources,
-        IEnumerable<PackageReferenceWithSymbols> referencesWithSymbols)
-        => CompilePackageAsync(name, files, testingFileSources, referencesWithSymbols, TaskScheduler.Default);
+        IEnumerable<PackageReferenceWithSymbols> referencesWithSymbols,
+        IPackageSymbolLoader symbolLoader)
+        => CompilePackageAsync(name, files, testingFileSources, referencesWithSymbols, symbolLoader, TaskScheduler.Default);
 
     // TODO replace with CompilePackageFacetAsync
     // TODO change references into a proper representation of the syntax
@@ -33,6 +34,7 @@ public class AzothCompiler
         IEnumerable<ICodeFileSource> fileSources,
         IEnumerable<ICodeFileSource> testingFileSources,
         IEnumerable<PackageReferenceWithSymbols> referencesWithSymbols,
+        IPackageSymbolLoader symbolLoader,
         TaskScheduler taskScheduler)
     {
         var compilationUnits = await ParseFilesAsync(fileSources);
