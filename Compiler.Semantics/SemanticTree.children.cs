@@ -372,6 +372,8 @@ public static class ISemanticNodeExtensions
                     yield return child;
                 foreach (var child in n.References)
                     yield return child;
+                foreach (var child in n.PrimitivesDeclarations)
+                    yield return child;
                 yield return n.IntrinsicsReference;
                 yield break;
             case IPackageFacetSymbolNode n:
@@ -382,8 +384,6 @@ public static class ISemanticNodeExtensions
             case IPackageNode n:
                 yield return n.MainFacet;
                 yield return n.TestsFacet;
-                foreach (var child in n.PrimitivesDeclarations)
-                    yield return child;
                 yield break;
             case IPackageSymbolNode n:
                 yield return n.MainFacet;

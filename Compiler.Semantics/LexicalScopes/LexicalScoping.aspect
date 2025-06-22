@@ -16,12 +16,8 @@ type `NamespaceScope` <: `NamespaceSearchScope`;
 // ---------- Bindings
 ↓ NamedBinding.ContainingLexicalScope: `LexicalScope`;
 
-// ---------- Packages
-= Package.MainFacet.PackageNameScope;
-= Package.TestsFacet.PackageNameScope;
-
 // ---------- Facets
-↓ PackageFacet.PackageNameScope: `PackageNameScope`;
+↑ PackageFacet.PackageNameScope: `PackageNameScope`;
 = PackageFacet.*.**.PackageNameScope => PackageNameScope;
 = PackageFacet.*.ContainingLexicalScope => PackageNameScope.PackageGlobalScope;
 

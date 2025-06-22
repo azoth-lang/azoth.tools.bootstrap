@@ -11,7 +11,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Structure;
 internal static partial class BuiltInsAspect
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IFixedSet<ITypeDeclarationNode> Package_PrimitivesDeclarations(IPackageNode node);
+    public static partial IFixedSet<ITypeDeclarationNode> PackageFacet_PrimitivesDeclarations(IPackageFacetNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IPackageFacetReferenceNode PackageFacet_IntrinsicsReference(IPackageFacetNode node);
 }

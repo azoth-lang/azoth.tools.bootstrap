@@ -27,16 +27,11 @@ internal static partial class LexicalScopingAspect
     }
     #endregion
 
-    #region Packages
-    public static partial PackageNameScope Package_MainFacet_PackageNameScope(IPackageNode node)
-        => new([node.MainFacet],
-            node.MainFacet.References.Append(node.MainFacet.IntrinsicsReference).Select(r => r.SymbolNode),
-            node.PrimitivesDeclarations);
-
-    public static partial PackageNameScope Package_TestsFacet_PackageNameScope(IPackageNode node)
-        => new([node.TestsFacet],
-            // TODO append main facet reference
-            node.TestsFacet.References.Append(node.TestsFacet.IntrinsicsReference).Select(r => r.SymbolNode),
+    #region Facets
+    public static partial PackageNameScope PackageFacet_PackageNameScope(IPackageFacetNode node)
+    // TODO properly handle tests facet referencing main facet
+        => new([node],
+            node.References.Append(node.IntrinsicsReference).Select(r => r.SymbolNode),
             node.PrimitivesDeclarations);
     #endregion
 

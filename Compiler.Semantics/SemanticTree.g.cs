@@ -164,7 +164,6 @@ public partial interface IPackageNode : IPackageDeclarationNode
     IdentifierName IPackageDeclarationNode.Name => Name;
     IFunctionDefinitionNode? EntryPoint { get; }
     DiagnosticCollection Diagnostics { get; }
-    IFixedSet<ITypeDeclarationNode> PrimitivesDeclarations { get; }
 
     public static IPackageNode Create(
         IPackageFacetNode mainFacet,
@@ -183,6 +182,7 @@ public partial interface IPackageFacetNode : IPackageFacetDeclarationNode
     PackageNameScope PackageNameScope { get; }
     IFixedSet<IFacetMemberDefinitionNode> Definitions { get; }
     FixedSymbolTree Symbols { get; }
+    IFixedSet<ITypeDeclarationNode> PrimitivesDeclarations { get; }
     IPackageFacetReferenceNode IntrinsicsReference { get; }
     new INamespaceDefinitionNode GlobalNamespace { get; }
     INamespaceDeclarationNode IPackageFacetDeclarationNode.GlobalNamespace => GlobalNamespace;
@@ -4943,11 +4943,6 @@ internal abstract partial class SemanticNode : TreeNode, IChildTreeNode<ISemanti
     protected LexicalScope Inherited_ContainingLexicalScope(IInheritanceContext ctx)
         => GetParent(ctx)!.Inherited_ContainingLexicalScope(this, this, ctx);
 
-    internal virtual PackageNameScope Inherited_PackageNameScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-        => (GetParent(ctx) ?? throw Child.InheritFailed("PackageNameScope", child, descendant)).Inherited_PackageNameScope(this, descendant, ctx);
-    protected PackageNameScope Inherited_PackageNameScope(IInheritanceContext ctx)
-        => GetParent(ctx)!.Inherited_PackageNameScope(this, this, ctx);
-
     internal virtual CodeFile Inherited_File(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
         => (GetParent(ctx) ?? throw Child.InheritFailed("File", child, descendant)).Inherited_File(this, descendant, ctx);
     protected CodeFile Inherited_File(IInheritanceContext ctx)
@@ -5048,6 +5043,11 @@ internal abstract partial class SemanticNode : TreeNode, IChildTreeNode<ISemanti
     protected IMaybeNonVoidType Inherited_ContextBindingType(IInheritanceContext ctx)
         => GetParent(ctx)!.Inherited_ContextBindingType(this, this, ctx);
 
+    internal virtual PackageNameScope Inherited_PackageNameScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+        => (GetParent(ctx) ?? throw Child.InheritFailed("PackageNameScope", child, descendant)).Inherited_PackageNameScope(this, descendant, ctx);
+    protected PackageNameScope Inherited_PackageNameScope(IInheritanceContext ctx)
+        => GetParent(ctx)!.Inherited_PackageNameScope(this, this, ctx);
+
     internal virtual IMaybeType? Inherited_ExpectedReturnType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
         => (GetParent(ctx) ?? throw Child.InheritFailed("ExpectedReturnType", child, descendant)).Inherited_ExpectedReturnType(this, descendant, ctx);
     protected IMaybeType? Inherited_ExpectedReturnType(IInheritanceContext ctx)
@@ -5127,12 +5127,6 @@ file class PackageNode : SemanticNode, IPackageNode
                 DefinitionsAspect.Package_EntryPoint);
     private IFunctionDefinitionNode? entryPoint;
     private bool entryPointCached;
-    public IFixedSet<ITypeDeclarationNode> PrimitivesDeclarations
-        => GrammarAttribute.IsCached(in primitivesDeclarationsCached) ? primitivesDeclarations!
-            : this.Synthetic(ref primitivesDeclarationsCached, ref primitivesDeclarations,
-                n => ChildSet.Attach(this, BuiltInsAspect.Package_PrimitivesDeclarations(n)));
-    private IFixedSet<ITypeDeclarationNode>? primitivesDeclarations;
-    private bool primitivesDeclarationsCached;
     public PackageSymbol Symbol
         => GrammarAttribute.IsCached(in symbolCached) ? symbol!
             : this.Synthetic(ref symbolCached, ref symbol,
@@ -5154,15 +5148,6 @@ file class PackageNode : SemanticNode, IPackageNode
         return this;
     }
 
-    internal override PackageNameScope Inherited_PackageNameScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ReferenceEquals(descendant, Self.MainFacet))
-            return LexicalScopingAspect.Package_MainFacet_PackageNameScope(this);
-        if (ReferenceEquals(descendant, Self.TestsFacet))
-            return LexicalScopingAspect.Package_TestsFacet_PackageNameScope(this);
-        return base.Inherited_PackageNameScope(child, descendant, ctx);
-    }
-
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
         => builder.Add(Diagnostics);
 
@@ -5182,12 +5167,6 @@ file class PackageFacetNode : SemanticNode, IPackageFacetNode
         => Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
-    public PackageNameScope PackageNameScope
-        => GrammarAttribute.IsCached(in packageNameScopeCached) ? packageNameScope!
-            : this.Inherited(ref packageNameScopeCached, ref packageNameScope,
-                Inherited_PackageNameScope);
-    private PackageNameScope? packageNameScope;
-    private bool packageNameScopeCached;
     public IFixedSet<IFacetMemberDefinitionNode> Definitions
         => GrammarAttribute.IsCached(in definitionsCached) ? definitions!
             : this.Synthetic(ref definitionsCached, ref definitions,
@@ -5206,6 +5185,18 @@ file class PackageFacetNode : SemanticNode, IPackageFacetNode
                 n => Child.Attach(this, BuiltInsAspect.PackageFacet_IntrinsicsReference(n)));
     private IPackageFacetReferenceNode? intrinsicsReference;
     private bool intrinsicsReferenceCached;
+    public PackageNameScope PackageNameScope
+        => GrammarAttribute.IsCached(in packageNameScopeCached) ? packageNameScope!
+            : this.Synthetic(ref packageNameScopeCached, ref packageNameScope,
+                LexicalScopingAspect.PackageFacet_PackageNameScope);
+    private PackageNameScope? packageNameScope;
+    private bool packageNameScopeCached;
+    public IFixedSet<ITypeDeclarationNode> PrimitivesDeclarations
+        => GrammarAttribute.IsCached(in primitivesDeclarationsCached) ? primitivesDeclarations!
+            : this.Synthetic(ref primitivesDeclarationsCached, ref primitivesDeclarations,
+                n => ChildSet.Attach(this, BuiltInsAspect.PackageFacet_PrimitivesDeclarations(n)));
+    private IFixedSet<ITypeDeclarationNode>? primitivesDeclarations;
+    private bool primitivesDeclarationsCached;
     public FixedSymbolTree Symbols
         => GrammarAttribute.IsCached(in symbolsCached) ? symbols!
             : this.Synthetic(ref symbolsCached, ref symbols,

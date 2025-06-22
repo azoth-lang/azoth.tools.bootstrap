@@ -12,10 +12,6 @@ internal static partial class LexicalScopingAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial LexicalScope BodyOrBlock_Statements_Broadcast_ContainingLexicalScope(IBodyOrBlockNode node, int statementIndex);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial PackageNameScope Package_MainFacet_PackageNameScope(IPackageNode node);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial PackageNameScope Package_TestsFacet_PackageNameScope(IPackageNode node);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial LexicalScope TypeDefinition_AllSupertypeNames_Broadcast_ContainingLexicalScope(ITypeDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial LexicalScope TypeDefinition_Members_Broadcast_ContainingLexicalScope(ITypeDefinitionNode node);
@@ -39,6 +35,8 @@ internal static partial class LexicalScopingAspect
     public static partial ConditionalLexicalScope BinaryOperatorExpression_FlowLexicalScope(IBinaryOperatorExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial ConditionalLexicalScope UnaryOperatorExpression_FlowLexicalScope(IUnaryOperatorExpressionNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial PackageNameScope PackageFacet_PackageNameScope(IPackageFacetNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial NamespaceSearchScope CompilationUnit_LexicalScope(ICompilationUnitNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

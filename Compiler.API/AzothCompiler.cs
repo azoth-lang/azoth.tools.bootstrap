@@ -38,13 +38,13 @@ public class AzothCompiler
         IPackageSymbolLoader symbolLoader,
         TaskScheduler taskScheduler)
     {
+        var referencesSyntax = references.Select(r => r.ToSyntax()).ToFixedSet();
+
         var compilationUnits = await ParseFilesAsync(fileSources);
-        var mainReferencesSyntax = references.Select(r => r.ToSyntax()).ToFixedSet();
-        var packageMainSyntax = IPackageFacetSyntax.Create(name, FacetKind.Main, compilationUnits, mainReferencesSyntax);
+        var packageMainSyntax = IPackageFacetSyntax.Create(name, FacetKind.Main, compilationUnits, referencesSyntax);
 
         var testsCompilationUnits = await ParseFilesAsync(testingFileSources);
-        var testsReferencesSyntax = references.Select(r => r.ToSyntax()).ToFixedSet();
-        var packageTestsSyntax = IPackageFacetSyntax.Create(name, FacetKind.Tests, testsCompilationUnits, testsReferencesSyntax);
+        var packageTestsSyntax = IPackageFacetSyntax.Create(name, FacetKind.Tests, testsCompilationUnits, referencesSyntax);
 
         var analyzer = new SemanticAnalyzer(symbolLoader);
         return await analyzer.CheckAsync(packageMainSyntax, packageTestsSyntax);

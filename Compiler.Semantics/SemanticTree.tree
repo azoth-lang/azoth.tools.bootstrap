@@ -36,6 +36,7 @@ LocalBinding <: NamedBinding = Syntax:`ILocalBindingSyntax`;
 VariableBinding <: LocalBinding, DataFlow;
 
 // ---------- Packages
+// TODO eliminate PackageNode
 Package <: PackageDeclaration = MainFacet:PackageFacet TestsFacet:PackageFacet;
 
 // ---------- Facets
