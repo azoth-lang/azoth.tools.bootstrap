@@ -5,7 +5,7 @@ using Azoth.Tools.Bootstrap.Compiler.Syntax;
 
 namespace Azoth.Tools.Bootstrap.Compiler.API;
 
-public sealed class PackageReferenceAsync(IdentifierName nameOrAlias, Task<IPackageSymbols> packageSymbols, bool isTrusted)
+public sealed class PackageReferenceWithSymbols(IdentifierName nameOrAlias, Task<IPackageSymbols> packageSymbols, bool isTrusted)
 {
     public IdentifierName NameOrAlias { get; } = nameOrAlias;
     public Task<IPackageSymbols> PackageSymbols { get; } = packageSymbols;

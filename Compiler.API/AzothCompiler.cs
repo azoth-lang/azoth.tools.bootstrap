@@ -22,8 +22,8 @@ public class AzothCompiler
         IdentifierName name,
         IEnumerable<ICodeFileSource> files,
         IEnumerable<ICodeFileSource> testingFileSources,
-        IEnumerable<PackageReferenceAsync> references)
-        => CompilePackageAsync(name, files, testingFileSources, references, TaskScheduler.Default);
+        IEnumerable<PackageReferenceWithSymbols> referencesWithSymbols)
+        => CompilePackageAsync(name, files, testingFileSources, referencesWithSymbols, TaskScheduler.Default);
 
     // TODO replace with CompilePackageFacetAsync
     // TODO change references into a proper representation of the syntax
@@ -32,13 +32,13 @@ public class AzothCompiler
         IdentifierName name,
         IEnumerable<ICodeFileSource> fileSources,
         IEnumerable<ICodeFileSource> testingFileSources,
-        IEnumerable<PackageReferenceAsync> references,
+        IEnumerable<PackageReferenceWithSymbols> referencesWithSymbols,
         TaskScheduler taskScheduler)
     {
         var compilationUnits = await ParseFilesAsync(fileSources);
         var testingCompilationUnits = await ParseFilesAsync(testingFileSources);
         var referenceSyntax = (await Task.WhenAll(
-            references.Select(r => r.ToSyntaxAsync())).ConfigureAwait(false)).ToFixedSet();
+            referencesWithSymbols.Select(r => r.ToSyntaxAsync())).ConfigureAwait(false)).ToFixedSet();
 
         var packageMainSyntax = IPackageFacetSyntax.Create(name, FacetKind.Main, compilationUnits, referenceSyntax);
         var packageTestsSyntax = IPackageFacetSyntax.Create(name, FacetKind.Tests, testingCompilationUnits, referenceSyntax);

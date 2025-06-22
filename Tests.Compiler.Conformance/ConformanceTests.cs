@@ -57,7 +57,7 @@ public partial class ConformanceTests
         var codeFile = await CodeFile.LoadAsync(testCase.FullCodePath, isTest: false);
         var code = codeFile.Code.Text;
         var compiler = new AzothCompiler();
-        var references = new List<PackageReferenceAsync>();
+        var references = new List<PackageReferenceWithSymbols>();
 
         // Reference Standard Library
         var supportPackage = await CompileSupportPackageAsync(compiler);

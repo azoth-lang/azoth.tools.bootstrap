@@ -219,9 +219,9 @@ internal class ProjectSet : IEnumerable<Project>
         var testSourcePaths = Directory.EnumerateFiles(sourceDir, "*.azt", SearchOption.AllDirectories);
         // Wait for the references, unfortunately, this requires an ugly loop.
         var referenceTasks = project.References.ToDictionaryWithValue(r => projectBuilds[r.Project]);
-        var references = new HashSet<PackageReferenceAsync>();
+        var references = new HashSet<PackageReferenceWithSymbols>();
         foreach (var (reference, packageTask) in referenceTasks)
-            references.Add(new PackageReferenceAsync(reference.Alias, GetPackageSymbolsAsync(packageTask), reference.IsTrusted));
+            references.Add(new PackageReferenceWithSymbols(reference.Alias, GetPackageSymbolsAsync(packageTask), reference.IsTrusted));
 
         using (await consoleLock.LockAsync())
         {
