@@ -12,8 +12,8 @@ namespace Azoth.Tools.Bootstrap.Lab.Config;
 /// for them as a dependency.</remarks>
 internal class ProjectConfigSet : IEnumerable<ProjectConfig>
 {
-    private readonly Dictionary<string, ProjectConfig> configs = new();
-    private readonly Dictionary<ProjectConfig, Dictionary<string, ProjectConfig>> configReferences = new();
+    private readonly Dictionary<string, ProjectConfig> configs = [];
+    private readonly Dictionary<ProjectConfig, Dictionary<string, ProjectConfig>> configReferences = [];
 
     public ProjectConfig Load(string packagePath)
     {

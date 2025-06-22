@@ -1,5 +1,7 @@
 using System.Diagnostics;
 using System.IO;
+using Azoth.Tools.Bootstrap.Compiler.API;
+using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Lab.Build;
@@ -21,5 +23,13 @@ internal class ProjectReference
         IsTrusted = isTrusted;
         Relation = relation;
         Bundle = bundle;
+    }
+
+    internal PackageReference? ToPackageReference()
+    {
+        if (Relation.ToPackageReferenceRelation() is not { } relation) return null;
+        string packageName = Project.Name;
+        var alias = Alias != packageName ? (IdentifierName)Alias : null;
+        return new PackageReference(packageName, alias, IsTrusted, relation);
     }
 }

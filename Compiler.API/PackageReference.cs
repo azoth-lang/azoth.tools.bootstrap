@@ -1,4 +1,5 @@
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Syntax;
 
 namespace Azoth.Tools.Bootstrap.Compiler.API;
 
@@ -37,4 +38,7 @@ public sealed class PackageReference
         IsTrusted = isTrusted;
         Relation = relation;
     }
+
+    internal IPackageReferenceSyntax ToSyntax()
+        => IPackageReferenceSyntax.Create(EffectiveName, Alias, Name, IsTrusted);
 }

@@ -14,7 +14,7 @@ internal static partial class FormattingAspect
         => $"package {node.Name.Text} facet {node.Kind}: {node.CompilationUnits.Count} Compilation Units";
 
     public static partial string PackageReference_ToString(IPackageReferenceSyntax node)
-        => $"reference {node.AliasOrName}: {{ \"package\": \"{node.Name}\" \"trusted\": {node.IsTrusted} }}";
+        => $"reference {node.AliasOrName}: {{ \"package\": \"{node.PackageName}\" \"trusted\": {node.IsTrusted} }}";
     #endregion
 
     #region Code Files
@@ -119,7 +119,7 @@ internal static partial class FormattingAspect
     {
         var abstractKeyword = node.AbstractKeyword is not null ? "abstract " : "";
         var @return = node.Return?.ToString() ?? "";
-        return $"fn {node.Name}({string.Join(", ", node.Parameters)}){@return} {node.Body}";
+        return $"{abstractKeyword}fn {node.Name}({string.Join(", ", node.Parameters)}){@return} {node.Body}";
     }
 
     public static partial string AssociatedTypeDefinition_ToString(IAssociatedTypeDefinitionSyntax node)

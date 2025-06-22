@@ -30,7 +30,7 @@ internal class ProjectConfig
     public ProjectTemplate? Template { get; set; }
 
     [JsonProperty("dependencies")]
-    public Dictionary<string, ProjectDependencyConfig?>? Dependencies { get; set; } = new Dictionary<string, ProjectDependencyConfig?>();
+    public Dictionary<string, ProjectDependencyConfig?>? Dependencies { get; set; } = [];
 
     public static ProjectConfig Load(string path)
     {

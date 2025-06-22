@@ -58,11 +58,11 @@ public partial class ConformanceTests
         var codeFile = await CodeFile.LoadAsync(testCase.FullCodePath, isTest: false);
         var code = codeFile.Code.Text;
         var compiler = new AzothCompiler();
-        var references = new List<PackageReferenceWithSymbols>();
+        var references = new List<PackageReference>();
 
         // Reference Standard Library
         var supportPackage = await CompileSupportPackageAsync(compiler);
-        references.Add(new(TestsSupportPackage.Name, Task.FromResult(supportPackage.PackageSymbols), true));
+        references.Add(new(TestsSupportPackage.Name, null, true, PackageReferenceRelation.Internal));
         var symbolLoader = new PackageSymbolLoader(supportPackage);
 
         string? expectedAbortMessage = ExpectedAbort(code);

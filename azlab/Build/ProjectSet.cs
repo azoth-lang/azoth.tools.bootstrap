@@ -10,7 +10,6 @@ using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Semantics;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter;
-using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Framework;
 using Azoth.Tools.Bootstrap.Lab.Config;
 using ExhaustiveMatching;
@@ -219,11 +218,7 @@ internal class ProjectSet : IEnumerable<Project>
         var sourcePaths = Directory.EnumerateFiles(sourceDir, "*.az", SearchOption.AllDirectories);
         var testSourcePaths = Directory.EnumerateFiles(sourceDir, "*.azt", SearchOption.AllDirectories);
         var symbolLoader = new PackageSymbolLoader(projectBuilds.ToFixedDictionary(e => (IdentifierName)e.Key.Name, e => e.Value));
-        // Wait for the references, unfortunately, this requires an ugly loop.
-        var referenceTasks = project.References.ToDictionaryWithValue(r => projectBuilds[r.Project]);
-        var references = new HashSet<PackageReferenceWithSymbols>();
-        foreach (var (reference, packageTask) in referenceTasks)
-            references.Add(new PackageReferenceWithSymbols(reference.Alias, GetPackageSymbolsAsync(packageTask), reference.IsTrusted));
+        var references = project.References.Select(r => r.ToPackageReference()).WhereNotNull();
 
         using (await consoleLock.LockAsync())
         {
@@ -233,8 +228,7 @@ internal class ProjectSet : IEnumerable<Project>
         var testCodeFiles = CreateCodePaths(testSourcePaths, isTest: true);
         try
         {
-            var package = await compiler.CompilePackageAsync(project.Name, codeFiles, testCodeFiles, references,
-                symbolLoader);
+            var package = await compiler.CompilePackageAsync(project.Name, codeFiles, testCodeFiles, references, symbolLoader);
 
             if (OutputDiagnostics(project, package.Diagnostics, consoleLock))
                 return package;
@@ -250,12 +244,6 @@ internal class ProjectSet : IEnumerable<Project>
         {
             OutputDiagnostics(project, ex.Diagnostics, consoleLock);
             throw;
-        }
-
-        async Task<IPackageSymbols> GetPackageSymbolsAsync(Task<IPackageNode> packageTask)
-        {
-            var package = await packageTask;
-            return package.PackageSymbols;
         }
 
         IEnumerable<CodePath> CreateCodePaths(IEnumerable<string> paths, bool isTest)
