@@ -156,9 +156,6 @@ public partial interface IPackageNode : IPackageDeclarationNode
     new ISyntax? Syntax
         => null;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    new IdentifierName Name
-        => MainFacet.Syntax.Name;
-    IdentifierName IPackageDeclarationNode.Name => Name;
     DiagnosticCollection Diagnostics { get; }
 
     public static IPackageNode Create(
@@ -3829,7 +3826,6 @@ public partial interface INamedBindingDeclarationNode : IBindingDeclarationNode,
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IPackageDeclarationNode : ISymbolDeclarationNode
 {
-    IdentifierName Name { get; }
     IPackageFacetDeclarationNode MainFacet { get; }
     IPackageFacetDeclarationNode TestsFacet { get; }
     new PackageSymbol Symbol { get; }
@@ -4315,9 +4311,8 @@ public partial interface IPackageSymbolNode : IPackageDeclarationNode, IChildSym
     IPackageFacetDeclarationNode IPackageDeclarationNode.MainFacet => MainFacet;
     new IPackageFacetSymbolNode TestsFacet { get; }
     IPackageFacetDeclarationNode IPackageDeclarationNode.TestsFacet => TestsFacet;
-    new IdentifierName Name
+    IdentifierName Name
         => Symbol.Name;
-    IdentifierName IPackageDeclarationNode.Name => Name;
 
     public static IPackageSymbolNode Create(
         PackageSymbol symbol,

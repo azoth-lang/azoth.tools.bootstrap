@@ -63,7 +63,7 @@ public partial class ConformanceTests
         // Reference Standard Library
         var supportPackage = await CompileSupportPackageAsync(compiler);
         references.Add(new(TestsSupportPackage.Name, null, true, PackageReferenceRelation.Internal));
-        var symbolLoader = new PackageSymbolLoader(supportPackage);
+        var symbolLoader = new PackageSymbolLoader(supportPackage.MainFacet);
 
         string? expectedAbortMessage = ExpectedAbort(code);
         try

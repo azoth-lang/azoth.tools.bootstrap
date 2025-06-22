@@ -430,7 +430,7 @@ BindingDeclaration <: ChildDeclaration;
 NamedBindingDeclaration <: BindingDeclaration, NamedDeclaration;
 
 // ---------- Package Declarations
-PackageDeclaration <: SymbolDeclaration = Name:`IdentifierName`
+PackageDeclaration <: SymbolDeclaration =
     MainFacet:PackageFacetDeclaration TestsFacet:PackageFacetDeclaration;
 
 // ---------- Facet Declarations

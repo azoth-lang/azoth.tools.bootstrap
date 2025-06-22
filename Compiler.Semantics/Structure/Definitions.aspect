@@ -16,7 +16,6 @@
 
 // ---------- Packages
 ↑ Package.Syntax: `ISyntax`? => null;
-↑ Package.Name: `IdentifierName` => MainFacet.Syntax.Name;
 ↗↖ Package.Diagnostics;
 
 // ---------- Facets

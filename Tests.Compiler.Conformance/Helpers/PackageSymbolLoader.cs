@@ -10,17 +10,17 @@ namespace Azoth.Tools.Bootstrap.Tests.Conformance.Helpers;
 
 internal class PackageSymbolLoader : IPackageSymbolLoader
 {
-    private readonly IPackageNode supportPackage;
+    private readonly IPackageFacetNode supportPackageMainFacet;
 
-    public PackageSymbolLoader(IPackageNode supportPackage)
+    public PackageSymbolLoader(IPackageFacetNode supportPackageMainFacet)
     {
-        this.supportPackage = supportPackage;
+        this.supportPackageMainFacet = supportPackageMainFacet;
     }
 
     public ValueTask<FixedSymbolTree> LoadSymbolsAsync(IdentifierName packageName, FacetKind facet)
     {
-        if (packageName == supportPackage.Name && facet == FacetKind.Main)
-            return ValueTask.FromResult(supportPackage.MainFacet.Symbols);
+        if (packageName == supportPackageMainFacet.PackageName && facet == FacetKind.Main)
+            return ValueTask.FromResult(supportPackageMainFacet.Symbols);
 
         throw new InvalidOperationException($"Invalid package and facet combination: {packageName}, {facet}");
     }
