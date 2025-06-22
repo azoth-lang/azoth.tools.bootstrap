@@ -12,7 +12,7 @@ internal static partial class SymbolNodeAspect
 {
     public static partial IPackageFacetSymbolNode PackageFacetReference_SymbolNode(IPackageFacetReferenceNode node)
         // TODO this is off that a dummy package symbol node has to be made
-        => IPackageSymbolNode.Create(node.AliasOrName, node.Symbols.Package,
+        => IPackageSymbolNode.Create(node.Symbols.Package,
             IPackageFacetSymbolNode.Create(node.Symbols),
             // TODO this isn't right because it puts the symbols in the testing facet too
             IPackageFacetSymbolNode.Create(node.Symbols)).MainFacet;

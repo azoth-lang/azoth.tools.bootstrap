@@ -156,9 +156,6 @@ public partial interface IPackageNode : IPackageDeclarationNode
     new ISyntax? Syntax
         => null;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    new IdentifierName? AliasOrName
-        => null;
-    IdentifierName? IPackageDeclarationNode.AliasOrName => AliasOrName;
     new IdentifierName Name
         => MainFacet.Syntax.Name;
     IdentifierName IPackageDeclarationNode.Name => Name;
@@ -3832,7 +3829,6 @@ public partial interface INamedBindingDeclarationNode : IBindingDeclarationNode,
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IPackageDeclarationNode : ISymbolDeclarationNode
 {
-    IdentifierName? AliasOrName { get; }
     IdentifierName Name { get; }
     IPackageFacetDeclarationNode MainFacet { get; }
     IPackageFacetDeclarationNode TestsFacet { get; }
@@ -4324,11 +4320,10 @@ public partial interface IPackageSymbolNode : IPackageDeclarationNode, IChildSym
     IdentifierName IPackageDeclarationNode.Name => Name;
 
     public static IPackageSymbolNode Create(
-        IdentifierName? aliasOrName,
         PackageSymbol symbol,
         IPackageFacetSymbolNode mainFacet,
         IPackageFacetSymbolNode testsFacet)
-        => new PackageSymbolNode(aliasOrName, symbol, mainFacet, testsFacet);
+        => new PackageSymbolNode(symbol, mainFacet, testsFacet);
 }
 
 [Closed(typeof(PackageFacetSymbolNode))]
@@ -19261,7 +19256,6 @@ file class PackageSymbolNode : SemanticNode, IPackageSymbolNode
 {
     private IPackageSymbolNode Self { [Inline] get => this; }
 
-    public IdentifierName? AliasOrName { [DebuggerStepThrough] get; }
     public PackageSymbol Symbol { [DebuggerStepThrough] get; }
     public IPackageFacetSymbolNode MainFacet { [DebuggerStepThrough] get; }
     public IPackageFacetSymbolNode TestsFacet { [DebuggerStepThrough] get; }
@@ -19273,13 +19267,11 @@ file class PackageSymbolNode : SemanticNode, IPackageSymbolNode
         => Inherited_SymbolTree(GrammarAttribute.CurrentInheritanceContext());
 
     public PackageSymbolNode(
-        IdentifierName? aliasOrName,
         PackageSymbol symbol,
         IPackageFacetSymbolNode mainFacet,
         IPackageFacetSymbolNode testsFacet)
         : base(true)
     {
-        AliasOrName = aliasOrName;
         Symbol = symbol;
         MainFacet = Child.Attach(this, mainFacet);
         TestsFacet = Child.Attach(this, testsFacet);

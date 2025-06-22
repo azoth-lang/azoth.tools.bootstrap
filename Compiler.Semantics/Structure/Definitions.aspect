@@ -16,9 +16,6 @@
 
 // ---------- Packages
 ↑ Package.Syntax: `ISyntax`? => null;
-/// <remarks>Implements <see cref="IPackageDeclarationNode.AliasOrName"/> which
-/// should be <see langword="null"/> for the current package.</remarks>
-↑ Package.AliasOrName: `IdentifierName`? => null;
 ↑ Package.Name: `IdentifierName` => MainFacet.Syntax.Name;
 ↗↖ Package.Diagnostics;
 
