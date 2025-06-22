@@ -33,10 +33,10 @@ internal static partial class LexicalScopingAspect
             node.MainFacet.References.Append(node.MainFacet.IntrinsicsReference).Select(r => r.SymbolNode),
             node.PrimitivesDeclarations);
 
-    public static partial PackageNameScope Package_TestingFacet_PackageNameScope(IPackageNode node)
-        => new([node.TestingFacet],
+    public static partial PackageNameScope Package_TestsFacet_PackageNameScope(IPackageNode node)
+        => new([node.TestsFacet],
             // TODO append main facet reference
-            node.TestingFacet.References.Append(node.TestingFacet.IntrinsicsReference).Select(r => r.SymbolNode),
+            node.TestsFacet.References.Append(node.TestsFacet.IntrinsicsReference).Select(r => r.SymbolNode),
             node.PrimitivesDeclarations);
     #endregion
 

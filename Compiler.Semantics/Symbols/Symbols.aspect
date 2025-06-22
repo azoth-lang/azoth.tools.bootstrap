@@ -1,6 +1,7 @@
 ◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 ◊name SymbolsAspect;
 ◊using Azoth.Tools.Bootstrap.Compiler.Symbols;
+◊using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
@@ -11,9 +12,9 @@ type `OrdinaryTypeSymbol` <: `TypeSymbol`;
 
 // ---------- Packages
 = Package.Symbol;
-↑ Package.PackageSymbols: `IPackageSymbols`;
 
 // ---------- Facets
+↑ PackageFacet.Symbols: `FixedSymbolTree`;
 ↑ PackageFacetReference.Symbols:`FixedSymbolTree`;
 = IntrinsicsPackageFacetReference.Symbols => Intrinsic.SymbolTree;
 

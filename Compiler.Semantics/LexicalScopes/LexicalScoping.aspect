@@ -18,7 +18,7 @@ type `NamespaceScope` <: `NamespaceSearchScope`;
 
 // ---------- Packages
 = Package.MainFacet.PackageNameScope;
-= Package.TestingFacet.PackageNameScope;
+= Package.TestsFacet.PackageNameScope;
 
 // ---------- Facets
 ↓ PackageFacet.PackageNameScope: `PackageNameScope`;

@@ -23,8 +23,8 @@ internal class PackageSymbolLoader : IPackageSymbolLoader
         var packageNode = await packages[packageName];
         return facet switch
         {
-            FacetKind.Main => packageNode.PackageSymbols.SymbolTree,
-            FacetKind.Tests => packageNode.PackageSymbols.TestingSymbolTree,
+            FacetKind.Main => packageNode.MainFacet.Symbols,
+            FacetKind.Tests => packageNode.TestsFacet.Symbols,
             _ => throw ExhaustiveMatch.Failed(facet),
         };
     }

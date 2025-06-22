@@ -11,19 +11,14 @@ internal static partial class SymbolsAspect
 {
     #region Packages
     public static partial PackageSymbol Package_Symbol(IPackageNode node) => new(node.Name);
+    #endregion
 
-    /// <summary>
-    /// All the symbols of this package in a form suitable for other packages to reference.
-    /// </summary>
-    public static partial IPackageSymbols Package_PackageSymbols(IPackageNode node)
+    #region Facets
+    public static partial FixedSymbolTree PackageFacet_Symbols(IPackageFacetNode node)
     {
-        var mainTreeBuilder = new SymbolTreeBuilder(node.Symbol);
-        var mainForest = BuiltIn.CreateSymbolForest(mainTreeBuilder, node.MainFacet.References.Select(p => p.Symbols));
-        var mainTree = new PackageSymbolTreeBuilder(mainTreeBuilder, node.MainFacet, mainForest).Build();
-        var testingTreeBuilder = new TestingSymbolTreeBuilder(mainTreeBuilder);
-        var testingForest = BuiltIn.CreateSymbolForest(testingTreeBuilder, node.TestingFacet.References.Select(p => p.Symbols));
-        var testingTree = new PackageSymbolTreeBuilder(testingTreeBuilder, node.MainFacet, testingForest).Build();
-        return new PackageSymbols(node.Symbol, mainTree, testingTree);
+        var treeBuilder = new SymbolTreeBuilder(node.PackageSymbol);
+        var forest = BuiltIn.CreateSymbolForest(treeBuilder, node.References.Select(p => p.Symbols));
+        return new PackageSymbolTreeBuilder(treeBuilder, node, forest).Build();
     }
     #endregion
 

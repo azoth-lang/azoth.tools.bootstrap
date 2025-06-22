@@ -151,8 +151,8 @@ public partial interface IPackageNode : IPackageDeclarationNode
 {
     new IPackageFacetNode MainFacet { get; }
     IPackageFacetDeclarationNode IPackageDeclarationNode.MainFacet => MainFacet;
-    new IPackageFacetNode TestingFacet { get; }
-    IPackageFacetDeclarationNode IPackageDeclarationNode.TestingFacet => TestingFacet;
+    new IPackageFacetNode TestsFacet { get; }
+    IPackageFacetDeclarationNode IPackageDeclarationNode.TestsFacet => TestsFacet;
     new ISyntax? Syntax
         => null;
     ISyntax? ISemanticNode.Syntax => Syntax;
@@ -164,13 +164,12 @@ public partial interface IPackageNode : IPackageDeclarationNode
     IdentifierName IPackageDeclarationNode.Name => Name;
     IFunctionDefinitionNode? EntryPoint { get; }
     DiagnosticCollection Diagnostics { get; }
-    IPackageSymbols PackageSymbols { get; }
     IFixedSet<ITypeDeclarationNode> PrimitivesDeclarations { get; }
 
     public static IPackageNode Create(
         IPackageFacetNode mainFacet,
-        IPackageFacetNode testingFacet)
-        => new PackageNode(mainFacet, testingFacet);
+        IPackageFacetNode testsFacet)
+        => new PackageNode(mainFacet, testsFacet);
 }
 
 [Closed(typeof(PackageFacetNode))]
@@ -183,6 +182,7 @@ public partial interface IPackageFacetNode : IPackageFacetDeclarationNode
     IFixedSet<IPackageFacetReferenceNode> References { get; }
     PackageNameScope PackageNameScope { get; }
     IFixedSet<IFacetMemberDefinitionNode> Definitions { get; }
+    FixedSymbolTree Symbols { get; }
     IPackageFacetReferenceNode IntrinsicsReference { get; }
     new INamespaceDefinitionNode GlobalNamespace { get; }
     INamespaceDeclarationNode IPackageFacetDeclarationNode.GlobalNamespace => GlobalNamespace;
@@ -3835,7 +3835,7 @@ public partial interface IPackageDeclarationNode : ISymbolDeclarationNode
     IdentifierName? AliasOrName { get; }
     IdentifierName Name { get; }
     IPackageFacetDeclarationNode MainFacet { get; }
-    IPackageFacetDeclarationNode TestingFacet { get; }
+    IPackageFacetDeclarationNode TestsFacet { get; }
     new PackageSymbol Symbol { get; }
     Symbol? ISymbolDeclarationNode.Symbol => Symbol;
 }
@@ -4317,8 +4317,8 @@ public partial interface IPackageSymbolNode : IPackageDeclarationNode, IChildSym
     Symbol IChildSymbolNode.Symbol => Symbol;
     new IPackageFacetSymbolNode MainFacet { get; }
     IPackageFacetDeclarationNode IPackageDeclarationNode.MainFacet => MainFacet;
-    new IPackageFacetSymbolNode TestingFacet { get; }
-    IPackageFacetDeclarationNode IPackageDeclarationNode.TestingFacet => TestingFacet;
+    new IPackageFacetSymbolNode TestsFacet { get; }
+    IPackageFacetDeclarationNode IPackageDeclarationNode.TestsFacet => TestsFacet;
     new IdentifierName Name
         => Symbol.Name;
     IdentifierName IPackageDeclarationNode.Name => Name;
@@ -4327,8 +4327,8 @@ public partial interface IPackageSymbolNode : IPackageDeclarationNode, IChildSym
         IdentifierName? aliasOrName,
         PackageSymbol symbol,
         IPackageFacetSymbolNode mainFacet,
-        IPackageFacetSymbolNode testingFacet)
-        => new PackageSymbolNode(aliasOrName, symbol, mainFacet, testingFacet);
+        IPackageFacetSymbolNode testsFacet)
+        => new PackageSymbolNode(aliasOrName, symbol, mainFacet, testsFacet);
 }
 
 [Closed(typeof(PackageFacetSymbolNode))]
@@ -5111,7 +5111,7 @@ file class PackageNode : SemanticNode, IPackageNode
     private IPackageNode Self { [Inline] get => this; }
 
     public IPackageFacetNode MainFacet { [DebuggerStepThrough] get; }
-    public IPackageFacetNode TestingFacet { [DebuggerStepThrough] get; }
+    public IPackageFacetNode TestsFacet { [DebuggerStepThrough] get; }
     public ISymbolDeclarationNode ContainingDeclaration
         => Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
     public DiagnosticCollection Diagnostics
@@ -5127,12 +5127,6 @@ file class PackageNode : SemanticNode, IPackageNode
                 DefinitionsAspect.Package_EntryPoint);
     private IFunctionDefinitionNode? entryPoint;
     private bool entryPointCached;
-    public IPackageSymbols PackageSymbols
-        => GrammarAttribute.IsCached(in packageSymbolsCached) ? packageSymbols!
-            : this.Synthetic(ref packageSymbolsCached, ref packageSymbols,
-                SymbolsAspect.Package_PackageSymbols);
-    private IPackageSymbols? packageSymbols;
-    private bool packageSymbolsCached;
     public IFixedSet<ITypeDeclarationNode> PrimitivesDeclarations
         => GrammarAttribute.IsCached(in primitivesDeclarationsCached) ? primitivesDeclarations!
             : this.Synthetic(ref primitivesDeclarationsCached, ref primitivesDeclarations,
@@ -5148,11 +5142,11 @@ file class PackageNode : SemanticNode, IPackageNode
 
     public PackageNode(
         IPackageFacetNode mainFacet,
-        IPackageFacetNode testingFacet)
+        IPackageFacetNode testsFacet)
         : base(true)
     {
         MainFacet = Child.Attach(this, mainFacet);
-        TestingFacet = Child.Attach(this, testingFacet);
+        TestsFacet = Child.Attach(this, testsFacet);
     }
 
     internal override IPackageDeclarationNode Inherited_Package(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -5164,8 +5158,8 @@ file class PackageNode : SemanticNode, IPackageNode
     {
         if (ReferenceEquals(descendant, Self.MainFacet))
             return LexicalScopingAspect.Package_MainFacet_PackageNameScope(this);
-        if (ReferenceEquals(descendant, Self.TestingFacet))
-            return LexicalScopingAspect.Package_TestingFacet_PackageNameScope(this);
+        if (ReferenceEquals(descendant, Self.TestsFacet))
+            return LexicalScopingAspect.Package_TestsFacet_PackageNameScope(this);
         return base.Inherited_PackageNameScope(child, descendant, ctx);
     }
 
@@ -5212,6 +5206,12 @@ file class PackageFacetNode : SemanticNode, IPackageFacetNode
                 n => Child.Attach(this, BuiltInsAspect.PackageFacet_IntrinsicsReference(n)));
     private IPackageFacetReferenceNode? intrinsicsReference;
     private bool intrinsicsReferenceCached;
+    public FixedSymbolTree Symbols
+        => GrammarAttribute.IsCached(in symbolsCached) ? symbols!
+            : this.Synthetic(ref symbolsCached, ref symbols,
+                SymbolsAspect.PackageFacet_Symbols);
+    private FixedSymbolTree? symbols;
+    private bool symbolsCached;
 
     public PackageFacetNode(
         IPackageFacetSyntax syntax,
@@ -19265,7 +19265,7 @@ file class PackageSymbolNode : SemanticNode, IPackageSymbolNode
     public IdentifierName? AliasOrName { [DebuggerStepThrough] get; }
     public PackageSymbol Symbol { [DebuggerStepThrough] get; }
     public IPackageFacetSymbolNode MainFacet { [DebuggerStepThrough] get; }
-    public IPackageFacetSymbolNode TestingFacet { [DebuggerStepThrough] get; }
+    public IPackageFacetSymbolNode TestsFacet { [DebuggerStepThrough] get; }
     public ISymbolDeclarationNode ContainingDeclaration
         => Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
     public IPackageDeclarationNode Package
@@ -19277,13 +19277,13 @@ file class PackageSymbolNode : SemanticNode, IPackageSymbolNode
         IdentifierName? aliasOrName,
         PackageSymbol symbol,
         IPackageFacetSymbolNode mainFacet,
-        IPackageFacetSymbolNode testingFacet)
+        IPackageFacetSymbolNode testsFacet)
         : base(true)
     {
         AliasOrName = aliasOrName;
         Symbol = symbol;
         MainFacet = Child.Attach(this, mainFacet);
-        TestingFacet = Child.Attach(this, testingFacet);
+        TestsFacet = Child.Attach(this, testsFacet);
     }
 
     internal override IPackageDeclarationNode Inherited_Package(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)

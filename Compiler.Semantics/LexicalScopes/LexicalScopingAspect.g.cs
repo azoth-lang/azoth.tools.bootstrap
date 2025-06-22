@@ -14,7 +14,7 @@ internal static partial class LexicalScopingAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial PackageNameScope Package_MainFacet_PackageNameScope(IPackageNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial PackageNameScope Package_TestingFacet_PackageNameScope(IPackageNode node);
+    public static partial PackageNameScope Package_TestsFacet_PackageNameScope(IPackageNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial LexicalScope TypeDefinition_AllSupertypeNames_Broadcast_ContainingLexicalScope(ITypeDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

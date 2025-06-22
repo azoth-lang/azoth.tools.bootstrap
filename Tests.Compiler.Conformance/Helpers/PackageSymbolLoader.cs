@@ -20,7 +20,7 @@ internal class PackageSymbolLoader : IPackageSymbolLoader
     public ValueTask<FixedSymbolTree> LoadSymbolsAsync(IdentifierName packageName, FacetKind facet)
     {
         if (packageName == supportPackage.Name && facet == FacetKind.Main)
-            return ValueTask.FromResult(supportPackage.PackageSymbols.SymbolTree);
+            return ValueTask.FromResult(supportPackage.MainFacet.Symbols);
 
         throw new InvalidOperationException($"Invalid package and facet combination: {packageName}, {facet}");
     }

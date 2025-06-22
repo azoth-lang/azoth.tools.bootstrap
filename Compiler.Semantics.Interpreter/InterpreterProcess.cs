@@ -69,7 +69,7 @@ public sealed class InterpreterProcess
     {
         this.package = package;
         var allDefinitions = GetAllDefinitions(package, referencedPackages,
-            runTests ? r => r.MainFacet.Definitions.Concat(r.TestingFacet.Definitions) : r => r.MainFacet.Definitions);
+            runTests ? r => r.MainFacet.Definitions.Concat(r.TestsFacet.Definitions) : r => r.MainFacet.Definitions);
         functions = allDefinitions
                     .OfType<IFunctionInvocableDefinitionNode>()
                     .ToFrozenDictionary(f => f.Symbol.Assigned());
@@ -158,7 +158,7 @@ public sealed class InterpreterProcess
         runStopwatch.Start();
         await using var _ = standardOutputWriter;
 
-        var testFunctions = package.TestingFacet.Definitions.OfType<IFunctionDefinitionNode>()
+        var testFunctions = package.TestsFacet.Definitions.OfType<IFunctionDefinitionNode>()
                                    .Where(f => f.Attributes.Any(IsTestAttribute)).ToFixedSet();
 
         await standardOutputWriter.WriteLineAsync($"Testing {package.Symbol.Name} package...");

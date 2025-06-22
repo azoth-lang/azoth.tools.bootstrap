@@ -1,6 +1,7 @@
 using System.CodeDom.Compiler;
 using System.Runtime.CompilerServices;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
+using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 
@@ -35,7 +36,7 @@ internal static partial class SymbolsAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial AssociatedTypeSymbol AssociatedTypeDefinition_Symbol(IAssociatedTypeDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IPackageSymbols Package_PackageSymbols(IPackageNode node);
+    public static partial FixedSymbolTree PackageFacet_Symbols(IPackageFacetNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial InvocableSymbol? Attribute_ReferencedSymbol(IAttributeNode node);
 }
