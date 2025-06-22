@@ -49,7 +49,7 @@ public sealed class PackageNameScope
         PackageGlobalScope = new NamespaceScope(parent, packageGlobalNamespaces);
 
         packageGlobalScopes = packageGlobalNamespaces.Concat(referencedGlobalNamespaces)
-            .GroupBy(ns => ns.Package.Name)
+            .GroupBy(ns => ns.PackageSymbol.Name)
             .ToFixedDictionary(g => g.Key, g => new NamespaceScope(this, g));
 
         builtIns = builtInDeclarations.ToFixedDictionary(p => p.Name);

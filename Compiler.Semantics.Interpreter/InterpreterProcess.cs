@@ -158,10 +158,11 @@ public sealed class InterpreterProcess
         runStopwatch.Start();
         await using var _ = standardOutputWriter;
 
-        var testFunctions = package.TestsFacet.Definitions.OfType<IFunctionDefinitionNode>()
-                                   .Where(f => f.Attributes.Any(IsTestAttribute)).ToFixedSet();
+        var testsFacet = package.TestsFacet;
+        var testFunctions = testsFacet.Definitions.OfType<IFunctionDefinitionNode>()
+                                             .Where(f => f.Attributes.Any(IsTestAttribute)).ToFixedSet();
 
-        await standardOutputWriter.WriteLineAsync($"Testing {package.Symbol.Name} package...");
+        await standardOutputWriter.WriteLineAsync($"Testing {testsFacet.PackageName} package...");
         await standardOutputWriter.WriteLineAsync($"  Found {testFunctions.Count} tests");
         await standardOutputWriter.WriteLineAsync();
 
@@ -188,7 +189,7 @@ public sealed class InterpreterProcess
         }
 
         await standardOutputWriter.WriteLineAsync();
-        await standardOutputWriter.WriteLineAsync($"Tested {package.Symbol.Name} package");
+        await standardOutputWriter.WriteLineAsync($"Tested {testsFacet.PackageName} package");
         await standardOutputWriter.WriteLineAsync($"{failed} failed tests out of {testFunctions.Count} total");
 
         // Flush any buffered output

@@ -38,6 +38,8 @@
 ↑ PackageSymbol.Name: `IdentifierName` => Symbol.Name;
 
 // ---------- Facet Symbol Nodes
+= PackageFacetSymbol.PackageName => PackageSymbol.Name;
+= PackageFacetSymbol.PackageSymbol => SymbolTree.Package;
 ↑ PackageFacetSymbol.Symbol: `PackageSymbol` => PackageSymbol;
 = PackageFacetSymbol.*.**.SymbolTree => SymbolTree;
 ↑ child PackageFacetSymbol.GlobalNamespace: NamespaceSymbol;

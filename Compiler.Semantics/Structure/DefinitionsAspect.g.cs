@@ -3,6 +3,7 @@ using System.Runtime.CompilerServices;
 using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Core.Types;
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Structure;
@@ -13,6 +14,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Structure;
 [GeneratedCode("AzothCompilerCodeGen", null)]
 internal static partial class DefinitionsAspect
 {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial PackageSymbol PackageFacet_PackageSymbol(IPackageFacetNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial void CompilationUnit_Contribute_Diagnostics(ICompilationUnitNode node, DiagnosticCollectionBuilder diagnostics);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

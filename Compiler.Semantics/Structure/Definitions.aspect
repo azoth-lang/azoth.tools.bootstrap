@@ -3,6 +3,7 @@
 ◊using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 ◊using Azoth.Tools.Bootstrap.Compiler.Core.Types;
 ◊using Azoth.Tools.Bootstrap.Compiler.Names;
+◊using Azoth.Tools.Bootstrap.Compiler.Symbols;
 ◊using Azoth.Tools.Bootstrap.Framework;
 
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
@@ -23,6 +24,7 @@
 ↗↖ Package.Diagnostics;
 
 // ---------- Facets
+= PackageFacet.PackageSymbol;
 ↑ PackageFacetReference.AliasOrName: `IdentifierName`;
 ↑ PackageFacetReference.IsTrusted: `bool`;
 = OrdinaryPackageFacetReference.AliasOrName => Syntax.AliasOrName;

@@ -9,12 +9,12 @@ internal static partial class TypeConstructorsAspect
 {
     #region Code Files
     public static partial NamespaceContext CompilationUnit_TypeConstructorContext(ICompilationUnitNode node)
-        => new NamespaceContext(node.Package.Name, node.ImplicitNamespaceName);
+        => new(node.PackageSymbol.Name, node.ImplicitNamespaceName);
     #endregion
 
     #region Namespace Definitions
     public static partial NamespaceContext NamespaceDefinition_TypeConstructorContext(INamespaceDefinitionNode node)
-        => new NamespaceContext(node.Package.Name, node.NamespaceName);
+        => new(node.PackageSymbol.Name, node.NamespaceName);
     #endregion
 
     #region Type Definitions

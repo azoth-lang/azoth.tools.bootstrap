@@ -8,7 +8,7 @@
 // inherit specific properties as needed.
 
 // ---------- Parent
-↓ computed Child.Package: PackageDeclaration;
+↓ computed Child.PackageSymbol: `PackageSymbol`;
 
 // ---------- Facets
 = PackageFacet.*.**.Facet => this;
@@ -51,10 +51,8 @@
 // Declarations
 // -------------------------------------------------------------------------------------------------
 
-// ---------- Package Declarations
-= PackageDeclaration.*.**.Package => this;
-
 // ---------- Facet Declarations
+= PackageFacetDeclaration.*.**.PackageSymbol => Self.PackageSymbol;
 = PackageFacetDeclaration.*.ContainingDeclaration => this;
 ↓ computed PackageFacetChildDeclaration.Facet: PackageFacetDeclaration;
 

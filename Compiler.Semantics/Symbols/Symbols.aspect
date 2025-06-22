@@ -19,7 +19,7 @@ type `OrdinaryTypeSymbol` <: `TypeSymbol`;
 = IntrinsicsPackageFacetReference.Symbols => Intrinsic.SymbolTree;
 
 // ---------- Code Files
-↑ CompilationUnit.ContainingSymbol(): `PackageSymbol` => Package.Symbol;
+↑ CompilationUnit.ContainingSymbol(): `PackageSymbol` => PackageSymbol;
 = CompilationUnit.*.ContainingSymbol() => Self.ImplicitNamespaceSymbol;
 
 // ---------- Definitions

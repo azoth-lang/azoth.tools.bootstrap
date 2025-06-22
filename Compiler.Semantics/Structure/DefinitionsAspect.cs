@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Core.Types;
+using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Tokens;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
@@ -19,6 +20,9 @@ internal static partial class DefinitionsAspect
     #endregion
 
     #region Facets
+    public static partial PackageSymbol PackageFacet_PackageSymbol(IPackageFacetNode node)
+        => new(node.Syntax.Name);
+
     public static partial IFixedSet<IFacetMemberDefinitionNode> PackageFacet_Definitions(IPackageFacetNode node)
     {
         return node.CompilationUnits.SelectMany(n => n.Definitions)

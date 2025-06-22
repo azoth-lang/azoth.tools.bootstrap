@@ -66,7 +66,7 @@ public partial interface ISemanticNode : ITreeNode
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IChildNode : IChildTreeNode<ISemanticNode>, ISemanticNode
 {
-    IPackageDeclarationNode Package { get; }
+    PackageSymbol PackageSymbol { get; }
 }
 
 [Closed(
@@ -330,7 +330,7 @@ public partial interface ICompilationUnitNode : ICodeNode
     NamespaceSymbol ImplicitNamespaceSymbol
         => ImplicitNamespace.Symbol;
     PackageSymbol ContainingSymbol()
-        => Package.Symbol;
+        => PackageSymbol;
     INamespaceDefinitionNode ImplicitNamespace { get; }
     NamespaceContext TypeConstructorContext { get; }
 
@@ -3847,9 +3847,9 @@ public partial interface IPackageDeclarationNode : ISymbolDeclarationNode
 public partial interface IPackageFacetDeclarationNode : IChildDeclarationNode, ISymbolDeclarationNode
 {
     IdentifierName PackageName
-        => Package.Name;
-    PackageSymbol PackageSymbol
-        => Package.Symbol;
+        => PackageSymbol.Name;
+    new PackageSymbol PackageSymbol { get; }
+    PackageSymbol IChildNode.PackageSymbol => PackageSymbol;
     new PackageSymbol Symbol
         => PackageSymbol;
     Symbol? ISymbolDeclarationNode.Symbol => Symbol;
@@ -4344,6 +4344,10 @@ public partial interface IPackageFacetSymbolNode : IPackageFacetDeclarationNode,
     Symbol IChildSymbolNode.Symbol => Symbol;
     new INamespaceSymbolNode GlobalNamespace { get; }
     INamespaceDeclarationNode IPackageFacetDeclarationNode.GlobalNamespace => GlobalNamespace;
+    IdentifierName IPackageFacetDeclarationNode.PackageName
+        => PackageSymbol.Name;
+    PackageSymbol IPackageFacetDeclarationNode.PackageSymbol
+        => SymbolTree.Package;
 
     public static IPackageFacetSymbolNode Create(FixedSymbolTree symbolTree)
         => new PackageFacetSymbolNode(symbolTree);
@@ -4933,10 +4937,10 @@ internal abstract partial class SemanticNode : TreeNode, IChildTreeNode<ISemanti
     internal virtual void Contribute_This_Diagnostics(DiagnosticCollectionBuilder builder) { }
     internal virtual void Contribute_Diagnostics(DiagnosticCollectionBuilder builder) { }
 
-    internal virtual IPackageDeclarationNode Inherited_Package(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-        => (GetParent(ctx) ?? throw Child.InheritFailed("Package", child, descendant)).Inherited_Package(this, descendant, ctx);
-    protected IPackageDeclarationNode Inherited_Package(IInheritanceContext ctx)
-        => GetParent(ctx)!.Inherited_Package(this, this, ctx);
+    internal virtual PackageSymbol Inherited_PackageSymbol(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+        => (GetParent(ctx) ?? throw Child.InheritFailed("PackageSymbol", child, descendant)).Inherited_PackageSymbol(this, descendant, ctx);
+    protected PackageSymbol Inherited_PackageSymbol(IInheritanceContext ctx)
+        => GetParent(ctx)!.Inherited_PackageSymbol(this, this, ctx);
 
     internal virtual LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
         => (GetParent(ctx) ?? throw Child.InheritFailed("ContainingLexicalScope", child, descendant)).Inherited_ContainingLexicalScope(this, descendant, ctx);
@@ -5143,11 +5147,6 @@ file class PackageNode : SemanticNode, IPackageNode
         TestsFacet = Child.Attach(this, testsFacet);
     }
 
-    internal override IPackageDeclarationNode Inherited_Package(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        return this;
-    }
-
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
         => builder.Add(Diagnostics);
 
@@ -5165,8 +5164,6 @@ file class PackageFacetNode : SemanticNode, IPackageFacetNode
     public IFixedSet<IPackageFacetReferenceNode> References { [DebuggerStepThrough] get; }
     public ISymbolDeclarationNode ContainingDeclaration
         => Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public IFixedSet<IFacetMemberDefinitionNode> Definitions
         => GrammarAttribute.IsCached(in definitionsCached) ? definitions!
             : this.Synthetic(ref definitionsCached, ref definitions,
@@ -5191,6 +5188,12 @@ file class PackageFacetNode : SemanticNode, IPackageFacetNode
                 LexicalScopingAspect.PackageFacet_PackageNameScope);
     private PackageNameScope? packageNameScope;
     private bool packageNameScopeCached;
+    public PackageSymbol PackageSymbol
+        => GrammarAttribute.IsCached(in packageSymbolCached) ? packageSymbol!
+            : this.Synthetic(ref packageSymbolCached, ref packageSymbol,
+                DefinitionsAspect.PackageFacet_PackageSymbol);
+    private PackageSymbol? packageSymbol;
+    private bool packageSymbolCached;
     public IFixedSet<ITypeDeclarationNode> PrimitivesDeclarations
         => GrammarAttribute.IsCached(in primitivesDeclarationsCached) ? primitivesDeclarations!
             : this.Synthetic(ref primitivesDeclarationsCached, ref primitivesDeclarations,
@@ -5237,6 +5240,11 @@ file class PackageFacetNode : SemanticNode, IPackageFacetNode
     {
         return PackageNameScope;
     }
+
+    internal override PackageSymbol Inherited_PackageSymbol(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return Self.PackageSymbol;
+    }
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -5246,8 +5254,8 @@ file class OrdinaryPackageFacetReferenceNode : SemanticNode, IOrdinaryPackageFac
 
     public IPackageReferenceSyntax Syntax { [DebuggerStepThrough] get; }
     public FixedSymbolTree Symbols { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public IPackageFacetSymbolNode SymbolNode { [DebuggerStepThrough] get; }
 
     public OrdinaryPackageFacetReferenceNode(
@@ -5267,8 +5275,8 @@ file class PackageMainFacetReferenceNode : SemanticNode, IPackageMainFacetRefere
 
     public IdentifierName AliasOrName { [DebuggerStepThrough] get; }
     public FixedSymbolTree Symbols { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public IPackageFacetSymbolNode SymbolNode { [DebuggerStepThrough] get; }
 
     public PackageMainFacetReferenceNode(
@@ -5286,8 +5294,8 @@ file class IntrinsicsPackageFacetReferenceNode : SemanticNode, IIntrinsicsPackag
 {
     private IIntrinsicsPackageFacetReferenceNode Self { [Inline] get => this; }
 
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public IPackageFacetSymbolNode SymbolNode { [DebuggerStepThrough] get; }
 
     public IntrinsicsPackageFacetReferenceNode()
@@ -5304,8 +5312,8 @@ file class CompilationUnitNode : SemanticNode, ICompilationUnitNode
     public ICompilationUnitSyntax Syntax { [DebuggerStepThrough] get; }
     public IFixedList<IImportDirectiveNode> ImportDirectives { [DebuggerStepThrough] get; }
     public IFixedList<INamespaceBlockMemberDefinitionNode> Definitions { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public NamespaceScope ContainingLexicalScope
         => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
             : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
@@ -5399,8 +5407,8 @@ file class ImportDirectiveNode : SemanticNode, IImportDirectiveNode
     private IImportDirectiveNode Self { [Inline] get => this; }
 
     public IImportDirectiveSyntax Syntax { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
 
@@ -5418,8 +5426,8 @@ file class NamespaceBlockDefinitionNode : SemanticNode, INamespaceBlockDefinitio
     public INamespaceBlockDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
     public IFixedList<IImportDirectiveNode> ImportDirectives { [DebuggerStepThrough] get; }
     public IFixedList<INamespaceBlockMemberDefinitionNode> Members { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public IPackageFacetNode Facet
         => GrammarAttribute.IsCached(in facetCached) ? facet!
             : this.Inherited(ref facetCached, ref facet,
@@ -5502,8 +5510,8 @@ file class NamespaceDefinitionNode : SemanticNode, INamespaceDefinitionNode
     public IFixedList<IFacetMemberDefinitionNode> PackageMembers { [DebuggerStepThrough] get; }
     public ISymbolDeclarationNode ContainingDeclaration
         => Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public IPackageFacetDeclarationNode Facet
         => Inherited_Facet(GrammarAttribute.CurrentInheritanceContext());
     public NamespaceSymbol ContainingSymbol()
@@ -5579,8 +5587,8 @@ file class FunctionDefinitionNode : SemanticNode, IFunctionDefinitionNode
     public IBodyNode Body { [DebuggerStepThrough] get; }
     public INamespaceDeclarationNode ContainingDeclaration
         => (INamespaceDeclarationNode)Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope
         => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
             : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
@@ -5763,8 +5771,8 @@ file class ClassDefinitionNode : SemanticNode, IClassDefinitionNode
     public ITypeNameNode? BaseTypeName { [DebuggerStepThrough] get; }
     public IFixedList<ITypeNameNode> SupertypeNames { [DebuggerStepThrough] get; }
     public IFixedList<ITypeMemberDefinitionNode> SourceMembers { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public ISymbolDeclarationNode ContainingDeclaration
@@ -5953,8 +5961,8 @@ file class StructDefinitionNode : SemanticNode, IStructDefinitionNode
     public IFixedList<IGenericParameterNode> GenericParameters { [DebuggerStepThrough] get; }
     public IFixedList<ITypeNameNode> SupertypeNames { [DebuggerStepThrough] get; }
     public IFixedList<ITypeMemberDefinitionNode> SourceMembers { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public ISymbolDeclarationNode ContainingDeclaration
@@ -6140,8 +6148,8 @@ file class TraitDefinitionNode : SemanticNode, ITraitDefinitionNode
     public IFixedList<IGenericParameterNode> GenericParameters { [DebuggerStepThrough] get; }
     public IFixedList<ITypeNameNode> SupertypeNames { [DebuggerStepThrough] get; }
     public IFixedSet<ITypeMemberDefinitionNode> Members { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public ISymbolDeclarationNode ContainingDeclaration
@@ -6311,8 +6319,8 @@ file class GenericParameterNode : SemanticNode, IGenericParameterNode
 
     public IGenericParameterSyntax Syntax { [DebuggerStepThrough] get; }
     public ICapabilityConstraintNode Constraint { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public IPackageFacetDeclarationNode Facet
@@ -6371,8 +6379,8 @@ file class ImplicitSelfDefinitionNode : SemanticNode, IImplicitSelfDefinitionNod
 {
     private IImplicitSelfDefinitionNode Self { [Inline] get => this; }
 
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public INonVariableTypeDeclarationNode ContainingDeclaration
         => (INonVariableTypeDeclarationNode)Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
     public TypeSymbol ContainingSymbol()
@@ -6414,8 +6422,8 @@ file class OrdinaryMethodDefinitionNode : SemanticNode, IOrdinaryMethodDefinitio
     public IFixedList<INamedParameterNode> Parameters { [DebuggerStepThrough] get; }
     public ITypeNode? Return { [DebuggerStepThrough] get; }
     public IBodyNode? Body { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope
@@ -6615,8 +6623,8 @@ file class GetterMethodDefinitionNode : SemanticNode, IGetterMethodDefinitionNod
     public IFixedList<INamedParameterNode> Parameters { [DebuggerStepThrough] get; }
     public ITypeNode Return { [DebuggerStepThrough] get; }
     public IBodyNode? Body { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope
@@ -6816,8 +6824,8 @@ file class SetterMethodDefinitionNode : SemanticNode, ISetterMethodDefinitionNod
     public IFixedList<INamedParameterNode> Parameters { [DebuggerStepThrough] get; }
     public ITypeNode? Return { [DebuggerStepThrough] get; }
     public IBodyNode? Body { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope
@@ -7013,8 +7021,8 @@ file class DefaultInitializerDefinitionNode : SemanticNode, IDefaultInitializerD
 
     public IOrdinaryTypeDeclarationNode ContainingDeclaration
         => (IOrdinaryTypeDeclarationNode)Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope
         => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
             : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
@@ -7137,8 +7145,8 @@ file class OrdinaryInitializerDefinitionNode : SemanticNode, IOrdinaryInitialize
     public IInitializerSelfParameterNode SelfParameter { [DebuggerStepThrough] get; }
     public IFixedList<IInitializerParameterNode> Parameters { [DebuggerStepThrough] get; }
     public IBlockBodyNode Body { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public IOrdinaryTypeDeclarationNode ContainingDeclaration
@@ -7316,8 +7324,8 @@ file class FieldDefinitionNode : SemanticNode, IFieldDefinitionNode
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IExpressionNode? Initializer => TempInitializer as IExpressionNode;
     public IAmbiguousExpressionNode? CurrentInitializer => initializer.UnsafeValue;
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public IPackageFacetNode Facet
@@ -7459,8 +7467,8 @@ file class AssociatedFunctionDefinitionNode : SemanticNode, IAssociatedFunctionD
     public IFixedList<INamedParameterNode> Parameters { [DebuggerStepThrough] get; }
     public ITypeNode? Return { [DebuggerStepThrough] get; }
     public IBodyNode? Body { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public IOrdinaryTypeDeclarationNode ContainingDeclaration
@@ -7639,8 +7647,8 @@ file class AssociatedTypeDefinitionNode : SemanticNode, IAssociatedTypeDefinitio
     public ITypeNode? Initializer { [DebuggerStepThrough] get; }
     public IOrdinaryTypeDeclarationNode ContainingDeclaration
         => (IOrdinaryTypeDeclarationNode)Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope
         => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
             : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
@@ -7701,8 +7709,8 @@ file class AttributeNode : SemanticNode, IAttributeNode
 
     public IAttributeSyntax Syntax { [DebuggerStepThrough] get; }
     public ITypeNameNode TypeName { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public InvocableSymbol? ReferencedSymbol
@@ -7745,8 +7753,8 @@ file class CapabilitySetNode : SemanticNode, ICapabilitySetNode
     private ICapabilitySetNode Self { [Inline] get => this; }
 
     public ICapabilitySetSyntax Syntax { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
 
@@ -7762,8 +7770,8 @@ file class CapabilityNode : SemanticNode, ICapabilityNode
     private ICapabilityNode Self { [Inline] get => this; }
 
     public ICapabilitySyntax Syntax { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
 
@@ -7781,8 +7789,8 @@ file class NamedParameterNode : SemanticNode, INamedParameterNode
 
     public INamedParameterSyntax Syntax { [DebuggerStepThrough] get; }
     public ITypeNode TypeNode { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public ValueIdScope ValueIdScope
@@ -7856,8 +7864,8 @@ file class InitializerSelfParameterNode : SemanticNode, IInitializerSelfParamete
 
     public IInitializerSelfParameterSyntax Syntax { [DebuggerStepThrough] get; }
     public ICapabilityNode Capability { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public ValueIdScope ValueIdScope
@@ -7943,8 +7951,8 @@ file class MethodSelfParameterNode : SemanticNode, IMethodSelfParameterNode
 
     public IMethodSelfParameterSyntax Syntax { [DebuggerStepThrough] get; }
     public ICapabilityConstraintNode Constraint { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public ValueIdScope ValueIdScope
@@ -8029,8 +8037,8 @@ file class FieldParameterNode : SemanticNode, IFieldParameterNode
     private AttributeLock syncLock;
 
     public IFieldParameterSyntax Syntax { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public ValueIdScope ValueIdScope
@@ -8087,8 +8095,8 @@ file class BlockBodyNode : SemanticNode, IBlockBodyNode
 
     public IBlockBodySyntax Syntax { [DebuggerStepThrough] get; }
     public IFixedList<IBodyStatementNode> Statements { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
@@ -8133,8 +8141,8 @@ file class ExpressionBodyNode : SemanticNode, IExpressionBodyNode
 
     public IExpressionBodySyntax Syntax { [DebuggerStepThrough] get; }
     public IResultStatementNode ResultStatement { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
@@ -8203,8 +8211,8 @@ file class OptionalTypeNode : SemanticNode, IOptionalTypeNode
 
     public IOptionalTypeSyntax Syntax { [DebuggerStepThrough] get; }
     public ITypeNode Referent { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public IMaybePlainType NamedPlainType
@@ -8237,8 +8245,8 @@ file class CapabilityTypeNode : SemanticNode, ICapabilityTypeNode
     public ICapabilityTypeSyntax Syntax { [DebuggerStepThrough] get; }
     public ICapabilityNode Capability { [DebuggerStepThrough] get; }
     public ITypeNode Referent { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public IMaybePlainType NamedPlainType
@@ -8284,8 +8292,8 @@ file class CapabilitySetTypeNode : SemanticNode, ICapabilitySetTypeNode
     public ICapabilitySetTypeSyntax Syntax { [DebuggerStepThrough] get; }
     public ICapabilitySetNode CapabilitySet { [DebuggerStepThrough] get; }
     public ITypeNode Referent { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public IMaybePlainType NamedPlainType
@@ -8331,8 +8339,8 @@ file class FunctionTypeNode : SemanticNode, IFunctionTypeNode
     public IFunctionTypeSyntax Syntax { [DebuggerStepThrough] get; }
     public IFixedList<IParameterTypeNode> Parameters { [DebuggerStepThrough] get; }
     public ITypeNode Return { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public IMaybePlainType NamedPlainType
@@ -8366,8 +8374,8 @@ file class ParameterTypeNode : SemanticNode, IParameterTypeNode
 
     public IParameterTypeSyntax Syntax { [DebuggerStepThrough] get; }
     public ITypeNode Referent { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public IMaybeParameterType Parameter
@@ -8394,8 +8402,8 @@ file class CapabilityViewpointTypeNode : SemanticNode, ICapabilityViewpointTypeN
     public ICapabilityViewpointTypeSyntax Syntax { [DebuggerStepThrough] get; }
     public ICapabilityNode Capability { [DebuggerStepThrough] get; }
     public ITypeNode Referent { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public IMaybePlainType NamedPlainType
@@ -8440,8 +8448,8 @@ file class SelfViewpointTypeNode : SemanticNode, ISelfViewpointTypeNode
 
     public ISelfViewpointTypeSyntax Syntax { [DebuggerStepThrough] get; }
     public ITypeNode Referent { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public IMaybeType? MethodSelfType
@@ -8490,8 +8498,8 @@ file class RefTypeNode : SemanticNode, IRefTypeNode
 
     public IRefTypeSyntax Syntax { [DebuggerStepThrough] get; }
     public ITypeNode Referent { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public IMaybePlainType NamedPlainType
@@ -8521,8 +8529,8 @@ file class EntryNode : SemanticNode, IEntryNode
 {
     private IEntryNode Self { [Inline] get => this; }
 
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public ControlFlowSet ControlFlowPrevious
         => GrammarAttribute.IsCached(in controlFlowPreviousCached) ? controlFlowPrevious!
             : this.Collection(ref controlFlowPreviousContributors, ref controlFlowPreviousCached, ref controlFlowPrevious,
@@ -8575,8 +8583,8 @@ file class ExitNode : SemanticNode, IExitNode
 {
     private IExitNode Self { [Inline] get => this; }
 
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public IEntryNode ControlFlowEntry()
         => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
     public ControlFlowSet ControlFlowPrevious
@@ -8643,8 +8651,8 @@ file class ResultStatementNode : SemanticNode, IResultStatementNode
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IExpressionNode? Expression => TempExpression as IExpressionNode;
     public IAmbiguousExpressionNode CurrentExpression => expression.UnsafeValue;
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public IEntryNode ControlFlowEntry()
@@ -8762,8 +8770,8 @@ file class VariableDeclarationStatementNode : SemanticNode, IVariableDeclaration
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IExpressionNode? Initializer => TempInitializer as IExpressionNode;
     public IAmbiguousExpressionNode? CurrentInitializer => initializer.UnsafeValue;
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public IEntryNode ControlFlowEntry()
@@ -8928,8 +8936,8 @@ file class ExpressionStatementNode : SemanticNode, IExpressionStatementNode
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IExpressionNode? Expression => TempExpression as IExpressionNode;
     public IAmbiguousExpressionNode CurrentExpression => expression.UnsafeValue;
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public IEntryNode ControlFlowEntry()
@@ -9015,8 +9023,8 @@ file class TypePatternNode : SemanticNode, ITypePatternNode
 
     public ITypePatternSyntax Syntax { [DebuggerStepThrough] get; }
     public ITypeNode Type { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public IEntryNode ControlFlowEntry()
@@ -9091,8 +9099,8 @@ file class BindingContextPatternNode : SemanticNode, IBindingContextPatternNode
     public IBindingContextPatternSyntax Syntax { [DebuggerStepThrough] get; }
     public IPatternNode Pattern { [DebuggerStepThrough] get; }
     public ITypeNode? Type { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public IEntryNode ControlFlowEntry()
@@ -9167,8 +9175,8 @@ file class BindingPatternNode : SemanticNode, IBindingPatternNode
     private AttributeLock syncLock;
 
     public IBindingPatternSyntax Syntax { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public IEntryNode ControlFlowEntry()
@@ -9294,8 +9302,8 @@ file class OptionalPatternNode : SemanticNode, IOptionalPatternNode
 
     public IOptionalPatternSyntax Syntax { [DebuggerStepThrough] get; }
     public IOptionalOrBindingPatternNode Pattern { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public IEntryNode ControlFlowEntry()
@@ -9381,8 +9389,8 @@ file class BlockExpressionNode : SemanticNode, IBlockExpressionNode
 
     public IBlockExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     public IFixedList<IStatementNode> Statements { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public IEntryNode ControlFlowEntry()
@@ -9560,8 +9568,8 @@ file class UnsafeExpressionNode : SemanticNode, IUnsafeExpressionNode
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IExpressionNode? Expression => TempExpression as IExpressionNode;
     public IAmbiguousExpressionNode CurrentExpression => expression.UnsafeValue;
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
@@ -9713,8 +9721,8 @@ file class UnresolvedMemberAccessExpressionNode : SemanticNode, IUnresolvedMembe
     public IExpressionNode? Context => TempContext as IExpressionNode;
     public IAmbiguousExpressionNode CurrentContext => context.UnsafeValue;
     public IFixedList<ITypeNode> GenericArguments { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
@@ -9836,8 +9844,8 @@ file class FieldAccessExpressionNode : SemanticNode, IFieldAccessExpressionNode
             : this.RewritableChild(ref contextCached, ref context);
     public IExpressionNode CurrentContext => context.UnsafeValue;
     public IFieldDeclarationNode ReferencedDeclaration { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
@@ -9991,8 +9999,8 @@ file class MethodAccessExpressionNode : SemanticNode, IMethodAccessExpressionNod
     public IExpressionNode CurrentContext => context.UnsafeValue;
     public IFixedList<ITypeNode> GenericArguments { [DebuggerStepThrough] get; }
     public IFixedSet<IOrdinaryMethodDeclarationNode> ReferencedDeclarations { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
@@ -10158,8 +10166,8 @@ file class BoolLiteralExpressionNode : SemanticNode, IBoolLiteralExpressionNode
     protected override bool MayHaveRewrite { [DebuggerStepThrough] get => true; }
 
     public IBoolLiteralExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
@@ -10300,8 +10308,8 @@ file class IntegerLiteralExpressionNode : SemanticNode, IIntegerLiteralExpressio
     protected override bool MayHaveRewrite { [DebuggerStepThrough] get => true; }
 
     public IIntegerLiteralExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
@@ -10442,8 +10450,8 @@ file class NoneLiteralExpressionNode : SemanticNode, INoneLiteralExpressionNode
     protected override bool MayHaveRewrite { [DebuggerStepThrough] get => true; }
 
     public INoneLiteralExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
@@ -10584,8 +10592,8 @@ file class StringLiteralExpressionNode : SemanticNode, IStringLiteralExpressionN
     protected override bool MayHaveRewrite { [DebuggerStepThrough] get => true; }
 
     public IStringLiteralExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public IEntryNode ControlFlowEntry()
@@ -10749,8 +10757,8 @@ file class AssignmentExpressionNode : SemanticNode, IAssignmentExpressionNode
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IExpressionNode? RightOperand => TempRightOperand as IExpressionNode;
     public IAmbiguousExpressionNode CurrentRightOperand => rightOperand.UnsafeValue;
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
@@ -10955,8 +10963,8 @@ file class RefAssignmentExpressionNode : SemanticNode, IRefAssignmentExpressionN
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IExpressionNode? RightOperand => TempRightOperand as IExpressionNode;
     public IAmbiguousExpressionNode CurrentRightOperand => rightOperand.UnsafeValue;
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
@@ -11140,8 +11148,8 @@ file class BinaryOperatorExpressionNode : SemanticNode, IBinaryOperatorExpressio
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IExpressionNode? RightOperand => TempRightOperand as IExpressionNode;
     public IAmbiguousExpressionNode CurrentRightOperand => rightOperand.UnsafeValue;
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public IEntryNode ControlFlowEntry()
@@ -11332,8 +11340,8 @@ file class UnaryOperatorExpressionNode : SemanticNode, IUnaryOperatorExpressionN
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IExpressionNode? Operand => TempOperand as IExpressionNode;
     public IAmbiguousExpressionNode CurrentOperand => operand.UnsafeValue;
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
@@ -11486,8 +11494,8 @@ file class ConversionExpressionNode : SemanticNode, IConversionExpressionNode
     public IExpressionNode? Referent => TempReferent as IExpressionNode;
     public IAmbiguousExpressionNode CurrentReferent => referent.UnsafeValue;
     public ITypeNode ConvertToType { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
@@ -11639,8 +11647,8 @@ file class ImplicitConversionExpressionNode : SemanticNode, IImplicitConversionE
             : this.RewritableChild(ref referentCached, ref referent);
     public IExpressionNode CurrentReferent => referent.UnsafeValue;
     public BarePlainType PlainType { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
@@ -11787,8 +11795,8 @@ file class OptionalConversionExpressionNode : SemanticNode, IOptionalConversionE
             : this.RewritableChild(ref referentCached, ref referent);
     public IExpressionNode CurrentReferent => referent.UnsafeValue;
     public uint Depth { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
@@ -11942,8 +11950,8 @@ file class PatternMatchExpressionNode : SemanticNode, IPatternMatchExpressionNod
     public IExpressionNode? Referent => TempReferent as IExpressionNode;
     public IAmbiguousExpressionNode CurrentReferent => referent.UnsafeValue;
     public IPatternNode Pattern { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
@@ -12128,8 +12136,8 @@ file class RefExpressionNode : SemanticNode, IRefExpressionNode
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IExpressionNode? Referent => TempReferent as IExpressionNode;
     public IAmbiguousExpressionNode CurrentReferent => referent.UnsafeValue;
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
@@ -12279,8 +12287,8 @@ file class ImplicitDerefExpressionNode : SemanticNode, IImplicitDerefExpressionN
         => GrammarAttribute.IsCached(in referentCached) ? referent.UnsafeValue
             : this.RewritableChild(ref referentCached, ref referent);
     public IExpressionNode CurrentReferent => referent.UnsafeValue;
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
@@ -12444,8 +12452,8 @@ file class IfExpressionNode : SemanticNode, IIfExpressionNode
         => GrammarAttribute.IsCached(in elseClauseCached) ? elseClause.UnsafeValue
             : this.RewritableChild(ref elseClauseCached, ref elseClause);
     public IElseClauseNode? CurrentElseClause => elseClause.UnsafeValue;
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
@@ -12634,8 +12642,8 @@ file class LoopExpressionNode : SemanticNode, ILoopExpressionNode
         => GrammarAttribute.IsCached(in blockCached) ? block.UnsafeValue
             : this.RewritableChild(ref blockCached, ref block);
     public IBlockExpressionNode CurrentBlock => block.UnsafeValue;
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
@@ -12807,8 +12815,8 @@ file class WhileExpressionNode : SemanticNode, IWhileExpressionNode
         => GrammarAttribute.IsCached(in blockCached) ? block.UnsafeValue
             : this.RewritableChild(ref blockCached, ref block);
     public IBlockExpressionNode CurrentBlock => block.UnsafeValue;
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
@@ -13002,8 +13010,8 @@ file class ForeachExpressionNode : SemanticNode, IForeachExpressionNode
         => GrammarAttribute.IsCached(in blockCached) ? block.UnsafeValue
             : this.RewritableChild(ref blockCached, ref block);
     public IBlockExpressionNode CurrentBlock => block.UnsafeValue;
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public IEntryNode ControlFlowEntry()
@@ -13322,8 +13330,8 @@ file class BreakExpressionNode : SemanticNode, IBreakExpressionNode
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IExpressionNode? Value => TempValue as IExpressionNode;
     public IAmbiguousExpressionNode? CurrentValue => value.UnsafeValue;
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
@@ -13416,8 +13424,8 @@ file class NextExpressionNode : SemanticNode, INextExpressionNode
     private AttributeLock syncLock;
 
     public INextExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
@@ -13516,8 +13524,8 @@ file class ReturnExpressionNode : SemanticNode, IReturnExpressionNode
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IExpressionNode? Value => TempValue as IExpressionNode;
     public IAmbiguousExpressionNode? CurrentValue => value.UnsafeValue;
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
@@ -13667,8 +13675,8 @@ file class UnresolvedInvocationExpressionNode : SemanticNode, IUnresolvedInvocat
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IFixedList<IExpressionNode?> Arguments => arguments.AsFinalType;
     public IFixedList<IAmbiguousExpressionNode> CurrentArguments => arguments.Current;
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
@@ -13855,8 +13863,8 @@ file class FunctionInvocationExpressionNode : SemanticNode, IFunctionInvocationE
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IFixedList<IExpressionNode?> Arguments => arguments.AsFinalType;
     public IFixedList<IAmbiguousExpressionNode> CurrentArguments => arguments.Current;
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
@@ -14055,8 +14063,8 @@ file class MethodInvocationExpressionNode : SemanticNode, IMethodInvocationExpre
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IFixedList<IExpressionNode?> Arguments => arguments.AsFinalType;
     public IFixedList<IAmbiguousExpressionNode> CurrentArguments => arguments.Current;
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
@@ -14237,8 +14245,8 @@ file class GetterInvocationExpressionNode : SemanticNode, IGetterInvocationExpre
             : this.RewritableChild(ref contextCached, ref context);
     public IExpressionNode CurrentContext => context.UnsafeValue;
     public IFixedSet<IPropertyAccessorDeclarationNode> ReferencedDeclarations { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
@@ -14423,8 +14431,8 @@ file class SetterInvocationExpressionNode : SemanticNode, ISetterInvocationExpre
     public IExpressionNode? Value => TempValue as IExpressionNode;
     public IAmbiguousExpressionNode CurrentValue => value.UnsafeValue;
     public IFixedSet<IPropertyAccessorDeclarationNode> ReferencedDeclarations { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
@@ -14626,8 +14634,8 @@ file class FunctionReferenceInvocationExpressionNode : SemanticNode, IFunctionRe
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IFixedList<IExpressionNode?> Arguments => arguments.AsFinalType;
     public IFixedList<IAmbiguousExpressionNode> CurrentArguments => arguments.Current;
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
@@ -14819,8 +14827,8 @@ file class InitializerInvocationExpressionNode : SemanticNode, IInitializerInvoc
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IFixedList<IExpressionNode?> Arguments => arguments.AsFinalType;
     public IFixedList<IAmbiguousExpressionNode> CurrentArguments => arguments.Current;
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
@@ -15012,8 +15020,8 @@ file class NonInvocableInvocationExpressionNode : SemanticNode, INonInvocableInv
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IFixedList<IExpressionNode?> Arguments => arguments.AsFinalType;
     public IFixedList<IAmbiguousExpressionNode> CurrentArguments => arguments.Current;
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
@@ -15168,8 +15176,8 @@ file class VariableNameExpressionNode : SemanticNode, IVariableNameExpressionNod
 
     public IIdentifierNameSyntax Syntax { [DebuggerStepThrough] get; }
     public ILocalBindingNode ReferencedDefinition { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
@@ -15322,8 +15330,8 @@ file class SelfExpressionNode : SemanticNode, ISelfExpressionNode
     protected override bool MayHaveRewrite { [DebuggerStepThrough] get => true; }
 
     public ISelfExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
@@ -15487,8 +15495,8 @@ file class FunctionNameExpressionNode : SemanticNode, IFunctionNameExpressionNod
     public OrdinaryName FunctionName { [DebuggerStepThrough] get; }
     public IFixedList<ITypeNode> GenericArguments { [DebuggerStepThrough] get; }
     public IFixedSet<IFunctionInvocableDeclarationNode> ReferencedDeclarations { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
@@ -15662,8 +15670,8 @@ file class InitializerNameExpressionNode : SemanticNode, IInitializerNameExpress
     public ITypeNameNode Context { [DebuggerStepThrough] get; }
     public OrdinaryName? InitializerName { [DebuggerStepThrough] get; }
     public IFixedSet<IInitializerDeclarationNode> ReferencedDeclarations { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
@@ -15830,8 +15838,8 @@ file class MissingNameExpressionNode : SemanticNode, IMissingNameExpressionNode
     private AttributeLock syncLock;
 
     public IMissingNameExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
@@ -15924,8 +15932,8 @@ file class UnresolvedIdentifierNameExpressionNode : SemanticNode, IUnresolvedIde
     protected override bool MayHaveRewrite { [DebuggerStepThrough] get => true; }
 
     public IIdentifierNameSyntax Syntax { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public IEntryNode ControlFlowEntry()
@@ -16044,8 +16052,8 @@ file class UnresolvedGenericNameExpressionNode : SemanticNode, IUnresolvedGeneri
 
     public IGenericNameSyntax Syntax { [DebuggerStepThrough] get; }
     public IFixedList<ITypeNode> GenericArguments { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public IEntryNode ControlFlowEntry()
@@ -16174,8 +16182,8 @@ file class UnresolvedNameExpressionQualifiedNameExpressionNode : SemanticNode, I
             : this.RewritableChild(ref contextCached, ref context);
     public IExpressionNode CurrentContext => context.UnsafeValue;
     public IFixedList<ITypeNode> GenericArguments { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public IEntryNode ControlFlowEntry()
@@ -16300,8 +16308,8 @@ file class UnresolvedNamespaceQualifiedNameExpressionNode : SemanticNode, IUnres
     public INamespaceNameNode Context { [DebuggerStepThrough] get; }
     public IFixedList<ITypeNode> GenericArguments { [DebuggerStepThrough] get; }
     public IFixedSet<INamespaceMemberDeclarationNode> ReferencedDeclarations { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public IEntryNode ControlFlowEntry()
@@ -16427,8 +16435,8 @@ file class UnresolvedTypeQualifiedNameExpressionNode : SemanticNode, IUnresolved
     public ITypeNameNode Context { [DebuggerStepThrough] get; }
     public IFixedList<ITypeNode> GenericArguments { [DebuggerStepThrough] get; }
     public IFixedSet<IAssociatedMemberDeclarationNode> ReferencedDeclarations { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public IEntryNode ControlFlowEntry()
@@ -16551,8 +16559,8 @@ file class UnqualifiedNamespaceNameNode : SemanticNode, IUnqualifiedNamespaceNam
 
     public IIdentifierNameSyntax Syntax { [DebuggerStepThrough] get; }
     public INamespaceDeclarationNode ReferencedDeclaration { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
@@ -16649,8 +16657,8 @@ file class QualifiedNamespaceNameNode : SemanticNode, IQualifiedNamespaceNameNod
     public IQualifiedNameSyntax Syntax { [DebuggerStepThrough] get; }
     public INamespaceNameNode Context { [DebuggerStepThrough] get; }
     public INamespaceDeclarationNode ReferencedDeclaration { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
@@ -16748,8 +16756,8 @@ file class UnresolvedIdentifierNameNode : SemanticNode, IUnresolvedIdentifierNam
     protected override bool MayHaveRewrite { [DebuggerStepThrough] get => true; }
 
     public IIdentifierNameSyntax Syntax { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope
@@ -16868,8 +16876,8 @@ file class UnresolvedGenericNameNode : SemanticNode, IUnresolvedGenericNameNode
 
     public IGenericNameSyntax Syntax { [DebuggerStepThrough] get; }
     public IFixedList<ITypeNode> GenericArguments { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope
@@ -16998,8 +17006,8 @@ file class UnresolvedNameQualifiedNameNode : SemanticNode, IUnresolvedNameQualif
             : this.RewritableChild(ref contextCached, ref context);
     public INameNode CurrentContext => context.UnsafeValue;
     public IFixedList<ITypeNode> GenericArguments { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope
@@ -17109,8 +17117,8 @@ file class UnresolvedNamespaceQualifiedNameNode : SemanticNode, IUnresolvedNames
     public INamespaceNameNode Context { [DebuggerStepThrough] get; }
     public IFixedList<ITypeNode> GenericArguments { [DebuggerStepThrough] get; }
     public IFixedSet<INamespaceMemberDeclarationNode> ReferencedDeclarations { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope
@@ -17221,8 +17229,8 @@ file class UnresolvedTypeQualifiedNameNode : SemanticNode, IUnresolvedTypeQualif
     public ITypeNameNode Context { [DebuggerStepThrough] get; }
     public IFixedList<ITypeNode> GenericArguments { [DebuggerStepThrough] get; }
     public IFixedSet<IAssociatedMemberDeclarationNode> ReferencedDeclarations { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope
@@ -17328,8 +17336,8 @@ file class BuiltInTypeNameNode : SemanticNode, IBuiltInTypeNameNode
     private IBuiltInTypeNameNode Self { [Inline] get => this; }
 
     public IBuiltInTypeNameSyntax Syntax { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public IEntryNode ControlFlowEntry()
@@ -17435,8 +17443,8 @@ file class IdentifierTypeNameNode : SemanticNode, IIdentifierTypeNameNode
     private AttributeLock syncLock;
 
     public IIdentifierNameSyntax Syntax { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public IEntryNode ControlFlowEntry()
@@ -17560,8 +17568,8 @@ file class GenericTypeNameNode : SemanticNode, IGenericTypeNameNode
 
     public IGenericNameSyntax Syntax { [DebuggerStepThrough] get; }
     public IFixedList<ITypeNode> GenericArguments { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public IEntryNode ControlFlowEntry()
@@ -17694,8 +17702,8 @@ file class QualifiedTypeNameNode : SemanticNode, IQualifiedTypeNameNode
             : this.RewritableChild(ref contextCached, ref context);
     public INameNode CurrentContext => context.UnsafeValue;
     public IFixedList<ITypeNode> GenericArguments { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public IEntryNode ControlFlowEntry()
@@ -17815,8 +17823,8 @@ file class AmbiguousMoveExpressionNode : SemanticNode, IAmbiguousMoveExpressionN
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IExpressionNode? Referent => TempReferent as IExpressionNode;
     public IAmbiguousExpressionNode CurrentReferent => referent.UnsafeValue;
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
@@ -17880,8 +17888,8 @@ file class MoveVariableExpressionNode : SemanticNode, IMoveVariableExpressionNod
             : this.RewritableChild(ref referentCached, ref referent);
     public ILocalBindingNameExpressionNode CurrentReferent => referent.UnsafeValue;
     public bool IsImplicit { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
@@ -18028,8 +18036,8 @@ file class MoveValueExpressionNode : SemanticNode, IMoveValueExpressionNode
             : this.RewritableChild(ref referentCached, ref referent);
     public IExpressionNode CurrentReferent => referent.UnsafeValue;
     public bool IsImplicit { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
@@ -18177,8 +18185,8 @@ file class ImplicitTempMoveExpressionNode : SemanticNode, IImplicitTempMoveExpre
         => GrammarAttribute.IsCached(in referentCached) ? referent.UnsafeValue
             : this.RewritableChild(ref referentCached, ref referent);
     public IExpressionNode CurrentReferent => referent.UnsafeValue;
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
@@ -18322,8 +18330,8 @@ file class AmbiguousFreezeExpressionNode : SemanticNode, IAmbiguousFreezeExpress
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IExpressionNode? Referent => TempReferent as IExpressionNode;
     public IAmbiguousExpressionNode CurrentReferent => referent.UnsafeValue;
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
@@ -18388,8 +18396,8 @@ file class FreezeVariableExpressionNode : SemanticNode, IFreezeVariableExpressio
     public ILocalBindingNameExpressionNode CurrentReferent => referent.UnsafeValue;
     public bool IsTemporary { [DebuggerStepThrough] get; }
     public bool IsImplicit { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
@@ -18539,8 +18547,8 @@ file class FreezeValueExpressionNode : SemanticNode, IFreezeValueExpressionNode
     public IExpressionNode CurrentReferent => referent.UnsafeValue;
     public bool IsTemporary { [DebuggerStepThrough] get; }
     public bool IsImplicit { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
@@ -18689,8 +18697,8 @@ file class PrepareToReturnExpressionNode : SemanticNode, IPrepareToReturnExpress
         => GrammarAttribute.IsCached(in valueCached) ? value.UnsafeValue
             : this.RewritableChild(ref valueCached, ref value);
     public IExpressionNode CurrentValue => value.UnsafeValue;
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
@@ -18826,8 +18834,8 @@ file class AsyncBlockExpressionNode : SemanticNode, IAsyncBlockExpressionNode
         => GrammarAttribute.IsCached(in blockCached) ? block.UnsafeValue
             : this.RewritableChild(ref blockCached, ref block);
     public IBlockExpressionNode CurrentBlock => block.UnsafeValue;
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
@@ -18960,8 +18968,8 @@ file class AsyncStartExpressionNode : SemanticNode, IAsyncStartExpressionNode
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IExpressionNode? Expression => TempExpression as IExpressionNode;
     public IAmbiguousExpressionNode CurrentExpression => expression.UnsafeValue;
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
@@ -19112,8 +19120,8 @@ file class AwaitExpressionNode : SemanticNode, IAwaitExpressionNode
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public IExpressionNode? Expression => TempExpression as IExpressionNode;
     public IAmbiguousExpressionNode CurrentExpression => expression.UnsafeValue;
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
@@ -19259,8 +19267,8 @@ file class PackageSymbolNode : SemanticNode, IPackageSymbolNode
     public IPackageFacetSymbolNode TestsFacet { [DebuggerStepThrough] get; }
     public ISymbolDeclarationNode ContainingDeclaration
         => Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public ISymbolTree SymbolTree()
         => Inherited_SymbolTree(GrammarAttribute.CurrentInheritanceContext());
 
@@ -19276,11 +19284,6 @@ file class PackageSymbolNode : SemanticNode, IPackageSymbolNode
         MainFacet = Child.Attach(this, mainFacet);
         TestsFacet = Child.Attach(this, testsFacet);
     }
-
-    internal override IPackageDeclarationNode Inherited_Package(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        return this;
-    }
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -19291,8 +19294,6 @@ file class PackageFacetSymbolNode : SemanticNode, IPackageFacetSymbolNode
     public FixedSymbolTree SymbolTree { [DebuggerStepThrough] get; }
     public ISymbolDeclarationNode ContainingDeclaration
         => Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public INamespaceSymbolNode GlobalNamespace { [DebuggerStepThrough] get; }
 
     public PackageFacetSymbolNode(FixedSymbolTree symbolTree)
@@ -19313,6 +19314,11 @@ file class PackageFacetSymbolNode : SemanticNode, IPackageFacetSymbolNode
         return this;
     }
 
+    internal override PackageSymbol Inherited_PackageSymbol(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return Self.PackageSymbol;
+    }
+
     internal override ISymbolTree Inherited_SymbolTree(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         return SymbolTree;
@@ -19327,8 +19333,8 @@ file class NamespaceSymbolNode : SemanticNode, INamespaceSymbolNode
     public NamespaceSymbol Symbol { [DebuggerStepThrough] get; }
     public ISymbolDeclarationNode ContainingDeclaration
         => Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public IPackageFacetDeclarationNode Facet
         => Inherited_Facet(GrammarAttribute.CurrentInheritanceContext());
     public ISymbolTree SymbolTree()
@@ -19370,8 +19376,8 @@ file class FunctionSymbolNode : SemanticNode, IFunctionSymbolNode
     private IFunctionSymbolNode Self { [Inline] get => this; }
 
     public FunctionSymbol Symbol { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public IPackageFacetDeclarationNode Facet
         => Inherited_Facet(GrammarAttribute.CurrentInheritanceContext());
     public INamespaceDeclarationNode ContainingDeclaration
@@ -19393,8 +19399,8 @@ file class BuiltInTypeSymbolNode : SemanticNode, IBuiltInTypeSymbolNode
     public BuiltInTypeSymbol Symbol { [DebuggerStepThrough] get; }
     public ISymbolDeclarationNode ContainingDeclaration
         => Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public FixedDictionary<OrdinaryName, IFixedSet<IAssociatedMemberDeclarationNode>> AssociatedMembersByName
         => GrammarAttribute.IsCached(in associatedMembersByNameCached) ? associatedMembersByName!
             : this.Synthetic(ref associatedMembersByNameCached, ref associatedMembersByName,
@@ -19439,8 +19445,8 @@ file class VoidTypeSymbolNode : SemanticNode, IVoidTypeSymbolNode
     public VoidTypeSymbol Symbol { [DebuggerStepThrough] get; }
     public ISymbolDeclarationNode ContainingDeclaration
         => Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public ISymbolTree SymbolTree()
         => Inherited_SymbolTree(GrammarAttribute.CurrentInheritanceContext());
 
@@ -19463,8 +19469,8 @@ file class NeverTypeSymbolNode : SemanticNode, INeverTypeSymbolNode
     public NeverTypeSymbol Symbol { [DebuggerStepThrough] get; }
     public ISymbolDeclarationNode ContainingDeclaration
         => Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public ISymbolTree SymbolTree()
         => Inherited_SymbolTree(GrammarAttribute.CurrentInheritanceContext());
 
@@ -19487,8 +19493,8 @@ file class ClassSymbolNode : SemanticNode, IClassSymbolNode
     public OrdinaryTypeSymbol Symbol { [DebuggerStepThrough] get; }
     public ISymbolDeclarationNode ContainingDeclaration
         => Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public IPackageFacetDeclarationNode Facet
         => Inherited_Facet(GrammarAttribute.CurrentInheritanceContext());
     public ISymbolTree SymbolTree()
@@ -19544,8 +19550,8 @@ file class StructSymbolNode : SemanticNode, IStructSymbolNode
     public OrdinaryTypeSymbol Symbol { [DebuggerStepThrough] get; }
     public ISymbolDeclarationNode ContainingDeclaration
         => Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public IPackageFacetDeclarationNode Facet
         => Inherited_Facet(GrammarAttribute.CurrentInheritanceContext());
     public ISymbolTree SymbolTree()
@@ -19601,8 +19607,8 @@ file class TraitSymbolNode : SemanticNode, ITraitSymbolNode
     public OrdinaryTypeSymbol Symbol { [DebuggerStepThrough] get; }
     public ISymbolDeclarationNode ContainingDeclaration
         => Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public IPackageFacetDeclarationNode Facet
         => Inherited_Facet(GrammarAttribute.CurrentInheritanceContext());
     public ISymbolTree SymbolTree()
@@ -19656,8 +19662,8 @@ file class GenericParameterSymbolNode : SemanticNode, IGenericParameterSymbolNod
     private IGenericParameterSymbolNode Self { [Inline] get => this; }
 
     public GenericParameterTypeSymbol Symbol { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public IPackageFacetDeclarationNode Facet
         => Inherited_Facet(GrammarAttribute.CurrentInheritanceContext());
     public IOrdinaryTypeDeclarationNode ContainingDeclaration
@@ -19688,8 +19694,8 @@ file class SelfSymbolNode : SemanticNode, ISelfSymbolNode
     private ISelfSymbolNode Self { [Inline] get => this; }
 
     public AssociatedTypeSymbol Symbol { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public INonVariableTypeDeclarationNode ContainingDeclaration
         => (INonVariableTypeDeclarationNode)Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
 
@@ -19712,8 +19718,8 @@ file class OrdinaryMethodSymbolNode : SemanticNode, IOrdinaryMethodSymbolNode
     public MethodSymbol Symbol { [DebuggerStepThrough] get; }
     public ITypeDeclarationNode ContainingDeclaration
         => (ITypeDeclarationNode)Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public IPackageFacetDeclarationNode Facet
         => Inherited_Facet(GrammarAttribute.CurrentInheritanceContext());
     public ISymbolTree SymbolTree()
@@ -19739,8 +19745,8 @@ file class GetterMethodSymbolNode : SemanticNode, IGetterMethodSymbolNode
     public MethodSymbol Symbol { [DebuggerStepThrough] get; }
     public ITypeDeclarationNode ContainingDeclaration
         => (ITypeDeclarationNode)Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public IPackageFacetDeclarationNode Facet
         => Inherited_Facet(GrammarAttribute.CurrentInheritanceContext());
     public ISymbolTree SymbolTree()
@@ -19766,8 +19772,8 @@ file class SetterMethodSymbolNode : SemanticNode, ISetterMethodSymbolNode
     public MethodSymbol Symbol { [DebuggerStepThrough] get; }
     public ITypeDeclarationNode ContainingDeclaration
         => (ITypeDeclarationNode)Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public IPackageFacetDeclarationNode Facet
         => Inherited_Facet(GrammarAttribute.CurrentInheritanceContext());
     public ISymbolTree SymbolTree()
@@ -19793,8 +19799,8 @@ file class InitializerSymbolNode : SemanticNode, IInitializerSymbolNode
     public InitializerSymbol Symbol { [DebuggerStepThrough] get; }
     public ITypeDeclarationNode ContainingDeclaration
         => (ITypeDeclarationNode)Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public IPackageFacetDeclarationNode Facet
         => Inherited_Facet(GrammarAttribute.CurrentInheritanceContext());
     public ISymbolTree SymbolTree()
@@ -19817,8 +19823,8 @@ file class FieldSymbolNode : SemanticNode, IFieldSymbolNode
     private IFieldSymbolNode Self { [Inline] get => this; }
 
     public FieldSymbol Symbol { [DebuggerStepThrough] get; }
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public IPackageFacetDeclarationNode Facet
         => Inherited_Facet(GrammarAttribute.CurrentInheritanceContext());
     public ITypeDeclarationNode ContainingDeclaration
@@ -19841,8 +19847,8 @@ file class AssociatedFunctionSymbolNode : SemanticNode, IAssociatedFunctionSymbo
     public FunctionSymbol Symbol { [DebuggerStepThrough] get; }
     public ITypeDeclarationNode ContainingDeclaration
         => (ITypeDeclarationNode)Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public IPackageFacetDeclarationNode Facet
         => Inherited_Facet(GrammarAttribute.CurrentInheritanceContext());
     public ISymbolTree SymbolTree()
@@ -19866,8 +19872,8 @@ file class AssociatedTypeSymbolNode : SemanticNode, IAssociatedTypeSymbolNode
     public AssociatedTypeSymbol Symbol { [DebuggerStepThrough] get; }
     public ISymbolDeclarationNode ContainingDeclaration
         => Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
-    public IPackageDeclarationNode Package
-        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public IPackageFacetDeclarationNode Facet
         => Inherited_Facet(GrammarAttribute.CurrentInheritanceContext());
     public ISymbolTree SymbolTree()

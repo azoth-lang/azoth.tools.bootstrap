@@ -28,7 +28,7 @@ internal static partial class SymbolsAspect
         if (node.Name is { } name)
             return new LocalNamespaceSymbol(node.ContainingSymbol(), name);
 
-        return node.Package.Symbol;
+        return node.PackageSymbol;
     }
     #endregion
 
