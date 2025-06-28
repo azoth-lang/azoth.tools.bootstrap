@@ -1,4 +1,4 @@
-namespace Azoth.Tools.Bootstrap.Compiler.API;
+namespace Azoth.Tools.Bootstrap.Compiler.Core;
 
 public enum PackageReferenceRelation
 {

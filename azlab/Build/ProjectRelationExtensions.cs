@@ -1,7 +1,8 @@
-using Azoth.Tools.Bootstrap.Compiler.API;
+using Azoth.Tools.Bootstrap.Compiler.Core;
 using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Lab.Build;
+
 internal static class ProjectRelationExtensions
 {
     public static PackageReferenceRelation? ToPackageReferenceRelation(this ProjectRelation relation)
