@@ -29,10 +29,6 @@ internal class ProjectSet : IEnumerable<Project>
     {
         foreach (var config in configs)
             GetOrAdd(config, configs);
-
-        foreach (var (_, project) in projects)
-            // Force dev references to be evaluated
-            _ = project.DevReferences;
     }
 
     private Project Get(ProjectConfig config)
@@ -54,6 +50,8 @@ internal class ProjectSet : IEnumerable<Project>
         var devReferences = Lazy.Create(() => CreateReferences(config, ProjectRelation.Dev).ToFixedList());
         var project = new Project(config, references, devReferences);
         projects[projectDir] = project;
+        // Force dev references to be evaluated
+        _ = project.DevReferences;
         return project;
 
         IEnumerable<ProjectReference> CreateReferences(ProjectConfig projectConfig, ProjectRelation minimumRelation)
