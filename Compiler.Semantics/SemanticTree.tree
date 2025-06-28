@@ -35,10 +35,6 @@ NamedBinding <: Binding, NamedBindingDeclaration;
 LocalBinding <: NamedBinding = Syntax:`ILocalBindingSyntax`;
 VariableBinding <: LocalBinding, DataFlow;
 
-// ---------- Packages
-// TODO eliminate PackageNode
-Package <: PackageDeclaration = MainFacet:PackageFacet TestsFacet:PackageFacet;
-
 // ---------- Facets
 PackageFacet <: PackageFacetDeclaration = Syntax:`IPackageFacetSyntax`
     CompilationUnits:{CompilationUnit} References:{PackageFacetReference};
@@ -429,10 +425,6 @@ NamedDeclaration <: ChildDeclaration;
 BindingDeclaration <: ChildDeclaration;
 NamedBindingDeclaration <: BindingDeclaration, NamedDeclaration;
 
-// ---------- Package Declarations
-PackageDeclaration <: SymbolDeclaration =
-    MainFacet:PackageFacetDeclaration TestsFacet:PackageFacetDeclaration;
-
 // ---------- Facet Declarations
 /// Facets separate the testing and non-testing aspects of a package. They do no have their own
 /// symbol. They use the package symbol.
@@ -507,10 +499,6 @@ AssociatedTypeDeclaration <: AssociatedMemberDeclaration, TypeDeclaration
 
 // ---------- Parent Symbol Nodes
 ChildSymbol <: SymbolDeclaration, ChildDeclaration;
-
-// ---------- Package Symbol Nodes
-PackageSymbol <: PackageDeclaration, ChildSymbol
-    = Symbol:`PackageSymbol` MainFacet:PackageFacetSymbol TestsFacet:PackageFacetSymbol;
 
 // ---------- Facet Symbol Nodes
 // Facets separate the testing and non-testing aspects of a package. They do no have their own symbol.

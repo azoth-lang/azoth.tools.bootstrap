@@ -19,18 +19,15 @@ public class SemanticAnalyzer
         this.symbolLoader = symbolLoader;
     }
 
-    public async ValueTask<IPackageNode> CheckAsync(
-        IPackageFacetSyntax packageMainSyntax,
-        IPackageFacetSyntax packageTestsSyntax)
+    public async ValueTask<IPackageFacetNode> CheckAsync(IPackageFacetSyntax packageFacetSyntax)
     {
         // If there are errors from the lex and parse phase, don't continue on
-        packageMainSyntax.Diagnostics.ThrowIfFatalErrors();
-        packageTestsSyntax.Diagnostics.ThrowIfFatalErrors();
+        packageFacetSyntax.Diagnostics.ThrowIfFatalErrors();
 
-        var referenceSymbols = await LoadReferenceSymbolsAsync(packageMainSyntax.References);
+        var referenceSymbols = await LoadReferenceSymbolsAsync(packageFacetSyntax.References);
 
         // Build a semantic tree from the syntax tree
-        var packageNode = SyntaxBinder.Bind(packageMainSyntax, packageTestsSyntax, referenceSymbols);
+        var packageNode = SyntaxBinder.Bind(packageFacetSyntax, referenceSymbols);
 
 #if DEBUG
         // Since the tree is lazy evaluated, walk it and force evaluation of many attributes to catch bugs

@@ -19,38 +19,32 @@ public class AzothCompiler
     private readonly Lexer lexer = new();
     private readonly CompilationUnitParser parser = new();
 
-    public ValueTask<IPackageNode> CompilePackageAsync(
+    public ValueTask<IPackageFacetNode> CompilePackageFacetAsync(
         IdentifierName name,
         IEnumerable<ICodeFileSource> files,
-        IEnumerable<ICodeFileSource> testingFileSources,
         IEnumerable<PackageReference> references,
         IPackageSymbolLoader symbolLoader)
-        => CompilePackageAsync(name, files, testingFileSources, references, symbolLoader, TaskScheduler.Default);
+        => CompilePackageFacetAsync(name, files, references, symbolLoader, TaskScheduler.Default);
 
     // TODO replace with CompilePackageFacetAsync
     // TODO change references into a proper representation of the syntax
     // TODO add a parameter for loading symbols for references
-    public async ValueTask<IPackageNode> CompilePackageAsync(
+    public async ValueTask<IPackageFacetNode> CompilePackageFacetAsync(
         IdentifierName name,
         IEnumerable<ICodeFileSource> fileSources,
-        IEnumerable<ICodeFileSource> testingFileSources,
         IEnumerable<PackageReference> references,
         IPackageSymbolLoader symbolLoader,
         TaskScheduler taskScheduler)
     {
         var referencesSyntax = references.Select(r => r.ToSyntax()).ToFixedSet();
-
-        var compilationUnits = await ParseFilesAsync(fileSources);
-        var packageMainSyntax = IPackageFacetSyntax.Create(name, FacetKind.Main, compilationUnits, referencesSyntax);
-
-        var testsCompilationUnits = await ParseFilesAsync(testingFileSources);
-        var packageTestsSyntax = IPackageFacetSyntax.Create(name, FacetKind.Tests, testsCompilationUnits, referencesSyntax);
-
+        var compilationUnits = await ParseFilesAsync(fileSources, taskScheduler);
+        var packageFacetSyntax = IPackageFacetSyntax.Create(name, FacetKind.Main, compilationUnits, referencesSyntax);
         var analyzer = new SemanticAnalyzer(symbolLoader);
-        return await analyzer.CheckAsync(packageMainSyntax, packageTestsSyntax);
+        return await analyzer.CheckAsync(packageFacetSyntax);
     }
 
-    private async ValueTask<IFixedSet<ICompilationUnitSyntax>> ParseFilesAsync(IEnumerable<ICodeFileSource> codeFileSources)
+    private async ValueTask<IFixedSet<ICompilationUnitSyntax>> ParseFilesAsync(IEnumerable<ICodeFileSource> codeFileSources, TaskScheduler taskScheduler)
+        // TODO use task scheduler?
         // TODO manage degree of parallelism
         // TODO Task.WhenAll has issues when errors and cancellation occur
         => (await Task.WhenAll(codeFileSources.Select(ParseFileAsync))).ToFixedSet();

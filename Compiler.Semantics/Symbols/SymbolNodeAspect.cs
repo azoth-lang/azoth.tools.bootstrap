@@ -11,11 +11,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 internal static partial class SymbolNodeAspect
 {
     public static partial IPackageFacetSymbolNode PackageFacetReference_SymbolNode(IPackageFacetReferenceNode node)
-        // TODO this is off that a dummy package symbol node has to be made
-        => IPackageSymbolNode.Create(node.Symbols.Package,
-            IPackageFacetSymbolNode.Create(FacetKind.Main, node.Symbols),
-            // TODO this isn't right because it puts the symbols in the testing facet too
-            IPackageFacetSymbolNode.Create(FacetKind.Tests, node.Symbols)).MainFacet;
+        // TODO shouldn't some facet references be to the test facet?
+        => IPackageFacetSymbolNode.Create(FacetKind.Main, node.Symbols);
 
     private static IEnumerable<Symbol> GetSymbolMembers(IChildSymbolNode node)
         => node.SymbolTree().GetChildrenOf(node.Symbol);

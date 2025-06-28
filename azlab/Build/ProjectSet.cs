@@ -219,7 +219,7 @@ internal class ProjectSet : IEnumerable<Project>
         var sourcePaths = Directory.EnumerateFiles(sourceDir, "*.az", SearchOption.AllDirectories);
         var testSourcePaths = Directory.EnumerateFiles(sourceDir, "*.azt", SearchOption.AllDirectories);
         var symbolLoader = CreateSymbolLoader(projectBuilds);
-        var references = project.References.Select(r => r.ToPackageReference()).WhereNotNull();
+        var references = project.References.Select(r => r.ToPackageReference()).WhereNotNull().ToList();
 
         using (await consoleLock.LockAsync())
         {
@@ -229,8 +229,9 @@ internal class ProjectSet : IEnumerable<Project>
         var testCodeFiles = CreateCodePaths(testSourcePaths, isTest: true);
         try
         {
-            var package = await compiler.CompilePackageAsync(project.Name, codeFiles, testCodeFiles, references, symbolLoader);
-            var packageFacets = new PackageFacets(package.MainFacet, package.TestsFacet);
+            var mainFacet = await compiler.CompilePackageFacetAsync(project.Name, codeFiles, references, symbolLoader);
+            var testsFacet = await compiler.CompilePackageFacetAsync(project.Name, testCodeFiles, references, symbolLoader);
+            var packageFacets = new PackageFacets(mainFacet, testsFacet);
 
             if (OutputDiagnostics(project, packageFacets.Diagnostics, consoleLock))
                 return packageFacets;

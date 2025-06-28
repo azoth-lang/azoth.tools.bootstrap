@@ -13,9 +13,6 @@
 // ---------- Bindings
 ↑ NamedBindingDeclaration.Name: `IdentifierName`;
 
-// ---------- Package Declarations
-↑ PackageDeclaration.Symbol: `PackageSymbol`;
-
 // ---------- Facet Declarations
 ↑ PackageFacetDeclaration.PackageName: `IdentifierName` => PackageSymbol.Name;
 ↑ PackageFacetDeclaration.PackageSymbol: `PackageSymbol`;

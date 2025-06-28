@@ -10,9 +10,6 @@ type `NamespaceSymbol` <: `Symbol`;
 type `TypeSymbol` <: `Symbol`;
 type `OrdinaryTypeSymbol` <: `TypeSymbol`;
 
-// ---------- Packages
-= Package.Symbol;
-
 // ---------- Facets
 ↑ PackageFacet.Symbols: `FixedSymbolTree`;
 ↑ PackageFacetReference.Symbols:`FixedSymbolTree`;

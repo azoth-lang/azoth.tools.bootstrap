@@ -14,10 +14,6 @@
 ↑ Binding.IsLentBinding: `bool`;
 ↑ NamedBinding.IsMutableBinding: `bool`;
 
-// ---------- Packages
-↑ Package.Syntax: `ISyntax`? => null;
-↑ Package.Diagnostics: `DiagnosticCollection`;
-
 // ---------- Facets
 ↗↖ PackageFacet.Diagnostics;
 = PackageFacet.PackageSymbol;

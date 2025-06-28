@@ -18,11 +18,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.SyntaxBinding;
 /// to reflect that.</remarks>
 internal static class SyntaxBinder
 {
-    public static IPackageNode Bind(
-        IPackageFacetSyntax packageMainSyntax,
-        IPackageFacetSyntax packageTestsSyntax,
+    public static IPackageFacetNode Bind(
+        IPackageFacetSyntax packageFacetSyntax,
         IReadOnlyDictionary<IPackageReferenceSyntax, FixedSymbolTree> referenceSymbols)
-        => Package(packageMainSyntax, packageTestsSyntax, referenceSymbols);
+        => PackageFacet(packageFacetSyntax, referenceSymbols);
 
     #region Top Level
     private static IEnumerable<ICompilationUnitNode> CompilationUnits(IEnumerable<ICompilationUnitSyntax> syntax)
@@ -53,14 +52,7 @@ internal static class SyntaxBinder
         };
     #endregion
 
-    #region Packages
-    private static IPackageNode Package(
-        IPackageFacetSyntax packageMainSyntax,
-        IPackageFacetSyntax packageTestsSyntax,
-        IReadOnlyDictionary<IPackageReferenceSyntax, FixedSymbolTree> referenceSymbols)
-        => IPackageNode.Create(PackageFacet(packageMainSyntax, referenceSymbols),
-            PackageFacet(packageTestsSyntax, referenceSymbols));
-
+    #region Package Facets
     private static IPackageFacetNode PackageFacet(
         IPackageFacetSyntax syntax,
         IReadOnlyDictionary<IPackageReferenceSyntax, FixedSymbolTree> referenceSymbols)

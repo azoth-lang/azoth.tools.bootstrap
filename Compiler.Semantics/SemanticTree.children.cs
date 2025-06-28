@@ -381,14 +381,6 @@ public static class ISemanticNodeExtensions
                 yield break;
             case IPackageMainFacetReferenceNode n:
                 yield break;
-            case IPackageNode n:
-                yield return n.MainFacet;
-                yield return n.TestsFacet;
-                yield break;
-            case IPackageSymbolNode n:
-                yield return n.MainFacet;
-                yield return n.TestsFacet;
-                yield break;
             case IParameterTypeNode n:
                 yield return n.Referent;
                 yield break;

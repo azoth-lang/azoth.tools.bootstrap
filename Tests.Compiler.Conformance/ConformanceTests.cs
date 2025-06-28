@@ -69,11 +69,11 @@ public partial class ConformanceTests
         try
         {
             // Analyze
-            var package = await compiler.CompilePackageAsync("testPackage", codeFile.Yield(), [], references, symbolLoader);
+            var mainFacet = await compiler.CompilePackageFacetAsync("testPackage", codeFile.Yield(), references, symbolLoader);
 
             // Check for compiler errors
-            Assert.NotNull(package.Diagnostics);
-            var diagnostics = package.Diagnostics;
+            Assert.NotNull(mainFacet.Diagnostics);
+            var diagnostics = mainFacet.Diagnostics;
             var errorDiagnostics = CheckErrorsExpected(testCase, codeFile, code, diagnostics);
 
             // We got only expected errors, but need to not go on to emit code
@@ -88,7 +88,7 @@ public partial class ConformanceTests
             //packageIL.Position = 0;
 
             // Execute and check results
-            var process = Execute(package.MainFacet, supportPackageFacet);
+            var process = Execute(mainFacet, supportPackageFacet);
             //var process = Execute(packageIL, stdLibIL);
 
             await process.WaitForExitAsync();
@@ -124,10 +124,10 @@ public partial class ConformanceTests
             var rootNamespace = FixedList.Empty<string>();
             var codeFiles = (await Task.WhenAll(sourcePaths.Select(p
                 => LoadCodeAsync(p, sourceDir, rootNamespace).AsTask()))).ToList();
-            var package = await compiler.CompilePackageAsync(TestsSupportPackage.Name, codeFiles, [], [], IPackageSymbolLoader.None);
-            if (package.Diagnostics.Any(d => d.Level >= DiagnosticLevel.CompilationError))
-                ReportSupportCompilationErrors(package.Diagnostics);
-            return package.MainFacet;
+            var mainFacet = await compiler.CompilePackageFacetAsync(TestsSupportPackage.Name, codeFiles, [], IPackageSymbolLoader.None);
+            if (mainFacet.Diagnostics.Any(d => d.Level >= DiagnosticLevel.CompilationError))
+                ReportSupportCompilationErrors(mainFacet.Diagnostics);
+            return mainFacet;
         }
         catch (FatalCompilationErrorException ex)
         {

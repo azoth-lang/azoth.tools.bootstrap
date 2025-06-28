@@ -145,25 +145,6 @@ public partial interface IVariableBindingNode : ILocalBindingNode, IDataFlowNode
     new ISemanticNode Parent => (ISemanticNode)PeekParent()!;
 }
 
-[Closed(typeof(PackageNode))]
-[GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IPackageNode : IPackageDeclarationNode
-{
-    new IPackageFacetNode MainFacet { get; }
-    IPackageFacetDeclarationNode IPackageDeclarationNode.MainFacet => MainFacet;
-    new IPackageFacetNode TestsFacet { get; }
-    IPackageFacetDeclarationNode IPackageDeclarationNode.TestsFacet => TestsFacet;
-    new ISyntax? Syntax
-        => null;
-    ISyntax? ISemanticNode.Syntax => Syntax;
-    DiagnosticCollection Diagnostics { get; }
-
-    public static IPackageNode Create(
-        IPackageFacetNode mainFacet,
-        IPackageFacetNode testsFacet)
-        => new PackageNode(mainFacet, testsFacet);
-}
-
 [Closed(typeof(PackageFacetNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IPackageFacetNode : IPackageFacetDeclarationNode
@@ -3765,7 +3746,6 @@ public partial interface IDeclarationNode : ISemanticNode
 
 [Closed(
     typeof(IExecutableDefinitionNode),
-    typeof(IPackageDeclarationNode),
     typeof(IPackageFacetDeclarationNode),
     typeof(IInvocableDeclarationNode),
     typeof(INamespaceOrTypeDeclarationNode),
@@ -3824,18 +3804,6 @@ public partial interface INamedBindingDeclarationNode : IBindingDeclarationNode,
 }
 
 [Closed(
-    typeof(IPackageNode),
-    typeof(IPackageSymbolNode))]
-[GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IPackageDeclarationNode : ISymbolDeclarationNode
-{
-    IPackageFacetDeclarationNode MainFacet { get; }
-    IPackageFacetDeclarationNode TestsFacet { get; }
-    new PackageSymbol Symbol { get; }
-    Symbol? ISymbolDeclarationNode.Symbol => Symbol;
-}
-
-[Closed(
     typeof(IPackageFacetNode),
     typeof(IPackageFacetSymbolNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -3850,7 +3818,6 @@ public partial interface IPackageFacetDeclarationNode : IChildDeclarationNode, I
     Symbol? ISymbolDeclarationNode.Symbol => Symbol;
     FacetKind Kind { get; }
     INamespaceDeclarationNode GlobalNamespace { get; }
-    ISemanticNode Parent => (ISemanticNode)PeekParent()!;
 }
 
 [Closed(
@@ -4287,7 +4254,6 @@ public partial interface IAssociatedTypeDeclarationNode : IAssociatedMemberDecla
 }
 
 [Closed(
-    typeof(IPackageSymbolNode),
     typeof(IPackageFacetSymbolNode),
     typeof(INamespaceMemberSymbolNode),
     typeof(ITypeSymbolNode),
@@ -4301,28 +4267,6 @@ public partial interface IChildSymbolNode : ISymbolDeclarationNode, IChildDeclar
     new ISyntax? Syntax
         => null;
     ISyntax? ISemanticNode.Syntax => Syntax;
-}
-
-[Closed(typeof(PackageSymbolNode))]
-[GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IPackageSymbolNode : IPackageDeclarationNode, IChildSymbolNode
-{
-    new PackageSymbol Symbol { get; }
-    PackageSymbol IPackageDeclarationNode.Symbol => Symbol;
-    Symbol? ISymbolDeclarationNode.Symbol => Symbol;
-    Symbol IChildSymbolNode.Symbol => Symbol;
-    new IPackageFacetSymbolNode MainFacet { get; }
-    IPackageFacetDeclarationNode IPackageDeclarationNode.MainFacet => MainFacet;
-    new IPackageFacetSymbolNode TestsFacet { get; }
-    IPackageFacetDeclarationNode IPackageDeclarationNode.TestsFacet => TestsFacet;
-    IdentifierName Name
-        => Symbol.Name;
-
-    public static IPackageSymbolNode Create(
-        PackageSymbol symbol,
-        IPackageFacetSymbolNode mainFacet,
-        IPackageFacetSymbolNode testsFacet)
-        => new PackageSymbolNode(symbol, mainFacet, testsFacet);
 }
 
 [Closed(typeof(PackageFacetSymbolNode))]
@@ -5108,38 +5052,6 @@ internal abstract partial class SemanticNode : TreeNode, IChildTreeNode<ISemanti
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class PackageNode : SemanticNode, IPackageNode
-{
-    private IPackageNode Self { [Inline] get => this; }
-
-    public IPackageFacetNode MainFacet { [DebuggerStepThrough] get; }
-    public IPackageFacetNode TestsFacet { [DebuggerStepThrough] get; }
-    public ISymbolDeclarationNode ContainingDeclaration
-        => Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
-    public DiagnosticCollection Diagnostics
-        => GrammarAttribute.IsCached(in diagnosticsCached) ? diagnostics!
-            : this.Synthetic(ref diagnosticsCached, ref diagnostics,
-                DefinitionsAspect.Package_Diagnostics);
-    private DiagnosticCollection? diagnostics;
-    private bool diagnosticsCached;
-    public PackageSymbol Symbol
-        => GrammarAttribute.IsCached(in symbolCached) ? symbol!
-            : this.Synthetic(ref symbolCached, ref symbol,
-                SymbolsAspect.Package_Symbol);
-    private PackageSymbol? symbol;
-    private bool symbolCached;
-
-    public PackageNode(
-        IPackageFacetNode mainFacet,
-        IPackageFacetNode testsFacet)
-        : base(true)
-    {
-        MainFacet = Child.Attach(this, mainFacet);
-        TestsFacet = Child.Attach(this, testsFacet);
-    }
-}
-
-[GeneratedCode("AzothCompilerCodeGen", null)]
 file class PackageFacetNode : SemanticNode, IPackageFacetNode
 {
     private IPackageFacetNode Self { [Inline] get => this; }
@@ -5209,6 +5121,7 @@ file class PackageFacetNode : SemanticNode, IPackageFacetNode
         IPackageFacetSyntax syntax,
         IEnumerable<ICompilationUnitNode> compilationUnits,
         IEnumerable<IPackageFacetReferenceNode> references)
+        : base(true)
     {
         Syntax = syntax;
         CompilationUnits = ChildSet.Attach(this, compilationUnits);
@@ -19261,33 +19174,6 @@ file class AwaitExpressionNode : SemanticNode, IAwaitExpressionNode
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class PackageSymbolNode : SemanticNode, IPackageSymbolNode
-{
-    private IPackageSymbolNode Self { [Inline] get => this; }
-
-    public PackageSymbol Symbol { [DebuggerStepThrough] get; }
-    public IPackageFacetSymbolNode MainFacet { [DebuggerStepThrough] get; }
-    public IPackageFacetSymbolNode TestsFacet { [DebuggerStepThrough] get; }
-    public ISymbolDeclarationNode ContainingDeclaration
-        => Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
-    public PackageSymbol PackageSymbol
-        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
-    public ISymbolTree SymbolTree()
-        => Inherited_SymbolTree(GrammarAttribute.CurrentInheritanceContext());
-
-    public PackageSymbolNode(
-        PackageSymbol symbol,
-        IPackageFacetSymbolNode mainFacet,
-        IPackageFacetSymbolNode testsFacet)
-        : base(true)
-    {
-        Symbol = symbol;
-        MainFacet = Child.Attach(this, mainFacet);
-        TestsFacet = Child.Attach(this, testsFacet);
-    }
-}
-
-[GeneratedCode("AzothCompilerCodeGen", null)]
 file class PackageFacetSymbolNode : SemanticNode, IPackageFacetSymbolNode
 {
     private IPackageFacetSymbolNode Self { [Inline] get => this; }
@@ -19301,6 +19187,7 @@ file class PackageFacetSymbolNode : SemanticNode, IPackageFacetSymbolNode
     public PackageFacetSymbolNode(
         FacetKind kind,
         FixedSymbolTree symbolTree)
+        : base(true)
     {
         Kind = kind;
         SymbolTree = symbolTree;

@@ -9,10 +9,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 
 internal static partial class SymbolsAspect
 {
-    #region Packages
-    public static partial PackageSymbol Package_Symbol(IPackageNode node) => node.MainFacet.PackageSymbol;
-    #endregion
-
     #region Facets
     public static partial FixedSymbolTree PackageFacet_Symbols(IPackageFacetNode node)
     {

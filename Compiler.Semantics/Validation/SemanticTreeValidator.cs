@@ -64,11 +64,9 @@ internal class SemanticTreeValidator
         // Validate Concrete Node Attributes
         switch (node)
         {
-            case IPackageNode n:
-                _ = n.Diagnostics;
-                break;
             case IPackageFacetNode n:
                 _ = n.Definitions;
+                _ = n.Diagnostics;
                 _ = n.Symbols;
                 _ = n.PackageNameScope;
                 break;
