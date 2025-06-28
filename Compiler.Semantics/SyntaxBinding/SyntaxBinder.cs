@@ -20,7 +20,7 @@ internal static class SyntaxBinder
 {
     public static IPackageFacetNode Bind(
         IPackageFacetSyntax packageFacetSyntax,
-        IReadOnlyDictionary<IPackageReferenceSyntax, FixedSymbolTree> referenceSymbols)
+        IReadOnlyDictionary<PackageFacetReferenceSyntax, FixedSymbolTree> referenceSymbols)
         => PackageFacet(packageFacetSyntax, referenceSymbols);
 
     #region Top Level
@@ -55,14 +55,14 @@ internal static class SyntaxBinder
     #region Package Facets
     private static IPackageFacetNode PackageFacet(
         IPackageFacetSyntax syntax,
-        IReadOnlyDictionary<IPackageReferenceSyntax, FixedSymbolTree> referenceSymbols)
+        IReadOnlyDictionary<PackageFacetReferenceSyntax, FixedSymbolTree> referenceSymbols)
         => IPackageFacetNode.Create(syntax, CompilationUnits(syntax.CompilationUnits),
-            PackageFacetReferences(syntax.References, referenceSymbols));
+            PackageFacetReferences(referenceSymbols));
 
     private static IEnumerable<IOrdinaryPackageFacetReferenceNode> PackageFacetReferences(
-        IEnumerable<IPackageReferenceSyntax> syntax,
-        IReadOnlyDictionary<IPackageReferenceSyntax, FixedSymbolTree> referenceSymbols)
-        => syntax.Select(s => IOrdinaryPackageFacetReferenceNode.Create(s, referenceSymbols[s]));
+        IReadOnlyDictionary<PackageFacetReferenceSyntax, FixedSymbolTree> referenceSymbols)
+        => referenceSymbols.Select((r, symbols)
+            => IOrdinaryPackageFacetReferenceNode.Create(r.PackageReference, r.Facet, symbols));
     #endregion
 
     #region Namespace Definitions

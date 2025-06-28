@@ -195,6 +195,7 @@ public partial interface IOrdinaryPackageFacetReferenceNode : IPackageFacetRefer
     new IPackageReferenceSyntax Syntax { get; }
     IPackageReferenceSyntax? IPackageFacetReferenceNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
+    FacetKind Facet { get; }
     new FixedSymbolTree Symbols { get; }
     FixedSymbolTree IPackageFacetReferenceNode.Symbols => Symbols;
     IdentifierName IPackageFacetReferenceNode.AliasOrName
@@ -204,8 +205,9 @@ public partial interface IOrdinaryPackageFacetReferenceNode : IPackageFacetRefer
 
     public static IOrdinaryPackageFacetReferenceNode Create(
         IPackageReferenceSyntax syntax,
+        FacetKind facet,
         FixedSymbolTree symbols)
-        => new OrdinaryPackageFacetReferenceNode(syntax, symbols);
+        => new OrdinaryPackageFacetReferenceNode(syntax, facet, symbols);
 }
 
 [Closed(typeof(PackageMainFacetReferenceNode))]
@@ -5170,6 +5172,7 @@ file class OrdinaryPackageFacetReferenceNode : SemanticNode, IOrdinaryPackageFac
     private IOrdinaryPackageFacetReferenceNode Self { [Inline] get => this; }
 
     public IPackageReferenceSyntax Syntax { [DebuggerStepThrough] get; }
+    public FacetKind Facet { [DebuggerStepThrough] get; }
     public FixedSymbolTree Symbols { [DebuggerStepThrough] get; }
     public PackageSymbol PackageSymbol
         => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
@@ -5177,9 +5180,11 @@ file class OrdinaryPackageFacetReferenceNode : SemanticNode, IOrdinaryPackageFac
 
     public OrdinaryPackageFacetReferenceNode(
         IPackageReferenceSyntax syntax,
+        FacetKind facet,
         FixedSymbolTree symbols)
     {
         Syntax = syntax;
+        Facet = facet;
         Symbols = symbols;
         SymbolNode = SymbolNodeAspect.PackageFacetReference_SymbolNode(this);
     }

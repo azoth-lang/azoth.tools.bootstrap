@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.SyntaxBinding;
@@ -24,7 +25,7 @@ public class SemanticAnalyzer
         // If there are errors from the lex and parse phase, don't continue on
         packageFacetSyntax.Diagnostics.ThrowIfFatalErrors();
 
-        var referenceSymbols = await LoadReferenceSymbolsAsync(packageFacetSyntax.References);
+        var referenceSymbols = await LoadReferenceSymbolsAsync(packageFacetSyntax.Kind, packageFacetSyntax.References);
 
         // Build a semantic tree from the syntax tree
         var packageNode = SyntaxBinder.Bind(packageFacetSyntax, referenceSymbols);
@@ -42,16 +43,31 @@ public class SemanticAnalyzer
         return packageNode;
     }
 
-    private async ValueTask<IReadOnlyDictionary<IPackageReferenceSyntax, FixedSymbolTree>> LoadReferenceSymbolsAsync(IFixedSet<IPackageReferenceSyntax> references)
+    private async ValueTask<IReadOnlyDictionary<PackageFacetReferenceSyntax, FixedSymbolTree>> LoadReferenceSymbolsAsync(
+            FacetKind facet, IFixedSet<IPackageReferenceSyntax> references)
     {
-        var symbolTrees = new Dictionary<IPackageReferenceSyntax, FixedSymbolTree>();
+        var symbolTrees = new Dictionary<PackageFacetReferenceSyntax, FixedSymbolTree>();
+        var minimumRelation
+            = facet == FacetKind.Main ? PackageReferenceRelation.Internal : PackageReferenceRelation.Dev;
 
-        foreach (var reference in references)
-        {
-            var symbolTree = await symbolLoader.LoadSymbolsAsync(reference.PackageName, FacetKind.Main);
-            symbolTrees.Add(reference, symbolTree);
-        }
+        await LoadReferenceSymbolsAsync(references, minimumRelation, FacetKind.Main, symbolTrees);
+
+        if (facet == FacetKind.Tests)
+            await LoadReferenceSymbolsAsync(references, minimumRelation, FacetKind.Tests, symbolTrees);
 
         return symbolTrees;
+    }
+
+    private async Task LoadReferenceSymbolsAsync(
+        IFixedSet<IPackageReferenceSyntax> references,
+        PackageReferenceRelation minimumRelation,
+        FacetKind facetToReference,
+        Dictionary<PackageFacetReferenceSyntax, FixedSymbolTree> symbolTrees)
+    {
+        foreach (var reference in references.Where(r => r.Relation >= minimumRelation))
+        {
+            var symbolTree = await symbolLoader.LoadSymbolsAsync(reference.PackageName, facetToReference);
+            symbolTrees.Add(new(reference, facetToReference), symbolTree);
+        }
     }
 }

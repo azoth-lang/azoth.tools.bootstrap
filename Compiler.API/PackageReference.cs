@@ -41,5 +41,5 @@ public sealed class PackageReference
     }
 
     internal IPackageReferenceSyntax ToSyntax()
-        => IPackageReferenceSyntax.Create(EffectiveName, Alias, Name, IsTrusted);
+        => IPackageReferenceSyntax.Create(EffectiveName, Alias, Name, IsTrusted, Relation);
 }
