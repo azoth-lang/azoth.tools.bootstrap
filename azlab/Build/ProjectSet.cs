@@ -101,14 +101,14 @@ internal class ProjectSet : IEnumerable<Project>
         }
     }
 
-    private delegate Task<IPackageNode> ProcessAsync(
+    private delegate Task<PackageFacets> ProcessAsync(
         AzothCompiler compiler,
         Project project,
         bool outputTests,
-        Task<FixedDictionary<Project, Task<IPackageNode>>> projectBuildsTask,
+        Task<FixedDictionary<Project, Task<PackageFacets>>> projectBuildsTask,
         AsyncLock consoleLock);
 
-    private async Task<(IPackageNode, IFixedSet<IPackageNode>)?> ProcessProjects(
+    private async Task<(PackageFacets, IFixedSet<PackageFacets>)?> ProcessProjects(
         TaskScheduler taskScheduler,
         bool verbose,
         bool outputTests,
@@ -117,9 +117,9 @@ internal class ProjectSet : IEnumerable<Project>
     {
         _ = verbose; // verbose parameter will be needed in the future
         var taskFactory = new TaskFactory(taskScheduler);
-        var projectBuilds = new Dictionary<Project, Task<IPackageNode>>();
+        var projectBuilds = new Dictionary<Project, Task<PackageFacets>>();
 
-        var projectBuildsSource = new TaskCompletionSource<FixedDictionary<Project, Task<IPackageNode>>>();
+        var projectBuildsSource = new TaskCompletionSource<FixedDictionary<Project, Task<PackageFacets>>>();
         var projectBuildsTask = projectBuildsSource.Task;
 
         // Sort projects to detect cycles, and so we can assume the tasks already exist
@@ -185,11 +185,11 @@ internal class ProjectSet : IEnumerable<Project>
         }
     }
 
-    private static async Task<IPackageNode> BuildAsync(
+    private static async Task<PackageFacets> BuildAsync(
         AzothCompiler compiler,
         Project project,
         bool outputTests,
-        Task<FixedDictionary<Project, Task<IPackageNode>>> projectBuildsTask,
+        Task<FixedDictionary<Project, Task<PackageFacets>>> projectBuildsTask,
         AsyncLock consoleLock)
     {
         var package = await CompileAsync(compiler, project, outputTests, projectBuildsTask, consoleLock);
@@ -204,11 +204,11 @@ internal class ProjectSet : IEnumerable<Project>
         return package;
     }
 
-    private static async Task<IPackageNode> CompileAsync(
+    private static async Task<PackageFacets> CompileAsync(
         AzothCompiler compiler,
         Project project,
         bool outputTests,
-        Task<FixedDictionary<Project, Task<IPackageNode>>> projectBuildsTask,
+        Task<FixedDictionary<Project, Task<PackageFacets>>> projectBuildsTask,
         AsyncLock consoleLock)
     {
         // Doesn't affect compilation, only IL emitting
@@ -230,16 +230,17 @@ internal class ProjectSet : IEnumerable<Project>
         try
         {
             var package = await compiler.CompilePackageAsync(project.Name, codeFiles, testCodeFiles, references, symbolLoader);
+            var packageFacets = new PackageFacets(package.MainFacet, package.TestsFacet);
 
-            if (OutputDiagnostics(project, package.Diagnostics, consoleLock))
-                return package;
+            if (OutputDiagnostics(project, packageFacets.Diagnostics, consoleLock))
+                return packageFacets;
 
             using (await consoleLock.LockAsync())
             {
                 Console.WriteLine($"Compile SUCCEEDED {project.Name} ({project.Path})");
             }
 
-            return package;
+            return packageFacets;
         }
         catch (FatalCompilationErrorException ex)
         {
@@ -247,7 +248,7 @@ internal class ProjectSet : IEnumerable<Project>
             throw;
         }
 
-        static PackageSymbolLoader CreateSymbolLoader(FixedDictionary<Project, Task<IPackageNode>> projectBuilds)
+        static PackageSymbolLoader CreateSymbolLoader(FixedDictionary<Project, Task<PackageFacets>> projectBuilds)
         {
             var mainFacets = projectBuilds.Select(
                 p => KeyValuePair.Create(((IdentifierName)p.Key.Name, FacetKind.Main), GetMainFacetAsync(p.Value)));
@@ -256,10 +257,10 @@ internal class ProjectSet : IEnumerable<Project>
             return new(mainFacets.Concat(testsFacets));
         }
 
-        static async Task<IPackageFacetNode> GetMainFacetAsync(Task<IPackageNode> packageNode)
+        static async Task<IPackageFacetNode> GetMainFacetAsync(Task<PackageFacets> packageNode)
             => (await packageNode).MainFacet;
 
-        static async Task<IPackageFacetNode> GetTestsFacetAsync(Task<IPackageNode> packageNode)
+        static async Task<IPackageFacetNode> GetTestsFacetAsync(Task<PackageFacets> packageNode)
             => (await packageNode).TestsFacet;
 
         IEnumerable<CodePath> CreateCodePaths(IEnumerable<string> paths, bool isTest)
@@ -324,7 +325,7 @@ internal class ProjectSet : IEnumerable<Project>
         return true;
     }
 
-    private static string EmitIL(Project project, IPackageNode package, bool outputTests, string cacheDir)
+    private static string EmitIL(Project project, PackageFacets package, bool outputTests, string cacheDir)
     {
 #pragma warning disable IDE0022
         throw new NotImplementedException();
