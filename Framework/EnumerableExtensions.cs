@@ -150,6 +150,7 @@ public static class EnumerableExtensions
         return default;
     }
 
+    [DebuggerStepThrough]
     public static IEnumerable<T> FallbackIfEmpty<T>(this IEnumerable<T> source, Func<IEnumerable<T>> fallback)
     {
         using var e = source.GetEnumerator();

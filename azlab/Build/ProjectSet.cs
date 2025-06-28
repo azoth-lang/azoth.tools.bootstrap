@@ -58,7 +58,7 @@ internal class ProjectSet : IEnumerable<Project>
 
         IEnumerable<ProjectReference> CreateReferences(ProjectConfig projectConfig, ProjectRelation minimumRelation)
             // TODO be more exact about selecting distinct references or possibly even merging them
-            => projectConfig.Dependencies!.Where(p => p.Value?.Relation > minimumRelation)
+            => projectConfig.Dependencies!.Where(p => p.Value?.Relation >= minimumRelation)
                 .SelectMany(CreateReferencesForDependency).DistinctBy(r => r.Project.Name);
 
         IEnumerable<ProjectReference> CreateReferencesForDependency(string alias, ProjectDependencyConfig? dependencyConfig)

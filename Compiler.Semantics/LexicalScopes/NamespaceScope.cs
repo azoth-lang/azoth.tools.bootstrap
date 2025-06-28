@@ -18,6 +18,7 @@ public sealed class NamespaceScope : NamespaceSearchScope
     /// </summary>
     internal NamespaceScope(PackageNameScope parent, IEnumerable<INamespaceDeclarationNode> namespaceDeclarations)
     {
+        Requires.NotNull(parent, nameof(parent));
         PackageNames = parent;
         this.namespaceDeclarations = namespaceDeclarations.ToFixedSet();
     }
@@ -27,6 +28,7 @@ public sealed class NamespaceScope : NamespaceSearchScope
     /// </summary>
     internal NamespaceScope(NamespaceScope parent, IEnumerable<INamespaceDeclarationNode> namespaceDeclarations)
     {
+        Requires.NotNull(parent, nameof(parent));
         this.parent = parent;
         PackageNames = parent.PackageNames;
         this.namespaceDeclarations = namespaceDeclarations.ToFixedSet();
@@ -37,6 +39,7 @@ public sealed class NamespaceScope : NamespaceSearchScope
     /// </summary>
     internal NamespaceScope(ImportDirectivesScope parent, NamespaceScope copyFromScope)
     {
+        Requires.NotNull(parent, nameof(parent));
         this.parent = parent;
         PackageNames = parent.PackageNames;
         namespaceDeclarations = copyFromScope.namespaceDeclarations;
