@@ -19,7 +19,7 @@ public class AzothCompiler
     private readonly Lexer lexer = new();
     private readonly CompilationUnitParser parser = new();
 
-    public Task<IPackageNode> CompilePackageAsync(
+    public ValueTask<IPackageNode> CompilePackageAsync(
         IdentifierName name,
         IEnumerable<ICodeFileSource> files,
         IEnumerable<ICodeFileSource> testingFileSources,
@@ -30,7 +30,7 @@ public class AzothCompiler
     // TODO replace with CompilePackageFacetAsync
     // TODO change references into a proper representation of the syntax
     // TODO add a parameter for loading symbols for references
-    public async Task<IPackageNode> CompilePackageAsync(
+    public async ValueTask<IPackageNode> CompilePackageAsync(
         IdentifierName name,
         IEnumerable<ICodeFileSource> fileSources,
         IEnumerable<ICodeFileSource> testingFileSources,
@@ -50,7 +50,7 @@ public class AzothCompiler
         return await analyzer.CheckAsync(packageMainSyntax, packageTestsSyntax);
     }
 
-    private async Task<IFixedSet<ICompilationUnitSyntax>> ParseFilesAsync(IEnumerable<ICodeFileSource> codeFileSources)
+    private async ValueTask<IFixedSet<ICompilationUnitSyntax>> ParseFilesAsync(IEnumerable<ICodeFileSource> codeFileSources)
         // TODO manage degree of parallelism
         // TODO Task.WhenAll has issues when errors and cancellation occur
         => (await Task.WhenAll(codeFileSources.Select(ParseFileAsync))).ToFixedSet();
