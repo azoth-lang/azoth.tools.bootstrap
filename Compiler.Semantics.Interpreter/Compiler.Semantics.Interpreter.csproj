@@ -39,6 +39,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Compiler.Semantics\Compiler.Semantics.csproj" />
+    <ProjectReference Include="..\Framework\Framework.csproj" />
   </ItemGroup>
 
   <ItemGroup>

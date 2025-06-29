@@ -49,9 +49,9 @@ public sealed class InterpreterProcess
     private readonly FrozenDictionary<MethodSymbol, IMethodDefinitionNode> structMethods;
     private readonly FrozenDictionary<InitializerSymbol, IOrdinaryInitializerDefinitionNode?> initializers;
     private readonly FrozenDictionary<OrdinaryTypeSymbol, ITypeDefinitionNode> userTypes;
-    private readonly IStructDefinitionNode stringStruct;
-    private readonly IOrdinaryInitializerDefinitionNode stringInitializer;
-    private readonly BareType stringBareType;
+    private readonly IStructDefinitionNode? stringStruct;
+    private readonly IOrdinaryInitializerDefinitionNode? stringInitializer;
+    private readonly BareType? stringBareType;
     private readonly IStructDefinitionNode? rangeStruct;
     private readonly InitializerSymbol? rangeInitializer;
     private readonly BareType? rangeBareType;
@@ -80,9 +80,9 @@ public sealed class InterpreterProcess
 
         userTypes = allDefinitions.OfType<ITypeDefinitionNode>()
                                  .ToFrozenDictionary(c => c.Symbol);
-        stringStruct = userTypes.Values.OfType<IStructDefinitionNode>().Single(c => c.Symbol.Name == SpecialNames.StringTypeName);
-        stringInitializer = stringStruct.Members.OfType<IOrdinaryInitializerDefinitionNode>().Single(c => c.Parameters.Count == 3);
-        stringBareType = stringStruct.TypeConstructor.ConstructNullaryType(containingType: null);
+        stringStruct = userTypes.Values.OfType<IStructDefinitionNode>().Where(c => c.Symbol.Name == SpecialNames.StringTypeName).TrySingle();
+        stringInitializer = stringStruct?.Members.OfType<IOrdinaryInitializerDefinitionNode>().Single(c => c.Parameters.Count == 3);
+        stringBareType = stringStruct?.TypeConstructor.ConstructNullaryType(containingType: null);
         rangeStruct = userTypes.Values.OfType<IStructDefinitionNode>().SingleOrDefault(c => c.Symbol.Name == SpecialNames.RangeTypeName);
         rangeInitializer = rangeStruct?.Members.OfType<IInitializerDefinitionNode>().SingleOrDefault(c => c.Parameters.Count == 2)?.Symbol;
         rangeBareType = rangeStruct?.TypeConstructor.ConstructNullaryType(containingType: null);
@@ -1092,9 +1092,11 @@ public sealed class InterpreterProcess
             // byte_count: size
             AzothValue.Size(bytes.Count),
         };
+        if (stringStruct is null)
+            throw new Exception("Cannot initialize string literal because no string type was found.");
         var layout = structLayouts.GetOrAdd(stringStruct, CreateStructLayout);
         var self = AzothValue.Struct(new(layout));
-        return await CallInitializerAsync(stringInitializer, self, stringBareType, arguments).ConfigureAwait(false);
+        return await CallInitializerAsync(stringInitializer!, self, stringBareType!, arguments).ConfigureAwait(false);
     }
 
     private async ValueTask<AzothValue> CallIntrinsicAsync(FunctionSymbol function, IReadOnlyList<AzothValue> arguments)
