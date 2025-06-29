@@ -63,14 +63,15 @@ public partial class ConformanceTests
 
         // Reference Standard Library
         var supportPackageFacet = await CompileSupportPackageFacetAsync(compiler);
-        references.Add(new(TestsSupportPackage.Name, null, true, PackageReferenceRelation.Internal));
+        references.Add(new(TestsSupportPackage.Name, null, true, PackageReferenceRelation.Internal, referenceTests: false));
         var symbolLoader = new PackageSymbolLoader(supportPackageFacet);
 
         string? expectedAbortMessage = ExpectedAbort(code);
         try
         {
             // Analyze
-            var mainFacet = await compiler.CompilePackageFacetAsync("testPackage", codeFile.Yield(), references, symbolLoader);
+            // These are main facet because they are mini programs, not unit tests in *.azt files
+            var mainFacet = await compiler.CompilePackageFacetAsync("testPackage", FacetKind.Main, codeFile.Yield(), references, symbolLoader);
 
             // Check for compiler errors
             Assert.NotNull(mainFacet.Diagnostics);
@@ -125,7 +126,7 @@ public partial class ConformanceTests
             var rootNamespace = FixedList.Empty<string>();
             var codeFiles = (await Task.WhenAll(sourcePaths.Select(p
                 => LoadCodeAsync(p, sourceDir, rootNamespace).AsTask()))).ToList();
-            var mainFacet = await compiler.CompilePackageFacetAsync(TestsSupportPackage.Name, codeFiles, [], IPackageSymbolLoader.None);
+            var mainFacet = await compiler.CompilePackageFacetAsync(TestsSupportPackage.Name, FacetKind.Main, codeFiles, [], IPackageSymbolLoader.None);
             if (mainFacet.Diagnostics.Any(d => d.Level >= DiagnosticLevel.CompilationError))
                 ReportSupportCompilationErrors(mainFacet.Diagnostics);
             return mainFacet;

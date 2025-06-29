@@ -11,11 +11,14 @@ internal class ProjectDependencyConfig
     public string? Path { get; set; }
 
     [JsonProperty("trusted")]
-    public bool? Trusted { get; set; }
+    public bool? IsTrusted { get; set; }
 
     [JsonProperty("relation")]
     public ProjectRelation Relation { get; set; } = ProjectRelation.Internal;
 
     [JsonProperty("bundle")]
     public ProjectRelation Bundle { get; set; } = ProjectRelation.None;
+
+    [JsonProperty("tests")]
+    public bool ReferenceTests { get; set; } = false;
 }

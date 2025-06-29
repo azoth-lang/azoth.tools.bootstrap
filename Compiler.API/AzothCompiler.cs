@@ -21,16 +21,18 @@ public class AzothCompiler
 
     public ValueTask<IPackageFacetNode> CompilePackageFacetAsync(
         IdentifierName name,
+        FacetKind facet,
         IEnumerable<ICodeFileSource> files,
         IEnumerable<PackageReference> references,
         IPackageSymbolLoader symbolLoader)
-        => CompilePackageFacetAsync(name, files, references, symbolLoader, TaskScheduler.Default);
+        => CompilePackageFacetAsync(name, facet, files, references, symbolLoader, TaskScheduler.Default);
 
     // TODO replace with CompilePackageFacetAsync
     // TODO change references into a proper representation of the syntax
     // TODO add a parameter for loading symbols for references
     public async ValueTask<IPackageFacetNode> CompilePackageFacetAsync(
         IdentifierName name,
+        FacetKind facet,
         IEnumerable<ICodeFileSource> fileSources,
         IEnumerable<PackageReference> references,
         IPackageSymbolLoader symbolLoader,
@@ -38,7 +40,7 @@ public class AzothCompiler
     {
         var referencesSyntax = references.Select(r => r.ToSyntax()).ToFixedSet();
         var compilationUnits = await ParseFilesAsync(fileSources, taskScheduler);
-        var packageFacetSyntax = IPackageFacetSyntax.Create(name, FacetKind.Main, compilationUnits, referencesSyntax);
+        var packageFacetSyntax = IPackageFacetSyntax.Create(name, facet, compilationUnits, referencesSyntax);
         var analyzer = new SemanticAnalyzer(symbolLoader);
         return await analyzer.CheckAsync(packageFacetSyntax);
     }

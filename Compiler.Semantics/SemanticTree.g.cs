@@ -152,6 +152,7 @@ public partial interface IPackageFacetNode : IPackageFacetDeclarationNode
     new IPackageFacetSyntax Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
     IFixedSet<ICompilationUnitNode> CompilationUnits { get; }
+    IPackageMainFacetReferenceNode? MainFacetReference { get; }
     IFixedSet<IPackageFacetReferenceNode> References { get; }
     PackageNameScope PackageNameScope { get; }
     DiagnosticCollection Diagnostics { get; }
@@ -168,8 +169,9 @@ public partial interface IPackageFacetNode : IPackageFacetDeclarationNode
     public static IPackageFacetNode Create(
         IPackageFacetSyntax syntax,
         IEnumerable<ICompilationUnitNode> compilationUnits,
+        IPackageMainFacetReferenceNode? mainFacetReference,
         IEnumerable<IPackageFacetReferenceNode> references)
-        => new PackageFacetNode(syntax, compilationUnits, references);
+        => new PackageFacetNode(syntax, compilationUnits, mainFacetReference, references);
 }
 
 [Closed(
@@ -5060,6 +5062,7 @@ file class PackageFacetNode : SemanticNode, IPackageFacetNode
 
     public IPackageFacetSyntax Syntax { [DebuggerStepThrough] get; }
     public IFixedSet<ICompilationUnitNode> CompilationUnits { [DebuggerStepThrough] get; }
+    public IPackageMainFacetReferenceNode? MainFacetReference { [DebuggerStepThrough] get; }
     public IFixedSet<IPackageFacetReferenceNode> References { [DebuggerStepThrough] get; }
     public ISymbolDeclarationNode ContainingDeclaration
         => Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
@@ -5122,11 +5125,13 @@ file class PackageFacetNode : SemanticNode, IPackageFacetNode
     public PackageFacetNode(
         IPackageFacetSyntax syntax,
         IEnumerable<ICompilationUnitNode> compilationUnits,
+        IPackageMainFacetReferenceNode? mainFacetReference,
         IEnumerable<IPackageFacetReferenceNode> references)
         : base(true)
     {
         Syntax = syntax;
         CompilationUnits = ChildSet.Attach(this, compilationUnits);
+        MainFacetReference = Child.Attach(this, mainFacetReference);
         References = ChildSet.Attach(this, references);
     }
 

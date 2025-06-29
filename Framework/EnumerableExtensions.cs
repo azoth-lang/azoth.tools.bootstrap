@@ -31,6 +31,16 @@ public static class EnumerableExtensions
     }
 
     [DebuggerStepThrough]
+    public static IEnumerable<T> AppendValue<T>(this IEnumerable<T> source, T? element)
+        where T : class
+        => element is not null ? source.Append(element) : source;
+
+    [DebuggerStepThrough]
+    public static IEnumerable<T> AppendValue<T>(this IEnumerable<T> source, T? element)
+        where T : struct
+        => element is { } value ? source.Append(value) : source;
+
+    [DebuggerStepThrough]
     public static IFixedList<T> ToFixedList<T>(this IEnumerable<T> values)
         => values as IFixedList<T> ?? FixedList.Create(values);
 

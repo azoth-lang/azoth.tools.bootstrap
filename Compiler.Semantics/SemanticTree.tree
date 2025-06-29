@@ -37,7 +37,7 @@ VariableBinding <: LocalBinding, DataFlow;
 
 // ---------- Facets
 PackageFacet <: PackageFacetDeclaration = Syntax:`IPackageFacetSyntax`
-    CompilationUnits:{CompilationUnit} References:{PackageFacetReference};
+    CompilationUnits:{CompilationUnit} MainFacetReference:PackageMainFacetReference? References:{PackageFacetReference};
 
 PackageFacetReference <: Child = Syntax:`IPackageReferenceSyntax`?;
 OrdinaryPackageFacetReference <: PackageFacetReference

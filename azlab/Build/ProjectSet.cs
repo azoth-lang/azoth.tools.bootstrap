@@ -24,39 +24,40 @@ namespace Azoth.Tools.Bootstrap.Lab.Build;
 internal class ProjectSet : IEnumerable<Project>
 {
     private readonly Dictionary<string, Project> projects = [];
+    private readonly Dictionary<(Project, FacetKind), ProjectFacet> projectFacets = [];
 
     public void AddAll(ProjectConfigSet configs)
     {
         foreach (var config in configs)
-            GetOrAdd(config, configs);
+            GetOrAddProject(config, configs);
     }
 
-    private Project Get(ProjectConfig config)
+    private Project GetProject(ProjectConfig config)
     {
         var projectDir = GetDirectoryName(config);
         return projects[projectDir];
     }
 
-    private Project GetOrAdd(ProjectConfig config, ProjectConfigSet configs)
+    private ProjectFacet GetProjectFacet(Project project, FacetKind facet)
+        => projectFacets[(project, facet)];
+
+    private Project GetOrAddProject(ProjectConfig config, ProjectConfigSet configs)
     {
         var projectDir = GetDirectoryName(config);
         if (projects.TryGetValue(projectDir, out var existingProject))
             return existingProject;
 
-        // Add a placeholder to prevent cycles (safe because we will replace it below)
-        projects.Add(projectDir, null!);
-
-        var references = CreateReferences(config, minimumRelation: ProjectRelation.Internal).ToList();
-        var devReferences = Lazy.Create(() => CreateReferences(config, ProjectRelation.Dev).ToFixedList());
-        var project = new Project(config, references, devReferences);
-        projects[projectDir] = project;
-        // Force dev references to be evaluated
-        _ = project.DevReferences;
+        var project = new Project(config);
+        projects.Add(projectDir, project);
+        project.AttachReferences(CreateReferences(config));
+        // Create facets
+        AddFacet(project, FacetKind.Main);
+        AddFacet(project, FacetKind.Tests);
         return project;
 
-        IEnumerable<ProjectReference> CreateReferences(ProjectConfig projectConfig, ProjectRelation minimumRelation)
+        IEnumerable<ProjectReference> CreateReferences(ProjectConfig projectConfig)
             // TODO be more exact about selecting distinct references or possibly even merging them
-            => projectConfig.Dependencies!.Where(p => p.Value?.Relation >= minimumRelation)
+            => projectConfig.Dependencies!
                 .SelectMany(CreateReferencesForDependency).DistinctBy(r => r.Project.Name);
 
         IEnumerable<ProjectReference> CreateReferencesForDependency(string alias, ProjectDependencyConfig? dependencyConfig)
@@ -68,16 +69,25 @@ internal class ProjectSet : IEnumerable<Project>
             if (dependencyConfig.Relation == ProjectRelation.None)
                 throw new InvalidOperationException("None is not a valid relation.");
             var dependencyProjectConfig = configs[config, alias];
-            var dependencyProject = GetOrAdd(dependencyProjectConfig, configs)
-                ?? throw new InvalidOperationException("Dependency cycle detected.");
-            var isTrusted = dependencyConfig.Trusted ?? throw new InvalidOperationException();
-            yield return new(alias, dependencyProject, isTrusted, dependencyConfig.Relation, dependencyConfig.Bundle);
+            var dependencyProject = GetOrAddProject(dependencyProjectConfig, configs);
+            var isTrusted = dependencyConfig.IsTrusted ?? throw new InvalidOperationException();
+            yield return new(alias, dependencyProject, isTrusted, dependencyConfig.Relation, dependencyConfig.Bundle, dependencyConfig.ReferenceTests);
             foreach (var bundledReference in dependencyProject.References.Where(r => r.Bundle != ProjectRelation.None))
             {
+                // Relation is the min because if this is a dev reference so is the bundled thing
+                var relation = dependencyConfig.Relation.Min(bundledReference.Bundle);
+                const ProjectRelation bundle = ProjectRelation.None; // bundling is non-recursive
+                const bool referenceTests = false; // Bundling doesn't apply on tests
                 yield return new(bundledReference.Project.Name, bundledReference.Project,
-                    isTrusted && bundledReference.IsTrusted, bundledReference.Bundle, ProjectRelation.None);
+                    isTrusted && bundledReference.IsTrusted, relation, bundle, referenceTests);
             }
         }
+    }
+
+    private void AddFacet(Project project, FacetKind facet)
+    {
+        var projectFacet = new ProjectFacet(project, facet);
+        projectFacets.Add((project, facet), projectFacet);
     }
 
     private static string GetDirectoryName(ProjectConfig config)
@@ -99,14 +109,14 @@ internal class ProjectSet : IEnumerable<Project>
         }
     }
 
-    private delegate Task<PackageFacets> ProcessAsync(
+    private delegate Task<IPackageFacetNode> ProcessAsync(
         AzothCompiler compiler,
-        Project project,
+        ProjectFacet projectFacet,
         bool outputTests,
-        Task<FixedDictionary<Project, Task<PackageFacets>>> projectBuildsTask,
+        Task<FixedDictionary<ProjectFacet, Task<IPackageFacetNode>>> projectBuildsTask,
         AsyncLock consoleLock);
 
-    private async Task<(PackageFacets, IFixedSet<PackageFacets>)?> ProcessProjects(
+    private async Task<(IPackageFacetNode, IFixedSet<IPackageFacetNode>)?> ProcessProjects(
         TaskScheduler taskScheduler,
         bool verbose,
         bool outputTests,
@@ -115,43 +125,43 @@ internal class ProjectSet : IEnumerable<Project>
     {
         _ = verbose; // verbose parameter will be needed in the future
         var taskFactory = new TaskFactory(taskScheduler);
-        var projectBuilds = new Dictionary<Project, Task<PackageFacets>>();
+        var projectFacetBuilds = new Dictionary<ProjectFacet, Task<IPackageFacetNode>>();
 
-        var projectBuildsSource = new TaskCompletionSource<FixedDictionary<Project, Task<PackageFacets>>>();
+        var projectBuildsSource = new TaskCompletionSource<FixedDictionary<ProjectFacet, Task<IPackageFacetNode>>>();
         var projectBuildsTask = projectBuildsSource.Task;
 
         // Sort projects to detect cycles, and so we can assume the tasks already exist
-        var sortedProjects = TopologicalSort();
+        var sortedProjectFacets = TopologicalSortFacets();
         var compiler = new AzothCompiler();
         var consoleLock = new AsyncLock();
-        foreach (var project in sortedProjects)
+        foreach (var projectFacet in sortedProjectFacets)
         {
-            var buildTask = taskFactory.StartNew(() => processAsync(compiler, project, outputTests, projectBuildsTask, consoleLock))
+            var buildTask = taskFactory.StartNew(() => processAsync(compiler, projectFacet, outputTests, projectBuildsTask, consoleLock))
                                        .Unwrap(); // Needed because StartNew doesn't work intuitively with Async methods
-            if (!projectBuilds.TryAdd(project, buildTask))
+            if (!projectFacetBuilds.TryAdd(projectFacet, buildTask))
                 throw new Exception("Project added to build set twice");
         }
 
-        projectBuildsSource.SetResult(projectBuilds.ToFixedDictionary());
+        projectBuildsSource.SetResult(projectFacetBuilds.ToFixedDictionary());
 
-        var allBuilds = await Task.WhenAll(projectBuilds.Values).ConfigureAwait(false);
+        var allBuilds = await Task.WhenAll(projectFacetBuilds.Values).ConfigureAwait(false);
 
         if (entryProjectConfig is null) return null;
 
-        var entryProject = Get(entryProjectConfig);
-        var entryPackage = await projectBuilds[entryProject];
-        var referencedPackages = allBuilds.WhereNotNull().Except(entryPackage).ToFixedSet();
-        return (entryPackage, referencedPackages);
+        var entryProjectFacet = GetProjectFacet(GetProject(entryProjectConfig), FacetKind.Main);
+        var entryFacet = await projectFacetBuilds[entryProjectFacet];
+        var referencedPackages = allBuilds.WhereNotNull().Except(entryFacet).ToFixedSet();
+        return (entryFacet, referencedPackages);
     }
 
     public async Task InterpretAsync(TaskScheduler taskScheduler, bool verbose, ProjectConfig entryProjectConfig)
     {
         try
         {
-            var (entryPackageNode, referencedPackages) = (await ProcessProjects(taskScheduler, verbose,
+            var (entryFacet, referencedFacets) = (await ProcessProjects(taskScheduler, verbose,
                 outputTests: false, CompileAsync, entryProjectConfig))!.Value;
             var interpreter = new AzothTreeInterpreter();
-            var process = interpreter.Execute(entryPackageNode.MainFacet, referencedPackages.Select(p => p.MainFacet));
+            var process = interpreter.Execute(entryFacet, referencedFacets);
             while (await process.StandardOutput.ReadLineAsync() is { } line) Console.WriteLine(line);
             await process.WaitForExitAsync();
             var stderr = await process.StandardError.ReadToEndAsync();
@@ -168,10 +178,10 @@ internal class ProjectSet : IEnumerable<Project>
     {
         try
         {
-            var (testPackageNode, referencedPackages) =
+            var (testFacet, referencedFacets) =
                 (await ProcessProjects(taskScheduler, verbose, outputTests: true, CompileAsync, testProjectConfig))!.Value;
             var interpreter = new AzothTreeInterpreter();
-            var process = interpreter.ExecuteTests(testPackageNode.TestsFacet, referencedPackages.Select(p => p.TestsFacet));
+            var process = interpreter.ExecuteTests(testFacet, referencedFacets);
             while (await process.StandardOutput.ReadLineAsync() is { } line) Console.WriteLine(line);
             await process.WaitForExitAsync();
             var stderr = await process.StandardError.ReadToEndAsync();
@@ -183,84 +193,75 @@ internal class ProjectSet : IEnumerable<Project>
         }
     }
 
-    private static async Task<PackageFacets> BuildAsync(
+    private static async Task<IPackageFacetNode> BuildAsync(
         AzothCompiler compiler,
-        Project project,
+        ProjectFacet projectFacet,
         bool outputTests,
-        Task<FixedDictionary<Project, Task<PackageFacets>>> projectBuildsTask,
+        Task<FixedDictionary<ProjectFacet, Task<IPackageFacetNode>>> projectBuildsTask,
         AsyncLock consoleLock)
     {
-        var package = await CompileAsync(compiler, project, outputTests, projectBuildsTask, consoleLock);
+        var packageFacet = await CompileAsync(compiler, projectFacet, outputTests, projectBuildsTask, consoleLock);
+        var project = projectFacet.Project;
         var cacheDir = PrepareCacheDir(project);
-        var codePath = EmitIL(project, package, outputTests, cacheDir);
+        var codePath = EmitIL(projectFacet, packageFacet, outputTests, cacheDir);
 
         using (await consoleLock.LockAsync())
         {
-            Console.WriteLine($"Build SUCCEEDED {project.Name} ({project.Path})");
+            Console.WriteLine($"Build SUCCEEDED {project.Name} {projectFacet.Kind} ({project.Path})");
         }
 
-        return package;
+        return packageFacet;
     }
 
-    private static async Task<PackageFacets> CompileAsync(
+    private static async Task<IPackageFacetNode> CompileAsync(
         AzothCompiler compiler,
-        Project project,
+        ProjectFacet projectFacet,
         bool outputTests,
-        Task<FixedDictionary<Project, Task<PackageFacets>>> projectBuildsTask,
+        Task<FixedDictionary<ProjectFacet, Task<IPackageFacetNode>>> projectFacetBuildsTask,
         AsyncLock consoleLock)
     {
         // Doesn't affect compilation, only IL emitting
         _ = outputTests;
 
-        var projectBuilds = await projectBuildsTask.ConfigureAwait(false);
-        var sourceDir = Path.Combine(project.Path, "src");
-        var sourcePaths = Directory.EnumerateFiles(sourceDir, "*.az", SearchOption.AllDirectories);
-        var testSourcePaths = Directory.EnumerateFiles(sourceDir, "*.azt", SearchOption.AllDirectories);
-        var symbolLoader = CreateSymbolLoader(projectBuilds);
-        var references = project.References.Select(r => r.ToPackageReference()).WhereNotNull().ToList();
-
+        var project = projectFacet.Project;
+        var projectFacetBuilds = await projectFacetBuildsTask.ConfigureAwait(false);
         using (await consoleLock.LockAsync())
         {
-            Console.WriteLine($"Compiling {project.Name} ({project.Path})...");
+            Console.WriteLine($"Compiling {project.Name} {projectFacet.Kind} ({project.Path}) ...");
         }
-        var codeFiles = CreateCodePaths(sourcePaths, isTest: false);
-        var testCodeFiles = CreateCodePaths(testSourcePaths, isTest: true);
+        var sourceDir = Path.Combine(project.Path, "src");
+        var symbolLoader = CreateSymbolLoader(projectFacetBuilds);
+        var references = projectFacet.References.Select(r => r.ToPackageReference()).WhereNotNull().ToList();
+        var isTest = projectFacet.Kind == FacetKind.Tests;
+        var fileExtension = isTest ? "*.azt" : "*.az";
+        var sourcePaths = Directory.EnumerateFiles(sourceDir, fileExtension, SearchOption.AllDirectories);
+        var codeFiles = CreateCodePaths(sourcePaths, isTest);
         try
         {
-            var mainFacet = await compiler.CompilePackageFacetAsync(project.Name, codeFiles, references, symbolLoader);
-            var testsFacet = await compiler.CompilePackageFacetAsync(project.Name, testCodeFiles, references, symbolLoader);
-            var packageFacets = new PackageFacets(mainFacet, testsFacet);
+            var facet = await compiler.CompilePackageFacetAsync(project.Name, projectFacet.Kind, codeFiles, references, symbolLoader);
 
-            if (OutputDiagnostics(project, packageFacets.Diagnostics, consoleLock))
-                return packageFacets;
+            if (OutputDiagnostics(projectFacet, facet.Diagnostics, consoleLock))
+                return facet;
 
             using (await consoleLock.LockAsync())
             {
-                Console.WriteLine($"Compile SUCCEEDED {project.Name} ({project.Path})");
+                Console.WriteLine($"Compile SUCCEEDED {project.Name} {projectFacet.Kind} ({project.Path})");
             }
 
-            return packageFacets;
+            return facet;
         }
         catch (FatalCompilationErrorException ex)
         {
-            OutputDiagnostics(project, ex.Diagnostics, consoleLock);
+            OutputDiagnostics(projectFacet, ex.Diagnostics, consoleLock);
             throw;
         }
 
-        static PackageSymbolLoader CreateSymbolLoader(FixedDictionary<Project, Task<PackageFacets>> projectBuilds)
+        static PackageSymbolLoader CreateSymbolLoader(FixedDictionary<ProjectFacet, Task<IPackageFacetNode>> projectBuilds)
         {
-            var mainFacets = projectBuilds.Select(
-                p => KeyValuePair.Create(((IdentifierName)p.Key.Name, FacetKind.Main), GetMainFacetAsync(p.Value)));
-            var testsFacets = projectBuilds.Select(p
-                => KeyValuePair.Create(((IdentifierName)p.Key.Name, FacetKind.Tests), GetTestsFacetAsync(p.Value)));
-            return new(mainFacets.Concat(testsFacets));
+            var entries = projectBuilds.Select((facet, task)
+                => KeyValuePair.Create(((IdentifierName)facet.Project.Name, Facet: facet.Kind), task));
+            return new(entries);
         }
-
-        static async Task<IPackageFacetNode> GetMainFacetAsync(Task<PackageFacets> packageNode)
-            => (await packageNode).MainFacet;
-
-        static async Task<IPackageFacetNode> GetTestsFacetAsync(Task<PackageFacets> packageNode)
-            => (await packageNode).TestsFacet;
 
         IEnumerable<CodePath> CreateCodePaths(IEnumerable<string> paths, bool isTest)
             => paths.Select(p => CreateCodePath(p, sourceDir, project.RootNamespace, isTest));
@@ -293,13 +294,14 @@ internal class ProjectSet : IEnumerable<Project>
         return cacheDir;
     }
 
-    private static bool OutputDiagnostics(Project project, DiagnosticCollection diagnostics, AsyncLock consoleLock)
+    private static bool OutputDiagnostics(ProjectFacet projectFacet, DiagnosticCollection diagnostics, AsyncLock consoleLock)
     {
         if (diagnostics.IsEmpty)
             return false;
+        var project = projectFacet.Project;
         using (consoleLock.Lock())
         {
-            Console.WriteLine($"Build FAILED {project.Name} ({project.Path})");
+            Console.WriteLine($"Build FAILED {project.Name} {projectFacet.Kind} ({project.Path})");
             foreach (var group in diagnostics.GroupBy(d => d.File))
             {
                 var fileDiagnostics = group.ToList();
@@ -324,7 +326,7 @@ internal class ProjectSet : IEnumerable<Project>
         return true;
     }
 
-    private static string EmitIL(Project project, PackageFacets package, bool outputTests, string cacheDir)
+    private static string EmitIL(ProjectFacet project, IPackageFacetNode package, bool outputTests, string cacheDir)
     {
 #pragma warning disable IDE0022
         throw new NotImplementedException();
@@ -368,38 +370,50 @@ internal class ProjectSet : IEnumerable<Project>
         //return outputPath;
     }
 
-    private List<Project> TopologicalSort()
+    private List<ProjectFacet> TopologicalSortFacets()
     {
-        var projectAlive = projects.Values.ToDictionary(p => p, _ => SortState.Unvisited);
-        var sorted = new List<Project>(projects.Count);
-        foreach (var project in projects.Values)
-            TopologicalSortVisit(project, projectAlive, sorted);
+        var states = projectFacets.Values.ToDictionary(p => p, _ => SortState.Unvisited);
+        var sorted = new List<ProjectFacet>(projects.Count);
+        foreach (var projectFacet in projectFacets.Values)
+            Visit(projectFacet);
 
         return sorted;
-    }
 
-    private static void TopologicalSortVisit(
-        Project project,
-        Dictionary<Project, SortState> state, List<Project> sorted)
-    {
-        switch (state[project])
+        void Visit(ProjectFacet projectFacet)
         {
-            case SortState.Visited:
-                return;
+            switch (states[projectFacet])
+            {
+                case SortState.Visited:
+                    return;
 
-            case SortState.Visiting:// Cycle
-                throw new Exception("Dependency Cycle");
+                case SortState.Visiting: // Cycle
+                    throw new Exception("Dependency Cycle");
 
-            case SortState.Unvisited:
-                state[project] = SortState.Visiting;
-                foreach (var referencedProject in project.References.Select(r => r.Project))
-                    TopologicalSortVisit(referencedProject, state, sorted);
-                state[project] = SortState.Visited;
-                sorted.Add(project);
-                return;
+                case SortState.Unvisited:
+                    states[projectFacet] = SortState.Visiting;
+                    if (projectFacet.Kind == FacetKind.Tests)
+                    {
+                        // Visit other test projects first to push them earlier/closer to the main their main facet
+                        VisitReferences(projectFacet, FacetKind.Tests);
+                        Visit(GetProjectFacet(projectFacet.Project, FacetKind.Main));
+                    }
+                    VisitReferences(projectFacet, FacetKind.Main);
+                    states[projectFacet] = SortState.Visited;
+                    sorted.Add(projectFacet);
+                    return;
 
-            default:
-                throw ExhaustiveMatch.Failed(state[project]);
+                default:
+                    throw ExhaustiveMatch.Failed(states[projectFacet]);
+            }
+        }
+
+        void VisitReferences(ProjectFacet projectFacet, FacetKind facet)
+        {
+            var references = projectFacet.References.AsEnumerable();
+            if (facet == FacetKind.Tests)
+                references = references.Where(r => r.ReferenceTests);
+            foreach (var referencedFacet in references.Select(r => GetProjectFacet(r.Project, facet)))
+                Visit(referencedFacet);
         }
     }
 

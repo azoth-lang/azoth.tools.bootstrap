@@ -25,10 +25,11 @@ public class SemanticAnalyzer
         // If there are errors from the lex and parse phase, don't continue on
         packageFacetSyntax.Diagnostics.ThrowIfFatalErrors();
 
+        var mainFacetSymbols  = await LoadMainFacetReferenceSymbols(packageFacetSyntax);
         var referenceSymbols = await LoadReferenceSymbolsAsync(packageFacetSyntax.Kind, packageFacetSyntax.References);
 
         // Build a semantic tree from the syntax tree
-        var packageNode = SyntaxBinder.Bind(packageFacetSyntax, referenceSymbols);
+        var packageNode = SyntaxBinder.Bind(packageFacetSyntax, mainFacetSymbols, referenceSymbols);
 
 #if DEBUG
         // Since the tree is lazy evaluated, walk it and force evaluation of many attributes to catch bugs
@@ -41,6 +42,12 @@ public class SemanticAnalyzer
         packageNode.Diagnostics.ThrowIfFatalErrors();
 
         return packageNode;
+    }
+
+    private async ValueTask<FixedSymbolTree?> LoadMainFacetReferenceSymbols(IPackageFacetSyntax packageFacetSyntax)
+    {
+        if (packageFacetSyntax.Kind != FacetKind.Tests) return null;
+        return await symbolLoader.LoadSymbolsAsync(packageFacetSyntax.Name, FacetKind.Main);
     }
 
     private async ValueTask<IReadOnlyDictionary<PackageFacetReferenceSyntax, FixedSymbolTree>> LoadReferenceSymbolsAsync(
@@ -59,11 +66,13 @@ public class SemanticAnalyzer
     }
 
     private async Task LoadReferenceSymbolsAsync(
-        IFixedSet<IPackageReferenceSyntax> references,
+        IEnumerable<IPackageReferenceSyntax> references,
         PackageReferenceRelation minimumRelation,
         FacetKind facetToReference,
         Dictionary<PackageFacetReferenceSyntax, FixedSymbolTree> symbolTrees)
     {
+        if (facetToReference == FacetKind.Tests)
+            references = references.Where(r => r.ReferenceTests);
         foreach (var reference in references.Where(r => r.Relation >= minimumRelation))
         {
             var symbolTree = await symbolLoader.LoadSymbolsAsync(reference.PackageName, facetToReference);

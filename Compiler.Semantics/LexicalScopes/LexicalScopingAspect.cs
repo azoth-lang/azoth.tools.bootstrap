@@ -29,9 +29,8 @@ internal static partial class LexicalScopingAspect
 
     #region Facets
     public static partial PackageNameScope PackageFacet_PackageNameScope(IPackageFacetNode node)
-    // TODO properly handle tests facet referencing main facet
         => new([node],
-            node.References.Append(node.IntrinsicsReference).Select(r => r.SymbolNode),
+            node.References.Append(node.IntrinsicsReference).AppendValue(node.MainFacetReference).Select(r => r.SymbolNode),
             node.PrimitivesDeclarations);
     #endregion
 

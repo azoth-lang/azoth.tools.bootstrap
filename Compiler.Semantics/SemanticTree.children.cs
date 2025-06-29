@@ -370,6 +370,8 @@ public static class ISemanticNodeExtensions
             case IPackageFacetNode n:
                 foreach (var child in n.CompilationUnits)
                     yield return child;
+                if (n.MainFacetReference is not null)
+                    yield return n.MainFacetReference;
                 foreach (var child in n.References)
                     yield return child;
                 foreach (var child in n.PrimitivesDeclarations)

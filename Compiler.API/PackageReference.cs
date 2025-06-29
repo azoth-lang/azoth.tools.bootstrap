@@ -32,14 +32,20 @@ public sealed class PackageReference
 
     public PackageReferenceRelation Relation { get; }
 
-    public PackageReference(IdentifierName name, IdentifierName? alias, bool isTrusted, PackageReferenceRelation relation)
+    /// <summary>
+    /// Whether the test facet should reference the test facet of the referenced package
+    /// </summary>
+    public bool ReferenceTests { get; }
+
+    public PackageReference(IdentifierName name, IdentifierName? alias, bool isTrusted, PackageReferenceRelation relation, bool referenceTests)
     {
         Name = name;
         Alias = alias;
         IsTrusted = isTrusted;
         Relation = relation;
+        ReferenceTests = referenceTests;
     }
 
     internal IPackageReferenceSyntax ToSyntax()
-        => IPackageReferenceSyntax.Create(EffectiveName, Alias, Name, IsTrusted, Relation);
+        => IPackageReferenceSyntax.Create(EffectiveName, Alias, Name, IsTrusted, Relation, ReferenceTests);
 }

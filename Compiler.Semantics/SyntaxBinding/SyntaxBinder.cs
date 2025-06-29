@@ -20,8 +20,9 @@ internal static class SyntaxBinder
 {
     public static IPackageFacetNode Bind(
         IPackageFacetSyntax packageFacetSyntax,
+        FixedSymbolTree? mainFacetSymbols,
         IReadOnlyDictionary<PackageFacetReferenceSyntax, FixedSymbolTree> referenceSymbols)
-        => PackageFacet(packageFacetSyntax, referenceSymbols);
+        => PackageFacet(packageFacetSyntax, mainFacetSymbols, referenceSymbols);
 
     #region Top Level
     private static IEnumerable<ICompilationUnitNode> CompilationUnits(IEnumerable<ICompilationUnitSyntax> syntax)
@@ -55,9 +56,15 @@ internal static class SyntaxBinder
     #region Package Facets
     private static IPackageFacetNode PackageFacet(
         IPackageFacetSyntax syntax,
+        FixedSymbolTree? mainFacetSymbols,
         IReadOnlyDictionary<PackageFacetReferenceSyntax, FixedSymbolTree> referenceSymbols)
         => IPackageFacetNode.Create(syntax, CompilationUnits(syntax.CompilationUnits),
-            PackageFacetReferences(referenceSymbols));
+            PackageMainFacetReference(mainFacetSymbols, syntax), PackageFacetReferences(referenceSymbols));
+
+    private static IPackageMainFacetReferenceNode? PackageMainFacetReference(
+        FixedSymbolTree? mainFacetSymbols,
+        IPackageFacetSyntax syntax)
+        => mainFacetSymbols is null ? null : IPackageMainFacetReferenceNode.Create(syntax.Name, mainFacetSymbols);
 
     private static IEnumerable<IOrdinaryPackageFacetReferenceNode> PackageFacetReferences(
         IReadOnlyDictionary<PackageFacetReferenceSyntax, FixedSymbolTree> referenceSymbols)

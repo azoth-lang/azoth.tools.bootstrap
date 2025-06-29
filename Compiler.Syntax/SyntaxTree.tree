@@ -35,7 +35,7 @@ LocalBinding <: Binding = NameSpan:`TextSpan`;
 PackageFacet = Name:`IdentifierName` Kind:`FacetKind` CompilationUnits:{CompilationUnit}
     References:{PackageReference};
 PackageReference = AliasOrName:`IdentifierName` PackageAlias:`IdentifierName`?
-    PackageName:`IdentifierName` IsTrusted:`bool` Relation:`PackageReferenceRelation`;
+    PackageName:`IdentifierName` IsTrusted:`bool` Relation:`PackageReferenceRelation` ReferenceTests:`bool`;
 
 // ---------- Code Files
 /// Syntax that corresponds to Azoth code.
