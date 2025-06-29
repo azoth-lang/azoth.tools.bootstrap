@@ -58,7 +58,7 @@ internal static class SymbolBinder
     private static IGenericParameterSymbolNode GenericParameterTypeSymbol(GenericParameterTypeSymbol sym)
         => IGenericParameterSymbolNode.Create(sym);
 
-    private static IPackageFacetChildDeclarationNode InvocableSymbol(InvocableSymbol symbol)
+    private static IInvocableDeclarationNode InvocableSymbol(InvocableSymbol symbol)
         => symbol switch
         {
             FunctionSymbol sym => FunctionSymbol(sym),
@@ -67,8 +67,8 @@ internal static class SymbolBinder
             _ => throw ExhaustiveMatch.Failed(symbol),
         };
 
-    private static IFunctionDeclarationNode FunctionSymbol(FunctionSymbol sym)
-         => IFunctionSymbolNode.Create(sym);
+    private static IFunctionInvocableDeclarationNode FunctionSymbol(FunctionSymbol sym)
+         => sym.ContextTypeSymbol is not null ? IAssociatedFunctionSymbolNode.Create(sym) : IFunctionSymbolNode.Create(sym);
 
     private static IInitializerSymbolNode InitializerSymbol(InitializerSymbol sym)
         => IInitializerSymbolNode.Create(sym);

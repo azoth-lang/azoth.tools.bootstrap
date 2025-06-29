@@ -144,6 +144,7 @@
 = FieldSymbol.IsMutableBinding => Symbol.IsMutableBinding;
 ↑ FieldSymbol.Name: `IdentifierName` => Symbol.Name;
 = FieldSymbol.BindingType => Symbol.Type;
+↑ AssociatedFunctionSymbol.Name: `IdentifierName` => Symbol.Name;
 = AssociatedFunctionSymbol.PlainType => Symbol.Type.PlainType;
 = AssociatedFunctionSymbol.Type => Symbol.Type;
 = AssociatedFunctionSymbol.ParameterPlainTypes => Symbol.Type.Parameters.ToPlainTypes();

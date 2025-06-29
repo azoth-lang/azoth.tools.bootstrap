@@ -4729,6 +4729,11 @@ public partial interface IAssociatedFunctionSymbolNode : IAssociatedFunctionDecl
     FunctionSymbol? IFunctionInvocableDeclarationNode.Symbol => Symbol;
     InvocableSymbol? IInvocableDeclarationNode.Symbol => Symbol;
     Symbol IChildSymbolNode.Symbol => Symbol;
+    new IdentifierName Name
+        => Symbol.Name;
+    OrdinaryName IAssociatedFunctionDeclarationNode.Name => Name;
+    OrdinaryName? IPackageFacetChildDeclarationNode.Name => Name;
+    UnqualifiedName INamedDeclarationNode.Name => Name;
     IMaybeFunctionPlainType IFunctionInvocableDeclarationNode.PlainType
         => Symbol.Type.PlainType;
     IMaybeFunctionType IFunctionInvocableDeclarationNode.Type
@@ -4742,10 +4747,8 @@ public partial interface IAssociatedFunctionSymbolNode : IAssociatedFunctionDecl
     IMaybeType IInvocableDeclarationNode.ReturnType
         => Symbol.Type.Return;
 
-    public static IAssociatedFunctionSymbolNode Create(
-        OrdinaryName name,
-        FunctionSymbol symbol)
-        => new AssociatedFunctionSymbolNode(name, symbol);
+    public static IAssociatedFunctionSymbolNode Create(FunctionSymbol symbol)
+        => new AssociatedFunctionSymbolNode(symbol);
 }
 
 [Closed(typeof(AssociatedTypeSymbolNode))]
@@ -19745,7 +19748,6 @@ file class AssociatedFunctionSymbolNode : SemanticNode, IAssociatedFunctionSymbo
 {
     private IAssociatedFunctionSymbolNode Self { [Inline] get => this; }
 
-    public OrdinaryName Name { [DebuggerStepThrough] get; }
     public FunctionSymbol Symbol { [DebuggerStepThrough] get; }
     public ITypeDeclarationNode ContainingDeclaration
         => (ITypeDeclarationNode)Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
@@ -19756,11 +19758,8 @@ file class AssociatedFunctionSymbolNode : SemanticNode, IAssociatedFunctionSymbo
     public ISymbolTree SymbolTree()
         => Inherited_SymbolTree(GrammarAttribute.CurrentInheritanceContext());
 
-    public AssociatedFunctionSymbolNode(
-        OrdinaryName name,
-        FunctionSymbol symbol)
+    public AssociatedFunctionSymbolNode(FunctionSymbol symbol)
     {
-        Name = name;
         Symbol = symbol;
     }
 }
