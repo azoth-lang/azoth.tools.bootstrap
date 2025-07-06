@@ -9,14 +9,20 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
     typeof(NamespaceSymbol),
     typeof(TypeSymbol),
     typeof(InvocableSymbol),
-    typeof(FieldSymbol))]
+    typeof(FieldSymbol),
+    typeof(PackageSymbol))]
 [DebuggerDisplay("{" + nameof(ToILString) + "(),nq}")]
 public abstract class Symbol : IEquatable<Symbol>
 {
     /// <summary>
     /// The package that declares this symbol or <see langword="null"/> for primitives.
     /// </summary>
-    public abstract PackageSymbol? Package { get; }
+    public virtual PackageSymbol? Package => Facet?.Package;
+    /// <summary>
+    /// The package facet that declares this symbol or <see langword="null"/> for built-in types and
+    /// <see cref="PackageSymbol"/>s.
+    /// </summary>
+    public abstract PackageFacetSymbol? Facet { get; }
     /// <summary>
     /// The symbol that contains this symbol or <see langword="null"/> for primitives and
     /// <see cref="PackageSymbol"/>.
@@ -26,6 +32,10 @@ public abstract class Symbol : IEquatable<Symbol>
     /// The type symbol, if any, that acts as the context for this symbol.
     /// </summary>
     public abstract TypeSymbol? ContextTypeSymbol { get; }
+    /// <summary>
+    /// The name of this symbol if it has one.
+    /// </summary>
+    /// <remarks>Many initializers and all package facets don't have names.</remarks>
     public abstract UnqualifiedName? Name { get; }
 
     private protected Symbol()

@@ -8,20 +8,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 /// </summary>
 [Closed(
     typeof(LocalNamespaceSymbol),
-    typeof(PackageSymbol))]
+    typeof(PackageFacetSymbol))]
 // TODO it is odd to have namespace symbols if packages don't really have namespaces declared in them
 public abstract class NamespaceSymbol : Symbol
 {
-    public override PackageSymbol Package { get; }
-    public NamespaceName NamespaceName { get; }
-    public override IdentifierName Name { get; }
-
-    protected NamespaceSymbol(PackageSymbol package, NamespaceSymbol? containingSymbol, IdentifierName name)
-    {
-        Package = package;
-        NamespaceName = containingSymbol is null
-            ? NamespaceName.Global
-            : containingSymbol.NamespaceName.Qualify(name);
-        Name = name;
-    }
+    public override PackageSymbol Package => Facet.Package;
+    public abstract override PackageFacetSymbol Facet { get; }
+    public abstract NamespaceName NamespaceName { get; }
+    public abstract override IdentifierName? Name { get; }
 }

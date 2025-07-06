@@ -10,7 +10,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
     typeof(MethodSymbol))]
 public abstract class InvocableSymbol : Symbol
 {
-    public override PackageSymbol? Package => ContainingSymbol.Package;
+    public override PackageFacetSymbol? Facet => ContainingSymbol.Facet;
     public abstract override Symbol ContainingSymbol { get; }
     public abstract override IdentifierName? Name { get; }
     public IFixedList<ParameterType> ParameterTypes { get; }

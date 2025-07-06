@@ -12,7 +12,7 @@ public sealed class NeverTypeSymbol : TypeSymbol
     private NeverTypeSymbol() : base(BuiltInTypeName.Never) { }
     #endregion
 
-    public override PackageSymbol? Package => null;
+    public override PackageFacetSymbol? Facet => null;
     public override Symbol? ContainingSymbol => null;
     public override TypeSymbol? ContextTypeSymbol => null;
     public override BuiltInTypeName Name => PlainType.Name;

@@ -21,7 +21,9 @@ public class SymbolForest
         if (symbolTreeBuilder.Package is null)
             throw new ArgumentException("Can't be builder for primitive symbols", nameof(symbolTreeBuilder));
         PrimitiveSymbolTree = primitiveSymbolTree;
-        this.packageTrees = packageTrees.Append<ISymbolTree>(symbolTreeBuilder).Append(intrinsicSymbolTree).ToFixedDictionary(t => t.Package!);
+        var trees = packageTrees.Append<ISymbolTree>(symbolTreeBuilder).Append(intrinsicSymbolTree).ToFixedList();
+     
+        this.packageTrees = trees.ToFixedDictionary(t => t.Package!);
     }
 
     public SymbolForest(PrimitiveSymbolTree primitiveSymbolTree, FixedSymbolTree intrinsicSymbolTree, IEnumerable<FixedSymbolTree> packageTrees)

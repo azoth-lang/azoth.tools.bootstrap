@@ -10,9 +10,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 internal static partial class SymbolsAspect
 {
     #region Facets
+    public static partial PackageFacetSymbol PackageFacet_Symbol(IPackageFacetNode node)
+        => new(node.PackageSymbol, node.Kind);
+
     public static partial FixedSymbolTree PackageFacet_Symbols(IPackageFacetNode node)
     {
-        var treeBuilder = new SymbolTreeBuilder(node.PackageSymbol);
+        var treeBuilder = new SymbolTreeBuilder(node.Symbol);
         var forest = BuiltIn.CreateSymbolForest(treeBuilder, node.References.Select(p => p.Symbols));
         return new PackageSymbolTreeBuilder(treeBuilder, node, forest).Build();
     }
@@ -24,7 +27,9 @@ internal static partial class SymbolsAspect
         if (node.Name is { } name)
             return new LocalNamespaceSymbol(node.ContainingSymbol(), name);
 
-        return node.PackageSymbol;
+        // The containing symbol ought to be the package facet symbol
+        // TODO is this correct? It used to be PackageSymbol
+        return node.ContainingSymbol();
     }
     #endregion
 

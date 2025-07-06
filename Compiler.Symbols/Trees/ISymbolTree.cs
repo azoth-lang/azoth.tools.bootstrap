@@ -9,6 +9,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 public interface ISymbolTree
 {
     PackageSymbol? Package { get; }
+    PackageFacetSymbol? Facet { get; }
     IEnumerable<Symbol> Symbols { get; }
     bool Contains(Symbol symbol);
     IEnumerable<Symbol> GetChildrenOf(Symbol symbol);

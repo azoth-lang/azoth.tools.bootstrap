@@ -78,11 +78,12 @@ public static class Intrinsic
     private static FixedSymbolTree DefineIntrinsicSymbols()
     {
         var intrinsicsPackage = new PackageSymbol("azoth.compiler.intrinsics.internal");
-        var tree = new SymbolTreeBuilder(intrinsicsPackage);
+        var intrinsicsFacet = new PackageFacetSymbol(intrinsicsPackage, FacetKind.Main);
+        var tree = new SymbolTreeBuilder(intrinsicsFacet);
 
-        var intrinsicsNamespace = new LocalNamespaceSymbol(intrinsicsPackage, "intrinsics");
+        var intrinsicsNamespace = new LocalNamespaceSymbol(intrinsicsFacet, "intrinsics");
 
-        var azothNamespace = BuildAzothNamespace(intrinsicsPackage, tree);
+        var azothNamespace = BuildAzothNamespace(intrinsicsFacet, tree);
 
         _ = BuildPromiseSymbol(azothNamespace, tree);
 
@@ -107,9 +108,9 @@ public static class Intrinsic
         return tree.Build();
     }
 
-    private static LocalNamespaceSymbol BuildAzothNamespace(PackageSymbol intrinsicsPackage, SymbolTreeBuilder tree)
+    private static LocalNamespaceSymbol BuildAzothNamespace(PackageFacetSymbol intrinsicsFacet, SymbolTreeBuilder tree)
     {
-        var azothNamespace = new LocalNamespaceSymbol(intrinsicsPackage, "azoth");
+        var azothNamespace = new LocalNamespaceSymbol(intrinsicsFacet, "azoth");
         tree.Add(azothNamespace);
         return azothNamespace;
     }

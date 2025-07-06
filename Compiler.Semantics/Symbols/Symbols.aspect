@@ -11,12 +11,14 @@ type `TypeSymbol` <: `Symbol`;
 type `OrdinaryTypeSymbol` <: `TypeSymbol`;
 
 // ---------- Facets
+= PackageFacet.Symbol;
 ↑ PackageFacet.Symbols: `FixedSymbolTree`;
+= PackageFacet.CompilationUnits[*].ContainingSymbol() => Symbol;
+= PackageFacet.GlobalNamespace.ContainingSymbol() => Symbol;
 ↑ PackageFacetReference.Symbols:`FixedSymbolTree`;
 = IntrinsicsPackageFacetReference.Symbols => Intrinsic.SymbolTree;
 
 // ---------- Code Files
-↑ CompilationUnit.ContainingSymbol(): `PackageSymbol` => PackageSymbol;
 = CompilationUnit.*.ContainingSymbol() => Self.ImplicitNamespaceSymbol;
 
 // ---------- Definitions

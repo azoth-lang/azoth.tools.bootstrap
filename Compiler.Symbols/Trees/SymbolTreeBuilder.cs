@@ -11,19 +11,21 @@ public class SymbolTreeBuilder : ISymbolTreeBuilder
 {
     public static SymbolTreeBuilder CreateForPrimitives() => new();
 
-    public PackageSymbol? Package { get; }
+    public PackageSymbol? Package => Facet?.Package;
+    public PackageFacetSymbol? Facet { get; }
     private readonly Dictionary<Symbol, ISet<Symbol>> symbolChildren = new Dictionary<Symbol, ISet<Symbol>>();
     public IEnumerable<Symbol> Symbols => symbolChildren.Keys;
 
     private SymbolTreeBuilder()
     {
-        Package = null;
+        Facet = null;
     }
 
-    public SymbolTreeBuilder(PackageSymbol package)
+    // TODO take a facet
+    public SymbolTreeBuilder(PackageFacetSymbol facet)
     {
-        Package = package;
-        symbolChildren.Add(package, new HashSet<Symbol>());
+        Facet = facet;
+        symbolChildren.Add(facet, new HashSet<Symbol>());
     }
 
     public bool Contains(Symbol symbol)
@@ -50,7 +52,7 @@ public class SymbolTreeBuilder : ISymbolTreeBuilder
 
     private void RequireForPackage(Symbol symbol)
     {
-        if (symbol.Package != Package)
+        if (symbol.Facet != Facet)
             throw new ArgumentException("Symbol must be for the package of this tree", nameof(symbol));
     }
 
@@ -69,15 +71,15 @@ public class SymbolTreeBuilder : ISymbolTreeBuilder
 
     public FixedSymbolTree Build()
     {
-        if (Package is null)
-            throw new InvalidOperationException($"Can't build {nameof(FixedSymbolTree)} without a package");
-        return new(Package, symbolChildren.ToFixedDictionary(e => e.Key, e => e.Value.ToFixedSet()));
+        if (Facet is null)
+            throw new InvalidOperationException($"Can't build {nameof(FixedSymbolTree)} without a package facet.");
+        return new(Facet, symbolChildren.ToFixedDictionary(e => e.Key, e => e.Value.ToFixedSet()));
     }
 
     public PrimitiveSymbolTree BuildPrimitives()
     {
-        if (Package is not null)
-            throw new InvalidOperationException($"Can't build {nameof(PrimitiveSymbolTree)} WITH a package");
+        if (Facet is not null)
+            throw new InvalidOperationException($"Can't build {nameof(PrimitiveSymbolTree)} WITH a package facet.");
         return new(symbolChildren.ToFixedDictionary(e => e.Key, e => e.Value.ToFixedSet()));
     }
 }

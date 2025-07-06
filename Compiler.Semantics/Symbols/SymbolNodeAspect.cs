@@ -11,15 +11,14 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 internal static partial class SymbolNodeAspect
 {
     public static partial IPackageFacetSymbolNode PackageFacetReference_SymbolNode(IPackageFacetReferenceNode node)
-        // TODO shouldn't some facet references be to the test facet?
-        => IPackageFacetSymbolNode.Create(FacetKind.Main, node.Symbols);
+        => IPackageFacetSymbolNode.Create(node.Symbols);
 
     private static IEnumerable<Symbol> GetSymbolMembers(IChildSymbolNode node)
         => node.SymbolTree().GetChildrenOf(node.Symbol);
 
     #region Facet Symbol Nodes
     public static partial INamespaceSymbolNode PackageFacetSymbol_GlobalNamespace(IPackageFacetSymbolNode node)
-        => INamespaceSymbolNode.Create(node.SymbolTree.Package);
+        => INamespaceSymbolNode.Create(node.SymbolTree.Facet);
     #endregion
 
     #region Namespace Symbol Nodes

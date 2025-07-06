@@ -5,7 +5,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 
 public sealed class AssociatedTypeSymbol : TypeSymbol
 {
-    public override PackageSymbol? Package => ContainingSymbol.Package;
+    public override PackageFacetSymbol? Facet => ContainingSymbol.Facet;
     public override TypeSymbol ContainingSymbol { get; }
     public override TypeSymbol ContextTypeSymbol => ContainingSymbol;
     public AssociatedTypeConstructor TypeConstructor { get; }

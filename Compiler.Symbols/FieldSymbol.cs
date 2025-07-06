@@ -6,7 +6,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 
 public sealed class FieldSymbol : Symbol
 {
-    public override PackageSymbol Package => ContainingSymbol.Package;
+    public override PackageFacetSymbol Facet => ContainingSymbol.Facet;
     public override OrdinaryTypeSymbol ContainingSymbol { get; }
     public override OrdinaryTypeSymbol ContextTypeSymbol => ContainingSymbol;
     public override IdentifierName Name { get; }

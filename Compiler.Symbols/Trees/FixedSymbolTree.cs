@@ -6,19 +6,20 @@ using Azoth.Tools.Bootstrap.Framework;
 namespace Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 
 /// <summary>
-/// A symbol tree for a specific package
+/// A symbol tree for a specific package facet
 /// </summary>
 public class FixedSymbolTree : ISymbolTree
 {
-    public PackageSymbol Package { get; }
+    public PackageSymbol Package => Facet.Package;
+    public PackageFacetSymbol Facet { get; }
     private readonly FixedDictionary<Symbol, IFixedSet<Symbol>> symbolChildren;
     public IEnumerable<Symbol> Symbols => symbolChildren.Keys.Prepend(Package);
 
-    public FixedSymbolTree(PackageSymbol package, FixedDictionary<Symbol, IFixedSet<Symbol>> symbolChildren)
+    public FixedSymbolTree(PackageFacetSymbol facet, FixedDictionary<Symbol, IFixedSet<Symbol>> symbolChildren)
     {
-        if (symbolChildren.Keys.Any(s => s.Package != package))
+        if (symbolChildren.Keys.Any(s => s.Facet != facet))
             throw new ArgumentException("Children must be for this package", nameof(symbolChildren));
-        Package = package;
+        Facet = facet;
         this.symbolChildren = symbolChildren;
     }
 

@@ -12,6 +12,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 internal static partial class SymbolsAspect
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial PackageFacetSymbol PackageFacet_Symbol(IPackageFacetNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial NamespaceSymbol NamespaceDefinition_Symbol(INamespaceDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial FunctionSymbol? FunctionDefinition_Symbol(IFunctionDefinitionNode node);

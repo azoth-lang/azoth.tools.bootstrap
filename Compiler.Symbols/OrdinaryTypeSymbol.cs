@@ -10,7 +10,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 /// </summary>
 public sealed class OrdinaryTypeSymbol : TypeSymbol
 {
-    public override PackageSymbol Package { get; }
+    public override PackageFacetSymbol Facet { get; }
     public override Symbol ContainingSymbol { get; }
     public override TypeSymbol? ContextTypeSymbol => null;
     public TypeKind Kind => TypeConstructor.Kind;
@@ -23,7 +23,7 @@ public sealed class OrdinaryTypeSymbol : TypeSymbol
         : base(typeConstructor.Name)
     {
         // TODO check the declared type is in the containing namespace and package
-        Package = containingSymbol.Package ?? throw new ArgumentException("Must be a proper container for a type.", nameof(containingSymbol));
+        Facet = containingSymbol.Facet ?? throw new ArgumentException("Must be a proper container for a type.", nameof(containingSymbol));
         ContainingSymbol = containingSymbol;
         Name = typeConstructor.Name;
         TypeConstructor = typeConstructor;

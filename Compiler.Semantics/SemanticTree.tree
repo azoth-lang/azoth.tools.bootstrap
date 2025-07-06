@@ -416,7 +416,7 @@ AwaitExpression <: OrdinaryTypedExpression = Syntax:`IAwaitExpressionSyntax` Exp
 Declaration;
 /// A declaration that may have an associated symbol. (Symbol attribute added in aspect.)
 SymbolDeclaration <: Declaration;
-/// A declaration that is definitly a child node. Note, this is not a `SymbolDeclaration` because
+/// A declaration that is definitely a child node. Note, this is not a `SymbolDeclaration` because
 /// bindings don't have symbols.
 ChildDeclaration <: Declaration, Child;
 /// A declaration that has a name.
@@ -429,7 +429,7 @@ NamedBindingDeclaration <: BindingDeclaration, NamedDeclaration;
 // ---------- Facet Declarations
 /// Facets separate the testing and non-testing aspects of a package. They do no have their own
 /// symbol. They use the package symbol.
-PackageFacetDeclaration <: ChildDeclaration, SymbolDeclaration;
+PackageFacetDeclaration <: SymbolDeclaration;
 
 // TODO better name for this
 // Any child declaration node of a facet (not just members)
@@ -498,12 +498,14 @@ AssociatedTypeDeclaration <: AssociatedMemberDeclaration, TypeDeclaration
 // -------------------------------------------------------------------------------------------------
 // TODO move into separate aspect
 
+Symbol <: SymbolDeclaration;
+
 // ---------- Parent Symbol Nodes
-ChildSymbol <: SymbolDeclaration, ChildDeclaration;
+ChildSymbol <: Symbol, SymbolDeclaration, ChildDeclaration;
 
 // ---------- Facet Symbol Nodes
 // Facets separate the testing and non-testing aspects of a package. They do no have their own symbol.
-PackageFacetSymbol <: PackageFacetDeclaration, ChildSymbol = Kind:`FacetKind` SymbolTree:`FixedSymbolTree`;
+PackageFacetSymbol <: Symbol, PackageFacetDeclaration = SymbolTree:`FixedSymbolTree`;
 
 // ---------- Namespace Symbol Nodes
 NamespaceSymbol <: NamespaceDeclaration, NamespaceMemberSymbol = Symbol:`NamespaceSymbol`;

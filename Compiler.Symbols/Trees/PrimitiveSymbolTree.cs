@@ -13,6 +13,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 public sealed class PrimitiveSymbolTree : ISymbolTree
 {
     PackageSymbol? ISymbolTree.Package => null;
+    PackageFacetSymbol? ISymbolTree.Facet => null;
     public IFixedSet<Symbol> GlobalSymbols { get; }
     private readonly FixedDictionary<Symbol, IFixedSet<Symbol>> symbolChildren;
     public IEnumerable<Symbol> Symbols => symbolChildren.Keys;

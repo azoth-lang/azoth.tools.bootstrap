@@ -17,6 +17,7 @@ internal static class SymbolBinder
        => symbol switch
        {
            PackageSymbol _ => throw new NotSupportedException($"{nameof(PackageSymbol)} not supported."),
+           PackageFacetSymbol _ => throw new NotSupportedException($"{nameof(PackageFacetSymbol)} not supported."),
            LocalNamespaceSymbol sym => INamespaceSymbolNode.Create(sym),
            TypeSymbol sym => TypeSymbol(sym),
            InvocableSymbol sym => InvocableSymbol(sym),

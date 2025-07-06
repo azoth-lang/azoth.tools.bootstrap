@@ -16,9 +16,9 @@ public abstract class TypeSymbol : Symbol
 {
     public override UnqualifiedName Name { get; }
 
-    public bool IsGlobal => ContainingSymbol == Package;
+    public bool IsGlobal => ContainingSymbol == Facet;
 
-    protected TypeSymbol(UnqualifiedName name)
+    private protected TypeSymbol(UnqualifiedName name)
     {
         Name = name;
     }

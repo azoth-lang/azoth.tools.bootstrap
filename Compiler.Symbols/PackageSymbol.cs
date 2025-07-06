@@ -9,14 +9,18 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 /// <remarks>
 /// A package alias has no effect on the symbol. It is still the same package.
 /// </remarks>
-public class PackageSymbol : NamespaceSymbol
+public sealed class PackageSymbol : Symbol
 {
     public override PackageSymbol Package => this;
+    public override PackageFacetSymbol? Facet => null;
     public override Symbol? ContainingSymbol => null;
     public override TypeSymbol? ContextTypeSymbol => null;
+    public override IdentifierName Name { get; }
 
     public PackageSymbol(IdentifierName name)
-        : base(null!, null, name) { }
+    {
+        Name = name;
+    }
 
     public override bool Equals(Symbol? other)
     {

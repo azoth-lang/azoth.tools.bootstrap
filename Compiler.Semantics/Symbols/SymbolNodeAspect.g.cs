@@ -1,5 +1,6 @@
 using System.CodeDom.Compiler;
 using System.Runtime.CompilerServices;
+using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Primitives;

@@ -15,10 +15,13 @@ public abstract class SymbolTestFixture
     private int unique;
 
     protected LocalNamespaceSymbol Namespace(string? name = null, NamespaceSymbol? ns = null)
-        => new(ns ?? Package(), Name(name) ?? DefaultName("namespace"));
+        => new(ns ?? Facet(), Name(name) ?? DefaultName("namespace"));
 
     protected PackageSymbol Package(string? name = null)
         => new(Name(name) ?? DefaultName("package"));
+
+    protected PackageFacetSymbol Facet(PackageSymbol? package = null, FacetKind kind = FacetKind.Main)
+        => new(package ?? Package(), kind);
 
     protected IdentifierName DefaultName(string prefix) => new($"⧫{prefix}_{++unique}");
 
@@ -31,7 +34,7 @@ public abstract class SymbolTestFixture
     protected static IFixedList<ParameterType> Params(NonVoidType param, params NonVoidType[] @params)
         => @params.Prepend(param).Select(t => new ParameterType(false, t)).ToFixedList();
 
-    protected static ParameterType Param(NonVoidType param) => new ParameterType(false, param);
+    protected static ParameterType Param(NonVoidType param) => new(false, param);
 
     protected FunctionSymbol Func(
         string? name = null,
@@ -115,7 +118,7 @@ public abstract class SymbolTestFixture
         OrdinaryTypeConstructor? dataType = null)
     {
         return new(
-            ns ?? Package(),
+            ns ?? Facet(),
             dataType ?? (OrdinaryTypeConstructor)DataType().PlainType.TypeConstructor!);
     }
 

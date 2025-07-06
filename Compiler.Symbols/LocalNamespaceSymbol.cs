@@ -15,15 +15,20 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 /// </remarks>
 public sealed class LocalNamespaceSymbol : NamespaceSymbol
 {
+    public override PackageFacetSymbol Facet => ContainingSymbol.Facet;
     public override NamespaceSymbol ContainingSymbol { get; }
     public override TypeSymbol? ContextTypeSymbol => null;
+    public override NamespaceName NamespaceName { get; }
+    public override IdentifierName Name { get; }
 
     public LocalNamespaceSymbol(NamespaceSymbol containingSymbol, IdentifierName name)
-        : base(containingSymbol.Package, containingSymbol, name)
     {
         ContainingSymbol = containingSymbol;
+        NamespaceName = ContainingSymbol.NamespaceName.Qualify(name);
+        Name = name;
     }
 
+    #region Equality
     public override bool Equals(Symbol? other)
     {
         if (other is null) return false;
@@ -34,6 +39,7 @@ public sealed class LocalNamespaceSymbol : NamespaceSymbol
     }
 
     public override int GetHashCode() => HashCode.Combine(ContainingSymbol, Name);
+    #endregion
 
     public override string ToILString() => $"{ContainingSymbol.ToILString()}.{Name}";
 }
