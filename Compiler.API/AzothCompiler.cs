@@ -20,15 +20,15 @@ public class AzothCompiler
     private readonly Lexer lexer = new();
     private readonly CompilationUnitParser parser = new();
 
-    public ValueTask<IPackageFacetNode> CompilePackageFacetAsync(
+    public ValueTask<IPackageFacetNode> AnalyzePackageFacetAsync(
         IdentifierName name,
         FacetKind facet,
         IEnumerable<ICodeFileSource> files,
         IEnumerable<PackageReference> references,
         IPackageSymbolLoader symbolLoader)
-        => CompilePackageFacetAsync(name, facet, files, references, symbolLoader, TaskScheduler.Default);
+        => AnalyzePackageFacetAsync(name, facet, files, references, symbolLoader, TaskScheduler.Default);
 
-    public async ValueTask<IPackageFacetNode> CompilePackageFacetAsync(
+    public async ValueTask<IPackageFacetNode> AnalyzePackageFacetAsync(
         IdentifierName name,
         FacetKind facet,
         IEnumerable<ICodeFileSource> fileSources,

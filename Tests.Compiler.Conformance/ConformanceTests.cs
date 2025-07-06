@@ -71,7 +71,7 @@ public partial class ConformanceTests
         {
             // Analyze
             // These are main facet because they are mini programs, not unit tests in *.azt files
-            var mainFacet = await compiler.CompilePackageFacetAsync("testPackage", FacetKind.Main, codeFile.Yield(), references, symbolLoader);
+            var mainFacet = await compiler.AnalyzePackageFacetAsync("testPackage", FacetKind.Main, codeFile.Yield(), references, symbolLoader);
 
             // Check for compiler errors
             Assert.NotNull(mainFacet.Diagnostics);
@@ -126,7 +126,7 @@ public partial class ConformanceTests
             var rootNamespace = FixedList.Empty<string>();
             var codeFiles = (await Task.WhenAll(sourcePaths.Select(p
                 => LoadCodeAsync(p, sourceDir, rootNamespace).AsTask()))).ToList();
-            var mainFacet = await compiler.CompilePackageFacetAsync(TestsSupportPackage.Name, FacetKind.Main, codeFiles, [], IPackageSymbolLoader.None);
+            var mainFacet = await compiler.AnalyzePackageFacetAsync(TestsSupportPackage.Name, FacetKind.Main, codeFiles, [], IPackageSymbolLoader.None);
             if (mainFacet.Diagnostics.Any(d => d.Level >= DiagnosticLevel.CompilationError))
                 ReportSupportCompilationErrors(mainFacet.Diagnostics);
             return mainFacet;

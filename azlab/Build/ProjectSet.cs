@@ -109,7 +109,7 @@ internal class ProjectSet : IEnumerable<Project>
     {
         try
         {
-            await ProcessProjects(taskScheduler, verbose, outputTests: false, BuildAsync, null);
+            await ProcessProjects(taskScheduler, verbose, BuildAsync);
         }
         catch (FatalCompilationErrorException)
         {
@@ -120,16 +120,10 @@ internal class ProjectSet : IEnumerable<Project>
     private delegate Task<IPackageFacetNode> ProcessAsync(
         AzothCompiler compiler,
         ProjectFacet projectFacet,
-        bool outputTests,
         Task<FixedDictionary<ProjectFacet, Task<IPackageFacetNode>>> projectBuildsTask,
         AsyncLock consoleLock);
 
-    private async Task<(IPackageFacetNode, IFixedSet<IPackageFacetNode>)?> ProcessProjects(
-        TaskScheduler taskScheduler,
-        bool verbose,
-        bool outputTests,
-        ProcessAsync processAsync,
-        ProjectConfig? entryProjectConfig)
+    private async Task<IFixedSet<IPackageFacetNode>> ProcessProjects(TaskScheduler taskScheduler, bool verbose, ProcessAsync processAsync)
     {
         _ = verbose; // verbose parameter will be needed in the future
         var taskFactory = new TaskFactory(taskScheduler);
@@ -144,7 +138,7 @@ internal class ProjectSet : IEnumerable<Project>
         var consoleLock = new AsyncLock();
         foreach (var projectFacet in sortedProjectFacets)
         {
-            var buildTask = taskFactory.StartNew(() => processAsync(compiler, projectFacet, outputTests, projectBuildsTask, consoleLock))
+            var buildTask = taskFactory.StartNew(() => processAsync(compiler, projectFacet, projectBuildsTask, consoleLock))
                                        .Unwrap(); // Needed because StartNew doesn't work intuitively with Async methods
             if (!projectFacetBuilds.TryAdd(projectFacet, buildTask))
                 throw new Exception("Project added to build set twice");
@@ -153,12 +147,18 @@ internal class ProjectSet : IEnumerable<Project>
         projectBuildsSource.SetResult(projectFacetBuilds.ToFixedDictionary());
 
         var allBuilds = await Task.WhenAll(projectFacetBuilds.Values).ConfigureAwait(false);
+        return allBuilds.ToFixedSet();
+    }
 
-        if (entryProjectConfig is null) return null;
-
-        var entryProjectFacet = GetProjectFacet(GetProject(entryProjectConfig), FacetKind.Main);
-        var entryFacet = await projectFacetBuilds[entryProjectFacet];
-        var referencedPackages = allBuilds.WhereNotNull().Except(entryFacet).ToFixedSet();
+    private (IPackageFacetNode, IFixedSet<IPackageFacetNode>) FindEntryFacet(
+        IFixedSet<IPackageFacetNode> facets,
+        ProjectConfig entryProjectConfig,
+        FacetKind entryFacetKind)
+    {
+        var entryProjectFacet = GetProjectFacet(GetProject(entryProjectConfig), entryFacetKind);
+        var entryFacet = facets.Single(f => f.PackageName == entryProjectFacet.Project.Name
+                                            && f.Kind == entryProjectFacet.Kind);
+        var referencedPackages = facets.WhereNotNull().Except(entryFacet).ToFixedSet();
         return (entryFacet, referencedPackages);
     }
 
@@ -166,8 +166,8 @@ internal class ProjectSet : IEnumerable<Project>
     {
         try
         {
-            var (entryFacet, referencedFacets) = (await ProcessProjects(taskScheduler, verbose,
-                outputTests: false, CompileAsync, entryProjectConfig))!.Value;
+            var facets = await ProcessProjects(taskScheduler, verbose, AnalyzeAsync);
+            var (entryFacet, referencedFacets) = FindEntryFacet(facets, entryProjectConfig, FacetKind.Main);
             var interpreter = new AzothTreeInterpreter();
             var process = interpreter.Execute(entryFacet, referencedFacets);
             while (await process.StandardOutput.ReadLineAsync() is { } line) Console.WriteLine(line);
@@ -186,8 +186,8 @@ internal class ProjectSet : IEnumerable<Project>
     {
         try
         {
-            var (testFacet, referencedFacets) =
-                (await ProcessProjects(taskScheduler, verbose, outputTests: true, CompileAsync, testProjectConfig))!.Value;
+            var facets = await ProcessProjects(taskScheduler, verbose, AnalyzeAsync);
+            var (testFacet, referencedFacets) = FindEntryFacet(facets, testProjectConfig, FacetKind.Tests);
             var interpreter = new AzothTreeInterpreter();
             var process = interpreter.ExecuteTests(testFacet, referencedFacets);
             while (await process.StandardOutput.ReadLineAsync() is { } line) Console.WriteLine(line);
@@ -204,14 +204,13 @@ internal class ProjectSet : IEnumerable<Project>
     private static async Task<IPackageFacetNode> BuildAsync(
         AzothCompiler compiler,
         ProjectFacet projectFacet,
-        bool outputTests,
         Task<FixedDictionary<ProjectFacet, Task<IPackageFacetNode>>> projectBuildsTask,
         AsyncLock consoleLock)
     {
-        var packageFacet = await CompileAsync(compiler, projectFacet, outputTests, projectBuildsTask, consoleLock);
+        var packageFacet = await AnalyzeAsync(compiler, projectFacet, projectBuildsTask, consoleLock);
         var project = projectFacet.Project;
         var cacheDir = PrepareCacheDir(project);
-        var codePath = EmitIL(projectFacet, packageFacet, outputTests, cacheDir);
+        var codePath = EmitIL(projectFacet, packageFacet, cacheDir);
 
         using (await consoleLock.LockAsync())
         {
@@ -221,16 +220,12 @@ internal class ProjectSet : IEnumerable<Project>
         return packageFacet;
     }
 
-    private static async Task<IPackageFacetNode> CompileAsync(
+    private static async Task<IPackageFacetNode> AnalyzeAsync(
         AzothCompiler compiler,
         ProjectFacet projectFacet,
-        bool outputTests,
         Task<FixedDictionary<ProjectFacet, Task<IPackageFacetNode>>> projectFacetBuildsTask,
         AsyncLock consoleLock)
     {
-        // Doesn't affect compilation, only IL emitting
-        _ = outputTests;
-
         var project = projectFacet.Project;
         var projectFacetBuilds = await projectFacetBuildsTask.ConfigureAwait(false);
         using (await consoleLock.LockAsync())
@@ -246,7 +241,7 @@ internal class ProjectSet : IEnumerable<Project>
         var codeFiles = CreateCodePaths(sourcePaths, isTest);
         try
         {
-            var facet = await compiler.CompilePackageFacetAsync(project.Name, projectFacet.Kind, codeFiles, references, symbolLoader);
+            var facet = await compiler.AnalyzePackageFacetAsync(project.Name, projectFacet.Kind, codeFiles, references, symbolLoader);
 
             if (OutputDiagnostics(projectFacet, facet.Diagnostics, consoleLock))
                 return facet;
@@ -334,7 +329,7 @@ internal class ProjectSet : IEnumerable<Project>
         return true;
     }
 
-    private static string EmitIL(ProjectFacet project, IPackageFacetNode package, bool outputTests, string cacheDir)
+    private static string EmitIL(ProjectFacet project, IPackageFacetNode package, string cacheDir)
     {
 #pragma warning disable IDE0022
         throw new NotImplementedException();
