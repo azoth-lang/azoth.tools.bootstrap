@@ -12,10 +12,8 @@ internal static partial class BuiltInsAspect
         => Primitive.SymbolTree.GlobalSymbols.Select(SymbolBinder.Symbol).WhereNotNull().Cast<ITypeDeclarationNode>()
                     .ToFixedSet();
 
-    // TODO shouldn't the intrinsics package be more distinct and not something that could be already referenced?
-    // If there is already a reference to the intrinsics package, use it. Otherwise, create a new one.
-    public static partial IPackageFacetReferenceNode PackageFacet_IntrinsicsReference(IPackageFacetNode node)
-        => node.References.SingleOrDefault(r => Intrinsic.Package.Equals(r.Symbols.Package))
-           ?? IIntrinsicsPackageFacetReferenceNode.Create();
+    // TODO the intrinsics package is going away and being replaced by uses of `#Intrinsic`
+    public static partial IIntrinsicsPackageFacetReferenceNode PackageFacet_IntrinsicsReference(IPackageFacetNode node)
+        => IIntrinsicsPackageFacetReferenceNode.Create();
     #endregion
 }

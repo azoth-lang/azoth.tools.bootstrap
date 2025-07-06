@@ -30,6 +30,9 @@ internal static partial class DefinitionsAspect
         static IEnumerable<INamespaceBlockMemberDefinitionNode> NamespaceChildren(INamespaceBlockMemberDefinitionNode m)
             => (m as INamespaceBlockDefinitionNode)?.Members ?? Enumerable.Empty<INamespaceBlockMemberDefinitionNode>();
     }
+
+    public static partial IEnumerable<IPackageFacetReferenceNode> PackageFacet_AllReferences(IPackageFacetNode node)
+        => node.References.Append<IPackageFacetReferenceNode>(node.IntrinsicsReference).AppendValue(node.MainFacetReference);
     #endregion
 
     #region Code Files

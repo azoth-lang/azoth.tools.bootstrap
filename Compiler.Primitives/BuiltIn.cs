@@ -6,8 +6,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Primitives;
 public static class BuiltIn
 {
     public static SymbolForest CreateSymbolForest(IEnumerable<FixedSymbolTree> packageTrees)
-        => new(Primitive.SymbolTree, Intrinsic.SymbolTree, packageTrees);
+        => new(Primitive.SymbolTree,  packageTrees);
 
     public static SymbolForest CreateSymbolForest(ISymbolTreeBuilder symbolTree, IEnumerable<FixedSymbolTree> packageTrees)
-        => new(Primitive.SymbolTree, Intrinsic.SymbolTree, symbolTree, packageTrees);
+        => new(Primitive.SymbolTree, symbolTree, packageTrees);
 }

@@ -150,14 +150,15 @@ public partial interface IPackageFacetNode : IPackageFacetDeclarationNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     IFixedSet<ICompilationUnitNode> CompilationUnits { get; }
     IPackageMainFacetReferenceNode? MainFacetReference { get; }
-    IFixedSet<IPackageFacetReferenceNode> References { get; }
+    IFixedSet<IOrdinaryPackageFacetReferenceNode> References { get; }
     PackageNameScope PackageNameScope { get; }
     DiagnosticCollection Diagnostics { get; }
     IFunctionDefinitionNode? EntryPoint { get; }
+    IEnumerable<IPackageFacetReferenceNode> AllReferences { get; }
     IFixedSet<IFacetMemberDefinitionNode> Definitions { get; }
     FixedSymbolTree Symbols { get; }
     IFixedSet<ITypeDeclarationNode> PrimitivesDeclarations { get; }
-    IPackageFacetReferenceNode IntrinsicsReference { get; }
+    IIntrinsicsPackageFacetReferenceNode IntrinsicsReference { get; }
     new INamespaceDefinitionNode GlobalNamespace { get; }
     INamespaceDeclarationNode IPackageFacetDeclarationNode.GlobalNamespace => GlobalNamespace;
     FacetKind IPackageFacetDeclarationNode.Kind
@@ -167,7 +168,7 @@ public partial interface IPackageFacetNode : IPackageFacetDeclarationNode
         IPackageFacetSyntax syntax,
         IEnumerable<ICompilationUnitNode> compilationUnits,
         IPackageMainFacetReferenceNode? mainFacetReference,
-        IEnumerable<IPackageFacetReferenceNode> references)
+        IEnumerable<IOrdinaryPackageFacetReferenceNode> references)
         => new PackageFacetNode(syntax, compilationUnits, mainFacetReference, references);
 }
 
@@ -5024,7 +5025,7 @@ file class PackageFacetNode : SemanticNode, IPackageFacetNode
     public IPackageFacetSyntax Syntax { [DebuggerStepThrough] get; }
     public IFixedSet<ICompilationUnitNode> CompilationUnits { [DebuggerStepThrough] get; }
     public IPackageMainFacetReferenceNode? MainFacetReference { [DebuggerStepThrough] get; }
-    public IFixedSet<IPackageFacetReferenceNode> References { [DebuggerStepThrough] get; }
+    public IFixedSet<IOrdinaryPackageFacetReferenceNode> References { [DebuggerStepThrough] get; }
     public ISymbolDeclarationNode ContainingDeclaration
         => Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
     public DiagnosticCollection Diagnostics
@@ -5034,6 +5035,12 @@ file class PackageFacetNode : SemanticNode, IPackageFacetNode
     private DiagnosticCollection? diagnostics;
     private bool diagnosticsCached;
     private IFixedSet<SemanticNode>? diagnosticsContributors;
+    public IEnumerable<IPackageFacetReferenceNode> AllReferences
+        => GrammarAttribute.IsCached(in allReferencesCached) ? allReferences!
+            : this.Synthetic(ref allReferencesCached, ref allReferences,
+                DefinitionsAspect.PackageFacet_AllReferences);
+    private IEnumerable<IPackageFacetReferenceNode>? allReferences;
+    private bool allReferencesCached;
     public IFixedSet<IFacetMemberDefinitionNode> Definitions
         => GrammarAttribute.IsCached(in definitionsCached) ? definitions!
             : this.Synthetic(ref definitionsCached, ref definitions,
@@ -5052,11 +5059,11 @@ file class PackageFacetNode : SemanticNode, IPackageFacetNode
                 NamespaceDefinitionsAspect.PackageFacet_GlobalNamespace);
     private INamespaceDefinitionNode? globalNamespace;
     private bool globalNamespaceCached;
-    public IPackageFacetReferenceNode IntrinsicsReference
+    public IIntrinsicsPackageFacetReferenceNode IntrinsicsReference
         => GrammarAttribute.IsCached(in intrinsicsReferenceCached) ? intrinsicsReference!
             : this.Synthetic(ref intrinsicsReferenceCached, ref intrinsicsReference,
                 n => Child.Attach(this, BuiltInsAspect.PackageFacet_IntrinsicsReference(n)));
-    private IPackageFacetReferenceNode? intrinsicsReference;
+    private IIntrinsicsPackageFacetReferenceNode? intrinsicsReference;
     private bool intrinsicsReferenceCached;
     public PackageNameScope PackageNameScope
         => GrammarAttribute.IsCached(in packageNameScopeCached) ? packageNameScope!
@@ -5093,7 +5100,7 @@ file class PackageFacetNode : SemanticNode, IPackageFacetNode
         IPackageFacetSyntax syntax,
         IEnumerable<ICompilationUnitNode> compilationUnits,
         IPackageMainFacetReferenceNode? mainFacetReference,
-        IEnumerable<IPackageFacetReferenceNode> references)
+        IEnumerable<IOrdinaryPackageFacetReferenceNode> references)
         : base(true)
     {
         Syntax = syntax;

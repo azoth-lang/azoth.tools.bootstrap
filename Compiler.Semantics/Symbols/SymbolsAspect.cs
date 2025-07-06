@@ -16,7 +16,7 @@ internal static partial class SymbolsAspect
     public static partial FixedSymbolTree PackageFacet_Symbols(IPackageFacetNode node)
     {
         var treeBuilder = new SymbolTreeBuilder(node.Symbol);
-        var forest = BuiltIn.CreateSymbolForest(treeBuilder, node.References.Select(p => p.Symbols));
+        var forest = BuiltIn.CreateSymbolForest(treeBuilder, node.AllReferences.Select(p => p.Symbols));
         return new PackageSymbolTreeBuilder(treeBuilder, node, forest).Build();
     }
     #endregion

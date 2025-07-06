@@ -1,5 +1,6 @@
 ◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Structure;
 ◊name DefinitionsAspect;
+◊using System.Collections.Generic;
 ◊using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 ◊using Azoth.Tools.Bootstrap.Compiler.Core.Types;
 ◊using Azoth.Tools.Bootstrap.Compiler.Names;
@@ -21,6 +22,7 @@
 = PackageFacet.Kind => Syntax.Kind;
 ↑ PackageFacetReference.AliasOrName: `IdentifierName`;
 ↑ PackageFacetReference.IsTrusted: `bool`;
+↑ PackageFacet.AllReferences: IEnumerable<PackageFacetReference>;
 = OrdinaryPackageFacetReference.AliasOrName => Syntax.AliasOrName;
 = OrdinaryPackageFacetReference.IsTrusted => Syntax.IsTrusted;
 // The tests facet always trusts the main facet

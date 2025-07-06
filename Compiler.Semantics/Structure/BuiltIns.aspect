@@ -6,5 +6,4 @@
 
 // ---------- Facets
 ↑ child PackageFacet.PrimitivesDeclarations: {TypeDeclaration};
-// TODO this should be included in children only if it isn't a duplicate
-↑ child PackageFacet.IntrinsicsReference: PackageFacetReference;
+↑ child PackageFacet.IntrinsicsReference: IntrinsicsPackageFacetReference;

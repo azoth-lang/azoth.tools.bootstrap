@@ -13,5 +13,5 @@ internal static partial class BuiltInsAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFixedSet<ITypeDeclarationNode> PackageFacet_PrimitivesDeclarations(IPackageFacetNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IPackageFacetReferenceNode PackageFacet_IntrinsicsReference(IPackageFacetNode node);
+    public static partial IIntrinsicsPackageFacetReferenceNode PackageFacet_IntrinsicsReference(IPackageFacetNode node);
 }

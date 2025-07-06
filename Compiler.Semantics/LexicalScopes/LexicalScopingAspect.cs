@@ -30,7 +30,7 @@ internal static partial class LexicalScopingAspect
     #region Facets
     public static partial PackageNameScope PackageFacet_PackageNameScope(IPackageFacetNode node)
         => new([node],
-            node.References.Append(node.IntrinsicsReference).AppendValue(node.MainFacetReference).Select(r => r.SymbolNode),
+            node.AllReferences.Select(r => r.SymbolNode),
             node.PrimitivesDeclarations);
     #endregion
 

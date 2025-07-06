@@ -15,21 +15,20 @@ public class SymbolForest
                                                                    .Concat(PackageFacets.SelectMany(Children));
     public IEnumerable<Symbol> Symbols => facetTrees.Values.SelectMany(t => t.Symbols);
 
-    public SymbolForest(PrimitiveSymbolTree primitiveSymbolTree, FixedSymbolTree intrinsicSymbolTree,
+    public SymbolForest(PrimitiveSymbolTree primitiveSymbolTree,
         ISymbolTreeBuilder symbolTreeBuilder, IEnumerable<FixedSymbolTree> otherTrees)
     {
         if (symbolTreeBuilder.Package is null)
             throw new ArgumentException("Can't be builder for primitive symbols", nameof(symbolTreeBuilder));
         PrimitiveSymbolTree = primitiveSymbolTree;
-        facetTrees = otherTrees.Append<ISymbolTree>(symbolTreeBuilder).Append(intrinsicSymbolTree)
+        facetTrees = otherTrees.Prepend<ISymbolTree>(symbolTreeBuilder)
                                .ToFixedDictionary(t => t.Facet!);
     }
 
-    public SymbolForest(PrimitiveSymbolTree primitiveSymbolTree, FixedSymbolTree intrinsicSymbolTree, IEnumerable<FixedSymbolTree> otherTrees)
+    public SymbolForest(PrimitiveSymbolTree primitiveSymbolTree, IEnumerable<FixedSymbolTree> trees)
     {
         PrimitiveSymbolTree = primitiveSymbolTree;
-        facetTrees = otherTrees.Append(intrinsicSymbolTree).SafeCast<ISymbolTree>()
-                               .ToFixedDictionary(t => t.Facet!);
+        facetTrees = trees.SafeCast<ISymbolTree>().ToFixedDictionary(t => t.Facet!);
     }
 
     public IEnumerable<Symbol> Children(Symbol symbol)

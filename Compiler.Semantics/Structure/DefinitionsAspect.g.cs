@@ -1,4 +1,5 @@
 using System.CodeDom.Compiler;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Core.Types;
@@ -20,6 +21,8 @@ internal static partial class DefinitionsAspect
     public static partial void CompilationUnit_Contribute_Diagnostics(ICompilationUnitNode node, DiagnosticCollectionBuilder diagnostics);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFunctionDefinitionNode? PackageFacet_EntryPoint(IPackageFacetNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial IEnumerable<IPackageFacetReferenceNode> PackageFacet_AllReferences(IPackageFacetNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFixedSet<IFacetMemberDefinitionNode> PackageFacet_Definitions(IPackageFacetNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
