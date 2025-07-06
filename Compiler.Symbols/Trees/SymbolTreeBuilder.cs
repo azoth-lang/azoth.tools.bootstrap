@@ -21,7 +21,6 @@ public class SymbolTreeBuilder : ISymbolTreeBuilder
         Facet = null;
     }
 
-    // TODO take a facet
     public SymbolTreeBuilder(PackageFacetSymbol facet)
     {
         Facet = facet;

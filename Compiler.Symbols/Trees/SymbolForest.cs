@@ -8,37 +8,37 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 public class SymbolForest
 {
     public PrimitiveSymbolTree PrimitiveSymbolTree { get; }
-    private readonly FixedDictionary<PackageSymbol, ISymbolTree> packageTrees;
-    public IEnumerable<PackageSymbol> Packages => packageTrees.Keys;
+    private readonly FixedDictionary<PackageFacetSymbol, ISymbolTree> facetTrees;
+    public IEnumerable<PackageFacetSymbol> PackageFacets => facetTrees.Keys;
 
     public IEnumerable<Symbol> GlobalSymbols => PrimitiveSymbolTree.GlobalSymbols
-                                                                   .Concat(Packages.SelectMany(Children));
-    public IEnumerable<Symbol> Symbols => packageTrees.Values.SelectMany(t => t.Symbols);
+                                                                   .Concat(PackageFacets.SelectMany(Children));
+    public IEnumerable<Symbol> Symbols => facetTrees.Values.SelectMany(t => t.Symbols);
 
     public SymbolForest(PrimitiveSymbolTree primitiveSymbolTree, FixedSymbolTree intrinsicSymbolTree,
-        ISymbolTreeBuilder symbolTreeBuilder, IEnumerable<FixedSymbolTree> packageTrees)
+        ISymbolTreeBuilder symbolTreeBuilder, IEnumerable<FixedSymbolTree> otherTrees)
     {
         if (symbolTreeBuilder.Package is null)
             throw new ArgumentException("Can't be builder for primitive symbols", nameof(symbolTreeBuilder));
         PrimitiveSymbolTree = primitiveSymbolTree;
-        var trees = packageTrees.Append<ISymbolTree>(symbolTreeBuilder).Append(intrinsicSymbolTree).ToFixedList();
-     
-        this.packageTrees = trees.ToFixedDictionary(t => t.Package!);
+        facetTrees = otherTrees.Append<ISymbolTree>(symbolTreeBuilder).Append(intrinsicSymbolTree)
+                               .ToFixedDictionary(t => t.Facet!);
     }
 
-    public SymbolForest(PrimitiveSymbolTree primitiveSymbolTree, FixedSymbolTree intrinsicSymbolTree, IEnumerable<FixedSymbolTree> packageTrees)
+    public SymbolForest(PrimitiveSymbolTree primitiveSymbolTree, FixedSymbolTree intrinsicSymbolTree, IEnumerable<FixedSymbolTree> otherTrees)
     {
         PrimitiveSymbolTree = primitiveSymbolTree;
-        this.packageTrees = packageTrees.Append(intrinsicSymbolTree).ToFixedDictionary(t => t.Package!, t => (ISymbolTree)t);
+        facetTrees = otherTrees.Append(intrinsicSymbolTree).SafeCast<ISymbolTree>()
+                               .ToFixedDictionary(t => t.Facet!);
     }
 
     public IEnumerable<Symbol> Children(Symbol symbol)
     {
-        if (symbol.Package is null)
+        if (symbol.Facet is null)
             return PrimitiveSymbolTree.GetChildrenOf(symbol);
 
-        if (!packageTrees.TryGetValue(symbol.Package, out var tree))
-            throw new ArgumentException("Symbol must be for one of the packages in this tree", nameof(symbol));
+        if (!facetTrees.TryGetValue(symbol.Facet, out var tree))
+            throw new ArgumentException("Symbol must be for one of the package facets in this forest.", nameof(symbol));
 
         return tree.GetChildrenOf(symbol);
     }

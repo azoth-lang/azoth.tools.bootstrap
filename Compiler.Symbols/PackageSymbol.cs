@@ -32,5 +32,5 @@ public sealed class PackageSymbol : Symbol
 
     public override int GetHashCode() => HashCode.Combine(Name);
 
-    public override string ToILString() => $"{Name}::";
+    public override string ToILString() => Name.ToString();
 }
