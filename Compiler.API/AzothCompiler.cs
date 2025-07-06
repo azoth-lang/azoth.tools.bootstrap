@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -27,9 +28,6 @@ public class AzothCompiler
         IPackageSymbolLoader symbolLoader)
         => CompilePackageFacetAsync(name, facet, files, references, symbolLoader, TaskScheduler.Default);
 
-    // TODO replace with CompilePackageFacetAsync
-    // TODO change references into a proper representation of the syntax
-    // TODO add a parameter for loading symbols for references
     public async ValueTask<IPackageFacetNode> CompilePackageFacetAsync(
         IdentifierName name,
         FacetKind facet,
@@ -39,6 +37,8 @@ public class AzothCompiler
         TaskScheduler taskScheduler)
     {
         var referencesSyntax = references.Select(r => r.ToSyntax()).ToFixedSet();
+        if (referencesSyntax.Any(r => r.PackageName == name))
+            throw new ArgumentException("Package cannot reference itself.", nameof(references));
         var compilationUnits = await ParseFilesAsync(fileSources, taskScheduler);
         var packageFacetSyntax = IPackageFacetSyntax.Create(name, facet, compilationUnits, referencesSyntax);
         var analyzer = new SemanticAnalyzer(symbolLoader);

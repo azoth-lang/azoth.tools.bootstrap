@@ -58,9 +58,13 @@ internal class ProjectSet : IEnumerable<Project>
         IEnumerable<ProjectReference> CreateReferences(ProjectConfig projectConfig)
             // TODO be more exact about selecting distinct references or possibly even merging them
             => projectConfig.Dependencies!
-                .SelectMany(CreateReferencesForDependency).DistinctBy(r => r.Project.Name);
+                .SelectMany((s, dependencyConfig) => CreateReferencesForDependency(projectConfig, s, dependencyConfig))
+                .DistinctBy(r => r.Project.Name);
 
-        IEnumerable<ProjectReference> CreateReferencesForDependency(string alias, ProjectDependencyConfig? dependencyConfig)
+        IEnumerable<ProjectReference> CreateReferencesForDependency(
+            ProjectConfig projectConfig,
+            string alias,
+            ProjectDependencyConfig? dependencyConfig)
         {
             // Note: these are input validations
             // TODO do these validations earlier
@@ -69,10 +73,14 @@ internal class ProjectSet : IEnumerable<Project>
             if (dependencyConfig.Relation == ProjectRelation.None)
                 throw new InvalidOperationException("None is not a valid relation.");
             var dependencyProjectConfig = configs[config, alias];
+            if (dependencyProjectConfig == projectConfig)
+                // TODO this is an input validation, it should probably be done earlier
+                throw new InvalidOperationException("Project cannot reference itself.");
             var dependencyProject = GetOrAddProject(dependencyProjectConfig, configs);
             var isTrusted = dependencyConfig.IsTrusted ?? throw new InvalidOperationException();
             yield return new(alias, dependencyProject, isTrusted, dependencyConfig.Relation, dependencyConfig.Bundle, dependencyConfig.ReferenceTests);
-            foreach (var bundledReference in dependencyProject.References.Where(r => r.Bundle != ProjectRelation.None))
+            // When bundling don't bundle in a reference to the current project
+            foreach (var bundledReference in dependencyProject.References.Where(r => r.Bundle != ProjectRelation.None && r.Project.Name != projectConfig.Name))
             {
                 // Relation is the min because if this is a dev reference so is the bundled thing
                 var relation = dependencyConfig.Relation.Min(bundledReference.Bundle);
