@@ -6,12 +6,14 @@ using System.Diagnostics;
 using System.IO;
 using System.IO.Pipelines;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Primitives;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.Async;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.Intrinsics;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.MemoryLayout;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.MemoryLayout.BoundedLists;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.InterpreterHelpers;
@@ -64,6 +66,7 @@ public sealed class InterpreterProcess
         = new(ReferenceEqualityComparer.Instance);
     private readonly LocalVariables.Scope.Pool localVariableScopePool = new();
     private readonly Stopwatch runStopwatch = new();
+    private readonly IntrinsicsRegistry intrinsics = IntrinsicsRegistry.Instance;
 
     private InterpreterProcess(IPackageFacetNode packageFacet, IEnumerable<IPackageFacetNode> referencedPackageFacets, bool runTests)
     {
@@ -237,6 +240,8 @@ public sealed class InterpreterProcess
         InitializerSymbol initializerSymbol,
         IReadOnlyList<AzothValue> arguments)
     {
+        if (intrinsics.Get(initializerSymbol) is { } intrinsicInitializer)
+            return intrinsicInitializer(selfBareType, initializerSymbol, arguments);
         if (ReferenceEquals(initializerSymbol.Package, Intrinsic.SymbolTree.Package))
             return CallIntrinsicAsync(initializerSymbol, arguments);
         var typeDefinition = userTypes[initializerSymbol.ContextTypeSymbol];
@@ -1086,7 +1091,7 @@ public sealed class InterpreterProcess
         var arguments = new[]
         {
             // bytes: const Raw_Bounded_List[byte]
-            AzothValue.RawBoundedList(bytes),
+            AzothValue.Intrinsic(bytes),
             // start: size
             AzothValue.Size(0),
             // byte_count: size
@@ -1117,7 +1122,7 @@ public sealed class InterpreterProcess
 
     private static string RawUtf8BytesToString(IReadOnlyList<AzothValue> arguments)
     {
-        var bytes = (RawBoundedByteList)arguments[0].RawBoundedListValue;
+        var bytes = (RawBoundedByteList)arguments[0].IntrinsicValue;
         var start = arguments[1].SizeValue;
         var byteCount = arguments[2].SizeValue;
         var message = bytes.Utf8GetString(start, byteCount);
@@ -1135,7 +1140,7 @@ public sealed class InterpreterProcess
                 list = new RawBoundedByteList(capacity);
             else
                 list = new RawBoundedList(capacity);
-            return ValueTask.FromResult(AzothValue.RawBoundedList(list));
+            return ValueTask.FromResult(AzothValue.Intrinsic(list));
         }
 
         throw new NotImplementedException($"Intrinsic {initializer}");
@@ -1147,26 +1152,26 @@ public sealed class InterpreterProcess
         IReadOnlyList<AzothValue> arguments)
     {
         if (ReferenceEquals(method, Intrinsic.GetRawBoundedListCapacity))
-            return ValueTask.FromResult(AzothValue.Size(self.RawBoundedListValue.Capacity));
+            return ValueTask.FromResult(AzothValue.Size(Unsafe.As<IRawBoundedList>(self.IntrinsicValue).Capacity));
         if (ReferenceEquals(method, Intrinsic.GetRawBoundedListCount))
-            return ValueTask.FromResult(AzothValue.Size(self.RawBoundedListValue.Count));
+            return ValueTask.FromResult(AzothValue.Size(Unsafe.As<IRawBoundedList>(self.IntrinsicValue).Count));
         if (ReferenceEquals(method, Intrinsic.RawBoundedListAdd))
         {
-            self.RawBoundedListValue.Add(arguments[0]);
+            Unsafe.As<IRawBoundedList>(self.IntrinsicValue).Add(arguments[0]);
             return ValueTask.FromResult(AzothValue.None);
         }
         if (ReferenceEquals(method, Intrinsic.RawBoundedListAt))
-            return ValueTask.FromResult(AzothValue.Ref(self.RawBoundedListValue.RefAt(arguments[0].SizeValue)));
+            return ValueTask.FromResult(AzothValue.Ref(Unsafe.As<IRawBoundedList>(self.IntrinsicValue).RefAt(arguments[0].SizeValue)));
         if (ReferenceEquals(method, Intrinsic.RawBoundedListShrink))
         {
-            self.RawBoundedListValue.Shrink(arguments[0].SizeValue);
+            Unsafe.As<IRawBoundedList>(self.IntrinsicValue).Shrink(arguments[0].SizeValue);
             return ValueTask.FromResult(AzothValue.None);
         }
         if (ReferenceEquals(method, Intrinsic.GetFixed))
-            return ValueTask.FromResult(self.RawBoundedListValue.Fixed);
+            return ValueTask.FromResult(Unsafe.As<IRawBoundedList>(self.IntrinsicValue).Fixed);
         if (ReferenceEquals(method, Intrinsic.SetFixed))
         {
-            self.RawBoundedListValue.Fixed = arguments[0];
+            Unsafe.As<IRawBoundedList>(self.IntrinsicValue).Fixed = arguments[0];
             return ValueTask.FromResult(AzothValue.None);
         }
 

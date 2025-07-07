@@ -8,7 +8,7 @@ using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using Azoth.Tools.Bootstrap.Framework;
-using static Azoth.Tools.Bootstrap.Compiler.Primitives.SymbolBuilder;
+using static Azoth.Tools.Bootstrap.Compiler.Symbols.SymbolBuilder;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Primitives;
 
@@ -158,7 +158,7 @@ public static class Intrinsic
         tree.Add(classSymbol);
 
         // published init(.fixed, .capacity) {...}
-        var initializer = new InitializerSymbol(classSymbol, null, mutType, Params(fixedType, Type.Size));
+        var initializer = Initializer(classSymbol, mutType, Params(fixedType, Type.Size));
         tree.Add(initializer);
 
         // TODO should this use `iref` to avoid copying large structs?

@@ -28,6 +28,7 @@ internal abstract class RawBoundedList<T> : IRawBoundedList, IList<AzothValue>
     public nuint Capacity => (nuint)items.Length;
     private readonly T[] items;
     private readonly bool clearValues;
+
     protected ReadOnlySpan<T> AsSpan() => items;
 
     public abstract void Add(AzothValue value);

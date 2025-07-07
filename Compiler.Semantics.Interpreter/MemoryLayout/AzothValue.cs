@@ -27,7 +27,7 @@ internal readonly struct AzothValue
     [FieldOffset(0)] public readonly AzothStruct StructValue;
     [FieldOffset(0)] public readonly BigInteger IntValue;
     [FieldOffset(0)] public readonly AzothRef RefValue;
-    [FieldOffset(0)] public readonly IRawBoundedList RawBoundedListValue;
+    [FieldOffset(0)] public readonly IIntrinsicValue IntrinsicValue;
     [FieldOffset(0)] public readonly Task<AzothResult> PromiseValue;
     [FieldOffset(0)] public readonly FunctionReference FunctionReferenceValue;
     [FieldOffset(0)] private readonly SimpleValueType value;
@@ -73,7 +73,7 @@ internal readonly struct AzothValue
     [Inline(InlineBehavior.Remove)]
     public static AzothValue Ref(AzothRef value) => new(value);
     [Inline(InlineBehavior.Remove)]
-    public static AzothValue RawBoundedList(IRawBoundedList value) => new(value);
+    public static AzothValue Intrinsic(IIntrinsicValue value) => new(value);
     [Inline(InlineBehavior.Remove)]
     public static AzothValue Promise(Task<AzothResult> value) => new(value);
     [Inline(InlineBehavior.Remove)]
@@ -134,9 +134,9 @@ internal readonly struct AzothValue
     {
         RefValue = value;
     }
-    private AzothValue(IRawBoundedList value)
+    private AzothValue(IIntrinsicValue value)
     {
-        RawBoundedListValue = value;
+        IntrinsicValue = value;
     }
     private AzothValue(Task<AzothResult> value)
     {

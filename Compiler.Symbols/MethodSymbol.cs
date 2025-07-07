@@ -17,6 +17,7 @@ public sealed class MethodSymbol : InvocableSymbol
     public override IdentifierName Name { get; }
     public NonVoidType SelfParameterType { get; }
     public override Type ReturnType { get; }
+    // TODO this isn't really a "MethodGroupType" because a method group has methods with different signatures
     public FunctionType MethodGroupType { get; }
 
     public MethodSymbol(

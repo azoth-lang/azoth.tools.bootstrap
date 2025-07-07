@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Frozen;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -98,4 +99,8 @@ public static class DictionaryExtensions
         Func<TSource, TValue> valueSelector)
         where TSource : notnull
         => source.ToDictionary(Identity, valueSelector);
+
+    public static FrozenDictionary<TKey, TValue> ToFrozenDictionary<TKey, TValue>(this IReadOnlyDictionary<TKey, TValue> source)
+        where TKey : notnull
+        => source.ToFrozenDictionary(p => p.Key, p => p.Value);
 }

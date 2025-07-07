@@ -1,6 +1,6 @@
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.MemoryLayout.BoundedLists;
 
-internal interface IRawBoundedList
+internal interface IRawBoundedList : IIntrinsicValue
 {
     public AzothValue Fixed { get; set; }
     public nuint Count { get; }

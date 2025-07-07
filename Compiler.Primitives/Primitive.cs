@@ -6,7 +6,7 @@ using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
-using static Azoth.Tools.Bootstrap.Compiler.Primitives.SymbolBuilder;
+using static Azoth.Tools.Bootstrap.Compiler.Symbols.SymbolBuilder;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Primitives;
 

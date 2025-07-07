@@ -14,6 +14,8 @@ public sealed class InitializerSymbol : FunctionOrInitializerSymbol
     public override IdentifierName? Name { get; }
     public CapabilityType SelfParameterType { get; }
     public override NonVoidType ReturnType { get; }
+
+    // TODO this isn't really a "InitializerGroupType" because an initializer group has initializers with different signatures
     public FunctionType InitializerGroupType { get; }
 
     public InitializerSymbol(
