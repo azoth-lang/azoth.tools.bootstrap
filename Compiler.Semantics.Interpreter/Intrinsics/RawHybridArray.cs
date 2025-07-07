@@ -27,7 +27,7 @@ internal abstract class RawHybridArray : IIntrinsicValue, IList<AzothValue>
         }
     }
 
-    public AzothValue Fixed { get; set; }
+    public AzothValue Prefix { get; set; }
     public abstract nuint Count { get; }
 
     public abstract AzothValue At(nuint index);

@@ -359,6 +359,8 @@ public sealed class InterpreterProcess
         AzothValue self,
         IReadOnlyList<AzothValue> arguments)
     {
+        if (intrinsics.Get(methodSymbol) is { } method)
+            return method(methodSymbol, self, arguments);
         if (ReferenceEquals(methodSymbol.Package, Intrinsic.SymbolTree.Package))
             return CallIntrinsicAsync(methodSymbol, self, arguments);
         if (ReferenceEquals(methodSymbol, Primitive.IdentityHash))
