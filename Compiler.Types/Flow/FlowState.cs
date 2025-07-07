@@ -332,7 +332,7 @@ internal sealed class FlowState : IFlowState
         foreach (var (returnValue, capability) in capabilityValuePairs)
         {
             if (capability.SharingIsTracked())
-                builder.AddToSet(set, false, returnValue, default);
+                builder.AddToSet(set, false, returnValue, capability);
             else
                 builder.AddUntracked(returnValue);
         }
