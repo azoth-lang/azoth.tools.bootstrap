@@ -216,6 +216,8 @@ public sealed class InterpreterProcess
 
     internal ValueTask<AzothValue> CallFunctionAsync(FunctionSymbol functionSymbol, IReadOnlyList<AzothValue> arguments)
     {
+        if (intrinsics.Get(functionSymbol) is { } function)
+            return function(functionSymbol, arguments);
         if (ReferenceEquals(functionSymbol.Package, Intrinsic.SymbolTree.Package))
             return CallIntrinsicAsync(functionSymbol, arguments);
         return CallFunctionAsync(functions[functionSymbol], arguments);

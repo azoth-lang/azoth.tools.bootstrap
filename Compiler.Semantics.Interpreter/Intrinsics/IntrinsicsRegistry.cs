@@ -59,9 +59,21 @@ internal sealed class IntrinsicsRegistry
         var intrinsicsFacet = new PackageFacetSymbol(intrinsicsPackage, FacetKind.Main);
         var azothNamespace = new LocalNamespaceSymbol(intrinsicsFacet, "azoth");
 
+        BuildCompilerIntrinsics(builder, azothNamespace);
+
         BuildRawCollections(builder, azothNamespace);
 
         return builder.Build();
+    }
+
+    private static void BuildCompilerIntrinsics(Builder builder, LocalNamespaceSymbol azothNamespace)
+    {
+        var compilerNamespace = new LocalNamespaceSymbol(azothNamespace, "compiler");
+        var intrinsicsNamespace = new LocalNamespaceSymbol(compilerNamespace, "intrinsics");
+
+        // published fn INTRINSIC() -> never
+        var intrinsicFunction = Function(intrinsicsNamespace, "INTRINSIC", Params(), Type.Never);
+        builder.Add(intrinsicFunction, (_, args) => throw new AbortException("INTRINSIC called."));
     }
 
     private static void BuildRawCollections(Builder builder, LocalNamespaceSymbol azothNamespace)
