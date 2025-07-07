@@ -9,6 +9,7 @@ using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 using static Azoth.Tools.Bootstrap.Compiler.Symbols.SymbolBuilder;
+using Type = Azoth.Tools.Bootstrap.Compiler.Types.Decorated.Type;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.Intrinsics;
 
@@ -99,9 +100,6 @@ internal sealed class IntrinsicsRegistry
         var initMutableSelfType = bareSelfType.With(Capability.InitMutable);
         var mutSelfType = bareSelfType.With(Capability.Mutable);
         var prefixType = typeConstructor.ParameterTypes[0];
-        var readType = bareType.WithDefaultCapability();
-        var mutType = bareType.With(Capability.Mutable);
-        var initMutableType = bareType.With(Capability.InitMutable);
         var itemType = typeConstructor.ParameterTypes[1];
         var irefVarItemType
             = RefType.Create(new(isInternal: true, isMutableBinding: true, itemType.PlainType), itemType);
@@ -143,6 +141,15 @@ internal sealed class IntrinsicsRegistry
         {
             var self = s.IntrinsicValue.UnsafeAs<RawHybridArray>();
             return ValueTask.FromResult(AzothValue.Size(self.Count));
+        });
+
+        // published unsafe fn at(readable self, index: size) -> self |> iref var T
+        var at = Method(classSymbol, "at", readableSelfType, Params(Type.Size), selfViewIRefVarItemType);
+        builder.Add(at, static (_, s, arguments) =>
+        {
+            var self = s.IntrinsicValue.UnsafeAs<RawHybridArray>();
+            var index = arguments[0].SizeValue;
+            return ValueTask.FromResult(AzothValue.Ref(self.RefAt(index)));
         });
     }
 

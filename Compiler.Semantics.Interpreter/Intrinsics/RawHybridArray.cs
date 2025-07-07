@@ -32,6 +32,7 @@ internal abstract class RawHybridArray : IIntrinsicValue, IList<AzothValue>
 
     public abstract AzothValue At(nuint index);
     public abstract void Set(nuint index, AzothValue value);
+    public AzothRef RefAt(nuint index) => new(this, (int)index);
 
     #region IList<T>
     int ICollection<AzothValue>.Count => (int)Count;
@@ -60,11 +61,6 @@ internal abstract class RawHybridArray : IIntrinsicValue, IList<AzothValue>
     private abstract class Base<T> : RawHybridArray
         where T : struct
     {
-        protected Base(nuint count)
-        {
-            items = new T[count];
-        }
-
         protected Base(T[] items)
         {
             this.items = items;
@@ -72,10 +68,6 @@ internal abstract class RawHybridArray : IIntrinsicValue, IList<AzothValue>
 
         public override nuint Count => (nuint)items.Length;
         private readonly T[] items;
-
-        protected ReadOnlySpan<T> AsSpan() => items;
-
-        public AzothRef RefAt(nuint index) => new(this, (int)index);
 
         protected T ValueAt(nuint index)
         {
