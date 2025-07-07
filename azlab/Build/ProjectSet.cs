@@ -77,7 +77,7 @@ internal class ProjectSet : IEnumerable<Project>
                 // TODO this is an input validation, it should probably be done earlier
                 throw new InvalidOperationException("Project cannot reference itself.");
             var dependencyProject = GetOrAddProject(dependencyProjectConfig, configs);
-            var isTrusted = dependencyConfig.IsTrusted ?? throw new InvalidOperationException();
+            var isTrusted = dependencyConfig.IsTrusted;
             yield return new(alias, dependencyProject, isTrusted, dependencyConfig.Relation, dependencyConfig.Bundle, dependencyConfig.ReferenceTests);
             // When bundling don't bundle in a reference to the current project
             foreach (var bundledReference in dependencyProject.References.Where(r => r.Bundle != ProjectRelation.None && r.Project.Name != projectConfig.Name))

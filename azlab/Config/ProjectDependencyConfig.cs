@@ -11,7 +11,7 @@ internal class ProjectDependencyConfig
     public string? Path { get; set; }
 
     [JsonProperty("trusted")]
-    public bool? IsTrusted { get; set; }
+    public bool IsTrusted { get; set; } = false;
 
     [JsonProperty("relation")]
     public ProjectRelation Relation { get; set; } = ProjectRelation.Internal;
