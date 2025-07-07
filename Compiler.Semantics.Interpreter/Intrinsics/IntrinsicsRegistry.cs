@@ -94,6 +94,7 @@ internal sealed class IntrinsicsRegistry
         var plainType = typeConstructor.ConstructWithParameterPlainTypes();
         var bareType = typeConstructor.ConstructWithParameterTypes(plainType);
         var bareSelfType = BareSelfType(bareType);
+        var readSelfType = bareSelfType.With(Capability.Read);
         var readableSelfType = new CapabilitySetSelfType(CapabilitySet.Readable, bareSelfType);
         var initMutableSelfType = bareSelfType.With(Capability.InitMutable);
         var mutSelfType = bareSelfType.With(Capability.Mutable);
@@ -118,8 +119,8 @@ internal sealed class IntrinsicsRegistry
             return ValueTask.FromResult(AzothValue.Intrinsic(RawHybridArray.Create(itemType, ensurePrefixZeroed, count, ensureZeroed)));
         });
 
-        // published unsafe get prefix(readable self) -> self |> P
-        var getPrefix = Getter(classSymbol, "prefix", readableSelfType, prefixType);
+        // published unsafe get prefix(self) -> P
+        var getPrefix = Getter(classSymbol, "prefix", readSelfType, prefixType);
         builder.Add(getPrefix, static (_, s, args) =>
         {
             var self = s.IntrinsicValue.UnsafeAs<RawHybridArray>();
@@ -134,6 +135,14 @@ internal sealed class IntrinsicsRegistry
             var prefix = args[0];
             self.Prefix = prefix;
             return ValueTask.FromResult(AzothValue.None);
+        });
+
+        // published unsafe get count(self) -> size
+        var getCount = Getter(classSymbol, "count", readSelfType, Type.Size);
+        builder.Add(getCount, static (_, s, args) =>
+        {
+            var self = s.IntrinsicValue.UnsafeAs<RawHybridArray>();
+            return ValueTask.FromResult(AzothValue.Size(self.Count));
         });
     }
 
