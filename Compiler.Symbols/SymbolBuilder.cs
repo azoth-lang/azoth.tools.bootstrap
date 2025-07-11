@@ -2,7 +2,6 @@ using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
-using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using Azoth.Tools.Bootstrap.Framework;
@@ -43,7 +42,7 @@ public static class SymbolBuilder
 
     public static BareType BareSelfType(BareType bareType, params Type[] arguments)
     {
-        var selfTypeConstructor = new SelfTypeConstructor(bareType.TypeConstructor);
+        var selfTypeConstructor = bareType.TypeConstructor.SelfTypeConstructor;
         var bareSelfPlainType = new BarePlainType(selfTypeConstructor, bareType.PlainType, arguments.Select(a => a.PlainType));
         var bareSelfType = new BareType(bareSelfPlainType, bareType, arguments.ToFixedList());
         return bareSelfType;

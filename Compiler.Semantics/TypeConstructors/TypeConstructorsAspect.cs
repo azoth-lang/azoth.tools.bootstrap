@@ -35,7 +35,7 @@ internal static partial class TypeConstructorsAspect
 
     #region Type Definition Parts
     public static partial SelfTypeConstructor ImplicitSelfDefinition_TypeConstructor(IImplicitSelfDefinitionNode node)
-        => new(node.TypeConstructorContext);
+        => node.TypeConstructorContext.SelfTypeConstructor;
     #endregion
 
     #region Member Definitions

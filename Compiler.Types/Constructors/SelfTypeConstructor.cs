@@ -15,7 +15,10 @@ public sealed class SelfTypeConstructor : AssociatedTypeConstructor
 
     public override IFixedSet<BareType> Supertypes { [DebuggerStepThrough] get; }
 
-    public SelfTypeConstructor(BareTypeConstructor containingTypeConstructor)
+    /// <remarks>
+    /// Use <see cref="BareTypeConstructor.SelfTypeConstructor"/> to create/get a <see cref="SelfTypeConstructor"/>.
+    /// </remarks>
+    internal SelfTypeConstructor(BareTypeConstructor containingTypeConstructor)
         : base(containingTypeConstructor)
     {
         Supertypes = containingTypeConstructor.Supertypes
