@@ -3,6 +3,9 @@ using InlineMethod;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.MemoryLayout;
 
+/// <summary>
+/// A `ref T` or `iref T`
+/// </summary>
 internal readonly struct AzothRef
 {
     private readonly IList<AzothValue> context;

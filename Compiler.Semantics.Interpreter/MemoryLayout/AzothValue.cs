@@ -209,9 +209,14 @@ internal readonly struct AzothValue
     [Inline(InlineBehavior.Remove)]
     public FunctionReference? AsFunctionReference() => value.Reference as FunctionReference;
 
+    /// <summary>
+    /// Get this value as a `ref T` or return null if it couldn't be one.
+    /// </summary>
+    /// <returns></returns>
     public AzothRef? AsRef()
     {
-        if (value.Reference is RawHybridBoundedList or not IList<AzothValue> || I32Value < 0)
+        // If this is a local variable reference, then it will be VariableStack.
+        if (value.Reference is not VariableStack || I32Value < 0)
             return null;
         return RefValue;
     }

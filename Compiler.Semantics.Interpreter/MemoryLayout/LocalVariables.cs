@@ -16,11 +16,11 @@ internal readonly struct LocalVariables
     [StructLayout(LayoutKind.Auto)]
     internal readonly struct Scope : IDisposable
     {
-        private readonly DefaultObjectPool<List<AzothValue>> pool;
+        private readonly DefaultObjectPool<VariableStack> pool;
         private readonly LocalVariables localVariables;
 
         private Scope(
-            DefaultObjectPool<List<AzothValue>> pool,
+            DefaultObjectPool<VariableStack> pool,
             ConcurrentDictionary<IBindingNode, int> bindingIndexes)
         {
             localVariables = new(bindingIndexes, pool.Get());
@@ -41,20 +41,20 @@ internal readonly struct LocalVariables
         {
             private readonly ConcurrentDictionary<IBindingNode, int> bindingIndexes
                 = new(ReferenceEqualityComparer.Instance);
-            private readonly DefaultObjectPool<List<AzothValue>> pool
+            private readonly DefaultObjectPool<VariableStack> pool
                 = new(new Policy(), Environment.ProcessorCount * 10);
 
             public Scope CreateRoot() => new(pool, bindingIndexes);
 
-            private class Policy : IPooledObjectPolicy<List<AzothValue>>
+            private class Policy : IPooledObjectPolicy<VariableStack>
             {
                 private const int MaxCapacityToReturn = 1024 + 1;
-                public List<AzothValue> Create() => new List<AzothValue>();
+                public VariableStack Create() => new();
 
-                public bool Return(List<AzothValue> list)
+                public bool Return(VariableStack stack)
                 {
-                    if (list.Capacity > MaxCapacityToReturn) return false;
-                    list.Clear();
+                    if (stack.Capacity > MaxCapacityToReturn) return false;
+                    stack.Clear();
                     return true;
                 }
             }
@@ -90,12 +90,12 @@ internal readonly struct LocalVariables
     }
 
     private readonly ConcurrentDictionary<IBindingNode, int> bindingIndexes;
-    private readonly List<AzothValue> variableStack;
+    private readonly VariableStack variableStack;
     public AsyncScope? AsyncScope { [DebuggerStepThrough] get; }
 
     private LocalVariables(
         ConcurrentDictionary<IBindingNode, int> bindingIndexes,
-        List<AzothValue> variableStack,
+        VariableStack variableStack,
         AsyncScope? asyncScope = null)
     {
         this.bindingIndexes = bindingIndexes;
