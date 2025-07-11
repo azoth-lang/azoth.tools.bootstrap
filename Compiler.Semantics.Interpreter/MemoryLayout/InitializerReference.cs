@@ -12,7 +12,7 @@ internal sealed class InitializerReference : FunctionReference
     private readonly BareType bareType;
     private readonly InitializerSymbol initializerSymbol;
 
-    public override FunctionType FunctionType => initializerSymbol.InitializerGroupType;
+    public override FunctionType FunctionType => initializerSymbol.InitializerReferenceType;
 
     public InitializerReference(InterpreterProcess interpreterProcess, BareType bareType, InitializerSymbol initializerSymbol)
     {

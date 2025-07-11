@@ -27,7 +27,7 @@
 = MethodDefinition.↑.Diagnostics;
 
 // TODO this shouldn't use Symbol
-= OrdinaryMethodDefinition.MethodGroupType => Symbol?.MethodGroupType ?? IMaybeFunctionType.Unknown;
+= OrdinaryMethodDefinition.MethodGroupType => Symbol?.MethodReferenceType ?? IMaybeFunctionType.Unknown;
 
 // TODO this shouldn't use Symbol
 = InitializerDefinition.ReturnType => Symbol?.ReturnType ?? IMaybeType.Unknown;

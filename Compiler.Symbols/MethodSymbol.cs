@@ -17,8 +17,12 @@ public sealed class MethodSymbol : InvocableSymbol
     public override IdentifierName Name { get; }
     public NonVoidType SelfParameterType { get; }
     public override Type ReturnType { get; }
-    // TODO this isn't really a "MethodGroupType" because a method group has methods with different signatures
-    public FunctionType MethodGroupType { get; }
+
+    /// <summary>
+    /// The <see cref="FunctionType"/> that will result from passing this method as a reference
+    /// to something expecting a function type.
+    /// </summary>
+    public FunctionType MethodReferenceType { get; }
 
     public MethodSymbol(
         TypeSymbol containingSymbol,
@@ -35,7 +39,7 @@ public sealed class MethodSymbol : InvocableSymbol
         Name = name;
         SelfParameterType = selfParameterType;
         ReturnType = returnType;
-        MethodGroupType = new FunctionType(parameterTypes, returnType);
+        MethodReferenceType = new FunctionType(parameterTypes, returnType);
     }
 
     public override bool Equals(Symbol? other)

@@ -887,7 +887,7 @@ internal static partial class ExpressionTypesAspect
 
     public static partial IMaybeType InitializerNameExpression_Type(IInitializerNameExpressionNode node)
         // TODO proper type
-        // => node.ReferencedDeclaration?.InitializerGroupType ?? IMaybeType.Unknown;
+        // => node.ReferencedDeclaration?.InitializerReferenceType ?? IMaybeType.Unknown;
         => IMaybeType.Unknown;
 
     public static partial IFlowState InitializerNameExpression_FlowStateAfter(IInitializerNameExpressionNode node)

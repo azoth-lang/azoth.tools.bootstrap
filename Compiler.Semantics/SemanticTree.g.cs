@@ -760,7 +760,7 @@ public partial interface IOrdinaryMethodDefinitionNode : IMethodDefinitionNode, 
     IMemberDefinitionSyntax? ITypeMemberDefinitionNode.Syntax => Syntax;
     IDefinitionSyntax? IDefinitionNode.Syntax => Syntax;
     IMaybeFunctionType IOrdinaryMethodDeclarationNode.MethodGroupType
-        => Symbol?.MethodGroupType ?? IMaybeFunctionType.Unknown;
+        => Symbol?.MethodReferenceType ?? IMaybeFunctionType.Unknown;
     MethodKind IMethodDefinitionNode.Kind
         => MethodKind.Standard;
     int IOrdinaryMethodDeclarationNode.Arity
@@ -4584,13 +4584,13 @@ public partial interface IMethodSymbolNode : IMethodDeclarationNode, ITypeMember
     IMaybeNonVoidType IMethodDeclarationNode.SelfParameterType
         => Symbol.SelfParameterType;
     IFixedList<IMaybeNonVoidPlainType> IInvocableDeclarationNode.ParameterPlainTypes
-        => Symbol.MethodGroupType.Parameters.ToPlainTypes();
+        => Symbol.MethodReferenceType.Parameters.ToPlainTypes();
     IFixedList<IMaybeParameterType> IInvocableDeclarationNode.ParameterTypes
-        => Symbol.MethodGroupType.Parameters;
+        => Symbol.MethodReferenceType.Parameters;
     IMaybePlainType IInvocableDeclarationNode.ReturnPlainType
-        => Symbol.MethodGroupType.Return.PlainType;
+        => Symbol.MethodReferenceType.Return.PlainType;
     IMaybeType IInvocableDeclarationNode.ReturnType
-        => Symbol.MethodGroupType.Return;
+        => Symbol.MethodReferenceType.Return;
 }
 
 [Closed(typeof(OrdinaryMethodSymbolNode))]
@@ -4600,9 +4600,9 @@ public partial interface IOrdinaryMethodSymbolNode : IOrdinaryMethodDeclarationN
     int IOrdinaryMethodDeclarationNode.Arity
         => Symbol.Arity;
     IMaybeFunctionPlainType IOrdinaryMethodDeclarationNode.MethodGroupPlainType
-        => Symbol.MethodGroupType.PlainType;
+        => Symbol.MethodReferenceType.PlainType;
     IMaybeFunctionType IOrdinaryMethodDeclarationNode.MethodGroupType
-        => Symbol.MethodGroupType;
+        => Symbol.MethodReferenceType;
 
     public static IOrdinaryMethodSymbolNode Create(MethodSymbol symbol)
         => new OrdinaryMethodSymbolNode(symbol);

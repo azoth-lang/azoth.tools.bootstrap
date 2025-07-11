@@ -15,8 +15,11 @@ public sealed class InitializerSymbol : FunctionOrInitializerSymbol
     public CapabilityType SelfParameterType { get; }
     public override NonVoidType ReturnType { get; }
 
-    // TODO this isn't really a "InitializerGroupType" because an initializer group has initializers with different signatures
-    public FunctionType InitializerGroupType { get; }
+    /// <summary>
+    /// The <see cref="FunctionType"/> that will result from passing this initializer as a reference
+    /// to something expecting a function type.
+    /// </summary>
+    public FunctionType InitializerReferenceType { get; }
 
     public InitializerSymbol(
         OrdinaryTypeSymbol containingTypeSymbol,
@@ -30,7 +33,7 @@ public sealed class InitializerSymbol : FunctionOrInitializerSymbol
         Name = initializerName;
         SelfParameterType = selfParameterType;
         ReturnType = containingTypeSymbol.TypeConstructor.ToConstructorReturn(selfParameterType, parameterTypes);
-        InitializerGroupType = new FunctionType(parameterTypes, ReturnType);
+        InitializerReferenceType = new FunctionType(parameterTypes, ReturnType);
     }
 
     public static InitializerSymbol CreateDefault(OrdinaryTypeSymbol containingTypeSymbol)
