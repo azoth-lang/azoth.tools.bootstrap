@@ -6,7 +6,6 @@ using System.Diagnostics;
 using System.IO;
 using System.IO.Pipelines;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
@@ -57,7 +56,7 @@ public sealed class InterpreterProcess
     private readonly InitializerSymbol? rangeInitializer;
     private readonly BareType? rangeBareType;
     private byte? exitCode;
-    private readonly TextWriter standardOutputWriter;
+    internal TextWriter StandardOutputWriter { get; }
     private readonly MethodSignatureCache methodSignatures = new();
     private readonly ConcurrentDictionary<IClassDefinitionNode, VTable> vTables
         = new(ReferenceEqualityComparer.Instance);
@@ -104,7 +103,7 @@ public sealed class InterpreterProcess
                        .ToFrozenDictionary(tuple => tuple.Item1, tuple => tuple.Item2);
 
         var pipe = new Pipe();
-        standardOutputWriter = new StreamWriter(pipe.Writer.AsStream(), Encoding.UTF8);
+        StandardOutputWriter = new StreamWriter(pipe.Writer.AsStream(), Encoding.UTF8);
         StandardOutput = new StreamReader(pipe.Reader.AsStream(), Encoding.UTF8);
 
         executionTask = runTests ? Task.Run(RunTestsAsync) : Task.Run(CallEntryPointAsync);
@@ -131,7 +130,7 @@ public sealed class InterpreterProcess
     private async Task CallEntryPointAsync()
     {
         runStopwatch.Start();
-        await using var _ = standardOutputWriter;
+        await using var _ = StandardOutputWriter;
 
         var entryPoint = packageFacet.EntryPoint!;
         var parameterTypes = entryPoint.Symbol.Assigned().ParameterTypes;
@@ -143,7 +142,7 @@ public sealed class InterpreterProcess
         runStopwatch.Stop();
 
         // Flush any buffered output
-        await standardOutputWriter.FlushAsync().ConfigureAwait(false);
+        await StandardOutputWriter.FlushAsync().ConfigureAwait(false);
         var returnType = entryPoint.Symbol.Assigned().ReturnType;
         if (returnType.Equals(Type.Void))
             exitCode = 0;
@@ -156,14 +155,14 @@ public sealed class InterpreterProcess
     private async Task RunTestsAsync()
     {
         runStopwatch.Start();
-        await using var _ = standardOutputWriter;
+        await using var _ = StandardOutputWriter;
 
         var testFunctions = packageFacet.Definitions.OfType<IFunctionDefinitionNode>()
                                         .Where(f => f.Attributes.Any(IsTestAttribute)).ToFixedSet();
 
-        await standardOutputWriter.WriteLineAsync($"Testing {packageFacet.PackageName} package...");
-        await standardOutputWriter.WriteLineAsync($"  Found {testFunctions.Count} tests");
-        await standardOutputWriter.WriteLineAsync();
+        await StandardOutputWriter.WriteLineAsync($"Testing {packageFacet.PackageName} package...");
+        await StandardOutputWriter.WriteLineAsync($"  Found {testFunctions.Count} tests");
+        await StandardOutputWriter.WriteLineAsync();
 
         int failed = 0;
 
@@ -172,27 +171,27 @@ public sealed class InterpreterProcess
         {
             // TODO check that return type is void
             var symbol = function.Symbol;
-            await standardOutputWriter.WriteLineAsync($"{symbol.Assigned().ContainingSymbol.ToILString()}.{symbol.Assigned().Name} ...");
+            await StandardOutputWriter.WriteLineAsync($"{symbol.Assigned().ContainingSymbol.ToILString()}.{symbol.Assigned().Name} ...");
             try
             {
                 stopwatch.Start();
                 await CallFunctionAsync(function, []).ConfigureAwait(false);
                 stopwatch.Stop();
-                await standardOutputWriter.WriteLineAsync($"  passed in {stopwatch.Elapsed.ToTotalSecondsAndMilliseconds()}");
+                await StandardOutputWriter.WriteLineAsync($"  passed in {stopwatch.Elapsed.ToTotalSecondsAndMilliseconds()}");
             }
             catch (AbortException ex)
             {
-                await standardOutputWriter.WriteLineAsync("  FAILED: " + ex.Message);
+                await StandardOutputWriter.WriteLineAsync("  FAILED: " + ex.Message);
                 failed += 1;
             }
         }
 
-        await standardOutputWriter.WriteLineAsync();
-        await standardOutputWriter.WriteLineAsync($"Tested {packageFacet.PackageName} package");
-        await standardOutputWriter.WriteLineAsync($"{failed} failed tests out of {testFunctions.Count} total");
+        await StandardOutputWriter.WriteLineAsync();
+        await StandardOutputWriter.WriteLineAsync($"Tested {packageFacet.PackageName} package");
+        await StandardOutputWriter.WriteLineAsync($"{failed} failed tests out of {testFunctions.Count} total");
 
         // Flush any buffered output
-        await standardOutputWriter.FlushAsync().ConfigureAwait(false);
+        await StandardOutputWriter.FlushAsync().ConfigureAwait(false);
 
         runStopwatch.Stop();
     }
@@ -216,9 +215,7 @@ public sealed class InterpreterProcess
     internal ValueTask<AzothValue> CallFunctionAsync(FunctionSymbol functionSymbol, IReadOnlyList<AzothValue> arguments)
     {
         if (intrinsics.Get(functionSymbol) is { } function)
-            return function(functionSymbol, arguments);
-        if (ReferenceEquals(functionSymbol.Package, Intrinsic.SymbolTree.Package))
-            return CallIntrinsicAsync(functionSymbol, arguments);
+            return function(this, functionSymbol, arguments);
         return CallFunctionAsync(functions[functionSymbol], arguments);
     }
 
@@ -243,8 +240,6 @@ public sealed class InterpreterProcess
     {
         if (intrinsics.Get(initializerSymbol) is { } intrinsicInitializer)
             return intrinsicInitializer(selfBareType, initializerSymbol, arguments);
-        if (ReferenceEquals(initializerSymbol.Package, Intrinsic.SymbolTree.Package))
-            return CallIntrinsicAsync(initializerSymbol, arguments);
         var typeDefinition = userTypes[initializerSymbol.ContextTypeSymbol];
         return typeDefinition switch
         {
@@ -362,8 +357,7 @@ public sealed class InterpreterProcess
     {
         if (intrinsics.Get(methodSymbol) is { } method)
             return method(methodSymbol, self, arguments);
-        if (ReferenceEquals(methodSymbol.Package, Intrinsic.SymbolTree.Package))
-            return CallIntrinsicAsync(methodSymbol, self, arguments);
+        // This is not part of the intrinsics because it is actually built-in and won't be declared with #Intrinsic
         if (ReferenceEquals(methodSymbol, Primitive.IdentityHash))
             return ValueTask.FromResult(IdentityHash(self));
 
@@ -1105,75 +1099,6 @@ public sealed class InterpreterProcess
         var layout = structLayouts.GetOrAdd(stringStruct, CreateStructLayout);
         var self = AzothValue.Struct(new(layout));
         return await CallInitializerAsync(stringInitializer!, self, stringBareType!, arguments).ConfigureAwait(false);
-    }
-
-    private async ValueTask<AzothValue> CallIntrinsicAsync(FunctionSymbol function, IReadOnlyList<AzothValue> arguments)
-    {
-        if (ReferenceEquals(function, Intrinsic.PrintRawUtf8Bytes))
-        {
-            string str = RawUtf8BytesToString(arguments);
-            await standardOutputWriter.WriteAsync(str).ConfigureAwait(false);
-            return AzothValue.None;
-        }
-        if (ReferenceEquals(function, Intrinsic.AbortRawUtf8Bytes))
-        {
-            string message = RawUtf8BytesToString(arguments);
-            throw new AbortException(message);
-        }
-        throw new NotImplementedException($"Intrinsic {function}");
-    }
-
-    private static string RawUtf8BytesToString(IReadOnlyList<AzothValue> arguments)
-    {
-        var bytes = (RawHybridBoundedList)arguments[0].IntrinsicValue;
-        var start = arguments[1].SizeValue;
-        var byteCount = arguments[2].SizeValue;
-        var message = bytes.GetStringFromUtf8Bytes(start, byteCount);
-        return message;
-    }
-
-    private static ValueTask<AzothValue> CallIntrinsicAsync(InitializerSymbol initializer, IReadOnlyList<AzothValue> arguments)
-    {
-        if (ReferenceEquals(initializer, Intrinsic.InitRawHybridBoundedList))
-        {
-            var itemType = initializer.ContainingSymbol.TypeConstructor.ParameterTypes[0];
-            nuint capacity = arguments[0].SizeValue;
-            return ValueTask.FromResult(AzothValue.Intrinsic(RawHybridBoundedList.Create(itemType, false, capacity)));
-        }
-
-        throw new NotImplementedException($"Intrinsic {initializer}");
-    }
-
-    private static ValueTask<AzothValue> CallIntrinsicAsync(
-        MethodSymbol method,
-        AzothValue self,
-        IReadOnlyList<AzothValue> arguments)
-    {
-        if (ReferenceEquals(method, Intrinsic.GetRawHybridBoundedListCapacity))
-            return ValueTask.FromResult(AzothValue.Size(Unsafe.As<RawHybridBoundedList>(self.IntrinsicValue).Capacity));
-        if (ReferenceEquals(method, Intrinsic.GetRawHybridBoundedListCount))
-            return ValueTask.FromResult(AzothValue.Size(Unsafe.As<RawHybridBoundedList>(self.IntrinsicValue).Count));
-        if (ReferenceEquals(method, Intrinsic.RawHybridBoundedListAdd))
-        {
-            Unsafe.As<RawHybridBoundedList>(self.IntrinsicValue).Add(arguments[0]);
-            return ValueTask.FromResult(AzothValue.None);
-        }
-        if (ReferenceEquals(method, Intrinsic.RawHybridBoundedListAt))
-            return ValueTask.FromResult(AzothValue.Ref(Unsafe.As<RawHybridBoundedList>(self.IntrinsicValue).RefAt(arguments[0].SizeValue)));
-        if (ReferenceEquals(method, Intrinsic.RawHybridBoundedListShrink))
-        {
-            Unsafe.As<RawHybridBoundedList>(self.IntrinsicValue).Shrink(arguments[0].SizeValue);
-            return ValueTask.FromResult(AzothValue.None);
-        }
-        if (ReferenceEquals(method, Intrinsic.GetRawHybridBoundedPrefix))
-            return ValueTask.FromResult(Unsafe.As<RawHybridBoundedList>(self.IntrinsicValue).Prefix);
-        if (ReferenceEquals(method, Intrinsic.SetRawHybridBoundedPrefix))
-        {
-            Unsafe.As<RawHybridBoundedList>(self.IntrinsicValue).Prefix = arguments[0];
-            return ValueTask.FromResult(AzothValue.None);
-        }
-
-        throw new NotImplementedException($"Intrinsic {method}");
     }
 
     private VTable CreateVTable(IClassDefinitionNode @class)
