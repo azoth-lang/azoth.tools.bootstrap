@@ -12,6 +12,7 @@ using static Azoth.Tools.Bootstrap.Compiler.Symbols.SymbolBuilder;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Primitives;
 
+// TODO these should be moved to new style intrinsics that are declared in azoth.compiler.intrinsics with #Intrinsic
 public static class Intrinsic
 {
     public static readonly FixedSymbolTree SymbolTree = DefineIntrinsicSymbols();
@@ -49,10 +50,10 @@ public static class Intrinsic
         = Find<MethodSymbol>(RawHybridBoundedList, "shrink");
 
     public static readonly MethodSymbol GetRawHybridBoundedPrefix
-        = FindGetter(RawHybridBoundedList, "fixed");
+        = FindGetter(RawHybridBoundedList, "prefix");
 
     public static readonly MethodSymbol SetRawHybridBoundedPrefix
-        = FindSetter(RawHybridBoundedList, "fixed");
+        = FindSetter(RawHybridBoundedList, "prefix");
 
     public static readonly FunctionSymbol PrintRawUtf8Bytes = Find<FunctionSymbol>("print_raw_utf8_bytes");
 
@@ -142,13 +143,13 @@ public static class Intrinsic
     {
         var typeConstructor = BareTypeConstructor.CreateClass(@namespace.Package.Name, @namespace.NamespaceName,
             isAbstract: false, isConst: false, "Raw_Hybrid_Bounded_List",
-            TypeConstructorParameter.Independent(CapabilitySet.Aliasable, "F"),
+            TypeConstructorParameter.Independent(CapabilitySet.Aliasable, "P"),
             TypeConstructorParameter.Independent(CapabilitySet.Aliasable, "T"));
         var plainType = typeConstructor.ConstructWithParameterPlainTypes();
         var bareType = typeConstructor.ConstructWithParameterTypes(plainType);
         var bareSelfType = BareSelfType(bareType);
         var readableSelfType = new CapabilitySetSelfType(CapabilitySet.Readable, bareSelfType);
-        var fixedType = typeConstructor.ParameterTypes[0];
+        var prefixType = typeConstructor.ParameterTypes[0];
         var readType = bareType.WithDefaultCapability();
         var mutType = bareType.With(Capability.Mutable);
         var itemType = typeConstructor.ParameterTypes[1];
@@ -158,17 +159,17 @@ public static class Intrinsic
         tree.Add(classSymbol);
 
         // published init(.fixed, .capacity) {...}
-        var initializer = Initializer(classSymbol, mutType, Params(fixedType, Type.Size));
+        var initializer = Initializer(classSymbol, mutType, Params(prefixType, Type.Size));
         tree.Add(initializer);
 
         // TODO should this use `iref` to avoid copying large structs?
-        // published get fixed(self) -> F;
-        var getFixed = Getter(classSymbol, "fixed", readType, fixedType);
-        tree.Add(getFixed);
+        // published get prefix(self) -> P;
+        var getPrefix = Getter(classSymbol, "prefix", readType, prefixType);
+        tree.Add(getPrefix);
 
-        // published set fixed(mut self, fixed: F);
-        var setFixed = Setter(classSymbol, "fixed", mutType, Param(fixedType));
-        tree.Add(setFixed);
+        // published set prefix(mut self, value: P);
+        var setPrefix = Setter(classSymbol, "prefix", mutType, Param(prefixType));
+        tree.Add(setPrefix);
 
         // published get capacity(self) -> size;
         var capacity = Getter(classSymbol, "capacity", readType, Type.Size);
