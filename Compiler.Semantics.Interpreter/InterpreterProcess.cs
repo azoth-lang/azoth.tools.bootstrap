@@ -15,7 +15,6 @@ using Azoth.Tools.Bootstrap.Compiler.Primitives;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.Async;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.Intrinsics;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.MemoryLayout;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.MemoryLayout.BoundedLists;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.InterpreterHelpers;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types;
@@ -1091,7 +1090,7 @@ public sealed class InterpreterProcess
 
     private async ValueTask<AzothValue> InitializeStringAsync(string value)
     {
-        var bytes = new RawHybridBoundedListBytes(Encoding.UTF8.GetBytes(value));
+        var bytes = RawHybridBoundedList.Create(value);
         var arguments = new[]
         {
             // bytes: const Raw_Bounded_List[byte]
@@ -1126,10 +1125,10 @@ public sealed class InterpreterProcess
 
     private static string RawUtf8BytesToString(IReadOnlyList<AzothValue> arguments)
     {
-        var bytes = (RawHybridBoundedListBytes)arguments[0].IntrinsicValue;
+        var bytes = (RawHybridBoundedList)arguments[0].IntrinsicValue;
         var start = arguments[1].SizeValue;
         var byteCount = arguments[2].SizeValue;
-        var message = bytes.Utf8GetString(start, byteCount);
+        var message = bytes.GetStringFromUtf8Bytes(start, byteCount);
         return message;
     }
 
@@ -1137,14 +1136,9 @@ public sealed class InterpreterProcess
     {
         if (ReferenceEquals(initializer, Intrinsic.InitRawHybridBoundedList))
         {
-            var listType = initializer.ContainingSymbol.TypeConstructor.ParameterTypes[0];
+            var itemType = initializer.ContainingSymbol.TypeConstructor.ParameterTypes[0];
             nuint capacity = arguments[0].SizeValue;
-            RawHybridBoundedList list;
-            if (listType.Equals(Type.Byte))
-                list = new RawHybridBoundedListBytes(capacity);
-            else
-                list = new RawHybridBoundedListValues(capacity);
-            return ValueTask.FromResult(AzothValue.Intrinsic(list));
+            return ValueTask.FromResult(AzothValue.Intrinsic(RawHybridBoundedList.Create(itemType, false, capacity)));
         }
 
         throw new NotImplementedException($"Intrinsic {initializer}");
@@ -1172,10 +1166,10 @@ public sealed class InterpreterProcess
             return ValueTask.FromResult(AzothValue.None);
         }
         if (ReferenceEquals(method, Intrinsic.GetRawHybridBoundedPrefix))
-            return ValueTask.FromResult(Unsafe.As<RawHybridBoundedList>(self.IntrinsicValue).Fixed);
+            return ValueTask.FromResult(Unsafe.As<RawHybridBoundedList>(self.IntrinsicValue).Prefix);
         if (ReferenceEquals(method, Intrinsic.SetRawHybridBoundedPrefix))
         {
-            Unsafe.As<RawHybridBoundedList>(self.IntrinsicValue).Fixed = arguments[0];
+            Unsafe.As<RawHybridBoundedList>(self.IntrinsicValue).Prefix = arguments[0];
             return ValueTask.FromResult(AzothValue.None);
         }
 

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.MemoryLayout.BoundedLists;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.Intrinsics;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using InlineMethod;
 
