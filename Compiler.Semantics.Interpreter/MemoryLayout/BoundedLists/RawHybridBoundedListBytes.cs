@@ -2,14 +2,14 @@ using System.Text;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.MemoryLayout.BoundedLists;
 
-internal sealed class RawBoundedByteList : RawBoundedList<byte>
+internal sealed class RawHybridBoundedListBytes : RawHybridBoundedListBase<byte>
 {
-    public RawBoundedByteList(nuint capacity)
+    public RawHybridBoundedListBytes(nuint capacity)
         : base(capacity, false) { }
 
     /// <remarks>This constructor takes ownership of the array. The array must not be modified after
     /// calling this constructor.</remarks>
-    public RawBoundedByteList(byte[] bytes)
+    public RawHybridBoundedListBytes(byte[] bytes)
         : base(bytes, (nuint)bytes.Length, false) { }
 
     public override void Add(AzothValue value) => AddValue(value.ByteValue);

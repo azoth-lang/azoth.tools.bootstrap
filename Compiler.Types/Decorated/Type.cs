@@ -37,7 +37,7 @@ public abstract class Type : IMaybeType
     /// <summary>
     /// The value `none` has this type, which is `never?`.
     /// </summary>
-    public static readonly OptionalType None = new(Plain.PlainType.None, Never);
+    public static readonly OptionalType None = new(PlainType.None, Never);
 
     public static readonly CapabilityType True = BareTypeConstructor.True.Type;
     public static readonly CapabilityType False = BareTypeConstructor.False.Type;

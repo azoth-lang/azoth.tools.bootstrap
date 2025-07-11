@@ -211,7 +211,7 @@ internal readonly struct AzothValue
 
     public AzothRef? AsRef()
     {
-        if (value.Reference is IRawBoundedList or not IList<AzothValue> || I32Value < 0)
+        if (value.Reference is RawHybridBoundedList or not IList<AzothValue> || I32Value < 0)
             return null;
         return RefValue;
     }

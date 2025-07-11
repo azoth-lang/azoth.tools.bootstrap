@@ -30,28 +30,28 @@ public static class Intrinsic
     public static readonly OrdinaryTypeSymbol RawHybridBoundedList
         = Find<OrdinaryTypeSymbol>("Raw_Hybrid_Bounded_List");
 
-    public static readonly InitializerSymbol InitRawBoundedList
+    public static readonly InitializerSymbol InitRawHybridBoundedList
         = Find<InitializerSymbol>(RawHybridBoundedList, null);
 
-    public static readonly MethodSymbol GetRawBoundedListCapacity
+    public static readonly MethodSymbol GetRawHybridBoundedListCapacity
         = Find<MethodSymbol>(RawHybridBoundedList, "capacity");
 
-    public static readonly MethodSymbol GetRawBoundedListCount
+    public static readonly MethodSymbol GetRawHybridBoundedListCount
         = Find<MethodSymbol>(RawHybridBoundedList, "count");
 
-    public static readonly MethodSymbol RawBoundedListAdd
+    public static readonly MethodSymbol RawHybridBoundedListAdd
         = Find<MethodSymbol>(RawHybridBoundedList, "add");
 
-    public static readonly MethodSymbol RawBoundedListAt
+    public static readonly MethodSymbol RawHybridBoundedListAt
         = Find<MethodSymbol>(RawHybridBoundedList, "at");
 
-    public static readonly MethodSymbol RawBoundedListShrink
+    public static readonly MethodSymbol RawHybridBoundedListShrink
         = Find<MethodSymbol>(RawHybridBoundedList, "shrink");
 
-    public static readonly MethodSymbol GetFixed
+    public static readonly MethodSymbol GetRawHybridBoundedPrefix
         = FindGetter(RawHybridBoundedList, "fixed");
 
-    public static readonly MethodSymbol SetFixed
+    public static readonly MethodSymbol SetRawHybridBoundedPrefix
         = FindSetter(RawHybridBoundedList, "fixed");
 
     public static readonly FunctionSymbol PrintRawUtf8Bytes = Find<FunctionSymbol>("print_raw_utf8_bytes");

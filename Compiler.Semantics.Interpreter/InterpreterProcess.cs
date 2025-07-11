@@ -1091,7 +1091,7 @@ public sealed class InterpreterProcess
 
     private async ValueTask<AzothValue> InitializeStringAsync(string value)
     {
-        var bytes = new RawBoundedByteList(Encoding.UTF8.GetBytes(value));
+        var bytes = new RawHybridBoundedListBytes(Encoding.UTF8.GetBytes(value));
         var arguments = new[]
         {
             // bytes: const Raw_Bounded_List[byte]
@@ -1126,7 +1126,7 @@ public sealed class InterpreterProcess
 
     private static string RawUtf8BytesToString(IReadOnlyList<AzothValue> arguments)
     {
-        var bytes = (RawBoundedByteList)arguments[0].IntrinsicValue;
+        var bytes = (RawHybridBoundedListBytes)arguments[0].IntrinsicValue;
         var start = arguments[1].SizeValue;
         var byteCount = arguments[2].SizeValue;
         var message = bytes.Utf8GetString(start, byteCount);
@@ -1135,15 +1135,15 @@ public sealed class InterpreterProcess
 
     private static ValueTask<AzothValue> CallIntrinsicAsync(InitializerSymbol initializer, IReadOnlyList<AzothValue> arguments)
     {
-        if (ReferenceEquals(initializer, Intrinsic.InitRawBoundedList))
+        if (ReferenceEquals(initializer, Intrinsic.InitRawHybridBoundedList))
         {
             var listType = initializer.ContainingSymbol.TypeConstructor.ParameterTypes[0];
             nuint capacity = arguments[0].SizeValue;
-            IRawBoundedList list;
+            RawHybridBoundedList list;
             if (listType.Equals(Type.Byte))
-                list = new RawBoundedByteList(capacity);
+                list = new RawHybridBoundedListBytes(capacity);
             else
-                list = new RawBoundedList(capacity);
+                list = new RawHybridBoundedListValues(capacity);
             return ValueTask.FromResult(AzothValue.Intrinsic(list));
         }
 
@@ -1155,27 +1155,27 @@ public sealed class InterpreterProcess
         AzothValue self,
         IReadOnlyList<AzothValue> arguments)
     {
-        if (ReferenceEquals(method, Intrinsic.GetRawBoundedListCapacity))
-            return ValueTask.FromResult(AzothValue.Size(Unsafe.As<IRawBoundedList>(self.IntrinsicValue).Capacity));
-        if (ReferenceEquals(method, Intrinsic.GetRawBoundedListCount))
-            return ValueTask.FromResult(AzothValue.Size(Unsafe.As<IRawBoundedList>(self.IntrinsicValue).Count));
-        if (ReferenceEquals(method, Intrinsic.RawBoundedListAdd))
+        if (ReferenceEquals(method, Intrinsic.GetRawHybridBoundedListCapacity))
+            return ValueTask.FromResult(AzothValue.Size(Unsafe.As<RawHybridBoundedList>(self.IntrinsicValue).Capacity));
+        if (ReferenceEquals(method, Intrinsic.GetRawHybridBoundedListCount))
+            return ValueTask.FromResult(AzothValue.Size(Unsafe.As<RawHybridBoundedList>(self.IntrinsicValue).Count));
+        if (ReferenceEquals(method, Intrinsic.RawHybridBoundedListAdd))
         {
-            Unsafe.As<IRawBoundedList>(self.IntrinsicValue).Add(arguments[0]);
+            Unsafe.As<RawHybridBoundedList>(self.IntrinsicValue).Add(arguments[0]);
             return ValueTask.FromResult(AzothValue.None);
         }
-        if (ReferenceEquals(method, Intrinsic.RawBoundedListAt))
-            return ValueTask.FromResult(AzothValue.Ref(Unsafe.As<IRawBoundedList>(self.IntrinsicValue).RefAt(arguments[0].SizeValue)));
-        if (ReferenceEquals(method, Intrinsic.RawBoundedListShrink))
+        if (ReferenceEquals(method, Intrinsic.RawHybridBoundedListAt))
+            return ValueTask.FromResult(AzothValue.Ref(Unsafe.As<RawHybridBoundedList>(self.IntrinsicValue).RefAt(arguments[0].SizeValue)));
+        if (ReferenceEquals(method, Intrinsic.RawHybridBoundedListShrink))
         {
-            Unsafe.As<IRawBoundedList>(self.IntrinsicValue).Shrink(arguments[0].SizeValue);
+            Unsafe.As<RawHybridBoundedList>(self.IntrinsicValue).Shrink(arguments[0].SizeValue);
             return ValueTask.FromResult(AzothValue.None);
         }
-        if (ReferenceEquals(method, Intrinsic.GetFixed))
-            return ValueTask.FromResult(Unsafe.As<IRawBoundedList>(self.IntrinsicValue).Fixed);
-        if (ReferenceEquals(method, Intrinsic.SetFixed))
+        if (ReferenceEquals(method, Intrinsic.GetRawHybridBoundedPrefix))
+            return ValueTask.FromResult(Unsafe.As<RawHybridBoundedList>(self.IntrinsicValue).Fixed);
+        if (ReferenceEquals(method, Intrinsic.SetRawHybridBoundedPrefix))
         {
-            Unsafe.As<IRawBoundedList>(self.IntrinsicValue).Fixed = arguments[0];
+            Unsafe.As<RawHybridBoundedList>(self.IntrinsicValue).Fixed = arguments[0];
             return ValueTask.FromResult(AzothValue.None);
         }
 

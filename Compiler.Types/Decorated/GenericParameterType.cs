@@ -6,7 +6,7 @@ using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 
 // e.g. T
-// NOTE: generic parameters are the only plain types that do not need a capability
+// NOTE: generic parameters are the only decorated types that do not need a capability
 public sealed class GenericParameterType : NonVoidType
 {
     public override GenericParameterPlainType PlainType { [DebuggerStepThrough] get; }
