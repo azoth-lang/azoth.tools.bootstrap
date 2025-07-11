@@ -99,8 +99,7 @@ public sealed class OrdinaryTypeConstructor : BareTypeConstructor
     /// <remarks>This is always `init mut` because the type is being initialized and can be mutated
     /// inside the constructor via field initializers.</remarks>
     public CapabilityType ToDefaultConstructorSelf()
-        // TODO switch to `init mut Self`
-        => ConstructWithParameterTypes().With(Capability.InitMutable);
+        => SelfTypeConstructor.ConstructWithParameterTypes().With(Capability.InitMutable);
 
     /// <summary>
     /// Make a version of this type for use as the return type of the default constructor or initializer.
@@ -108,7 +107,7 @@ public sealed class OrdinaryTypeConstructor : BareTypeConstructor
     /// <remarks>This is always either `iso` or `const` depending on whether the type was declared
     /// with `const` because there are no parameters that could break the new objects isolation.</remarks>
     public CapabilityType ToDefaultConstructorReturn()
-        => ConstructWithParameterTypes().With(IsDeclaredConst ? Capability.Constant : Capability.Isolated);
+        => SelfTypeConstructor.ConstructWithParameterTypes().With(IsDeclaredConst ? Capability.Constant : Capability.Isolated);
 
     /// <summary>
     /// Determine the return type of a constructor or initializer with the given parameter types.

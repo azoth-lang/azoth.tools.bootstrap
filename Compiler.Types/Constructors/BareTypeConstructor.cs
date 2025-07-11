@@ -129,7 +129,7 @@ public abstract class BareTypeConstructor : BareTypeConstructorContext, IEquatab
     {
         if (containingType is not null)
         {
-            Requires.That(Equals(containingType?.TypeConstructor), nameof(containingType), "Must match the context.");
+            Requires.That(Equals(containingType.TypeConstructor), nameof(containingType), "Must match the context.");
             containingType.ToString(builder);
         }
         else
@@ -208,6 +208,10 @@ public abstract class BareTypeConstructor : BareTypeConstructorContext, IEquatab
     private IFixedList<GenericParameterType>? parameterTypes;
 
     public abstract IFixedSet<BareType> Supertypes { get; }
+
+    public SelfTypeConstructor SelfTypeConstructor
+        => Lazy.Initialize(ref selfTypeConstructor, this, static bareType => new(bareType));
+    private SelfTypeConstructor? selfTypeConstructor;
 
     private BarePlainType? withParameterPlainTypes;
     private BareType? withParameterTypes;

@@ -82,7 +82,7 @@ public sealed class BareType : IEquatable<BareType>
         => With(TypeConstructor.DefaultCapability);
 
     public BareType WithReplacement(IFixedList<Type> arguments)
-        => new BareType(PlainType, ContainingType, arguments);
+        => new(PlainType, ContainingType, arguments);
 
     public BareType? TryToNonLiteral()
     {
