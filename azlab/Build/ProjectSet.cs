@@ -169,6 +169,7 @@ internal class ProjectSet : IEnumerable<Project>
             var facets = await ProcessProjects(taskScheduler, verbose, AnalyzeAsync);
             var (entryFacet, referencedFacets) = FindEntryFacet(facets, entryProjectConfig, FacetKind.Main);
             var interpreter = new AzothTreeInterpreter();
+            Console.WriteLine($"Running {entryFacet.PackageName}...");
             var process = interpreter.Execute(entryFacet, referencedFacets);
             while (await process.StandardOutput.ReadLineAsync() is { } line) Console.WriteLine(line);
             await process.WaitForExitAsync();
