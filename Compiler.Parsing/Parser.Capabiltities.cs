@@ -3,7 +3,6 @@ using Azoth.Tools.Bootstrap.Compiler.Core.Code;
 using Azoth.Tools.Bootstrap.Compiler.Core.Types;
 using Azoth.Tools.Bootstrap.Compiler.Syntax;
 using Azoth.Tools.Bootstrap.Compiler.Tokens;
-using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 using static Azoth.Tools.Bootstrap.Compiler.Core.Types.DeclaredCapability;
@@ -98,12 +97,12 @@ public partial class Parser
         var constraint = Tokens.RequiredToken<ICapabilitySetToken>();
         return constraint switch
         {
-            IReadableKeywordToken _ => ICapabilitySetSyntax.Create(constraint.Span, CapabilitySet.Readable),
-            IShareableKeywordToken _ => ICapabilitySetSyntax.Create(constraint.Span, CapabilitySet.Shareable),
-            IAliasableKeywordToken _ => ICapabilitySetSyntax.Create(constraint.Span, CapabilitySet.Aliasable),
-            ISendableKeywordToken _ => ICapabilitySetSyntax.Create(constraint.Span, CapabilitySet.Sendable),
-            ITemporaryKeywordToken _ => ICapabilitySetSyntax.Create(constraint.Span, CapabilitySet.Temporary),
-            IAnyKeywordToken _ => ICapabilitySetSyntax.Create(constraint.Span, CapabilitySet.Any),
+            IReadableKeywordToken _ => ICapabilitySetSyntax.Create(constraint.Span, constraint, DeclaredCapabilitySet.Readable),
+            IShareableKeywordToken _ => ICapabilitySetSyntax.Create(constraint.Span, constraint, DeclaredCapabilitySet.Shareable),
+            IAliasableKeywordToken _ => ICapabilitySetSyntax.Create(constraint.Span, constraint, DeclaredCapabilitySet.Aliasable),
+            ISendableKeywordToken _ => ICapabilitySetSyntax.Create(constraint.Span, constraint, DeclaredCapabilitySet.Sendable),
+            ITemporaryKeywordToken _ => ICapabilitySetSyntax.Create(constraint.Span, constraint, DeclaredCapabilitySet.Temporary),
+            IAnyKeywordToken _ => ICapabilitySetSyntax.Create(constraint.Span, constraint, DeclaredCapabilitySet.Any),
             _ => throw ExhaustiveMatch.Failed(constraint),
         };
     }

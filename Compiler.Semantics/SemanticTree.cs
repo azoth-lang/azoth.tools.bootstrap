@@ -10,7 +10,7 @@ public partial interface ICapabilityConstraintNode
     public ICapabilityConstraint ToConstraint(ICapabilityConstraint defaultConstraint)
         => this switch
         {
-            ICapabilitySetNode n => n.CapabilitySet,
+            ICapabilitySetNode n => n.DeclaredCapabilitySet.ToCapabilitySet(),
             ICapabilityNode n => n.DeclaredCapability.ToCapability(null) ?? defaultConstraint,
             _ => throw ExhaustiveMatch.Failed(this),
         };

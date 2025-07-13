@@ -43,8 +43,9 @@ internal static partial class TypeExpressionsAspect
 
     public static partial IMaybeType CapabilitySetType_NamedType(ICapabilitySetTypeNode node)
     {
+        var capabilitySet = node.CapabilitySet.DeclaredCapabilitySet.ToCapabilitySet();
         var referent = node.Referent.NamedType as GenericParameterType ?? IMaybeType.Unknown;
-        return CapabilitySetRestrictedType.Create(node.CapabilitySet.CapabilitySet, referent);
+        return CapabilitySetRestrictedType.Create(capabilitySet, referent);
     }
 
     public static partial void CapabilitySetType_Contribute_Diagnostics(ICapabilitySetTypeNode node, DiagnosticCollectionBuilder diagnostics)
@@ -56,7 +57,7 @@ internal static partial class TypeExpressionsAspect
             return;
 
         diagnostics.Add(TypeError.CannotApplyCapabilitySetToType(node.File, node.Syntax,
-            node.CapabilitySet.CapabilitySet, referentType));
+            node.CapabilitySet.DeclaredCapabilitySet, referentType));
     }
 
     public static partial IMaybeType OptionalType_NamedType(IOptionalTypeNode node)

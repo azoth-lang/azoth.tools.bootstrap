@@ -1037,7 +1037,7 @@ public partial interface ICapabilitySetNode : ICapabilityConstraintNode
     ICapabilityConstraintSyntax ICapabilityConstraintNode.Syntax => Syntax;
     ICodeSyntax ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    CapabilitySet CapabilitySet
+    DeclaredCapabilitySet DeclaredCapabilitySet
         => Syntax.CapabilitySet;
 
     public static ICapabilitySetNode Create(ICapabilitySetSyntax syntax)

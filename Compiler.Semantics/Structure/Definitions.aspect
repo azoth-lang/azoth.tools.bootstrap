@@ -85,7 +85,7 @@
 ↑ eager AssociatedTypeDefinition.Variance: `TypeVariance`;
 
 // ---------- Capabilities
-↑ CapabilitySet.CapabilitySet: `CapabilitySet` => Syntax.CapabilitySet;
+↑ CapabilitySet.DeclaredCapabilitySet: `DeclaredCapabilitySet` => Syntax.CapabilitySet;
 ↑ Capability.DeclaredCapability: `DeclaredCapability` => Syntax.Capability;
 
 // ---------- Parameters

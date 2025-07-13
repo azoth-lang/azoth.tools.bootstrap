@@ -8,9 +8,7 @@ using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 using Azoth.Tools.Bootstrap.Compiler.Core.Types;
 using Azoth.Tools.Bootstrap.Compiler.Names;
-using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Tokens;
-using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 using InlineMethod;
@@ -575,12 +573,14 @@ public partial interface ICapabilityConstraintSyntax : ICodeSyntax
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface ICapabilitySetSyntax : ICapabilityConstraintSyntax
 {
-    CapabilitySet CapabilitySet { get; }
+    ICapabilitySetToken? Token { get; }
+    DeclaredCapabilitySet CapabilitySet { get; }
 
     public static ICapabilitySetSyntax Create(
         TextSpan span,
-        CapabilitySet capabilitySet)
-        => new CapabilitySetSyntax(span, capabilitySet);
+        ICapabilitySetToken? token,
+        DeclaredCapabilitySet capabilitySet)
+        => new CapabilitySetSyntax(span, token, capabilitySet);
 }
 
 [Closed(typeof(CapabilitySyntax))]
@@ -2256,15 +2256,18 @@ file class CapabilitySetSyntax : ICapabilitySetSyntax
     private ICapabilitySetSyntax Self { [Inline] get => this; }
 
     public TextSpan Span { [DebuggerStepThrough] get; }
-    public CapabilitySet CapabilitySet { [DebuggerStepThrough] get; }
+    public ICapabilitySetToken? Token { [DebuggerStepThrough] get; }
+    public DeclaredCapabilitySet CapabilitySet { [DebuggerStepThrough] get; }
     public override string ToString()
         => FormattingAspect.CapabilitySet_ToString(this);
 
     public CapabilitySetSyntax(
         TextSpan span,
-        CapabilitySet capabilitySet)
+        ICapabilitySetToken? token,
+        DeclaredCapabilitySet capabilitySet)
     {
         Span = span;
+        Token = token;
         CapabilitySet = capabilitySet;
     }
 }

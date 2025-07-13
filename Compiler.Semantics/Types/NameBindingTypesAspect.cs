@@ -82,7 +82,7 @@ internal static partial class NameBindingTypesAspect
         return constraintNode switch
         {
             ICapabilityNode n => selfType.With(n.DeclaredCapability),
-            ICapabilitySetNode n => new CapabilitySetSelfType(n.CapabilitySet, selfType),
+            ICapabilitySetNode n => new CapabilitySetSelfType(n.DeclaredCapabilitySet.ToCapabilitySet(), selfType),
             _ => throw ExhaustiveMatch.Failed(constraintNode)
         };
     }

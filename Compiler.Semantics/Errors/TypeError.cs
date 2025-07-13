@@ -226,7 +226,7 @@ public static class TypeError
             3034, $"Supertype `{typeSyntax}` does not maintain independence.");
     }
 
-    public static Diagnostic CannotApplyCapabilitySetToType(CodeFile file, ICapabilitySetTypeSyntax typeSyntax, CapabilitySet capabilitySet, IMaybeType type)
+    public static Diagnostic CannotApplyCapabilitySetToType(CodeFile file, ICapabilitySetTypeSyntax typeSyntax, DeclaredCapabilitySet capabilitySet, IMaybeType type)
     {
         return new(file, typeSyntax.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             3035, $"Cannot apply `{capabilitySet.ToSourceCodeString()}` to type `{type.ToSourceCodeString()}`. Type must be a generic parameter.");

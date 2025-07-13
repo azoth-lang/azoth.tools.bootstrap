@@ -1,7 +1,7 @@
 namespace Azoth.Tools.Bootstrap.Compiler.Core.Types;
 
 /// <summary>
-/// The reference capability a type was declared with.
+/// The capability a type was declared with.
 /// </summary>
 /// <remarks>This is distinct from <c>Capability</c> because that type supports additional
 /// capabilities that cannot be directly declared. Also, this type distinguishes

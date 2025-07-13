@@ -11,9 +11,7 @@
 ◊using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 ◊using Azoth.Tools.Bootstrap.Compiler.Core.Types;
 ◊using Azoth.Tools.Bootstrap.Compiler.Names;
-◊using Azoth.Tools.Bootstrap.Compiler.Symbols;
 ◊using Azoth.Tools.Bootstrap.Compiler.Tokens;
-◊using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 ◊using Azoth.Tools.Bootstrap.Framework;
 
 // The syntax tree ought to be independent of semantics. It should not try to enforce rules such as
@@ -98,7 +96,7 @@ Attribute <: Code = TypeName:Name;
 
 // ---------- Capabilities
 CapabilityConstraint <: Code;
-CapabilitySet <: CapabilityConstraint = CapabilitySet:`CapabilitySet`;
+CapabilitySet <: CapabilityConstraint = Token:`ICapabilitySetToken`? CapabilitySet:`DeclaredCapabilitySet`;
 Capability <: CapabilityConstraint = Tokens:`ICapabilityToken`* Capability:`DeclaredCapability`;
 
 // ---------- Parameters and Return
