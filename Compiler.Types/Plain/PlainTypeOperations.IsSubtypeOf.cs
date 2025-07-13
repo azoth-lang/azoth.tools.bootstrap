@@ -6,6 +6,7 @@ using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 
+// TODO either remove substitutable or replace with "allowBoxing"
 public static partial class PlainTypeOperations
 {
     /// <summary>

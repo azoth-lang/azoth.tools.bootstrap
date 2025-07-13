@@ -10,6 +10,7 @@ using ExhaustiveMatching;
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 
 // TODO the logic here mostly duplicates the logic in PlainType.IsSubtypeOf is there a way to eliminate the duplication?
+// TODO either remove substitutable or replace with "allowBoxing" (See Plain type operations)
 public static partial class TypeOperations
 {
     /// <summary>
@@ -17,7 +18,9 @@ public static partial class TypeOperations
     /// </summary>
     /// <param name="self"></param>
     /// <param name="other"></param>
-    /// <param name="substitutable">TODO explain this parameter</param>
+    /// <param name="substitutable">Whether the subtype must be substitutable for the supertype.
+    /// By default, boxing is not allowed so a value type cannot be substituted for a trait. However,
+    /// it is technically a subtype.</param>
     public static bool IsSubtypeOf(this IMaybeType self, IMaybeType other, bool substitutable = true)
         => (self, other) switch
         {
@@ -52,10 +55,12 @@ public static partial class TypeOperations
             _ => false,
         };
 
+    /// <inheritdoc cref="IsSubtypeOf(IMaybeType,IMaybeType,bool)"/>
     public static bool IsSubtypeOf(this CapabilityType self, CapabilityType other, bool substitutable = true)
         => self.Capability.IsSubtypeOf(other.Capability)
            && self.BareType.IsSubtypeOf(other.BareType, other.Capability.AllowsWrite, substitutable);
 
+    /// <inheritdoc cref="IsSubtypeOf(IMaybeType,IMaybeType,bool)"/>
     public static bool IsSubtypeOf(this CapabilityType self, SelfViewpointType other, bool substitutable = true)
     {
         if (!self.Capability.IsSubtypeOf(other.CapabilitySet)) return false;
@@ -64,6 +69,7 @@ public static partial class TypeOperations
         return self.PlainType.IsSubtypeOf(other.PlainType, substitutable);
     }
 
+    /// <inheritdoc cref="IsSubtypeOf(IMaybeType,IMaybeType,bool)"/>
     public static bool IsSubtypeOf(this CapabilityType self, CapabilitySetSelfType other, bool substitutable = true)
     {
         if (!self.Capability.IsSubtypeOf(other.CapabilitySet)) return false;
@@ -71,11 +77,13 @@ public static partial class TypeOperations
         return self.BareType.IsSubtypeOf(other.BareType, other.CapabilitySet.AnyCapabilityAllowsWrite, substitutable);
     }
 
+    /// <inheritdoc cref="IsSubtypeOf(IMaybeType,IMaybeType,bool)"/>
     public static bool IsSubtypeOf(this SelfViewpointType self, CapabilityType other, bool substitutable = true)
         => self.CapabilitySet.IsSubtypeOf(other.Capability)
            // Capabilities on the referent also need to satisfy other.Capability
            && self.Referent.IsSubtypeOf(other, substitutable);
 
+    /// <inheritdoc cref="IsSubtypeOf(IMaybeType,IMaybeType,bool)"/>
     public static bool IsSubtypeOf(this SelfViewpointType self, SelfViewpointType other, bool substitutable = true)
         => self.CapabilitySet.IsSubtypeOf(other.CapabilitySet)
            && self.Referent.IsSubtypeOf(other.Referent, substitutable);
@@ -189,6 +197,7 @@ public static partial class TypeOperations
         return true;
     }
 
+    /// <inheritdoc cref="IsSubtypeOf(IMaybeType,IMaybeType,bool)"/>
     public static bool IsSubtypeOf(this FunctionType self, FunctionType other)
     {
         if (self.Parameters.Count != other.Parameters.Count)
@@ -201,6 +210,7 @@ public static partial class TypeOperations
         return self.Return.ReturnCanOverride(other.Return);
     }
 
+    /// <inheritdoc cref="IsSubtypeOf(IMaybeType,IMaybeType,bool)"/>
     public static bool IsSubtypeOf(this RefType self, RefType other)
     {
         // `iref var T <: ref var T`
