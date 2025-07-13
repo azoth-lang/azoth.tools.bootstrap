@@ -209,6 +209,8 @@ public abstract class BareTypeConstructor : BareTypeConstructorContext, IEquatab
 
     public abstract IFixedSet<BareType> Supertypes { get; }
 
+    public virtual IFixedSet<BareType> Subtypes => FixedSet.Empty<BareType>();
+
     public SelfTypeConstructor SelfTypeConstructor
         => Lazy.Initialize(ref selfTypeConstructor, this, static bareType => new(bareType));
     private SelfTypeConstructor? selfTypeConstructor;

@@ -9,15 +9,30 @@ public sealed class OrdinaryAssociatedTypeConstructor : AssociatedTypeConstructo
 {
     public override bool IsDeclaredConst => false;
 
-    public override TypeSemantics? Semantics => null;
+    public override TypeSemantics? Semantics { [DebuggerStepThrough] get; }
 
     public override IdentifierName Name { [DebuggerStepThrough] get; }
 
-    public override IFixedSet<BareType> Supertypes => BareType.AnySet;
+    public override IFixedSet<BareType> Supertypes { [DebuggerStepThrough] get; }
+
+    public override IFixedSet<BareType> Subtypes { [DebuggerStepThrough] get; }
 
     public OrdinaryAssociatedTypeConstructor(BareTypeConstructor containingTypeConstructor, IdentifierName name)
         : base(containingTypeConstructor)
     {
         Name = name;
+        Semantics = null; // Semantics unknown
+        Supertypes = BareType.AnySet;
+        Subtypes = FixedSet.Empty<BareType>();
+    }
+
+    public OrdinaryAssociatedTypeConstructor(BareTypeConstructor containingTypeConstructor, IdentifierName name, BareType equalToType)
+        : base(containingTypeConstructor)
+    {
+        Name = name;
+        Semantics = equalToType.Semantics;
+        Supertypes = equalToType.Supertypes.Prepend(equalToType).ToFixedSet();
+        // Subtypes are the same as supertypes because this type is equal to the other type.
+        Subtypes = Supertypes;
     }
 }

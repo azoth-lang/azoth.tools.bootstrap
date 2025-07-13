@@ -41,11 +41,28 @@ public sealed class BareType : IEquatable<BareType>
                                (p, a) => new TypeParameterArgument(p, a)).ToFixedList());
     private IFixedList<TypeParameterArgument>? typeParameterArguments;
 
+    /// <summary>
+    /// The declared supertypes of this type.
+    /// </summary>
+    /// <remarks>Associated and generic types can be constrained with supertypes, or they can be
+    /// equal to a type in which case they are both a supertype and subtype of that type.</remarks>
     public IFixedSet<BareType> Supertypes
         => Lazy.Initialize(ref supertypes, TypeConstructor, TypeReplacements,
             static (constructor, replacements)
                 => constructor.Supertypes.Select(replacements.ApplyTo).ToFixedSet());
     private IFixedSet<BareType>? supertypes;
+
+    /// <summary>
+    /// The constrained subtypes of this type. (Does <em>not</em> include all types this type is a
+    /// supertype of.)
+    /// </summary>
+    /// <remarks>Normal type declarations report no subtypes. However, associated and generic types
+    /// can be constrained to have subtypes, or they can be  equal to a type in which case they are
+    /// both a supertype and subtype of that type.</remarks>
+    public IFixedSet<BareType> Subtypes
+        => Lazy.Initialize(ref subtypes, TypeConstructor, TypeReplacements,
+            static (constructor, replacements) => constructor.Subtypes.Select(replacements.ApplyTo).ToFixedSet());
+    private IFixedSet<BareType>? subtypes;
 
     public BareType(BarePlainType plainType, BareType? containingType, IFixedList<Type> arguments)
     {

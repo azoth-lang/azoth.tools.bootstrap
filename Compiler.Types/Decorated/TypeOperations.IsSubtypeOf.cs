@@ -12,6 +12,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 // TODO the logic here mostly duplicates the logic in PlainType.IsSubtypeOf is there a way to eliminate the duplication?
 public static partial class TypeOperations
 {
+    /// <summary>
+    /// Whether <paramref name="self"/> is a subtype of <paramref name="other"/>.
+    /// </summary>
+    /// <param name="self"></param>
+    /// <param name="other"></param>
+    /// <param name="substitutable">TODO explain this parameter</param>
     public static bool IsSubtypeOf(this IMaybeType self, IMaybeType other, bool substitutable = true)
         => (self, other) switch
         {
@@ -20,6 +26,7 @@ public static partial class TypeOperations
             _ => throw new UnreachableException()
         };
 
+    /// <inheritdoc cref="IsSubtypeOf(IMaybeType,IMaybeType,bool)"/>
     public static bool IsSubtypeOf(this Type self, Type other, bool substitutable = true)
         => (self, other) switch
         {
@@ -77,7 +84,7 @@ public static partial class TypeOperations
     {
         if (self.Equals(other))
             return true;
-        if (self.Supertypes.Contains(other))
+        if (self.Supertypes.Contains(other) || other.Subtypes.Contains(self))
             return IsSubstitutable();
 
         // TODO remove hack to allow string to exist in both primitives and stdlib
@@ -96,9 +103,7 @@ public static partial class TypeOperations
         return false;
 
         bool IsSubstitutable()
-            => !substitutable
-               || self.Semantics == TypeSemantics.Reference
-               || self.Semantics == TypeSemantics.Value && other.Semantics == TypeSemantics.Value;
+            => !substitutable || self.Semantics == other.Semantics;
     }
 
     private static bool IsSubtypeOf(

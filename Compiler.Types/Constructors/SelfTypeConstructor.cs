@@ -5,6 +5,9 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 
+/// <summary>
+/// Type constructor for the `Self` type.
+/// </summary>
 public sealed class SelfTypeConstructor : AssociatedTypeConstructor
 {
     public override bool IsDeclaredConst => Context.IsDeclaredConst;

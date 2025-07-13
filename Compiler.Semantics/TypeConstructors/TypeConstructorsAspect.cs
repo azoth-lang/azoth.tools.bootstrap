@@ -39,7 +39,13 @@ internal static partial class TypeConstructorsAspect
     #endregion
 
     #region Member Definitions
+    // TODO report errors for anything that shouldn't be an IAssociatedTypeDefinitionNode.Initializer
     public static partial OrdinaryAssociatedTypeConstructor AssociatedTypeDefinition_TypeConstructor(IAssociatedTypeDefinitionNode node)
-        => new(node.TypeConstructorContext, node.Name);
+    {
+        // TODO this is probably not correct. For example, can't an associated type be assigned an optional type or function type?
+        if (node.Initializer is INameNode { NamedBareType: { } namedBareType })
+            return new(node.TypeConstructorContext, node.Name, namedBareType);
+        return new(node.TypeConstructorContext, node.Name);
+    }
     #endregion
 }

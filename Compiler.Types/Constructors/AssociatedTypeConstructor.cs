@@ -8,6 +8,10 @@ using Type = Azoth.Tools.Bootstrap.Compiler.Types.Decorated.Type;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 
+/// <summary>
+/// Type constructor for an associated type, either a regular associated type declared with `type`
+/// or the special `Self` associated type.
+/// </summary>
 [Closed(typeof(OrdinaryAssociatedTypeConstructor), typeof(SelfTypeConstructor))]
 public abstract class AssociatedTypeConstructor : BareTypeConstructor
 {
