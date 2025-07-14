@@ -22,6 +22,8 @@ public sealed class CapabilitySetRestrictedType : NonVoidType
     public static NonVoidType Create(CapabilitySet capabilitySet, GenericParameterType referent)
         => new CapabilitySetRestrictedType(capabilitySet, referent);
 
+    public override NonVoidType? BaseType => null;
+
     public CapabilitySet CapabilitySet { [DebuggerStepThrough] get; }
 
     public GenericParameterType Referent { [DebuggerStepThrough] get; }

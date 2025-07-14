@@ -23,6 +23,9 @@ public abstract class NonVoidType : Type, IMaybeNonVoidType
 
     internal abstract GenericParameterTypeReplacements BareTypeReplacements { [DebuggerStepThrough] get; }
 
+    public abstract NonVoidType? BaseType { get; }
+    IMaybeNonVoidType? IMaybeNonVoidType.BaseType => BaseType;
+
     public TypeReplacements TypeReplacements
         => Lazy.Initialize(ref typeReplacements, this, static type => new(type));
     private TypeReplacements? typeReplacements;

@@ -22,6 +22,8 @@ public sealed class CapabilityType : NonVoidType
     public static CapabilityType Create(Capability capability, BareType bareType)
         => new(capability, bareType);
 
+    public override NonVoidType? BaseType => BareType.BaseType?.With(Capability);
+
     public Capability Capability { [DebuggerStepThrough] get; }
 
     public BareType BareType { [DebuggerStepThrough] get; }

@@ -27,7 +27,7 @@ public sealed class SelfTypeConstructor : AssociatedTypeConstructor
         : base(containingTypeConstructor)
     {
         var containingType = containingTypeConstructor.ConstructWithParameterTypes();
-        BaseType = containingType.BaseType;
+        BaseType = containingType.BaseType; // TODO should this also be a self type?
         Supertypes = containingTypeConstructor.Supertypes
             .Prepend(containingType).ToFixedSet();
     }

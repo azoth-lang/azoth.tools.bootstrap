@@ -36,6 +36,9 @@ public sealed class OptionalType : NonVoidType
 
     public override OptionalPlainType PlainType { [DebuggerStepThrough] get; }
 
+    // TODO maybe for reference types this should be optional of Referent.BaseType
+    public override NonVoidType? BaseType => null;
+
     public NonVoidType Referent { [DebuggerStepThrough] get; }
 
     internal override GenericParameterTypeReplacements BareTypeReplacements => Referent.BareTypeReplacements;

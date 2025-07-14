@@ -18,6 +18,8 @@ public sealed class FunctionType : NonVoidType, IMaybeFunctionType
     public override FunctionPlainType PlainType { [DebuggerStepThrough] get; }
     IMaybeFunctionPlainType IMaybeFunctionType.PlainType => PlainType;
 
+    public override NonVoidType? BaseType => null;
+
     public IFixedList<ParameterType> Parameters { [DebuggerStepThrough] get; }
     public Type Return { [DebuggerStepThrough] get; }
     IMaybeType IMaybeFunctionType.Return => Return;

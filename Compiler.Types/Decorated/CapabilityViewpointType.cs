@@ -26,6 +26,8 @@ public sealed class CapabilityViewpointType : NonVoidType
         return new CapabilityViewpointType(capability, referent);
     }
 
+    public override NonVoidType? BaseType => null;
+
     public Capability Capability { [DebuggerStepThrough] get; }
 
     public GenericParameterType Referent { [DebuggerStepThrough] get; }

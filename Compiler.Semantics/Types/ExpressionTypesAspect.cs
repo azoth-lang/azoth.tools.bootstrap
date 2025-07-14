@@ -881,9 +881,9 @@ internal static partial class ExpressionTypesAspect
 
     public static partial IMaybeType BaseExpression_Type(IBaseExpressionNode node)
     {
-        if (node.ReferencedDefinition is { BindingValueId: var bindingValueId, BindingType: var bindingType })
-            // TODO get base type
-            return node.FlowStateAfter.AliasType(bindingValueId, bindingType);
+        // TODO if ReferencedDefinition is not null, but BaseType is, then the type ought to be `Any`
+        if (node.ReferencedDefinition is { BindingValueId: var bindingValueId, BindingType.BaseType: { } baseType })
+            return node.FlowStateAfter.AliasType(bindingValueId, baseType);
 
         // Only happens when node.ReferencedDefinition is null
         return IMaybeType.Unknown;

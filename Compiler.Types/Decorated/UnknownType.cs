@@ -7,7 +7,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 public sealed class UnknownType : IMaybeFunctionType, IMaybeParameterType
 {
     #region Singleton
-    internal static readonly UnknownType Instance = new UnknownType();
+    internal static readonly UnknownType Instance = new();
 
     private UnknownType() { }
     #endregion
@@ -16,7 +16,7 @@ public sealed class UnknownType : IMaybeFunctionType, IMaybeParameterType
     bool IMaybeType.HasIndependentTypeArguments => false;
     IMaybePlainType IMaybeType.PlainType => PlainType;
     IMaybeFunctionPlainType IMaybeFunctionType.PlainType => PlainType;
-
+    IMaybeNonVoidType? IMaybeNonVoidType.BaseType => this;
     IMaybeType IMaybeFunctionType.Return => this;
 
     #region Parmaeter Types

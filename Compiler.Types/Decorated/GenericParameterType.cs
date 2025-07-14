@@ -10,7 +10,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 public sealed class GenericParameterType : NonVoidType
 {
     public override GenericParameterPlainType PlainType { [DebuggerStepThrough] get; }
-
+    public override NonVoidType? BaseType => null;
     public IdentifierName Name => PlainType.Name;
 
     public TypeConstructorParameter Parameter => PlainType.Parameter;

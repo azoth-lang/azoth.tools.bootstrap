@@ -68,6 +68,8 @@ public sealed class RefType : NonVoidType
 
     public override RefPlainType PlainType { [DebuggerStepThrough] get; }
 
+    public override NonVoidType? BaseType => null;
+
     public bool IsInternal
     {
         [DebuggerStepThrough]

@@ -29,6 +29,11 @@ public sealed class SelfViewpointType : NonVoidType
             _ => throw ExhaustiveMatch.Failed(referent),
         };
 
+    public static SelfViewpointType? Create(CapabilitySet capability, NonVoidType? referent)
+        => referent is not null ? new SelfViewpointType(capability, referent) : null;
+
+    public override NonVoidType? BaseType => Create(CapabilitySet, Referent.BaseType);
+
     public CapabilitySet CapabilitySet { [DebuggerStepThrough] get; }
 
     public NonVoidType Referent { [DebuggerStepThrough] get; }

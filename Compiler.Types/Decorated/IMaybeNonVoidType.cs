@@ -9,6 +9,8 @@ public interface IMaybeNonVoidType : IMaybeType
     new IMaybeNonVoidPlainType PlainType { get; }
     IMaybePlainType IMaybeType.PlainType => PlainType;
 
+    IMaybeNonVoidType? BaseType { get; }
+
     /// <summary>
     /// Convert types for literals (e.g. <c>bool[true]</c>, <c>int[42]</c> etc.) to their
     /// corresponding types.

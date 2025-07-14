@@ -17,6 +17,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 /// bare `Self` type.</para></remarks>
 public sealed class CapabilitySetSelfType : NonVoidType
 {
+    public override NonVoidType? BaseType
+        => BareType.BaseType is { } bareBaseType ? new CapabilitySetSelfType(CapabilitySet, bareBaseType) : null;
+
     public CapabilitySet CapabilitySet { [DebuggerStepThrough] get; }
 
     public BareType BareType { [DebuggerStepThrough] get; }
