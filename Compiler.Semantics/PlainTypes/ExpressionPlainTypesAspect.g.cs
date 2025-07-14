@@ -85,6 +85,8 @@ internal static partial class ExpressionPlainTypesAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IMaybePlainType SelfExpression_PlainType(ISelfExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial IMaybePlainType BaseExpression_PlainType(IBaseExpressionNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IMaybePlainType FunctionNameExpression_PlainType(IFunctionNameExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IMaybePlainType InitializerNameExpression_PlainType(IInitializerNameExpressionNode node);

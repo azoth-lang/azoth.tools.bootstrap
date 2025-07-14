@@ -55,16 +55,17 @@ public abstract class BareTypeConstructor : BareTypeConstructorContext, IEquatab
         OrdinaryName name,
         IFixedList<TypeConstructorParameter> genericParameters,
         IFixedSet<BareType> supertypes)
-        => new(context, isAbstract: false, isConst, TypeKind.Struct, name, genericParameters, supertypes);
+        => new(context, isAbstract: false, isConst, TypeKind.Struct, name, genericParameters, baseType: null, supertypes);
 
     public static OrdinaryTypeConstructor CreateClass(
         IdentifierName containingPackage,
         NamespaceName containingNamespace,
         bool isAbstract,
         bool isConst,
-        string name)
+        string name,
+        BareType? baseType = null)
         => new(new NamespaceContext(containingPackage, containingNamespace),
-            isAbstract, isConst, TypeKind.Class, name, [], BareType.AnySet);
+            isAbstract, isConst, TypeKind.Class, name, [], baseType, BareType.AnySet);
 
     public static OrdinaryTypeConstructor CreateTrait(
         IdentifierName containingPackage,
@@ -72,7 +73,7 @@ public abstract class BareTypeConstructor : BareTypeConstructorContext, IEquatab
         bool isConst,
         string name)
         => new(new NamespaceContext(containingPackage, containingNamespace),
-            isAbstract: true, isConst, TypeKind.Trait, name, [], BareType.AnySet);
+            isAbstract: true, isConst, TypeKind.Trait, name, [], baseType: null, BareType.AnySet);
 
     public static OrdinaryTypeConstructor CreateClass(
         IdentifierName containingPackage,
@@ -81,10 +82,11 @@ public abstract class BareTypeConstructor : BareTypeConstructorContext, IEquatab
         bool isConst,
         string name,
         IFixedList<TypeConstructorParameter> genericParameters,
+        BareType? baseType,
         IFixedSet<BareType> supertypes)
         => new(new NamespaceContext(containingPackage, containingNamespace),
             isAbstract, isConst, TypeKind.Class, OrdinaryName.Create(name, genericParameters.Count),
-            genericParameters, supertypes);
+            genericParameters, baseType, supertypes);
 
     public static OrdinaryTypeConstructor CreateClass(
         BareTypeConstructorContext context,
@@ -92,8 +94,9 @@ public abstract class BareTypeConstructor : BareTypeConstructorContext, IEquatab
         bool isConst,
         OrdinaryName name,
         IFixedList<TypeConstructorParameter> genericParameters,
+        BareType? baseType,
         IFixedSet<BareType> supertypes)
-        => new(context, isAbstract, isConst, TypeKind.Class, name, genericParameters, supertypes);
+        => new(context, isAbstract, isConst, TypeKind.Class, name, genericParameters, baseType, supertypes);
 
     public static OrdinaryTypeConstructor CreateTrait(
         BareTypeConstructorContext context,
@@ -101,7 +104,7 @@ public abstract class BareTypeConstructor : BareTypeConstructorContext, IEquatab
         OrdinaryName name,
         IFixedList<TypeConstructorParameter> genericParameters,
         IFixedSet<BareType> supertypes)
-        => new(context, isAbstract: true, isConst, TypeKind.Trait, name, genericParameters, supertypes);
+        => new(context, isAbstract: true, isConst, TypeKind.Trait, name, genericParameters, baseType: null, supertypes);
 
     public static OrdinaryTypeConstructor CreateClass(
         IdentifierName containingPackage,
@@ -112,7 +115,7 @@ public abstract class BareTypeConstructor : BareTypeConstructorContext, IEquatab
         params TypeConstructorParameter[] genericParameters)
         => new(new NamespaceContext(containingPackage, containingNamespace),
             isAbstract, isConst, TypeKind.Class, OrdinaryName.Create(name, genericParameters.Length),
-            genericParameters.ToFixedList(), BareType.AnySet);
+            genericParameters.ToFixedList(), baseType: null, BareType.AnySet);
 
     public static OrdinaryTypeConstructor CreateTrait(
         IdentifierName containingPackage,
@@ -122,7 +125,7 @@ public abstract class BareTypeConstructor : BareTypeConstructorContext, IEquatab
         params TypeConstructorParameter[] genericParameters)
         => new(new NamespaceContext(containingPackage, containingNamespace),
             isAbstract: true, isConst, TypeKind.Trait, OrdinaryName.Create(name, genericParameters.Length),
-             genericParameters.ToFixedList(), BareType.AnySet);
+             genericParameters.ToFixedList(), baseType: null, BareType.AnySet);
     #endregion
 
     public sealed override void AppendContextPrefix(StringBuilder builder, BarePlainType? containingType)
@@ -162,6 +165,11 @@ public abstract class BareTypeConstructor : BareTypeConstructorContext, IEquatab
     /// </summary>
     /// <remarks>Even if a type cannot have fields, a subtype still could.</remarks>
     public abstract bool CanHaveFields { get; }
+
+    /// <summary>
+    /// Whether this type is allowed to be used as a base type (i.e. it is a `class` type).
+    /// </summary>
+    public abstract bool CanBeBaseType { get; }
 
     /// <summary>
     /// Whether this type is allowed to be used as a supertype.
@@ -206,6 +214,8 @@ public abstract class BareTypeConstructor : BareTypeConstructorContext, IEquatab
         => Lazy.Initialize(ref parameterTypes, ParameterTypeFactories,
             static factories => factories.Select(p => p.Type).ToFixedList());
     private IFixedList<GenericParameterType>? parameterTypes;
+
+    public abstract BareType? BaseType { get; }
 
     public abstract IFixedSet<BareType> Supertypes { get; }
 

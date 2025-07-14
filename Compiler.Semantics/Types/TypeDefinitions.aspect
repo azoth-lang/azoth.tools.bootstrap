@@ -9,10 +9,10 @@
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
 // ---------- Type Definitions
-⟳ TypeDefinition.Supertypes: {`BareType`} initial
-    => BareType.AnySet;
+⟳ TypeDefinition.Supertypes: {`BareType`} initial => BareType.AnySet;
 = TypeDefinition.Supertypes;
 = TypeDefinition.↑.Diagnostics;
+⟳ ClassDefinition.BaseType: `BareType`? initial => null;
 = ClassDefinition.↑.Diagnostics;
 
 // ---------- Type Definition Parts

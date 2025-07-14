@@ -45,7 +45,7 @@
 ↓ FieldParameter.ContainingTypeDefinition: TypeDefinition;
 
 // ---------- Name Expressions
-↓ SelfExpression.ContainingDeclaration: ExecutableDefinition;
+↓ InstanceExpression.ContainingDeclaration: ExecutableDefinition;
 
 // -------------------------------------------------------------------------------------------------
 // Declarations

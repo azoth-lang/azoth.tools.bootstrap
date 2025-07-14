@@ -48,6 +48,7 @@ public sealed class OrdinaryTypeConstructor : BareTypeConstructor
     /// <remarks>Even if a type cannot have fields, a subtype still could.</remarks>
     public override bool CanHaveFields => Kind != TypeKind.Trait;
 
+    public override bool CanBeBaseType => Kind == TypeKind.Class;
     public override bool CanBeSupertype => Kind != TypeKind.Struct;
 
     public override OrdinaryName Name { [DebuggerStepThrough] get; }
@@ -61,6 +62,7 @@ public sealed class OrdinaryTypeConstructor : BareTypeConstructor
 
     public override IFixedList<GenericParameterTypeConstructor> ParameterTypeFactories { [DebuggerStepThrough] get; }
 
+    public override BareType? BaseType { [DebuggerStepThrough] get; }
     public override IFixedSet<BareType> Supertypes { [DebuggerStepThrough] get; }
     public override TypeSemantics? Semantics
         => Kind == TypeKind.Struct ? TypeSemantics.Value : TypeSemantics.Reference;
@@ -72,7 +74,8 @@ public sealed class OrdinaryTypeConstructor : BareTypeConstructor
         TypeKind kind,
         OrdinaryName name,
         IEnumerable<TypeConstructorParameter> genericParameters,
-        IFixedSet<BareType> supertypes)
+        BareType? baseType,
+        IEnumerable<BareType> supertypes)
     {
         Requires.That((kind == TypeKind.Trait).Implies(isAbstract), nameof(isAbstract), "Traits must be abstract.");
         Requires.That((kind == TypeKind.Struct).Implies(!isAbstract), nameof(isAbstract), "Structs cannot be abstract.");
@@ -86,9 +89,14 @@ public sealed class OrdinaryTypeConstructor : BareTypeConstructor
         AllowsVariance = Parameters.Any(p => p.Variance != TypeParameterVariance.Invariant);
         HasIndependentParameters = Parameters.Any(p => p.HasIndependence);
 
-        Requires.That(supertypes.Contains(BareType.Any), nameof(supertypes),
+        Requires.That((baseType is not null).Implies(kind == TypeKind.Class), nameof(baseType),
+            "Only classes can have base types.");
+        Requires.That((baseType is not null).Implies(baseType!.TypeConstructor.CanBeBaseType),
+            nameof(baseType), "Must be a class.");
+        BaseType = baseType;
+        Supertypes = supertypes.AppendValue(baseType).ToFixedSet();
+        Requires.That(Supertypes.Contains(BareType.Any), nameof(supertypes),
             "All ordinary type constructors must have `Any` as a supertype.");
-        Supertypes = supertypes;
         IsDeclaredConst = isDeclaredConst;
         ParameterTypeFactories = Parameters.Select(p => new GenericParameterTypeConstructor(this, p)).ToFixedList();
     }

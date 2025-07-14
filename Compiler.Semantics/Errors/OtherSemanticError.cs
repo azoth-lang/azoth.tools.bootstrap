@@ -43,13 +43,19 @@ public static class OtherSemanticError
     public static Diagnostic ImplicitSelfOutsideMethod(CodeFile file, TextSpan span)
     {
         return new(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
-            6007, "Can't use implicit self reference outside of a method or constructor");
+            6007, "Can't use implicit self reference outside of a method or initializer");
     }
 
     public static Diagnostic SelfOutsideMethod(CodeFile file, TextSpan span)
     {
         return new(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
-            6008, "Can't use `self` outside of a method or constructor");
+            6008, "Can't use `self` outside of a method or initializer");
+    }
+
+    public static Diagnostic BaseOutsideMethod(CodeFile file, TextSpan span)
+    {
+        return new(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
+            6009, "Can't use `base` outside of a method or initializer");
     }
 
     // TODO error reported by parser and statement dropped, perhaps should be a semantic error

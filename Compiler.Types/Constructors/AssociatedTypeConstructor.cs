@@ -21,6 +21,7 @@ public abstract class AssociatedTypeConstructor : BareTypeConstructor
     /// might. However, it probably doesn't matter since I believe this is used for supertypes and
     /// associated types can't be supertypes.</remarks>
     public sealed override bool CanHaveFields => true;
+    public sealed override bool CanBeBaseType => false;
     public sealed override bool CanBeSupertype => false;
     public sealed override IFixedList<TypeConstructorParameter> Parameters => [];
     public sealed override bool AllowsVariance => false;

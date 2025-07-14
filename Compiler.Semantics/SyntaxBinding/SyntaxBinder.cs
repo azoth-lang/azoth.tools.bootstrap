@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -513,11 +512,11 @@ internal static class SyntaxBinder
     private static ISelfExpressionNode SelfExpression(ISelfExpressionSyntax syntax)
         => ISelfExpressionNode.Create(syntax);
 
-    private static IExpressionNode BaseExpression(IBaseExpressionSyntax syntax)
-        => throw new NotImplementedException();
+    private static IBaseExpressionNode BaseExpression(IBaseExpressionSyntax syntax)
+        => IBaseExpressionNode.Create(syntax);
 
-    private static IMissingNameExpressionNode MissingNameExpression(IMissingNameExpressionSyntax syn)
-        => IMissingNameExpressionNode.Create(syn);
+    private static IMissingNameExpressionNode MissingNameExpression(IMissingNameExpressionSyntax syntax)
+        => IMissingNameExpressionNode.Create(syntax);
     #endregion
 
     #region Names

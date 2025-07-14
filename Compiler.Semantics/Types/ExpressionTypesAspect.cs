@@ -873,11 +873,21 @@ internal static partial class ExpressionTypesAspect
     public static partial IFlowState VariableNameExpression_FlowStateAfter(IVariableNameExpressionNode node)
         => node.FlowStateBefore().Alias(node.ReferencedDefinition, node.ValueId);
 
-    public static partial IFlowState SelfExpression_FlowStateAfter(ISelfExpressionNode node)
+    public static partial IFlowState InstanceExpression_FlowStateAfter(IInstanceExpressionNode node)
         => node.FlowStateBefore().Alias(node.ReferencedDefinition, node.ValueId);
 
     public static partial IMaybeType SelfExpression_Type(ISelfExpressionNode node)
         => node.FlowStateAfter.AliasType(node.ReferencedDefinition);
+
+    public static partial IMaybeType BaseExpression_Type(IBaseExpressionNode node)
+    {
+        if (node.ReferencedDefinition is { BindingValueId: var bindingValueId, BindingType: var bindingType })
+            // TODO get base type
+            return node.FlowStateAfter.AliasType(bindingValueId, bindingType);
+
+        // Only happens when node.ReferencedDefinition is null
+        return IMaybeType.Unknown;
+    }
 
     public static partial IMaybeType FunctionNameExpression_Type(IFunctionNameExpressionNode node)
         => node.ReferencedDeclaration?.Type ?? IMaybeType.Unknown;

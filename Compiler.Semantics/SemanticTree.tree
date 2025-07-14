@@ -301,10 +301,12 @@ OrdinaryTypedNameExpression <: NameExpression, OrdinaryTypedExpression;
 LocalBindingNameExpression <: OrdinaryTypedNameExpression = ReferencedDefinition:`IBindingNode`?;
 VariableNameExpression <: LocalBindingNameExpression, OrdinaryTypedNameExpression
     = Syntax:`IIdentifierNameSyntax` ReferencedDefinition:`ILocalBindingNode`;
-InstanceExpression <: OrdinaryTypedNameExpression = Syntax:`IInstanceExpressionSyntax`; // i.e. `self` or `base`
-// TODO BaseExpression <: InstanceExpression
-SelfExpression <: InstanceExpression, LocalBindingNameExpression
+InstanceExpression <: OrdinaryTypedNameExpression, LocalBindingNameExpression
+    = Syntax:`IInstanceExpressionSyntax`; // i.e. `self` or `base`
+SelfExpression <: InstanceExpression
     = Syntax:`ISelfExpressionSyntax`;
+BaseExpression <: InstanceExpression
+    = Syntax:`IBaseExpressionSyntax`;
 FunctionNameExpression <: OrdinaryTypedNameExpression
     = Syntax:`INameExpressionSyntax` Context:Name? FunctionName:`OrdinaryName` GenericArguments:Type*
     ReferencedDeclarations:{`IFunctionInvocableDeclarationNode`};

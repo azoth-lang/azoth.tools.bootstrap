@@ -66,7 +66,7 @@ internal static partial class ExpressionTypesAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFlowState VariableNameExpression_FlowStateAfter(IVariableNameExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IFlowState SelfExpression_FlowStateAfter(ISelfExpressionNode node);
+    public static partial IFlowState InstanceExpression_FlowStateAfter(IInstanceExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFlowState FunctionNameExpression_FlowStateAfter(IFunctionNameExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -221,6 +221,8 @@ internal static partial class ExpressionTypesAspect
     public static partial IMaybeType VariableNameExpression_Type(IVariableNameExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IMaybeType SelfExpression_Type(ISelfExpressionNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial IMaybeType BaseExpression_Type(IBaseExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IMaybeType FunctionNameExpression_Type(IFunctionNameExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

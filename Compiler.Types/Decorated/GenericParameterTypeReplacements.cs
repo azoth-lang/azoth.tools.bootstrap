@@ -48,7 +48,6 @@ public sealed class GenericParameterTypeReplacements
         // Can't access bareType.Supertypes because that depends on the type replacements, use
         // `typeConstructor.Supertypes` instead.
         foreach (var supertype in typeConstructor.Supertypes)
-        {
             foreach (var (parameter, arg) in supertype.TypeConstructor.ParameterTypes
                                                       .EquiZip(supertype.Arguments))
             {
@@ -59,7 +58,6 @@ public sealed class GenericParameterTypeReplacements
                         $"Conflicting type replacements. Replace `{parameter}` with "
                         + $"`{replacements[parameter]}` or `{replacement}`");
             }
-        }
     }
 
     internal IMaybeType ApplyTo(IMaybeType type, NonVoidType? selfReplacement)
@@ -246,7 +244,8 @@ public sealed class GenericParameterTypeReplacements
         return typesReplaced ? replacementTypes.ToFixedList() : types;
     }
 
-    public BareType ApplyTo(BareType bareType)
+    [return: NotNullIfNotNull(nameof(bareType))]
+    public BareType? ApplyTo(BareType? bareType)
         => ApplyTo(bareType, selfReplacement: null);
 
     [return: NotNullIfNotNull(nameof(bareType))]

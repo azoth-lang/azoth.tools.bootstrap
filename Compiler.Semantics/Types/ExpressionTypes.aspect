@@ -227,7 +227,7 @@
 ↓ NameExpression.FlowStateBefore(): `IFlowState`;
 = VariableNameExpression.LocatorType;
 = VariableNameExpression.FlowStateAfter;
-= SelfExpression.FlowStateAfter;
+= InstanceExpression.FlowStateAfter;
 = FunctionNameExpression.FlowStateAfter;
 = FunctionNameExpression.*.ExpectedType => null;
 = InitializerNameExpression.FlowStateAfter;

@@ -578,6 +578,9 @@ internal static partial class ExpressionPlainTypesAspect
     public static partial IMaybePlainType SelfExpression_PlainType(ISelfExpressionNode node)
         => node.ReferencedDefinition?.BindingPlainType ?? IMaybePlainType.Unknown;
 
+    public static partial IMaybePlainType BaseExpression_PlainType(IBaseExpressionNode node)
+        => node.ReferencedDefinition is { } referencedDefinition ? referencedDefinition.BindingPlainType.BaseType ?? PlainType.Any : IMaybePlainType.Unknown;
+
     public static partial IMaybePlainType FunctionNameExpression_PlainType(IFunctionNameExpressionNode node)
         => node.ReferencedDeclaration?.PlainType ?? PlainType.Unknown;
 

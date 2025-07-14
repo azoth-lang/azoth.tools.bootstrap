@@ -13,38 +13,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 
 internal static partial class TypeDefinitionsAspect
 {
-    public static partial void ClassDefinition_Contribute_Diagnostics(IClassDefinitionNode node, DiagnosticCollectionBuilder diagnostics)
-    {
-        CheckBaseTypeMustBeAClass(node, diagnostics);
-
-        CheckBaseTypeMustMaintainIndependence(node, diagnostics);
-    }
-
-    private static void CheckBaseTypeMustBeAClass(IClassDefinitionNode node, DiagnosticCollectionBuilder diagnostics)
-    {
-        if (node.BaseTypeName?.ReferencedDeclaration?.TypeConstructor is not null
-            and not OrdinaryTypeConstructor { Kind: TypeKind.Class })
-            diagnostics.Add(OtherSemanticError.BaseTypeMustBeClass(node.File, node.Name, node.BaseTypeName.Syntax));
-    }
-
-    private static void CheckBaseTypeMustMaintainIndependence(IClassDefinitionNode node, DiagnosticCollectionBuilder diagnostics)
-    {
-        var typeConstructor = node.Symbol.TypeConstructor;
-        // TODO nested classes and traits need to be checked if nested inside of generic types?
-        if (!typeConstructor.HasIndependentParameters) return;
-
-        if (node.BaseTypeName is not null and var typeName
-            && (!typeName.NamedBareType?.SupertypeMaintainsIndependence(exact: true) ?? false))
-            diagnostics.Add(TypeError.SupertypeMustMaintainIndependence(node.File, typeName.Syntax));
-    }
-
-    public static partial TypeConstructorParameter GenericParameter_Parameter(IGenericParameterNode node)
-        => new TypeConstructorParameter(node.Constraint.ToConstraint(CapabilitySet.GenericParameterDefault),
-            node.Name, node.Independence, node.Variance);
-
-    public static partial GenericParameterType GenericParameter_DeclaredType(IGenericParameterNode node)
-        => node.ContainingTypeConstructor.ParameterTypes.Single(t => t.Parameter.Equals(node.Parameter));
-
+    #region Type Definitions
     public static partial IFixedSet<BareType> TypeDefinition_Supertypes(ITypeDefinitionNode node)
     {
         // Note: Supertypes is a circular attribute that both declared types and symbols depend on.
@@ -161,4 +130,51 @@ internal static partial class TypeDefinitionsAspect
             if (!typeName.NamedBareType?.SupertypeMaintainsIndependence(exact: false) ?? false)
                 diagnostics.Add(TypeError.SupertypeMustMaintainIndependence(typeDefinition.File, typeName.Syntax));
     }
+
+    public static partial BareType? ClassDefinition_BaseType(IClassDefinitionNode node)
+    {
+        // Note: this is a circular attribute because computing the NamedBareType depends on the
+        // BaseType of the referenced definition.
+        var bareType = node.BaseTypeName?.NamedBareType;
+        if (bareType?.TypeConstructor.CanBeBaseType ?? false)
+            return bareType;
+        return null;
+    }
+
+    public static partial void ClassDefinition_Contribute_Diagnostics(IClassDefinitionNode node, DiagnosticCollectionBuilder diagnostics)
+    {
+        CheckBaseTypeMustBeAClass(node, diagnostics);
+
+        CheckBaseTypeMustMaintainIndependence(node, diagnostics);
+    }
+
+    private static void CheckBaseTypeMustBeAClass(IClassDefinitionNode node, DiagnosticCollectionBuilder diagnostics)
+    {
+        if (node.BaseTypeName?.ReferencedDeclaration?.TypeConstructor is not null
+            and not OrdinaryTypeConstructor { Kind: TypeKind.Class })
+            diagnostics.Add(OtherSemanticError.BaseTypeMustBeClass(node.File, node.Name, node.BaseTypeName.Syntax));
+    }
+
+    private static void CheckBaseTypeMustMaintainIndependence(
+        IClassDefinitionNode node,
+        DiagnosticCollectionBuilder diagnostics)
+    {
+        var typeConstructor = node.Symbol.TypeConstructor;
+        // TODO nested classes and traits need to be checked if nested inside of generic types?
+        if (!typeConstructor.HasIndependentParameters) return;
+
+        if (node.BaseTypeName is not null and var typeName
+            && (!typeName.NamedBareType?.SupertypeMaintainsIndependence(exact: true) ?? false))
+            diagnostics.Add(TypeError.SupertypeMustMaintainIndependence(node.File, typeName.Syntax));
+    }
+    #endregion
+
+    #region Type Definition Parts
+    public static partial TypeConstructorParameter GenericParameter_Parameter(IGenericParameterNode node)
+        => new(node.Constraint.ToConstraint(CapabilitySet.GenericParameterDefault), node.Name,
+            node.Independence, node.Variance);
+
+    public static partial GenericParameterType GenericParameter_DeclaredType(IGenericParameterNode node)
+        => node.ContainingTypeConstructor.ParameterTypes.Single(t => t.Parameter.Equals(node.Parameter));
+    #endregion
 }

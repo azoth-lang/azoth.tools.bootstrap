@@ -55,6 +55,7 @@
 // ---------- Name Expressions
 = VariableNameExpression.ExpressionKind => ExpressionKind.VariableName;
 = SelfExpression.ExpressionKind => ExpressionKind.Self;
+= BaseExpression.ExpressionKind => ExpressionKind.NotTraversed;
 = FunctionNameExpression.ExpressionKind => ExpressionKind.FunctionName;
 = InitializerNameExpression.ExpressionKind => ExpressionKind.InitializerName;
 = MissingNameExpression.ExpressionKind => ExpressionKind.Invalid;

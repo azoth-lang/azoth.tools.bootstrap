@@ -26,7 +26,8 @@ public sealed class AnyTypeConstructor : BareTypeConstructor
     /// </summary>
     public override bool CanHaveFields => false;
 
-    public override bool CanBeSupertype => true;
+    public override bool CanBeBaseType => false;
+    public override bool CanBeSupertype => false;
 
     /// <summary>
     /// The `Any` type cannot be instantiated because it is abstract.
@@ -41,6 +42,8 @@ public sealed class AnyTypeConstructor : BareTypeConstructor
     public override bool HasIndependentParameters => false;
     public override IFixedList<GenericParameterTypeConstructor> ParameterTypeFactories => [];
 
+    public override BareType? BaseType => null;
+
     /// <remarks>Because `Any` is the base of the constructed type hierarchy, it has no supertypes.</remarks>
     public override IFixedSet<BareType> Supertypes => [];
 
@@ -53,7 +56,7 @@ public sealed class AnyTypeConstructor : BareTypeConstructor
         return PlainType;
     }
 
-    public override PlainType? TryConstructNullaryPlainType(BarePlainType? containingType)
+    public override PlainType TryConstructNullaryPlainType(BarePlainType? containingType)
     {
         Requires.Null(containingType, nameof(containingType), "Any does not have a containing type.");
         return PlainType;

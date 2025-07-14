@@ -20,7 +20,7 @@ internal static partial class TypeConstructorsAspect
     #region Type Definitions
     public static partial OrdinaryTypeConstructor ClassDefinition_TypeConstructor(IClassDefinitionNode node)
         => BareTypeConstructor.CreateClass(node.TypeConstructorContext, node.IsAbstract, node.IsConst,
-            node.Name, GetGenericParameters(node), node.Supertypes);
+            node.Name, GetGenericParameters(node), node.BaseType, node.Supertypes);
 
     public static partial OrdinaryTypeConstructor StructDefinition_TypeConstructor(IStructDefinitionNode node)
         => BareTypeConstructor.CreateStruct(node.TypeConstructorContext, node.IsConst, node.Name,

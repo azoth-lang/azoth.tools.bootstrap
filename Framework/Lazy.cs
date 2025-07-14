@@ -140,6 +140,27 @@ public static class Lazy
     /// Initializes a target reference type with a specified function if it has not already been
     /// initialized. Important use a <b>static lambda</b> as the parameter for good performance.
     /// </summary>
+    public static TValue? InitializeNullable<TParam1, TParam2, TValue>(
+        ref TValue? target,
+        TParam1 param1,
+        TParam2 param2,
+        Func<TParam1, TParam2, TValue?> valueFactory)
+        where TValue : class
+    {
+        var tmp = Volatile.Read(ref target);
+        if (ReferenceEquals(tmp, NullValue)) return null;
+        if (tmp is not null) return tmp;
+
+        Interlocked.CompareExchange(ref target, valueFactory(param1, param2) ?? Unsafe.As<TValue>(NullValue), null);
+
+        tmp = target;
+        return ReferenceEquals(tmp, NullValue) ? null : tmp;
+    }
+
+    /// <summary>
+    /// Initializes a target reference type with a specified function if it has not already been
+    /// initialized. Important use a <b>static lambda</b> as the parameter for good performance.
+    /// </summary>
     public static TValue Initialize<TParam1, TParam2, TParam3, TValue>(
         ref TValue? target,
         TParam1 param1,
@@ -193,4 +214,5 @@ public static class Lazy
     }
 
     private static readonly object InProgressValue = new();
+    private static readonly object NullValue = new();
 }

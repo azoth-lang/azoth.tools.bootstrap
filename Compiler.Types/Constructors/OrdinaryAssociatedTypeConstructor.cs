@@ -13,6 +13,8 @@ public sealed class OrdinaryAssociatedTypeConstructor : AssociatedTypeConstructo
 
     public override IdentifierName Name { [DebuggerStepThrough] get; }
 
+    public override BareType? BaseType { [DebuggerStepThrough] get; }
+
     public override IFixedSet<BareType> Supertypes { [DebuggerStepThrough] get; }
 
     public override IFixedSet<BareType> Subtypes { [DebuggerStepThrough] get; }
@@ -22,6 +24,7 @@ public sealed class OrdinaryAssociatedTypeConstructor : AssociatedTypeConstructo
     {
         Name = name;
         Semantics = null; // Semantics unknown
+        BaseType = null;
         Supertypes = BareType.AnySet;
         Subtypes = FixedSet.Empty<BareType>();
     }
@@ -31,6 +34,7 @@ public sealed class OrdinaryAssociatedTypeConstructor : AssociatedTypeConstructo
     {
         Name = name;
         Semantics = equalToType.Semantics;
+        BaseType = equalToType.BaseType;
         Supertypes = equalToType.Supertypes.Prepend(equalToType).ToFixedSet();
         // Subtypes are the same as supertypes because this type is equal to the other type.
         Subtypes = Supertypes;

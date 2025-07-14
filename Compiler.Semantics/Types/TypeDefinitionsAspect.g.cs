@@ -21,6 +21,8 @@ internal static partial class TypeDefinitionsAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial void ClassDefinition_Contribute_Diagnostics(IClassDefinitionNode node, DiagnosticCollectionBuilder diagnostics);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial BareType? ClassDefinition_BaseType(IClassDefinitionNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial TypeConstructorParameter GenericParameter_Parameter(IGenericParameterNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial GenericParameterType GenericParameter_DeclaredType(IGenericParameterNode node);

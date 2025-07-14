@@ -41,6 +41,12 @@ public sealed class BareType : IEquatable<BareType>
                                (p, a) => new TypeParameterArgument(p, a)).ToFixedList());
     private IFixedList<TypeParameterArgument>? typeParameterArguments;
 
+    public BareType? BaseType
+        => Lazy.InitializeNullable(ref baseType, TypeConstructor, TypeReplacements,
+            static (typeConstructor, replacements)
+                => replacements.ApplyTo(typeConstructor.BaseType));
+    private BareType? baseType;
+
     /// <summary>
     /// The declared supertypes of this type.
     /// </summary>
@@ -49,7 +55,7 @@ public sealed class BareType : IEquatable<BareType>
     public IFixedSet<BareType> Supertypes
         => Lazy.Initialize(ref supertypes, TypeConstructor, TypeReplacements,
             static (constructor, replacements)
-                => constructor.Supertypes.Select(replacements.ApplyTo).ToFixedSet());
+                => constructor.Supertypes.Select(t => replacements.ApplyTo(t)).ToFixedSet());
     private IFixedSet<BareType>? supertypes;
 
     /// <summary>
@@ -61,7 +67,7 @@ public sealed class BareType : IEquatable<BareType>
     /// both a supertype and subtype of that type.</remarks>
     public IFixedSet<BareType> Subtypes
         => Lazy.Initialize(ref subtypes, TypeConstructor, TypeReplacements,
-            static (constructor, replacements) => constructor.Subtypes.Select(replacements.ApplyTo).ToFixedSet());
+            static (constructor, replacements) => constructor.Subtypes.Select(t => replacements.ApplyTo(t)).ToFixedSet());
     private IFixedSet<BareType>? subtypes;
 
     public BareType(BarePlainType plainType, BareType? containingType, IFixedList<Type> arguments)

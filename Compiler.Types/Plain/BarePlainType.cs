@@ -18,6 +18,11 @@ public sealed class BarePlainType : NonVoidPlainType
     public UnqualifiedName Name => TypeConstructor.Name;
     public bool AllowsVariance => TypeConstructor.AllowsVariance;
     public IFixedList<PlainType> Arguments { [DebuggerStepThrough] get; }
+    public BarePlainType? BaseType
+        => Lazy.InitializeNullable(ref baseType, TypeConstructor, TypeReplacements,
+            static (typeConstructor, replacements)
+                => replacements.ApplyTo(typeConstructor.BaseType?.PlainType));
+    private BarePlainType? baseType;
     public IFixedSet<BarePlainType> Supertypes
         => Lazy.Initialize(ref supertypes, TypeConstructor, TypeReplacements,
             static (typeConstructor, replacements)

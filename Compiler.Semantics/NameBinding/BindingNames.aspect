@@ -12,8 +12,10 @@
 ↑ FieldParameter.ReferencedField: FieldDefinition?;
 
 // ---------- Name Expressions
-↑ SelfExpression.ReferencedDefinition: SelfParameter?;
+↑ InstanceExpression.ReferencedDefinition: SelfParameter?;
+= InstanceExpression.ReferencedDefinition;
 = SelfExpression.↑.Diagnostics;
+= BaseExpression.↑.Diagnostics;
 
 // ---------- Names
 ↑ Name.ReferencedDeclaration: NamespaceOrTypeDeclaration?;

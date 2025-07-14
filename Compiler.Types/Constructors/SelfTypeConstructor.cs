@@ -16,6 +16,8 @@ public sealed class SelfTypeConstructor : AssociatedTypeConstructor
 
     public override BuiltInTypeName Name => BuiltInTypeName.Self;
 
+    public override BareType? BaseType { [DebuggerStepThrough] get; }
+
     public override IFixedSet<BareType> Supertypes { [DebuggerStepThrough] get; }
 
     /// <remarks>
@@ -24,7 +26,9 @@ public sealed class SelfTypeConstructor : AssociatedTypeConstructor
     internal SelfTypeConstructor(BareTypeConstructor containingTypeConstructor)
         : base(containingTypeConstructor)
     {
+        var containingType = containingTypeConstructor.ConstructWithParameterTypes();
+        BaseType = containingType.BaseType;
         Supertypes = containingTypeConstructor.Supertypes
-            .Prepend(containingTypeConstructor.ConstructWithParameterTypes()).ToFixedSet();
+            .Prepend(containingType).ToFixedSet();
     }
 }

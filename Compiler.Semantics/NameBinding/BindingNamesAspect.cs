@@ -28,7 +28,7 @@ internal static partial class BindingNamesAspect
     #endregion
 
     #region Name Expressions
-    public static partial ISelfParameterNode? SelfExpression_ReferencedDefinition(ISelfExpressionNode node)
+    public static partial ISelfParameterNode? InstanceExpression_ReferencedDefinition(IInstanceExpressionNode node)
         // TODO use a more specific inherited attribute? (e.g. SelfParameter)
         // TODO or add `SelfParameter` to ExecutableDefinition and do node.ContainingDeclaration.SelfParameter?
         => node.ContainingDeclaration switch
@@ -36,7 +36,7 @@ internal static partial class BindingNamesAspect
             IMethodDefinitionNode n => n.SelfParameter,
             IOrdinaryInitializerDefinitionNode n => n.SelfParameter,
             IDefaultInitializerDefinitionNode _
-                => throw new UnreachableException("A `self` expression cannot occur here because it has an empty body."),
+                => throw new UnreachableException("An instance expression cannot occur here because it has an empty body."),
             IFieldDefinitionNode _ => null,
             IAssociatedFunctionDefinitionNode _ => null,
             IFunctionDefinitionNode _ => null,
@@ -49,6 +49,12 @@ internal static partial class BindingNamesAspect
             diagnostics.Add(node.IsImplicit
                 ? OtherSemanticError.ImplicitSelfOutsideMethod(node.File, node.Syntax.Span)
                 : OtherSemanticError.SelfOutsideMethod(node.File, node.Syntax.Span));
+    }
+
+    public static partial void BaseExpression_Contribute_Diagnostics(IBaseExpressionNode node, DiagnosticCollectionBuilder diagnostics)
+    {
+        if (node.ContainingDeclaration is not (IMethodDefinitionNode or IInitializerDeclarationNode))
+            diagnostics.Add(OtherSemanticError.BaseOutsideMethod(node.File, node.Syntax.Span));
     }
     #endregion
 

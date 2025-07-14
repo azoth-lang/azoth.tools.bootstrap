@@ -59,6 +59,8 @@ public static class ISemanticNodeExtensions
             case IAwaitExpressionNode n:
                 yield return n.TempExpression;
                 yield break;
+            case IBaseExpressionNode n:
+                yield break;
             case IBinaryOperatorExpressionNode n:
                 yield return n.TempLeftOperand;
                 yield return n.TempRightOperand;
