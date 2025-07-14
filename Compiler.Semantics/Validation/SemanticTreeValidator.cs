@@ -60,6 +60,10 @@ internal class SemanticTreeValidator
             _ = dataFlow.DefinitelyAssigned;
             _ = dataFlow.DefinitelyUnassigned;
         }
+        if (node is ISymbolDeclarationNode symbolDeclaration)
+        {
+            _ = symbolDeclaration.Symbol;
+        }
 
         // Validate Concrete Node Attributes
         switch (node)
@@ -117,6 +121,9 @@ internal class SemanticTreeValidator
             case IReturnExpressionNode n:
                 // Force flow state to the return where it matters
                 _ = n.Value?.FlowStateAfter;
+                break;
+            case IDefaultInitializerDefinitionNode n:
+                _ = n.Symbol?.SelfParameterType.BareType.TypeReplacements;
                 break;
         }
 
