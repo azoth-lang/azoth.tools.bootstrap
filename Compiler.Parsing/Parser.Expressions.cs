@@ -316,6 +316,8 @@ public partial class Parser
                 throw new ParseFailedException("Unexpected end of expression");
             case ISelfKeywordToken _:
                 return ParseSelfExpression();
+            case IBaseKeywordToken _:
+                return ParseBaseExpression();
             case IReturnKeywordToken _:
             {
                 var returnKeyword = Tokens.Consume<IReturnKeywordToken>();
@@ -437,6 +439,12 @@ public partial class Parser
     {
         var selfKeyword = Tokens.Consume<ISelfKeywordToken>();
         return ISelfExpressionSyntax.Create(selfKeyword, false);
+    }
+
+    private IBaseExpressionSyntax ParseBaseExpression()
+    {
+        var baseKeyword = Tokens.Consume<IBaseKeywordToken>();
+        return IBaseExpressionSyntax.Create(baseKeyword);
     }
 
     private IMissingNameExpressionSyntax ParseMissingNameExpression()

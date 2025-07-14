@@ -47,6 +47,8 @@ public static class ISyntaxExtensions
             case IAwaitExpressionSyntax n:
                 yield return n.Expression;
                 yield break;
+            case IBaseExpressionSyntax n:
+                yield break;
             case IBinaryOperatorExpressionSyntax n:
                 yield return n.LeftOperand;
                 yield return n.RightOperand;

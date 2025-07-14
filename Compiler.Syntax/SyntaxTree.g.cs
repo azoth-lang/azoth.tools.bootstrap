@@ -1383,7 +1383,8 @@ public partial interface INameExpressionSyntax : IExpressionSyntax
 }
 
 [Closed(
-    typeof(ISelfExpressionSyntax))]
+    typeof(ISelfExpressionSyntax),
+    typeof(IBaseExpressionSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IInstanceExpressionSyntax : INameExpressionSyntax
 {
@@ -1399,6 +1400,15 @@ public partial interface ISelfExpressionSyntax : IInstanceExpressionSyntax
         TextSpan span,
         bool isImplicit)
         => new SelfExpressionSyntax(span, isImplicit);
+}
+
+[Closed(typeof(BaseExpressionSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
+public partial interface IBaseExpressionSyntax : IInstanceExpressionSyntax
+{
+
+    public static IBaseExpressionSyntax Create(TextSpan span)
+        => new BaseExpressionSyntax(span);
 }
 
 [Closed(typeof(MissingNameExpressionSyntax))]
@@ -3262,6 +3272,21 @@ file class SelfExpressionSyntax : ISelfExpressionSyntax
     {
         Span = span;
         IsImplicit = isImplicit;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class BaseExpressionSyntax : IBaseExpressionSyntax
+{
+    private IBaseExpressionSyntax Self { [Inline] get => this; }
+
+    public TextSpan Span { [DebuggerStepThrough] get; }
+    public override string ToString()
+        => FormattingAspect.BaseExpression_ToString(this);
+
+    public BaseExpressionSyntax(TextSpan span)
+    {
+        Span = span;
     }
 }
 

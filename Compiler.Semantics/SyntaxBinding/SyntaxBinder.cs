@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -413,6 +414,7 @@ internal static class SyntaxBinder
             IReturnExpressionSyntax syn => ReturnExpression(syn),
             IInvocationExpressionSyntax syn => InvocationExpression(syn),
             ISelfExpressionSyntax syn => SelfExpression(syn),
+            IBaseExpressionSyntax syn => BaseExpression(syn),
             IMoveExpressionSyntax syn => MoveExpression(syn),
             IFreezeExpressionSyntax syn => FreezeExpression(syn),
             IAsyncBlockExpressionSyntax syn => AsyncBlockExpression(syn),
@@ -510,6 +512,9 @@ internal static class SyntaxBinder
     #region Name Expressions
     private static ISelfExpressionNode SelfExpression(ISelfExpressionSyntax syntax)
         => ISelfExpressionNode.Create(syntax);
+
+    private static IExpressionNode BaseExpression(IBaseExpressionSyntax syntax)
+        => throw new NotImplementedException();
 
     private static IMissingNameExpressionNode MissingNameExpression(IMissingNameExpressionSyntax syn)
         => IMissingNameExpressionNode.Create(syn);

@@ -110,7 +110,7 @@ SelfParameter <: Parameter = IsLentBinding:`bool` Constraint:CapabilityConstrain
 InitializerSelfParameter <: SelfParameter = Constraint:Capability;
 MethodSelfParameter <: SelfParameter;
 FieldParameter <: InitializerParameter = Name:`IdentifierName` DefaultValue:Expression?;
-Return <: Code = Type; // Return syntax of a function or method (i.e. ``)
+Return <: Code = Type; // Return syntax of a function or method (i.e. `-> Type`)
 
 // ---------- Function Parts
 Body <: BodyOrBlock;
@@ -198,6 +198,7 @@ NameExpression <: Expression;
 // See the names section for more nodes that are name expressions
 InstanceExpression <: NameExpression; // i.e. `self` or `base`
 SelfExpression <: InstanceExpression = IsImplicit:`bool`;
+BaseExpression <: InstanceExpression;
 MissingNameExpression <: NameExpression;
 
 // ---------- Names

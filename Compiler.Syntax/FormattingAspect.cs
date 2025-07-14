@@ -343,6 +343,8 @@ internal static partial class FormattingAspect
     public static partial string SelfExpression_ToString(ISelfExpressionSyntax node)
         => node.IsImplicit ? "⟦self⟧" : "self";
 
+    public static partial string BaseExpression_ToString(IBaseExpressionSyntax node) => "base";
+
     public static partial string MissingNameExpression_ToString(IMissingNameExpressionSyntax node)
         => "⧼unknown⧽";
     #endregion

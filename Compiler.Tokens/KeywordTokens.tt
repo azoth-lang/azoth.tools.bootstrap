@@ -50,7 +50,7 @@
         "Safe",
         "Self",
         "SelfType",
-        //"Base",
+        "Base",
         "Type",
         "Mutable",
         //"Params",
