@@ -158,7 +158,7 @@ public static class Intrinsic
         var classSymbol = new OrdinaryTypeSymbol(@namespace, typeConstructor);
         tree.Add(classSymbol);
 
-        // published init(.fixed, .capacity) {...}
+        // published init(.prefix, .capacity) {...}
         var initializer = Initializer(classSymbol, mutType, Params(prefixType, Type.Size));
         tree.Add(initializer);
 

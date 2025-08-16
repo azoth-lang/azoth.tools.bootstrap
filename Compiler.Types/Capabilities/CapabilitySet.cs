@@ -33,6 +33,9 @@ public sealed class CapabilitySet : ICapabilityConstraint
     public static readonly CapabilitySet Sendable
         = new("sendable", Isolated, Constant, Identity);
 
+    // TODO add `readonly` which reflects the `readonly out` option. Does `readonly` include id? It
+    // seems like it needs to
+
     /// <summary>
     /// Any capability that is temporary (i.e. `temp iso`, `temp const`).
     /// </summary>

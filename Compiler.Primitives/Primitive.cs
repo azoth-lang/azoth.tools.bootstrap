@@ -93,7 +93,9 @@ public static class Primitive
         var symbol = new BuiltInTypeSymbol(BareTypeConstructor.Any);
         tree.Add(symbol);
 
+        // TODO identity_hash should be an intrinsic extension of Any
         // published fn identity_hash(id self) -> nuint
+        //     where Self : class
         var identityHash = Method(symbol, "identity_hash", Type.IdAny, Params(), Type.NUInt);
         tree.Add(identityHash);
     }
