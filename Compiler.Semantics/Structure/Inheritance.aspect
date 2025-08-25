@@ -8,9 +8,7 @@
 ↑ TypeDefinition.AllSupertypeNames: IEnumerable<TypeName> => SupertypeNames;
 = ClassDefinition.AllSupertypeNames
     => BaseTypeName is null ? SupertypeNames : SupertypeNames.Prepend(BaseTypeName);
-= ClassDefinition.InclusiveMembers;
-= StructDefinition.InclusiveMembers;
-= TraitDefinition.InclusiveMembers;
+= TypeDefinition.InclusiveMembers;
 
 // ---------- Type Definition Parts
 = GenericParameter.InclusiveMembers => [];

@@ -86,6 +86,9 @@ ClassDefinition <: Code, TypeDefinition, ClassDeclaration = Syntax:`IClassDefini
 StructDefinition <: Code, TypeDefinition, StructDeclaration = Syntax:`IStructDefinitionSyntax`
     /Attributes/ /GenericParameters/ /SupertypeNames/
     SourceMembers:TypeMemberDefinition*;
+ValueDefinition <: Code, TypeDefinition, ValueDeclaration = Syntax:`IValueDefinitionSyntax`
+    /Attributes/ /GenericParameters/ /SupertypeNames/
+    SourceMembers:TypeMemberDefinition*;
 TraitDefinition <: Code, TypeDefinition, TraitDeclaration = Syntax:`ITraitDefinitionSyntax`
     /Attributes/ /GenericParameters/ /SupertypeNames/
     Members:{TypeMemberDefinition};
@@ -464,6 +467,7 @@ OrdinaryTypeDeclaration <: NamespaceMemberDeclaration, TypeMemberDeclaration, No
     = Name:`OrdinaryName` GenericParameters:GenericParameterDeclaration* Members:{TypeMemberDeclaration};
 ClassDeclaration <: OrdinaryTypeDeclaration = Members:{TypeMemberDeclaration};
 StructDeclaration <: OrdinaryTypeDeclaration = Members:{TypeMemberDeclaration};
+ValueDeclaration <: OrdinaryTypeDeclaration = Members:{TypeMemberDeclaration};
 TraitDeclaration <: OrdinaryTypeDeclaration = Members:{TypeMemberDeclaration};
 
 // ---------- Type Declaration Parts
@@ -525,6 +529,7 @@ NeverTypeSymbol <: TypeSymbol = Symbol:`NeverTypeSymbol`;
 OrdinaryTypeSymbol <: OrdinaryTypeDeclaration, NonVariableTypeSymbol, NamespaceMemberSymbol = Symbol:`OrdinaryTypeSymbol`;
 ClassSymbol <: ClassDeclaration, OrdinaryTypeSymbol = /GenericParameters/ /Members/;
 StructSymbol <: StructDeclaration, OrdinaryTypeSymbol = /GenericParameters/ /Members/;
+ValueSymbol <: ValueDeclaration, OrdinaryTypeSymbol = /GenericParameters/ /Members/;
 TraitSymbol <: TraitDeclaration, OrdinaryTypeSymbol = /GenericParameters/ /Members/;
 
 // ---------- Type Declaration Parts

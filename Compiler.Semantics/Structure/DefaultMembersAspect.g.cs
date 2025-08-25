@@ -20,4 +20,8 @@ internal static partial class DefaultMembersAspect
     public static partial IFixedSet<ITypeMemberDefinitionNode> StructDefinition_Members(IStructDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IDefaultInitializerDefinitionNode? StructDefinition_DefaultInitializer(IStructDefinitionNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial IFixedSet<ITypeMemberDefinitionNode> ValueDefinition_Members(IValueDefinitionNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial IDefaultInitializerDefinitionNode? ValueDefinition_DefaultInitializer(IValueDefinitionNode node);
 }

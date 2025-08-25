@@ -12,6 +12,8 @@
 ↑ child ClassDefinition.DefaultInitializer: DefaultInitializerDefinition?;
 ↑ StructDefinition.Members: {TypeMemberDefinition};
 ↑ child StructDefinition.DefaultInitializer: DefaultInitializerDefinition?;
+↑ ValueDefinition.Members: {TypeMemberDefinition};
+↑ child ValueDefinition.DefaultInitializer: DefaultInitializerDefinition?;
 
 // ---------- Type Definition Parts
 ↑ GenericParameter.Members: {TypeMemberDefinition} => [];

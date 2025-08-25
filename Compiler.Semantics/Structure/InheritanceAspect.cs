@@ -8,26 +8,16 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Structure;
 
 internal static partial class InheritanceAspect
 {
-    public static partial IFixedSet<ITypeMemberDeclarationNode> ClassDefinition_InclusiveMembers(IClassDefinitionNode node)
-        => InclusiveMembers(node, node.Members);
-
-    public static partial IFixedSet<ITypeMemberDeclarationNode> StructDefinition_InclusiveMembers(IStructDefinitionNode node)
-        => InclusiveMembers(node, node.Members);
-
-    public static partial IFixedSet<ITypeMemberDeclarationNode> TraitDefinition_InclusiveMembers(ITraitDefinitionNode node)
-        => InclusiveMembers(node, node.Members);
-
-    private static IFixedSet<ITypeMemberDeclarationNode> InclusiveMembers(
-        ITypeDefinitionNode node,
-        IFixedSet<ITypeMemberDeclarationNode> memberDefinitionNodes)
+    #region Type Definitions
+    public static partial IFixedSet<ITypeMemberDeclarationNode> TypeDefinition_InclusiveMembers(ITypeDefinitionNode node)
     {
-        var inclusiveMembers = memberDefinitionNodes.Where(m => m.Name is not null)
-                                                    .ToMultiMapHashSet(m => m.Name!);
+        var inclusiveMembers = node.Members.Where(m => m.Name is not null)
+                                   .ToMultiMapHashSet(m => m.Name!);
         foreach (var supertype in node.AllSupertypeNames.Select(t => t.ReferencedDeclaration))
             AddInheritedMembers(inclusiveMembers, supertype);
         var anyType = node.ContainingLexicalScope.PackageNames.Lookup(BareTypeConstructor.Any);
         AddInheritedMembers(inclusiveMembers, anyType);
-        return inclusiveMembers.Values.SelectMany().Concat(memberDefinitionNodes.Where(m => m.Name is null))
+        return inclusiveMembers.Values.SelectMany().Concat(node.Members.Where(m => m.Name is null))
                                .ToFixedSet();
     }
 
@@ -49,4 +39,5 @@ internal static partial class InheritanceAspect
             members.TryToAddMapping(name, inheritedMember);
         }
     }
+    #endregion
 }

@@ -30,34 +30,32 @@ internal static partial class SymbolNodeAspect
     public static partial ISelfSymbolNode NonVariableTypeSymbol_ImplicitSelf(INonVariableTypeSymbolNode node)
         => ISelfSymbolNode.Create(node.SymbolTree().GetChildrenOf(node.Symbol).OfType<AssociatedTypeSymbol>().Where(t => t.Name == BuiltInTypeName.Self).TrySingle()!);
 
+    public static partial IFixedSet<ITypeMemberSymbolNode> BuiltInTypeSymbol_Members(IBuiltInTypeSymbolNode node)
+        => GetMembers(node);
+
     public static partial IFixedList<IGenericParameterSymbolNode> OrdinaryTypeSymbol_GenericParameters(IOrdinaryTypeSymbolNode node)
         => GetSymbolMembers(node).OfType<GenericParameterTypeSymbol>()
                            .Select(SymbolBinder.Symbol).WhereNotNull()
                            .Cast<IGenericParameterSymbolNode>().ToFixedList();
 
-    public static partial IFixedSet<ITypeMemberSymbolNode> BuiltInTypeSymbol_Members(IBuiltInTypeSymbolNode node)
+    public static partial IFixedSet<ITypeMemberSymbolNode> OrdinaryTypeSymbol_Members(IOrdinaryTypeSymbolNode node)
         => GetMembers(node);
 
     public static partial void Validate_ClassSymbol(OrdinaryTypeSymbol symbol)
         => Requires.That(symbol.TypeConstructor is { Kind: TypeKind.Class }, nameof(symbol),
             "Symbol must be for an class type.");
 
-    public static partial IFixedSet<ITypeMemberSymbolNode> ClassSymbol_Members(IClassSymbolNode node)
-        => GetMembers(node);
-
     public static partial void Validate_StructSymbol(OrdinaryTypeSymbol symbol)
         => Requires.That(symbol.TypeConstructor is { Kind: TypeKind.Struct }, nameof(symbol),
             "Symbol must be for a struct type.");
 
-    public static partial IFixedSet<ITypeMemberSymbolNode> StructSymbol_Members(IStructSymbolNode node)
-        => GetMembers(node);
+    public static partial void Validate_ValueSymbol(OrdinaryTypeSymbol symbol)
+        => Requires.That(symbol.TypeConstructor is { Kind: TypeKind.Value }, nameof(symbol),
+            "Symbol must be for a value type.");
 
     public static partial void Validate_TraitSymbol(OrdinaryTypeSymbol symbol)
         => Requires.That(symbol.TypeConstructor is { Kind: TypeKind.Trait }, nameof(symbol),
             "Symbol must be for an trait type.");
-
-    public static partial IFixedSet<ITypeMemberSymbolNode> TraitSymbol_Members(ITraitSymbolNode node)
-        => GetMembers(node);
 
     private static IFixedSet<ITypeMemberSymbolNode> GetMembers(ITypeSymbolNode node)
         => GetSymbolMembers(node).Where(sym => sym is not GenericParameterTypeSymbol)

@@ -45,5 +45,22 @@ internal static partial class DefaultMembersAspect
         if (node.SourceMembers.Any(m => m is IInitializerDefinitionNode)) return null;
         return Child.Attach(node, IDefaultInitializerDefinitionNode.Create());
     }
+
+    /// <remarks>This needs to be lazy computed because the
+    /// <see cref="IStructDefinitionNode.DefaultInitializer"/> attribute must be computed.</remarks>
+    public static partial IFixedSet<ITypeMemberDefinitionNode> ValueDefinition_Members(IValueDefinitionNode node)
+    {
+        var members = node.SourceMembers.AsEnumerable();
+
+        if (node.DefaultInitializer is { } defaultInitializer) members = members.Append(defaultInitializer);
+
+        return members.ToFixedSet();
+    }
+
+    public static partial IDefaultInitializerDefinitionNode? ValueDefinition_DefaultInitializer(IValueDefinitionNode node)
+    {
+        if (node.SourceMembers.Any(m => m is IInitializerDefinitionNode)) return null;
+        return Child.Attach(node, IDefaultInitializerDefinitionNode.Create());
+    }
     #endregion
 }

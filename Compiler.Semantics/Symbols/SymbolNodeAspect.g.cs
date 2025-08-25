@@ -20,6 +20,8 @@ internal static partial class SymbolNodeAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial void Validate_StructSymbol(OrdinaryTypeSymbol symbol);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial void Validate_ValueSymbol(OrdinaryTypeSymbol symbol);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial void Validate_TraitSymbol(OrdinaryTypeSymbol symbol);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial void Validate_OrdinaryMethodSymbol(MethodSymbol symbol);
@@ -38,11 +40,7 @@ internal static partial class SymbolNodeAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFixedList<IGenericParameterSymbolNode> OrdinaryTypeSymbol_GenericParameters(IOrdinaryTypeSymbolNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial IFixedSet<ITypeMemberSymbolNode> OrdinaryTypeSymbol_Members(IOrdinaryTypeSymbolNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFixedList<INamespaceMemberSymbolNode> NamespaceSymbol_Members(INamespaceSymbolNode node);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IFixedSet<ITypeMemberSymbolNode> ClassSymbol_Members(IClassSymbolNode node);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IFixedSet<ITypeMemberSymbolNode> StructSymbol_Members(IStructSymbolNode node);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IFixedSet<ITypeMemberSymbolNode> TraitSymbol_Members(ITraitSymbolNode node);
 }

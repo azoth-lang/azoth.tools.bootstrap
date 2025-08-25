@@ -549,6 +549,26 @@ public static class ISemanticNodeExtensions
             case IUnsafeExpressionNode n:
                 yield return n.TempExpression;
                 yield break;
+            case IValueDefinitionNode n:
+                yield return n.ImplicitSelf;
+                foreach (var child in n.Attributes)
+                    yield return child;
+                foreach (var child in n.GenericParameters)
+                    yield return child;
+                foreach (var child in n.SupertypeNames)
+                    yield return child;
+                foreach (var child in n.SourceMembers)
+                    yield return child;
+                if (n.DefaultInitializer is not null)
+                    yield return n.DefaultInitializer;
+                yield break;
+            case IValueSymbolNode n:
+                yield return n.ImplicitSelf;
+                foreach (var child in n.GenericParameters)
+                    yield return child;
+                foreach (var child in n.Members)
+                    yield return child;
+                yield break;
             case IVariableDeclarationStatementNode n:
                 if (n.Capability is not null)
                     yield return n.Capability;

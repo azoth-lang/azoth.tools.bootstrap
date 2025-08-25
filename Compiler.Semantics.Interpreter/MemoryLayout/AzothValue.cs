@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.Intrinsics;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using InlineMethod;
 
@@ -25,6 +24,7 @@ internal readonly struct AzothValue
     [FieldOffset(0)] public readonly AzothInstance InstanceValue;
     [FieldOffset(0)] public readonly AzothObject ObjectValue;
     [FieldOffset(0)] public readonly AzothStruct StructValue;
+    [FieldOffset(0)] public readonly AzothValueType ValueValue;
     [FieldOffset(0)] public readonly BigInteger IntValue;
     [FieldOffset(0)] public readonly AzothRef RefValue;
     [FieldOffset(0)] public readonly IIntrinsicValue IntrinsicValue;
@@ -68,6 +68,8 @@ internal readonly struct AzothValue
     public static AzothValue Object(AzothObject value) => new(value);
     [Inline(InlineBehavior.Remove)]
     public static AzothValue Struct(AzothStruct value) => new(value);
+    [Inline(InlineBehavior.Remove)]
+    public static AzothValue Value(AzothValueType value) => new(value);
     [Inline(export: true)]
     public static AzothValue Int(BigInteger value) => new(value);
     [Inline(InlineBehavior.Remove)]
@@ -125,6 +127,10 @@ internal readonly struct AzothValue
     private AzothValue(AzothStruct value)
     {
         StructValue = value;
+    }
+    private AzothValue(AzothValueType value)
+    {
+        ValueValue = value;
     }
     private AzothValue(BigInteger value)
     {

@@ -46,6 +46,8 @@ public partial class Parser
                 return ParseClass(attributes, modifiers);
             case IStructKeywordToken _:
                 return ParseStruct(attributes, modifiers);
+            case IValueKeywordToken _:
+                return ParseValue(attributes, modifiers);
             case ITraitKeywordToken _:
                 return ParseTrait(attributes, modifiers);
             case IFunctionKeywordToken _:
@@ -175,7 +177,7 @@ public partial class Parser
     }
     #endregion
 
-    #region Parse Class Declarations
+    #region Parse Class Definitions
     private IClassDefinitionSyntax ParseClass(IFixedList<IAttributeSyntax> attributes, ModifierParser modifiers)
     {
         var accessModifiers = modifiers.ParseAccessModifiers();
@@ -191,7 +193,7 @@ public partial class Parser
         INameSyntax? baseClass = null;
         if (Tokens.Accept<IColonToken>()) baseClass = ParseTypeName();
         var supertypes = ParseSupertypes();
-        var (members, bodySpan) = ParseClassBody();
+        var (members, bodySpan) = ParseTypeBody(inTrait: false);
         var span = TextSpan.Covering(classKeywordSpan, identifier.Span, generic?.Span, baseClass?.Span,
             TextSpan.Covering(supertypes.Select(st => st.Span)), bodySpan);
         return IClassDefinitionSyntax.Create(span, File, identifier.Span, attributes, accessModifiers, constModifier,
@@ -257,17 +259,17 @@ public partial class Parser
         return (TypeParameterVariance.NonwritableCovariant, span);
     }
 
-    private (IFixedList<IMemberDefinitionSyntax> Members, TextSpan Span) ParseClassBody()
+    private (IFixedList<IMemberDefinitionSyntax> Members, TextSpan Span) ParseTypeBody(bool inTrait)
     {
         var openBrace = Tokens.Expect<IOpenBraceToken>();
-        var members = ParseMemberDefinitions(inTrait: false);
+        var members = ParseMemberDefinitions(inTrait);
         var closeBrace = Tokens.Expect<ICloseBraceToken>();
         var span = TextSpan.Covering(openBrace, closeBrace);
         return (members, span);
     }
     #endregion
 
-    #region Parse Struct Declarations
+    #region Parse Struct Definitions
     private IStructDefinitionSyntax ParseStruct(IFixedList<IAttributeSyntax> attributes, ModifierParser modifiers)
     {
         var accessModifiers = modifiers.ParseAccessModifiers();
@@ -280,25 +282,38 @@ public partial class Parser
         var genericParameters = generic?.Parameters ?? FixedList.Empty<IGenericParameterSyntax>();
         var name = OrdinaryName.Create(identifier.Value, genericParameters.Count);
         var superTypes = ParseSupertypes();
-        var (members, bodySpan) = ParseStructBody();
+        var (members, bodySpan) = ParseTypeBody(inTrait: false);
         var span = TextSpan.Covering(structKeywordSpan, identifier.Span, generic?.Span,
             TextSpan.Covering(superTypes.Select(st => st.Span)), bodySpan);
         return IStructDefinitionSyntax.Create(span, File, identifier.Span, attributes, accessModifiers,
             constModifier, moveModifier, name, genericParameters, superTypes,
             members);
     }
-
-    private (IFixedList<IMemberDefinitionSyntax> Members, TextSpan Span) ParseStructBody()
-    {
-        var openBrace = Tokens.Expect<IOpenBraceToken>();
-        var members = ParseMemberDefinitions(inTrait: false);
-        var closeBrace = Tokens.Expect<ICloseBraceToken>();
-        var span = TextSpan.Covering(openBrace, closeBrace);
-        return (members, span);
-    }
     #endregion
 
-    #region Parse Trait Declarations
+    #region Parse Value Definitions
+    private IValueDefinitionSyntax ParseValue(IFixedList<IAttributeSyntax> attributes, ModifierParser modifiers)
+    {
+        var accessModifiers = modifiers.ParseAccessModifiers();
+        var constModifier = modifiers.ParseConstModifier();
+        var moveModifier = modifiers.ParseMoveModifier();
+        modifiers.ParseEndOfModifiers();
+        var valueKeywordSpan = Tokens.Consume<IValueKeywordToken>();
+        var identifier = Tokens.RequiredToken<IIdentifierToken>();
+        var generic = AcceptGenericParameters();
+        var genericParameters = generic?.Parameters ?? FixedList.Empty<IGenericParameterSyntax>();
+        var name = OrdinaryName.Create(identifier.Value, genericParameters.Count);
+        var superTypes = ParseSupertypes();
+        var (members, bodySpan) = ParseTypeBody(inTrait: false);
+        var span = TextSpan.Covering(valueKeywordSpan, identifier.Span, generic?.Span,
+            TextSpan.Covering(superTypes.Select(st => st.Span)), bodySpan);
+        return IValueDefinitionSyntax.Create(span, File, identifier.Span, attributes, accessModifiers, constModifier,
+            moveModifier, name, genericParameters, superTypes, members);
+    }
+
+    #endregion
+
+    #region Parse Trait Definitions
     private ITraitDefinitionSyntax ParseTrait(IFixedList<IAttributeSyntax> attributes, ModifierParser modifiers)
     {
         var accessModifiers = modifiers.ParseAccessModifiers();
@@ -311,24 +326,16 @@ public partial class Parser
         var genericParameters = generic?.Parameters ?? FixedList.Empty<IGenericParameterSyntax>();
         var name = OrdinaryName.Create(identifier.Value, genericParameters.Count);
         var superTypes = ParseSupertypes();
-        var (members, bodySpan) = ParseTraitBody();
+        var (members, bodySpan) = ParseTypeBody(inTrait: true);
         var span = TextSpan.Covering(traitKeywordSpan, identifier.Span, generic?.Span,
             TextSpan.Covering(superTypes.Select(st => st.Span)), bodySpan);
         return ITraitDefinitionSyntax.Create(span, File, identifier.Span, attributes, accessModifiers,
             constModifier, moveModifier, name, genericParameters, superTypes, members);
     }
 
-    private (IFixedList<IMemberDefinitionSyntax> Members, TextSpan Span) ParseTraitBody()
-    {
-        var openBrace = Tokens.Expect<IOpenBraceToken>();
-        var members = ParseMemberDefinitions(inTrait: true);
-        var closeBrace = Tokens.Expect<ICloseBraceToken>();
-        var span = TextSpan.Covering(openBrace, closeBrace);
-        return (members, span);
-    }
     #endregion
 
-    #region Parse Member Declarations
+    #region Parse Member Definitions
     private IFixedList<IMemberDefinitionSyntax> ParseMemberDefinitions(bool inTrait)
         => ParseMany<IMemberDefinitionSyntax, ICloseBraceToken>(() => ParseMemberDefinition(inTrait));
 

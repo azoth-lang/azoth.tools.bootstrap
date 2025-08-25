@@ -41,8 +41,9 @@ internal static class SymbolBinder
     private static IOrdinaryTypeDeclarationNode UserTypeSymbol(OrdinaryTypeSymbol symbol)
          => symbol.TypeConstructor.Kind switch
          {
-             TypeKind.Struct => IStructSymbolNode.Create(symbol),
              TypeKind.Class => IClassSymbolNode.Create(symbol),
+             TypeKind.Struct => IStructSymbolNode.Create(symbol),
+             TypeKind.Value => IValueSymbolNode.Create(symbol),
              TypeKind.Trait => ITraitSymbolNode.Create(symbol),
              _ => throw ExhaustiveMatch.Failed(symbol.TypeConstructor.Kind),
          };

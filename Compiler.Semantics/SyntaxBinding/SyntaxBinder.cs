@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -103,7 +102,7 @@ internal static class SyntaxBinder
         {
             IClassDefinitionSyntax syn => ClassDefinition(syn),
             IStructDefinitionSyntax syn => StructDefinition(syn),
-            IValueDefinitionSyntax syn => throw new NotImplementedException(),
+            IValueDefinitionSyntax syn => ValueDefinition(syn),
             ITraitDefinitionSyntax syn => TraitDefinition(syn),
             _ => throw ExhaustiveMatch.Failed(syntax)
         };
@@ -115,6 +114,11 @@ internal static class SyntaxBinder
 
     private static IStructDefinitionNode StructDefinition(IStructDefinitionSyntax syntax)
         => IStructDefinitionNode.Create(syntax, Attributes(syntax.Attributes),
+            GenericParameters(syntax.GenericParameters), SupertypeNames(syntax.SupertypeNames),
+            MemberDefinitions(syntax.Members));
+
+    private static IValueDefinitionNode ValueDefinition(IValueDefinitionSyntax syntax)
+        => IValueDefinitionNode.Create(syntax, Attributes(syntax.Attributes),
             GenericParameters(syntax.GenericParameters), SupertypeNames(syntax.SupertypeNames),
             MemberDefinitions(syntax.Members));
 

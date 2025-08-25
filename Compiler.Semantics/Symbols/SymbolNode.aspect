@@ -95,21 +95,17 @@
 = OrdinaryTypeSymbol.GenericParameters;
 = OrdinaryTypeSymbol.TypeConstructor => Symbol.TypeConstructor;
 ↑ child OrdinaryTypeSymbol.Members: {TypeMemberSymbol};
+= OrdinaryTypeSymbol.Members;
+// For now, the symbol tree already includes all inherited members.
+= OrdinaryTypeSymbol.InclusiveMembers => Members;
 
 + ClassSymbol.new.Validate;
-↑ child ClassSymbol.Members: {TypeMemberSymbol};
-// For now, the symbol tree already includes all inherited members.
-= ClassSymbol.InclusiveMembers => Members;
 
 + StructSymbol.new.Validate;
-↑ child StructSymbol.Members: {TypeMemberSymbol};
-// For now, the symbol tree already includes all inherited members.
-= StructSymbol.InclusiveMembers => Members;
+
++ ValueSymbol.new.Validate;
 
 + TraitSymbol.new.Validate;
-↑ child TraitSymbol.Members: {TypeMemberSymbol};
-// For now, the symbol tree already includes all inherited members.
-= TraitSymbol.InclusiveMembers => Members;
 
 // ---------- Type Declaration Parts
 ↑ GenericParameterSymbol.Name: `IdentifierName` => Symbol.Name;

@@ -62,6 +62,8 @@ public sealed class InterpreterProcess
         = new(ReferenceEqualityComparer.Instance);
     private readonly ConcurrentDictionary<IStructDefinitionNode, StructLayout> structLayouts
         = new(ReferenceEqualityComparer.Instance);
+    private readonly ConcurrentDictionary<IValueDefinitionNode, ValueLayout> valueLayouts
+        = new(ReferenceEqualityComparer.Instance);
     private readonly LocalVariables.Scope.Pool localVariableScopePool = new();
     private readonly Stopwatch runStopwatch = new();
     private readonly IntrinsicsRegistry intrinsics = IntrinsicsRegistry.Instance;
@@ -245,6 +247,7 @@ public sealed class InterpreterProcess
         {
             IClassDefinitionNode @class => CallClassInitializerAsync(@class, selfBareType, initializerSymbol, arguments),
             IStructDefinitionNode @struct => CallStructInitializerAsync(@struct, selfBareType, initializerSymbol, arguments),
+            IValueDefinitionNode value => CallValueInitializerAsync(value, selfBareType, initializerSymbol, arguments),
             ITraitDefinitionNode _ => throw new UnreachableException("Traits don't have initializers."),
             _ => throw ExhaustiveMatch.Failed(typeDefinition)
         };
@@ -275,6 +278,17 @@ public sealed class InterpreterProcess
         var layout = structLayouts.GetOrAdd(@struct, CreateStructLayout);
         var self = AzothValue.Struct(new(layout));
         return CallInitializerAsync(@struct, initializerSymbol, self, selfBareType, arguments);
+    }
+
+    private ValueTask<AzothValue> CallValueInitializerAsync(
+        IValueDefinitionNode value,
+        BareType selfBareType,
+        InitializerSymbol initializerSymbol,
+        IReadOnlyList<AzothValue> arguments)
+    {
+        var layout = valueLayouts.GetOrAdd(value, CreateValueLayout);
+        var self = AzothValue.Value(new(layout));
+        return CallInitializerAsync(value, initializerSymbol, self, selfBareType, arguments);
     }
 
     private ValueTask<AzothValue> CallInitializerAsync(
@@ -1105,6 +1119,8 @@ public sealed class InterpreterProcess
         => new(@class, methodSignatures, userTypes);
 
     private static StructLayout CreateStructLayout(IStructDefinitionNode @struct) => new(@struct);
+
+    private static ValueLayout CreateValueLayout(IValueDefinitionNode value) => new(value);
 
     private async ValueTask<AzothResult> ExecuteArgumentsAsync(
         BareType? selfBareType,

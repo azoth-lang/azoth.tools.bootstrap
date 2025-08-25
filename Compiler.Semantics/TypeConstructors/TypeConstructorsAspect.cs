@@ -26,6 +26,10 @@ internal static partial class TypeConstructorsAspect
         => BareTypeConstructor.CreateStruct(node.TypeConstructorContext, node.IsConst, node.Name,
             GetGenericParameters(node), node.Supertypes);
 
+    public static partial OrdinaryTypeConstructor ValueDefinition_TypeConstructor(IValueDefinitionNode node)
+        => BareTypeConstructor.CreateValue(node.TypeConstructorContext, node.IsConst, node.Name,
+            GetGenericParameters(node), node.Supertypes);
+
     public static partial OrdinaryTypeConstructor TraitDefinition_TypeConstructor(ITraitDefinitionNode node)
         => BareTypeConstructor.CreateTrait(node.TypeConstructorContext, node.IsConst, node.Name, GetGenericParameters(node), node.Supertypes);
 
