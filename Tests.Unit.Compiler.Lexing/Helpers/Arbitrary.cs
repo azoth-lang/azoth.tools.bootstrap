@@ -118,7 +118,15 @@ public static class Arbitrary
     private static Gen<PseudoToken> GenSymbol()
     {
         return Gen.Elements(Symbols.AsEnumerable())
-                  .Select(item => new PseudoToken(item.Value, item.Key));
+                  .Select(Selector);
+
+        static PseudoToken Selector(KeyValuePair<string, Type> pair)
+        {
+            // Type kinds are contextual keywords and have a value too
+            if (pair.Value.IsAssignableTo(typeof(ITypeKindKeywordToken)))
+                return new(pair.Value, pair.Key, pair.Key);
+            return new(pair.Value, pair.Key);
+        }
     }
 
     private static Gen<string> GenRegex(string pattern)
@@ -346,6 +354,7 @@ public static class Arbitrary
         { "sendable", typeof(ISendableKeywordToken) },
         { "any", typeof(IAnyKeywordToken) },
         { "nonwritable",typeof(INonwritableKeywordToken) },
+        { "value", typeof(IValueKeywordToken) },
     }.ToFixedDictionary();
 
     private readonly record struct AppendedToken(IEnumerable<PseudoToken> Items, PseudoToken? LastToken)
