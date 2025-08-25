@@ -92,6 +92,7 @@ public static partial class TokenTypes
         typeof(TemporaryKeywordToken),
         typeof(AnyKeywordToken),
         typeof(NonwritableKeywordToken),
+        typeof(ValueKeywordToken),
     }.AsReadOnly();
 }
 
@@ -346,6 +347,9 @@ public static partial class TokenFactory
     public static INonwritableKeywordToken NonwritableKeyword(TextSpan span)
         => new NonwritableKeywordToken(span);
 
+    public static IValueKeywordToken ValueKeyword(TextSpan span)
+        => new ValueKeywordToken(span);
+
 }
 
 [Closed(
@@ -431,7 +435,8 @@ public static partial class TokenFactory
     typeof(ISendableKeywordToken),
     typeof(ITemporaryKeywordToken),
     typeof(IAnyKeywordToken),
-    typeof(INonwritableKeywordToken))]
+    typeof(INonwritableKeywordToken),
+    typeof(IValueKeywordToken))]
 public partial interface IKeywordToken : IToken;
 
 
@@ -1177,6 +1182,15 @@ public partial interface INonwritableKeywordToken : IKeywordToken;
 internal partial class NonwritableKeywordToken : Token, INonwritableKeywordToken
 {
     public NonwritableKeywordToken(TextSpan span)
+        : base(span)
+    {
+    }
+}
+
+public partial interface IValueKeywordToken : IKeywordToken;
+internal partial class ValueKeywordToken : Token, IValueKeywordToken
+{
+    public ValueKeywordToken(TextSpan span)
         : base(span)
     {
     }

@@ -111,6 +111,7 @@
         "Temporary",
         "Any",
         "Nonwritable",
+        "Value",
     }.AsReadOnly();
 #>
 using System;

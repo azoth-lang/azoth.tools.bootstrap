@@ -291,7 +291,6 @@ public partial class Parser
             case IBindingToken _:
             case IPublishedKeywordToken _:
             case IPackageAccessModifierToken _:
-            case ITypeKindKeywordToken _:
             case ICapabilityToken _:
             case ICapabilitySetToken _:
             case IConversionOperatorToken _:

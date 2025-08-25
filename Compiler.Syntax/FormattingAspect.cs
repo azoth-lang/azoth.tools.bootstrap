@@ -59,7 +59,18 @@ internal static partial class FormattingAspect
         if (node.ConstModifier is not null) modifiers += "const ";
         if (node.MoveModifier is not null) modifiers += "move ";
         var generics = !node.GenericParameters.IsEmpty ? $"[{string.Join(", ", node.GenericParameters)}]" : "";
-        return $"{modifiers}class {node.Name.ToBareString()}{generics} {{ … }}";
+        return $"{modifiers}struct {node.Name.ToBareString()}{generics} {{ … }}";
+    }
+
+    public static partial string ValueDefinition_ToString(IValueDefinitionSyntax node)
+    {
+        var modifiers = "";
+        var accessModifier = node.AccessModifier.ToAccessModifier();
+        if (accessModifier != AccessModifier.Private) modifiers += accessModifier.ToSourceString() + " ";
+        if (node.ConstModifier is not null) modifiers += "const ";
+        if (node.MoveModifier is not null) modifiers += "move ";
+        var generics = !node.GenericParameters.IsEmpty ? $"[{string.Join(", ", node.GenericParameters)}]" : "";
+        return $"{modifiers}value {node.Name.ToBareString()}{generics} {{ … }}";
     }
 
     public static partial string TraitDefinition_ToString(ITraitDefinitionSyntax node)

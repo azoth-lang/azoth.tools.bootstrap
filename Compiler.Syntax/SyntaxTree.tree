@@ -69,6 +69,7 @@ TypeDefinition <: NamespaceBlockMemberDefinition, MemberDefinition
 ClassDefinition <: TypeDefinition
     = AbstractModifier:`IAbstractKeywordToken`? /GenericParameters/ BaseTypeName:Name? /SupertypeNames/ /Members/;
 StructDefinition <: TypeDefinition;
+ValueDefinition <: TypeDefinition;
 TraitDefinition <: TypeDefinition;
 
 // ---------- Type Definition Parts

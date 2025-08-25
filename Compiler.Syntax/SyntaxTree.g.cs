@@ -261,6 +261,7 @@ public partial interface IFunctionDefinitionSyntax : IInvocableDefinitionSyntax,
 [Closed(
     typeof(IClassDefinitionSyntax),
     typeof(IStructDefinitionSyntax),
+    typeof(IValueDefinitionSyntax),
     typeof(ITraitDefinitionSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface ITypeDefinitionSyntax : INamespaceBlockMemberDefinitionSyntax, IMemberDefinitionSyntax
@@ -316,6 +317,26 @@ public partial interface IStructDefinitionSyntax : ITypeDefinitionSyntax
         IEnumerable<INameSyntax> supertypeNames,
         IEnumerable<IMemberDefinitionSyntax> members)
         => new StructDefinitionSyntax(span, file, nameSpan, attributes, accessModifier, constModifier, moveModifier, name, genericParameters, supertypeNames, members);
+}
+
+[Closed(typeof(ValueDefinitionSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
+public partial interface IValueDefinitionSyntax : ITypeDefinitionSyntax
+{
+
+    public static IValueDefinitionSyntax Create(
+        TextSpan span,
+        CodeFile file,
+        TextSpan nameSpan,
+        IEnumerable<IAttributeSyntax> attributes,
+        AccessModifierSyntax accessModifier,
+        IConstKeywordToken? constModifier,
+        IMoveKeywordToken? moveModifier,
+        OrdinaryName name,
+        IEnumerable<IGenericParameterSyntax> genericParameters,
+        IEnumerable<INameSyntax> supertypeNames,
+        IEnumerable<IMemberDefinitionSyntax> members)
+        => new ValueDefinitionSyntax(span, file, nameSpan, attributes, accessModifier, constModifier, moveModifier, name, genericParameters, supertypeNames, members);
 }
 
 [Closed(typeof(TraitDefinitionSyntax))]
@@ -1840,6 +1861,52 @@ file class StructDefinitionSyntax : IStructDefinitionSyntax
         => FormattingAspect.StructDefinition_ToString(this);
 
     public StructDefinitionSyntax(
+        TextSpan span,
+        CodeFile file,
+        TextSpan nameSpan,
+        IEnumerable<IAttributeSyntax> attributes,
+        AccessModifierSyntax accessModifier,
+        IConstKeywordToken? constModifier,
+        IMoveKeywordToken? moveModifier,
+        OrdinaryName name,
+        IEnumerable<IGenericParameterSyntax> genericParameters,
+        IEnumerable<INameSyntax> supertypeNames,
+        IEnumerable<IMemberDefinitionSyntax> members)
+    {
+        Span = span;
+        File = file;
+        NameSpan = nameSpan;
+        Attributes = attributes.ToFixedList();
+        AccessModifier = accessModifier;
+        ConstModifier = constModifier;
+        MoveModifier = moveModifier;
+        Name = name;
+        GenericParameters = genericParameters.ToFixedList();
+        SupertypeNames = supertypeNames.ToFixedList();
+        Members = members.ToFixedList();
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class ValueDefinitionSyntax : IValueDefinitionSyntax
+{
+    private IValueDefinitionSyntax Self { [Inline] get => this; }
+
+    public TextSpan Span { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public TextSpan NameSpan { [DebuggerStepThrough] get; }
+    public IFixedList<IAttributeSyntax> Attributes { [DebuggerStepThrough] get; }
+    public AccessModifierSyntax AccessModifier { [DebuggerStepThrough] get; }
+    public IConstKeywordToken? ConstModifier { [DebuggerStepThrough] get; }
+    public IMoveKeywordToken? MoveModifier { [DebuggerStepThrough] get; }
+    public OrdinaryName Name { [DebuggerStepThrough] get; }
+    public IFixedList<IGenericParameterSyntax> GenericParameters { [DebuggerStepThrough] get; }
+    public IFixedList<INameSyntax> SupertypeNames { [DebuggerStepThrough] get; }
+    public IFixedList<IMemberDefinitionSyntax> Members { [DebuggerStepThrough] get; }
+    public override string ToString()
+        => FormattingAspect.ValueDefinition_ToString(this);
+
+    public ValueDefinitionSyntax(
         TextSpan span,
         CodeFile file,
         TextSpan nameSpan,

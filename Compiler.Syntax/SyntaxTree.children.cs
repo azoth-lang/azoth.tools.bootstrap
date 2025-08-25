@@ -326,6 +326,16 @@ public static class ISyntaxExtensions
             case IUnsafeExpressionSyntax n:
                 yield return n.Expression;
                 yield break;
+            case IValueDefinitionSyntax n:
+                foreach (var child in n.Attributes)
+                    yield return child;
+                foreach (var child in n.GenericParameters)
+                    yield return child;
+                foreach (var child in n.SupertypeNames)
+                    yield return child;
+                foreach (var child in n.Members)
+                    yield return child;
+                yield break;
             case IVariableDeclarationStatementSyntax n:
                 if (n.Capability is not null)
                     yield return n.Capability;

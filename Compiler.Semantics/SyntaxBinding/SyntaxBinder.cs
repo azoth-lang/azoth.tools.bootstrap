@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -102,6 +103,7 @@ internal static class SyntaxBinder
         {
             IClassDefinitionSyntax syn => ClassDefinition(syn),
             IStructDefinitionSyntax syn => StructDefinition(syn),
+            IValueDefinitionSyntax syn => throw new NotImplementedException(),
             ITraitDefinitionSyntax syn => TraitDefinition(syn),
             _ => throw ExhaustiveMatch.Failed(syntax)
         };

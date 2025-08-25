@@ -1,3 +1,3 @@
 namespace Azoth.Tools.Bootstrap.Compiler.Tokens;
 
-public interface IIdentifierStringToken : IIdentifierToken;
+public partial interface IIdentifierStringToken;

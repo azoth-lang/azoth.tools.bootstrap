@@ -28,6 +28,8 @@ internal static partial class FormattingAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial string StructDefinition_ToString(IStructDefinitionSyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial string ValueDefinition_ToString(IValueDefinitionSyntax node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial string TraitDefinition_ToString(ITraitDefinitionSyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial string GenericParameter_ToString(IGenericParameterSyntax node);
