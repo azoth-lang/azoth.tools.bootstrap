@@ -1,10 +1,11 @@
+// TODO make this a `value`
 published const struct string
 {
     /// The index of the start of the string data in `bytes`.
     public let start: size;
     /// The number of bytes in the string when encoded in UTF8.
     published let byte_count: size;
-    // TODO use iref var?
+    // TODO use Var[byte]
     var bytes: mut Raw_Hybrid_Bounded_List[void, byte];
 
     // Initializer is private because this is a temporary way of initializing strings for constants

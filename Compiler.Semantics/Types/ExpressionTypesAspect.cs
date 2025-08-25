@@ -150,6 +150,7 @@ internal static partial class ExpressionTypesAspect
             if (statement.ResultValueId is ValueId resultValueId)
                 return flowState.Transform(resultValueId, node.ValueId, node.Type);
 
+        // Return `void` which is a constant
         return flowState.Constant(node.ValueId);
     }
 

@@ -119,8 +119,4 @@ internal static partial class TypeExpressionsAspect
     public static partial IMaybeType RefType_NamedType(IRefTypeNode node)
         => RefType.Create(node.NamedPlainType, node.Referent.NamedType);
     #endregion
-
-    #region Type Names
-
-    #endregion
 }

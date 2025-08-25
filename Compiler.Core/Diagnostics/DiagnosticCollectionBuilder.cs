@@ -10,7 +10,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 [DebuggerTypeProxy(typeof(CollectionDebugView<>))]
 public class DiagnosticCollectionBuilder : IReadOnlyCollection<Diagnostic>
 {
-    private readonly List<Diagnostic> items = new List<Diagnostic>();
+    private readonly List<Diagnostic> items = [];
 
     public int Count => items.Count;
 
