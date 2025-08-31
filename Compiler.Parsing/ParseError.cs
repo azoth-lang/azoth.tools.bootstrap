@@ -50,6 +50,8 @@ internal static class ParseError
             2005, "Unexpected end of expression.");
     }
 
+    // Missing 2006
+
     public static Diagnostic ResultStatementInBody(CodeFile file, TextSpan span)
     {
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,
@@ -68,11 +70,15 @@ internal static class ParseError
             2009, "Self parameter must be the first parameter.");
     }
 
+    // Missing 2010
+
     public static Diagnostic MissingType(CodeFile file, in TextSpan span)
     {
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,
             2011, "Variable type and capability are missing.");
     }
+
+    // Missing 2012
 
     public static Diagnostic AbstractAssociatedFunction(CodeFile file, TextSpan span)
     {
@@ -134,6 +140,8 @@ internal static class ParseError
             2022, "Explicit `read` capability should not be used here. Omit capability for implicit read.");
     }
 
+    // Missing 2023
+
     public static Diagnostic MissingReturn(CodeFile file, TextSpan span)
     {
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,
@@ -158,27 +166,23 @@ internal static class ParseError
             2027, "Setter is missing a parameter.");
     }
 
-    public static Diagnostic SetterHasExtraParameters(CodeFile file, TextSpan span)
-    {
-        return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,
-            2028, "Setter has extra parameters. A setter should have only one named parameter.");
-    }
+    // Missing 2028
 
     public static Diagnostic ConcreteAssociatedTypeDeclaredAbstract(CodeFile file, TextSpan span)
     {
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,
-            2019, "A concrete associated type cannot be abstract.");
+            2029, "A concrete associated type cannot be abstract.");
     }
 
     public static Diagnostic AbstractAssociatedTypeMissingAbstractModifier(CodeFile file, TextSpan span)
     {
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,
-            2020, "An abstract associated type must be declared `abstract`.");
+            2030, "An abstract associated type must be declared `abstract`.");
     }
 
     public static Diagnostic AbstractModifierInTrait(CodeFile file, TextSpan span)
     {
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,
-            2021, "An abstract associated type must be declared `abstract`.");
+            2031, "An abstract associated type must be declared `abstract`.");
     }
 }

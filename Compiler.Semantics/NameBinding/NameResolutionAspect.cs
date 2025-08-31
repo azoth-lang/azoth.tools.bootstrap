@@ -115,19 +115,27 @@ internal static partial class NameResolutionAspect
     #region Operator Expressions
     public static partial ISetterInvocationExpressionNode? AssignmentExpression_Rewrite_SetterInvocationExpression(IAssignmentExpressionNode node)
     {
-        // TODO refactor to a replacement of the getter node based on an inherited attribute. That
-        // should allow optimization of caching compared to a full rewrite.
+        switch (node.TempLeftOperand)
+        {
+            // Note that even if there is no corresponding getter for this setter, there will still be
+            // a getter invocation generated.
+            case IGetterInvocationExpressionNode getterInvocation
+                // There must be a setter to call.
+                when !getterInvocation.ReferencedDeclarations.OfType<ISetterMethodDeclarationNode>().Any():
+                return null;
+            // TODO refactor to a replacement of the getter node based on an inherited attribute. That
+            // should allow optimization of caching compared to a full rewrite.
+            case IGetterInvocationExpressionNode getterInvocation:
+                return ISetterInvocationExpressionNode.Create(node.Syntax, getterInvocation.Context,
+                    getterInvocation.PropertyName, [node.CurrentRightOperand],
+                    getterInvocation.ReferencedDeclarations);
+            case IUnresolvedInvocationExpressionNode { TempExpression: IGetterInvocationExpressionNode getterInvocation } unresolvedInvocation:
+                return ISetterInvocationExpressionNode.Create(node.Syntax, getterInvocation.Context,
+                    getterInvocation.PropertyName, unresolvedInvocation.CurrentArguments.Append(node.CurrentRightOperand),
+                    getterInvocation.ReferencedDeclarations);
+        }
 
-        if (node.TempLeftOperand is not IGetterInvocationExpressionNode getterInvocation) return null;
-
-        // There must be a setter to call
-        if (!getterInvocation.ReferencedDeclarations.OfType<ISetterMethodDeclarationNode>().Any())
-            return null;
-
-        // TODO whether this is a set also depends on whether the `ref` and `iref` types say it should be
-
-        return ISetterInvocationExpressionNode.Create(node.Syntax, getterInvocation.Context,
-            getterInvocation.PropertyName, node.CurrentRightOperand, getterInvocation.ReferencedDeclarations);
+        return null;
     }
     #endregion
 
@@ -385,16 +393,16 @@ internal static partial class NameResolutionAspect
 
     private static bool TryAllOfType<T>(
         this IReadOnlyCollection<IDeclarationNode> declarations,
-        out IFixedList<T> referencedNamespaces)
+        out IFixedList<T> referencedDeclarations)
         where T : IDeclarationNode
     {
         if (declarations.Count == 0)
         {
-            referencedNamespaces = [];
+            referencedDeclarations = [];
             return false;
         }
-        referencedNamespaces = declarations.OfType<T>().ToFixedList();
+        referencedDeclarations = declarations.OfType<T>().ToFixedList();
         // All of type T when counts match
-        return referencedNamespaces.Count == declarations.Count;
+        return referencedDeclarations.Count == declarations.Count;
     }
 }

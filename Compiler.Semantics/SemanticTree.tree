@@ -280,7 +280,7 @@ GetterInvocationExpression <: InvocationExpression
     = Syntax:`IMemberAccessExpressionSyntax` Context:Expression
     ReferencedDeclarations:{`IPropertyAccessorDeclarationNode`};
 SetterInvocationExpression <: InvocationExpression = Syntax:`IAssignmentExpressionSyntax`
-    Context:Expression PropertyName:`OrdinaryName` Value:AmbiguousExpression
+    Context:Expression PropertyName:`OrdinaryName` Arguments:AmbiguousExpression*
     ReferencedDeclarations:{`IPropertyAccessorDeclarationNode`};
 FunctionReferenceInvocationExpression <: InvocationExpression = Syntax:`IInvocationExpressionSyntax`
     Expression:Expression Arguments:AmbiguousExpression*;

@@ -74,6 +74,7 @@
 ↑ OrdinaryMethodDeclaration.Arity: `int`;
 ↑ OrdinaryMethodDeclaration.MethodGroupPlainType: `IMaybeFunctionPlainType`;
 ↑ OrdinaryMethodDeclaration.MethodGroupType: `IMaybeFunctionType`;
+↑ SetterMethodDeclaration.Arity: `int`;
 ↑ InitializerDeclaration.SelfParameterPlainType: `IMaybeNonVoidPlainType`;
 ↑ InitializerDeclaration.SelfParameterType: `IMaybeNonVoidType`;
 ↑ InitializerDeclaration.Symbol: `InitializerSymbol`?;

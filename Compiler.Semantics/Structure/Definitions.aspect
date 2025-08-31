@@ -71,6 +71,7 @@
 = OrdinaryMethodDefinition.Arity => Parameters.Count;
 = GetterMethodDefinition.Kind => MethodKind.Getter;
 = SetterMethodDefinition.Kind => MethodKind.Setter;
+= SetterMethodDefinition.Arity => Parameters.Count - 1;
 ↑ InitializerDefinition.Name: `IdentifierName`? => Syntax?.Name;
 ↑ DefaultInitializerDefinition.Syntax: `IInitializerDefinitionSyntax`? => null;
 ↑ DefaultInitializerDefinition.Attributes: Attribute* => [];
@@ -165,8 +166,8 @@
 ↑ GetterInvocationExpression.PropertyName: `OrdinaryName` => Syntax.MemberName;
 = GetterInvocationExpression.TempAllArguments => [Context];
 = GetterInvocationExpression.AllArguments => [Context];
-= SetterInvocationExpression.TempAllArguments => [Context, TempValue];
-= SetterInvocationExpression.AllArguments => [Context, Value];
+= SetterInvocationExpression.TempAllArguments => TempArguments.Prepend(Context);
+= SetterInvocationExpression.AllArguments => Arguments.Prepend(Context);
 = FunctionReferenceInvocationExpression.TempAllArguments => TempArguments;
 = FunctionReferenceInvocationExpression.AllArguments => Arguments;
 = InitializerInvocationExpression.TempAllArguments => TempArguments;

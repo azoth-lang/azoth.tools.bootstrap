@@ -950,11 +950,11 @@ public sealed class InterpreterProcess
                 var context = exp.Context; // Avoids repeated access
                 var selfResult = await ExecuteAsync(selfBareType, context, variables).ConfigureAwait(false);
                 if (selfResult.ShouldExit(out var self)) return selfResult;
-                var valueResult = await ExecuteAsync(selfBareType, exp.Value!, variables).ConfigureAwait(false);
-                if (valueResult.ShouldExit(out var value)) return valueResult;
+                var argumentsResult = await ExecuteArgumentsAsync(selfBareType, exp.Arguments!, variables).ConfigureAwait(false);
+                if (argumentsResult.ShouldExit(out var arguments)) return argumentsResult;
                 var setterSymbol = exp.ReferencedDeclaration!.Symbol.Assigned();
                 var selfType = context.Type.Known();
-                return await CallMethodAsync(setterSymbol, selfType, self, [value]).ConfigureAwait(false);
+                return await CallMethodAsync(setterSymbol, selfType, self, arguments.ArgumentsValue).ConfigureAwait(false);
             }
             case ExpressionKind.FunctionReferenceInvocation:
             {

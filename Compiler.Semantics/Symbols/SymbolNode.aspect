@@ -129,6 +129,7 @@
 = OrdinaryMethodSymbol.MethodGroupPlainType => Symbol.MethodReferenceType.PlainType;
 = OrdinaryMethodSymbol.MethodGroupType => Symbol.MethodReferenceType;
 + GetterMethodSymbol.new.Validate;
+= SetterMethodSymbol.Arity => Symbol.Arity;
 + SetterMethodSymbol.new.Validate;
 ↑ InitializerSymbol.Name: `IdentifierName`? => Symbol.Name;
 = InitializerSymbol.SelfParameterPlainType => Symbol.SelfParameterType.PlainType;

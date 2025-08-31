@@ -184,6 +184,8 @@
     => Method.FlowStateAfter;
 = MethodInvocationExpression.Arguments[index].**.FlowStateBefore()
     => Arguments[index - 1]?.FlowStateAfter ?? IFlowState.Empty;
+= MethodInvocationExpression.Arguments[index].ExpectedType
+    => ContextualizedCall?.ParameterTypes[index].Type;
 ↑ MethodInvocationExpression.ContextualizedCall: `ContextualizedCall`?;
 = MethodInvocationExpression.↑.Diagnostics;
 ↑ GetterInvocationExpression.ContextualizedCall: `ContextualizedCall`?;
@@ -191,11 +193,14 @@
     => ContextualizedCall?.SelfParameterType?.ToUpperBound();
 = GetterInvocationExpression.FlowStateAfter;
 = GetterInvocationExpression.↑.Diagnostics;
-= SetterInvocationExpression.Value.**.FlowStateBefore() => Context.FlowStateAfter;
+= SetterInvocationExpression.Arguments[0].**.FlowStateBefore()
+    => Context.FlowStateAfter;
+= SetterInvocationExpression.Arguments[index].**.FlowStateBefore()
+    => Arguments[index - 1]?.FlowStateAfter ?? IFlowState.Empty;
 = SetterInvocationExpression.Context.ExpectedType
     => ContextualizedCall?.SelfParameterType?.ToUpperBound();
-= SetterInvocationExpression.Value.ExpectedType
-    => ContextualizedCall?.ParameterTypes[0].Type;
+= SetterInvocationExpression.Arguments[index].ExpectedType
+    => ContextualizedCall?.ParameterTypes[index].Type;
 ↑ SetterInvocationExpression.ContextualizedCall: `ContextualizedCall`?;
 = SetterInvocationExpression.↑.Diagnostics;
 = FunctionReferenceInvocationExpression.Arguments[0].**.FlowStateBefore()
