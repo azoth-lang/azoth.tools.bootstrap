@@ -85,8 +85,8 @@
     => Self.SelectedCallCandidate?.SelfParameterPlainType;
 = SetterInvocationExpression.Context.ExpectedPlainType
     => Self.SelectedCallCandidate?.SelfParameterPlainType;
-= SetterInvocationExpression.Arguments[index].ExpectedPlainType
-    => Self.SelectedCallCandidate?.ParameterPlainTypes[index];
+= SetterInvocationExpression.Value.ExpectedPlainType
+    => Self.SelectedCallCandidate?.ParameterPlainTypes[0];
 = FunctionReferenceInvocationExpression.Arguments[index].ExpectedPlainType
     => Self.FunctionPlainType.Parameters[index];
 ↑ FunctionReferenceInvocationExpression.FunctionPlainType: `FunctionPlainType`;

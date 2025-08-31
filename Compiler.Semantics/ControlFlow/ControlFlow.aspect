@@ -120,13 +120,7 @@
     => index < Arguments.Count - 1 ? ControlFlowSet.CreateNormal(Arguments[index + 1])
                                    : base.Inherited_ControlFlowFollowing(child, descendant, ctx);
 = SetterInvocationExpression.Context.**.ControlFlowFollowing()
-    => ControlFlowSet.CreateNormal(Arguments[0]);
-// TODO it would be better to have a way to specify that the last statement inherits and not emit any code
-// TODO supporting index from end (e.g. [^1]) would allow this to be split into two rules
-= SetterInvocationExpression.Arguments[index].**.ControlFlowFollowing()
-    => index < Arguments.Count - 1
-        ? ControlFlowSet.CreateNormal(Arguments[index + 1])
-        : base.Inherited_ControlFlowFollowing(child, descendant, ctx);
+    => ControlFlowSet.CreateNormal(Value);
 = FunctionReferenceInvocationExpression.Expression.**.ControlFlowFollowing()
     => !TempArguments.IsEmpty
         ? ControlFlowSet.CreateNormal(Arguments[0])

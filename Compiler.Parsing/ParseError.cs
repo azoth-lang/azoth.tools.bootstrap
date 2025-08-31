@@ -166,7 +166,11 @@ internal static class ParseError
             2027, "Setter is missing a parameter.");
     }
 
-    // Missing 2028
+    public static Diagnostic SetterHasExtraParameters(CodeFile file, TextSpan span)
+    {
+        return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,
+            2028, "Setter has extra parameters. A setter should have only one named parameter.");
+    }
 
     public static Diagnostic ConcreteAssociatedTypeDeclaredAbstract(CodeFile file, TextSpan span)
     {

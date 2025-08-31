@@ -16,7 +16,6 @@ public sealed class MethodSymbol : InvocableSymbol
     public MethodKind Kind { get; }
     public override IdentifierName Name { get; }
     public NonVoidType SelfParameterType { get; }
-    public override int Arity => Kind == MethodKind.Setter ? ParameterTypes.Count - 1 : base.Arity;
     public override Type ReturnType { get; }
 
     /// <summary>

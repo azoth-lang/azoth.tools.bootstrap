@@ -732,16 +732,19 @@ internal static partial class ExpressionTypesAspect
 
     public static partial IFlowState SetterInvocationExpression_FlowStateAfter(ISetterInvocationExpressionNode node)
     {
-        // The flow state just before the setter is called is the state after the arguments has been evaluated
-        var flowStateBefore = node.Arguments.LastOrDefault()?.FlowStateAfter ?? node.Context.FlowStateAfter;
-        var argumentValueIds = ArgumentValueIds(node.ContextualizedCall, node.Context, node.Arguments);
+        if (node.Value is not IExpressionNode value)
+            return IFlowState.Empty;
+        // The flow state just before the setter is called is the state after the argument has been evaluated
+        var flowStateBefore = value.FlowStateAfter;
+        var argumentValueIds = ArgumentValueIds(node.ContextualizedCall, node.Context, [value]);
         return flowStateBefore.CombineArguments(argumentValueIds, node.ValueId, node.Type);
     }
 
     public static partial void SetterInvocationExpression_Contribute_Diagnostics(ISetterInvocationExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
-        var flowStateBefore = node.Arguments[^1]?.FlowStateAfter ?? node.Context.FlowStateAfter;
-        var argumentValueIds = ArgumentValueIds(node.ContextualizedCall, node.Context, node.Arguments);
+        var value = node.Value!;
+        var flowStateBefore = value.FlowStateAfter;
+        var argumentValueIds = ArgumentValueIds(node.ContextualizedCall, node.Context, [value]);
         ContributeCannotUnionDiagnostics(node, flowStateBefore, argumentValueIds, diagnostics);
     }
 

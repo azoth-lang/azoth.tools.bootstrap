@@ -193,12 +193,9 @@ internal static partial class OverloadResolutionAspect
 
     public static partial IFixedSet<ICallCandidate<ISetterMethodDeclarationNode>> SetterInvocationExpression_CompatibleCallCandidates(ISetterInvocationExpressionNode node)
     {
-        // TODO setters should have method names just like others so you can pass them as function references (e.g. `context.setter.set`)
-        var expectedPlainType = node.ExpectedPlainType; // Avoids repeated access
-        if (expectedPlainType is null or UnknownPlainType)
-            return node.CallCandidates.OfType<ICallCandidate<ISetterMethodDeclarationNode>>().ToFixedSet();
-        if (expectedPlainType is not FunctionPlainType { Parameters: var expectedParameters }) return [];
-        var argumentPlainTypes = ArgumentPlainTypes.ForMethod(node.Context.PlainType, expectedParameters);
+        // TODO setters should have method names just like others so you can pass them as function references
+        var parameterPlainType = node.Value?.PlainType ?? PlainType.Unknown;
+        var argumentPlainTypes = ArgumentPlainTypes.ForMethod(node.Context.PlainType, parameterPlainType.Yield());
         return node.CallCandidates.OfType<ICallCandidate<ISetterMethodDeclarationNode>>()
                    .Where(c => c.CompatibleWith(argumentPlainTypes)).ToFixedSet();
     }

@@ -515,6 +515,8 @@ public partial class Parser
 
         if (!namedParameters.Any())
             Add(ParseError.SetterMissingParameter(File, selfParameter.Span.AtEnd()));
+        if (namedParameters.Count > 1)
+            Add(ParseError.SetterHasExtraParameters(File, TextSpan.Covering(namedParameters.Skip(1).Select(p => p.Span))!.Value));
         if (@return is not null)
             Add(ParseError.SetterHasReturn(File, @return.Span));
         return ISetterMethodDefinitionSyntax.Create(span, File, identifier.Span, attributes,

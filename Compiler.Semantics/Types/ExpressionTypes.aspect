@@ -193,14 +193,11 @@
     => ContextualizedCall?.SelfParameterType?.ToUpperBound();
 = GetterInvocationExpression.FlowStateAfter;
 = GetterInvocationExpression.↑.Diagnostics;
-= SetterInvocationExpression.Arguments[0].**.FlowStateBefore()
-    => Context.FlowStateAfter;
-= SetterInvocationExpression.Arguments[index].**.FlowStateBefore()
-    => Arguments[index - 1]?.FlowStateAfter ?? IFlowState.Empty;
+= SetterInvocationExpression.Value.**.FlowStateBefore() => Context.FlowStateAfter;
 = SetterInvocationExpression.Context.ExpectedType
     => ContextualizedCall?.SelfParameterType?.ToUpperBound();
-= SetterInvocationExpression.Arguments[index].ExpectedType
-    => ContextualizedCall?.ParameterTypes[index].Type;
+= SetterInvocationExpression.Value.ExpectedType
+    => ContextualizedCall?.ParameterTypes[0].Type;
 ↑ SetterInvocationExpression.ContextualizedCall: `ContextualizedCall`?;
 = SetterInvocationExpression.↑.Diagnostics;
 = FunctionReferenceInvocationExpression.Arguments[0].**.FlowStateBefore()

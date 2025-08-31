@@ -429,8 +429,7 @@ public static class ISemanticNodeExtensions
                 yield break;
             case ISetterInvocationExpressionNode n:
                 yield return n.Context;
-                foreach (var child in n.TempArguments)
-                    yield return child;
+                yield return n.TempValue;
                 yield break;
             case ISetterMethodDefinitionNode n:
                 foreach (var child in n.Attributes)

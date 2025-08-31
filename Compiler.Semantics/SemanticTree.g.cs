@@ -839,8 +839,6 @@ public partial interface ISetterMethodDefinitionNode : IMethodDefinitionNode, IS
     IDefinitionSyntax? IDefinitionNode.Syntax => Syntax;
     MethodKind IMethodDefinitionNode.Kind
         => MethodKind.Setter;
-    int ISetterMethodDeclarationNode.Arity
-        => Parameters.Count - 1;
 
     public static ISetterMethodDefinitionNode Create(
         ISetterMethodDefinitionSyntax syntax,
@@ -2705,9 +2703,9 @@ public partial interface ISetterInvocationExpressionNode : IInvocationExpression
     IExpressionNode Context { get; }
     IExpressionNode CurrentContext { get; }
     OrdinaryName PropertyName { get; }
-    IFixedList<IAmbiguousExpressionNode> TempArguments { get; }
-    IFixedList<IExpressionNode?> Arguments { get; }
-    IFixedList<IAmbiguousExpressionNode> CurrentArguments { get; }
+    IAmbiguousExpressionNode TempValue { get; }
+    IExpressionNode? Value { get; }
+    IAmbiguousExpressionNode CurrentValue { get; }
     IFixedSet<IPropertyAccessorDeclarationNode> ReferencedDeclarations { get; }
     ContextualizedCall? ContextualizedCall { get; }
     IFixedSet<ICallCandidate<IPropertyAccessorDeclarationNode>> CallCandidates { get; }
@@ -2717,9 +2715,9 @@ public partial interface ISetterInvocationExpressionNode : IInvocationExpression
     ISetterMethodDeclarationNode? ReferencedDeclaration
         => SelectedCallCandidate?.Declaration;
     IEnumerable<IAmbiguousExpressionNode> IInvocationExpressionNode.TempAllArguments
-        => TempArguments.Prepend(Context);
+        => [Context, TempValue];
     IEnumerable<IExpressionNode?> IInvocationExpressionNode.AllArguments
-        => Arguments.Prepend(Context);
+        => [Context, Value];
     ExpressionKind IExpressionNode.ExpressionKind
         => ExpressionKind.SetterInvocation;
 
@@ -2727,9 +2725,9 @@ public partial interface ISetterInvocationExpressionNode : IInvocationExpression
         IAssignmentExpressionSyntax syntax,
         IExpressionNode context,
         OrdinaryName propertyName,
-        IEnumerable<IAmbiguousExpressionNode> arguments,
+        IAmbiguousExpressionNode value,
         IEnumerable<IPropertyAccessorDeclarationNode> referencedDeclarations)
-        => new SetterInvocationExpressionNode(syntax, context, propertyName, arguments, referencedDeclarations);
+        => new SetterInvocationExpressionNode(syntax, context, propertyName, value, referencedDeclarations);
 }
 
 [Closed(typeof(FunctionReferenceInvocationExpressionNode))]
@@ -4196,7 +4194,6 @@ public partial interface IGetterMethodDeclarationNode : IPropertyAccessorDeclara
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface ISetterMethodDeclarationNode : IPropertyAccessorDeclarationNode
 {
-    int Arity { get; }
 }
 
 [Closed(
@@ -4680,8 +4677,6 @@ public partial interface IGetterMethodSymbolNode : IGetterMethodDeclarationNode,
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface ISetterMethodSymbolNode : ISetterMethodDeclarationNode, IMethodSymbolNode
 {
-    int ISetterMethodDeclarationNode.Arity
-        => Symbol.Arity;
 
     public static ISetterMethodSymbolNode Create(MethodSymbol symbol)
         => new SetterMethodSymbolNode(symbol);
@@ -14588,12 +14583,15 @@ file class SetterInvocationExpressionNode : SemanticNode, ISetterInvocationExpre
             : this.RewritableChild(ref contextCached, ref context);
     public IExpressionNode CurrentContext => context.UnsafeValue;
     public OrdinaryName PropertyName { [DebuggerStepThrough] get; }
-    private IRewritableChildList<IAmbiguousExpressionNode, IExpressionNode> arguments;
+    private RewritableChild<IAmbiguousExpressionNode> value;
+    private bool valueCached;
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    public IFixedList<IAmbiguousExpressionNode> TempArguments => arguments;
+    public IAmbiguousExpressionNode TempValue
+        => GrammarAttribute.IsCached(in valueCached) ? value.UnsafeValue
+            : this.RewritableChild(ref valueCached, ref value);
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    public IFixedList<IExpressionNode?> Arguments => arguments.AsFinalType;
-    public IFixedList<IAmbiguousExpressionNode> CurrentArguments => arguments.Current;
+    public IExpressionNode? Value => TempValue as IExpressionNode;
+    public IAmbiguousExpressionNode CurrentValue => value.UnsafeValue;
     public IFixedSet<IPropertyAccessorDeclarationNode> ReferencedDeclarations { [DebuggerStepThrough] get; }
     public PackageSymbol PackageSymbol
         => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
@@ -14683,22 +14681,20 @@ file class SetterInvocationExpressionNode : SemanticNode, ISetterInvocationExpre
         IAssignmentExpressionSyntax syntax,
         IExpressionNode context,
         OrdinaryName propertyName,
-        IEnumerable<IAmbiguousExpressionNode> arguments,
+        IAmbiguousExpressionNode value,
         IEnumerable<IPropertyAccessorDeclarationNode> referencedDeclarations)
     {
         Syntax = syntax;
         this.context = Child.Create(this, context);
         PropertyName = propertyName;
-        this.arguments = ChildList<IExpressionNode>.Create(this, nameof(Arguments), arguments);
+        this.value = Child.Create(this, value);
         ReferencedDeclarations = referencedDeclarations.ToFixedSet();
     }
 
     internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, Self.CurrentContext))
-            return ControlFlowSet.CreateNormal(Arguments[0]);
-        if (IndexOfNode(Self.CurrentArguments, child) is { } index)
-            return index < Arguments.Count - 1 ? ControlFlowSet.CreateNormal(Arguments[index + 1]) : base.Inherited_ControlFlowFollowing(child, descendant, ctx);
+            return ControlFlowSet.CreateNormal(Value);
         return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
     }
 
@@ -14706,8 +14702,8 @@ file class SetterInvocationExpressionNode : SemanticNode, ISetterInvocationExpre
     {
         if (ReferenceEquals(descendant, Self.CurrentContext))
             return Self.SelectedCallCandidate?.SelfParameterPlainType;
-        if (IndexOfNode(Self.CurrentArguments, descendant) is { } index)
-            return Self.SelectedCallCandidate?.ParameterPlainTypes[index];
+        if (ReferenceEquals(descendant, Self.CurrentValue))
+            return Self.SelectedCallCandidate?.ParameterPlainTypes[0];
         if (ReferenceEquals(child, descendant))
             return null;
         return base.Inherited_ExpectedPlainType(child, descendant, ctx);
@@ -14717,8 +14713,8 @@ file class SetterInvocationExpressionNode : SemanticNode, ISetterInvocationExpre
     {
         if (ReferenceEquals(descendant, Self.CurrentContext))
             return ContextualizedCall?.SelfParameterType?.ToUpperBound();
-        if (IndexOfNode(Self.CurrentArguments, descendant) is { } index)
-            return ContextualizedCall?.ParameterTypes[index].Type;
+        if (ReferenceEquals(descendant, Self.CurrentValue))
+            return ContextualizedCall?.ParameterTypes[0].Type;
         if (ReferenceEquals(child, descendant))
             return null;
         return base.Inherited_ExpectedType(child, descendant, ctx);
@@ -14726,10 +14722,8 @@ file class SetterInvocationExpressionNode : SemanticNode, ISetterInvocationExpre
 
     internal override IFlowState Inherited_FlowStateBefore(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
-        if (0 < Self.CurrentArguments.Count && ReferenceEquals(child, Self.CurrentArguments[0]))
+        if (ReferenceEquals(child, Self.CurrentValue))
             return Context.FlowStateAfter;
-        if (IndexOfNode(Self.CurrentArguments, child) is { } index)
-            return Arguments[index - 1]?.FlowStateAfter ?? IFlowState.Empty;
         return base.Inherited_FlowStateBefore(child, descendant, ctx);
     }
 
