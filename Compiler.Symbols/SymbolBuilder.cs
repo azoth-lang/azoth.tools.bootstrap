@@ -29,16 +29,19 @@ public static class SymbolBuilder
     => new(containingTypeSymbol, null, selfParameterType, @params);
 
     public static MethodSymbol Method(TypeSymbol containingSymbol, IdentifierName name, NonVoidType selfParam, IFixedList<ParameterType> @params)
-        => new(containingSymbol, MethodKind.Standard, name, selfParam, @params, Type.Void);
+        => new(containingSymbol, MethodKind.Ordinary, name, selfParam, @params, Type.Void);
 
     public static MethodSymbol Method(TypeSymbol containingSymbol, IdentifierName name, NonVoidType selfParam, IFixedList<ParameterType> @params, Type @return)
-        => new(containingSymbol, MethodKind.Standard, name, selfParam, @params, @return);
+        => new(containingSymbol, MethodKind.Ordinary, name, selfParam, @params, @return);
 
     public static MethodSymbol Getter(TypeSymbol containingSymbol, IdentifierName name, NonVoidType selfParam, Type @return)
         => new(containingSymbol, MethodKind.Getter, name, selfParam, FixedList.Empty<ParameterType>(), @return);
 
     public static MethodSymbol Setter(TypeSymbol containingSymbol, IdentifierName name, NonVoidType selfParam, ParameterType parameter)
         => new(containingSymbol, MethodKind.Setter, name, selfParam, FixedList.Create(parameter), Type.Void);
+
+    public static MethodSymbol Setter(TypeSymbol containingSymbol, IdentifierName name, NonVoidType selfParam, IFixedList<ParameterType> @params)
+        => new(containingSymbol, MethodKind.Setter, name, selfParam, @params, Type.Void);
 
     public static BareType BareSelfType(BareType bareType, params Type[] arguments)
     {

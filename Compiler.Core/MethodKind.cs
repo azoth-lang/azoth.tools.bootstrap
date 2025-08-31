@@ -5,7 +5,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Core;
 /// </summary>
 public enum MethodKind
 {
-    Standard = 1,
+    Ordinary = 1,
     Getter,
     Setter,
 }

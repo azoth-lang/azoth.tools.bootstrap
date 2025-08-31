@@ -67,7 +67,7 @@
 ↑ MethodDefinition.Name:`IdentifierName` => Syntax.Name;
 ↑ MethodDefinition.Kind: `MethodKind`;
 ↑ MethodDefinition.IsAbstract: `bool` => Body is null;
-= OrdinaryMethodDefinition.Kind => MethodKind.Standard;
+= OrdinaryMethodDefinition.Kind => MethodKind.Ordinary;
 = OrdinaryMethodDefinition.Arity => Parameters.Count;
 = GetterMethodDefinition.Kind => MethodKind.Getter;
 = SetterMethodDefinition.Kind => MethodKind.Setter;

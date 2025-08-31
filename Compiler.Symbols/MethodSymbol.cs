@@ -64,7 +64,7 @@ public sealed class MethodSymbol : InvocableSymbol
         {
             MethodKind.Getter => ".get",
             MethodKind.Setter => ".set",
-            MethodKind.Standard => "",
+            MethodKind.Ordinary => "",
             _ => throw ExhaustiveMatch.Failed(Kind),
         };
         var parameterSeparator = ParameterTypes.Any() ? ", " : "";

@@ -786,7 +786,7 @@ public partial interface IOrdinaryMethodDefinitionNode : IMethodDefinitionNode, 
     IMaybeFunctionType IOrdinaryMethodDeclarationNode.MethodGroupType
         => Symbol?.MethodReferenceType ?? IMaybeFunctionType.Unknown;
     MethodKind IMethodDefinitionNode.Kind
-        => MethodKind.Standard;
+        => MethodKind.Ordinary;
     int IOrdinaryMethodDeclarationNode.Arity
         => Parameters.Count;
     IMaybeFunctionPlainType IOrdinaryMethodDeclarationNode.MethodGroupPlainType

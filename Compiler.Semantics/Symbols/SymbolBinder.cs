@@ -78,7 +78,7 @@ internal static class SymbolBinder
     private static IMethodDeclarationNode MethodSymbol(MethodSymbol sym)
         => sym.Kind switch
         {
-            MethodKind.Standard => IOrdinaryMethodSymbolNode.Create(sym),
+            MethodKind.Ordinary => IOrdinaryMethodSymbolNode.Create(sym),
             MethodKind.Getter => IGetterMethodSymbolNode.Create(sym),
             MethodKind.Setter => ISetterMethodSymbolNode.Create(sym),
             _ => throw ExhaustiveMatch.Failed(sym.Kind),

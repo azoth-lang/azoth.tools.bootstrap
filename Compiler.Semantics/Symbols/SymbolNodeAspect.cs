@@ -65,7 +65,7 @@ internal static partial class SymbolNodeAspect
 
     #region Member Symbol Nodes
     public static partial void Validate_OrdinaryMethodSymbol(MethodSymbol symbol)
-        => Requires.That(symbol.Kind == MethodKind.Standard, nameof(symbol),
+        => Requires.That(symbol.Kind == MethodKind.Ordinary, nameof(symbol),
             "Must be a standard method symbol.");
 
     public static partial void Validate_GetterMethodSymbol(MethodSymbol symbol)

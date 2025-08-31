@@ -1,8 +1,6 @@
 using System.Diagnostics;
-using Azoth.Tools.Bootstrap.Compiler.Core.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
-using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 
@@ -36,11 +34,6 @@ public sealed class CapabilitySetRestrictedType : NonVoidType
 
     private CapabilitySetRestrictedType(CapabilitySet capabilitySet, GenericParameterType referent)
     {
-        Requires.That(referent is not { Parameter.Independence: TypeParameterIndependence.Independent }, nameof(referent),
-            "Must not be a fully independent generic parameter.");
-        if (capabilitySet != CapabilitySet.Shareable)
-            Requires.That(referent is not { Parameter.Independence: TypeParameterIndependence.ShareableIndependent }, nameof(referent),
-                "Must not be a fully shareable independent generic parameter.");
         CapabilitySet = capabilitySet;
         Referent = referent;
     }

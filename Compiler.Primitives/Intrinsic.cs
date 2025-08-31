@@ -34,6 +34,12 @@ public static class Intrinsic
     public static readonly InitializerSymbol InitRawHybridBoundedList
         = Find<InitializerSymbol>(RawHybridBoundedList, null);
 
+    public static readonly MethodSymbol GetRawHybridBoundedPrefix
+        = FindGetter(RawHybridBoundedList, "prefix");
+
+    public static readonly MethodSymbol SetRawHybridBoundedPrefix
+        = FindSetter(RawHybridBoundedList, "prefix");
+
     public static readonly MethodSymbol GetRawHybridBoundedListCapacity
         = Find<MethodSymbol>(RawHybridBoundedList, "capacity");
 
@@ -49,12 +55,6 @@ public static class Intrinsic
     public static readonly MethodSymbol RawHybridBoundedListShrink
         = Find<MethodSymbol>(RawHybridBoundedList, "shrink");
 
-    public static readonly MethodSymbol GetRawHybridBoundedPrefix
-        = FindGetter(RawHybridBoundedList, "prefix");
-
-    public static readonly MethodSymbol SetRawHybridBoundedPrefix
-        = FindSetter(RawHybridBoundedList, "prefix");
-
     public static readonly FunctionSymbol PrintRawUtf8Bytes = Find<FunctionSymbol>("print_raw_utf8_bytes");
 
     public static readonly FunctionSymbol AbortRawUtf8Bytes = Find<FunctionSymbol>("ABORT_RAW_UTF8_BYTES");
@@ -69,6 +69,9 @@ public static class Intrinsic
     private static T Find<T>(Symbol containingSymbol, string? name)
         where T : Symbol
         => Find<T>().Single(s => s.ContainingSymbol == containingSymbol && s.Name?.Text == name);
+
+    private static MethodSymbol FindOrdinaryMethod(Symbol containingSymbol, string name)
+        => Find<MethodSymbol>().Single(s => s.Kind == MethodKind.Ordinary && s.ContainingSymbol == containingSymbol && s.Name.Text == name);
 
     private static MethodSymbol FindGetter(Symbol containingSymbol, string name)
         => Find<MethodSymbol>().Single(s => s.Kind == MethodKind.Getter && s.ContainingSymbol == containingSymbol && s.Name.Text == name);
@@ -146,50 +149,49 @@ public static class Intrinsic
             TypeConstructorParameter.Independent(CapabilitySet.Aliasable, "P"),
             TypeConstructorParameter.Independent(CapabilitySet.Aliasable, "T"));
         var plainType = typeConstructor.ConstructWithParameterPlainTypes();
-        var bareType = typeConstructor.ConstructWithParameterTypes(plainType);
-        var bareSelfType = BareSelfType(bareType);
+        var bareSelfType = BareSelfType(typeConstructor.ConstructWithParameterTypes(plainType));
+        var mutSelfType = bareSelfType.With(Capability.Mutable);
+        var readSelfType = bareSelfType.WithDefaultCapability();
         var readableSelfType = new CapabilitySetSelfType(CapabilitySet.Readable, bareSelfType);
         var prefixType = typeConstructor.ParameterTypes[0];
-        var readType = bareType.WithDefaultCapability();
-        var mutType = bareType.With(Capability.Mutable);
+        var aliasablePrefixType = CapabilitySetRestrictedType.Create(CapabilitySet.Aliasable, prefixType);
         var itemType = typeConstructor.ParameterTypes[1];
         var irefVarItemType = RefType.Create(new(isInternal: true, isMutableBinding: true, itemType.PlainType), itemType);
         var selfViewIRefVarItemType = new SelfViewpointType(CapabilitySet.Readable, irefVarItemType);
         var classSymbol = new OrdinaryTypeSymbol(@namespace, typeConstructor);
         tree.Add(classSymbol);
 
-        // published init(.prefix, .capacity) {...}
-        var initializer = Initializer(classSymbol, mutType, Params(prefixType, Type.Size));
+        // published init(mut self, .prefix, .capacity) {...}
+        var initializer = Initializer(classSymbol, mutSelfType, Params(prefixType, Type.Size));
         tree.Add(initializer);
 
-        // TODO should this use `iref` to avoid copying large structs?
-        // published get prefix(self) -> P;
-        var getPrefix = Getter(classSymbol, "prefix", readType, prefixType);
+        // published get prefix(self) -> aliasable P
+        var getPrefix = Getter(classSymbol, "prefix", readSelfType, aliasablePrefixType);
         tree.Add(getPrefix);
 
-        // published set prefix(mut self, value: P);
-        var setPrefix = Setter(classSymbol, "prefix", mutType, Param(prefixType));
+        // published set prefix(mut self, value: P)
+        var setPrefix = Setter(classSymbol, "prefix", mutSelfType, Param(prefixType));
         tree.Add(setPrefix);
 
-        // published get capacity(self) -> size;
-        var capacity = Getter(classSymbol, "capacity", readType, Type.Size);
+        // published get capacity(self) -> size
+        var capacity = Getter(classSymbol, "capacity", readSelfType, Type.Size);
         tree.Add(capacity);
 
         // published get count(self) -> size
-        var count = Getter(classSymbol, "count", readType, Type.Size);
+        var count = Getter(classSymbol, "count", readSelfType, Type.Size);
         tree.Add(count);
+
+        // published fn add(mut self, value: T);
+        var add = Method(classSymbol, "add", mutSelfType, Params(itemType));
+        tree.Add(add);
+
+        // published fn shrink(mut self, count: size)
+        var shrink = Method(classSymbol, "shrink", mutSelfType, Params(Type.Size));
+        tree.Add(shrink);
 
         // published /* unsafe */ fn at(readable self, index: size) -> self |> iref var T
         var at = Method(classSymbol, "at", readableSelfType, Params(Type.Size), selfViewIRefVarItemType);
         tree.Add(at);
-
-        // published fn add(mut self, value: T);
-        var add = Method(classSymbol, "add", mutType, Params(itemType));
-        tree.Add(add);
-
-        // published fn shrink(mut self, count: size)
-        var shrink = Method(classSymbol, "shrink", mutType, Params(Type.Size));
-        tree.Add(shrink);
 
         return typeConstructor;
     }

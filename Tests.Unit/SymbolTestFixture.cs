@@ -71,7 +71,7 @@ public abstract class SymbolTestFixture
         containing ??= Type();
         return new MethodSymbol(
             containing,
-            MethodKind.Standard,
+            MethodKind.Ordinary,
             Name(name) ?? DefaultName("method"),
             self ?? containing.TypeConstructor.ConstructNullaryType(containingType: null).WithDefaultCapability(),
             @params ?? Params(),
@@ -88,7 +88,7 @@ public abstract class SymbolTestFixture
     {
         return new MethodSymbol(
             containing ?? mother.ContainingSymbol,
-            MethodKind.Standard,
+            MethodKind.Ordinary,
             Name(name) ?? mother.Name,
             self ?? mother.SelfParameterType,
             @params ?? mother.ParameterTypes,

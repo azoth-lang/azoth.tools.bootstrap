@@ -286,8 +286,6 @@ internal static partial class ExpressionTypesAspect
 
     public static partial void AssignmentExpression_Contribute_Diagnostics(IAssignmentExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
-        // TODO maybe all assignments should happen via `ref`.
-
         switch (node.LeftOperand)
         {
             case IFieldAccessExpressionNode fieldAccess:
