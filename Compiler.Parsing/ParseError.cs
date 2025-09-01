@@ -189,4 +189,16 @@ internal static class ParseError
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,
             2031, "An abstract associated type must be declared `abstract`.");
     }
+
+    public static Diagnostic InvalidGetterName(CodeFile file, IIdentifierToken identifier)
+    {
+        return new(file, identifier.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Parsing,
+            2032, $"A getter cannot be named `{identifier.Value}`.");
+    }
+
+    public static Diagnostic InvalidSetterName(CodeFile file, IIdentifierToken identifier)
+    {
+        return new(file, identifier.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Parsing,
+            2033, $"A setter cannot be named `{identifier.Value}`.");
+    }
 }

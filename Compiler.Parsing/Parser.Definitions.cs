@@ -409,6 +409,8 @@ public partial class Parser
         var get = Tokens.Consume<IGetKeywordToken>();
         var identifier = Tokens.RequiredToken<IIdentifierToken>();
         IdentifierName name = identifier.Value;
+        if (name == "get" || name == "set")
+            Add(ParseError.InvalidGetterName(File, identifier));
         // Self parameter is expected to be after the current token which is expected to be `(`
         var expectedSelfParameterLocation = Tokens.Current.Span.AtEnd();
         var parameters = ParseParameters(ParseMethodParameter);
@@ -474,6 +476,8 @@ public partial class Parser
         var set = Tokens.Consume<ISetKeywordToken>();
         var identifier = Tokens.RequiredToken<IIdentifierToken>();
         IdentifierName name = identifier.Value;
+        if (name == "get" || name == "set")
+            Add(ParseError.InvalidSetterName(File, identifier));
         // Self parameter is expected to be after the current token which is expected to be `(`
         var expectedSelfParameterLocation = Tokens.Current.Span.AtEnd();
         var parameters = ParseParameters(ParseMethodParameter);
