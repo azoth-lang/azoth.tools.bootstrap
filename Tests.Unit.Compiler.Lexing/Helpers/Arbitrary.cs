@@ -122,8 +122,9 @@ public static class Arbitrary
 
         static PseudoToken Selector(KeyValuePair<string, Type> pair)
         {
-            // Type kinds are contextual keywords and have a value too
-            if (pair.Value.IsAssignableTo(typeof(ITypeKindKeywordToken)))
+            // Type kinds and accessors are contextual keywords and have a value too
+            if (pair.Value.IsAssignableTo(typeof(ITypeKindKeywordToken))
+                || pair.Value.IsAssignableTo(typeof(IAccessorKeywordToken)))
                 return new(pair.Value, pair.Key, pair.Key);
             return new(pair.Value, pair.Key);
         }

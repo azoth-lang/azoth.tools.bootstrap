@@ -6,10 +6,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.Tokens;
     typeof(IBareIdentifierToken),
     typeof(IEscapedIdentifierToken),
     typeof(IIdentifierStringToken),
-    typeof(ITypeKindKeywordToken))]
+    typeof(ITypeKindKeywordToken),
+    typeof(IAccessorKeywordToken))]
 public partial interface IIdentifierToken;
 
 public partial interface IBareIdentifierToken : IIdentifierToken;
 public partial interface IEscapedIdentifierToken : IIdentifierToken;
 public partial interface IIdentifierStringToken : IIdentifierToken;
 public partial interface ITypeKindKeywordToken : IIdentifierToken;
+public partial interface IAccessorKeywordToken : IIdentifierToken;
