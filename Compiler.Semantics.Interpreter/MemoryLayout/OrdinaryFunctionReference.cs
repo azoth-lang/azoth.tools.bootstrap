@@ -18,6 +18,6 @@ internal sealed class OrdinaryFunctionReference : FunctionReference
         this.functionSymbol = functionSymbol;
     }
 
-    public override ValueTask<AzothValue> CallAsync(IReadOnlyList<AzothValue> arguments)
+    public override ValueTask<Value> CallAsync(IReadOnlyList<Value> arguments)
         => interpreterProcess.CallFunctionAsync(functionSymbol, arguments);
 }

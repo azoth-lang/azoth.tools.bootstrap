@@ -9,7 +9,7 @@ internal sealed class MethodReference : FunctionReference
 {
     private readonly InterpreterProcess interpreterProcess;
     private readonly Type selfType;
-    private readonly AzothValue self;
+    private readonly Value self;
     private readonly MethodSymbol methodSymbol;
 
     public override FunctionType FunctionType => methodSymbol.MethodReferenceType;
@@ -17,7 +17,7 @@ internal sealed class MethodReference : FunctionReference
     public MethodReference(
         InterpreterProcess interpreterProcess,
         Type selfType,
-        AzothValue self,
+        Value self,
         MethodSymbol methodSymbol)
     {
         this.interpreterProcess = interpreterProcess;
@@ -26,6 +26,6 @@ internal sealed class MethodReference : FunctionReference
         this.selfType = selfType;
     }
 
-    public override ValueTask<AzothValue> CallAsync(IReadOnlyList<AzothValue> arguments)
+    public override ValueTask<Value> CallAsync(IReadOnlyList<Value> arguments)
         => interpreterProcess.CallMethodAsync(methodSymbol, selfType, self, arguments);
 }

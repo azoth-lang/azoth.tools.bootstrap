@@ -5,15 +5,15 @@ internal class AzothObject<TReferences, TInts, TBytes> : IAzothObject
     where TInts : struct, IAzothInts
     where TBytes : struct, IAzothBytes
 {
-    public VTable VTable { get; }
+    public ClassMetadata ClassMetadata { get; }
 
     private TReferences references;
     private TInts ints;
     private TBytes bytes;
 
-    public AzothObject(VTable vTable)
+    public AzothObject(ClassMetadata classMetadata)
     {
-        VTable = vTable;
+        ClassMetadata = classMetadata;
     }
 
     public void Foo()

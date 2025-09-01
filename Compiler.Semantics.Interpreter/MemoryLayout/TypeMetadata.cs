@@ -8,14 +8,17 @@ using InlineMethod;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.MemoryLayout;
 
-internal abstract class TypeLayout
+/// <summary>
+/// Metadata about a type describing its memory layout and member lookup
+/// </summary>
+internal abstract class TypeMetadata
 {
     private readonly int fieldOffset;
     private readonly FrozenDictionary<FieldSymbol, int> fieldLayout;
     private readonly ConcurrentDictionary<IFieldDeclarationNode, int> fieldIndexes
         = new(ReferenceEqualityComparer.Instance);
 
-    protected TypeLayout(ITypeDefinitionNode typeDefinition, int fieldOffset)
+    protected TypeMetadata(ITypeDefinitionNode typeDefinition, int fieldOffset)
     {
         this.fieldOffset = fieldOffset;
         var fields = typeDefinition.InclusiveMembers.OfType<IFieldDefinitionNode>();
@@ -29,11 +32,11 @@ internal abstract class TypeLayout
     private static int Factory(IFieldDeclarationNode field, FrozenDictionary<FieldSymbol, int> fieldLayout)
         => fieldLayout[field.Symbol.Assigned()];
 
-    protected AzothValue[] CreateInstanceFields()
+    protected Value[] CreateInstanceFields()
     {
         var size = fieldLayout.Count + fieldOffset;
-        var fields = new AzothValue[size];
-        fields[0] = AzothValue.TypeLayout(this);
+        var fields = new Value[size];
+        fields[0] = Value.From(this);
         return fields;
     }
 }

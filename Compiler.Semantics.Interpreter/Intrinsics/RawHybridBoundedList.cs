@@ -7,7 +7,7 @@ using Type = Azoth.Tools.Bootstrap.Compiler.Types.Decorated.Type;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.Intrinsics;
 
-internal abstract class RawHybridBoundedList : IList<AzothValue>, IIntrinsicValue
+internal abstract class RawHybridBoundedList : IList<Value>, IIntrinsicValue
 {
     public static RawHybridBoundedList Create(Type itemType, bool ensurePrefixZeroed, nuint capacity)
     {
@@ -22,8 +22,8 @@ internal abstract class RawHybridBoundedList : IList<AzothValue>, IIntrinsicValu
         }
         else
         {
-            // Note that GC.AllocateArray probably isn't generating an uninitialized array because AzothValue contains
-            var items = ensurePrefixZeroed ? new AzothValue[capacity] : GC.AllocateArray<AzothValue>((int)capacity);
+            // Note that GC.AllocateArray probably isn't generating an uninitialized array because Value contains
+            var items = ensurePrefixZeroed ? new Value[capacity] : GC.AllocateArray<Value>((int)capacity);
             return new Values(items, 0);
         }
     }
@@ -39,20 +39,20 @@ internal abstract class RawHybridBoundedList : IList<AzothValue>, IIntrinsicValu
         Count = count;
     }
 
-    public AzothValue Prefix { get; set; }
+    public Value Prefix { get; set; }
     public nuint Count { get; protected set; }
     public abstract nuint Capacity { get; }
-    public abstract void Add(AzothValue value);
-    public abstract AzothValue Get(nuint index);
-    public abstract void Set(nuint index, AzothValue value);
+    public abstract void Add(Value value);
+    public abstract Value Get(nuint index);
+    public abstract void Set(nuint index, Value value);
     public abstract void Shrink(nuint count);
 
     public abstract string GetStringFromUtf8Bytes(nuint start, nuint byteCount);
 
     #region IList<T>
-    int ICollection<AzothValue>.Count => (int)Count;
+    int ICollection<Value>.Count => (int)Count;
 
-    AzothValue IList<AzothValue>.this[int index]
+    Value IList<Value>.this[int index]
     {
         get => Get((nuint)index);
         set => Set((nuint)index, value);
@@ -60,17 +60,17 @@ internal abstract class RawHybridBoundedList : IList<AzothValue>, IIntrinsicValu
     #endregion
 
     #region IList<T> Not Supported
-    bool ICollection<AzothValue>.IsReadOnly => false;
-    void ICollection<AzothValue>.Add(AzothValue item) => throw new NotSupportedException();
-    void ICollection<AzothValue>.Clear() => throw new NotSupportedException();
-    bool ICollection<AzothValue>.Contains(AzothValue item) => throw new NotSupportedException();
-    void ICollection<AzothValue>.CopyTo(AzothValue[] array, int arrayIndex) => throw new NotSupportedException();
-    bool ICollection<AzothValue>.Remove(AzothValue item) => throw new NotSupportedException();
-    IEnumerator<AzothValue> IEnumerable<AzothValue>.GetEnumerator() => throw new NotSupportedException();
+    bool ICollection<Value>.IsReadOnly => false;
+    void ICollection<Value>.Add(Value item) => throw new NotSupportedException();
+    void ICollection<Value>.Clear() => throw new NotSupportedException();
+    bool ICollection<Value>.Contains(Value item) => throw new NotSupportedException();
+    void ICollection<Value>.CopyTo(Value[] array, int arrayIndex) => throw new NotSupportedException();
+    bool ICollection<Value>.Remove(Value item) => throw new NotSupportedException();
+    IEnumerator<Value> IEnumerable<Value>.GetEnumerator() => throw new NotSupportedException();
     IEnumerator IEnumerable.GetEnumerator() => throw new NotSupportedException();
-    int IList<AzothValue>.IndexOf(AzothValue item) => throw new NotSupportedException();
-    void IList<AzothValue>.Insert(int index, AzothValue item) => throw new NotSupportedException();
-    void IList<AzothValue>.RemoveAt(int index) => throw new NotSupportedException();
+    int IList<Value>.IndexOf(Value item) => throw new NotSupportedException();
+    void IList<Value>.Insert(int index, Value item) => throw new NotSupportedException();
+    void IList<Value>.RemoveAt(int index) => throw new NotSupportedException();
     #endregion
 
     private abstract class Base<T> : RawHybridBoundedList
@@ -125,22 +125,22 @@ internal abstract class RawHybridBoundedList : IList<AzothValue>, IIntrinsicValu
         public Bytes(byte[] bytes, nuint count)
             : base(bytes, count, false) { }
 
-        public override void Add(AzothValue value) => AddValue(value.ByteValue);
-        public override AzothValue Get(nuint index) => AzothValue.Byte(ValueAt(index));
-        public override void Set(nuint index, AzothValue value) => SetValue(index, value.ByteValue);
+        public override void Add(Value value) => AddValue(value.Byte);
+        public override Value Get(nuint index) => Value.FromByte(ValueAt(index));
+        public override void Set(nuint index, Value value) => SetValue(index, value.Byte);
 
         public override string GetStringFromUtf8Bytes(nuint start, nuint byteCount)
             => Encoding.UTF8.GetString(AsSpan().Slice((int)start, (int)byteCount));
     }
 
-    private sealed class Values : Base<AzothValue>
+    private sealed class Values : Base<Value>
     {
-        public Values(AzothValue[] values, nuint count)
+        public Values(Value[] values, nuint count)
             : base(values, count, false) { }
 
-        public override void Add(AzothValue value) => AddValue(value);
-        public override AzothValue Get(nuint index) => ValueAt(index);
-        public override void Set(nuint index, AzothValue value) => SetValue(index, value);
+        public override void Add(Value value) => AddValue(value);
+        public override Value Get(nuint index) => ValueAt(index);
+        public override void Set(nuint index, Value value) => SetValue(index, value);
 
         public override string GetStringFromUtf8Bytes(nuint start, nuint byteCount)
             => throw new NotSupportedException("List is not a list of bytes.");

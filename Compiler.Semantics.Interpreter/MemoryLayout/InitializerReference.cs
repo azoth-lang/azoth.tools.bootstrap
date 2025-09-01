@@ -21,6 +21,6 @@ internal sealed class InitializerReference : FunctionReference
         this.initializerSymbol = initializerSymbol;
     }
 
-    public override ValueTask<AzothValue> CallAsync(IReadOnlyList<AzothValue> arguments)
+    public override ValueTask<Value> CallAsync(IReadOnlyList<Value> arguments)
         => interpreterProcess.CallInitializerAsync(bareType, initializerSymbol, arguments);
 }

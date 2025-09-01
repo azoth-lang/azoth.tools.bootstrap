@@ -6,7 +6,7 @@ using Type = Azoth.Tools.Bootstrap.Compiler.Types.Decorated.Type;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.Intrinsics;
 
-internal abstract class RawHybridArray : IIntrinsicValue, IList<AzothValue>
+internal abstract class RawHybridArray : IIntrinsicValue, IList<Value>
 {
     public static RawHybridArray Create(Type itemType, bool ensurePrefixZeroed, nuint count, bool ensureZeroed)
     {
@@ -21,22 +21,22 @@ internal abstract class RawHybridArray : IIntrinsicValue, IList<AzothValue>
         }
         else
         {
-            // Note that GC.AllocateArray probably isn't generating an uninitialized array because AzothValue contains
-            var items = ensurePrefixZeroed ? new AzothValue[count] : GC.AllocateArray<AzothValue>((int)count);
+            // Note that GC.AllocateArray probably isn't generating an uninitialized array because Value contains
+            var items = ensurePrefixZeroed ? new Value[count] : GC.AllocateArray<Value>((int)count);
             return new Values(items);
         }
     }
 
-    public AzothValue Prefix { get; set; }
+    public Value Prefix { get; set; }
     public abstract nuint Count { get; }
 
-    public abstract AzothValue Get(nuint index);
-    public abstract void Set(nuint index, AzothValue value);
+    public abstract Value Get(nuint index);
+    public abstract void Set(nuint index, Value value);
 
     #region IList<T>
-    int ICollection<AzothValue>.Count => (int)Count;
+    int ICollection<Value>.Count => (int)Count;
 
-    AzothValue IList<AzothValue>.this[int index]
+    Value IList<Value>.this[int index]
     {
         get => Get((nuint)index);
         set => Set((nuint)index, value);
@@ -44,17 +44,17 @@ internal abstract class RawHybridArray : IIntrinsicValue, IList<AzothValue>
     #endregion
 
     #region IList<T> Not Supported
-    bool ICollection<AzothValue>.IsReadOnly => false;
-    void ICollection<AzothValue>.Add(AzothValue item) => throw new NotSupportedException();
-    void ICollection<AzothValue>.Clear() => throw new NotSupportedException();
-    bool ICollection<AzothValue>.Contains(AzothValue item) => throw new NotSupportedException();
-    void ICollection<AzothValue>.CopyTo(AzothValue[] array, int arrayIndex) => throw new NotSupportedException();
-    bool ICollection<AzothValue>.Remove(AzothValue item) => throw new NotSupportedException();
-    IEnumerator<AzothValue> IEnumerable<AzothValue>.GetEnumerator() => throw new NotSupportedException();
+    bool ICollection<Value>.IsReadOnly => false;
+    void ICollection<Value>.Add(Value item) => throw new NotSupportedException();
+    void ICollection<Value>.Clear() => throw new NotSupportedException();
+    bool ICollection<Value>.Contains(Value item) => throw new NotSupportedException();
+    void ICollection<Value>.CopyTo(Value[] array, int arrayIndex) => throw new NotSupportedException();
+    bool ICollection<Value>.Remove(Value item) => throw new NotSupportedException();
+    IEnumerator<Value> IEnumerable<Value>.GetEnumerator() => throw new NotSupportedException();
     IEnumerator IEnumerable.GetEnumerator() => throw new NotSupportedException();
-    int IList<AzothValue>.IndexOf(AzothValue item) => throw new NotSupportedException();
-    void IList<AzothValue>.Insert(int index, AzothValue item) => throw new NotSupportedException();
-    void IList<AzothValue>.RemoveAt(int index) => throw new NotSupportedException();
+    int IList<Value>.IndexOf(Value item) => throw new NotSupportedException();
+    void IList<Value>.Insert(int index, Value item) => throw new NotSupportedException();
+    void IList<Value>.RemoveAt(int index) => throw new NotSupportedException();
     #endregion
 
     private abstract class Base<T> : RawHybridArray
@@ -84,16 +84,16 @@ internal abstract class RawHybridArray : IIntrinsicValue, IList<AzothValue>
         public Bytes(byte[] items)
             : base(items) { }
 
-        public override AzothValue Get(nuint index) => AzothValue.Byte(ValueAt(index));
-        public override void Set(nuint index, AzothValue value) => SetValue(index, value.ByteValue);
+        public override Value Get(nuint index) => Value.FromByte(ValueAt(index));
+        public override void Set(nuint index, Value value) => SetValue(index, value.Byte);
     }
 
-    private sealed class Values : Base<AzothValue>
+    private sealed class Values : Base<Value>
     {
-        public Values(AzothValue[] items)
+        public Values(Value[] items)
             : base(items) { }
 
-        public override AzothValue Get(nuint index) => ValueAt(index);
-        public override void Set(nuint index, AzothValue value) => SetValue(index, value);
+        public override Value Get(nuint index) => ValueAt(index);
+        public override void Set(nuint index, Value value) => SetValue(index, value);
     }
 }

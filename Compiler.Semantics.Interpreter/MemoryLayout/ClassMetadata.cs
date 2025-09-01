@@ -9,14 +9,17 @@ using InlineMethod;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.MemoryLayout;
 
-internal sealed class VTable : TypeLayout
+/// <summary>
+/// Metadata for a class describing the field layout but also acting as the vtable.
+/// </summary>
+internal sealed class ClassMetadata : TypeMetadata
 {
     public IClassDefinitionNode Class { [DebuggerStepThrough] get; }
     private readonly MethodSignatureCache methodSignatures;
     private readonly FrozenDictionary<OrdinaryTypeSymbol, ITypeDefinitionNode> types;
     private readonly ConcurrentDictionary<MethodSignature, IMethodDefinitionNode> methods = new();
 
-    public VTable(
+    public ClassMetadata(
         IClassDefinitionNode @class,
         MethodSignatureCache methodSignatures,
         FrozenDictionary<OrdinaryTypeSymbol, ITypeDefinitionNode> types)
@@ -33,10 +36,10 @@ internal sealed class VTable : TypeLayout
         get => methods.GetOrAdd(signature, LookupMethod);
     }
 
-    public AzothValue[] CreateInstanceFields(BareType bareType)
+    public Value[] CreateInstanceFields(BareType bareType)
     {
         var fields = base.CreateInstanceFields();
-        fields[1] = AzothValue.BareType(bareType);
+        fields[1] = Value.From(bareType);
         return fields;
     }
 

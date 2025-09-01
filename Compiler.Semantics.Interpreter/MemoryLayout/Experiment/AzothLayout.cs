@@ -5,10 +5,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.MemoryLayout.Expe
 
 internal partial class AzothLayout
 {
-    public static IAzothObject CreateObject(VTable vTable, int references, int ints, int bytes)
+    public static IAzothObject CreateObject(ClassMetadata classMetadata, int references, int ints, int bytes)
     {
         var objectType = AzothObjectType.MakeGenericType(ReferencesTypes[references], IntsTypes[ints], BytesTypes[bytes]);
-        return (IAzothObject?)Activator.CreateInstance(objectType, vTable) ?? throw new UnreachableException();
+        return (IAzothObject?)Activator.CreateInstance(objectType, classMetadata) ?? throw new UnreachableException();
     }
 
     private static readonly Type AzothObjectType = typeof(AzothObject<,,>);

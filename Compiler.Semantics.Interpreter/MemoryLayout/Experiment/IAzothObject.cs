@@ -2,5 +2,5 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.MemoryLayout.Expe
 
 internal interface IAzothObject
 {
-    public VTable VTable { get; }
+    public ClassMetadata ClassMetadata { get; }
 }

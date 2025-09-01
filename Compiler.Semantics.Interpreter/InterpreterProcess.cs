@@ -58,11 +58,11 @@ public sealed class InterpreterProcess
     private byte? exitCode;
     internal TextWriter StandardOutputWriter { get; }
     private readonly MethodSignatureCache methodSignatures = new();
-    private readonly ConcurrentDictionary<IClassDefinitionNode, VTable> vTables
+    private readonly ConcurrentDictionary<IClassDefinitionNode, ClassMetadata> classMetadata
         = new(ReferenceEqualityComparer.Instance);
-    private readonly ConcurrentDictionary<IStructDefinitionNode, StructLayout> structLayouts
+    private readonly ConcurrentDictionary<IStructDefinitionNode, StructMetadata> structMetadata
         = new(ReferenceEqualityComparer.Instance);
-    private readonly ConcurrentDictionary<IValueDefinitionNode, ValueLayout> valueLayouts
+    private readonly ConcurrentDictionary<IValueDefinitionNode, ValueMetadata> valueMetadata
         = new(ReferenceEqualityComparer.Instance);
     private readonly LocalVariables.Scope.Pool localVariableScopePool = new();
     private readonly Stopwatch runStopwatch = new();
@@ -136,7 +136,7 @@ public sealed class InterpreterProcess
 
         var entryPoint = packageFacet.EntryPoint!;
         var parameterTypes = entryPoint.Symbol.Assigned().ParameterTypes;
-        var arguments = new List<AzothValue>(parameterTypes.Count);
+        var arguments = new List<Value>(parameterTypes.Count);
         foreach (var parameterType in parameterTypes)
             arguments.Add(await InitializeMainParameterAsync(parameterType.Type));
 
@@ -149,7 +149,7 @@ public sealed class InterpreterProcess
         if (returnType.Equals(Type.Void))
             exitCode = 0;
         else if (returnType.Equals(Type.Byte))
-            exitCode = returnValue.ByteValue;
+            exitCode = returnValue.Byte;
         else
             throw new InvalidOperationException($"Main function cannot have return type {returnType.ToILString()}");
     }
@@ -201,7 +201,7 @@ public sealed class InterpreterProcess
     private static bool IsTestAttribute(IAttributeNode attribute)
         => attribute.TypeName.ReferencedDeclaration!.Name.Text == "Test_Attribute";
 
-    private ValueTask<AzothValue> InitializeMainParameterAsync(Type parameterType)
+    private ValueTask<Value> InitializeMainParameterAsync(Type parameterType)
     {
         if (parameterType is not CapabilityType { Arguments.Count: 0 } type)
             throw new InvalidOperationException(
@@ -214,16 +214,16 @@ public sealed class InterpreterProcess
         return CallInitializerAsync(type.BareType, initializerSymbol, []);
     }
 
-    internal ValueTask<AzothValue> CallFunctionAsync(FunctionSymbol functionSymbol, IReadOnlyList<AzothValue> arguments)
+    internal ValueTask<Value> CallFunctionAsync(FunctionSymbol functionSymbol, IReadOnlyList<Value> arguments)
     {
         if (intrinsics.Get(functionSymbol) is { } function)
             return function(this, functionSymbol, arguments);
         return CallFunctionAsync(functions[functionSymbol], arguments);
     }
 
-    private async ValueTask<AzothValue> CallFunctionAsync(
+    private async ValueTask<Value> CallFunctionAsync(
         IFunctionInvocableDefinitionNode function,
-        IReadOnlyList<AzothValue> arguments)
+        IReadOnlyList<Value> arguments)
     {
         using var scope = localVariableScopePool.CreateRoot();
         var parameters = function.Parameters;
@@ -235,10 +235,10 @@ public sealed class InterpreterProcess
         return result.ReturnValue;
     }
 
-    internal ValueTask<AzothValue> CallInitializerAsync(
+    internal ValueTask<Value> CallInitializerAsync(
         BareType selfBareType,
         InitializerSymbol initializerSymbol,
-        IReadOnlyList<AzothValue> arguments)
+        IReadOnlyList<Value> arguments)
     {
         if (intrinsics.Get(initializerSymbol) is { } intrinsicInitializer)
             return intrinsicInitializer(selfBareType, initializerSymbol, arguments);
@@ -253,14 +253,14 @@ public sealed class InterpreterProcess
         };
     }
 
-    private ValueTask<AzothValue> CallClassInitializerAsync(
+    private ValueTask<Value> CallClassInitializerAsync(
         IClassDefinitionNode @class,
         BareType selfBareType,
         InitializerSymbol initializerSymbol,
-        IReadOnlyList<AzothValue> arguments)
+        IReadOnlyList<Value> arguments)
     {
-        var vTable = vTables.GetOrAdd(@class, CreateVTable);
-        var self = AzothValue.Object(new(vTable, selfBareType));
+        var metadata = classMetadata.GetOrAdd(@class, CreateClassMetadata);
+        var self = Value.From(new ClassReference(metadata, selfBareType));
         return CallInitializerAsync(@class, initializerSymbol, self, selfBareType, arguments);
     }
 
@@ -269,34 +269,34 @@ public sealed class InterpreterProcess
            ?? baseClass.Members.OfType<IInitializerDefinitionNode>()
                        .Select(c => c.Symbol.Assigned()).Single(c => c.Arity == 0);
 
-    private ValueTask<AzothValue> CallStructInitializerAsync(
+    private ValueTask<Value> CallStructInitializerAsync(
         IStructDefinitionNode @struct,
         BareType selfBareType,
         InitializerSymbol initializerSymbol,
-        IReadOnlyList<AzothValue> arguments)
+        IReadOnlyList<Value> arguments)
     {
-        var layout = structLayouts.GetOrAdd(@struct, CreateStructLayout);
-        var self = AzothValue.Struct(new(layout));
+        var layout = structMetadata.GetOrAdd(@struct, CreateStructMetatdata);
+        var self = Value.From((StructReference)new(layout));
         return CallInitializerAsync(@struct, initializerSymbol, self, selfBareType, arguments);
     }
 
-    private ValueTask<AzothValue> CallValueInitializerAsync(
+    private ValueTask<Value> CallValueInitializerAsync(
         IValueDefinitionNode value,
         BareType selfBareType,
         InitializerSymbol initializerSymbol,
-        IReadOnlyList<AzothValue> arguments)
+        IReadOnlyList<Value> arguments)
     {
-        var layout = valueLayouts.GetOrAdd(value, CreateValueLayout);
-        var self = AzothValue.Value(new(layout));
+        var layout = valueMetadata.GetOrAdd(value, CreateValueMetadata);
+        var self = Value.From((ValueReference)new(layout));
         return CallInitializerAsync(value, initializerSymbol, self, selfBareType, arguments);
     }
 
-    private ValueTask<AzothValue> CallInitializerAsync(
+    private ValueTask<Value> CallInitializerAsync(
         ITypeDefinitionNode typeDefinition,
         InitializerSymbol initializerSymbol,
-        AzothValue self,
+        Value self,
         BareType selfBareType,
-        IReadOnlyList<AzothValue> arguments)
+        IReadOnlyList<Value> arguments)
     {
         // TODO run field initializers
         var initializer = initializers[initializerSymbol];
@@ -305,11 +305,11 @@ public sealed class InterpreterProcess
         return CallInitializerAsync(initializer, self, selfBareType, arguments);
     }
 
-    private async ValueTask<AzothValue> CallInitializerAsync(
+    private async ValueTask<Value> CallInitializerAsync(
         IOrdinaryInitializerDefinitionNode initializer,
-        AzothValue self,
+        Value self,
         BareType selfBareType,
-        IReadOnlyList<AzothValue> arguments)
+        IReadOnlyList<Value> arguments)
     {
         using var scope = localVariableScopePool.CreateRoot();
         scope.Add(initializer.SelfParameter, self);
@@ -321,7 +321,7 @@ public sealed class InterpreterProcess
                 default:
                     throw ExhaustiveMatch.Failed(parameters[i]);
                 case IFieldParameterNode fieldParameter:
-                    self.InstanceValue[fieldParameter.ReferencedField!] = arguments[i];
+                    self.InstanceReference[fieldParameter.ReferencedField!] = arguments[i];
                     break;
                 case INamedParameterNode p:
                     scope.Add(p, arguments[i]);
@@ -332,7 +332,7 @@ public sealed class InterpreterProcess
         {
             var result = await ExecuteAsync(selfBareType, statement, scope).ConfigureAwait(false);
             if (result.IsReturn) break;
-            if (result.Type != AzothResultType.Ordinary) throw new UnreachableException("Unmatched break or next.");
+            if (result.Type != ResultType.Ordinary) throw new UnreachableException("Unmatched break or next.");
         }
         return self;
     }
@@ -340,15 +340,15 @@ public sealed class InterpreterProcess
     /// <summary>
     /// Call the implicit default initializer for a type that has no initializers.
     /// </summary>
-    private async ValueTask<AzothValue> CallDefaultInitializerAsync(
+    private async ValueTask<Value> CallDefaultInitializerAsync(
         ITypeDefinitionNode typeDefinition,
-        AzothValue self,
+        Value self,
         BareType selfBareType)
     {
         // Initialize fields to default values
         var fields = typeDefinition.Members.OfType<IFieldDefinitionNode>();
         foreach (var field in fields)
-            self.InstanceValue[field] = AzothValue.None;
+            self.InstanceReference[field] = Value.None;
 
         if (typeDefinition is IClassDefinitionNode
             {
@@ -363,11 +363,11 @@ public sealed class InterpreterProcess
         return self;
     }
 
-    internal ValueTask<AzothValue> CallMethodAsync(
+    internal ValueTask<Value> CallMethodAsync(
         MethodSymbol methodSymbol,
         Type selfType,
-        AzothValue self,
-        IReadOnlyList<AzothValue> arguments)
+        Value self,
+        IReadOnlyList<Value> arguments)
     {
         if (intrinsics.Get(methodSymbol) is { } method)
             return method(methodSymbol, self, arguments);
@@ -399,16 +399,16 @@ public sealed class InterpreterProcess
         }
     }
 
-    private ValueTask<AzothValue> CallMethodAsync(
+    private ValueTask<Value> CallMethodAsync(
         MethodSymbol methodSymbol,
         BareType selfType,
-        AzothValue self,
-        IReadOnlyList<AzothValue> arguments)
+        Value self,
+        IReadOnlyList<Value> arguments)
     {
         var referenceCall = selfType.Semantics switch
         {
             // TODO this is an odd case, generic instantiation should avoid it but this works for now
-            null => self.InstanceValue.IsObject,
+            null => self.InstanceReference.IsClassReference,
             TypeSemantics.Value => false,
             TypeSemantics.Reference => true,
             _ => throw ExhaustiveMatch.Failed(selfType.Semantics),
@@ -419,23 +419,23 @@ public sealed class InterpreterProcess
             : CallStructMethod(methodSymbol, selfType, self, arguments);
     }
 
-    private ValueTask<AzothValue> CallClassMethodAsync(
+    private ValueTask<Value> CallClassMethodAsync(
         MethodSymbol methodSymbol,
         BareType selfType,
-        AzothValue self,
-        IReadOnlyList<AzothValue> arguments)
+        Value self,
+        IReadOnlyList<Value> arguments)
     {
         var methodSignature = methodSignatures[methodSymbol];
-        var vtable = self.ObjectValue.VTable;
+        var vtable = self.ClassReference.ClassMetadata;
         var method = vtable[methodSignature];
         return CallMethodAsync(method, self, selfType, arguments);
     }
 
-    private ValueTask<AzothValue> CallStructMethod(
+    private ValueTask<Value> CallStructMethod(
         MethodSymbol methodSymbol,
         BareType selfType,
-        AzothValue self,
-        IReadOnlyList<AzothValue> arguments)
+        Value self,
+        IReadOnlyList<Value> arguments)
     {
         return methodSymbol.Name.Text switch
         {
@@ -445,11 +445,11 @@ public sealed class InterpreterProcess
         };
     }
 
-    private async ValueTask<AzothValue> CallMethodAsync(
+    private async ValueTask<Value> CallMethodAsync(
         IMethodDefinitionNode method,
-        AzothValue self,
+        Value self,
         BareType selfBareType,
-        IReadOnlyList<AzothValue> arguments)
+        IReadOnlyList<Value> arguments)
     {
         if (method.Body is null)
             throw new InvalidOperationException($"Can't call abstract method {method.Syntax}");
@@ -465,7 +465,7 @@ public sealed class InterpreterProcess
         return result.ReturnValue;
     }
 
-    private async ValueTask<AzothResult> ExecuteAsync(
+    private async ValueTask<Result> ExecuteAsync(
         BareType? selfBareType,
         IFixedList<IStatementNode> statements,
         LocalVariables variables)
@@ -483,10 +483,10 @@ public sealed class InterpreterProcess
                     return await ExecuteAsync(selfBareType, resultStatement.Expression!, variables).ConfigureAwait(false);
             }
 
-        return AzothValue.None;
+        return Value.None;
     }
 
-    private async ValueTask<AzothResult> ExecuteAsync(
+    private async ValueTask<Result> ExecuteAsync(
         BareType? selfBareType,
         IBodyStatementNode statement,
         LocalVariables variables)
@@ -501,18 +501,18 @@ public sealed class InterpreterProcess
             {
                 var initialValueResult = d.Initializer is { } initializer
                     ? await ExecuteAsync(selfBareType, initializer, variables).ConfigureAwait(false)
-                    : AzothValue.None;
+                    : Value.None;
                 if (initialValueResult.ShouldExit(out var initialValue)) return initialValueResult;
                 variables.Add(d, initialValue);
-                return AzothValue.None;
+                return Value.None;
             }
         }
     }
 
-    private ValueTask<AzothResult> ExecuteAsync(BareType? selfBareType, IResultStatementNode statement, LocalVariables variables)
+    private ValueTask<Result> ExecuteAsync(BareType? selfBareType, IResultStatementNode statement, LocalVariables variables)
         => ExecuteAsync(selfBareType, statement.Expression!, variables);
 
-    private async ValueTask<AzothResult> ExecuteAsync(
+    private async ValueTask<Result> ExecuteAsync(
         BareType? selfBareType,
         IExpressionNode expression,
         LocalVariables variables)
@@ -548,7 +548,7 @@ public sealed class InterpreterProcess
                 var exp = (IFieldAccessExpressionNode)expression;
                 var result = await ExecuteAsync(selfBareType, exp.Context, variables).ConfigureAwait(false);
                 if (result.ShouldExit(out var obj)) return result;
-                return obj.InstanceValue[exp.ReferencedDeclaration];
+                return obj.InstanceReference[exp.ReferencedDeclaration];
             }
             case ExpressionKind.MethodAccess:
             {
@@ -558,7 +558,7 @@ public sealed class InterpreterProcess
                 if (selfResult.ShouldExit(out var self)) return selfResult;
                 var methodSymbol = exp.ReferencedDeclaration!.Symbol.Assigned();
                 var selfType = context.Type.Known();
-                return AzothValue.FunctionReference(new MethodReference(this, selfType, self, methodSymbol));
+                return Value.From(new MethodReference(this, selfType, self, methodSymbol));
             }
             #endregion
 
@@ -566,15 +566,15 @@ public sealed class InterpreterProcess
             case ExpressionKind.BoolLiteral:
             {
                 var exp = (IBoolLiteralExpressionNode)expression;
-                return AzothValue.Bool(exp.Value);
+                return Value.From(exp.Value);
             }
             case ExpressionKind.IntegerLiteral:
             {
                 var exp = (IIntegerLiteralExpressionNode)expression;
-                return AzothValue.Int(exp.Value);
+                return Value.From(exp.Value);
             }
             case ExpressionKind.NoneLiteral:
-                return AzothValue.None;
+                return Value.None;
             case ExpressionKind.StringLiteral:
             {
                 var exp = (IStringLiteralExpressionNode)expression;
@@ -642,41 +642,41 @@ public sealed class InterpreterProcess
                         var result = await CompareAsync(selfBareType, exp.LeftOperand!, exp.RightOperand!, variables)
                             .ConfigureAwait(false);
                         if (result.ShouldExit(out var value)) return result;
-                        return AzothValue.Bool(value.I32Value < 0);
+                        return Value.From(value.I32 < 0);
                     }
                     case BinaryOperator.LessThanOrEqual:
                     {
                         var result = await CompareAsync(selfBareType, exp.LeftOperand!, exp.RightOperand!, variables)
                             .ConfigureAwait(false);
                         if (result.ShouldExit(out var value)) return result;
-                        return AzothValue.Bool(value.I32Value <= 0);
+                        return Value.From(value.I32 <= 0);
                     }
                     case BinaryOperator.GreaterThan:
                     {
                         var result = await CompareAsync(selfBareType, exp.LeftOperand!, exp.RightOperand!, variables)
                             .ConfigureAwait(false);
                         if (result.ShouldExit(out var value)) return result;
-                        return AzothValue.Bool(value.I32Value > 0);
+                        return Value.From(value.I32 > 0);
                     }
                     case BinaryOperator.GreaterThanOrEqual:
                     {
                         var result = await CompareAsync(selfBareType, exp.LeftOperand!, exp.RightOperand!, variables)
                             .ConfigureAwait(false);
                         if (result.ShouldExit(out var value)) return result;
-                        return AzothValue.Bool(value.I32Value >= 0);
+                        return Value.From(value.I32 >= 0);
                     }
                     case BinaryOperator.And:
                     {
                         var leftResult = await ExecuteAsync(selfBareType, exp.LeftOperand!, variables).ConfigureAwait(false);
                         if (leftResult.ShouldExit(out var left)) return leftResult;
-                        if (!left.BoolValue) return AzothValue.False;
+                        if (!left.Bool) return Value.False;
                         return await ExecuteAsync(selfBareType, exp.RightOperand!, variables).ConfigureAwait(false);
                     }
                     case BinaryOperator.Or:
                     {
                         var leftResult = await ExecuteAsync(selfBareType, exp.LeftOperand!, variables).ConfigureAwait(false);
                         if (leftResult.ShouldExit(out var left)) return leftResult;
-                        if (left.BoolValue) return AzothValue.True;
+                        if (left.Bool) return Value.True;
                         return await ExecuteAsync(selfBareType, exp.RightOperand!, variables).ConfigureAwait(false);
                     }
                     case BinaryOperator.DotDot:
@@ -752,11 +752,11 @@ public sealed class InterpreterProcess
                 var exp = (IIfExpressionNode)expression;
                 var conditionResult = await ExecuteAsync(selfBareType, exp.Condition!, variables).ConfigureAwait(false);
                 if (conditionResult.ShouldExit(out var condition)) return conditionResult;
-                if (condition.BoolValue)
+                if (condition.Bool)
                     return await ExecuteBlockOrResultAsync(selfBareType, exp.ThenBlock, variables).ConfigureAwait(false);
                 if (exp.ElseClause is { } elseClause)
                     return await ExecuteElseAsync(selfBareType, elseClause, variables).ConfigureAwait(false);
-                return AzothValue.None;
+                return Value.None;
             }
             case ExpressionKind.Loop:
             {
@@ -769,12 +769,12 @@ public sealed class InterpreterProcess
                     {
                         default:
                             throw ExhaustiveMatch.Failed(result.Type);
-                        case AzothResultType.Next:
-                        case AzothResultType.Ordinary:
+                        case ResultType.Next:
+                        case ResultType.Ordinary:
                             continue;
-                        case AzothResultType.Break:
+                        case ResultType.Break:
                             return result.Value;
-                        case AzothResultType.Return:
+                        case ResultType.Return:
                             return result;
                     }
                 }
@@ -790,20 +790,20 @@ public sealed class InterpreterProcess
                     using var scope = variables.CreateNestedScope();
                     var conditionResult = await ExecuteAsync(selfBareType, conditionExpression, scope).ConfigureAwait(false);
                     if (conditionResult.ShouldExit(out var condition)) return conditionResult;
-                    if (!condition.BoolValue)
-                        return AzothValue.None;
+                    if (!condition.Bool)
+                        return Value.None;
 
                     var result = await ExecuteAsync(selfBareType, block, scope).ConfigureAwait(false);
                     switch (result.Type)
                     {
                         default:
                             throw ExhaustiveMatch.Failed(result.Type);
-                        case AzothResultType.Next:
-                        case AzothResultType.Ordinary:
+                        case ResultType.Next:
+                        case ResultType.Ordinary:
                             continue;
-                        case AzothResultType.Break:
+                        case ResultType.Break:
                             return result.Value;
-                        case AzothResultType.Return:
+                        case ResultType.Return:
                             return result;
                     }
                 }
@@ -816,7 +816,7 @@ public sealed class InterpreterProcess
                 if (iterableResult.ShouldExit(out var iterable)) return iterableResult;
                 IBindingNode loopVariable = exp;
                 // Call `iterable.iterate()` if it exists
-                AzothValue iterator;
+                Value iterator;
                 CapabilityType iteratorType;
                 if (exp.ReferencedIterateMethod is { } iterateMethod)
                 {
@@ -845,35 +845,35 @@ public sealed class InterpreterProcess
                     {
                         default:
                             throw ExhaustiveMatch.Failed(result.Type);
-                        case AzothResultType.Next:
-                        case AzothResultType.Ordinary:
+                        case ResultType.Next:
+                        case ResultType.Ordinary:
                             continue;
-                        case AzothResultType.Break:
+                        case ResultType.Break:
                             return result.Value;
-                        case AzothResultType.Return:
+                        case ResultType.Return:
                             return result;
                     }
                 }
 
-                return AzothValue.None;
+                return Value.None;
             }
             case ExpressionKind.Break:
             {
                 var exp = (IBreakExpressionNode)expression;
-                if (exp.Value is not { } value) return AzothResult.BreakWithoutValue;
+                if (exp.Value is not { } value) return Result.BreakWithoutValue;
                 var result = await ExecuteAsync(selfBareType, value, variables).ConfigureAwait(false);
                 if (result.ShouldExit(out var breakValue)) return result;
-                return AzothResult.Break(breakValue);
+                return Result.Break(breakValue);
             }
             case ExpressionKind.Next:
-                return AzothResult.Next;
+                return Result.Next;
             case ExpressionKind.Return:
             {
                 var exp = (IReturnExpressionNode)expression;
-                if (exp.Value is not { } value) return AzothResult.ReturnVoid;
+                if (exp.Value is not { } value) return Result.ReturnVoid;
                 var result = await ExecuteAsync(selfBareType, value, variables).ConfigureAwait(false);
                 if (result.ShouldExit(out var returnValue)) return result;
-                return AzothResult.Return(returnValue);
+                return Result.Return(returnValue);
             }
             #endregion
 
@@ -884,7 +884,7 @@ public sealed class InterpreterProcess
                 var argumentsResult = await ExecuteArgumentsAsync(selfBareType, exp.Arguments!, variables).ConfigureAwait(false);
                 if (argumentsResult.ShouldExit(out var arguments)) return argumentsResult;
                 var functionSymbol = exp.Function.ReferencedDeclaration!.Symbol.Assigned();
-                return await CallFunctionAsync(functionSymbol, arguments.ArgumentsValue).ConfigureAwait(false);
+                return await CallFunctionAsync(functionSymbol, arguments.Arguments).ConfigureAwait(false);
             }
             case ExpressionKind.MethodInvocation:
             {
@@ -897,7 +897,7 @@ public sealed class InterpreterProcess
                 if (argumentsResult.ShouldExit(out var arguments)) return argumentsResult;
                 var methodSymbol = method.ReferencedDeclaration!.Symbol.Assigned();
                 var selfType = context.Type.Known();
-                return await CallMethodAsync(methodSymbol, selfType, self, arguments.ArgumentsValue).ConfigureAwait(false);
+                return await CallMethodAsync(methodSymbol, selfType, self, arguments.Arguments).ConfigureAwait(false);
             }
             case ExpressionKind.GetterInvocation:
             {
@@ -928,7 +928,7 @@ public sealed class InterpreterProcess
                 if (functionResult.ShouldExit(out var function)) return functionResult;
                 var argumentsResult = await ExecuteArgumentsAsync(selfBareType, exp.Arguments!, variables).ConfigureAwait(false);
                 if (argumentsResult.ShouldExit(out var arguments)) return argumentsResult;
-                return await function.FunctionReferenceValue.CallAsync(arguments.ArgumentsValue).ConfigureAwait(false);
+                return await function.FunctionReference.CallAsync(arguments.Arguments).ConfigureAwait(false);
             }
             case ExpressionKind.InitializerInvocation:
             {
@@ -938,7 +938,7 @@ public sealed class InterpreterProcess
                 var initializer = exp.Initializer; // Avoids repeated access
                 var bareType = initializer.Context.NamedBareType!;
                 var initializerSymbol = initializer.ReferencedDeclaration!.Symbol.Assigned();
-                return await CallInitializerAsync(bareType, initializerSymbol, arguments.ArgumentsValue).ConfigureAwait(false);
+                return await CallInitializerAsync(bareType, initializerSymbol, arguments.Arguments).ConfigureAwait(false);
             }
             #endregion
 
@@ -956,7 +956,7 @@ public sealed class InterpreterProcess
             case ExpressionKind.FunctionName:
             {
                 var exp = (IFunctionNameExpressionNode)expression;
-                return AzothValue.FunctionReference(new OrdinaryFunctionReference(this,
+                return Value.From(new OrdinaryFunctionReference(this,
                     exp.ReferencedDeclaration!.Symbol.Assigned()));
             }
             case ExpressionKind.InitializerName:
@@ -964,7 +964,7 @@ public sealed class InterpreterProcess
                 var exp = (IInitializerNameExpressionNode)expression;
                 var bareType = exp.Context.NamedBareType!;
                 var initializerSymbol = exp.ReferencedDeclaration!.Symbol.Assigned();
-                return AzothValue.FunctionReference(new InitializerReference(this, bareType, initializerSymbol));
+                return Value.From(new InitializerReference(this, bareType, initializerSymbol));
             }
             #endregion
 
@@ -1014,14 +1014,14 @@ public sealed class InterpreterProcess
 
                 asyncScope.Add(task);
 
-                return AzothValue.Promise(task);
+                return Value.From(task);
             }
             case ExpressionKind.Await:
             {
                 var exp = (IAwaitExpressionNode)expression;
                 var result = await ExecuteAsync(selfBareType, exp.Expression!, variables).ConfigureAwait(false);
                 if (result.ShouldExit(out var value)) return result;
-                return await value.PromiseValue.ConfigureAwait(false);
+                return await value.Promise.ConfigureAwait(false);
             }
             #endregion
 
@@ -1035,9 +1035,9 @@ public sealed class InterpreterProcess
     private static UnreachableException UnreachableInErrorFreeTree(IExpressionNode expression)
         => new($"Node type {expression.GetType().GetFriendlyName()} won't be in error free tree.");
 
-    private static async ValueTask<AzothValue> ExecuteMatchAsync(
+    private static async ValueTask<Value> ExecuteMatchAsync(
         BareType? selfBareType,
-        AzothValue value,
+        Value value,
         IPatternNode pattern,
         LocalVariables variables)
     {
@@ -1046,53 +1046,53 @@ public sealed class InterpreterProcess
             default:
                 throw ExhaustiveMatch.Failed(pattern);
             case ITypePatternNode pat:
-                return AzothValue.Bool(value.IsOfType(pat.Type.NamedType.Known(), selfBareType));
+                return Value.From(value.IsOfType(pat.Type.NamedType.Known(), selfBareType));
             case IBindingContextPatternNode pat:
                 if (pat.Type is { } type && !value.IsOfType(type.NamedType.Known(), selfBareType))
-                    return AzothValue.False;
+                    return Value.False;
                 return await ExecuteMatchAsync(selfBareType, value, pat.Pattern, variables).ConfigureAwait(false);
             case IBindingPatternNode pat:
                 variables.Add(pat, value);
-                return AzothValue.True;
+                return Value.True;
             case IOptionalPatternNode pat:
                 if (value.IsNone)
-                    return AzothValue.False;
+                    return Value.False;
                 return await ExecuteMatchAsync(selfBareType, value, pat.Pattern, variables).ConfigureAwait(false);
         }
     }
 
-    private async ValueTask<AzothValue> InitializeStringAsync(string value)
+    private async ValueTask<Value> InitializeStringAsync(string value)
     {
         var bytes = RawHybridBoundedList.Create(value);
         var arguments = new[]
         {
             // bytes: const Raw_Bounded_List[byte]
-            AzothValue.Intrinsic(bytes),
+            Value.From(bytes),
             // start: size
-            AzothValue.Size(0),
+            Value.FromSize(0),
             // byte_count: size
-            AzothValue.Size(bytes.Count),
+            Value.FromSize(bytes.Count),
         };
         if (stringStruct is null)
             throw new Exception("Cannot initialize string literal because no string type was found.");
-        var layout = structLayouts.GetOrAdd(stringStruct, CreateStructLayout);
-        var self = AzothValue.Struct(new(layout));
+        var layout = structMetadata.GetOrAdd(stringStruct, CreateStructMetatdata);
+        var self = Value.From((StructReference)new(layout));
         return await CallInitializerAsync(stringInitializer!, self, stringBareType!, arguments).ConfigureAwait(false);
     }
 
-    private VTable CreateVTable(IClassDefinitionNode @class)
+    private ClassMetadata CreateClassMetadata(IClassDefinitionNode @class)
         => new(@class, methodSignatures, userTypes);
 
-    private static StructLayout CreateStructLayout(IStructDefinitionNode @struct) => new(@struct);
+    private static StructMetadata CreateStructMetatdata(IStructDefinitionNode @struct) => new(@struct);
 
-    private static ValueLayout CreateValueLayout(IValueDefinitionNode value) => new(value);
+    private static ValueMetadata CreateValueMetadata(IValueDefinitionNode value) => new(value);
 
-    private async ValueTask<AzothResult> ExecuteArgumentsAsync(
+    private async ValueTask<Result> ExecuteArgumentsAsync(
         BareType? selfBareType,
         IFixedList<IExpressionNode> arguments,
         LocalVariables variables)
     {
-        var values = new List<AzothValue>(arguments.Count);
+        var values = new List<Value>(arguments.Count);
         // Execute arguments in order
         foreach (var argument in arguments)
         {
@@ -1101,10 +1101,10 @@ public sealed class InterpreterProcess
             values.Add(value);
         }
 
-        return AzothValue.Arguments(values);
+        return Value.FromArguments(values);
     }
 
-    private async ValueTask<AzothResult> AddAsync(
+    private async ValueTask<Result> AddAsync(
         BareType? selfBareType,
         IExpressionNode leftExp,
         IExpressionNode rightExp,
@@ -1117,24 +1117,24 @@ public sealed class InterpreterProcess
         var rightResult = await ExecuteAsync(selfBareType, rightExp, variables).ConfigureAwait(false);
         if (rightResult.ShouldExit(out var right)) return leftResult;
         var plainType = leftExp.Type.PlainType;
-        if (ReferenceEquals(plainType, PlainType.Int)) return AzothValue.Int(left.IntValue + right.IntValue);
-        if (ReferenceEquals(plainType, PlainType.UInt)) return AzothValue.Int(left.IntValue + right.IntValue);
-        if (ReferenceEquals(plainType, PlainType.Int8)) return AzothValue.I8((sbyte)(left.I8Value + right.I8Value));
-        if (ReferenceEquals(plainType, PlainType.Byte)) return AzothValue.Byte((byte)(left.ByteValue + right.ByteValue));
-        if (ReferenceEquals(plainType, PlainType.Int16)) return AzothValue.I16((short)(left.I16Value + right.I16Value));
-        if (ReferenceEquals(plainType, PlainType.UInt16)) return AzothValue.U16((ushort)(left.U16Value + right.U16Value));
-        if (ReferenceEquals(plainType, PlainType.Int32)) return AzothValue.I32(left.I32Value + right.I32Value);
-        if (ReferenceEquals(plainType, PlainType.UInt32)) return AzothValue.U32(left.U32Value + right.U32Value);
-        if (ReferenceEquals(plainType, PlainType.Int64)) return AzothValue.I64(left.I64Value + right.I64Value);
-        if (ReferenceEquals(plainType, PlainType.UInt64)) return AzothValue.U64(left.U64Value + right.U64Value);
-        if (ReferenceEquals(plainType, PlainType.Offset)) return AzothValue.Offset(left.OffsetValue + right.OffsetValue);
-        if (ReferenceEquals(plainType, PlainType.Size)) return AzothValue.Size(left.SizeValue + right.SizeValue);
-        if (ReferenceEquals(plainType, PlainType.NInt)) return AzothValue.NInt(left.NIntValue + right.NIntValue);
-        if (ReferenceEquals(plainType, PlainType.NUInt)) return AzothValue.NUInt(left.NUIntValue + right.NUIntValue);
+        if (ReferenceEquals(plainType, PlainType.Int)) return Value.From(left.Int + right.Int);
+        if (ReferenceEquals(plainType, PlainType.UInt)) return Value.From(left.Int + right.Int);
+        if (ReferenceEquals(plainType, PlainType.Int8)) return Value.FromI8((sbyte)(left.I8 + right.I8));
+        if (ReferenceEquals(plainType, PlainType.Byte)) return Value.FromByte((byte)(left.Byte + right.Byte));
+        if (ReferenceEquals(plainType, PlainType.Int16)) return Value.FromI16((short)(left.I16 + right.I16));
+        if (ReferenceEquals(plainType, PlainType.UInt16)) return Value.FromU16((ushort)(left.U16 + right.U16));
+        if (ReferenceEquals(plainType, PlainType.Int32)) return Value.FromI32(left.I32 + right.I32);
+        if (ReferenceEquals(plainType, PlainType.UInt32)) return Value.FromU32(left.U32 + right.U32);
+        if (ReferenceEquals(plainType, PlainType.Int64)) return Value.FromI64(left.I64 + right.I64);
+        if (ReferenceEquals(plainType, PlainType.UInt64)) return Value.FromU64(left.U64 + right.U64);
+        if (ReferenceEquals(plainType, PlainType.Offset)) return Value.FromOffset(left.Offset + right.Offset);
+        if (ReferenceEquals(plainType, PlainType.Size)) return Value.FromSize(left.Size + right.Size);
+        if (ReferenceEquals(plainType, PlainType.NInt)) return Value.FromNInt(left.NInt + right.NInt);
+        if (ReferenceEquals(plainType, PlainType.NUInt)) return Value.FromNUInt(left.NUInt + right.NUInt);
         throw new NotImplementedException($"Add {leftExp.Type.ToILString()}");
     }
 
-    private async ValueTask<AzothResult> SubtractAsync(
+    private async ValueTask<Result> SubtractAsync(
         BareType? selfBareType,
         IExpressionNode leftExp,
         IExpressionNode rightExp,
@@ -1148,24 +1148,24 @@ public sealed class InterpreterProcess
         var rightResult = await ExecuteAsync(selfBareType, rightExp, variables).ConfigureAwait(false);
         if (rightResult.ShouldExit(out var right)) return leftResult;
         var plainType = leftExp.Type.PlainType;
-        if (ReferenceEquals(plainType, PlainType.Int)) return AzothValue.Int(left.IntValue - right.IntValue);
-        if (ReferenceEquals(plainType, PlainType.UInt)) return AzothValue.Int(left.IntValue - right.IntValue);
-        if (ReferenceEquals(plainType, PlainType.Int8)) return AzothValue.I8((sbyte)(left.I8Value - right.I8Value));
-        if (ReferenceEquals(plainType, PlainType.Byte)) return AzothValue.Byte((byte)(left.ByteValue - right.ByteValue));
-        if (ReferenceEquals(plainType, PlainType.Int16)) return AzothValue.I16((short)(left.I16Value - right.I16Value));
-        if (ReferenceEquals(plainType, PlainType.UInt16)) return AzothValue.U16((ushort)(left.U16Value - right.U16Value));
-        if (ReferenceEquals(plainType, PlainType.Int32)) return AzothValue.I32(left.I32Value - right.I32Value);
-        if (ReferenceEquals(plainType, PlainType.UInt32)) return AzothValue.U32(left.U32Value - right.U32Value);
-        if (ReferenceEquals(plainType, PlainType.Int64)) return AzothValue.I64(left.I64Value - right.I64Value);
-        if (ReferenceEquals(plainType, PlainType.UInt64)) return AzothValue.U64(left.U64Value - right.U64Value);
-        if (ReferenceEquals(plainType, PlainType.Offset)) return AzothValue.Offset(left.OffsetValue - right.OffsetValue);
-        if (ReferenceEquals(plainType, PlainType.Size)) return AzothValue.Size(left.SizeValue - right.SizeValue);
-        if (ReferenceEquals(plainType, PlainType.NInt)) return AzothValue.NInt(left.NIntValue - right.NIntValue);
-        if (ReferenceEquals(plainType, PlainType.NUInt)) return AzothValue.NUInt(left.NUIntValue - right.NUIntValue);
+        if (ReferenceEquals(plainType, PlainType.Int)) return Value.From(left.Int - right.Int);
+        if (ReferenceEquals(plainType, PlainType.UInt)) return Value.From(left.Int - right.Int);
+        if (ReferenceEquals(plainType, PlainType.Int8)) return Value.FromI8((sbyte)(left.I8 - right.I8));
+        if (ReferenceEquals(plainType, PlainType.Byte)) return Value.FromByte((byte)(left.Byte - right.Byte));
+        if (ReferenceEquals(plainType, PlainType.Int16)) return Value.FromI16((short)(left.I16 - right.I16));
+        if (ReferenceEquals(plainType, PlainType.UInt16)) return Value.FromU16((ushort)(left.U16 - right.U16));
+        if (ReferenceEquals(plainType, PlainType.Int32)) return Value.FromI32(left.I32 - right.I32);
+        if (ReferenceEquals(plainType, PlainType.UInt32)) return Value.FromU32(left.U32 - right.U32);
+        if (ReferenceEquals(plainType, PlainType.Int64)) return Value.FromI64(left.I64 - right.I64);
+        if (ReferenceEquals(plainType, PlainType.UInt64)) return Value.FromU64(left.U64 - right.U64);
+        if (ReferenceEquals(plainType, PlainType.Offset)) return Value.FromOffset(left.Offset - right.Offset);
+        if (ReferenceEquals(plainType, PlainType.Size)) return Value.FromSize(left.Size - right.Size);
+        if (ReferenceEquals(plainType, PlainType.NInt)) return Value.FromNInt(left.NInt - right.NInt);
+        if (ReferenceEquals(plainType, PlainType.NUInt)) return Value.FromNUInt(left.NUInt - right.NUInt);
         throw new NotImplementedException($"Subtract {leftExp.Type.ToILString()}");
     }
 
-    private async ValueTask<AzothResult> MultiplyAsync(
+    private async ValueTask<Result> MultiplyAsync(
         BareType? selfBareType,
         IExpressionNode leftExp,
         IExpressionNode rightExp,
@@ -1178,24 +1178,24 @@ public sealed class InterpreterProcess
         var rightResult = await ExecuteAsync(selfBareType, rightExp, variables).ConfigureAwait(false);
         if (rightResult.ShouldExit(out var right)) return leftResult;
         var plainType = leftExp.Type.PlainType;
-        if (ReferenceEquals(plainType, PlainType.Int)) return AzothValue.Int(left.IntValue * right.IntValue);
-        if (ReferenceEquals(plainType, PlainType.UInt)) return AzothValue.Int(left.IntValue * right.IntValue);
-        if (ReferenceEquals(plainType, PlainType.Int8)) return AzothValue.I8((sbyte)(left.I8Value * right.I8Value));
-        if (ReferenceEquals(plainType, PlainType.Byte)) return AzothValue.Byte((byte)(left.ByteValue * right.ByteValue));
-        if (ReferenceEquals(plainType, PlainType.Int16)) return AzothValue.I16((short)(left.I16Value * right.I16Value));
-        if (ReferenceEquals(plainType, PlainType.UInt16)) return AzothValue.U16((ushort)(left.U16Value * right.U16Value));
-        if (ReferenceEquals(plainType, PlainType.Int32)) return AzothValue.I32(left.I32Value * right.I32Value);
-        if (ReferenceEquals(plainType, PlainType.UInt32)) return AzothValue.U32(left.U32Value * right.U32Value);
-        if (ReferenceEquals(plainType, PlainType.Int64)) return AzothValue.I64(left.I64Value * right.I64Value);
-        if (ReferenceEquals(plainType, PlainType.UInt64)) return AzothValue.U64(left.U64Value * right.U64Value);
-        if (ReferenceEquals(plainType, PlainType.Offset)) return AzothValue.Offset(left.OffsetValue * right.OffsetValue);
-        if (ReferenceEquals(plainType, PlainType.Size)) return AzothValue.Size(left.SizeValue * right.SizeValue);
-        if (ReferenceEquals(plainType, PlainType.NInt)) return AzothValue.NInt(left.NIntValue * right.NIntValue);
-        if (ReferenceEquals(plainType, PlainType.NUInt)) return AzothValue.NUInt(left.NUIntValue * right.NUIntValue);
+        if (ReferenceEquals(plainType, PlainType.Int)) return Value.From(left.Int * right.Int);
+        if (ReferenceEquals(plainType, PlainType.UInt)) return Value.From(left.Int * right.Int);
+        if (ReferenceEquals(plainType, PlainType.Int8)) return Value.FromI8((sbyte)(left.I8 * right.I8));
+        if (ReferenceEquals(plainType, PlainType.Byte)) return Value.FromByte((byte)(left.Byte * right.Byte));
+        if (ReferenceEquals(plainType, PlainType.Int16)) return Value.FromI16((short)(left.I16 * right.I16));
+        if (ReferenceEquals(plainType, PlainType.UInt16)) return Value.FromU16((ushort)(left.U16 * right.U16));
+        if (ReferenceEquals(plainType, PlainType.Int32)) return Value.FromI32(left.I32 * right.I32);
+        if (ReferenceEquals(plainType, PlainType.UInt32)) return Value.FromU32(left.U32 * right.U32);
+        if (ReferenceEquals(plainType, PlainType.Int64)) return Value.FromI64(left.I64 * right.I64);
+        if (ReferenceEquals(plainType, PlainType.UInt64)) return Value.FromU64(left.U64 * right.U64);
+        if (ReferenceEquals(plainType, PlainType.Offset)) return Value.FromOffset(left.Offset * right.Offset);
+        if (ReferenceEquals(plainType, PlainType.Size)) return Value.FromSize(left.Size * right.Size);
+        if (ReferenceEquals(plainType, PlainType.NInt)) return Value.FromNInt(left.NInt * right.NInt);
+        if (ReferenceEquals(plainType, PlainType.NUInt)) return Value.FromNUInt(left.NUInt * right.NUInt);
         throw new NotImplementedException($"Multiply {leftExp.Type.ToILString()}");
     }
 
-    private async ValueTask<AzothResult> DivideAsync(
+    private async ValueTask<Result> DivideAsync(
         BareType? selfBareType,
         IExpressionNode leftExp,
         IExpressionNode rightExp,
@@ -1208,24 +1208,24 @@ public sealed class InterpreterProcess
         var rightResult = await ExecuteAsync(selfBareType, rightExp, variables).ConfigureAwait(false);
         if (rightResult.ShouldExit(out var right)) return leftResult;
         var plainType = leftExp.Type.PlainType;
-        if (ReferenceEquals(plainType, PlainType.Int)) return AzothValue.Int(left.IntValue / right.IntValue);
-        if (ReferenceEquals(plainType, PlainType.UInt)) return AzothValue.Int(left.IntValue / right.IntValue);
-        if (ReferenceEquals(plainType, PlainType.Int8)) return AzothValue.I8((sbyte)(left.I8Value / right.I8Value));
-        if (ReferenceEquals(plainType, PlainType.Byte)) return AzothValue.Byte((byte)(left.ByteValue / right.ByteValue));
-        if (ReferenceEquals(plainType, PlainType.Int16)) return AzothValue.I16((short)(left.I16Value / right.I16Value));
-        if (ReferenceEquals(plainType, PlainType.UInt16)) return AzothValue.U16((ushort)(left.U16Value / right.U16Value));
-        if (ReferenceEquals(plainType, PlainType.Int32)) return AzothValue.I32(left.I32Value / right.I32Value);
-        if (ReferenceEquals(plainType, PlainType.UInt32)) return AzothValue.U32(left.U32Value / right.U32Value);
-        if (ReferenceEquals(plainType, PlainType.Int64)) return AzothValue.I64(left.I64Value / right.I64Value);
-        if (ReferenceEquals(plainType, PlainType.UInt64)) return AzothValue.U64(left.U64Value / right.U64Value);
-        if (ReferenceEquals(plainType, PlainType.Offset)) return AzothValue.Offset(left.OffsetValue / right.OffsetValue);
-        if (ReferenceEquals(plainType, PlainType.Size)) return AzothValue.Size(left.SizeValue / right.SizeValue);
-        if (ReferenceEquals(plainType, PlainType.NInt)) return AzothValue.NInt(left.NIntValue / right.NIntValue);
-        if (ReferenceEquals(plainType, PlainType.NUInt)) return AzothValue.NUInt(left.NUIntValue / right.NUIntValue);
+        if (ReferenceEquals(plainType, PlainType.Int)) return Value.From(left.Int / right.Int);
+        if (ReferenceEquals(plainType, PlainType.UInt)) return Value.From(left.Int / right.Int);
+        if (ReferenceEquals(plainType, PlainType.Int8)) return Value.FromI8((sbyte)(left.I8 / right.I8));
+        if (ReferenceEquals(plainType, PlainType.Byte)) return Value.FromByte((byte)(left.Byte / right.Byte));
+        if (ReferenceEquals(plainType, PlainType.Int16)) return Value.FromI16((short)(left.I16 / right.I16));
+        if (ReferenceEquals(plainType, PlainType.UInt16)) return Value.FromU16((ushort)(left.U16 / right.U16));
+        if (ReferenceEquals(plainType, PlainType.Int32)) return Value.FromI32(left.I32 / right.I32);
+        if (ReferenceEquals(plainType, PlainType.UInt32)) return Value.FromU32(left.U32 / right.U32);
+        if (ReferenceEquals(plainType, PlainType.Int64)) return Value.FromI64(left.I64 / right.I64);
+        if (ReferenceEquals(plainType, PlainType.UInt64)) return Value.FromU64(left.U64 / right.U64);
+        if (ReferenceEquals(plainType, PlainType.Offset)) return Value.FromOffset(left.Offset / right.Offset);
+        if (ReferenceEquals(plainType, PlainType.Size)) return Value.FromSize(left.Size / right.Size);
+        if (ReferenceEquals(plainType, PlainType.NInt)) return Value.FromNInt(left.NInt / right.NInt);
+        if (ReferenceEquals(plainType, PlainType.NUInt)) return Value.FromNUInt(left.NUInt / right.NUInt);
         throw new NotImplementedException($"Divide {leftExp.Type.ToILString()}");
     }
 
-    private async ValueTask<AzothResult> BuiltInEqualsAsync(
+    private async ValueTask<Result> BuiltInEqualsAsync(
         BareType? selfBareType,
         PlainType commonPlainType,
         IExpressionNode leftExp,
@@ -1240,34 +1240,34 @@ public sealed class InterpreterProcess
         if (rightResult.ShouldExit(out var right)) return leftResult;
         if (commonPlainType is OptionalPlainType optionalType)
         {
-            if (left.IsNone && right.IsNone) return AzothValue.True;
-            if (left.IsNone || right.IsNone) return AzothValue.False;
-            return AzothValue.Bool(BuiltInEquals(optionalType.Referent, left, right));
+            if (left.IsNone && right.IsNone) return Value.True;
+            if (left.IsNone || right.IsNone) return Value.False;
+            return Value.From(BuiltInEquals(optionalType.Referent, left, right));
         }
 
-        return AzothValue.Bool(BuiltInEquals(commonPlainType, left, right));
+        return Value.From(BuiltInEquals(commonPlainType, left, right));
     }
 
-    private static bool BuiltInEquals(PlainType plainType, AzothValue left, AzothValue right)
+    private static bool BuiltInEquals(PlainType plainType, Value left, Value right)
     {
-        if (ReferenceEquals(plainType, PlainType.Int)) return left.IntValue.Equals(right.IntValue);
-        if (ReferenceEquals(plainType, PlainType.UInt)) return left.IntValue.Equals(right.IntValue);
-        if (ReferenceEquals(plainType, PlainType.Int8)) return left.I8Value.Equals(right.I8Value);
-        if (ReferenceEquals(plainType, PlainType.Byte)) return left.ByteValue.Equals(right.ByteValue);
-        if (ReferenceEquals(plainType, PlainType.Int16)) return left.I16Value.Equals(right.I16Value);
-        if (ReferenceEquals(plainType, PlainType.UInt16)) return left.U16Value.Equals(right.U16Value);
-        if (ReferenceEquals(plainType, PlainType.Int32)) return left.I32Value.Equals(right.I32Value);
-        if (ReferenceEquals(plainType, PlainType.UInt32)) return left.U32Value.Equals(right.U32Value);
-        if (ReferenceEquals(plainType, PlainType.Int64)) return left.I64Value.Equals(right.I64Value);
-        if (ReferenceEquals(plainType, PlainType.UInt64)) return left.U64Value.Equals(right.U64Value);
-        if (ReferenceEquals(plainType, PlainType.Offset)) return left.OffsetValue.Equals(right.OffsetValue);
-        if (ReferenceEquals(plainType, PlainType.Size)) return left.SizeValue.Equals(right.SizeValue);
-        if (ReferenceEquals(plainType, PlainType.NInt)) return left.NIntValue.Equals(right.NIntValue);
-        if (ReferenceEquals(plainType, PlainType.NUInt)) return left.NUIntValue.Equals(right.NUIntValue);
+        if (ReferenceEquals(plainType, PlainType.Int)) return left.Int.Equals(right.Int);
+        if (ReferenceEquals(plainType, PlainType.UInt)) return left.Int.Equals(right.Int);
+        if (ReferenceEquals(plainType, PlainType.Int8)) return left.I8.Equals(right.I8);
+        if (ReferenceEquals(plainType, PlainType.Byte)) return left.Byte.Equals(right.Byte);
+        if (ReferenceEquals(plainType, PlainType.Int16)) return left.I16.Equals(right.I16);
+        if (ReferenceEquals(plainType, PlainType.UInt16)) return left.U16.Equals(right.U16);
+        if (ReferenceEquals(plainType, PlainType.Int32)) return left.I32.Equals(right.I32);
+        if (ReferenceEquals(plainType, PlainType.UInt32)) return left.U32.Equals(right.U32);
+        if (ReferenceEquals(plainType, PlainType.Int64)) return left.I64.Equals(right.I64);
+        if (ReferenceEquals(plainType, PlainType.UInt64)) return left.U64.Equals(right.U64);
+        if (ReferenceEquals(plainType, PlainType.Offset)) return left.Offset.Equals(right.Offset);
+        if (ReferenceEquals(plainType, PlainType.Size)) return left.Size.Equals(right.Size);
+        if (ReferenceEquals(plainType, PlainType.NInt)) return left.NInt.Equals(right.NInt);
+        if (ReferenceEquals(plainType, PlainType.NUInt)) return left.NUInt.Equals(right.NUInt);
         throw new NotImplementedException($"Compare equality of `{plainType}`.");
     }
 
-    private async ValueTask<AzothResult> ReferenceEqualsAsync(
+    private async ValueTask<Result> ReferenceEqualsAsync(
         BareType? selfBareType,
         IExpressionNode leftExp,
         IExpressionNode rightExp,
@@ -1282,14 +1282,14 @@ public sealed class InterpreterProcess
         var type = leftExp.Type.Known();
         if (type is OptionalType)
         {
-            if (left.IsNone && right.IsNone) return AzothValue.True;
-            if (left.IsNone || right.IsNone) return AzothValue.False;
+            if (left.IsNone && right.IsNone) return Value.True;
+            if (left.IsNone || right.IsNone) return Value.False;
         }
 
-        return AzothValue.Bool(left.ObjectValue.ReferenceEquals(right.ObjectValue));
+        return Value.From(left.ClassReference.ReferenceEquals(right.ClassReference));
     }
 
-    private async ValueTask<AzothResult> CompareAsync(
+    private async ValueTask<Result> CompareAsync(
         BareType? selfBareType,
         IExpressionNode leftExp,
         IExpressionNode rightExp,
@@ -1304,36 +1304,36 @@ public sealed class InterpreterProcess
         var type = leftExp.Type;
         while (type is OptionalType optionalType)
         {
-            if (left.IsNone && right.IsNone) return AzothValue.I32(0);
+            if (left.IsNone && right.IsNone) return Value.FromI32(0);
             if (left.IsNone || right.IsNone) throw new NotImplementedException("No comparison order");
             type = optionalType.Referent;
         }
 
         var plainType = type.PlainType;
-        if (ReferenceEquals(plainType, PlainType.Int)) return AzothValue.I32(left.IntValue.CompareTo(right.IntValue));
-        if (ReferenceEquals(plainType, PlainType.UInt)) return AzothValue.I32(left.IntValue.CompareTo(right.IntValue));
-        if (ReferenceEquals(plainType, PlainType.Int8)) return AzothValue.I32(left.I8Value.CompareTo(right.I8Value));
-        if (ReferenceEquals(plainType, PlainType.Byte)) return AzothValue.I32(left.ByteValue.CompareTo(right.ByteValue));
-        if (ReferenceEquals(plainType, PlainType.Int16)) return AzothValue.I32(left.I16Value.CompareTo(right.I16Value));
-        if (ReferenceEquals(plainType, PlainType.UInt16)) return AzothValue.I32(left.U16Value.CompareTo(right.U16Value));
-        if (ReferenceEquals(plainType, PlainType.Int32)) return AzothValue.I32(left.I32Value.CompareTo(right.I32Value));
-        if (ReferenceEquals(plainType, PlainType.UInt32)) return AzothValue.I32(left.U32Value.CompareTo(right.U32Value));
-        if (ReferenceEquals(plainType, PlainType.Int64)) return AzothValue.I32(left.I64Value.CompareTo(right.I64Value));
-        if (ReferenceEquals(plainType, PlainType.UInt64)) return AzothValue.I32(left.U64Value.CompareTo(right.U64Value));
-        if (ReferenceEquals(plainType, PlainType.Offset)) return AzothValue.I32(left.OffsetValue.CompareTo(right.OffsetValue));
-        if (ReferenceEquals(plainType, PlainType.Size)) return AzothValue.I32(left.SizeValue.CompareTo(right.SizeValue));
-        if (ReferenceEquals(plainType, PlainType.NInt)) return AzothValue.I32(left.NIntValue.CompareTo(right.NIntValue));
-        if (ReferenceEquals(plainType, PlainType.NUInt)) return AzothValue.I32(left.NUIntValue.CompareTo(right.NUIntValue));
+        if (ReferenceEquals(plainType, PlainType.Int)) return Value.FromI32(left.Int.CompareTo(right.Int));
+        if (ReferenceEquals(plainType, PlainType.UInt)) return Value.FromI32(left.Int.CompareTo(right.Int));
+        if (ReferenceEquals(plainType, PlainType.Int8)) return Value.FromI32(left.I8.CompareTo(right.I8));
+        if (ReferenceEquals(plainType, PlainType.Byte)) return Value.FromI32(left.Byte.CompareTo(right.Byte));
+        if (ReferenceEquals(plainType, PlainType.Int16)) return Value.FromI32(left.I16.CompareTo(right.I16));
+        if (ReferenceEquals(plainType, PlainType.UInt16)) return Value.FromI32(left.U16.CompareTo(right.U16));
+        if (ReferenceEquals(plainType, PlainType.Int32)) return Value.FromI32(left.I32.CompareTo(right.I32));
+        if (ReferenceEquals(plainType, PlainType.UInt32)) return Value.FromI32(left.U32.CompareTo(right.U32));
+        if (ReferenceEquals(plainType, PlainType.Int64)) return Value.FromI32(left.I64.CompareTo(right.I64));
+        if (ReferenceEquals(plainType, PlainType.UInt64)) return Value.FromI32(left.U64.CompareTo(right.U64));
+        if (ReferenceEquals(plainType, PlainType.Offset)) return Value.FromI32(left.Offset.CompareTo(right.Offset));
+        if (ReferenceEquals(plainType, PlainType.Size)) return Value.FromI32(left.Size.CompareTo(right.Size));
+        if (ReferenceEquals(plainType, PlainType.NInt)) return Value.FromI32(left.NInt.CompareTo(right.NInt));
+        if (ReferenceEquals(plainType, PlainType.NUInt)) return Value.FromI32(left.NUInt.CompareTo(right.NUInt));
         if (plainType is BarePlainType { TypeConstructor: IntegerLiteralTypeConstructor })
-            return AzothValue.I32(left.IntValue.CompareTo(right.IntValue));
+            return Value.FromI32(left.Int.CompareTo(right.Int));
         throw new NotImplementedException($"Compare `{type.ToILString()}`.");
     }
 
     [Inline]
-    private static AzothResult Not(AzothResult result)
-        => result.ShouldExit(out var value) ? result : AzothValue.Bool(!value.BoolValue);
+    private static Result Not(Result result)
+        => result.ShouldExit(out var value) ? result : Value.From(!value.Bool);
 
-    private async ValueTask<AzothResult> NegateAsync(
+    private async ValueTask<Result> NegateAsync(
         BareType? selfBareType,
         IExpressionNode expression,
         LocalVariables variables)
@@ -1342,63 +1342,63 @@ public sealed class InterpreterProcess
         if (result.ShouldExit(out var value)) return result;
         var type = expression.Type;
         var plainType = type.PlainType;
-        if (ReferenceEquals(plainType, PlainType.Int)) return AzothValue.Int(-value.IntValue);
-        if (ReferenceEquals(plainType, PlainType.Int8)) return AzothValue.I8((sbyte)-value.I8Value);
-        if (ReferenceEquals(plainType, PlainType.Int16)) return AzothValue.I16((short)-value.I16Value);
-        if (ReferenceEquals(plainType, PlainType.Int32)) return AzothValue.I32(-value.I32Value);
-        if (ReferenceEquals(plainType, PlainType.Int64)) return AzothValue.I64(-value.I64Value);
-        if (ReferenceEquals(plainType, PlainType.Offset)) return AzothValue.Offset(-value.OffsetValue);
-        if (ReferenceEquals(plainType, PlainType.NInt)) return AzothValue.NInt(-value.NIntValue);
-        if (type is CapabilityType { TypeConstructor: IntegerLiteralTypeConstructor }) return AzothValue.Int(-value.IntValue);
+        if (ReferenceEquals(plainType, PlainType.Int)) return Value.From(-value.Int);
+        if (ReferenceEquals(plainType, PlainType.Int8)) return Value.FromI8((sbyte)-value.I8);
+        if (ReferenceEquals(plainType, PlainType.Int16)) return Value.FromI16((short)-value.I16);
+        if (ReferenceEquals(plainType, PlainType.Int32)) return Value.FromI32(-value.I32);
+        if (ReferenceEquals(plainType, PlainType.Int64)) return Value.FromI64(-value.I64);
+        if (ReferenceEquals(plainType, PlainType.Offset)) return Value.FromOffset(-value.Offset);
+        if (ReferenceEquals(plainType, PlainType.NInt)) return Value.FromNInt(-value.NInt);
+        if (type is CapabilityType { TypeConstructor: IntegerLiteralTypeConstructor }) return Value.From(-value.Int);
         throw new NotImplementedException($"Negate {type.ToILString()}");
     }
 
     [Inline]
-    private static AzothValue IdentityHash(AzothValue value)
-        => AzothValue.NUInt((nuint)value.ObjectValue.IdentityHash());
+    private static Value IdentityHash(Value value)
+        => Value.FromNUInt((nuint)value.ClassReference.IdentityHash());
 
-    private static AzothValue Remainder(
-        AzothValue dividend,
-        AzothValue divisor,
+    private static Value Remainder(
+        Value dividend,
+        Value divisor,
         BareType selfType)
     {
         var plainType = selfType.PlainType;
-        if (ReferenceEquals(plainType, PlainType.Int)) return AzothValue.Int(dividend.IntValue % divisor.IntValue);
-        if (ReferenceEquals(plainType, PlainType.UInt)) return AzothValue.Int(dividend.IntValue % divisor.IntValue);
-        if (ReferenceEquals(plainType, PlainType.Int8)) return AzothValue.I8((sbyte)(dividend.I8Value % divisor.I8Value));
-        if (ReferenceEquals(plainType, PlainType.Byte)) return AzothValue.Byte((byte)(dividend.ByteValue % divisor.ByteValue));
-        if (ReferenceEquals(plainType, PlainType.Int16)) return AzothValue.I16((short)(dividend.I16Value % divisor.I16Value));
-        if (ReferenceEquals(plainType, PlainType.UInt16)) return AzothValue.U16((ushort)(dividend.U16Value % divisor.U16Value));
-        if (ReferenceEquals(plainType, PlainType.Int32)) return AzothValue.I32(dividend.I32Value % divisor.I32Value);
-        if (ReferenceEquals(plainType, PlainType.UInt32)) return AzothValue.U32(dividend.U32Value % divisor.U32Value);
-        if (ReferenceEquals(plainType, PlainType.Int64)) return AzothValue.I64(dividend.I64Value % divisor.I64Value);
-        if (ReferenceEquals(plainType, PlainType.UInt64)) return AzothValue.U64(dividend.U64Value % divisor.U64Value);
-        if (ReferenceEquals(plainType, PlainType.Offset)) return AzothValue.Offset(dividend.OffsetValue % divisor.OffsetValue);
-        if (ReferenceEquals(plainType, PlainType.Size)) return AzothValue.Size(dividend.SizeValue % divisor.SizeValue);
-        if (ReferenceEquals(plainType, PlainType.NInt)) return AzothValue.Offset(dividend.NIntValue % divisor.NIntValue);
-        if (ReferenceEquals(plainType, PlainType.NUInt)) return AzothValue.Size(dividend.NUIntValue % divisor.NUIntValue);
+        if (ReferenceEquals(plainType, PlainType.Int)) return Value.From(dividend.Int % divisor.Int);
+        if (ReferenceEquals(plainType, PlainType.UInt)) return Value.From(dividend.Int % divisor.Int);
+        if (ReferenceEquals(plainType, PlainType.Int8)) return Value.FromI8((sbyte)(dividend.I8 % divisor.I8));
+        if (ReferenceEquals(plainType, PlainType.Byte)) return Value.FromByte((byte)(dividend.Byte % divisor.Byte));
+        if (ReferenceEquals(plainType, PlainType.Int16)) return Value.FromI16((short)(dividend.I16 % divisor.I16));
+        if (ReferenceEquals(plainType, PlainType.UInt16)) return Value.FromU16((ushort)(dividend.U16 % divisor.U16));
+        if (ReferenceEquals(plainType, PlainType.Int32)) return Value.FromI32(dividend.I32 % divisor.I32);
+        if (ReferenceEquals(plainType, PlainType.UInt32)) return Value.FromU32(dividend.U32 % divisor.U32);
+        if (ReferenceEquals(plainType, PlainType.Int64)) return Value.FromI64(dividend.I64 % divisor.I64);
+        if (ReferenceEquals(plainType, PlainType.UInt64)) return Value.FromU64(dividend.U64 % divisor.U64);
+        if (ReferenceEquals(plainType, PlainType.Offset)) return Value.FromOffset(dividend.Offset % divisor.Offset);
+        if (ReferenceEquals(plainType, PlainType.Size)) return Value.FromSize(dividend.Size % divisor.Size);
+        if (ReferenceEquals(plainType, PlainType.NInt)) return Value.FromOffset(dividend.NInt % divisor.NInt);
+        if (ReferenceEquals(plainType, PlainType.NUInt)) return Value.FromSize(dividend.NUInt % divisor.NUInt);
         throw new NotImplementedException($"Remainder {selfType.ToILString()}");
     }
 
-    private async ValueTask<AzothValue> ToDisplayStringAsync(AzothValue value, BareType selfType)
+    private async ValueTask<Value> ToDisplayStringAsync(Value value, BareType selfType)
     {
         var plainType = selfType.PlainType;
         string displayString;
-        if (ReferenceEquals(plainType, PlainType.Int)) displayString = value.IntValue.ToString();
-        else if (ReferenceEquals(plainType, PlainType.UInt)) displayString = value.IntValue.ToString();
-        else if (ReferenceEquals(plainType, PlainType.Byte)) displayString = value.ByteValue.ToString();
-        else if (ReferenceEquals(plainType, PlainType.Int32)) displayString = value.I32Value.ToString();
-        else if (ReferenceEquals(plainType, PlainType.UInt32)) displayString = value.U32Value.ToString();
-        else if (ReferenceEquals(plainType, PlainType.Offset)) displayString = value.OffsetValue.ToString();
-        else if (ReferenceEquals(plainType, PlainType.Size)) displayString = value.SizeValue.ToString();
-        else if (ReferenceEquals(plainType, PlainType.NInt)) displayString = value.NIntValue.ToString();
-        else if (ReferenceEquals(plainType, PlainType.NUInt)) displayString = value.NUIntValue.ToString();
+        if (ReferenceEquals(plainType, PlainType.Int)) displayString = value.Int.ToString();
+        else if (ReferenceEquals(plainType, PlainType.UInt)) displayString = value.Int.ToString();
+        else if (ReferenceEquals(plainType, PlainType.Byte)) displayString = value.Byte.ToString();
+        else if (ReferenceEquals(plainType, PlainType.Int32)) displayString = value.I32.ToString();
+        else if (ReferenceEquals(plainType, PlainType.UInt32)) displayString = value.U32.ToString();
+        else if (ReferenceEquals(plainType, PlainType.Offset)) displayString = value.Offset.ToString();
+        else if (ReferenceEquals(plainType, PlainType.Size)) displayString = value.Size.ToString();
+        else if (ReferenceEquals(plainType, PlainType.NInt)) displayString = value.NInt.ToString();
+        else if (ReferenceEquals(plainType, PlainType.NUInt)) displayString = value.NUInt.ToString();
         else throw new NotImplementedException($"to_display_string({selfType.ToILString()})");
 
         return await InitializeStringAsync(displayString).ConfigureAwait(false);
     }
 
-    private async ValueTask<AzothResult> ExecuteBlockOrResultAsync(
+    private async ValueTask<Result> ExecuteBlockOrResultAsync(
         BareType? selfBareType,
         IBlockOrResultNode statement,
         LocalVariables variables)
@@ -1409,7 +1409,7 @@ public sealed class InterpreterProcess
             _ => throw ExhaustiveMatch.Failed(statement)
         };
 
-    private async ValueTask<AzothResult> ExecuteElseAsync(
+    private async ValueTask<Result> ExecuteElseAsync(
         BareType? selfBareType,
         IElseClauseNode elseClause,
         LocalVariables variables)
@@ -1422,10 +1422,10 @@ public sealed class InterpreterProcess
         };
     }
 
-    private async ValueTask<AzothResult> ExecuteAssignmentAsync(
+    private async ValueTask<Result> ExecuteAssignmentAsync(
         BareType? selfBareType,
         IExpressionNode expression,
-        AzothValue value,
+        Value value,
         LocalVariables variables)
     {
         switch (expression)
@@ -1439,7 +1439,7 @@ public sealed class InterpreterProcess
                 var result = await ExecuteAsync(selfBareType, exp.Context, variables).ConfigureAwait(false);
                 if (result.ShouldExit(out var obj)) return result;
                 // TODO handle the access operator
-                obj.InstanceValue[exp.ReferencedDeclaration] = value;
+                obj.InstanceReference[exp.ReferencedDeclaration] = value;
                 break;
         }
 

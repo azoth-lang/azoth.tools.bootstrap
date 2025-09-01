@@ -3,15 +3,15 @@ using InlineMethod;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.MemoryLayout;
 
-internal sealed class ValueLayout : TypeLayout
+internal sealed class ValueMetadata : TypeMetadata
 {
     public IValueDefinitionNode Value { [DebuggerStepThrough] get; }
 
-    public ValueLayout(IValueDefinitionNode value) : base(value, 1)
+    public ValueMetadata(IValueDefinitionNode value) : base(value, 1)
     {
         Value = value;
     }
 
     [Inline(InlineBehavior.Remove)]
-    public new AzothValue[] CreateInstanceFields() => base.CreateInstanceFields();
+    public new Value[] CreateInstanceFields() => base.CreateInstanceFields();
 }

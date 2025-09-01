@@ -6,12 +6,12 @@ using Xunit;
 
 namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Semantics.Interpreter.MemoryLayout;
 
-public class AzothValueTests
+public class ValueTests
 {
     [Fact]
     public unsafe void SizeOfAzothValue()
     {
-        var size = Unsafe.SizeOf<AzothValue>();
+        var size = Unsafe.SizeOf<Value>();
 
         var expectedSize = sizeof(IntPtr) + sizeof(long);
         Assert.Equal(expectedSize, size);
@@ -20,17 +20,17 @@ public class AzothValueTests
     [Fact]
     public void NoneIsNone()
     {
-        Assert.True(AzothValue.None.IsNone);
+        Assert.True(Value.None.IsNone);
     }
 
     /// <summary>
-    /// Due to the memory layout of <see cref="AzothValue"/> and <see cref="BigInteger"/> a special
+    /// Due to the memory layout of <see cref="Value"/> and <see cref="BigInteger"/> a special
     /// flag reference must be used to indicate `none`. If that isn't done, then the `IsNone`
     /// property could incorrectly report that an integer value is `none`.
     /// </summary>
     [Fact]
     public void IntIsNotNone()
     {
-        Assert.False(AzothValue.Int(42).IsNone);
+        Assert.False(Value.From(42).IsNone);
     }
 }

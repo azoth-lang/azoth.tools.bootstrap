@@ -3,15 +3,15 @@ using InlineMethod;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.MemoryLayout;
 
-internal sealed class StructLayout : TypeLayout
+internal sealed class StructMetadata : TypeMetadata
 {
     public IStructDefinitionNode Struct { [DebuggerStepThrough] get; }
 
-    public StructLayout(IStructDefinitionNode @struct) : base(@struct, 1)
+    public StructMetadata(IStructDefinitionNode @struct) : base(@struct, 1)
     {
         Struct = @struct;
     }
 
     [Inline(InlineBehavior.Remove)]
-    public new AzothValue[] CreateInstanceFields() => base.CreateInstanceFields();
+    public new Value[] CreateInstanceFields() => base.CreateInstanceFields();
 }

@@ -28,7 +28,7 @@ internal readonly struct LocalVariables
         }
 
         [Inline(InlineBehavior.Remove)]
-        public void Add(IBindingNode binding, AzothValue value)
+        public void Add(IBindingNode binding, Value value)
             => localVariables.Add(binding, value);
 
         [Inline(InlineBehavior.Remove)]
@@ -75,7 +75,7 @@ internal readonly struct LocalVariables
         }
 
         [Inline(InlineBehavior.Remove)]
-        public void Add(IBindingNode binding, AzothValue value)
+        public void Add(IBindingNode binding, Value value)
             => localVariables.Add(binding, value);
 
         [Inline(InlineBehavior.Remove)]
@@ -107,7 +107,7 @@ internal readonly struct LocalVariables
     public NestedScope CreateNestedScope(AsyncScope? asyncScope = null)
         => new NestedScope(this, asyncScope);
 
-    public AzothValue this[IBindingNode binding]
+    public Value this[IBindingNode binding]
     {
         [Inline(InlineBehavior.Remove)]
         get => variableStack[bindingIndexes[binding]];
@@ -116,7 +116,7 @@ internal readonly struct LocalVariables
     }
 
     [Inline(InlineBehavior.Remove)]
-    public void Add(IBindingNode binding, AzothValue value)
+    public void Add(IBindingNode binding, Value value)
     {
         var index = variableStack.Count;
         var existingIndex = bindingIndexes.GetOrAdd(binding, index);
@@ -124,8 +124,4 @@ internal readonly struct LocalVariables
             throw new InvalidOperationException("Cannot change index of a binding");
         variableStack.Add(value);
     }
-
-    [Inline(InlineBehavior.Remove)]
-    public AzothRef Ref(IBindingNode binding)
-        => new(variableStack, bindingIndexes[binding]);
 }

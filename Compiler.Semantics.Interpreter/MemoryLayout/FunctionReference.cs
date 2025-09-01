@@ -8,5 +8,5 @@ internal abstract class FunctionReference
 {
     public abstract FunctionType FunctionType { get; }
 
-    public abstract ValueTask<AzothValue> CallAsync(IReadOnlyList<AzothValue> arguments);
+    public abstract ValueTask<Value> CallAsync(IReadOnlyList<Value> arguments);
 }

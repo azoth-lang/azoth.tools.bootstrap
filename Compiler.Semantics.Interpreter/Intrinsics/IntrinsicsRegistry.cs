@@ -81,7 +81,7 @@ internal sealed class IntrinsicsRegistry
         {
             string str = RawUtf8BytesToString(args);
             await interpreter.StandardOutputWriter.WriteAsync(str).ConfigureAwait(false);
-            return AzothValue.None;
+            return Value.None;
         });
 
         builder.Add(Intrinsic.AbortRawUtf8Bytes, static (interpreter, function, args) =>
@@ -91,11 +91,11 @@ internal sealed class IntrinsicsRegistry
         });
     }
 
-    private static string RawUtf8BytesToString(IReadOnlyList<AzothValue> arguments)
+    private static string RawUtf8BytesToString(IReadOnlyList<Value> arguments)
     {
         var bytes = (RawHybridBoundedList)arguments[0].IntrinsicValue;
-        var start = arguments[1].SizeValue;
-        var byteCount = arguments[2].SizeValue;
+        var start = arguments[1].Size;
+        var byteCount = arguments[2].Size;
         var message = bytes.GetStringFromUtf8Bytes(start, byteCount);
         return message;
     }
@@ -134,10 +134,10 @@ internal sealed class IntrinsicsRegistry
         builder.Add(initializer, static (selfBareType, _, arguments) =>
         {
             var itemType = selfBareType.Arguments[1];
-            var ensurePrefixZeroed = arguments[0].BoolValue;
-            var count = arguments[1].NUIntValue;
-            var ensureZeroed = arguments[2].BoolValue;
-            return ValueTask.FromResult(AzothValue.Intrinsic(RawHybridArray.Create(itemType, ensurePrefixZeroed, count, ensureZeroed)));
+            var ensurePrefixZeroed = arguments[0].Bool;
+            var count = arguments[1].NUInt;
+            var ensureZeroed = arguments[2].Bool;
+            return ValueTask.FromResult(Value.From(RawHybridArray.Create(itemType, ensurePrefixZeroed, count, ensureZeroed)));
         });
 
         // published unsafe get prefix(self) -> aliasable P
@@ -155,7 +155,7 @@ internal sealed class IntrinsicsRegistry
             var self = s.IntrinsicValue.UnsafeAs<RawHybridArray>();
             var prefix = args[0];
             self.Prefix = prefix;
-            return ValueTask.FromResult(AzothValue.None);
+            return ValueTask.FromResult(Value.None);
         });
 
         // published unsafe get count(self) -> size
@@ -163,7 +163,7 @@ internal sealed class IntrinsicsRegistry
         builder.Add(getCount, static (_, s, _) =>
         {
             var self = s.IntrinsicValue.UnsafeAs<RawHybridArray>();
-            return ValueTask.FromResult(AzothValue.Size(self.Count));
+            return ValueTask.FromResult(Value.FromSize(self.Count));
         });
 
         // published unsafe fn at(readable self, index: size) -> aliasable T
@@ -171,7 +171,7 @@ internal sealed class IntrinsicsRegistry
         builder.Add(get, static (_, s, args) =>
         {
             var self = s.IntrinsicValue.UnsafeAs<RawHybridArray>();
-            var index = args[0].SizeValue;
+            var index = args[0].Size;
             return ValueTask.FromResult(self.Get(index));
         });
 
@@ -180,9 +180,9 @@ internal sealed class IntrinsicsRegistry
         builder.Add(set, static (_, s, args) =>
         {
             var self = s.IntrinsicValue.UnsafeAs<RawHybridArray>();
-            var index = args[0].SizeValue;
+            var index = args[0].Size;
             self.Set(index, args[1]);
-            return ValueTask.FromResult(AzothValue.None);
+            return ValueTask.FromResult(Value.None);
         });
     }
 
@@ -192,8 +192,8 @@ internal sealed class IntrinsicsRegistry
         builder.Add(Intrinsic.RawHybridBoundedListInit, static (selfBareType, _, arguments) =>
         {
             var itemType = selfBareType.Arguments[1];
-            nuint capacity = arguments[0].SizeValue;
-            return ValueTask.FromResult(AzothValue.Intrinsic(RawHybridBoundedList.Create(itemType, false, capacity)));
+            nuint capacity = arguments[0].Size;
+            return ValueTask.FromResult(Value.From(RawHybridBoundedList.Create(itemType, false, capacity)));
         });
 
         builder.Add(Intrinsic.RawHybridBoundedGetPrefix, static (_, self, _)
@@ -202,42 +202,42 @@ internal sealed class IntrinsicsRegistry
         builder.Add(Intrinsic.RawHybridBoundedSetPrefix, static (_, self, args) =>
         {
             Unsafe.As<RawHybridBoundedList>(self.IntrinsicValue).Prefix = args[0];
-            return ValueTask.FromResult(AzothValue.None);
+            return ValueTask.FromResult(Value.None);
         });
 
         builder.Add(Intrinsic.RawHybridBoundedListGetCapacity, static (_, self, _)
-            => ValueTask.FromResult(AzothValue.Size(Unsafe.As<RawHybridBoundedList>(self.IntrinsicValue).Capacity)));
+            => ValueTask.FromResult(Value.FromSize(Unsafe.As<RawHybridBoundedList>(self.IntrinsicValue).Capacity)));
 
         builder.Add(Intrinsic.RawHybridBoundedListGetCount, static (_, self, _)
-            => ValueTask.FromResult(AzothValue.Size(Unsafe.As<RawHybridBoundedList>(self.IntrinsicValue).Count)));
+            => ValueTask.FromResult(Value.FromSize(Unsafe.As<RawHybridBoundedList>(self.IntrinsicValue).Count)));
 
         builder.Add(Intrinsic.RawHybridBoundedListAdd, static (_, self, args) =>
         {
             Unsafe.As<RawHybridBoundedList>(self.IntrinsicValue).Add(args[0]);
-            return ValueTask.FromResult(AzothValue.None);
+            return ValueTask.FromResult(Value.None);
         });
 
         builder.Add(Intrinsic.RawHybridBoundedListShrink, static (_, self, args) =>
         {
-            Unsafe.As<RawHybridBoundedList>(self.IntrinsicValue).Shrink(args[0].SizeValue);
-            return ValueTask.FromResult(AzothValue.None);
+            Unsafe.As<RawHybridBoundedList>(self.IntrinsicValue).Shrink(args[0].Size);
+            return ValueTask.FromResult(Value.None);
         });
 
         // TODO handle returning value types and structs
         builder.Add(Intrinsic.RawHybridBoundedListTake, static (_, self, args)
             => ValueTask.FromResult(Unsafe.As<RawHybridBoundedList>(self.IntrinsicValue)
-                                          .Get(args[0].SizeValue)));
+                                          .Get(args[0].Size)));
 
         // TODO handle returning reference to value types
         builder.Add(Intrinsic.RawHybridBoundedListGet, static (_, self, args)
             => ValueTask.FromResult(Unsafe.As<RawHybridBoundedList>(self.IntrinsicValue)
-                                          .Get(args[0].SizeValue)));
+                                          .Get(args[0].Size)));
 
         builder.Add(Intrinsic.RawHybridBoundedListSet, static (_, self, args) =>
         {
-            var index = args[0].SizeValue;
+            var index = args[0].Size;
             Unsafe.As<RawHybridBoundedList>(self.IntrinsicValue).Set(index, args[1]);
-            return ValueTask.FromResult(AzothValue.None);
+            return ValueTask.FromResult(Value.None);
         });
     }
 

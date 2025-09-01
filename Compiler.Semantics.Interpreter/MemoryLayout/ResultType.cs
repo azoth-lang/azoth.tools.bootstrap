@@ -1,6 +1,6 @@
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.MemoryLayout;
 
-public enum AzothResultType
+public enum ResultType
 {
     Ordinary = 0,
     Break,

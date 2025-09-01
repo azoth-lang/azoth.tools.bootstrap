@@ -8,9 +8,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.Async;
 
 internal sealed class AsyncScope
 {
-    private readonly ConcurrentDictionary<Task<AzothResult>, Void> tasks = new();
+    private readonly ConcurrentDictionary<Task<Result>, Void> tasks = new();
 
-    public void Add(Task<AzothResult> task)
+    public void Add(Task<Result> task)
     {
         if (task.IsCompleted) return;
 
