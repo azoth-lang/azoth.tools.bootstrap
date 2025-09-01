@@ -19,11 +19,18 @@ published class List[T ind]
     published get count(self) -> size
         => .items.count;
 
-    published fn at(temporary self, index: size) -> self |> iref var T
+    published fn get(self, index: size) -> aliasable T
     {
         let count = .items.count;
         if index >= count => ABORT("index out of bounds");
         return .items.at(index);
+    }
+
+    published fn set(mut self, index: size, value: T)
+    {
+        let count = .items.count;
+        if index >= count => ABORT("index out of bounds");
+        .items.at(index) = value;
     }
 
     published fn add(mut self, value: T)

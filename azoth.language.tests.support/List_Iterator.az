@@ -8,10 +8,10 @@ published class List_Iterator[T ind out]
         .index = 0;
     }
 
-    public fn \next(mut self) -> T?
+    public fn \next(mut self) -> aliasable T?
     {
         if .index >= .list.count => return none;
-        let value = .list.at(.index);
+        let value = .list.get(.index);
         .index += 1;
         return value;
     }

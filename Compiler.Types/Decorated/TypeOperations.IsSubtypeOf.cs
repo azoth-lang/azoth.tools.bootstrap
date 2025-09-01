@@ -43,6 +43,8 @@ public static partial class TypeOperations
                 => s.IsSubtypeOf(o, substitutable),
             (SelfViewpointType s, CapabilityType o)
                 => s.IsSubtypeOf(o, substitutable),
+            (GenericParameterType s, CapabilitySetRestrictedType o)
+                => s.IsSubtypeOf(o.Referent),
             (SelfViewpointType s, SelfViewpointType o)
                 => s.IsSubtypeOf(o, substitutable),
             (OptionalType s, OptionalType o)
