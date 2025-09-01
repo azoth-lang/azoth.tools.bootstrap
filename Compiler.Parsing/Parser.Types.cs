@@ -14,8 +14,7 @@ public partial class Parser
         return Tokens.Current switch
         {
             ICapabilityToken or IIdentifierToken or IBuiltInTypeToken or IOpenParenToken
-                or ISelfKeywordToken or ISelfTypeKeywordToken or IRefKeywordToken
-                or ICapabilitySetToken
+                or ISelfKeywordToken or ISelfTypeKeywordToken or ICapabilitySetToken
                 => ParseType(),
             _ => null
         };
@@ -26,7 +25,6 @@ public partial class Parser
         var type = Tokens.Current switch
         {
             ISelfKeywordToken => ParseSelfViewpointType(),
-            IRefKeywordToken => ParseRefType(),
             IExplicitCapabilityToken => ParseTypeWithExplicitCapabilityViewpoint(),
             ICapabilityToken => ParseTypeStartingWithCapability(),
             ICapabilitySetToken => ParseCapabilitySetType(),
@@ -48,7 +46,7 @@ public partial class Parser
     {
         var self = Tokens.Consume<ISelfKeywordToken>();
         _ = Tokens.Required<IRightTriangleToken>();
-        var type = ParseBareOrRefType();
+        var type = ParseBareType();
         var span = TextSpan.Covering(self, type.Span);
         return ISelfViewpointTypeSyntax.Create(span, type);
     }
@@ -125,23 +123,6 @@ public partial class Parser
             default:
                 return false;
         }
-    }
-
-    private ITypeSyntax ParseBareOrRefType()
-        => Tokens.Current switch
-        {
-            IRefKeywordToken => ParseRefType(),
-            _ => ParseBareType()
-        };
-
-    private IRefTypeSyntax ParseRefType()
-    {
-        var refToken = Tokens.ConsumeToken<IRefKeywordToken>();
-        var isInternal = refToken is IInternalRefKeywordToken;
-        var isVarBinding = Tokens.Accept<IVarKeywordToken>();
-        var referent = ParseType();
-        var span = TextSpan.Covering(refToken.Span, referent.Span);
-        return IRefTypeSyntax.Create(span, isInternal, isVarBinding, referent);
     }
 
     /// <summary>
