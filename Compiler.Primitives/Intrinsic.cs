@@ -31,29 +31,35 @@ public static class Intrinsic
     public static readonly OrdinaryTypeSymbol RawHybridBoundedList
         = Find<OrdinaryTypeSymbol>("Raw_Hybrid_Bounded_List");
 
-    public static readonly InitializerSymbol InitRawHybridBoundedList
+    public static readonly InitializerSymbol RawHybridBoundedListInit
         = Find<InitializerSymbol>(RawHybridBoundedList, null);
 
-    public static readonly MethodSymbol GetRawHybridBoundedPrefix
+    public static readonly MethodSymbol RawHybridBoundedGetPrefix
         = FindGetter(RawHybridBoundedList, "prefix");
 
-    public static readonly MethodSymbol SetRawHybridBoundedPrefix
+    public static readonly MethodSymbol RawHybridBoundedSetPrefix
         = FindSetter(RawHybridBoundedList, "prefix");
 
-    public static readonly MethodSymbol GetRawHybridBoundedListCapacity
+    public static readonly MethodSymbol RawHybridBoundedListGetCapacity
         = Find<MethodSymbol>(RawHybridBoundedList, "capacity");
 
-    public static readonly MethodSymbol GetRawHybridBoundedListCount
+    public static readonly MethodSymbol RawHybridBoundedListGetCount
         = Find<MethodSymbol>(RawHybridBoundedList, "count");
 
     public static readonly MethodSymbol RawHybridBoundedListAdd
         = Find<MethodSymbol>(RawHybridBoundedList, "add");
 
-    public static readonly MethodSymbol RawHybridBoundedListAt
-        = Find<MethodSymbol>(RawHybridBoundedList, "at");
-
     public static readonly MethodSymbol RawHybridBoundedListShrink
         = Find<MethodSymbol>(RawHybridBoundedList, "shrink");
+
+    public static readonly MethodSymbol RawHybridBoundedListTake
+        = Find<MethodSymbol>(RawHybridBoundedList, "take");
+
+    public static readonly MethodSymbol RawHybridBoundedListGet
+        = Find<MethodSymbol>(RawHybridBoundedList, "get");
+
+    public static readonly MethodSymbol RawHybridBoundedListSet
+        = Find<MethodSymbol>(RawHybridBoundedList, "set");
 
     public static readonly FunctionSymbol PrintRawUtf8Bytes = Find<FunctionSymbol>("print_raw_utf8_bytes");
 
@@ -156,8 +162,7 @@ public static class Intrinsic
         var prefixType = typeConstructor.ParameterTypes[0];
         var aliasablePrefixType = CapabilitySetRestrictedType.Create(CapabilitySet.Aliasable, prefixType);
         var itemType = typeConstructor.ParameterTypes[1];
-        var irefVarItemType = RefType.Create(new(isInternal: true, isMutableBinding: true, itemType.PlainType), itemType);
-        var selfViewIRefVarItemType = new SelfViewpointType(CapabilitySet.Readable, irefVarItemType);
+        var aliasableItemType = CapabilitySetRestrictedType.Create(CapabilitySet.Aliasable, itemType);
         var classSymbol = new OrdinaryTypeSymbol(@namespace, typeConstructor);
         tree.Add(classSymbol);
 
@@ -181,7 +186,7 @@ public static class Intrinsic
         var count = Getter(classSymbol, "count", readSelfType, Type.Size);
         tree.Add(count);
 
-        // published fn add(mut self, value: T);
+        // published fn add(mut self, value: T)
         var add = Method(classSymbol, "add", mutSelfType, Params(itemType));
         tree.Add(add);
 
@@ -189,9 +194,17 @@ public static class Intrinsic
         var shrink = Method(classSymbol, "shrink", mutSelfType, Params(Type.Size));
         tree.Add(shrink);
 
-        // published /* unsafe */ fn at(readable self, index: size) -> self |> iref var T
-        var at = Method(classSymbol, "at", readableSelfType, Params(Type.Size), selfViewIRefVarItemType);
-        tree.Add(at);
+        // published /* unsafe */ fn take(mut self, index: size) -> T
+        var take = Method(classSymbol, "take", mutSelfType, Params(Type.Size), itemType);
+        tree.Add(take);
+
+        // published /* unsafe */ fn get(readable self, index: size) -> aliasable T
+        var get = Method(classSymbol, "get", readableSelfType, Params(Type.Size), aliasableItemType);
+        tree.Add(get);
+
+        // published /* unsafe */ fn set(mut self, index: size, value: T)
+        var set = Method(classSymbol, "set", mutSelfType, Params(Type.Size, itemType));
+        tree.Add(set);
 
         return typeConstructor;
     }

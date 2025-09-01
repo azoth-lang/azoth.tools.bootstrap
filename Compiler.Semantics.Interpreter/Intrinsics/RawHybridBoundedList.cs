@@ -43,7 +43,6 @@ internal abstract class RawHybridBoundedList : IList<AzothValue>, IIntrinsicValu
     public nuint Count { get; protected set; }
     public abstract nuint Capacity { get; }
     public abstract void Add(AzothValue value);
-    public AzothRef RefAt(nuint index) => new(this, (int)index);
     public abstract AzothValue At(nuint index);
     public abstract void Set(nuint index, AzothValue value);
     public abstract void Shrink(nuint count);
