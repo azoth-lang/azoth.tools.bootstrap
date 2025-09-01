@@ -307,8 +307,6 @@ public static class Arbitrary
         //{ "may", typeof(IMayKeywordToken) },
         //{ "no", typeof(INoKeywordToken) },
         //{ "throw", typeof(IThrowKeywordToken) },
-        { "ref", typeof(IVariableRefKeywordToken) },
-        { "iref", typeof(IInternalRefKeywordToken) },
         { "abstract", typeof(IAbstractKeywordToken) },
         { "get", typeof(IGetKeywordToken) },
         { "set", typeof(ISetKeywordToken) },

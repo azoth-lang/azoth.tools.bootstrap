@@ -57,8 +57,6 @@
         //"May",
         //"No",
         //"Throw",
-        "VariableRef",
-        "InternalRef",
         "Abstract",
         "Get",
         "Set",

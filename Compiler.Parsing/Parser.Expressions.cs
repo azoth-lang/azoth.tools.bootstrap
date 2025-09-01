@@ -400,16 +400,6 @@ public partial class Parser
                 var span = TextSpan.Covering(freeze, expression.Span);
                 return IFreezeExpressionSyntax.Create(span, expression);
             }
-            case IRefKeywordToken _:
-            {
-                var refToken = Tokens.ConsumeToken<IRefKeywordToken>();
-                var isInternal = refToken is IInternalRefKeywordToken;
-                var isVarBinding = Tokens.Accept<IVarKeywordToken>();
-                // `ref` and `iref` are like a unary operator
-                var expression = ParseExpression(OperatorPrecedence.Unary);
-                var span = TextSpan.Covering(refToken.Span, expression.Span);
-                return IRefExpressionSyntax.Create(span, isInternal, isVarBinding, expression);
-            }
             case IAsyncKeywordToken _:
                 return ParseAsyncBlock();
             case IDoKeywordToken _:

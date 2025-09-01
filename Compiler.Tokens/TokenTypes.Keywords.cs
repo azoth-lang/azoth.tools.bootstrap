@@ -34,8 +34,6 @@ public static partial class TokenTypes
                 nameof(MutableKeywordToken) => "mut",
                 nameof(AnyTypeKeywordToken) => "Any",
                 //nameof(TypeKeywordToken) => "Type",
-                nameof(VariableRefKeywordToken) => "ref",
-                nameof(InternalRefKeywordToken) => "iref",
                 nameof(AsExclamationKeywordToken) => "as!",
                 nameof(AsQuestionKeywordToken) => "as?",
                 nameof(IndependentKeywordToken) => "ind",
