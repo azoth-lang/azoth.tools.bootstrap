@@ -254,9 +254,6 @@ public static class ISemanticNodeExtensions
             case IImplicitConversionExpressionNode n:
                 yield return n.Referent;
                 yield break;
-            case IImplicitDerefExpressionNode n:
-                yield return n.Referent;
-                yield break;
             case IImplicitSelfDefinitionNode n:
                 yield break;
             case IImplicitTempMoveExpressionNode n:
@@ -406,12 +403,6 @@ public static class ISemanticNodeExtensions
             case IRefAssignmentExpressionNode n:
                 yield return n.TempLeftOperand;
                 yield return n.TempRightOperand;
-                yield break;
-            case IRefExpressionNode n:
-                yield return n.TempReferent;
-                yield break;
-            case IRefTypeNode n:
-                yield return n.Referent;
                 yield break;
             case IResultStatementNode n:
                 yield return n.TempExpression;

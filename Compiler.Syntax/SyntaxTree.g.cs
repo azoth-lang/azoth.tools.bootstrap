@@ -763,7 +763,6 @@ public partial interface IExpressionBodySyntax : IBodySyntax
     typeof(ICapabilitySetTypeSyntax),
     typeof(IFunctionTypeSyntax),
     typeof(IViewpointTypeSyntax),
-    typeof(IRefTypeSyntax),
     typeof(INameSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface ITypeSyntax : ICodeSyntax
@@ -869,22 +868,6 @@ public partial interface ISelfViewpointTypeSyntax : IViewpointTypeSyntax
         TextSpan span,
         ITypeSyntax referent)
         => new SelfViewpointTypeSyntax(span, referent);
-}
-
-[Closed(typeof(RefTypeSyntax))]
-[GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IRefTypeSyntax : ITypeSyntax
-{
-    bool IsInternal { get; }
-    bool IsMutableBinding { get; }
-    ITypeSyntax Referent { get; }
-
-    public static IRefTypeSyntax Create(
-        TextSpan span,
-        bool isInternal,
-        bool isMutableBinding,
-        ITypeSyntax referent)
-        => new RefTypeSyntax(span, isInternal, isMutableBinding, referent);
 }
 
 [Closed(
@@ -1030,7 +1013,6 @@ public partial interface IOptionalPatternSyntax : IOptionalOrBindingPatternSynta
     typeof(IUnaryOperatorExpressionSyntax),
     typeof(IConversionExpressionSyntax),
     typeof(IPatternMatchExpressionSyntax),
-    typeof(IRefExpressionSyntax),
     typeof(IIfExpressionSyntax),
     typeof(ILoopExpressionSyntax),
     typeof(IWhileExpressionSyntax),
@@ -1247,24 +1229,6 @@ public partial interface IPatternMatchExpressionSyntax : IExpressionSyntax
         IIsKeywordToken isKeyword,
         IPatternSyntax pattern)
         => new PatternMatchExpressionSyntax(span, referent, isKeyword, pattern);
-}
-
-[Closed(typeof(RefExpressionSyntax))]
-[GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IRefExpressionSyntax : IExpressionSyntax
-{
-    bool IsInternal { get; }
-    bool IsMutableBinding { get; }
-    IExpressionSyntax Referent { get; }
-    OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
-        => OperatorPrecedence.Unary;
-
-    public static IRefExpressionSyntax Create(
-        TextSpan span,
-        bool isInternal,
-        bool isMutableBinding,
-        IExpressionSyntax referent)
-        => new RefExpressionSyntax(span, isInternal, isMutableBinding, referent);
 }
 
 [Closed(typeof(IfExpressionSyntax))]
@@ -2679,31 +2643,6 @@ file class SelfViewpointTypeSyntax : ISelfViewpointTypeSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class RefTypeSyntax : IRefTypeSyntax
-{
-    private IRefTypeSyntax Self { [Inline] get => this; }
-
-    public TextSpan Span { [DebuggerStepThrough] get; }
-    public bool IsInternal { [DebuggerStepThrough] get; }
-    public bool IsMutableBinding { [DebuggerStepThrough] get; }
-    public ITypeSyntax Referent { [DebuggerStepThrough] get; }
-    public override string ToString()
-        => FormattingAspect.RefType_ToString(this);
-
-    public RefTypeSyntax(
-        TextSpan span,
-        bool isInternal,
-        bool isMutableBinding,
-        ITypeSyntax referent)
-    {
-        Span = span;
-        IsInternal = isInternal;
-        IsMutableBinding = isMutableBinding;
-        Referent = referent;
-    }
-}
-
-[GeneratedCode("AzothCompilerCodeGen", null)]
 file class ResultStatementSyntax : IResultStatementSyntax
 {
     private IResultStatementSyntax Self { [Inline] get => this; }
@@ -3120,31 +3059,6 @@ file class PatternMatchExpressionSyntax : IPatternMatchExpressionSyntax
         Referent = referent;
         IsKeyword = isKeyword;
         Pattern = pattern;
-    }
-}
-
-[GeneratedCode("AzothCompilerCodeGen", null)]
-file class RefExpressionSyntax : IRefExpressionSyntax
-{
-    private IRefExpressionSyntax Self { [Inline] get => this; }
-
-    public TextSpan Span { [DebuggerStepThrough] get; }
-    public bool IsInternal { [DebuggerStepThrough] get; }
-    public bool IsMutableBinding { [DebuggerStepThrough] get; }
-    public IExpressionSyntax Referent { [DebuggerStepThrough] get; }
-    public override string ToString()
-        => FormattingAspect.RefExpression_ToString(this);
-
-    public RefExpressionSyntax(
-        TextSpan span,
-        bool isInternal,
-        bool isMutableBinding,
-        IExpressionSyntax referent)
-    {
-        Span = span;
-        IsInternal = isInternal;
-        IsMutableBinding = isMutableBinding;
-        Referent = referent;
     }
 }
 

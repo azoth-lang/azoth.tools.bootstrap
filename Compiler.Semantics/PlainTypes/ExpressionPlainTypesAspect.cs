@@ -40,21 +40,6 @@ internal static partial class ExpressionPlainTypesAspect
     #endregion
 
     #region Expressions
-    public static partial IImplicitDerefExpressionNode? OrdinaryTypedExpression_Insert_ImplicitDerefExpression(IOrdinaryTypedExpressionNode node)
-    {
-        // To minimize outstanding rewrites, first check whether node.PlainType could possibly
-        // support dereference. If node.ExpectedPlainType is checked, that is inherited and if a
-        // rewrite is in progress, that can't be cached.
-        if (node.PlainType is not RefPlainType plainType)
-            return null;
-
-        if (node.ExpectedPlainType is PlainType expectedPlainType
-            && expectedPlainType.RefDepth() < plainType.RefDepth())
-            return IImplicitDerefExpressionNode.Create(node);
-
-        return null;
-    }
-
     public static partial IImplicitConversionExpressionNode? OrdinaryTypedExpression_Insert_ImplicitConversionExpression(IOrdinaryTypedExpressionNode node)
     {
         // TODO can this be dropped? All those things should have an unknown plain type and so be skipped
@@ -506,14 +491,6 @@ internal static partial class ExpressionPlainTypesAspect
             plainType = OptionalPlainType.Create(plainType);
         return plainType;
     }
-
-    public static partial IMaybePlainType RefExpression_PlainType(IRefExpressionNode node)
-        => RefPlainType.Create(node.IsInternal, node.IsMutableBinding, node.Referent?.PlainType) ?? PlainType.Unknown;
-
-    // TODO diagnostics for using `iref` or `var` when it isn not valid
-
-    public static partial IMaybePlainType ImplicitDerefExpression_PlainType(IImplicitDerefExpressionNode node)
-        => (node.Referent.PlainType as RefPlainType)?.Referent ?? IMaybePlainType.Unknown;
     #endregion
 
     #region Control Flow Expressions

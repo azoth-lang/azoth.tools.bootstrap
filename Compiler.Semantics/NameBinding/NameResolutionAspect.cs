@@ -7,7 +7,6 @@ using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Compiler.Syntax;
 using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
-using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.NameBinding;
@@ -18,16 +17,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.NameBinding;
 internal static partial class NameResolutionAspect
 {
     #region Unresolved Expressions
-    public static partial IUnresolvedMemberAccessExpressionNode? UnresolvedMemberAccessExpression_Deref_Rewrite_UnresolvedMemberAccessExpression(IUnresolvedMemberAccessExpressionNode node)
-    {
-        // TODO this is a messy rewrite. Should this be changed into an insert on Expression?
-
-        if (node.Context is not { } context || context.PlainType.RefDepth() == 0) return null;
-
-        var deref = IImplicitDerefExpressionNode.Create(context);
-        return IUnresolvedMemberAccessExpressionNode.Create(node.Syntax, deref, node.GenericArguments);
-    }
-
     public static partial IExpressionNode? UnresolvedMemberAccessExpression_ExpressionContext_ReplaceWith_Expression(IUnresolvedMemberAccessExpressionNode node)
     {
         if (node.Context is not { } context)

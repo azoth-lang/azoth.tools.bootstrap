@@ -55,10 +55,6 @@ internal static partial class ExpressionPlainTypesAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IMaybePlainType OptionalConversionExpression_PlainType(IOptionalConversionExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IMaybePlainType RefExpression_PlainType(IRefExpressionNode node);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IMaybePlainType ImplicitDerefExpression_PlainType(IImplicitDerefExpressionNode node);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IMaybePlainType IfExpression_PlainType(IIfExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IMaybePlainType LoopExpression_PlainType(ILoopExpressionNode node);
@@ -95,7 +91,6 @@ internal static partial class ExpressionPlainTypesAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IMaybePlainType AwaitExpression_PlainType(IAwaitExpressionNode node);
     public static partial IImplicitConversionExpressionNode? OrdinaryTypedExpression_Insert_ImplicitConversionExpression(IOrdinaryTypedExpressionNode node);
-    public static partial IImplicitDerefExpressionNode? OrdinaryTypedExpression_Insert_ImplicitDerefExpression(IOrdinaryTypedExpressionNode node);
     public static partial IOptionalConversionExpressionNode? OrdinaryTypedExpression_OptionalConversion_Rewrite_OptionalConversionExpression(IOrdinaryTypedExpressionNode node);
     public static partial IRefAssignmentExpressionNode? AssignmentExpression_ReplaceWith_RefAssignmentExpression(IAssignmentExpressionNode node);
 }

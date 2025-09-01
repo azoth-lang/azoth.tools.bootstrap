@@ -162,7 +162,6 @@ ParameterType <: Code = Syntax:`IParameterTypeSyntax` Referent:Type;
 ViewpointType <: Type = Syntax:`IViewpointTypeSyntax` Referent:Type;
 CapabilityViewpointType <: ViewpointType = Syntax:`ICapabilityViewpointTypeSyntax` Capability Referent:Type;
 SelfViewpointType <: ViewpointType = Syntax:`ISelfViewpointTypeSyntax` Referent:Type;
-RefType <: Type = Syntax:`IRefTypeSyntax` Referent:Type;
 
 // ---------- Control Flow
 ControlFlow <: Child;
@@ -249,8 +248,6 @@ OptionalConversionExpression <: OrdinaryTypedExpression = Referent:Expression De
 // TODO eventually add nodes for implicit and explicit user defined conversions. Separate nodes because they need overload resolution etc.
 PatternMatchExpression <: OrdinaryTypedExpression
     = Syntax:`IPatternMatchExpressionSyntax` Referent:AmbiguousExpression Pattern;
-RefExpression <: OrdinaryTypedExpression = Syntax:`IRefExpressionSyntax` Referent:AmbiguousExpression;
-ImplicitDerefExpression <: OrdinaryTypedExpression = Referent:Expression;
 
 // ---------- Control Flow Expressions
 IfExpression <: OrdinaryTypedExpression, ElseClause = Syntax:`IIfExpressionSyntax`

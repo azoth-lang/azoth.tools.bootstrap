@@ -754,31 +754,6 @@ public sealed class InterpreterProcess
                 if (result.ShouldExit(out var value)) return result;
                 return await ExecuteMatchAsync(selfBareType, value, exp.Pattern, variables);
             }
-            case ExpressionKind.Ref:
-            {
-                var exp = (IRefExpressionNode)expression;
-                var referent = exp.Referent!; // Avoids repeated access
-                switch (referent.ExpressionKind)
-                {
-                    case ExpressionKind.VariableName:
-                        var variable = (IVariableNameExpressionNode)referent;
-                        return AzothValue.Ref(variables.Ref(variable.ReferencedDefinition));
-                    case ExpressionKind.FieldAccess:
-                        var fieldAccess = (IFieldAccessExpressionNode)referent;
-                        var result = await ExecuteAsync(selfBareType, fieldAccess.Context, variables).ConfigureAwait(false);
-                        if (result.ShouldExit(out var value)) return result;
-                        return AzothValue.Ref(value.InstanceValue.Ref(fieldAccess.ReferencedDeclaration));
-                    default:
-                        throw UnreachableInErrorFreeTree(referent);
-                }
-            }
-            case ExpressionKind.ImplicitDeref:
-            {
-                var exp = (IImplicitDerefExpressionNode)expression;
-                var result = await ExecuteAsync(selfBareType, exp.Referent, variables).ConfigureAwait(false);
-                if (result.ShouldExit(out var value)) return result;
-                return value.RefValue.Value;
-            }
             #endregion
 
             #region Control Flow Expressions

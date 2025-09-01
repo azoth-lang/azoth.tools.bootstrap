@@ -21,8 +21,6 @@ internal static partial class TypeExpressionsPlainTypesAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IMaybePlainType FunctionType_NamedPlainType(IFunctionTypeNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IMaybePlainType RefType_NamedPlainType(IRefTypeNode node);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IMaybePlainType BuiltInTypeName_NamedPlainType(IBuiltInTypeNameNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IMaybePlainType IdentifierTypeName_NamedPlainType(IIdentifierTypeNameNode node);

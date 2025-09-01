@@ -115,8 +115,5 @@ internal static partial class TypeExpressionsAspect
             or RefType { Referent: GenericParameterType }))
             diagnostics.Add(TypeError.SelfViewpointAppliedIncorrectly(node.File, node.Syntax));
     }
-
-    public static partial IMaybeType RefType_NamedType(IRefTypeNode node)
-        => RefType.Create(node.NamedPlainType, node.Referent.NamedType);
     #endregion
 }

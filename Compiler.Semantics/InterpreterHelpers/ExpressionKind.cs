@@ -35,8 +35,6 @@ public enum ExpressionKind
     ImplicitConversion,
     OptionalConversionExpression,
     PatternMatch,
-    Ref,
-    ImplicitDeref,
     #endregion
 
     #region Control Flow Expressions

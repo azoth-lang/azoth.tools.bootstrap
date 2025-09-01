@@ -69,10 +69,6 @@ internal static partial class ControlFlowAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial ControlFlowSet PatternMatchExpression_ControlFlowNext(IPatternMatchExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial ControlFlowSet RefExpression_ControlFlowNext(IRefExpressionNode node);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial ControlFlowSet ImplicitDerefExpression_ControlFlowNext(IImplicitDerefExpressionNode node);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial ControlFlowSet IfExpression_ControlFlowNext(IIfExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial ControlFlowSet LoopExpression_ControlFlowNext(ILoopExpressionNode node);

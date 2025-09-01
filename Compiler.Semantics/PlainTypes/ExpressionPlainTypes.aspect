@@ -34,7 +34,6 @@
 ↑ Expression.PlainType: `IMaybePlainType`;
 ↓ OrdinaryTypedExpression.ExpectedPlainType: `IMaybePlainType`?;
 ✎ OrdinaryTypedExpression insert ImplicitConversionExpression;
-✎ OrdinaryTypedExpression insert ImplicitDerefExpression;
 ✎ OrdinaryTypedExpression OptionalConversion rewrite OptionalConversionExpression;
 ↑ BlockExpression.PlainType: `IMaybePlainType`;
 = NeverTypedExpression.PlainType => AzothPlainType.Never;
@@ -61,8 +60,6 @@
 = ImplicitConversionExpression.Referent.ExpectedPlainType => null;
 = OptionalConversionExpression.Referent.ExpectedPlainType => null;
 = PatternMatchExpression.PlainType => AzothPlainType.Bool;
-= RefExpression.Referent.ExpectedPlainType => null;
-= ImplicitDerefExpression.Referent.ExpectedPlainType => null;
 
 // ---------- Control Flow Expressions
 // To avoid implicit conversion to `bool?` the expected type is `bool` when the condition type is `bool`

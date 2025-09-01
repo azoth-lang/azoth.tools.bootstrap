@@ -122,12 +122,6 @@ internal static partial class ControlFlowAspect
 
     public static partial ControlFlowSet PatternMatchExpression_ControlFlowNext(IPatternMatchExpressionNode node)
         => ControlFlowSet.CreateNormal(node.Referent);
-
-    public static partial ControlFlowSet RefExpression_ControlFlowNext(IRefExpressionNode node)
-        => ControlFlowSet.CreateNormal(node.Referent);
-
-    public static partial ControlFlowSet ImplicitDerefExpression_ControlFlowNext(IImplicitDerefExpressionNode node)
-        => ControlFlowSet.CreateNormal(node.Referent);
     #endregion
 
     #region Control Flow Expressions

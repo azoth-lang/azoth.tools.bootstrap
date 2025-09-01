@@ -31,8 +31,6 @@
 = ImplicitConversionExpression.ExpressionKind => ExpressionKind.ImplicitConversion;
 = OptionalConversionExpression.ExpressionKind => ExpressionKind.OptionalConversionExpression;
 = PatternMatchExpression.ExpressionKind => ExpressionKind.PatternMatch;
-= RefExpression.ExpressionKind => ExpressionKind.Ref;
-= ImplicitDerefExpression.ExpressionKind => ExpressionKind.ImplicitDeref;
 
 // ---------- Control Flow Expressions
 = IfExpression.ExpressionKind => ExpressionKind.If;

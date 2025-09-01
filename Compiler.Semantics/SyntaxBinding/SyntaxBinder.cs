@@ -283,7 +283,6 @@ internal static class SyntaxBinder
             ICapabilitySetTypeSyntax syn => CapabilitySetType(syn),
             IFunctionTypeSyntax syn => FunctionType(syn),
             IViewpointTypeSyntax syn => ViewpointType(syn),
-            IRefTypeSyntax syn => RefType(syn),
             _ => throw ExhaustiveMatch.Failed(syntax)
         };
 
@@ -318,9 +317,6 @@ internal static class SyntaxBinder
 
     private static ISelfViewpointTypeNode SelfViewpointType(ISelfViewpointTypeSyntax syntax)
         => ISelfViewpointTypeNode.Create(syntax, Type(syntax.Referent));
-
-    private static IRefTypeNode RefType(IRefTypeSyntax syntax)
-        => IRefTypeNode.Create(syntax, Type(syntax.Referent));
     #endregion
 
     #region Statements
@@ -409,7 +405,6 @@ internal static class SyntaxBinder
             IUnaryOperatorExpressionSyntax syn => UnaryOperatorExpression(syn),
             IConversionExpressionSyntax syn => ConversionExpression(syn),
             IPatternMatchExpressionSyntax syn => PatternMatchExpression(syn),
-            IRefExpressionSyntax syn => RefExpression(syn),
             IIfExpressionSyntax syn => IfExpression(syn),
             ILoopExpressionSyntax syn => LoopExpression(syn),
             IWhileExpressionSyntax syn => WhileExpression(syn),
@@ -479,9 +474,6 @@ internal static class SyntaxBinder
 
     private static IPatternMatchExpressionNode PatternMatchExpression(IPatternMatchExpressionSyntax syntax)
         => IPatternMatchExpressionNode.Create(syntax, Expression(syntax.Referent), Pattern(syntax.Pattern));
-
-    private static IRefExpressionNode RefExpression(IRefExpressionSyntax syntax)
-        => IRefExpressionNode.Create(syntax, Expression(syntax.Referent));
     #endregion
 
     #region Control Flow Expressions

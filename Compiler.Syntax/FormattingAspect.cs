@@ -205,13 +205,6 @@ internal static partial class FormattingAspect
 
     public static partial string SelfViewpointType_ToString(ISelfViewpointTypeSyntax node)
         => $"self|>{node.Referent}";
-
-    public static partial string RefType_ToString(IRefTypeSyntax node)
-    {
-        var kind = node.IsInternal ? "iref" : "ref";
-        var binding = node.IsMutableBinding ? "var " : "";
-        return $"{kind} {binding}{node.Referent}";
-    }
     #endregion
 
     #region Statements
@@ -302,13 +295,6 @@ internal static partial class FormattingAspect
 
     public static partial string PatternMatchExpression_ToString(IPatternMatchExpressionSyntax node)
         => $"{node.Referent.ToGroupedString(node.ExpressionPrecedence)} is {node.Pattern}";
-
-    public static partial string RefExpression_ToString(IRefExpressionSyntax node)
-    {
-        var kind = node.IsInternal ? "iref" : "ref";
-        var binding = node.IsMutableBinding ? "var " : "";
-        return $"{kind} {binding}{node.Referent.ToGroupedString(node.ExpressionPrecedence)}";
-    }
     #endregion
 
     #region Control Flow Expressions

@@ -129,7 +129,6 @@ ParameterType <: Code = IsLent:`bool` Referent:Type;
 ViewpointType <: Type = Referent:Type;
 CapabilityViewpointType <: ViewpointType = Capability Referent:Type;
 SelfViewpointType <: ViewpointType = Referent:Type;
-RefType <: Type = IsInternal:`bool` IsMutableBinding:`bool` Referent:Type;
 
 // ---------- Statements
 Statement <: Code;
@@ -177,7 +176,6 @@ BinaryOperatorExpression <: Expression = LeftOperand:Expression Operator:`Binary
 UnaryOperatorExpression <: Expression = Fixity:`UnaryOperatorFixity` Operator:`UnaryOperator` Operand:Expression;
 ConversionExpression <: Expression = Referent:Expression Operator:`ConversionOperator` ConvertToType:Type;
 PatternMatchExpression <: Expression = Referent:Expression IsKeyword:`IIsKeywordToken` Pattern;
-RefExpression <: Expression = IsInternal:`bool` IsMutableBinding:`bool` Referent:Expression;
 
 // ---------- Control Flow Expressions
 IfExpression <: Expression, ElseClause = Condition:Expression ThenBlock:BlockOrResult ElseClause?;

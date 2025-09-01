@@ -486,61 +486,6 @@ internal static partial class ExpressionTypesAspect
         // Constant for the boolean result of the pattern match
         return flowStateBefore.Constant(node.ValueId);
     }
-
-    public static partial IMaybeType RefExpression_Type(IRefExpressionNode node)
-    {
-        var referentLocatorType = node.Referent?.LocatorType ?? Type.Unknown;
-        if (referentLocatorType is not NonVoidType type) return referentLocatorType;
-
-        // The net effect of this is to place the `ref` type inside of any self viewpoint
-
-        // TODO this all seems somewhat adhoc. Is there a more principled way to do this?
-
-        NonVoidType t;
-        CapabilitySet? capabilitySet = null;
-        if (type is SelfViewpointType { Referent: RefType r } selfViewpointType)
-        {
-            capabilitySet = selfViewpointType.CapabilitySet;
-            t = r;
-        }
-        else
-            t = type;
-
-        if (t is not RefType refType)
-            throw new InvalidOperationException(
-                $"Locator type must be a {nameof(RefType)}. Found: {type.GetType().GetFriendlyName()}");
-
-        // Make sure the RefType is the kind that is needed
-        var plainType = (RefPlainType)node.PlainType; // Avoids repeated access
-        if (refType.IsInternal != plainType.IsInternal
-            || refType.IsMutableBinding != plainType.IsMutableBinding)
-        {
-            refType = RefType.Create(plainType, refType.Referent);
-            if (capabilitySet is not null)
-                type = refType.AccessedVia(capabilitySet);
-        }
-
-        return type;
-    }
-
-    public static partial IFlowState RefExpression_FlowStateAfter(IRefExpressionNode node)
-    {
-        var referent = node.Referent; // Avoids repeated access
-        return referent?.FlowStateAfter.Transform(referent.ValueId, node.ValueId, node.Type) ?? IFlowState.Empty;
-    }
-
-    public static partial IMaybeType ImplicitDerefExpression_Type(IImplicitDerefExpressionNode node)
-        => (node.Referent.Type as RefType)?.Referent ?? IMaybeType.Unknown;
-
-    public static partial IMaybeType ImplicitDerefExpression_LocatorType(IImplicitDerefExpressionNode node)
-        // If a deref is used as a locator, then the type is just the underlying ref type.
-        => node.Referent.Type;
-
-    public static partial IFlowState ImplicitDerefExpression_FlowStateAfter(IImplicitDerefExpressionNode node)
-    {
-        var referent = node.Referent; // Avoid repeated access
-        return referent.FlowStateAfter.Transform(referent.ValueId, node.ValueId, node.Type);
-    }
     #endregion
 
     #region Control Flow Expressions

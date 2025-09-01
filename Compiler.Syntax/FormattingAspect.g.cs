@@ -78,8 +78,6 @@ internal static partial class FormattingAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial string SelfViewpointType_ToString(ISelfViewpointTypeSyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial string RefType_ToString(IRefTypeSyntax node);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial string ResultStatement_ToString(IResultStatementSyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial string VariableDeclarationStatement_ToString(IVariableDeclarationStatementSyntax node);
@@ -117,8 +115,6 @@ internal static partial class FormattingAspect
     public static partial string ConversionExpression_ToString(IConversionExpressionSyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial string PatternMatchExpression_ToString(IPatternMatchExpressionSyntax node);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial string RefExpression_ToString(IRefExpressionSyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial string IfExpression_ToString(IIfExpressionSyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

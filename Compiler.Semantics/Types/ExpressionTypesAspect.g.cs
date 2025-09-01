@@ -42,8 +42,6 @@ internal static partial class ExpressionTypesAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial void ConversionExpression_Contribute_Diagnostics(IConversionExpressionNode node, DiagnosticCollectionBuilder diagnostics);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IMaybeType ImplicitDerefExpression_LocatorType(IImplicitDerefExpressionNode node);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial void IfExpression_Contribute_Diagnostics(IIfExpressionNode node, DiagnosticCollectionBuilder diagnostics);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial void ReturnExpression_Contribute_Diagnostics(IReturnExpressionNode node, DiagnosticCollectionBuilder diagnostics);
@@ -149,14 +147,6 @@ internal static partial class ExpressionTypesAspect
     public static partial IFlowState OptionalConversionExpression_FlowStateAfter(IOptionalConversionExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFlowState PatternMatchExpression_FlowStateAfter(IPatternMatchExpressionNode node);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IMaybeType RefExpression_Type(IRefExpressionNode node);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IFlowState RefExpression_FlowStateAfter(IRefExpressionNode node);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IMaybeType ImplicitDerefExpression_Type(IImplicitDerefExpressionNode node);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IFlowState ImplicitDerefExpression_FlowStateAfter(IImplicitDerefExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IMaybeType IfExpression_Type(IIfExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

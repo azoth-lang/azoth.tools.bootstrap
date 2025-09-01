@@ -34,11 +34,6 @@ internal static partial class TypeExpressionsPlainTypesAspect
     public static partial IMaybePlainType ViewpointType_NamedPlainType(IViewpointTypeNode node)
         // Viewpoint has no effect on the plain type
         => node.Referent.NamedPlainType;
-
-    public static partial IMaybePlainType RefType_NamedPlainType(IRefTypeNode node)
-        => RefPlainType.Create(node.IsInternal, node.IsMutableBinding, node.Referent.NamedPlainType);
-
-    // TODO report error for `ref void` and `ref never`?
     #endregion
 
     #region Type Names
