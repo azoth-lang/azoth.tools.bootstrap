@@ -63,8 +63,6 @@
 // ---------- Operator Expressions
 = AssignmentExpression.LeftOperand.**.ControlFlowFollowing()
     => ControlFlowSet.CreateNormal(RightOperand);
-= RefAssignmentExpression.LeftOperand.**.ControlFlowFollowing()
-    => ControlFlowSet.CreateNormal(RightOperand);
 = BinaryOperatorExpression.LeftOperand.**.ControlFlowFollowing()
     => ControlFlowSet.CreateNormal(RightOperand);
 = PatternMatchExpression.Referent.**.ControlFlowFollowing()

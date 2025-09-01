@@ -41,8 +41,6 @@ public static partial class PlainTypeOperations
             (BarePlainType { TypeConstructor: SimpleOrLiteralTypeConstructor s },
                 BarePlainType { TypeConstructor: SimpleOrLiteralTypeConstructor o })
                 => s.IsImplicitlyNumericallyConvertibleTo(o),
-            (RefPlainType s, _)
-                => s.Referent.IsAssignableTo(other),
             _ => false,
         };
     }

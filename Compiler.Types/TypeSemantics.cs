@@ -5,6 +5,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 /// </summary>
 public enum TypeSemantics
 {
-    Value = 1,
-    Reference
+    Reference = 1,
+    // TODO add Hybrid
+    Value,
 }

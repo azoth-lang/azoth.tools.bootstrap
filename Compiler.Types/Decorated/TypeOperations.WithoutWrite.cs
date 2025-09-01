@@ -36,8 +36,6 @@ public static partial class TypeOperations
             SelfViewpointType t => t,
             GenericParameterType t => t,
             OptionalType t => t,
-            // TODO is this correct? Should `ref var` and the referent be constrained?
-            RefType t => t,
             FunctionType t => t,
             NeverType t => t,
             _ => throw ExhaustiveMatch.Failed(self),

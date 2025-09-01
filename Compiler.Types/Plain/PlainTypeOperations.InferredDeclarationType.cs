@@ -13,11 +13,5 @@ public static partial class PlainTypeOperations
     /// Given an initializer of this type, what should the inferred declaration type be?
     /// </summary>
     public static NonVoidPlainType InferredDeclarationType(this NonVoidPlainType self)
-    {
-        // Declarations are never inferred to have `iref` or `ref` types by default. This is
-        // recursive (e.g. `ref var ref var T` infers `T`).
-        while (self is RefPlainType refType)
-            self = refType.Referent;
-        return self.ToNonLiteral();
-    }
+        => self.ToNonLiteral();
 }

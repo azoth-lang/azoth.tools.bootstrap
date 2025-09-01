@@ -8,7 +8,6 @@ using Azoth.Tools.Bootstrap.Compiler.Primitives;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
-using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
@@ -182,28 +181,6 @@ internal static partial class ExpressionTypesAspect
         return type;
     }
 
-    public static partial IMaybeType FieldAccessExpression_LocatorType(IFieldAccessExpressionNode node)
-    {
-        var contextType = node.Context.Type;
-        //var isInternal = contextType
-        var field = node.ReferencedDeclaration; // Avoids repeated access
-        // TODO what about value type fields within reference types. Really this is recursively defined by the context
-        var isInternal = field.ContainingDeclaration.TypeConstructor.Semantics == TypeSemantics.Reference;
-        var isMutableBinding = field.IsMutableBinding;
-        var fieldType = field.BindingType;
-        // TODO avoid creating types without matching plain types
-        var type = RefType.CreateWithoutPlainType(isInternal, isMutableBinding, fieldType);
-
-        // Access must be applied first, so it can account for independent generic parameters.
-        type = type.AccessedVia(contextType);
-        // Then type parameters can be replaced now that they have the correct access
-        if (contextType is NonVoidType nonVoidContext)
-            // resolve generic type fields
-            type = nonVoidContext.TypeReplacements.ApplyTo(type);
-
-        return type;
-    }
-
     public static partial IFlowState FieldAccessExpression_FlowStateAfter(IFieldAccessExpressionNode node)
         => node.Context.FlowStateAfter.AccessField(node);
 
@@ -331,18 +308,6 @@ internal static partial class ExpressionTypesAspect
             }
         }
     }
-
-    public static partial IMaybeType RefAssignmentExpression_Type(IRefAssignmentExpressionNode node)
-        => (node.LeftOperand?.Type as RefType)?.Referent ?? IMaybeType.Unknown;
-
-    public static partial IFlowState RefAssignmentExpression_FlowStateAfter(IRefAssignmentExpressionNode node)
-    {
-        // TODO this isn't quite right since the original value is replaced by the new value
-        if (node.LeftOperand?.ValueId is not ValueId leftValueId) return IFlowState.Empty;
-        return node.RightOperand?.FlowStateAfter.Combine(leftValueId, node.RightOperand.ValueId, node.ValueId) ?? IFlowState.Empty;
-    }
-
-    // TODO RefAssignment diagnostics
 
     public static partial IMaybeType BinaryOperatorExpression_Type(IBinaryOperatorExpressionNode node)
     {
@@ -809,10 +774,6 @@ internal static partial class ExpressionTypesAspect
     #region Name Expressions
     public static partial IMaybeType VariableNameExpression_Type(IVariableNameExpressionNode node)
         => node.FlowStateAfter.AliasType(node.ReferencedDefinition);
-
-    public static partial IMaybeType VariableNameExpression_LocatorType(IVariableNameExpressionNode node)
-        // TODO avoid creating types without matching plain types
-        => RefType.CreateWithoutPlainType(isInternal: false, node.ReferencedDefinition.IsMutableBinding, node.Type);
 
     public static partial IFlowState VariableNameExpression_FlowStateAfter(IVariableNameExpressionNode node)
         => node.FlowStateBefore().Alias(node.ReferencedDefinition, node.ValueId);

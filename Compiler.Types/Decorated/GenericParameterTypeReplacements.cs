@@ -81,13 +81,6 @@ public sealed class GenericParameterTypeReplacements
                     return OptionalType.CreateWithoutPlainType(replacementType);
                 break;
             }
-            case RefType t:
-            {
-                var replacementType = ApplyTo(t.Referent, selfReplacement);
-                if (!ReferenceEquals(t.Referent, replacementType))
-                    return RefType.CreateWithoutPlainType(t.IsInternal, t.IsMutableBinding, replacementType);
-                break;
-            }
             case GenericParameterType t:
                 return ApplyTo(t);
             case FunctionType t:
@@ -280,7 +273,6 @@ public sealed class GenericParameterTypeReplacements
             GenericParameterType t => t,
             NeverType t => t,
             OptionalType t => t,
-            RefType t => t,
             SelfViewpointType t => SelfReplacement(t.Referent, withCapability),
             _ => throw ExhaustiveMatch.Failed(selfReplacement),
         };

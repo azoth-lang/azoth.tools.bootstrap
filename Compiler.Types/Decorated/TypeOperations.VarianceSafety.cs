@@ -41,8 +41,6 @@ public static partial class TypeOperations
             UnknownType _ => true,
             // The referent of an optional type is basically `out T` (covariant)
             OptionalType t => t.Referent.IsVarianceSafe(context, nonwritableSelf),
-            // TODO not sure RefType is correct
-            RefType t => t.Referent.IsVarianceSafe(t.IsMutableBinding ? TypeVariance.Invariant : context, nonwritableSelf),
             FunctionType t => t.IsVarianceSafe(context, nonwritableSelf),
             _ => throw ExhaustiveMatch.Failed(type),
         };

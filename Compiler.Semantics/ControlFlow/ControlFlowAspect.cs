@@ -102,9 +102,6 @@ internal static partial class ControlFlowAspect
     public static partial ControlFlowSet AssignmentExpression_ControlFlowNext(IAssignmentExpressionNode node)
         => ControlFlowSet.CreateNormal(node.LeftOperand);
 
-    public static partial ControlFlowSet RefAssignmentExpression_ControlFlowNext(IRefAssignmentExpressionNode node)
-        => ControlFlowSet.CreateNormal(node.LeftOperand);
-
     public static partial ControlFlowSet BinaryOperatorExpression_ControlFlowNext(IBinaryOperatorExpressionNode node)
         => ControlFlowSet.CreateNormal(node.LeftOperand);
 

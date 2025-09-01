@@ -43,8 +43,6 @@ internal static partial class ExpressionPlainTypesAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IMaybePlainType AssignmentExpression_PlainType(IAssignmentExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IMaybePlainType RefAssignmentExpression_PlainType(IRefAssignmentExpressionNode node);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IMaybePlainType BinaryOperatorExpression_PlainType(IBinaryOperatorExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial PlainType? BinaryOperatorExpression_NumericOperatorCommonPlainType(IBinaryOperatorExpressionNode node);
@@ -92,5 +90,4 @@ internal static partial class ExpressionPlainTypesAspect
     public static partial IMaybePlainType AwaitExpression_PlainType(IAwaitExpressionNode node);
     public static partial IImplicitConversionExpressionNode? OrdinaryTypedExpression_Insert_ImplicitConversionExpression(IOrdinaryTypedExpressionNode node);
     public static partial IOptionalConversionExpressionNode? OrdinaryTypedExpression_OptionalConversion_Rewrite_OptionalConversionExpression(IOrdinaryTypedExpressionNode node);
-    public static partial IRefAssignmentExpressionNode? AssignmentExpression_ReplaceWith_RefAssignmentExpression(IAssignmentExpressionNode node);
 }

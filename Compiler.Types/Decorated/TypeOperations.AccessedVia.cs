@@ -50,7 +50,6 @@ public static partial class TypeOperations
             GenericParameterType t => t.AccessedVia(capability),
             FunctionType t => t,
             NeverType t => t,
-            RefType t => t.AccessedVia(capability),
             // TODO shouldn't this combine with the capability set?
             CapabilitySetSelfType t => t,
             // TODO shouldn't this combine with the capability set?
@@ -108,23 +107,5 @@ public static partial class TypeOperations
             CapabilitySet c => new SelfViewpointType(c, self),
             _ => throw ExhaustiveMatch.Failed(capability),
         };
-    }
-
-    public static NonVoidType AccessedVia(this RefType self, ICapabilityConstraint capability)
-    {
-        switch (capability)
-        {
-            case Capability c:
-                var newReferent = self.Referent.AccessedVia(capability);
-                var newIsMutableBinding = self.IsMutableBinding && c.AllowsWrite;
-                if (ReferenceEquals(newReferent, self.Referent)
-                    && newIsMutableBinding == self.IsMutableBinding)
-                    return self;
-                return RefType.CreateWithoutPlainType(self.IsInternal, newIsMutableBinding, newReferent);
-            case CapabilitySet c:
-                return new SelfViewpointType(c, self);
-            default:
-                throw ExhaustiveMatch.Failed(capability);
-        }
     }
 }

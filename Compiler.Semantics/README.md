@@ -1,8 +1,16 @@
 # Azoth.Tools.Bootstrap.Compiler.Semantics
 
+## Glossary
+
+* Declaration: a declaration of a type or member. This could be a definition in source code, but it
+  could also be a symbol from a dependency that declares it.
+* Definition: the actual definition of a type or member in source code including the body.
+
+## History
+
 There have been several approaches to the semantic analysis portion of the compiler.
 
-## Original Approach
+### Original Approach
 
 At first, it was thought that this compiler should be designed to plan for reimplementation in Azoth. Doing so imposed a number of constraints:
 
@@ -14,7 +22,7 @@ At first, it was thought that this compiler should be designed to plan for reimp
 
 Trying to support all of these while creating a compiler that could be rapidly developed and changed was challenging. C# seemed to make everything very verbose. A series of approaches were tried. Eventually a system allowing for a fairly direct expression of attribute grammars over the syntax tree was adopted. However, this makes strong typing challenging. Worse than that, because everything is computed on demand it makes order of execution and debugging very confusing. To simplify the implementation of the borrow checker an intermediate language (IL) was introduced. This was helpful, however, it was added as a later phase to semantic analysis which then became an issue because it couldn't be used for compile time code execution because it could only be generated after all semantic analysis was complete.
 
-## Current Plan
+### Current Plan
 
 Of the above constraints, all but arbitrary compile time code execution and strong typing have been dropped. It is hoped this will make development quicker, easier and more testable. To make things clear and easy, the plan to to have a series of clearly defined steps. Of the below list, only steps 2 through 4 are part of semantic the semantic analysis in this project. Steps 1 and 5 are included for context.
 
@@ -24,7 +32,7 @@ Of the above constraints, all but arbitrary compile time code execution and stro
 4. Analyze the semantics. This must mix name binding, type checking, IL generation and compile time code execution because they are interdependent. To simplify this as much as possible, this will be single threaded and will be free to mutate the tree as needed. All mutator method/properties will be `internal` to other phases can't mutate the tree. The `Lazy<T>` type may or may not be used to make cycle detection easier.
 5. Emit C code from the generated IL.
 
-### Semantic/IL Tree
+#### Semantic/IL Tree
 
 The current plan is that the tree generated for the semantic analysis and IL generation would be something roughly consistent with what could be used in an IL representation of an Azoth package. However, it may include additional data or optional data structures that wouldn't be used if parsing and generating IL. In order to try to keep this structure as simple as possible, it is planned the following abstractions relative to the concrete syntax trees will be made:
 

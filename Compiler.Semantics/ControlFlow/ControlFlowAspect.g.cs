@@ -55,8 +55,6 @@ internal static partial class ControlFlowAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial ControlFlowSet AssignmentExpression_ControlFlowNext(IAssignmentExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial ControlFlowSet RefAssignmentExpression_ControlFlowNext(IRefAssignmentExpressionNode node);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial ControlFlowSet BinaryOperatorExpression_ControlFlowNext(IBinaryOperatorExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial ControlFlowSet UnaryOperatorExpression_ControlFlowNext(IUnaryOperatorExpressionNode node);

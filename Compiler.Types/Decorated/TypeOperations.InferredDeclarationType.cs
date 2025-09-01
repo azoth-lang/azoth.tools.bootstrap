@@ -16,10 +16,6 @@ public static partial class TypeOperations
     /// </summary>
     public static IMaybeNonVoidType InferredDeclarationType(this NonVoidType self, DeclaredCapability? declaredCapability)
     {
-        // Declarations are never inferred to have `iref` or `ref` types by default. This is
-        // recursive (e.g. `ref var ref var T` infers `T`).
-        while (self is RefType refType)
-            self = refType.Referent;
         self = self.ToNonLiteral();
 
         if (declaredCapability is not { } capability)

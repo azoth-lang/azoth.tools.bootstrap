@@ -79,7 +79,6 @@ public sealed class PackageNameScope
             VoidPlainType _ => null,
             NeverPlainType _ => null,
             FunctionPlainType _ => null,
-            RefPlainType _ => null,
             OptionalPlainType _ => throw new NotImplementedException(),
             GenericParameterPlainType t => Lookup(t),
             BarePlainType t => Lookup(t.TypeConstructor),

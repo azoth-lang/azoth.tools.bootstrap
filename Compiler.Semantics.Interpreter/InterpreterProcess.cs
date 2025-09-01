@@ -392,7 +392,6 @@ public sealed class InterpreterProcess
             case OptionalType _:
             case GenericParameterType _:
             case FunctionType _:
-            case RefType _:
                 var methodSignature = methodSignatures[methodSymbol];
                 throw new InvalidOperationException($"Can't call {methodSignature} on {selfType}");
             default:
@@ -607,15 +606,6 @@ public sealed class InterpreterProcess
                 };
                 if (result.ShouldExit(out var value)) return result;
                 return await ExecuteAssignmentAsync(selfBareType, leftOperand, value, variables).ConfigureAwait(false);
-            }
-            case ExpressionKind.RefAssignment:
-            {
-                var exp = (IRefAssignmentExpressionNode)expression;
-                var result = await ExecuteAsync(selfBareType, exp.LeftOperand!, variables).ConfigureAwait(false);
-                if (result.ShouldExit(out var leftValue)) return result;
-                result = await ExecuteAsync(selfBareType, exp.RightOperand!, variables).ConfigureAwait(false);
-                if (result.ShouldExit(out var rightValue)) return result;
-                return leftValue.RefValue.Value = rightValue;
             }
             case ExpressionKind.BinaryOperator:
             {

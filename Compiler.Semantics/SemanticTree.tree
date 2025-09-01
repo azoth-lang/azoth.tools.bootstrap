@@ -234,8 +234,6 @@ StringLiteralExpression <: LiteralExpression = Syntax:`IStringLiteralExpressionS
 // ---------- Operator Expressions
 AssignmentExpression <: OrdinaryTypedExpression, DataFlow = Syntax:`IAssignmentExpressionSyntax`
     LeftOperand:AmbiguousExpression RightOperand:AmbiguousExpression;
-RefAssignmentExpression <: OrdinaryTypedExpression = Syntax:`IAssignmentExpressionSyntax`
-    LeftOperand:AmbiguousExpression RightOperand:AmbiguousExpression;
 BinaryOperatorExpression <: OrdinaryTypedExpression = Syntax:`IBinaryOperatorExpressionSyntax`
     LeftOperand:AmbiguousExpression RightOperand:AmbiguousExpression;
 UnaryOperatorExpression <: OrdinaryTypedExpression = Syntax:`IUnaryOperatorExpressionSyntax`

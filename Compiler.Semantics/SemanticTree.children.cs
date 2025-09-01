@@ -400,10 +400,6 @@ public static class ISemanticNodeExtensions
                 foreach (var child in n.GenericArguments)
                     yield return child;
                 yield break;
-            case IRefAssignmentExpressionNode n:
-                yield return n.TempLeftOperand;
-                yield return n.TempRightOperand;
-                yield break;
             case IResultStatementNode n:
                 yield return n.TempExpression;
                 yield break;

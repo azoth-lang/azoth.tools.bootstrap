@@ -21,11 +21,6 @@ public static partial class PlainTypeOperations
             (BarePlainType { TypeConstructor: SimpleOrLiteralTypeConstructor left },
                 BarePlainType { TypeConstructor: SimpleOrLiteralTypeConstructor right })
                 => left.NumericOperatorCommonType(right),
-            // Implicit deref
-            (RefPlainType left, RefPlainType right)
-                => left.Referent.NumericOperatorCommonType(right.Referent),
-            (RefPlainType left, _) => left.Referent.NumericOperatorCommonType(rightType),
-            (_, RefPlainType right) => leftType.NumericOperatorCommonType(right.Referent),
             _ => null,
         };
 

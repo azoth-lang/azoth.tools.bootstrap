@@ -48,9 +48,6 @@ internal static partial class ForeachExpressionTypesAspect
         {
             // TODO this duplicates logic in other nodes, eliminate that duplication somehow
             var contextType = node.IterableType;
-            // Apply any implicit deref needed
-            // TODO do derefs need to affect the flow state?
-            while (contextType is RefType refType) contextType = refType.Referent;
 
             var previousValueId = inExpression.ValueId;
 

@@ -46,8 +46,6 @@ public static partial class TypeOperations
                 case NeverType _:
                 case VoidType _:
                 case FunctionType _:
-                // TODO not sure RefType is correct
-                case RefType _:
                     // ignore
                     break;
                 default:

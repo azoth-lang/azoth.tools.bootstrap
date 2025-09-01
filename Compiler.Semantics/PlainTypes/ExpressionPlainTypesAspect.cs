@@ -235,21 +235,6 @@ internal static partial class ExpressionPlainTypesAspect
     public static partial IMaybePlainType AssignmentExpression_PlainType(IAssignmentExpressionNode node)
         => node.LeftOperand?.PlainType ?? PlainType.Unknown;
 
-    public static partial IRefAssignmentExpressionNode? AssignmentExpression_ReplaceWith_RefAssignmentExpression(IAssignmentExpressionNode node)
-    {
-        var leftDepth = node.LeftOperand?.PlainType.RefDepth();
-        // The left hand side must be a ref/iref and the depth >= the right hand side. Note that
-        // `list.at(i) = list.at(j)` have equal depth.
-        // TODO what if the left is a ref var field, then equal depth is a normal assignment?
-        if (leftDepth > 0 && leftDepth >= node.RightOperand?.PlainType.RefDepth())
-            return IRefAssignmentExpressionNode.Create(node.Syntax, node.CurrentLeftOperand, node.CurrentRightOperand);
-
-        return null;
-    }
-
-    public static partial IMaybePlainType RefAssignmentExpression_PlainType(IRefAssignmentExpressionNode node)
-        => (node.LeftOperand?.PlainType as RefPlainType)?.Referent ?? IMaybePlainType.Unknown;
-
     public static partial PlainType? BinaryOperatorExpression_NumericOperatorCommonPlainType(IBinaryOperatorExpressionNode node)
     {
         var leftPlainType = node.LeftOperand?.PlainType ?? PlainType.Unknown;

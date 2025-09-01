@@ -24,7 +24,6 @@
 
 // ---------- Operator Expressions
 = AssignmentExpression.ExpressionKind => ExpressionKind.Assignment;
-= RefAssignmentExpression.ExpressionKind => ExpressionKind.RefAssignment;
 = BinaryOperatorExpression.ExpressionKind => ExpressionKind.BinaryOperator;
 = UnaryOperatorExpression.ExpressionKind => ExpressionKind.UnaryOperator;
 = ConversionExpression.ExpressionKind => ExpressionKind.Conversion;

@@ -24,8 +24,6 @@ internal static partial class ExpressionTypesAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFlowState UnresolvedMemberAccessExpression_FlowStateAfter(IUnresolvedMemberAccessExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IMaybeType FieldAccessExpression_LocatorType(IFieldAccessExpressionNode node);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFlowState FieldAccessExpression_FlowStateAfter(IFieldAccessExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial void FieldAccessExpression_Contribute_Diagnostics(IFieldAccessExpressionNode node, DiagnosticCollectionBuilder diagnostics);
@@ -59,8 +57,6 @@ internal static partial class ExpressionTypesAspect
     public static partial void FunctionReferenceInvocationExpression_Contribute_Diagnostics(IFunctionReferenceInvocationExpressionNode node, DiagnosticCollectionBuilder diagnostics);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial void InitializerInvocationExpression_Contribute_Diagnostics(IInitializerInvocationExpressionNode node, DiagnosticCollectionBuilder diagnostics);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IMaybeType VariableNameExpression_LocatorType(IVariableNameExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFlowState VariableNameExpression_FlowStateAfter(IVariableNameExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -121,10 +117,6 @@ internal static partial class ExpressionTypesAspect
     public static partial IMaybeType AssignmentExpression_Type(IAssignmentExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFlowState AssignmentExpression_FlowStateAfter(IAssignmentExpressionNode node);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IMaybeType RefAssignmentExpression_Type(IRefAssignmentExpressionNode node);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IFlowState RefAssignmentExpression_FlowStateAfter(IRefAssignmentExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IMaybeType BinaryOperatorExpression_Type(IBinaryOperatorExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

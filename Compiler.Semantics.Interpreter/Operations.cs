@@ -155,11 +155,6 @@ internal static class Operations
             case GenericParameterType _:
                 // Should be unreachable since type replacement should have removed all generic parameter types.
                 throw new UnreachableException();
-            case RefType t:
-                // TODO what about `iref` vs `ref` and `var` vs not?
-                if (value.AsRef() is not { } refValue)
-                    return false;
-                return refValue.Value.IsOfType(t.Referent);
             case CapabilitySetSelfType t:
                 return value.IsOfType(t.BareType, t.CapabilitySet.AnyCapabilityAllowsWrite);
             case CapabilitySetRestrictedType t:

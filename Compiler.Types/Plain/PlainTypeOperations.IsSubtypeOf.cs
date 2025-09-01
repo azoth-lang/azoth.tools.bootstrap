@@ -40,7 +40,6 @@ public static partial class PlainTypeOperations
                 => self.Semantics == TypeSemantics.Reference && self.IsSubtypeOf(o.Referent, substitutable),
             (BarePlainType s, BarePlainType t) => s.IsSubtypeOf(t, substitutable),
             (FunctionPlainType s, FunctionPlainType o) => s.IsSubtypeOf(o),
-            (RefPlainType s, RefPlainType o) => s.IsSubtypeOf(o),
             _ => false
         };
 
@@ -130,26 +129,5 @@ public static partial class PlainTypeOperations
                 return false;
 
         return self.Return.IsSubtypeOf(other.Return, substitutable: false);
-    }
-
-    /// <inheritdoc cref="IsSubtypeOf(IMaybePlainType,IMaybePlainType,bool)"/>
-    public static bool IsSubtypeOf(this RefPlainType self, RefPlainType other)
-    {
-        // `iref var T <: ref var T`
-        if ((self, other)
-            is ({ IsInternal: true, IsMutableBinding: true }, { IsInternal: false, IsMutableBinding: true }))
-            // Types must match because it can be assigned into
-            return self.Referent.Equals(other.Referent);
-
-        // `ref var S <: ref T`
-        // `iref S <: ref T`
-        // `iref var S <: ref T`
-        // `iref var S <: iref T`
-        // when S <: T
-        if (!other.IsMutableBinding && other.IsInternal.Implies(self.IsInternal))
-            return self.Referent.IsSubtypeOf(other.Referent, substitutable: true);
-
-        // If this method is directly called, then the case where they are equal must be covered
-        return self.Equals(other);
     }
 }

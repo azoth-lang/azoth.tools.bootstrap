@@ -70,8 +70,6 @@
 // TODO remove once all nodes properly provide the expected type
 = AmbiguousExpression.*.ExpectedType => null;
 ↑ Expression.Type: `IMaybeType`;
-/// The type of this expression when it is used as a locator (e.g. to assign into or take a reference to)
-↑ Expression.LocatorType: `IMaybeType` => Type;
 ↑ Expression.FlowStateAfter: `IFlowState`;
 ↓ OrdinaryTypedExpression.ExpectedType:`IMaybeType`?;
 /// <summary>
@@ -103,7 +101,6 @@
 = UnresolvedMemberAccessExpression.FlowStateAfter;
 
 // ---------- Instance Member Access Expressions
-= FieldAccessExpression.LocatorType;
 = FieldAccessExpression.FlowStateAfter;
 = FieldAccessExpression.↑.Diagnostics;
 = MethodAccessExpression.Context.ExpectedType;
@@ -123,11 +120,6 @@
     => LeftOperand?.FlowStateAfter ?? IFlowState.Empty;
 = AssignmentExpression.RightOperand.ExpectedType => LeftOperand?.Type;
 = AssignmentExpression.↑.Diagnostics;
-= RefAssignmentExpression.RightOperand.**.FlowStateBefore
-    => LeftOperand?.FlowStateAfter ?? IFlowState.Empty;
-= RefAssignmentExpression.LeftOperand.ExpectedType
-    => RefType.CreateWithoutPlainType(isInternal: false, isMutableBinding: true, RightOperand?.Type);
-= RefAssignmentExpression.RightOperand.ExpectedType => (LeftOperand?.Type as RefType)?.Referent;
 = BinaryOperatorExpression.RightOperand.**.FlowStateBefore
     => LeftOperand?.FlowStateAfter ?? IFlowState.Empty;
 = BinaryOperatorExpression.↑.Diagnostics;
@@ -226,7 +218,6 @@
 
 // ---------- Name Expressions
 ↓ NameExpression.FlowStateBefore(): `IFlowState`;
-= VariableNameExpression.LocatorType;
 = VariableNameExpression.FlowStateAfter;
 = InstanceExpression.FlowStateAfter;
 = FunctionNameExpression.FlowStateAfter;

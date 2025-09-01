@@ -75,7 +75,6 @@ public sealed class PlainTypeReplacements
             GenericParameterPlainType t => ApplyTo(t),
             FunctionPlainType t => ApplyTo(t),
             OptionalPlainType t => ApplyTo(t),
-            RefPlainType t => ApplyTo(t),
             _ => throw ExhaustiveMatch.Failed(plainType)
         };
 
@@ -150,14 +149,5 @@ public sealed class PlainTypeReplacements
             return plainType;
 
         return OptionalPlainType.Create(replacementType);
-    }
-
-    public PlainType ApplyTo(RefPlainType plainType)
-    {
-        var replacementType = ApplyTo(plainType.Referent);
-        if (ReferenceEquals(plainType.Referent, replacementType))
-            return plainType;
-
-        return RefPlainType.Create(plainType.IsInternal, plainType.IsMutableBinding, replacementType);
     }
 }

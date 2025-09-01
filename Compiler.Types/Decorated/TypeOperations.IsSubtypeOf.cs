@@ -53,7 +53,6 @@ public static partial class TypeOperations
                 => self.Semantics == TypeSemantics.Reference && self.IsSubtypeOf(o.Referent, substitutable),
             (FunctionType s, FunctionType o)
                 => s.IsSubtypeOf(o),
-            (RefType s, RefType o) => s.IsSubtypeOf(o),
             _ => false,
         };
 
@@ -210,26 +209,5 @@ public static partial class TypeOperations
                 return false;
 
         return self.Return.ReturnCanOverride(other.Return);
-    }
-
-    /// <inheritdoc cref="IsSubtypeOf(IMaybeType,IMaybeType,bool)"/>
-    public static bool IsSubtypeOf(this RefType self, RefType other)
-    {
-        // `iref var T <: ref var T`
-        if ((self, other)
-            is ({ IsInternal: true, IsMutableBinding: true }, { IsInternal: false, IsMutableBinding: true }))
-            // Types must match because it can be assigned into
-            return self.Referent.Equals(other.Referent);
-
-        // `ref var S <: ref T`
-        // `iref S <: ref T`
-        // `iref var S <: ref T`
-        // `iref var S <: iref T`
-        // when S <: T
-        if (!other.IsMutableBinding && other.IsInternal.Implies(self.IsInternal))
-            return self.Referent.IsSubtypeOf(other.Referent, substitutable: true);
-
-        // If this method is directly called, then the case where they are equal must be covered
-        return self.Equals(other);
     }
 }

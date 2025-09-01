@@ -14,8 +14,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
     typeof(SelfViewpointType),
     typeof(CapabilityViewpointType),
     typeof(CapabilitySetRestrictedType),
-    typeof(NeverType),
-    typeof(RefType))]
+    typeof(NeverType))]
 public abstract class NonVoidType : Type, IMaybeNonVoidType
 {
     public abstract override NonVoidPlainType PlainType { [DebuggerStepThrough] get; }

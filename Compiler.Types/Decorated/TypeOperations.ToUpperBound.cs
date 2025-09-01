@@ -38,7 +38,6 @@ public static partial class TypeOperations
                 => CapabilityType.Create(t.CapabilitySet.UpperBound, t.BareType.ContainingType, t.PlainType),
             // TODO shouldn't these be recursive on referents and arguments?
             OptionalType t => t,
-            RefType t => t,
             GenericParameterType t => t,
             CapabilityViewpointType t => t,
             SelfViewpointType t => t,

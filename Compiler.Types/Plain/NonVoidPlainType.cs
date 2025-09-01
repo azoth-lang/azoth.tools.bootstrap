@@ -7,8 +7,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
     typeof(FunctionPlainType),
     typeof(BarePlainType),
     typeof(GenericParameterPlainType),
-    typeof(NeverPlainType),
-    typeof(RefPlainType))]
+    typeof(NeverPlainType))]
 public abstract class NonVoidPlainType : PlainType, IMaybeNonVoidPlainType
 {
     public sealed override NonVoidPlainType ToNonLiteral() => TryToNonLiteral() ?? this;
