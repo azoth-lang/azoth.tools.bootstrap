@@ -12,7 +12,6 @@ public partial class TokenTypes
     public static readonly IReadOnlySet<string> ReservedWords = new HashSet<string>()
     {
         // Keywords not yet implemented
-        "base",
         "delete",
         "ensures",
         "explicit",
@@ -30,7 +29,6 @@ public partial class TokenTypes
         "override",
         "params",
         "requires",
-        "struct",
         "throw",
         "Tuple",
         "Type",
@@ -68,9 +66,9 @@ public partial class TokenTypes
         "sizeof", "size_of", // Size of Operator
         "switch",            // Useful for switch like constructs
         "symmetric",         // Symmetric operators
+        "then",              // Python style loop else
         "transmute",         // Reinterpret Cast
         "trn",               // Transition reference capability
-        "then",              // Python style loop else
         "unchecked",         // Unchecked Operations
         "unless",            // Ruby style `if not` statement or `unless break` for Python style loop else
         "when",              // C# style exception filters

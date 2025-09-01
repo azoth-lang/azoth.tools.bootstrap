@@ -7,53 +7,53 @@
 <#
     var tokens = new List<string>()
     {
-        "EndOfFile",
-        "OpenBrace", // `{` U+007B
+        "Asterisk", // `*` U+002A
+        "AsteriskEquals", // `*=` U+002A", U+003D
         "CloseBrace", // `}` U+007D
-        "OpenParen", // `(` U+0028
-        "CloseParen", // `)` U+0029
-        "OpenBracket", // `[` U+005B
         "CloseBracket", // `]` U+005D
-        "Semicolon", // `;` U+003B
-        "Comma", // `",` U+002C
-        //"Pipe", // `|` U+007C
+        "CloseParen", // `)` U+0029
         "Colon", // `:` U+003A
-        "RightArrow", // `->` U+002D, U+003E
-        "Hash", // `#` U+0023
-        //"HashHash", // `##` U+0023, U+0023
-        "Dot", // `.` U+002E
         "ColonColon", // `::` U+003A, U+003A
         "ColonColonDot", // `::.` U+003A, U+003A, U+002E
+        "Comma", // `",` U+002C
+        "Dot", // `.` U+002E
         "DotDot", // `..` U+002E, U+002E
-        "LessThanDotDot", // `<..` U+003C, U+002E, U+002E
         "DotDotLessThan", // `..<` U+002E, U+002E, U+003C
+        "EndOfFile",
+        "Equals", // `=` U+003D
+        "EqualsEquals", // `==` U+003D, U+003D
+        "GreaterThan", // `>` U+003E
+        "GreaterThanOrEqual", // `>=` U+003E", U+003D
+        "Hash", // `#` U+0023
+        "LessThan", // `<` U+003C
+        "LessThanColon" , // `<:` U+003C, U+003A
+        "LessThanDotDot", // `<..` U+003C, U+002E, U+002E
         "LessThanDotDotLessThan", // `<..<` U+002E, U+002E, U+003C
+        "LessThanOrEqual", // `<=` U+003C", U+003D
+        "Minus", // `-` U+002D
+        "MinusEquals", // `-=` U+002D", U+003D
+        "NotEqual", // `=/=` U+003D, U+002F, U+003D
+        "NotReferenceEquals", // `@=/=` U+0040, U+003D, U+002F, U+003D
+        "OpenBrace", // `{` U+007B
+        "OpenBracket", // `[` U+005B
+        "OpenParen", // `(` U+0028
+        "Plus", // `+` U+002B
+        "PlusEquals", // `+=` U+002B", U+003D
+        "Question", // `?` U+003F
+        "QuestionDot", // `?.` U+003F, U+002E
+        "QuestionQuestion", // `??` U+003F, U+003F
+        "ReferenceEquals", // `@== ` U+0040, U+003D, U+003D
+        "RightArrow", // `->` U+002D, U+003E
+        "RightDoubleArrow", // `=>` U+003D, U+003E
+        "RightTriangle", // `|>` U+007C, U+003E
+        "Semicolon", // `;` U+003B
+        "Slash", // `/` U+002F
+        "SlashEquals", // `/=` U+002F", U+003D
         //"AtSign", // `@` U+0040 (named at sign to distinguish it from the word "at")
         //"Caret", // `^` U+005E
         //"CaretDot", // `^.` U+005E, U+002E
-        "Plus", // `+` U+002B
-        "Minus", // `-` U+002D
-        "Asterisk", // `*` U+002A
-        "Slash", // `/` U+002F
-        "Equals", // `=` U+003D
-        "EqualsEquals", // `==` U+003D, U+003D
-        "NotEqual", // `=/=` U+003D, U+002F, U+003D
-        "ReferenceEquals", // `@== ` U+0040, U+003D, U+003D
-        "NotReferenceEquals", // `@=/=` U+0040, U+003D, U+002F, U+003D
-        "GreaterThan", // `>` U+003E
-        "GreaterThanOrEqual", // `>=` U+003E", U+003D
-        "LessThan", // `<` U+003C
-        "LessThanOrEqual", // `<=` U+003C", U+003D
-        "PlusEquals", // `+=` U+002B", U+003D
-        "MinusEquals", // `-=` U+002D", U+003D
-        "AsteriskEquals", // `*=` U+002A", U+003D
-        "SlashEquals", // `/=` U+002F", U+003D
-        "Question", // `?` U+003F
-        "QuestionQuestion", // `??` U+003F, U+003F
-        "QuestionDot", // `?.` U+003F, U+002E
-        "LessThanColon" , // `<:` U+003C, U+003A
-        "RightDoubleArrow", // `=>` U+003D, U+003E
-        "RightTriangle", // `|>` U+007C, U+003E
+        //"HashHash", // `##` U+0023, U+0023
+        //"Pipe", // `|` U+007C
     }.AsReadOnly();
 #>
 using Azoth.Tools.Bootstrap.Compiler.Core.Code;

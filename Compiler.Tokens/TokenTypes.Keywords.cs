@@ -28,15 +28,15 @@ public static partial class TokenTypes
             string keyword = tokenTypeName switch
             {
                 // Some exceptions to the normal rule
-                nameof(FunctionKeywordToken) => "fn",
-                nameof(SelfTypeKeywordToken) => "Self",
-                nameof(IsolatedKeywordToken) => "iso",
-                nameof(MutableKeywordToken) => "mut",
                 nameof(AnyTypeKeywordToken) => "Any",
-                //nameof(TypeKeywordToken) => "Type",
                 nameof(AsExclamationKeywordToken) => "as!",
                 nameof(AsQuestionKeywordToken) => "as?",
+                nameof(FunctionKeywordToken) => "fn",
                 nameof(IndependentKeywordToken) => "ind",
+                nameof(IsolatedKeywordToken) => "iso",
+                nameof(MutableKeywordToken) => "mut",
+                nameof(SelfTypeKeywordToken) => "Self",
+                //nameof(TypeKeywordToken) => "Type",
                 "UnderscoreKeywordToken" => "_", // TODO why does this need to be a string?
                 _ => tokenTypeName[..^KeywordTokenLength]
                                   .ToLower(CultureInfo.InvariantCulture)
