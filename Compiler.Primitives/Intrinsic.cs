@@ -163,6 +163,7 @@ public static class Intrinsic
         var aliasablePrefixType = CapabilitySetRestrictedType.Create(CapabilitySet.Aliasable, prefixType);
         var itemType = typeConstructor.ParameterTypes[1];
         var aliasableItemType = CapabilitySetRestrictedType.Create(CapabilitySet.Aliasable, itemType);
+
         var classSymbol = new OrdinaryTypeSymbol(@namespace, typeConstructor);
         tree.Add(classSymbol);
 

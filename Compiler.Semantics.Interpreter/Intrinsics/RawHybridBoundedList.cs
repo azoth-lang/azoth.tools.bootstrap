@@ -43,7 +43,7 @@ internal abstract class RawHybridBoundedList : IList<AzothValue>, IIntrinsicValu
     public nuint Count { get; protected set; }
     public abstract nuint Capacity { get; }
     public abstract void Add(AzothValue value);
-    public abstract AzothValue At(nuint index);
+    public abstract AzothValue Get(nuint index);
     public abstract void Set(nuint index, AzothValue value);
     public abstract void Shrink(nuint count);
 
@@ -54,7 +54,7 @@ internal abstract class RawHybridBoundedList : IList<AzothValue>, IIntrinsicValu
 
     AzothValue IList<AzothValue>.this[int index]
     {
-        get => At((nuint)index);
+        get => Get((nuint)index);
         set => Set((nuint)index, value);
     }
     #endregion
@@ -126,7 +126,7 @@ internal abstract class RawHybridBoundedList : IList<AzothValue>, IIntrinsicValu
             : base(bytes, count, false) { }
 
         public override void Add(AzothValue value) => AddValue(value.ByteValue);
-        public override AzothValue At(nuint index) => AzothValue.Byte(ValueAt(index));
+        public override AzothValue Get(nuint index) => AzothValue.Byte(ValueAt(index));
         public override void Set(nuint index, AzothValue value) => SetValue(index, value.ByteValue);
 
         public override string GetStringFromUtf8Bytes(nuint start, nuint byteCount)
@@ -139,7 +139,7 @@ internal abstract class RawHybridBoundedList : IList<AzothValue>, IIntrinsicValu
             : base(values, count, false) { }
 
         public override void Add(AzothValue value) => AddValue(value);
-        public override AzothValue At(nuint index) => ValueAt(index);
+        public override AzothValue Get(nuint index) => ValueAt(index);
         public override void Set(nuint index, AzothValue value) => SetValue(index, value);
 
         public override string GetStringFromUtf8Bytes(nuint start, nuint byteCount)

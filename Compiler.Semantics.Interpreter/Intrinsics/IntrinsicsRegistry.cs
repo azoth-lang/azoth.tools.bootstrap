@@ -124,10 +124,9 @@ internal sealed class IntrinsicsRegistry
         var initMutableSelfType = bareSelfType.With(Capability.InitMutable);
         var mutSelfType = bareSelfType.With(Capability.Mutable);
         var prefixType = typeConstructor.ParameterTypes[0];
+        var aliasablePrefixType = CapabilitySetRestrictedType.Create(CapabilitySet.Aliasable, prefixType);
         var itemType = typeConstructor.ParameterTypes[1];
-        var irefVarItemType
-            = RefType.Create(new(isInternal: true, isMutableBinding: true, itemType.PlainType), itemType);
-        var selfViewIRefVarItemType = new SelfViewpointType(CapabilitySet.Readable, irefVarItemType);
+        var aliasableItemType = CapabilitySetRestrictedType.Create(CapabilitySet.Aliasable, itemType);
         var classSymbol = new OrdinaryTypeSymbol(rawNamespace, typeConstructor);
 
         // published /*unsafe*/ init(mut self, ensure_prefix_zeroed: bool, count: size, ensure_zeroed: bool)
@@ -141,8 +140,8 @@ internal sealed class IntrinsicsRegistry
             return ValueTask.FromResult(AzothValue.Intrinsic(RawHybridArray.Create(itemType, ensurePrefixZeroed, count, ensureZeroed)));
         });
 
-        // published unsafe get prefix(self) -> P
-        var getPrefix = Getter(classSymbol, "prefix", readSelfType, prefixType);
+        // published unsafe get prefix(self) -> aliasable P
+        var getPrefix = Getter(classSymbol, "prefix", readSelfType, aliasablePrefixType);
         builder.Add(getPrefix, static (_, s, args) =>
         {
             var self = s.IntrinsicValue.UnsafeAs<RawHybridArray>();
@@ -161,19 +160,29 @@ internal sealed class IntrinsicsRegistry
 
         // published unsafe get count(self) -> size
         var getCount = Getter(classSymbol, "count", readSelfType, Type.Size);
-        builder.Add(getCount, static (_, s, args) =>
+        builder.Add(getCount, static (_, s, _) =>
         {
             var self = s.IntrinsicValue.UnsafeAs<RawHybridArray>();
             return ValueTask.FromResult(AzothValue.Size(self.Count));
         });
 
-        // published unsafe fn at(readable self, index: size) -> self |> iref var T
-        var at = Method(classSymbol, "at", readableSelfType, Params(Type.Size), selfViewIRefVarItemType);
-        builder.Add(at, static (_, s, arguments) =>
+        // published unsafe fn at(readable self, index: size) -> aliasable T
+        var get = Method(classSymbol, "get", readSelfType, Params(Type.Size), aliasableItemType);
+        builder.Add(get, static (_, s, args) =>
         {
             var self = s.IntrinsicValue.UnsafeAs<RawHybridArray>();
-            var index = arguments[0].SizeValue;
-            return ValueTask.FromResult(AzothValue.Ref(self.RefAt(index)));
+            var index = args[0].SizeValue;
+            return ValueTask.FromResult(self.Get(index));
+        });
+
+        // published unsafe fn at(readable self, index: size, value: T)
+        var set = Method(classSymbol, "set", readableSelfType, Params(Type.Size, itemType));
+        builder.Add(set, static (_, s, args) =>
+        {
+            var self = s.IntrinsicValue.UnsafeAs<RawHybridArray>();
+            var index = args[0].SizeValue;
+            self.Set(index, args[1]);
+            return ValueTask.FromResult(AzothValue.None);
         });
     }
 
@@ -217,12 +226,12 @@ internal sealed class IntrinsicsRegistry
         // TODO handle returning value types and structs
         builder.Add(Intrinsic.RawHybridBoundedListTake, static (_, self, args)
             => ValueTask.FromResult(Unsafe.As<RawHybridBoundedList>(self.IntrinsicValue)
-                                          .At(args[0].SizeValue)));
+                                          .Get(args[0].SizeValue)));
 
         // TODO handle returning reference to value types
         builder.Add(Intrinsic.RawHybridBoundedListGet, static (_, self, args)
             => ValueTask.FromResult(Unsafe.As<RawHybridBoundedList>(self.IntrinsicValue)
-                                          .At(args[0].SizeValue)));
+                                          .Get(args[0].SizeValue)));
 
         builder.Add(Intrinsic.RawHybridBoundedListSet, static (_, self, args) =>
         {

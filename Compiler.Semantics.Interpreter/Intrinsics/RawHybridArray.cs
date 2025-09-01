@@ -30,16 +30,15 @@ internal abstract class RawHybridArray : IIntrinsicValue, IList<AzothValue>
     public AzothValue Prefix { get; set; }
     public abstract nuint Count { get; }
 
-    public abstract AzothValue At(nuint index);
+    public abstract AzothValue Get(nuint index);
     public abstract void Set(nuint index, AzothValue value);
-    public AzothRef RefAt(nuint index) => new(this, (int)index);
 
     #region IList<T>
     int ICollection<AzothValue>.Count => (int)Count;
 
     AzothValue IList<AzothValue>.this[int index]
     {
-        get => At((nuint)index);
+        get => Get((nuint)index);
         set => Set((nuint)index, value);
     }
     #endregion
@@ -85,7 +84,7 @@ internal abstract class RawHybridArray : IIntrinsicValue, IList<AzothValue>
         public Bytes(byte[] items)
             : base(items) { }
 
-        public override AzothValue At(nuint index) => AzothValue.Byte(ValueAt(index));
+        public override AzothValue Get(nuint index) => AzothValue.Byte(ValueAt(index));
         public override void Set(nuint index, AzothValue value) => SetValue(index, value.ByteValue);
     }
 
@@ -94,7 +93,7 @@ internal abstract class RawHybridArray : IIntrinsicValue, IList<AzothValue>
         public Values(AzothValue[] items)
             : base(items) { }
 
-        public override AzothValue At(nuint index) => ValueAt(index);
+        public override AzothValue Get(nuint index) => ValueAt(index);
         public override void Set(nuint index, AzothValue value) => SetValue(index, value);
     }
 }
