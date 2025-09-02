@@ -197,7 +197,7 @@ public partial class Parser
         var span = TextSpan.Covering(classKeywordSpan, identifier.Span, generic?.Span, baseClass?.Span,
             TextSpan.Covering(supertypes.Select(st => st.Span)), bodySpan);
         return IClassDefinitionSyntax.Create(span, File, identifier.Span, attributes, accessModifiers, constModifier,
-            null, dropModifier, name, abstractModifier, genericParameters, baseClass, supertypes, members);
+            dropModifier, name, abstractModifier, genericParameters, baseClass, supertypes, members);
     }
 
     private (IFixedList<IGenericParameterSyntax> Parameters, TextSpan Span)? AcceptGenericParameters()
@@ -286,7 +286,7 @@ public partial class Parser
         var span = TextSpan.Covering(structKeywordSpan, identifier.Span, generic?.Span,
             TextSpan.Covering(superTypes.Select(st => st.Span)), bodySpan);
         return IStructDefinitionSyntax.Create(span, File, identifier.Span, attributes, accessModifiers,
-            constModifier, null, dropModifier, name, genericParameters, superTypes,
+            constModifier, dropModifier, name, genericParameters, superTypes,
             members);
     }
     #endregion
@@ -308,7 +308,7 @@ public partial class Parser
         var span = TextSpan.Covering(valueKeywordSpan, identifier.Span, generic?.Span,
             TextSpan.Covering(superTypes.Select(st => st.Span)), bodySpan);
         return IValueDefinitionSyntax.Create(span, File, identifier.Span, attributes, accessModifiers, constModifier,
-            null, dropModifier, name, genericParameters, superTypes, members);
+            dropModifier, name, genericParameters, superTypes, members);
     }
 
     #endregion
@@ -330,7 +330,7 @@ public partial class Parser
         var span = TextSpan.Covering(traitKeywordSpan, identifier.Span, generic?.Span,
             TextSpan.Covering(superTypes.Select(st => st.Span)), bodySpan);
         return ITraitDefinitionSyntax.Create(span, File, identifier.Span, attributes, accessModifiers,
-            constModifier, null, dropModifier, name, genericParameters, superTypes, members);
+            constModifier, dropModifier, name, genericParameters, superTypes, members);
     }
 
     #endregion

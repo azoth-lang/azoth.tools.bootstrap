@@ -267,7 +267,6 @@ public partial interface IFunctionDefinitionSyntax : IInvocableDefinitionSyntax,
 public partial interface ITypeDefinitionSyntax : INamespaceBlockMemberDefinitionSyntax, IMemberDefinitionSyntax
 {
     IConstKeywordToken? ConstModifier { get; }
-    IMoveKeywordToken? MoveModifier { get; }
     IDropKeywordToken? DropModifier { get; }
     new OrdinaryName Name { get; }
     UnqualifiedName? IDefinitionSyntax.Name => Name;
@@ -290,7 +289,6 @@ public partial interface IClassDefinitionSyntax : ITypeDefinitionSyntax
         IEnumerable<IAttributeSyntax> attributes,
         AccessModifierSyntax accessModifier,
         IConstKeywordToken? constModifier,
-        IMoveKeywordToken? moveModifier,
         IDropKeywordToken? dropModifier,
         OrdinaryName name,
         IAbstractKeywordToken? abstractModifier,
@@ -298,7 +296,7 @@ public partial interface IClassDefinitionSyntax : ITypeDefinitionSyntax
         INameSyntax? baseTypeName,
         IEnumerable<INameSyntax> supertypeNames,
         IEnumerable<IMemberDefinitionSyntax> members)
-        => new ClassDefinitionSyntax(span, file, nameSpan, attributes, accessModifier, constModifier, moveModifier, dropModifier, name, abstractModifier, genericParameters, baseTypeName, supertypeNames, members);
+        => new ClassDefinitionSyntax(span, file, nameSpan, attributes, accessModifier, constModifier, dropModifier, name, abstractModifier, genericParameters, baseTypeName, supertypeNames, members);
 }
 
 [Closed(typeof(StructDefinitionSyntax))]
@@ -313,13 +311,12 @@ public partial interface IStructDefinitionSyntax : ITypeDefinitionSyntax
         IEnumerable<IAttributeSyntax> attributes,
         AccessModifierSyntax accessModifier,
         IConstKeywordToken? constModifier,
-        IMoveKeywordToken? moveModifier,
         IDropKeywordToken? dropModifier,
         OrdinaryName name,
         IEnumerable<IGenericParameterSyntax> genericParameters,
         IEnumerable<INameSyntax> supertypeNames,
         IEnumerable<IMemberDefinitionSyntax> members)
-        => new StructDefinitionSyntax(span, file, nameSpan, attributes, accessModifier, constModifier, moveModifier, dropModifier, name, genericParameters, supertypeNames, members);
+        => new StructDefinitionSyntax(span, file, nameSpan, attributes, accessModifier, constModifier, dropModifier, name, genericParameters, supertypeNames, members);
 }
 
 [Closed(typeof(ValueDefinitionSyntax))]
@@ -334,13 +331,12 @@ public partial interface IValueDefinitionSyntax : ITypeDefinitionSyntax
         IEnumerable<IAttributeSyntax> attributes,
         AccessModifierSyntax accessModifier,
         IConstKeywordToken? constModifier,
-        IMoveKeywordToken? moveModifier,
         IDropKeywordToken? dropModifier,
         OrdinaryName name,
         IEnumerable<IGenericParameterSyntax> genericParameters,
         IEnumerable<INameSyntax> supertypeNames,
         IEnumerable<IMemberDefinitionSyntax> members)
-        => new ValueDefinitionSyntax(span, file, nameSpan, attributes, accessModifier, constModifier, moveModifier, dropModifier, name, genericParameters, supertypeNames, members);
+        => new ValueDefinitionSyntax(span, file, nameSpan, attributes, accessModifier, constModifier, dropModifier, name, genericParameters, supertypeNames, members);
 }
 
 [Closed(typeof(TraitDefinitionSyntax))]
@@ -355,13 +351,12 @@ public partial interface ITraitDefinitionSyntax : ITypeDefinitionSyntax
         IEnumerable<IAttributeSyntax> attributes,
         AccessModifierSyntax accessModifier,
         IConstKeywordToken? constModifier,
-        IMoveKeywordToken? moveModifier,
         IDropKeywordToken? dropModifier,
         OrdinaryName name,
         IEnumerable<IGenericParameterSyntax> genericParameters,
         IEnumerable<INameSyntax> supertypeNames,
         IEnumerable<IMemberDefinitionSyntax> members)
-        => new TraitDefinitionSyntax(span, file, nameSpan, attributes, accessModifier, constModifier, moveModifier, dropModifier, name, genericParameters, supertypeNames, members);
+        => new TraitDefinitionSyntax(span, file, nameSpan, attributes, accessModifier, constModifier, dropModifier, name, genericParameters, supertypeNames, members);
 }
 
 [Closed(typeof(GenericParameterSyntax))]
@@ -1769,7 +1764,6 @@ file class ClassDefinitionSyntax : IClassDefinitionSyntax
     public IFixedList<IAttributeSyntax> Attributes { [DebuggerStepThrough] get; }
     public AccessModifierSyntax AccessModifier { [DebuggerStepThrough] get; }
     public IConstKeywordToken? ConstModifier { [DebuggerStepThrough] get; }
-    public IMoveKeywordToken? MoveModifier { [DebuggerStepThrough] get; }
     public IDropKeywordToken? DropModifier { [DebuggerStepThrough] get; }
     public OrdinaryName Name { [DebuggerStepThrough] get; }
     public IAbstractKeywordToken? AbstractModifier { [DebuggerStepThrough] get; }
@@ -1787,7 +1781,6 @@ file class ClassDefinitionSyntax : IClassDefinitionSyntax
         IEnumerable<IAttributeSyntax> attributes,
         AccessModifierSyntax accessModifier,
         IConstKeywordToken? constModifier,
-        IMoveKeywordToken? moveModifier,
         IDropKeywordToken? dropModifier,
         OrdinaryName name,
         IAbstractKeywordToken? abstractModifier,
@@ -1802,7 +1795,6 @@ file class ClassDefinitionSyntax : IClassDefinitionSyntax
         Attributes = attributes.ToFixedList();
         AccessModifier = accessModifier;
         ConstModifier = constModifier;
-        MoveModifier = moveModifier;
         DropModifier = dropModifier;
         Name = name;
         AbstractModifier = abstractModifier;
@@ -1824,7 +1816,6 @@ file class StructDefinitionSyntax : IStructDefinitionSyntax
     public IFixedList<IAttributeSyntax> Attributes { [DebuggerStepThrough] get; }
     public AccessModifierSyntax AccessModifier { [DebuggerStepThrough] get; }
     public IConstKeywordToken? ConstModifier { [DebuggerStepThrough] get; }
-    public IMoveKeywordToken? MoveModifier { [DebuggerStepThrough] get; }
     public IDropKeywordToken? DropModifier { [DebuggerStepThrough] get; }
     public OrdinaryName Name { [DebuggerStepThrough] get; }
     public IFixedList<IGenericParameterSyntax> GenericParameters { [DebuggerStepThrough] get; }
@@ -1840,7 +1831,6 @@ file class StructDefinitionSyntax : IStructDefinitionSyntax
         IEnumerable<IAttributeSyntax> attributes,
         AccessModifierSyntax accessModifier,
         IConstKeywordToken? constModifier,
-        IMoveKeywordToken? moveModifier,
         IDropKeywordToken? dropModifier,
         OrdinaryName name,
         IEnumerable<IGenericParameterSyntax> genericParameters,
@@ -1853,7 +1843,6 @@ file class StructDefinitionSyntax : IStructDefinitionSyntax
         Attributes = attributes.ToFixedList();
         AccessModifier = accessModifier;
         ConstModifier = constModifier;
-        MoveModifier = moveModifier;
         DropModifier = dropModifier;
         Name = name;
         GenericParameters = genericParameters.ToFixedList();
@@ -1873,7 +1862,6 @@ file class ValueDefinitionSyntax : IValueDefinitionSyntax
     public IFixedList<IAttributeSyntax> Attributes { [DebuggerStepThrough] get; }
     public AccessModifierSyntax AccessModifier { [DebuggerStepThrough] get; }
     public IConstKeywordToken? ConstModifier { [DebuggerStepThrough] get; }
-    public IMoveKeywordToken? MoveModifier { [DebuggerStepThrough] get; }
     public IDropKeywordToken? DropModifier { [DebuggerStepThrough] get; }
     public OrdinaryName Name { [DebuggerStepThrough] get; }
     public IFixedList<IGenericParameterSyntax> GenericParameters { [DebuggerStepThrough] get; }
@@ -1889,7 +1877,6 @@ file class ValueDefinitionSyntax : IValueDefinitionSyntax
         IEnumerable<IAttributeSyntax> attributes,
         AccessModifierSyntax accessModifier,
         IConstKeywordToken? constModifier,
-        IMoveKeywordToken? moveModifier,
         IDropKeywordToken? dropModifier,
         OrdinaryName name,
         IEnumerable<IGenericParameterSyntax> genericParameters,
@@ -1902,7 +1889,6 @@ file class ValueDefinitionSyntax : IValueDefinitionSyntax
         Attributes = attributes.ToFixedList();
         AccessModifier = accessModifier;
         ConstModifier = constModifier;
-        MoveModifier = moveModifier;
         DropModifier = dropModifier;
         Name = name;
         GenericParameters = genericParameters.ToFixedList();
@@ -1922,7 +1908,6 @@ file class TraitDefinitionSyntax : ITraitDefinitionSyntax
     public IFixedList<IAttributeSyntax> Attributes { [DebuggerStepThrough] get; }
     public AccessModifierSyntax AccessModifier { [DebuggerStepThrough] get; }
     public IConstKeywordToken? ConstModifier { [DebuggerStepThrough] get; }
-    public IMoveKeywordToken? MoveModifier { [DebuggerStepThrough] get; }
     public IDropKeywordToken? DropModifier { [DebuggerStepThrough] get; }
     public OrdinaryName Name { [DebuggerStepThrough] get; }
     public IFixedList<IGenericParameterSyntax> GenericParameters { [DebuggerStepThrough] get; }
@@ -1938,7 +1923,6 @@ file class TraitDefinitionSyntax : ITraitDefinitionSyntax
         IEnumerable<IAttributeSyntax> attributes,
         AccessModifierSyntax accessModifier,
         IConstKeywordToken? constModifier,
-        IMoveKeywordToken? moveModifier,
         IDropKeywordToken? dropModifier,
         OrdinaryName name,
         IEnumerable<IGenericParameterSyntax> genericParameters,
@@ -1951,7 +1935,6 @@ file class TraitDefinitionSyntax : ITraitDefinitionSyntax
         Attributes = attributes.ToFixedList();
         AccessModifier = accessModifier;
         ConstModifier = constModifier;
-        MoveModifier = moveModifier;
         DropModifier = dropModifier;
         Name = name;
         GenericParameters = genericParameters.ToFixedList();

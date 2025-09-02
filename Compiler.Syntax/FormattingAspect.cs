@@ -46,7 +46,7 @@ internal static partial class FormattingAspect
         if (accessModifier != AccessModifier.Private) modifiers += accessModifier.ToSourceString() + " ";
         if (node.AbstractModifier is not null) modifiers += "abstract ";
         if (node.ConstModifier is not null) modifiers += "const ";
-        if (node.MoveModifier is not null) modifiers += "move ";
+        if (node.DropModifier is not null) modifiers += "drop ";
         var generics = !node.GenericParameters.IsEmpty ? $"[{string.Join(", ", node.GenericParameters)}]" : "";
         return $"{modifiers}class {node.Name.ToBareString()}{generics} {{ … }}";
     }
@@ -57,7 +57,7 @@ internal static partial class FormattingAspect
         var accessModifier = node.AccessModifier.ToAccessModifier();
         if (accessModifier != AccessModifier.Private) modifiers += accessModifier.ToSourceString() + " ";
         if (node.ConstModifier is not null) modifiers += "const ";
-        if (node.MoveModifier is not null) modifiers += "move ";
+        if (node.DropModifier is not null) modifiers += "drop ";
         var generics = !node.GenericParameters.IsEmpty ? $"[{string.Join(", ", node.GenericParameters)}]" : "";
         return $"{modifiers}struct {node.Name.ToBareString()}{generics} {{ … }}";
     }
@@ -68,7 +68,7 @@ internal static partial class FormattingAspect
         var accessModifier = node.AccessModifier.ToAccessModifier();
         if (accessModifier != AccessModifier.Private) modifiers += accessModifier.ToSourceString() + " ";
         if (node.ConstModifier is not null) modifiers += "const ";
-        if (node.MoveModifier is not null) modifiers += "move ";
+        if (node.DropModifier is not null) modifiers += "drop ";
         var generics = !node.GenericParameters.IsEmpty ? $"[{string.Join(", ", node.GenericParameters)}]" : "";
         return $"{modifiers}value {node.Name.ToBareString()}{generics} {{ … }}";
     }
@@ -79,7 +79,7 @@ internal static partial class FormattingAspect
         var accessModifier = node.AccessModifier.ToAccessModifier();
         if (accessModifier != AccessModifier.Private) modifiers += accessModifier.ToSourceString() + " ";
         if (node.ConstModifier is not null) modifiers += "const ";
-        if (node.MoveModifier is not null) modifiers += "move ";
+        if (node.DropModifier is not null) modifiers += "drop ";
         var generics = !node.GenericParameters.IsEmpty ? $"[{string.Join(", ", node.GenericParameters)}]" : "";
         return $"{modifiers}trait {node.Name.ToBareString()}{generics} {{ … }}";
     }
