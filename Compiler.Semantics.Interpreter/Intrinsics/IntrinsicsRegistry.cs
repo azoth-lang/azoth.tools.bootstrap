@@ -133,11 +133,12 @@ internal sealed class IntrinsicsRegistry
         var initializer = Initializer(classSymbol, initMutableSelfType, Params(Type.Bool, Type.Size, Type.Bool));
         builder.Add(initializer, static (selfBareType, _, arguments) =>
         {
+            var prefixType = selfBareType.Arguments[0];
             var itemType = selfBareType.Arguments[1];
             var ensurePrefixZeroed = arguments[0].Bool;
             var count = arguments[1].NUInt;
             var ensureZeroed = arguments[2].Bool;
-            return ValueTask.FromResult(Value.From(RawHybridArray.Create(itemType, ensurePrefixZeroed, count, ensureZeroed)));
+            return ValueTask.FromResult(Value.From(RawHybridArray.Create(prefixType, itemType, ensurePrefixZeroed, count, ensureZeroed)));
         });
 
         // published unsafe get prefix(self) -> aliasable P
@@ -188,12 +189,13 @@ internal sealed class IntrinsicsRegistry
 
     private static void BuildRawHybridList(Builder builder)
     {
-        // published /*unsafe*/ init(mut self, ensure_prefix_zeroed: bool, count: size, ensure_zeroed: bool)
+        // published /*unsafe*/ init(mut self, .prefix, .capacity)
         builder.Add(Intrinsic.RawHybridBoundedListInit, static (selfBareType, _, arguments) =>
         {
+            var prefixType = selfBareType.Arguments[0];
             var itemType = selfBareType.Arguments[1];
             nuint capacity = arguments[0].Size;
-            return ValueTask.FromResult(Value.From(RawHybridBoundedList.Create(itemType, false, capacity)));
+            return ValueTask.FromResult(Value.From(RawHybridBoundedList.Create(prefixType, itemType, false, capacity)));
         });
 
         builder.Add(Intrinsic.RawHybridBoundedGetPrefix, static (_, self, _)

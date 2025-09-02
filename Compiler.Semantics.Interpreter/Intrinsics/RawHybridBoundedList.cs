@@ -9,12 +9,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.Intrinsics;
 
 internal abstract class RawHybridBoundedList : IList<Value>, IIntrinsicValue
 {
-    public static RawHybridBoundedList Create(Type itemType, bool ensurePrefixZeroed, nuint capacity)
+    public static RawHybridBoundedList Create(Type prefixType, Type itemType, bool ensurePrefixZeroed, UIntPtr capacity)
     {
         // Parameter is unused since C# provides no way to not initialize the field to zero
         _ = ensurePrefixZeroed;
 
-        if (itemType.Equals(Type.Byte))
+        if (prefixType.Equals(Type.Void) && itemType.Equals(Type.Byte))
         {
             // GC.AllocateArray allocates an uninitialized array
             var items = ensurePrefixZeroed ? new byte[capacity] : GC.AllocateArray<byte>((int)capacity);
@@ -22,7 +22,7 @@ internal abstract class RawHybridBoundedList : IList<Value>, IIntrinsicValue
         }
         else
         {
-            // Note that GC.AllocateArray probably isn't generating an uninitialized array because Value contains
+            // Note that GC.AllocateArray probably isn't generating an uninitialized array because Value contains a reference
             var items = ensurePrefixZeroed ? new Value[capacity] : GC.AllocateArray<Value>((int)capacity);
             return new Values(items, 0);
         }
