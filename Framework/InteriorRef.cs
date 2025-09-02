@@ -18,7 +18,7 @@ public readonly struct InteriorRef<T>
     /// CAUTION: This is a dangerous method that should be used with care. The <paramref name="owner"/>
     /// must be the object that contains the <paramref name="value"/>.
     /// </summary>
-    public InteriorRef(in object owner, ref T value)
+    public InteriorRef(object owner, ref T value)
     {
         Owner = owner;
         ref T startOfObject = ref Unsafe.As<Fake>(Owner).StartOfObject;
@@ -40,7 +40,7 @@ public static class InteriorRef
     /// CAUTION: This is a dangerous method that should be used with care. The <paramref name="owner"/>
     /// must be the object that contains the <paramref name="value"/>.
     /// </summary>
-    public static InteriorRef<T> Create<T>(in object owner, ref T value)
+    public static InteriorRef<T> Create<T>(object owner, ref T value)
         where T : struct
         => new InteriorRef<T>(owner, ref value);
 }
