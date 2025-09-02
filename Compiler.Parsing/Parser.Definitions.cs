@@ -183,7 +183,7 @@ public partial class Parser
         var accessModifiers = modifiers.ParseAccessModifiers();
         var abstractModifier = modifiers.ParseAbstractModifier();
         var constModifier = modifiers.ParseConstModifier();
-        var moveModifier = modifiers.ParseMoveModifier();
+        var dropModifier = modifiers.ParseDropModifier();
         modifiers.ParseEndOfModifiers();
         var classKeywordSpan = Tokens.Consume<IClassKeywordToken>();
         var identifier = Tokens.RequiredToken<IIdentifierToken>();
@@ -197,7 +197,7 @@ public partial class Parser
         var span = TextSpan.Covering(classKeywordSpan, identifier.Span, generic?.Span, baseClass?.Span,
             TextSpan.Covering(supertypes.Select(st => st.Span)), bodySpan);
         return IClassDefinitionSyntax.Create(span, File, identifier.Span, attributes, accessModifiers, constModifier,
-            moveModifier, name, abstractModifier, genericParameters, baseClass, supertypes, members);
+            null, dropModifier, name, abstractModifier, genericParameters, baseClass, supertypes, members);
     }
 
     private (IFixedList<IGenericParameterSyntax> Parameters, TextSpan Span)? AcceptGenericParameters()
@@ -274,7 +274,7 @@ public partial class Parser
     {
         var accessModifiers = modifiers.ParseAccessModifiers();
         var constModifier = modifiers.ParseConstModifier();
-        var moveModifier = modifiers.ParseMoveModifier();
+        var dropModifier = modifiers.ParseDropModifier();
         modifiers.ParseEndOfModifiers();
         var structKeywordSpan = Tokens.Consume<IStructKeywordToken>();
         var identifier = Tokens.RequiredToken<IIdentifierToken>();
@@ -286,7 +286,7 @@ public partial class Parser
         var span = TextSpan.Covering(structKeywordSpan, identifier.Span, generic?.Span,
             TextSpan.Covering(superTypes.Select(st => st.Span)), bodySpan);
         return IStructDefinitionSyntax.Create(span, File, identifier.Span, attributes, accessModifiers,
-            constModifier, moveModifier, name, genericParameters, superTypes,
+            constModifier, null, dropModifier, name, genericParameters, superTypes,
             members);
     }
     #endregion
@@ -296,7 +296,7 @@ public partial class Parser
     {
         var accessModifiers = modifiers.ParseAccessModifiers();
         var constModifier = modifiers.ParseConstModifier();
-        var moveModifier = modifiers.ParseMoveModifier();
+        var dropModifier = modifiers.ParseDropModifier();
         modifiers.ParseEndOfModifiers();
         var valueKeywordSpan = Tokens.Consume<IValueKeywordToken>();
         var identifier = Tokens.RequiredToken<IIdentifierToken>();
@@ -308,7 +308,7 @@ public partial class Parser
         var span = TextSpan.Covering(valueKeywordSpan, identifier.Span, generic?.Span,
             TextSpan.Covering(superTypes.Select(st => st.Span)), bodySpan);
         return IValueDefinitionSyntax.Create(span, File, identifier.Span, attributes, accessModifiers, constModifier,
-            moveModifier, name, genericParameters, superTypes, members);
+            null, dropModifier, name, genericParameters, superTypes, members);
     }
 
     #endregion
@@ -318,7 +318,7 @@ public partial class Parser
     {
         var accessModifiers = modifiers.ParseAccessModifiers();
         var constModifier = modifiers.ParseConstModifier();
-        var moveModifier = modifiers.ParseMoveModifier();
+        var dropModifier = modifiers.ParseDropModifier();
         modifiers.ParseEndOfModifiers();
         var traitKeywordSpan = Tokens.Consume<ITraitKeywordToken>();
         var identifier = Tokens.RequiredToken<IIdentifierToken>();
@@ -330,7 +330,7 @@ public partial class Parser
         var span = TextSpan.Covering(traitKeywordSpan, identifier.Span, generic?.Span,
             TextSpan.Covering(superTypes.Select(st => st.Span)), bodySpan);
         return ITraitDefinitionSyntax.Create(span, File, identifier.Span, attributes, accessModifiers,
-            constModifier, moveModifier, name, genericParameters, superTypes, members);
+            constModifier, null, dropModifier, name, genericParameters, superTypes, members);
     }
 
     #endregion

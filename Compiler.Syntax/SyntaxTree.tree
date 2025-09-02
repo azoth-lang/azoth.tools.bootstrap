@@ -64,7 +64,7 @@ FunctionDefinition <: InvocableDefinition, NamespaceBlockMemberDefinition
 
 // ---------- Type Definitions
 TypeDefinition <: NamespaceBlockMemberDefinition, MemberDefinition
-    = Attributes:Attribute* /AccessModifier/ ConstModifier:`IConstKeywordToken`? MoveModifier:`IMoveKeywordToken`?
+    = Attributes:Attribute* /AccessModifier/ ConstModifier:`IConstKeywordToken`? MoveModifier:`IMoveKeywordToken`? DropModifier:`IDropKeywordToken`?
         Name:`OrdinaryName` GenericParameters:GenericParameter* SupertypeNames:Name* Members:MemberDefinition*;
 ClassDefinition <: TypeDefinition
     = AbstractModifier:`IAbstractKeywordToken`? /GenericParameters/ BaseTypeName:Name? /SupertypeNames/ /Members/;
