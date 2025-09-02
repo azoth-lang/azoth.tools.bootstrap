@@ -25,6 +25,7 @@
         "Const",
         "Copy",
         "Do",
+        "Drop",
         "Else",
         "False",
         "Foreach",

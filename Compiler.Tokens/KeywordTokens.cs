@@ -27,6 +27,7 @@ public static partial class TokenTypes
         typeof(ConstKeywordToken),
         typeof(CopyKeywordToken),
         typeof(DoKeywordToken),
+        typeof(DropKeywordToken),
         typeof(ElseKeywordToken),
         typeof(FalseKeywordToken),
         typeof(ForeachKeywordToken),
@@ -149,6 +150,9 @@ public static partial class TokenFactory
 
     public static IDoKeywordToken DoKeyword(TextSpan span)
         => new DoKeywordToken(span);
+
+    public static IDropKeywordToken DropKeyword(TextSpan span)
+        => new DropKeywordToken(span);
 
     public static IElseKeywordToken ElseKeyword(TextSpan span)
         => new ElseKeywordToken(span);
@@ -363,6 +367,7 @@ public static partial class TokenFactory
     typeof(IConstKeywordToken),
     typeof(ICopyKeywordToken),
     typeof(IDoKeywordToken),
+    typeof(IDropKeywordToken),
     typeof(IElseKeywordToken),
     typeof(IFalseKeywordToken),
     typeof(IForeachKeywordToken),
@@ -587,6 +592,15 @@ public partial interface IDoKeywordToken : IKeywordToken;
 internal partial class DoKeywordToken : Token, IDoKeywordToken
 {
     public DoKeywordToken(TextSpan span)
+        : base(span)
+    {
+    }
+}
+
+public partial interface IDropKeywordToken : IKeywordToken;
+internal partial class DropKeywordToken : Token, IDropKeywordToken
+{
+    public DropKeywordToken(TextSpan span)
         : base(span)
     {
     }
