@@ -57,6 +57,11 @@ public interface ICapabilityValue : IValue, IComparable<ICapabilityValue>
                 var newContextType = t.BareType.ContainingType!.With(t.CapabilitySet.UpperBound);
                 ForType(id, newContextType, index, capture, values, create);
                 return;
+            case UnknownType t:
+                // An unknown type acts like an `id X` type because unknown types are untracked
+                values.Add(create(id, new(index)), Capability.Identity);
+                break;
+                // TODO I think this switch should be exhaustive and the else below moved up into a case
         }
 
         if (!type.HasIndependentTypeArguments)

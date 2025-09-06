@@ -547,8 +547,13 @@ internal static partial class ExpressionTypesAspect
     public static partial IFlowState UnresolvedInvocationExpression_FlowStateAfter(IUnresolvedInvocationExpressionNode node)
     {
         // The flow state just before the invocation happens is the state after all arguments have evaluated
-        var flowState = node.Arguments.LastOrDefault()?.FlowStateAfter ?? node.FlowStateBefore();
-        var argumentValueIds = ArgumentValueIds(null, null, node.Arguments);
+        var flowState = node.Arguments.LastOrDefault()?.FlowStateAfter
+                        // If there are no arguments, then it is from the context expression
+                        // TODO we may need flow state even for ambiguous expressions
+                        ?? node.Expression?.FlowStateAfter
+                        // If the context expression can't be resolved, use the flow state from before the node
+                        ?? node.FlowStateBefore();
+        var argumentValueIds = ArgumentValueIds(null, node.Expression, node.Arguments);
         return flowState.CombineArguments(argumentValueIds, node.ValueId, node.Type);
     }
 
