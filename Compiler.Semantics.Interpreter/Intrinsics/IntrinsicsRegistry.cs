@@ -75,7 +75,7 @@ internal sealed class IntrinsicsRegistry
 
         // published fn INTRINSIC() -> never
         var intrinsicFunction = Function(intrinsicsNamespace, "INTRINSIC", Params(), Type.Never);
-        builder.Add(intrinsicFunction, (_, func, args) => throw new AbortException("INTRINSIC called."));
+        builder.Add(intrinsicFunction, (_, _, _) => throw new AbortException("INTRINSIC called."));
 
         builder.Add(Intrinsic.PrintRawUtf8Bytes, static async (interpreter, function, args) =>
         {
@@ -114,13 +114,12 @@ internal sealed class IntrinsicsRegistry
         // published class Raw_Hybrid_Array[P shareable ind, T ind nonwritable out]
         var typeConstructor = BareTypeConstructor.CreateClass(rawNamespace.Package.Name, rawNamespace.NamespaceName,
             isAbstract: false, isConst: false, "Raw_Hybrid_Array",
-            TypeConstructorParameter.ShareableIndependent(CapabilitySet.Aliasable, "P"),
-            TypeConstructorParameter.IndependentNonWriteableOut(CapabilitySet.Aliasable, "T"));
+            TypeConstructorParameter.IndependentNonWriteableOut(CapabilitySet.Any, "P"),
+            TypeConstructorParameter.IndependentNonWriteableOut(CapabilitySet.Any, "T"));
         var plainType = typeConstructor.ConstructWithParameterPlainTypes();
         var bareType = typeConstructor.ConstructWithParameterTypes(plainType);
         var bareSelfType = BareSelfType(bareType);
         var readSelfType = bareSelfType.With(Capability.Read);
-        var readableSelfType = new CapabilitySetSelfType(CapabilitySet.Readable, bareSelfType);
         var initMutableSelfType = bareSelfType.With(Capability.InitMutable);
         var mutSelfType = bareSelfType.With(Capability.Mutable);
         var prefixType = typeConstructor.ParameterTypes[0];
@@ -167,7 +166,7 @@ internal sealed class IntrinsicsRegistry
             return ValueTask.FromResult(Value.FromSize(self.Count));
         });
 
-        // published unsafe fn at(readable self, index: size) -> aliasable T
+        // published unsafe fn get(self, index: size) -> aliasable T
         var get = Method(classSymbol, "get", readSelfType, Params(Type.Size), aliasableItemType);
         builder.Add(get, static (_, s, args) =>
         {
@@ -176,8 +175,8 @@ internal sealed class IntrinsicsRegistry
             return ValueTask.FromResult(self.Get(index));
         });
 
-        // published unsafe fn at(readable self, index: size, value: T)
-        var set = Method(classSymbol, "set", readableSelfType, Params(Type.Size, itemType));
+        // published unsafe fn set(mut self, index: size, value: T)
+        var set = Method(classSymbol, "set", mutSelfType, Params(Type.Size, itemType));
         builder.Add(set, static (_, s, args) =>
         {
             var self = s.IntrinsicValue.UnsafeAs<RawHybridArray>();

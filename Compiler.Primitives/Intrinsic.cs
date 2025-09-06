@@ -152,13 +152,12 @@ public static class Intrinsic
     {
         var typeConstructor = BareTypeConstructor.CreateClass(@namespace.Package.Name, @namespace.NamespaceName,
             isAbstract: false, isConst: false, "Raw_Hybrid_Bounded_List",
-            TypeConstructorParameter.Independent(CapabilitySet.Aliasable, "P"),
-            TypeConstructorParameter.Independent(CapabilitySet.Aliasable, "T"));
+            TypeConstructorParameter.IndependentNonWriteableOut(CapabilitySet.Any, "P"),
+            TypeConstructorParameter.IndependentNonWriteableOut(CapabilitySet.Any, "T"));
         var plainType = typeConstructor.ConstructWithParameterPlainTypes();
         var bareSelfType = BareSelfType(typeConstructor.ConstructWithParameterTypes(plainType));
         var mutSelfType = bareSelfType.With(Capability.Mutable);
         var readSelfType = bareSelfType.WithDefaultCapability();
-        var readableSelfType = new CapabilitySetSelfType(CapabilitySet.Readable, bareSelfType);
         var prefixType = typeConstructor.ParameterTypes[0];
         var aliasablePrefixType = CapabilitySetRestrictedType.Create(CapabilitySet.Aliasable, prefixType);
         var itemType = typeConstructor.ParameterTypes[1];
@@ -199,8 +198,8 @@ public static class Intrinsic
         var take = Method(classSymbol, "take", mutSelfType, Params(Type.Size), itemType);
         tree.Add(take);
 
-        // published /* unsafe */ fn get(readable self, index: size) -> aliasable T
-        var get = Method(classSymbol, "get", readableSelfType, Params(Type.Size), aliasableItemType);
+        // published /* unsafe */ fn get(self, index: size) -> aliasable T
+        var get = Method(classSymbol, "get", readSelfType, Params(Type.Size), aliasableItemType);
         tree.Add(get);
 
         // published /* unsafe */ fn set(mut self, index: size, value: T)
