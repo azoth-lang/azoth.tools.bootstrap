@@ -142,10 +142,15 @@ public sealed class GenericParameterTypeReplacements
             case GenericParameterType t:
                 return CapabilitySetRestrictedType.Create(capabilitySet, t);
             case OptionalType t:
-            {
                 // Optional types act like a const value type with an independent
                 // parameter. So the restriction should be applied to the referent type.
                 return OptionalType.CreateWithoutPlainType(ApplyCapabilitySet(t.Referent, capabilitySet));
+            case CapabilityViewpointType t:
+            {
+                // TODO handle independent parameters
+                var capability = t.Capability.UpcastTo(capabilitySet)
+                                 ?? throw new NotImplementedException("Handle capability cannot be upcast to capability set.");
+                return CapabilityViewpointType.Create(capability, t.Referent);
             }
             default:
                 // TODO what is the correct thing to do in this case?
