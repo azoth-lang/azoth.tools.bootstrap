@@ -11,7 +11,7 @@ internal static partial class InheritanceAspect
     #region Type Definitions
     public static partial IFixedSet<ITypeMemberDeclarationNode> TypeDefinition_InclusiveMembers(ITypeDefinitionNode node)
     {
-        var inclusiveMembers = node.Members.Where(m => m.Name is not null)
+        var inclusiveMembers = node.Members.Where<ITypeMemberDeclarationNode>(m => m.Name is not null)
                                    .ToMultiMapHashSet(m => m.Name!);
         foreach (var supertype in node.AllSupertypeNames.Select(t => t.ReferencedDeclaration))
             AddInheritedMembers(inclusiveMembers, supertype);
@@ -21,15 +21,15 @@ internal static partial class InheritanceAspect
                                .ToFixedSet();
     }
 
-    private static void AddInheritedMembers<TMemberDeclaration>(
-        MultiMapHashSet<OrdinaryName, TMemberDeclaration> members,
+    private static void AddInheritedMembers(
+        MultiMapHashSet<OrdinaryName, ITypeMemberDeclarationNode> members,
         ITypeDeclarationNode? fromDeclaration)
-        where TMemberDeclaration : ITypeMemberDeclarationNode
     {
         if (fromDeclaration is null)
             return;
 
-        foreach (var inheritedMember in fromDeclaration.InclusiveMembers.OfType<TMemberDeclaration>())
+        var fromDeclarationInclusiveMembers = fromDeclaration.InclusiveMembers;
+        foreach (var inheritedMember in fromDeclarationInclusiveMembers)
         {
             var name = inheritedMember.Name;
             // TODO actually base on signature
