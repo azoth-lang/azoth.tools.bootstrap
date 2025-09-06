@@ -9,6 +9,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 /// </summary>
 public sealed class CapabilitySetRestrictedType : NonVoidType
 {
+    // TODO shouldn't this be named something else since it doesn't always apply?
     public static IMaybeType Create(CapabilitySet capabilitySet, IMaybeType referent)
       => referent switch
       {

@@ -110,25 +110,9 @@ public sealed class GenericParameterTypeReplacements
                 break;
             case CapabilitySetRestrictedType t:
             {
-                var replacementType = ApplyTo(t.Referent);
+                Type replacementType = ApplyTo(t.Referent);
                 if (!ReferenceEquals(t.Referent, replacementType))
-                    switch (replacementType)
-                    {
-                        case CapabilityType replacement:
-                        {
-                            var capability = replacement.Capability.UpcastTo(t.CapabilitySet)
-                                             ?? throw new NotImplementedException("Handle capability cannot be upcast to capability set.");
-                            // The capability was already applied to the type, so the original
-                            // capability accounted for whether the type was declared `const`. So there
-                            // is no need to do anything for that now.
-                            return replacement.BareType.With(capability);
-                        }
-                        case GenericParameterType replacement:
-                            return CapabilitySetRestrictedType.Create(t.CapabilitySet, replacement);
-                        default:
-                            // TODO what is the correct thing to do in this case?
-                            throw new NotImplementedException();
-                    }
+                    return ApplyCapabilitySet(replacementType, t.CapabilitySet);
                 break;
             }
             case VoidType _:
@@ -139,6 +123,34 @@ public sealed class GenericParameterTypeReplacements
         }
 
         return type;
+    }
+
+    private static Type ApplyCapabilitySet(Type type, CapabilitySet capabilitySet)
+    {
+        switch (type)
+        {
+            case CapabilityType t:
+            {
+                // TODO handle independent parameters
+                var capability = t.Capability.UpcastTo(capabilitySet)
+                                 ?? throw new NotImplementedException("Handle capability cannot be upcast to capability set.");
+                // The capability was already applied to the type, so the original
+                // capability accounted for whether the type was declared `const`. So there
+                // is no need to do anything for that now.
+                return t.BareType.With(capability);
+            }
+            case GenericParameterType t:
+                return CapabilitySetRestrictedType.Create(capabilitySet, t);
+            case OptionalType t:
+            {
+                // Optional types act like a const value type with an independent
+                // parameter. So the restriction should be applied to the referent type.
+                return OptionalType.CreateWithoutPlainType(ApplyCapabilitySet(t.Referent, capabilitySet));
+            }
+            default:
+                // TODO what is the correct thing to do in this case?
+                throw new NotImplementedException();
+        }
     }
 
     internal Type ApplyTo(SelfViewpointType type, NonVoidType? selfReplacement)
