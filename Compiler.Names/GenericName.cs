@@ -28,7 +28,7 @@ public sealed class GenericName : OrdinaryName
     #endregion
 
     public override OrdinaryName WithAttributeSuffix()
-        => new GenericName(Text + SpecialNames.AttributeSuffix, GenericParameterCount);
+        => new GenericName(SpecialNames.WithAttributeSuffix(Text), GenericParameterCount);
 
     public override string ToString() => $"{QuotedText}[{new string(',', GenericParameterCount - 1)}]";
 }

@@ -27,7 +27,7 @@ public sealed class IdentifierName : OrdinaryName
         => HashCode.Combine(typeof(IdentifierName), Text);
     #endregion
 
-    public override OrdinaryName WithAttributeSuffix() => Text + SpecialNames.AttributeSuffix;
+    public override OrdinaryName WithAttributeSuffix() => SpecialNames.WithAttributeSuffix(Text);
 
     public override string ToString() => QuotedText;
 
