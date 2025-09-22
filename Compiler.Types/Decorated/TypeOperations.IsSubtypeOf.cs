@@ -180,7 +180,7 @@ public static partial class TypeOperations
                         }
                     }
                     break;
-                case TypeParameterVariance.NonwritableCovariant:
+                case TypeParameterVariance.ReadOnlyCovariant:
                     if (!otherAllowsWrite)
                         goto case TypeParameterVariance.Covariant;
 

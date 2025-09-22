@@ -63,7 +63,7 @@ public static partial class TypeOperations
                         : Independence.Disallowed,
                 TypeParameterVariance.Invariant
                     => Independence.Disallowed,
-                TypeParameterVariance.NonwritableCovariant
+                TypeParameterVariance.ReadOnlyCovariant
                     => Independence.Disallowed,
                 TypeParameterVariance.Covariant // i.e. `out`
                     => Independence.Disallowed, // TODO if field is `let`, then Independence.BothAllowed

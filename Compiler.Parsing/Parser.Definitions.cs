@@ -246,17 +246,17 @@ public partial class Parser
         {
             IInKeywordToken _ => (TypeParameterVariance.Contravariant, Tokens.Consume<IInKeywordToken>()),
             IOutKeywordToken _ => (TypeParameterVariance.Covariant, Tokens.Consume<IOutKeywordToken>()),
-            INonwritableKeywordToken _ => ParseNonwriteableVariance(),
+            IReadonlyKeywordToken _ => ParseReadOnlyVariance(),
             _ => (TypeParameterVariance.Invariant, Tokens.Current.Span.AtStart())
         };
     }
 
-    private (TypeParameterVariance, TextSpan) ParseNonwriteableVariance()
+    private (TypeParameterVariance, TextSpan) ParseReadOnlyVariance()
     {
-        var nonwriteableKeyword = Tokens.Required<INonwritableKeywordToken>();
+        var readOnlyKeyword = Tokens.Required<IReadonlyKeywordToken>();
         var outKeyword = Tokens.Required<IOutKeywordToken>();
-        var span = TextSpan.Covering(nonwriteableKeyword, outKeyword);
-        return (TypeParameterVariance.NonwritableCovariant, span);
+        var span = TextSpan.Covering(readOnlyKeyword, outKeyword);
+        return (TypeParameterVariance.ReadOnlyCovariant, span);
     }
 
     private (IFixedList<IMemberDefinitionSyntax> Members, TextSpan Span) ParseTypeBody(bool inTrait)

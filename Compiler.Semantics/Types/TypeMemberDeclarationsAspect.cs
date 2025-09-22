@@ -66,13 +66,13 @@ internal static partial class TypeMemberDeclarationsAspect
                 // Mutable bindings can be both read and written to, so they must be both input and output
                 // safe (i.e. invariant). Self is nonwritable for the output case which is where
                 // self writable matters.
-                if (!type.IsInputAndOutputSafe(nonwriteableSelf: true))
+                if (!type.IsInputAndOutputSafe(readOnlySelf: true))
                     diagnostics.Add(TypeError.VarFieldMustBeInputAndOutputSafe(node.File, node.Syntax, (IMaybeType)type));
             }
             else
             {
                 // Immutable bindings can only be read, so they must be output safe.
-                if (!type.IsOutputSafe(nonwritableSelf: true))
+                if (!type.IsOutputSafe(readOnlySelf: true))
                     diagnostics.Add(TypeError.LetFieldMustBeOutputSafe(node.File, node.Syntax, (IMaybeType)type));
             }
         }

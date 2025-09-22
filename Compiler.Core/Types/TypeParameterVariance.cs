@@ -9,7 +9,7 @@ public enum TypeParameterVariance
 {
     Contravariant = -1,
     Invariant = 0,
-    NonwritableCovariant = 1,
+    ReadOnlyCovariant = 1,
     Covariant = 2,
 }
 
@@ -20,36 +20,36 @@ public static class TypeParameterVarianceExtensions
         {
             TypeParameterVariance.Contravariant => "in",
             TypeParameterVariance.Invariant => "",
-            TypeParameterVariance.NonwritableCovariant => "nonwriteable out",
+            TypeParameterVariance.ReadOnlyCovariant => "readonly out",
             TypeParameterVariance.Covariant => "out",
             _ => throw ExhaustiveMatch.Failed(variance),
         };
 
-    /// <param name="nonwritableSelf">Whether the self parameter type is nonwriteable.
+    /// <param name="readOnlySelf">Whether the self parameter type is readonly.
     /// <see langword="null"/> is used for base types to indicate that it could behave either way.</param>
-    public static TypeVariance? ToTypeVariance(this TypeParameterVariance variance, bool? nonwritableSelf)
+    public static TypeVariance? ToTypeVariance(this TypeParameterVariance variance, bool? readOnlySelf)
     {
-        if (nonwritableSelf is bool knownNonwritableSelf)
-            return variance.ToTypeVariance(knownNonwritableSelf);
+        if (readOnlySelf is bool knownReadOnlySelf)
+            return variance.ToTypeVariance(knownReadOnlySelf);
         return variance switch
         {
             TypeParameterVariance.Contravariant => TypeVariance.Contravariant,
             TypeParameterVariance.Invariant => TypeVariance.Invariant,
-            TypeParameterVariance.NonwritableCovariant => null,
+            TypeParameterVariance.ReadOnlyCovariant => null,
             TypeParameterVariance.Covariant => TypeVariance.Covariant,
             _ => throw ExhaustiveMatch.Failed(variance),
         };
     }
 
-    /// <param name="nonwritableSelf">Whether the self parameter type is nonwriteable.</param>
-    public static TypeVariance ToTypeVariance(this TypeParameterVariance variance, bool nonwritableSelf)
+    /// <param name="readOnlySelf">Whether the self parameter type is readonly.</param>
+    public static TypeVariance ToTypeVariance(this TypeParameterVariance variance, bool readOnlySelf)
         => variance switch
         {
             TypeParameterVariance.Contravariant => TypeVariance.Contravariant,
             TypeParameterVariance.Invariant => TypeVariance.Invariant,
-            TypeParameterVariance.NonwritableCovariant
-                // NonwritableCovariant acts like Covariant or Invariant depending on whether self is nonwritable
-                => nonwritableSelf ? TypeVariance.Covariant : TypeVariance.Invariant,
+            TypeParameterVariance.ReadOnlyCovariant
+                // NonwritableCovariant acts like Covariant or Invariant depending on whether self is readonly
+                => readOnlySelf ? TypeVariance.Covariant : TypeVariance.Invariant,
             TypeParameterVariance.Covariant => TypeVariance.Covariant,
             _ => throw ExhaustiveMatch.Failed(variance),
         };

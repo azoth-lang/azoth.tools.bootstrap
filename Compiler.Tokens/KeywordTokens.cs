@@ -58,7 +58,6 @@ public static partial class TokenTypes
         typeof(NextKeywordToken),
         typeof(NIntKeywordToken),
         typeof(NoneKeywordToken),
-        typeof(NonwritableKeywordToken),
         typeof(NotKeywordToken),
         typeof(NUIntKeywordToken),
         typeof(OffsetKeywordToken),
@@ -69,6 +68,7 @@ public static partial class TokenTypes
         typeof(PublishedKeywordToken),
         typeof(ReadKeywordToken),
         typeof(ReadableKeywordToken),
+        typeof(ReadonlyKeywordToken),
         typeof(ReturnKeywordToken),
         typeof(SafeKeywordToken),
         typeof(SelfKeywordToken),
@@ -244,9 +244,6 @@ public static partial class TokenFactory
     public static INoneKeywordToken NoneKeyword(TextSpan span)
         => new NoneKeywordToken(span);
 
-    public static INonwritableKeywordToken NonwritableKeyword(TextSpan span)
-        => new NonwritableKeywordToken(span);
-
     public static INotKeywordToken NotKeyword(TextSpan span)
         => new NotKeywordToken(span);
 
@@ -276,6 +273,9 @@ public static partial class TokenFactory
 
     public static IReadableKeywordToken ReadableKeyword(TextSpan span)
         => new ReadableKeywordToken(span);
+
+    public static IReadonlyKeywordToken ReadonlyKeyword(TextSpan span)
+        => new ReadonlyKeywordToken(span);
 
     public static IReturnKeywordToken ReturnKeyword(TextSpan span)
         => new ReturnKeywordToken(span);
@@ -398,7 +398,6 @@ public static partial class TokenFactory
     typeof(INextKeywordToken),
     typeof(INIntKeywordToken),
     typeof(INoneKeywordToken),
-    typeof(INonwritableKeywordToken),
     typeof(INotKeywordToken),
     typeof(INUIntKeywordToken),
     typeof(IOffsetKeywordToken),
@@ -409,6 +408,7 @@ public static partial class TokenFactory
     typeof(IPublishedKeywordToken),
     typeof(IReadKeywordToken),
     typeof(IReadableKeywordToken),
+    typeof(IReadonlyKeywordToken),
     typeof(IReturnKeywordToken),
     typeof(ISafeKeywordToken),
     typeof(ISelfKeywordToken),
@@ -876,15 +876,6 @@ internal partial class NoneKeywordToken : Token, INoneKeywordToken
     }
 }
 
-public partial interface INonwritableKeywordToken : IKeywordToken;
-internal partial class NonwritableKeywordToken : Token, INonwritableKeywordToken
-{
-    public NonwritableKeywordToken(TextSpan span)
-        : base(span)
-    {
-    }
-}
-
 public partial interface INotKeywordToken : IKeywordToken;
 internal partial class NotKeywordToken : Token, INotKeywordToken
 {
@@ -970,6 +961,15 @@ public partial interface IReadableKeywordToken : IKeywordToken;
 internal partial class ReadableKeywordToken : Token, IReadableKeywordToken
 {
     public ReadableKeywordToken(TextSpan span)
+        : base(span)
+    {
+    }
+}
+
+public partial interface IReadonlyKeywordToken : IKeywordToken;
+internal partial class ReadonlyKeywordToken : Token, IReadonlyKeywordToken
+{
+    public ReadonlyKeywordToken(TextSpan span)
         : base(span)
     {
     }

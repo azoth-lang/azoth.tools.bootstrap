@@ -96,7 +96,7 @@ public static partial class PlainTypeOperations
                     throw ExhaustiveMatch.Failed(genericParameter.Variance);
                 case TypeParameterVariance.Invariant:
                 // Since plain types are always writeable, NonwritableCovariant always acts as invariant
-                case TypeParameterVariance.NonwritableCovariant:
+                case TypeParameterVariance.ReadOnlyCovariant:
                     if (!self.Equals(other))
                         return false;
                     break;

@@ -152,8 +152,8 @@ public static class Intrinsic
     {
         var typeConstructor = BareTypeConstructor.CreateClass(@namespace.Package.Name, @namespace.NamespaceName,
             isAbstract: false, isConst: false, "Raw_Hybrid_Bounded_List",
-            TypeConstructorParameter.IndependentNonWriteableOut(CapabilitySet.Any, "P"),
-            TypeConstructorParameter.IndependentNonWriteableOut(CapabilitySet.Any, "T"));
+            TypeConstructorParameter.IndependentReadOnlyOut(CapabilitySet.Any, "P"),
+            TypeConstructorParameter.IndependentReadOnlyOut(CapabilitySet.Any, "T"));
         var plainType = typeConstructor.ConstructWithParameterPlainTypes();
         var bareSelfType = BareSelfType(typeConstructor.ConstructWithParameterTypes(plainType));
         var mutSelfType = bareSelfType.With(Capability.Mutable);

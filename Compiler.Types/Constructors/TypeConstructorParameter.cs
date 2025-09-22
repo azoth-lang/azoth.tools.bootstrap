@@ -21,8 +21,8 @@ public sealed class TypeConstructorParameter : IEquatable<TypeConstructorParamet
     public static TypeConstructorParameter ShareableIndependent(ICapabilityConstraint constraint, IdentifierName name)
         => new(constraint, name, TypeParameterIndependence.ShareableIndependent, TypeParameterVariance.Invariant);
 
-    public static TypeConstructorParameter IndependentNonWriteableOut(ICapabilityConstraint constraint, IdentifierName name)
-        => new(constraint, name, TypeParameterIndependence.Independent, TypeParameterVariance.NonwritableCovariant);
+    public static TypeConstructorParameter IndependentReadOnlyOut(ICapabilityConstraint constraint, IdentifierName name)
+        => new(constraint, name, TypeParameterIndependence.Independent, TypeParameterVariance.ReadOnlyCovariant);
 
     public static TypeConstructorParameter Out(ICapabilityConstraint constraint, IdentifierName name)
         => new(constraint, name, TypeParameterIndependence.None, TypeParameterVariance.Covariant);

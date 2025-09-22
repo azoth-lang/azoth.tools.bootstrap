@@ -9,7 +9,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 public sealed class CapabilitySet : ICapabilityConstraint
 {
     /// <summary>
-    /// Any capability that is directly readable without conversion (i.e. `mut`, `const`, `temp const`, `read`).
+    /// Any capability that is directly readable without conversion (i.e. `own`, `mut`, `const`, `temp const`, `read`).
     /// </summary>
     public static readonly CapabilitySet Readable
         = new("readable", Mutable, Constant, TemporarilyConstant, Read);
@@ -45,7 +45,7 @@ public sealed class CapabilitySet : ICapabilityConstraint
     public static readonly CapabilitySet Temporary = new("temporary", TemporarilyIsolated, TemporarilyConstant);
 
     /// <summary>
-    /// Any capability whatsoever (i.e. `iso`, `temp iso`, `mut`, `const`, `temp const`, `read`, `id`).
+    /// Any capability whatsoever (i.e. `iso`, `temp iso`, `own`, `mut`, `const`, `temp const`, `read`, `id`).
     /// </summary>
     public static readonly CapabilitySet Any
         = new("any", Isolated, TemporarilyIsolated, Mutable, Constant, TemporarilyConstant, Read, Identity);

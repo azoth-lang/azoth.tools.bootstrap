@@ -114,8 +114,8 @@ internal sealed class IntrinsicsRegistry
         // published class Raw_Hybrid_Array[P shareable ind, T ind nonwritable out]
         var typeConstructor = BareTypeConstructor.CreateClass(rawNamespace.Package.Name, rawNamespace.NamespaceName,
             isAbstract: false, isConst: false, "Raw_Hybrid_Array",
-            TypeConstructorParameter.IndependentNonWriteableOut(CapabilitySet.Any, "P"),
-            TypeConstructorParameter.IndependentNonWriteableOut(CapabilitySet.Any, "T"));
+            TypeConstructorParameter.IndependentReadOnlyOut(CapabilitySet.Any, "P"),
+            TypeConstructorParameter.IndependentReadOnlyOut(CapabilitySet.Any, "T"));
         var plainType = typeConstructor.ConstructWithParameterPlainTypes();
         var bareType = typeConstructor.ConstructWithParameterTypes(plainType);
         var bareSelfType = BareSelfType(bareType);

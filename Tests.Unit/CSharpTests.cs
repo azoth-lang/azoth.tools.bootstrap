@@ -85,4 +85,20 @@ public class CSharpTests
     private class Foo : IFoo
     {
     }
+
+    //[Fact]
+    //public void AbstractStatic()
+    //{
+    //    var b = new Box<IAbstractStaticTest>(new AbstractStaticTest());
+    //}
+
+    //private interface IAbstractStaticTest
+    //{
+    //    public static abstract void Test();
+    //}
+
+    //private class AbstractStaticTest : IAbstractStaticTest
+    //{
+    //    public static void Test() => throw new System.NotImplementedException();
+    //}
 }
