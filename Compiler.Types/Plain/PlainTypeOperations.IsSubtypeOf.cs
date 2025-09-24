@@ -65,9 +65,7 @@ public static partial class PlainTypeOperations
             var selfPlainTypes = self.Supertypes.Prepend(self)
                                      .Where(t => otherTypeConstructor.Equals(t.TypeConstructor));
             if (selfPlainTypes.Any(selfPlainType => IsSubtypeOf(otherTypeConstructor, selfPlainType.Arguments, other.Arguments)))
-            {
                 return IsSubstitutable();
-            }
         }
 
         return false;
@@ -75,7 +73,7 @@ public static partial class PlainTypeOperations
         bool IsSubstitutable()
             => !substitutable
                || self.Semantics == TypeSemantics.Reference
-               || self.Semantics == TypeSemantics.Value && other.Semantics == TypeSemantics.Value;
+               || (self.Semantics == TypeSemantics.Value && other.Semantics == TypeSemantics.Value);
     }
 
     private static bool IsSubtypeOf(
@@ -101,11 +99,11 @@ public static partial class PlainTypeOperations
                         return false;
                     break;
                 case TypeParameterVariance.Covariant:
-                    if (!self.IsSubtypeOf(other, substitutable: false))
+                    if (!self.IsSubtypeOf(other, substitutable: true))
                         return false;
                     break;
                 case TypeParameterVariance.Contravariant:
-                    if (!other.IsSubtypeOf(self, substitutable: false))
+                    if (!other.IsSubtypeOf(self, substitutable: true))
                         return false;
                     break;
             }
@@ -125,9 +123,9 @@ public static partial class PlainTypeOperations
 
         foreach (var (selfParameter, otherParameter) in self.Parameters.EquiZip(other.Parameters))
             // Parameter types are contravariant
-            if (!otherParameter.IsSubtypeOf(selfParameter, substitutable: false))
+            if (!otherParameter.IsSubtypeOf(selfParameter, substitutable: true))
                 return false;
 
-        return self.Return.IsSubtypeOf(other.Return, substitutable: false);
+        return self.Return.IsSubtypeOf(other.Return, substitutable: true);
     }
 }

@@ -28,6 +28,7 @@ public sealed class BarePlainType : NonVoidPlainType
             static (typeConstructor, replacements)
                 => typeConstructor.Supertypes.Select(s => replacements.ApplyTo(s.PlainType)).ToFixedSet());
     private IFixedSet<BarePlainType>? supertypes;
+    // TODO Subtypes to match BareType
     public override PlainTypeReplacements TypeReplacements
         => Lazy.Initialize(ref typeReplacements, this, static plainType => new(plainType));
     private PlainTypeReplacements? typeReplacements;

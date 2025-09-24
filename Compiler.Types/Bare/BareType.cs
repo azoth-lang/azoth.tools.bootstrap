@@ -63,7 +63,7 @@ public sealed class BareType : IEquatable<BareType>
     /// supertype of.)
     /// </summary>
     /// <remarks>Normal type declarations report no subtypes. However, associated and generic types
-    /// can be constrained to have subtypes, or they can be  equal to a type in which case they are
+    /// can be constrained to have subtypes, or they can be equal to a type in which case they are
     /// both a supertype and subtype of that type.</remarks>
     public IFixedSet<BareType> Subtypes
         => Lazy.Initialize(ref subtypes, TypeConstructor, TypeReplacements,

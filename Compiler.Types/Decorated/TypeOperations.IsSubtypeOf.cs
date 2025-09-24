@@ -112,7 +112,9 @@ public static partial class TypeOperations
         return false;
 
         bool IsSubstitutable()
-            => !substitutable || self.Semantics == other.Semantics;
+            => !substitutable
+               || self.Semantics == TypeSemantics.Reference
+               || (self.Semantics == TypeSemantics.Value && other.Semantics == TypeSemantics.Value);
     }
 
     private static bool IsSubtypeOf(

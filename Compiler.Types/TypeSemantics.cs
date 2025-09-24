@@ -1,11 +1,11 @@
 namespace Azoth.Tools.Bootstrap.Compiler.Types;
 
 /// <summary>
-/// Whether a type is a value type or a reference type.
+/// The kind of semantics that a type has. Whether and when it is pass by value or pass by reference.
 /// </summary>
 public enum TypeSemantics
 {
     Reference = 1,
-    // TODO add Hybrid
+    Hybrid,
     Value,
 }

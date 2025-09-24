@@ -46,13 +46,14 @@ public sealed class InterpreterProcess
     private readonly IPackageFacetNode packageFacet;
     private readonly Task executionTask;
     private readonly FrozenDictionary<FunctionSymbol, IFunctionInvocableDefinitionNode> functions;
+    private readonly FrozenDictionary<MethodSymbol, IMethodDefinitionNode> valueMethods;
     private readonly FrozenDictionary<MethodSymbol, IMethodDefinitionNode> structMethods;
     private readonly FrozenDictionary<InitializerSymbol, IOrdinaryInitializerDefinitionNode?> initializers;
     private readonly FrozenDictionary<OrdinaryTypeSymbol, ITypeDefinitionNode> userTypes;
-    private readonly IStructDefinitionNode? stringStruct;
+    private readonly IValueDefinitionNode? stringValue;
     private readonly IOrdinaryInitializerDefinitionNode? stringInitializer;
     private readonly BareType? stringBareType;
-    private readonly IStructDefinitionNode? rangeStruct;
+    private readonly IValueDefinitionNode? rangeValue;
     private readonly InitializerSymbol? rangeInitializer;
     private readonly BareType? rangeBareType;
     private byte? exitCode;
@@ -76,6 +77,11 @@ public sealed class InterpreterProcess
                     .OfType<IFunctionInvocableDefinitionNode>()
                     .ToFrozenDictionary(f => f.Symbol.Assigned());
 
+        valueMethods = allDefinitions
+                       .OfType<IMethodDefinitionNode>()
+                       .Where(m => m.Symbol.Assigned().ContextTypeSymbol is OrdinaryTypeSymbol { Kind: TypeKind.Value })
+                       .ToFrozenDictionary(m => m.Symbol.Assigned());
+
         structMethods = allDefinitions
                         .OfType<IMethodDefinitionNode>()
                         .Where(m => m.Symbol.Assigned().ContextTypeSymbol is OrdinaryTypeSymbol { Kind: TypeKind.Struct })
@@ -83,12 +89,12 @@ public sealed class InterpreterProcess
 
         userTypes = allDefinitions.OfType<ITypeDefinitionNode>()
                                  .ToFrozenDictionary(c => c.Symbol);
-        stringStruct = userTypes.Values.OfType<IStructDefinitionNode>().Where(c => c.Symbol.Name == SpecialNames.StringTypeName).TrySingle();
-        stringInitializer = stringStruct?.Members.OfType<IOrdinaryInitializerDefinitionNode>().Single(c => c.Parameters.Count == 3);
-        stringBareType = stringStruct?.TypeConstructor.ConstructNullaryType(containingType: null);
-        rangeStruct = userTypes.Values.OfType<IStructDefinitionNode>().SingleOrDefault(c => c.Symbol.Name == SpecialNames.RangeTypeName);
-        rangeInitializer = rangeStruct?.Members.OfType<IInitializerDefinitionNode>().SingleOrDefault(c => c.Parameters.Count == 2)?.Symbol;
-        rangeBareType = rangeStruct?.TypeConstructor.ConstructNullaryType(containingType: null);
+        stringValue = userTypes.Values.OfType<IValueDefinitionNode>().Where(c => c.Symbol.Name == SpecialNames.StringTypeName).TrySingle();
+        stringInitializer = stringValue?.Members.OfType<IOrdinaryInitializerDefinitionNode>().Single(c => c.Parameters.Count == 3);
+        stringBareType = stringValue?.TypeConstructor.ConstructNullaryType(containingType: null);
+        rangeValue = userTypes.Values.OfType<IValueDefinitionNode>().SingleOrDefault(c => c.Symbol.Name == SpecialNames.RangeTypeName);
+        rangeInitializer = rangeValue?.Members.OfType<IInitializerDefinitionNode>().SingleOrDefault(c => c.Parameters.Count == 2)?.Symbol;
+        rangeBareType = rangeValue?.TypeConstructor.ConstructNullaryType(containingType: null);
 
         var defaultInitializerSymbols = allDefinitions
                                        .OfType<IStructDefinitionNode>()
@@ -405,18 +411,15 @@ public sealed class InterpreterProcess
         Value self,
         IReadOnlyList<Value> arguments)
     {
-        var referenceCall = selfType.Semantics switch
+        // TODO null is an odd case, generic instantiation should avoid it but this works for now
+        var semantics = selfType.Semantics ?? (self.InstanceReference.IsClassReference ? TypeSemantics.Reference : TypeSemantics.Value);
+        return semantics switch
         {
-            // TODO this is an odd case, generic instantiation should avoid it but this works for now
-            null => self.InstanceReference.IsClassReference,
-            TypeSemantics.Value => false,
-            TypeSemantics.Reference => true,
-            _ => throw ExhaustiveMatch.Failed(selfType.Semantics),
+            TypeSemantics.Value => CallValueMethod(methodSymbol, selfType, self, arguments),
+            TypeSemantics.Hybrid => CallStructMethod(methodSymbol, selfType, self, arguments),
+            TypeSemantics.Reference => CallClassMethodAsync(methodSymbol, selfType, self, arguments),
+            _ => throw ExhaustiveMatch.Failed(semantics),
         };
-
-        return referenceCall
-            ? CallClassMethodAsync(methodSymbol, selfType, self, arguments)
-            : CallStructMethod(methodSymbol, selfType, self, arguments);
     }
 
     private ValueTask<Value> CallClassMethodAsync(
@@ -429,6 +432,20 @@ public sealed class InterpreterProcess
         var vtable = self.ClassReference.ClassMetadata;
         var method = vtable[methodSignature];
         return CallMethodAsync(method, self, selfType, arguments);
+    }
+
+    private ValueTask<Value> CallValueMethod(
+        MethodSymbol methodSymbol,
+        BareType selfType,
+        Value self,
+        IReadOnlyList<Value> arguments)
+    {
+        return methodSymbol.Name.Text switch
+        {
+            "remainder" => ValueTask.FromResult(Remainder(self, arguments.Single(), selfType)),
+            "to_display_string" => ToDisplayStringAsync(self, selfType),
+            _ => CallMethodAsync(valueMethods[methodSymbol], self, selfType, arguments),
+        };
     }
 
     private ValueTask<Value> CallStructMethod(
@@ -690,7 +707,7 @@ public sealed class InterpreterProcess
                         var rightResult = await ExecuteAsync(selfBareType, exp.RightOperand!, variables).ConfigureAwait(false);
                         if (rightResult.ShouldExit(out var right)) return rightResult;
                         if (binaryOperator.RangeInclusiveOfEnd()) right = right.IncrementInt();
-                        return await CallStructInitializerAsync(rangeStruct!, rangeBareType!, rangeInitializer!, [left, right]);
+                        return await CallValueInitializerAsync(rangeValue!, rangeBareType!, rangeInitializer!, [left, right]);
                     }
                     case BinaryOperator.QuestionQuestion:
                     {
@@ -1073,10 +1090,10 @@ public sealed class InterpreterProcess
             // byte_count: size
             Value.FromSize(bytes.Count),
         };
-        if (stringStruct is null)
+        if (stringValue is null)
             throw new Exception("Cannot initialize string literal because no string type was found.");
-        var layout = structMetadata.GetOrAdd(stringStruct, CreateStructMetatdata);
-        var self = Value.From((StructReference)new(layout));
+        var layout = valueMetadata.GetOrAdd(stringValue, CreateValueMetadata);
+        var self = Value.From(new ValueReference(layout));
         return await CallInitializerAsync(stringInitializer!, self, stringBareType!, arguments).ConfigureAwait(false);
     }
 

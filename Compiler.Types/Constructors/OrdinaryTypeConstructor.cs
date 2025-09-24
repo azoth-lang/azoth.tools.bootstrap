@@ -64,8 +64,7 @@ public sealed class OrdinaryTypeConstructor : BareTypeConstructor
 
     public override BareType? BaseType { [DebuggerStepThrough] get; }
     public override IFixedSet<BareType> Supertypes { [DebuggerStepThrough] get; }
-    public override TypeSemantics? Semantics
-        => Kind == TypeKind.Struct ? TypeSemantics.Value : TypeSemantics.Reference;
+    public override TypeSemantics? Semantics => Kind.ToSemantics();
 
     public OrdinaryTypeConstructor(
         BareTypeConstructorContext context,

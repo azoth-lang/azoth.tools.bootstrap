@@ -1,5 +1,4 @@
-// TODO make this a `value`
-published const struct string
+published const value string
 {
     /// The index of the start of the string data in `bytes`.
     public let start: size;

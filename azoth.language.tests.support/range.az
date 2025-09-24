@@ -1,6 +1,6 @@
 namespace azoth
 {
-    published const struct range
+    published const value range
         // where T <: Steppable
     {
         /// The inclusive start of the range.
