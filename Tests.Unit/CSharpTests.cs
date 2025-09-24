@@ -65,6 +65,7 @@ public class CSharpTests
         Assert.Same(box.Value, value1);
     }
 
+    #region Types for Generic Implicit Conversion Tests
     private sealed class Box<T>
         where T : class?
     {
@@ -85,6 +86,44 @@ public class CSharpTests
     private class Foo : IFoo
     {
     }
+    #endregion
+
+    #region Single Implementation
+    private interface IBase
+    {
+        int Method();
+    }
+    private interface IBase<T> : IBase
+    {
+        void Procedure(T value);
+    }
+
+    private interface IOne : IBase<int>
+    {
+        int IBase.Method() => Method();
+        new int Method() => 1;
+
+        void IBase<int>.Procedure(int value) => Procedure(value);
+        new void Procedure(int value) { }
+    }
+
+    private interface ITwo : IBase<string>
+    {
+        int IBase.Method() => Method();
+        new int Method() => 2;
+
+        void IBase<string>.Procedure(string value) => Procedure(value);
+        new void Procedure(string value) { }
+    }
+
+    private class Class : IOne, ITwo
+    {
+        // C# gives an error about not having a most specific method implementation if this method is
+        // missing. Azoth needs to either require the same, or deal with how to upcast Class to IBase
+        // given that there are two different implementations of IBase
+        public int Method() => throw new System.NotImplementedException();
+    }
+    #endregion
 
     //[Fact]
     //public void AbstractStatic()
