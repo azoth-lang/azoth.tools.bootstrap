@@ -1,5 +1,4 @@
 using System;
-using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Code;
 using Azoth.Tools.Bootstrap.Compiler.Lexing;
 using Azoth.Tools.Bootstrap.Compiler.Tokens;
@@ -14,7 +13,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing;
 ///   add a compiler error that an expected token is missing.
 /// * Accept: If the current token is of the given type consume it, otherwise leave it.
 /// * Consume: Consume a token of the given type, throws <see cref="InvalidOperationException"/> if
-///   the token is not of the given type.
+///   the token is not of the given type. Use when the next token is known to be of the given type,
+///   and it is a bug if it isn't.
 /// </summary>
 public static class TokenIteratorExtensions
 {
@@ -117,7 +117,7 @@ public static class TokenIteratorExtensions
     /// </summary>
     /// <returns>The text span of the consumed token.</returns>
     /// <exception cref="InvalidOperationException">The next token is not of the given type.</exception>
-    /// <remarks>Use when the next token is known to be of the given type and it is a bug if it isn't.</remarks>
+    /// <remarks>Use when the next token is known to be of the given type, and it is a bug if it isn't.</remarks>
     public static TextSpan Consume<T>(this ITokenIterator<IToken> tokens)
         where T : IToken
     {
@@ -135,7 +135,7 @@ public static class TokenIteratorExtensions
     /// </summary>
     /// <returns>The consumed token.</returns>
     /// <exception cref="InvalidOperationException">The next token is not of the given type.</exception>
-    /// <remarks>Use when the next token is known to be of the given type and it is a bug if it isn't.</remarks>
+    /// <remarks>Use when the next token is known to be of the given type, and it is a bug if it isn't.</remarks>
     public static T ConsumeToken<T>(this ITokenIterator<IToken> tokens)
         where T : class, IToken
     {
@@ -162,7 +162,7 @@ public static class TokenIteratorExtensions
     }
 
     /// <summary>
-    /// Whether the we are at the end of something as indicated by the given token type or the end
+    /// Whether we are at the end of something as indicated by the given token type or the end
     /// of the file.
     /// </summary>
     public static bool AtEnd<T>(this ITokenIterator<IToken> tokens)

@@ -32,7 +32,6 @@ public static partial class TokenTypes
                 nameof(AsExclamationKeywordToken) => "as!",
                 nameof(AsQuestionKeywordToken) => "as?",
                 nameof(FunctionKeywordToken) => "fn",
-                nameof(IndependentKeywordToken) => "ind",
                 nameof(IsolatedKeywordToken) => "iso",
                 nameof(MutableKeywordToken) => "mut",
                 nameof(SelfTypeKeywordToken) => "Self",

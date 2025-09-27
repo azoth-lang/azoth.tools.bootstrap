@@ -280,7 +280,7 @@ public static class Arbitrary
         { "if", typeof(IIfKeywordToken) },
         { "import", typeof(IImportKeywordToken) },
         { "in", typeof(IInKeywordToken) },
-        { "ind", typeof(IIndependentKeywordToken) },
+        { "independent", typeof(IIndependentKeywordToken) },
         { "init", typeof(IInitKeywordToken) },
         { "int", typeof(IIntKeywordToken) },
         { "int16", typeof(IInt16KeywordToken) },

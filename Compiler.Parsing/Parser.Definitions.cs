@@ -211,12 +211,17 @@ public partial class Parser
 
     private IGenericParameterSyntax? AcceptGenericParameter()
     {
-        var constraint = AcceptExplicitCapabilityConstraint()
-                         // TODO do not do this in parsing
-                         ?? ICapabilitySetSyntax.CreateImplicitAliasable(Tokens.Current.Span.AtStart());
+        // TODO capture independence in the syntax tree instead of just as an enum
+        var (independence, independenceSpan) = ParseIndependence();
+        var isIndependent = independence != TypeParameterIndependence.None;
+        // TODO do not create implicit any in parsing
+        var constraint = isIndependent ? ICapabilitySetSyntax.CreateImplicitAny(Tokens.Current.Span.AtStart())
+            : (AcceptExplicitCapabilityConstraint()
+               // TODO do not create implicit aliasable in parsing
+               ?? ICapabilitySetSyntax.CreateImplicitAliasable(Tokens.Current.Span.AtStart()));
         var identifier = Tokens.AcceptToken<IIdentifierToken>();
         if (identifier is null) return null;
-        var (independence, independenceSpan) = ParseIndependence();
+
         var (variance, varianceSpan) = ParseVariance();
         var span = TextSpan.Covering(identifier.Span, independenceSpan, varianceSpan);
         return IGenericParameterSyntax.Create(span, constraint, identifier.Value, independence, variance);
@@ -224,20 +229,17 @@ public partial class Parser
 
     private (TypeParameterIndependence, TextSpan) ParseIndependence()
     {
-        return Tokens.Current switch
+        var independentKeyword = Tokens.AcceptToken<IIndependentKeywordToken>();
+        if (independentKeyword is null) return (TypeParameterIndependence.None, Tokens.Current.Span.AtStart());
+        if (Tokens.Current is IOpenParenToken)
         {
-            IIndependentKeywordToken _ => (TypeParameterIndependence.Independent, Tokens.Consume<IIndependentKeywordToken>()),
-            IShareableKeywordToken _ => ParseShareableIndependence(),
-            _ => (TypeParameterIndependence.None, Tokens.Current.Span.AtStart())
-        };
-    }
-
-    private (TypeParameterIndependence, TextSpan) ParseShareableIndependence()
-    {
-        var shareableKeyword = Tokens.Required<IShareableKeywordToken>();
-        var independentKeyword = Tokens.Required<IIndependentKeywordToken>();
-        var span = TextSpan.Covering(shareableKeyword, independentKeyword);
-        return (TypeParameterIndependence.ShareableIndependent, span);
+            var openParen = Tokens.Consume<IOpenParenToken>();
+            var shareableKeyword = Tokens.Expect<IShareableKeywordToken>();
+            var closeParen = Tokens.Expect<ICloseParenToken>();
+            var span = TextSpan.Covering(independentKeyword.Span, openParen, shareableKeyword, closeParen);
+            return (TypeParameterIndependence.ShareableIndependent, span);
+        }
+        return (TypeParameterIndependence.Independent, independentKeyword.Span);
     }
 
     private (TypeParameterVariance, TextSpan) ParseVariance()

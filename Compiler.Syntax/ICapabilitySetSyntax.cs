@@ -11,4 +11,10 @@ public partial interface ICapabilitySetSyntax
         Requires.That(span.Length == 0, nameof(span), "span must be empty");
         return Create(span, token: null, DeclaredCapabilitySet.Aliasable);
     }
+
+    public static ICapabilitySetSyntax CreateImplicitAny(TextSpan span)
+    {
+        Requires.That(span.Length == 0, nameof(span), "span must be empty");
+        return Create(span, token: null, DeclaredCapabilitySet.Any);
+    }
 }

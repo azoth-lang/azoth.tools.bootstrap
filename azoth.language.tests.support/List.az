@@ -1,4 +1,4 @@
-published class List[T ind]
+published class List[independent T]
 {
     var items: mut Raw_Hybrid_Bounded_List[void, T];
 
