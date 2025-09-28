@@ -248,14 +248,14 @@ public partial class Parser
         {
             IInKeywordToken _ => (TypeParameterVariance.Contravariant, Tokens.Consume<IInKeywordToken>()),
             IOutKeywordToken _ => (TypeParameterVariance.Covariant, Tokens.Consume<IOutKeywordToken>()),
-            IReadonlyKeywordToken _ => ParseReadOnlyVariance(),
+            IReadOnlyKeywordToken _ => ParseReadOnlyVariance(),
             _ => (TypeParameterVariance.Invariant, Tokens.Current.Span.AtStart())
         };
     }
 
     private (TypeParameterVariance, TextSpan) ParseReadOnlyVariance()
     {
-        var readOnlyKeyword = Tokens.Required<IReadonlyKeywordToken>();
+        var readOnlyKeyword = Tokens.Required<IReadOnlyKeywordToken>();
         var outKeyword = Tokens.Required<IOutKeywordToken>();
         var span = TextSpan.Covering(readOnlyKeyword, outKeyword);
         return (TypeParameterVariance.ReadOnlyCovariant, span);

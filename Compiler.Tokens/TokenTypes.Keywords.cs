@@ -29,13 +29,13 @@ public static partial class TokenTypes
             {
                 // Some exceptions to the normal rule
                 nameof(AnyTypeKeywordToken) => "Any",
+                nameof(SelfTypeKeywordToken) => "Self",
+                nameof(TypeTypeKeywordToken) => "Type",
                 nameof(AsExclamationKeywordToken) => "as!",
                 nameof(AsQuestionKeywordToken) => "as?",
                 nameof(FunctionKeywordToken) => "fn",
                 nameof(IsolatedKeywordToken) => "iso",
                 nameof(MutableKeywordToken) => "mut",
-                nameof(SelfTypeKeywordToken) => "Self",
-                //nameof(TypeKeywordToken) => "Type",
                 "UnderscoreKeywordToken" => "_", // TODO why does this need to be a string?
                 _ => tokenTypeName[..^KeywordTokenLength]
                                   .ToLower(CultureInfo.InvariantCulture)

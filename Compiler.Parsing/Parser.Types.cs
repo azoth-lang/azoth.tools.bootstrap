@@ -179,6 +179,7 @@ public partial class Parser
             INeverKeywordToken _ => BuiltInTypeName.Never,
             IBoolKeywordToken _ => BuiltInTypeName.Bool,
             IAnyTypeKeywordToken _ => BuiltInTypeName.Any,
+            ITypeTypeKeywordToken _ => BuiltInTypeName.Type,
 
             IIntKeywordToken _ => BuiltInTypeName.Int,
             IUIntKeywordToken _ => BuiltInTypeName.UInt,

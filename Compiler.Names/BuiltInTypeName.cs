@@ -16,6 +16,7 @@ public sealed class BuiltInTypeName : UnqualifiedName
     public static readonly BuiltInTypeName Never = new("never");
     public static readonly BuiltInTypeName Bool = new("bool");
     public static readonly BuiltInTypeName Any = new("Any");
+    public static readonly BuiltInTypeName Type = new("Type");
     public static readonly BuiltInTypeName Self = new("Self");
     public static readonly BuiltInTypeName Int = new("int");
     public static readonly BuiltInTypeName UInt = new("uint");

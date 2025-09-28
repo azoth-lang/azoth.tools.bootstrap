@@ -68,7 +68,7 @@ public static partial class TokenTypes
         typeof(PublishedKeywordToken),
         typeof(ReadKeywordToken),
         typeof(ReadableKeywordToken),
-        typeof(ReadonlyKeywordToken),
+        typeof(ReadOnlyKeywordToken),
         typeof(ReturnKeywordToken),
         typeof(SafeKeywordToken),
         typeof(SelfKeywordToken),
@@ -83,6 +83,7 @@ public static partial class TokenTypes
         typeof(TraitKeywordToken),
         typeof(TrueKeywordToken),
         typeof(TypeKeywordToken),
+        typeof(TypeTypeKeywordToken),
         typeof(UIntKeywordToken),
         typeof(UInt16KeywordToken),
         typeof(UInt32KeywordToken),
@@ -274,8 +275,8 @@ public static partial class TokenFactory
     public static IReadableKeywordToken ReadableKeyword(TextSpan span)
         => new ReadableKeywordToken(span);
 
-    public static IReadonlyKeywordToken ReadonlyKeyword(TextSpan span)
-        => new ReadonlyKeywordToken(span);
+    public static IReadOnlyKeywordToken ReadOnlyKeyword(TextSpan span)
+        => new ReadOnlyKeywordToken(span);
 
     public static IReturnKeywordToken ReturnKeyword(TextSpan span)
         => new ReturnKeywordToken(span);
@@ -318,6 +319,9 @@ public static partial class TokenFactory
 
     public static ITypeKeywordToken TypeKeyword(TextSpan span)
         => new TypeKeywordToken(span);
+
+    public static ITypeTypeKeywordToken TypeTypeKeyword(TextSpan span)
+        => new TypeTypeKeywordToken(span);
 
     public static IUIntKeywordToken UIntKeyword(TextSpan span)
         => new UIntKeywordToken(span);
@@ -408,7 +412,7 @@ public static partial class TokenFactory
     typeof(IPublishedKeywordToken),
     typeof(IReadKeywordToken),
     typeof(IReadableKeywordToken),
-    typeof(IReadonlyKeywordToken),
+    typeof(IReadOnlyKeywordToken),
     typeof(IReturnKeywordToken),
     typeof(ISafeKeywordToken),
     typeof(ISelfKeywordToken),
@@ -423,6 +427,7 @@ public static partial class TokenFactory
     typeof(ITraitKeywordToken),
     typeof(ITrueKeywordToken),
     typeof(ITypeKeywordToken),
+    typeof(ITypeTypeKeywordToken),
     typeof(IUIntKeywordToken),
     typeof(IUInt16KeywordToken),
     typeof(IUInt32KeywordToken),
@@ -966,10 +971,10 @@ internal partial class ReadableKeywordToken : Token, IReadableKeywordToken
     }
 }
 
-public partial interface IReadonlyKeywordToken : IKeywordToken;
-internal partial class ReadonlyKeywordToken : Token, IReadonlyKeywordToken
+public partial interface IReadOnlyKeywordToken : IKeywordToken;
+internal partial class ReadOnlyKeywordToken : Token, IReadOnlyKeywordToken
 {
-    public ReadonlyKeywordToken(TextSpan span)
+    public ReadOnlyKeywordToken(TextSpan span)
         : base(span)
     {
     }
@@ -1096,6 +1101,15 @@ public partial interface ITypeKeywordToken : IKeywordToken;
 internal partial class TypeKeywordToken : Token, ITypeKeywordToken
 {
     public TypeKeywordToken(TextSpan span)
+        : base(span)
+    {
+    }
+}
+
+public partial interface ITypeTypeKeywordToken : IKeywordToken;
+internal partial class TypeTypeKeywordToken : Token, ITypeTypeKeywordToken
+{
+    public TypeTypeKeywordToken(TextSpan span)
         : base(span)
     {
     }
