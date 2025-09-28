@@ -9,6 +9,7 @@ public enum DeclaredCapabilitySet
     Shareable,
     Aliasable,
     Sendable,
+    ReadOnly,
     Temporary,
     Any,
 }

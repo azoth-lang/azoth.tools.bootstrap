@@ -101,6 +101,7 @@ public partial class Parser
             IShareableKeywordToken _ => ICapabilitySetSyntax.Create(constraint.Span, constraint, DeclaredCapabilitySet.Shareable),
             IAliasableKeywordToken _ => ICapabilitySetSyntax.Create(constraint.Span, constraint, DeclaredCapabilitySet.Aliasable),
             ISendableKeywordToken _ => ICapabilitySetSyntax.Create(constraint.Span, constraint, DeclaredCapabilitySet.Sendable),
+            IReadOnlyKeywordToken _ => ICapabilitySetSyntax.Create(constraint.Span, constraint, DeclaredCapabilitySet.ReadOnly),
             ITemporaryKeywordToken _ => ICapabilitySetSyntax.Create(constraint.Span, constraint, DeclaredCapabilitySet.Temporary),
             IAnyKeywordToken _ => ICapabilitySetSyntax.Create(constraint.Span, constraint, DeclaredCapabilitySet.Any),
             _ => throw ExhaustiveMatch.Failed(constraint),

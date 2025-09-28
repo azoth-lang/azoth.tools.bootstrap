@@ -33,7 +33,10 @@ public sealed class CapabilitySet : ICapabilityConstraint
     public static readonly CapabilitySet Sendable
         = new("sendable", Isolated, Constant, Identity);
 
-    // TODO add `readonly` which reflects the `readonly out` option (i.e. `const`, `temp const`, `read`, `id`)
+    /// <summary>
+    /// Any capability that does not allow writing (i.e. `const`, `temp const`, `read`, `id`).
+    /// </summary>
+    public static readonly CapabilitySet ReadOnly = new("readonly", Constant, TemporarilyConstant, Read, Identity);
 
     /// <summary>
     /// Any capability that is temporary (i.e. `temp iso`, `temp const`).

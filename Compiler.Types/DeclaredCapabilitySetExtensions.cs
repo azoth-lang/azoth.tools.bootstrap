@@ -13,6 +13,7 @@ public static class DeclaredCapabilitySetExtensions
             DeclaredCapabilitySet.Shareable => CapabilitySet.Shareable,
             DeclaredCapabilitySet.Aliasable => CapabilitySet.Aliasable,
             DeclaredCapabilitySet.Sendable => CapabilitySet.Sendable,
+            DeclaredCapabilitySet.ReadOnly => CapabilitySet.ReadOnly,
             DeclaredCapabilitySet.Temporary => CapabilitySet.Temporary,
             DeclaredCapabilitySet.Any => CapabilitySet.Any,
             _ => throw ExhaustiveMatch.Failed(self),

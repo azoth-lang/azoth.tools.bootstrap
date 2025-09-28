@@ -11,6 +11,7 @@ public static class DeclaredCapabilitySetExtensions
             DeclaredCapabilitySet.Shareable => "shareable",
             DeclaredCapabilitySet.Aliasable => "aliasable",
             DeclaredCapabilitySet.Sendable => "sendable",
+            DeclaredCapabilitySet.ReadOnly => "readonly",
             DeclaredCapabilitySet.Temporary => "temporary",
             DeclaredCapabilitySet.Any => "any",
             _ => throw ExhaustiveMatch.Failed(self),
