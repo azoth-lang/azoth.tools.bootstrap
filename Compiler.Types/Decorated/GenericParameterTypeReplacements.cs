@@ -152,6 +152,11 @@ public sealed class GenericParameterTypeReplacements
                                  ?? throw new NotImplementedException("Handle capability cannot be upcast to capability set.");
                 return CapabilityViewpointType.Create(capability, t.Referent);
             }
+            case CapabilitySetRestrictedType t:
+            {
+                var newCapabilitySet = t.CapabilitySet.Intersect(capabilitySet);
+                return CapabilitySetRestrictedType.Create(newCapabilitySet, t.Referent);
+            }
             default:
                 // TODO what is the correct thing to do in this case?
                 throw new NotImplementedException();

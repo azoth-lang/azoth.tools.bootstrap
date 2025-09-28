@@ -111,7 +111,7 @@ internal class ProjectSet : IEnumerable<Project>
         {
             await ProcessProjects(taskScheduler, verbose, BuildAsync);
         }
-        catch (FatalCompilationErrorException)
+        catch (StopCompilationException)
         {
             // Errors already output, nothing to do
         }
@@ -177,7 +177,7 @@ internal class ProjectSet : IEnumerable<Project>
             await Console.Error.WriteLineAsync(stderr);
             Console.WriteLine($"Run took {process.RunTime}");
         }
-        catch (FatalCompilationErrorException)
+        catch (StopCompilationException)
         {
             // Errors already output, nothing to do
         }
@@ -196,7 +196,7 @@ internal class ProjectSet : IEnumerable<Project>
             var stderr = await process.StandardError.ReadToEndAsync();
             await Console.Error.WriteLineAsync(stderr);
         }
-        catch (FatalCompilationErrorException)
+        catch (StopCompilationException)
         {
             // Errors already output, nothing to do
         }
@@ -257,7 +257,7 @@ internal class ProjectSet : IEnumerable<Project>
         catch (FatalCompilationErrorException ex)
         {
             OutputDiagnostics(projectFacet, ex.Diagnostics, consoleLock);
-            throw;
+            throw new StopCompilationException(ex);
         }
 
         static PackageSymbolLoader CreateSymbolLoader(FixedDictionary<ProjectFacet, Task<IPackageFacetNode>> projectBuilds)

@@ -91,6 +91,13 @@ public sealed class CapabilitySet : ICapabilityConstraint
 
     public bool IsSubtypeOf(ICapabilityConstraint other) => other.IsAssignableFrom(this);
 
+    public CapabilitySet Intersect(CapabilitySet other)
+    {
+        if (IsSubtypeOf(other)) return this;
+        if (other.IsSubtypeOf(this)) return other;
+        throw new NotImplementedException();
+    }
+
     public override string ToString() => ToILString();
 
     public string ToILString() => name;

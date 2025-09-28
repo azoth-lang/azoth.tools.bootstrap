@@ -73,11 +73,17 @@ public sealed class TypeConstructorParameter : IEquatable<TypeConstructorParamet
     public override string ToString()
     {
         var builder = new StringBuilder();
-        // Aliasable is the default and so isn't written
-        if (Constraint != CapabilitySet.Aliasable) builder.Append(Constraint.ToSourceCodeString()).Append(' ');
+        if (Independence != TypeParameterIndependence.None)
+        {
+            // Independent parameters are always `any` so that isn't written
+            builder.Append(Independence.ToSourceCodeString()).Append(' ');
+        }
+        else
+        {
+            // Aliasable is the default and so isn't written
+            if (Constraint != CapabilitySet.Aliasable) builder.Append(Constraint.ToSourceCodeString()).Append(' ');
+        }
         builder.Append(Name);
-        var independence = Independence.ToSourceCodeString();
-        if (independence.Length != 0) builder.Append(' ').Append(independence);
         var variance = Variance.ToSourceCodeString();
         if (variance.Length != 0) builder.Append(' ').Append(variance);
         return builder.ToString();

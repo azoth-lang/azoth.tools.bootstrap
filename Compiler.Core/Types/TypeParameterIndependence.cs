@@ -15,8 +15,8 @@ public static class TypeParameterIndependenceExtensions
         => independence switch
         {
             TypeParameterIndependence.None => "",
-            TypeParameterIndependence.ShareableIndependent => "shareable ind",
-            TypeParameterIndependence.Independent => "ind",
+            TypeParameterIndependence.ShareableIndependent => "independent(shareable)",
+            TypeParameterIndependence.Independent => "independent",
             _ => throw ExhaustiveMatch.Failed(independence),
         };
 }

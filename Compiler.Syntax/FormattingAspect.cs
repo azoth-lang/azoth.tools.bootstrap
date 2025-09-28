@@ -91,8 +91,8 @@ internal static partial class FormattingAspect
         {
             (TypeParameterIndependence.None, TypeParameterVariance.Invariant) => node.Name.ToString(),
             (TypeParameterIndependence.None, _) => $"{node.Name} {node.Variance.ToSourceCodeString()}",
-            (_, TypeParameterVariance.Invariant) => $"{node.Name} {node.Independence.ToSourceCodeString()}",
-            _ => $"{node.Name} {node.Independence.ToSourceCodeString()} {node.Variance.ToSourceCodeString()}"
+            (_, TypeParameterVariance.Invariant) => $"{node.Independence.ToSourceCodeString()} {node.Name}",
+            _ => $"{node.Independence.ToSourceCodeString()} {node.Name} {node.Variance.ToSourceCodeString()}"
         };
     #endregion
 
