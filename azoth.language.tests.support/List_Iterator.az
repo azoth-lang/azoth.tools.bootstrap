@@ -8,6 +8,7 @@ published class List_Iterator[T out]
         .index = 0;
     }
 
+    // TODO aliasable shouldn't be needed here if `T` is already constrained to it
     public fn \next(mut self) -> aliasable T?
     {
         if .index >= .list.count => return none;
