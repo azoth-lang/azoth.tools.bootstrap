@@ -1,4 +1,4 @@
-published class List[independent T]
+published class List[independent T readonly out]
 {
     var items: mut Raw_Hybrid_Bounded_List[void, T];
 
@@ -55,6 +55,6 @@ published class List[independent T]
     published fn clear(mut self)
         => .items.shrink(0);
 
-    published fn iterate(temp const self) -> mut List_Iterator[T]
-        => List_Iterator[T](self);
+    published fn iterate(temp const self) -> mut List_Iterator[aliasable T]
+        => List_Iterator[aliasable T](self);
 }

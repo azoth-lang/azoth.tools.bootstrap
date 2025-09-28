@@ -1,4 +1,4 @@
-published class List_Iterator[independent T out]
+published class List_Iterator[T out]
 {
     let list: temp const List[T];
     var index: size;
