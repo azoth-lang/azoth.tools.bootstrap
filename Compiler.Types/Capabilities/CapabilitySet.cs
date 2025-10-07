@@ -11,6 +11,8 @@ public sealed class CapabilitySet : ICapabilityConstraint
     /// <summary>
     /// Any capability that is directly readable without conversion (i.e. `own`, `mut`, `const`, `temp const`, `read`).
     /// </summary>
+    // TODO maybe this ought to be changed to include iso. Pony doesn't but it handles iso differently. If this
+    //      can allow `own` then it seems it should allow `iso`. But maybe we need a readable & aliasable?
     public static readonly CapabilitySet Readable
         = new("readable", Mutable, Constant, TemporarilyConstant, Read);
 
