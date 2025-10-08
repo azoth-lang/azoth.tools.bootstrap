@@ -273,10 +273,6 @@ public class Lexer
                             // it is `<=`
                             yield return TokenFactory.LessThanOrEqual(SymbolSpan(2));
                             break;
-                        case ':':
-                            // it is `<:`
-                            yield return TokenFactory.LessThanColon(SymbolSpan(2));
-                            break;
                         case '.':
                             if (CharAt(2) is '.')
                             {

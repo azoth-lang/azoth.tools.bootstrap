@@ -64,7 +64,7 @@ public static class Arbitrary
             case "*":
                 return t2.Text is "=" or "==" or "=/=" or "=>" or "*=";
             case "<":
-                return t2.Text is "=" or "==" or "=/=" or "=>" or ":" or "::" or "::." or ".." or "..<";
+                return t2.Text is "=" or "==" or "=/=" or "=>" or ".." or "..<";
             case "-":
                 return t2.Text is "=" or "==" or "=/=" or "=>" or ">" or ">=";
             case "/":
@@ -234,7 +234,6 @@ public static class Arbitrary
         { "#", typeof(IHashToken) },
         { "+", typeof(IPlusToken) },
         { "+=", typeof(IPlusEqualsToken) },
-        { "<:", typeof(ILessThanColonToken) },
         { "<..", typeof(ILessThanDotDotToken) },
         { "<..<", typeof(ILessThanDotDotLessThanToken) },
         { "<", typeof(ILessThanToken) },

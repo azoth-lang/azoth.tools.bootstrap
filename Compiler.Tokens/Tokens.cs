@@ -62,9 +62,6 @@ public static partial class TokenFactory
     public static ILessThanToken LessThan(TextSpan span)
         => new LessThanToken(span);
 
-    public static ILessThanColonToken LessThanColon(TextSpan span)
-        => new LessThanColonToken(span);
-
     public static ILessThanDotDotToken LessThanDotDot(TextSpan span)
         => new LessThanDotDotToken(span);
 
@@ -153,7 +150,6 @@ public static partial class TokenFactory
     typeof(IGreaterThanOrEqualToken),
     typeof(IHashToken),
     typeof(ILessThanToken),
-    typeof(ILessThanColonToken),
     typeof(ILessThanDotDotToken),
     typeof(ILessThanDotDotLessThanToken),
     typeof(ILessThanOrEqualToken),
@@ -345,15 +341,6 @@ public partial interface ILessThanToken : IEssentialToken;
 internal partial class LessThanToken : Token, ILessThanToken
 {
     public LessThanToken(TextSpan span)
-        : base(span)
-    {
-    }
-}
-
-public partial interface ILessThanColonToken : IEssentialToken;
-internal partial class LessThanColonToken : Token, ILessThanColonToken
-{
-    public LessThanColonToken(TextSpan span)
         : base(span)
     {
     }

@@ -69,7 +69,7 @@ public partial class Parser
     }
 
     private IFixedList<INameSyntax> ParseSupertypes()
-        => Tokens.Accept<ILessThanColonToken>()
+        => Tokens.Accept<IColonToken>()
             ? ParseTypeNames()
             : FixedList.Empty<IOrdinaryNameSyntax>();
 
@@ -190,14 +190,21 @@ public partial class Parser
         var generic = AcceptGenericParameters();
         var genericParameters = generic?.Parameters ?? FixedList.Empty<IGenericParameterSyntax>();
         var name = OrdinaryName.Create(identifier.Value, genericParameters.Count);
-        INameSyntax? baseClass = null;
-        if (Tokens.Accept<IColonToken>()) baseClass = ParseTypeName();
-        var supertypes = ParseSupertypes();
+        var (baseClass, supertypes) = ParseClassSupertypes();
         var (members, bodySpan) = ParseTypeBody(inTrait: false);
         var span = TextSpan.Covering(classKeywordSpan, identifier.Span, generic?.Span, baseClass?.Span,
             TextSpan.Covering(supertypes.Select(st => st.Span)), bodySpan);
         return IClassDefinitionSyntax.Create(span, File, identifier.Span, attributes, accessModifiers, constModifier,
             dropModifier, name, abstractModifier, genericParameters, baseClass, supertypes, members);
+    }
+
+    private (INameSyntax? baseClass, IFixedList<INameSyntax> supertypes) ParseClassSupertypes()
+    {
+        INameSyntax? baseClass = null;
+        if (Tokens.Accept<IInheritsKeywordToken>())
+            baseClass = ParseTypeName();
+
+        return (baseClass, ParseSupertypes());
     }
 
     private (IFixedList<IGenericParameterSyntax> Parameters, TextSpan Span)? AcceptGenericParameters()

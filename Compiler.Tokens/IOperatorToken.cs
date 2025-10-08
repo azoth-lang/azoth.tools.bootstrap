@@ -29,7 +29,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Tokens;
     typeof(IQuestionToken),
     typeof(IQuestionQuestionToken),
     typeof(IQuestionDotToken),
-    typeof(ILessThanColonToken),
     typeof(IRightDoubleArrowToken),
     typeof(IAndKeywordToken),
     typeof(IOrKeywordToken),
@@ -63,7 +62,6 @@ public partial interface ISlashEqualsToken : IOperatorToken;
 public partial interface IQuestionToken : IOperatorToken;
 public partial interface IQuestionQuestionToken : IOperatorToken;
 public partial interface IQuestionDotToken : IOperatorToken;
-public partial interface ILessThanColonToken : IOperatorToken;
 public partial interface IRightDoubleArrowToken : IOperatorToken;
 public partial interface IAndKeywordToken : IOperatorToken;
 public partial interface IOrKeywordToken : IOperatorToken;

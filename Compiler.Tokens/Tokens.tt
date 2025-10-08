@@ -26,7 +26,6 @@
         "GreaterThanOrEqual", // `>=` U+003E", U+003D
         "Hash", // `#` U+0023
         "LessThan", // `<` U+003C
-        "LessThanColon" , // `<:` U+003C, U+003A
         "LessThanDotDot", // `<..` U+003C, U+002E, U+002E
         "LessThanDotDotLessThan", // `<..<` U+002E, U+002E, U+003C
         "LessThanOrEqual", // `<=` U+003C", U+003D

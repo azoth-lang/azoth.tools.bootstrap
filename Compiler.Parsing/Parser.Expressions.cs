@@ -97,7 +97,6 @@ public partial class Parser
                 case IGreaterThanOrEqualToken _:
                 case IReferenceEqualsToken _:
                 case INotReferenceEqualsToken _:
-                case ILessThanColonToken _: // Subtype operator
                     if (minPrecedence <= OperatorPrecedence.Relational)
                     {
                         precedence = OperatorPrecedence.Relational;
@@ -276,7 +275,6 @@ public partial class Parser
             case IColonToken _:
             case IColonColonToken _:
             case IColonColonDotToken _:
-            case ILessThanColonToken _:
             case ICommaToken _:
             case IRightArrowToken _:
             case IQuestionToken _:
@@ -309,6 +307,7 @@ public partial class Parser
             case IIndependentKeywordToken _:
             case IIsKeywordToken _:
             case IDropKeywordToken _:
+            case IInheritsKeywordToken _:
                 Add(ParseError.UnexpectedEndOfExpression(File, Tokens.Current.Span.AtStart()));
                 throw new ParseFailedException("Unexpected end of expression");
             case ISelfKeywordToken _:

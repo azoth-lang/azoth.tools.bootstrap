@@ -1,7 +1,7 @@
 namespace azoth
 {
     published const value range
-        // where T <: Steppable
+        // where T: Steppable
     {
         /// The inclusive start of the range.
         published let start: int;

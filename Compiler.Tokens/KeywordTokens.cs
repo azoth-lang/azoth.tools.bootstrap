@@ -40,6 +40,7 @@ public static partial class TokenTypes
         typeof(ImportKeywordToken),
         typeof(InKeywordToken),
         typeof(IndependentKeywordToken),
+        typeof(InheritsKeywordToken),
         typeof(InitKeywordToken),
         typeof(IntKeywordToken),
         typeof(Int16KeywordToken),
@@ -190,6 +191,9 @@ public static partial class TokenFactory
 
     public static IIndependentKeywordToken IndependentKeyword(TextSpan span)
         => new IndependentKeywordToken(span);
+
+    public static IInheritsKeywordToken InheritsKeyword(TextSpan span)
+        => new InheritsKeywordToken(span);
 
     public static IInitKeywordToken InitKeyword(TextSpan span)
         => new InitKeywordToken(span);
@@ -384,6 +388,7 @@ public static partial class TokenFactory
     typeof(IImportKeywordToken),
     typeof(IInKeywordToken),
     typeof(IIndependentKeywordToken),
+    typeof(IInheritsKeywordToken),
     typeof(IInitKeywordToken),
     typeof(IIntKeywordToken),
     typeof(IInt16KeywordToken),
@@ -714,6 +719,15 @@ public partial interface IIndependentKeywordToken : IKeywordToken;
 internal partial class IndependentKeywordToken : Token, IIndependentKeywordToken
 {
     public IndependentKeywordToken(TextSpan span)
+        : base(span)
+    {
+    }
+}
+
+public partial interface IInheritsKeywordToken : IKeywordToken;
+internal partial class InheritsKeywordToken : Token, IInheritsKeywordToken
+{
+    public InheritsKeywordToken(TextSpan span)
         : base(span)
     {
     }
