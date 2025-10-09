@@ -4,6 +4,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 
 public static partial class TypeOperations
 {
+    /// <summary>
+    /// Given an initializer of this type, what should the inferred declaration type be?
+    /// </summary>
     public static IMaybeNonVoidType InferredDeclarationType(this IMaybeType self, DeclaredCapability? declaredCapability)
         => self.ToNonVoid() switch
         {
@@ -11,9 +14,7 @@ public static partial class TypeOperations
             var t => t,
         };
 
-    /// <summary>
-    /// Given an initializer of this type, what should the inferred declaration type be?
-    /// </summary>
+    /// <inheritdoc cref="InferredDeclarationType(IMaybeType,DeclaredCapability?)"/>
     public static IMaybeNonVoidType InferredDeclarationType(this NonVoidType self, DeclaredCapability? declaredCapability)
     {
         self = self.ToNonLiteral();

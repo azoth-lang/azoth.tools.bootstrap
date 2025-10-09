@@ -101,29 +101,21 @@ public sealed class OrdinaryTypeConstructor : BareTypeConstructor
     }
 
     /// <summary>
-    /// Make a version of this type for use as the default constructor or initializer parameter.
+    /// Make a version of this type for use as the default initializer parameter.
     /// </summary>
     /// <remarks>This is always `init mut` because the type is being initialized and can be mutated
-    /// inside the constructor via field initializers.</remarks>
-    public CapabilityType ToDefaultConstructorSelf()
+    /// inside the initializer via field initializers.</remarks>
+    public CapabilityType ToDefaultInitializerSelf()
         => SelfTypeConstructor.ConstructWithParameterTypes().With(Capability.InitMutable);
 
     /// <summary>
-    /// Make a version of this type for use as the return type of the default constructor or initializer.
-    /// </summary>
-    /// <remarks>This is always either `iso` or `const` depending on whether the type was declared
-    /// with `const` because there are no parameters that could break the new objects isolation.</remarks>
-    public CapabilityType ToDefaultConstructorReturn()
-        => SelfTypeConstructor.ConstructWithParameterTypes().With(IsDeclaredConst ? Capability.Constant : Capability.Isolated);
-
-    /// <summary>
-    /// Determine the return type of a constructor or initializer with the given parameter types.
+    /// Determine the return type of an initializer with the given parameter types.
     /// </summary>
     /// <remarks>The capability of the return type is restricted by the parameter types because the
     /// newly constructed object could contain references to them.</remarks>
-    public CapabilityType ToConstructorReturn(CapabilityType selfParameterType, IEnumerable<ParameterType> parameterTypes)
+    public CapabilityType ToInitializerReturn(CapabilityType selfParameterType, IEnumerable<ParameterType> parameterTypes)
     {
-        var bareType = ConstructWithParameterTypes();
+        var bareType = SelfTypeConstructor.ConstructWithParameterTypes();
         if (IsDeclaredConst) return bareType.With(Capability.Constant);
         // Read only self constructors cannot return `mut` or `iso`
         if (!selfParameterType.Capability.AllowsWrite)

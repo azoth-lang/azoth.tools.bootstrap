@@ -32,13 +32,13 @@ public sealed class InitializerSymbol : FunctionOrInitializerSymbol
         ContainingSymbol = containingTypeSymbol;
         Name = initializerName;
         SelfParameterType = selfParameterType;
-        ReturnType = containingTypeSymbol.TypeConstructor.ToConstructorReturn(selfParameterType, parameterTypes);
+        ReturnType = containingTypeSymbol.TypeConstructor.ToInitializerReturn(selfParameterType, parameterTypes);
         InitializerReferenceType = new FunctionType(parameterTypes, ReturnType);
     }
 
     public static InitializerSymbol CreateDefault(OrdinaryTypeSymbol containingTypeSymbol)
         => new(containingTypeSymbol, null,
-            containingTypeSymbol.TypeConstructor.ToDefaultConstructorSelf(),
+            containingTypeSymbol.TypeConstructor.ToDefaultInitializerSelf(),
             FixedList.Empty<ParameterType>());
 
     public override bool Equals(Symbol? other)
