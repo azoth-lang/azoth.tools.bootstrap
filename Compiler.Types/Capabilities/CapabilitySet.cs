@@ -9,10 +9,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 public sealed class CapabilitySet : ICapabilityConstraint
 {
     /// <summary>
-    /// Any capability that is directly readable without conversion (i.e. `own`, `mut`, `const`, `temp const`, `read`).
+    /// Any capability that is directly readable <i>without conversion</i> (i.e. `mut`, `const`, `temp const`, `read`).
     /// </summary>
-    // TODO maybe this ought to be changed to include iso. Pony doesn't but it handles iso differently. If this
-    //      can allow `own` then it seems it should allow `iso`. But maybe we need a readable & aliasable?
+    /// <remarks>The "without conversion" in the summary is meant to indicate that one must be able
+    /// to read from the value without creating an alias with a different capability. Thus, it
+    /// really means that this is all <see cref="Aliasable"/> capabilities that allow reading.</remarks>
     public static readonly CapabilitySet Readable
         = new("readable", Mutable, Constant, TemporarilyConstant, Read);
 
