@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Diagnostics;
 using Xunit;
 
 namespace Azoth.Tools.Bootstrap.Tests.Unit;
@@ -124,6 +126,16 @@ public class CSharpTests
         public int Method() => throw new System.NotImplementedException();
     }
     #endregion
+
+
+    private static class StaticClass;
+
+    [Fact]
+    public void StaticClassAsGenericArgument()
+    {
+        // The below line doesn't compile
+        //_ = new List<StaticClass>();
+    }
 
     //[Fact]
     //public void AbstractStatic()
