@@ -47,7 +47,7 @@ public sealed class Capability : ICapabilityConstraint
     /// <summary>
     /// An init reference that has read-only access.
     /// </summary>
-    public static readonly Capability InitReadOnly
+    public static readonly Capability InitRead
         = new("init read", "⧼init⧽ read", init: true);
 
     /// <summary>
@@ -164,43 +164,31 @@ public sealed class Capability : ICapabilityConstraint
         AllowsSequesteredAliases = allowsSequesteredAliases;
     }
 
-    /// <summary>
-    /// Can a reference with this capability be assigned from a reference with the given capability
-    /// ignoring lent.
-    /// </summary>
-    /// <remarks>This ignores `lent` because "swapping" means there are times when a lent reference
-    /// is passed to something expecting a non-lent reference. The rules are context dependent.</remarks>
-    public bool IsAssignableFrom(Capability from)
+    public bool IsSubtypeOf(CapabilitySet other)
+        // Since the upper bound includes all other capabilities, only have to check against that
+        => IsSubtypeOf(other.UpperBound);
+
+    public bool IsSubtypeOf(Capability other)
     {
+        if (this == other || other == Identity) return true;
         // Can't change `init`
-        if (AllowsInit != from.AllowsInit) return false;
+        if (AllowsInit != other.AllowsInit) return false;
         // Can't gain permissions
-        if (AllowsWrite && !from.AllowsWrite) return false;
-        if (!AllowsWriteAliases && from.AllowsWriteAliases) return false;
-        if (AllowsRead && !from.AllowsRead) return false;
-        if (!AllowsReadAliases && from.AllowsReadAliases) return false;
-        // Can't change `temp` to non-temp when target disallows aliases
-        if (!AllowsSequesteredAliases && from.AllowsSequesteredAliases
-            && (!AllowsWriteAliases || !AllowsReadAliases)) return false;
+        if (!AllowsWrite && other.AllowsWrite) return false;
+        if (!AllowsRead && other.AllowsRead) return false;
+        // Can't recover isolation
+        if (AllowsWriteAliases && !other.AllowsWriteAliases) return false;
+        if (AllowsReadAliases && !other.AllowsReadAliases) return false;
+        // Can't change `temp` to non-`temp` when supertype disallows aliases
+        if (AllowsSequesteredAliases && !other.AllowsSequesteredAliases
+            && (!other.AllowsWriteAliases || !other.AllowsReadAliases)) return false;
 
         return true;
     }
 
-    public bool IsSubtypeOf(ICapabilityConstraint other) => other.IsAssignableFrom(this);
+    bool ICapabilityConstraint.IsSubsetOf(Capability other) => this == other;
 
-    /// <summary>
-    /// Can a reference with this capability be assigned from a reference with the given capability
-    /// constraint ignoring lent.
-    /// </summary>
-    /// <remarks>This ignores `lent` because "swapping" means there are times when a lent reference
-    /// is passed to something expecting a non-lent reference. The rules are context dependent.</remarks>
-    public bool IsAssignableFrom(ICapabilityConstraint from)
-        => from switch
-        {
-            Capability c => IsAssignableFrom(c),
-            CapabilitySet c => IsAssignableFrom(c.UpperBound),
-            _ => throw ExhaustiveMatch.Failed(from),
-        };
+    public bool IsSubsetOf(CapabilitySet other) => other.AllowedCapabilities.Contains(this);
 
     /// <summary>
     /// This capability with any write ability removed.
@@ -210,7 +198,7 @@ public sealed class Capability : ICapabilityConstraint
         // Already not writable. Just return this. That will preserve the correct other attributes
         if (!AllowsWrite) return this;
         // If it is init, there is only one non-writable init capability.
-        if (AllowsInit) return InitReadOnly;
+        if (AllowsInit) return InitRead;
         // It is either `iso`, `temp iso`, or `mut`. Regardless, convert to `readonly`
         return Read;
     }

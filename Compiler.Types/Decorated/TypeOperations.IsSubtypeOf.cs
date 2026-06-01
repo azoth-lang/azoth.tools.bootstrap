@@ -153,7 +153,7 @@ public static partial class TypeOperations
 
                                 if (!fromCapabilityType.BareType.Equals(toCapabilityType.BareType)
                                     // TODO does this handle `iso` and `id` correctly?
-                                    || !toCapabilityType.Capability.IsAssignableFrom(fromCapabilityType.Capability))
+                                    || !fromCapabilityType.Capability.IsSubtypeOf(toCapabilityType.Capability))
                                     return false;
                                 break;
                             }
@@ -165,10 +165,10 @@ public static partial class TypeOperations
 
                                 if (!fromCapabilityType.BareType.Equals(toCapabilityType.BareType)
                                     // TODO does this handle `iso` and `id` correctly?
-                                    || !toCapabilityType.Capability.IsAssignableFrom(fromCapabilityType.Capability))
+                                    || !fromCapabilityType.Capability.IsSubtypeOf(toCapabilityType.Capability))
                                     return false;
 
-                                // Because `shareable ind` preserves the shareableness of the type, it cannot
+                                // Because `independent(shareable)` preserves the shareableness of the type, it cannot
                                 // promote a `const` to `id`.
                                 if (toCapabilityType.Capability == Capability.Identity
                                     && fromCapabilityType.Capability == Capability.Constant)

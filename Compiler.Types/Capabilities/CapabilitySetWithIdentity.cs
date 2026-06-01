@@ -37,7 +37,7 @@ public sealed class CapabilitySetWithIdentity : CapabilitySet
     private CapabilitySetWithIdentity(string name, params Capability[] allowedCapabilities)
         : base(name, allowedCapabilities)
     {
-        Requires.That(Identity.IsSubtypeOf(this), nameof(allowedCapabilities), "Must contain `id`");
+        Requires.That(UpperBound == Identity, nameof(allowedCapabilities), "Must contain `id`");
     }
 
     public CapabilitySetWithIdentity Intersect(CapabilitySetWithIdentity other)

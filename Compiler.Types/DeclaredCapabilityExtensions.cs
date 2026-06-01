@@ -32,11 +32,11 @@ public static class DeclaredCapabilityExtensions
             DeclaredCapability.Mutable => Capability.InitMutable,
             DeclaredCapability.Isolated => Capability.InitMutable,
             DeclaredCapability.TemporarilyIsolated => Capability.InitMutable,
-            DeclaredCapability.Constant => Capability.InitReadOnly,
-            DeclaredCapability.Read => Capability.InitReadOnly,
-            DeclaredCapability.Default => Capability.InitReadOnly,
-            DeclaredCapability.TemporarilyConstant => Capability.InitReadOnly,
-            DeclaredCapability.Identity => Capability.InitReadOnly,
+            DeclaredCapability.Constant => Capability.InitRead,
+            DeclaredCapability.Read => Capability.InitRead,
+            DeclaredCapability.Default => Capability.InitRead,
+            DeclaredCapability.TemporarilyConstant => Capability.InitRead,
+            DeclaredCapability.Identity => Capability.InitRead,
             _ => throw ExhaustiveMatch.Failed(capability)
         };
 }

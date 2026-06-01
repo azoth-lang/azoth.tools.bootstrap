@@ -72,28 +72,27 @@ public class CapabilitySet : ICapabilityConstraint
         this.name = name;
         AllowedCapabilities = allowedCapabilities.ToFrozenSet();
         SomeCapabilityAllowsWrite = AllowedCapabilities.Any(capability => capability.AllowsWrite);
-        // This does assume there will be a unique upper bound
-        var upperBound = AllowedCapabilities.First();
-        foreach (var allowedCapability in AllowedCapabilities)
-        {
-            if (!upperBound.IsAssignableFrom(allowedCapability))
-                upperBound = allowedCapability;
-        }
-        UpperBound = upperBound;
+        UpperBound = AllowedCapabilities.Max(SubtypeComparer) ?? throw new ArgumentException("Must be at least one capability", nameof(allowedCapabilities));
     }
 
     private readonly string name;
 
-    public bool IsAssignableFrom(ICapabilityConstraint from)
-        => from switch
-        {
-            Capability capability => AllowedCapabilities.Contains(capability),
-            CapabilitySet constraint
-                => AllowedCapabilities.IsSupersetOf(constraint.AllowedCapabilities),
-            _ => throw ExhaustiveMatch.Failed(from)
-        };
+    bool ICapabilityConstraint.IsSubsetOf(Capability other) => false;
 
-    public bool IsSubtypeOf(ICapabilityConstraint other) => other.IsAssignableFrom(this);
+    public bool IsSubsetOf(CapabilitySet other)
+        => AllowedCapabilities.IsSubsetOf(other.AllowedCapabilities);
+
+    /// <summary>
+    /// Is this capability set a subtype of the given capability set?
+    /// </summary>
+    public bool IsSubtypeOf(CapabilitySet other)
+        => AllowedCapabilities.IsSubsetOf(other.AllowedCapabilities);
+
+    /// <summary>
+    /// Is this capability set a subtype of the given capability? This occurs when all capabilities
+    /// in the set are a subtype of the given capability.
+    /// </summary>
+    public bool IsSubtypeOf(Capability other) => UpperBound.IsSubtypeOf(other);
 
     public override string ToString() => ToILString();
 

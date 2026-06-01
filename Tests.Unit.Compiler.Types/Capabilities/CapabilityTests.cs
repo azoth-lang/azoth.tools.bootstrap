@@ -9,36 +9,37 @@ public class CapabilityTests
 {
     [Theory]
     [MemberData(nameof(AssignableFromData))]
-    public void AssignableFrom(CapabilityAssignmentTestCase row)
+    public void IsSubtypeOf(CapabilitySubtypeTestCase row)
     {
-        var isAssignable = row.To.IsAssignableFrom(row.From);
+        var isSubtype = row.Left.IsSubtypeOf(row.Right);
 
-        Assert.Equal(row.Assignable, isAssignable);
+        Assert.Equal(row.IsSubtype, isSubtype);
     }
 
-    public static TheoryData<CapabilityAssignmentTestCase> AssignableFromData()
+    public static TheoryData<CapabilitySubtypeTestCase> AssignableFromData()
     {
-        var data = new TheoryData<CapabilityAssignmentTestCase>
+        var data = new TheoryData<CapabilitySubtypeTestCase>
         {
             // Up the standard hierarchy
-            new CapabilityAssignmentTestCase(Isolated, Mutable, true),
-            new CapabilityAssignmentTestCase(Isolated, Constant, true),
-            new CapabilityAssignmentTestCase(Mutable, Read, true),
-            new CapabilityAssignmentTestCase(Constant, Read, true),
-            new CapabilityAssignmentTestCase(Read, Identity, true),
+            new(Isolated, Mutable, true),
+            new(Isolated, Constant, true),
+            new(Mutable, Read, true),
+            new(Constant, Read, true),
+            new(Read, Identity, true),
             // Init
-            new CapabilityAssignmentTestCase(InitMutable, InitReadOnly, true),
-            new CapabilityAssignmentTestCase(InitMutable, Mutable, false),
-            new CapabilityAssignmentTestCase(Mutable, InitMutable, false),
-            new CapabilityAssignmentTestCase(InitReadOnly, Read, false),
-            new CapabilityAssignmentTestCase(Read, InitReadOnly, false),
+            new(InitMutable, InitRead, true),
+            new(InitMutable, Mutable, false),
+            new(Mutable, InitMutable, false),
+            new(InitRead, Read, false),
+            new(Read, InitRead, false),
             // Temp
-            new CapabilityAssignmentTestCase(TemporarilyIsolated, TemporarilyConstant, true),
-            new CapabilityAssignmentTestCase(Isolated, TemporarilyIsolated, true),
-            new CapabilityAssignmentTestCase(TemporarilyIsolated, Isolated, false),
-            new CapabilityAssignmentTestCase(Constant, TemporarilyConstant, true),
-            new CapabilityAssignmentTestCase(TemporarilyConstant, Constant, false),
-            new CapabilityAssignmentTestCase(TemporarilyConstant, Read, true),
+            new(TemporarilyIsolated, TemporarilyConstant, true),
+            new(Isolated, TemporarilyIsolated, true),
+            new(TemporarilyIsolated, Mutable, true),
+            new(TemporarilyIsolated, Isolated, false),
+            new(Constant, TemporarilyConstant, true),
+            new(TemporarilyConstant, Constant, false),
+            new(TemporarilyConstant, Read, true),
         };
         // Add all transitive conversions?
         return data;
