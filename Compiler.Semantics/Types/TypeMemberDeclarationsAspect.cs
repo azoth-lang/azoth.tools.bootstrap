@@ -21,11 +21,11 @@ internal static partial class TypeMemberDeclarationsAspect
         // TODO do generic methods and functions need to be checked?
 
         // Only methods declared in generic types need checked
-        // TODO what about nesting inside of a generic type?
+        // TODO what about nesting inside a generic type?
         if (!node.ContainingDeclaration.GenericParameters.Any()) return;
 
         // Even if the default constraint is actually `const`, it doesn't matter for the purpose of checking write
-        var nonwritableSelf = !node.SelfParameter.Constraint.ToConstraint(Capability.Read).AnyCapabilityAllowsWrite;
+        var nonwritableSelf = !node.SelfParameter.Constraint.ToConstraint(Capability.Read).SomeCapabilityAllowsWrite;
 
         // The `self` parameter does not get checked for variance safety. It will always operate on
         // the original type so it is safe.
@@ -33,12 +33,12 @@ internal static partial class TypeMemberDeclarationsAspect
         {
             var type = parameter.BindingType;
             if (!type.IsInputSafe(nonwritableSelf))
-                diagnostics.Add(TypeError.ParameterMustBeInputSafe(node.File, parameter.Syntax, (IMaybeType)type));
+                diagnostics.Add(TypeError.ParameterMustBeInputSafe(node.File, parameter.Syntax, type));
         }
 
         var returnType = node.ReturnType;
         if (!returnType.IsOutputSafe(nonwritableSelf))
-            diagnostics.Add(TypeError.ReturnTypeMustBeOutputSafe(node.File, node.Return!.Syntax, (IMaybeType)returnType));
+            diagnostics.Add(TypeError.ReturnTypeMustBeOutputSafe(node.File, node.Return!.Syntax, returnType));
     }
 
     public static partial void FieldDefinition_Contribute_Diagnostics(IFieldDefinitionNode node, DiagnosticCollectionBuilder diagnostics)
@@ -67,13 +67,13 @@ internal static partial class TypeMemberDeclarationsAspect
                 // safe (i.e. invariant). Self is nonwritable for the output case which is where
                 // self writable matters.
                 if (!type.IsInputAndOutputSafe(readOnlySelf: true))
-                    diagnostics.Add(TypeError.VarFieldMustBeInputAndOutputSafe(node.File, node.Syntax, (IMaybeType)type));
+                    diagnostics.Add(TypeError.VarFieldMustBeInputAndOutputSafe(node.File, node.Syntax, type));
             }
             else
             {
                 // Immutable bindings can only be read, so they must be output safe.
                 if (!type.IsOutputSafe(readOnlySelf: true))
-                    diagnostics.Add(TypeError.LetFieldMustBeOutputSafe(node.File, node.Syntax, (IMaybeType)type));
+                    diagnostics.Add(TypeError.LetFieldMustBeOutputSafe(node.File, node.Syntax, type));
             }
         }
     }
@@ -83,6 +83,6 @@ internal static partial class TypeMemberDeclarationsAspect
         var type = ((IFieldDeclarationNode)node).BindingType;
         // Fields must also maintain the independence of independent type parameters
         if (!type.FieldMaintainsIndependence())
-            diagnostics.Add(TypeError.FieldMustMaintainIndependence(node.File, node.Syntax, (IMaybeType)type));
+            diagnostics.Add(TypeError.FieldMustMaintainIndependence(node.File, node.Syntax, type));
     }
 }

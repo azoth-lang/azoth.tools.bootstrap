@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 
@@ -11,6 +12,7 @@ public sealed class GenericParameterType : NonVoidType
 {
     public override GenericParameterPlainType PlainType { [DebuggerStepThrough] get; }
     public override NonVoidType? BaseType => null;
+    public ICapabilityConstraint ImplicitConstraint => Parameter.Constraint;
     public IdentifierName Name => PlainType.Name;
 
     public TypeConstructorParameter Parameter => PlainType.Parameter;
@@ -37,7 +39,7 @@ public sealed class GenericParameterType : NonVoidType
     public override int GetHashCode() => HashCode.Combine(PlainType);
     #endregion
 
-    public override string ToSourceCodeString() => PlainType.ToString();
+    public override string ToSourceCodeString() => $"⟦{ImplicitConstraint.ToSourceCodeString()}⟧ {PlainType}";
 
-    public override string ToILString() => PlainType.ToString();
+    public override string ToILString() => ImplicitConstraint.ToILString() + " " + PlainType;
 }

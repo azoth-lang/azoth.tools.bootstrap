@@ -231,4 +231,16 @@ public static class TypeError
         return new(file, typeSyntax.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             3035, $"Cannot apply `{capabilitySet.ToSourceCodeString()}` to type `{type.ToSourceCodeString()}`. Type must be a generic parameter.");
     }
+
+    public static Diagnostic CannotApplyCapabilitySetToGenericParameterType(CodeFile file, ICapabilitySetTypeSyntax typeSyntax, DeclaredCapabilitySet capabilitySet, IMaybeType type)
+    {
+        return new(file, typeSyntax.Span, DiagnosticLevel.CompilationError, DiagnosticPhase.Analysis,
+            3036, $"Cannot apply `{capabilitySet.ToSourceCodeString()}` to type `{type.ToSourceCodeString()}` because it is a generic parameter with a more specific capability constraint.");
+    }
+
+    public static Diagnostic CannotApplyCapabilitySetWithoutIdentityToGenericParameterType(CodeFile file, ICapabilitySetTypeSyntax typeSyntax, DeclaredCapabilitySet capabilitySet, IMaybeType type)
+    {
+        return new(file, typeSyntax.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
+            3037, $"Cannot apply `{capabilitySet.ToSourceCodeString()}` to type because it doesn't contain `id`.");
+    }
 }

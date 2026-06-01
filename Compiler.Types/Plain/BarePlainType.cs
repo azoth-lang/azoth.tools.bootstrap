@@ -99,11 +99,9 @@ public sealed class BarePlainType : NonVoidPlainType
             builder.Append(TypeConstructor);
         else
             builder.Append(TypeConstructor.Name.ToBareString());
-        if (!Arguments.IsEmpty)
-        {
-            builder.Append('[');
-            builder.AppendJoin(", ", Arguments);
-            builder.Append(']');
-        }
+        if (Arguments.IsEmpty) return;
+        builder.Append('[');
+        builder.AppendJoin(", ", Arguments);
+        builder.Append(']');
     }
 }

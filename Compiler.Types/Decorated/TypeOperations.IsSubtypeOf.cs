@@ -75,7 +75,7 @@ public static partial class TypeOperations
     {
         if (!self.Capability.IsSubtypeOf(other.CapabilitySet)) return false;
 
-        return self.BareType.IsSubtypeOf(other.BareType, other.CapabilitySet.AnyCapabilityAllowsWrite, substitutable);
+        return self.BareType.IsSubtypeOf(other.BareType, other.CapabilitySet.SomeCapabilityAllowsWrite, substitutable);
     }
 
     /// <inheritdoc cref="IsSubtypeOf(IMaybeType,IMaybeType,bool)"/>

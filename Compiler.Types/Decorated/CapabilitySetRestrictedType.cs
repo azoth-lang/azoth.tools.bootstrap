@@ -1,6 +1,8 @@
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
+using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 
@@ -9,21 +11,13 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 /// </summary>
 public sealed class CapabilitySetRestrictedType : NonVoidType
 {
-    // TODO shouldn't this be named something else since it doesn't always apply?
-    public static IMaybeType Create(CapabilitySet capabilitySet, IMaybeType referent)
-      => referent switch
-      {
-          GenericParameterType t => Create(capabilitySet, t),
-          // In an error case, don't actually make a capability set restricted type.
-          _ => referent.AccessedVia(capabilitySet),
-      };
-
-    public static NonVoidType Create(CapabilitySet capabilitySet, GenericParameterType referent)
-        => new CapabilitySetRestrictedType(capabilitySet, referent);
+    [return: NotNullIfNotNull(nameof(referent))]
+    public static NonVoidType? Create(CapabilitySetWithIdentity capabilitySet, GenericParameterType? referent)
+        => referent is null ? null : new CapabilitySetRestrictedType(capabilitySet, referent);
 
     public override NonVoidType? BaseType => null;
 
-    public CapabilitySet CapabilitySet { [DebuggerStepThrough] get; }
+    public CapabilitySetWithIdentity CapabilitySet { [DebuggerStepThrough] get; }
 
     public GenericParameterType Referent { [DebuggerStepThrough] get; }
 
@@ -33,8 +27,10 @@ public sealed class CapabilitySetRestrictedType : NonVoidType
 
     internal override GenericParameterTypeReplacements BareTypeReplacements => Referent.BareTypeReplacements;
 
-    private CapabilitySetRestrictedType(CapabilitySet capabilitySet, GenericParameterType referent)
+    public CapabilitySetRestrictedType(CapabilitySetWithIdentity capabilitySet, GenericParameterType referent)
     {
+        Requires.That(!referent.ImplicitConstraint.IsSubtypeOf(capabilitySet), nameof(capabilitySet),
+            $"Cannot apply capability set '{capabilitySet}' to type with implicit constraint of '{referent.ImplicitConstraint}' because it is redundant.");
         CapabilitySet = capabilitySet;
         Referent = referent;
     }
@@ -53,7 +49,7 @@ public sealed class CapabilitySetRestrictedType : NonVoidType
     #endregion
 
     public override string ToSourceCodeString()
-        => $"{CapabilitySet.ToSourceCodeString()} {Referent.ToSourceCodeString()}";
+        => $"{CapabilitySet.ToSourceCodeString()} {Referent.PlainType}";
 
-    public override string ToILString() => $"{CapabilitySet.ToILString()} {Referent.ToILString()}";
+    public override string ToILString() => $"{CapabilitySet.ToILString()} {Referent.PlainType}";
 }

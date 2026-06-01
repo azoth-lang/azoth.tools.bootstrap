@@ -7,7 +7,7 @@ public static partial class PlainTypeOperations
     /// <summary>
     /// Determine what the common type for two numeric types for a numeric operator is.
     /// </summary>
-    public static PlainType? NumericOperatorCommonType(this PlainType leftType, PlainType rightType)
+    public static NonVoidPlainType? NumericOperatorCommonType(this NonVoidPlainType leftType, NonVoidPlainType rightType)
         => (leftType, rightType) switch
         {
             (_, NeverPlainType) => PlainType.Never,
@@ -27,7 +27,7 @@ public static partial class PlainTypeOperations
     /// <summary>
     /// Determine what the common type for two numeric types for a numeric operator is.
     /// </summary>
-    internal static PlainType? NumericOperatorCommonType(
+    internal static NonVoidPlainType? NumericOperatorCommonType(
         this SimpleOrLiteralTypeConstructor leftTypeConstructor,
         SimpleOrLiteralTypeConstructor rightTypeConstructor)
         => (leftType: leftTypeConstructor, rightType: rightTypeConstructor) switch

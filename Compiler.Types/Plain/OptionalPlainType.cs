@@ -31,6 +31,14 @@ public sealed class OptionalPlainType : NonVoidPlainType
             _ => throw new UnreachableException(),
         };
 
+    [return: NotNullIfNotNull(nameof(plainType))]
+    public static OptionalPlainType? Create(NonVoidPlainType? plainType)
+        => plainType switch
+        {
+            null => null,
+            var t => new OptionalPlainType(t),
+        };
+
     /// <remarks>The optional type acts as a value type that may contain a reference and as such
     /// always has value semantics.</remarks>
     public override TypeSemantics? Semantics => TypeSemantics.Value;

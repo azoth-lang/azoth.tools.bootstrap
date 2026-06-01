@@ -65,7 +65,7 @@ public static partial class TypeOperations
         TypeVariance context,
         bool? readOnlySelf)
     {
-        var nonwritableType = !typeCapability?.AnyCapabilityAllowsWrite;
+        var nonwritableType = !typeCapability?.SomeCapabilityAllowsWrite;
         foreach (var (parameter, argument) in typeParameterArguments)
         {
             var variance = parameter.Variance.ToTypeVariance(nonwritableType);

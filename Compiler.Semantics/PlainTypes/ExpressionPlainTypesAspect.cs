@@ -279,19 +279,19 @@ internal static partial class ExpressionPlainTypesAspect
                 // Don't apply any common type casting in this case.
                 => null,
 
-            (PlainType, BinaryOperator.Plus, PlainType)
-                or (PlainType, BinaryOperator.Minus, PlainType)
-                or (PlainType, BinaryOperator.Asterisk, PlainType)
-                or (PlainType, BinaryOperator.Slash, PlainType)
-                => ((PlainType)leftPlainType).NumericOperatorCommonType((PlainType)rightPlainType),
-            (PlainType, BinaryOperator.EqualsEquals, PlainType)
-                or (PlainType, BinaryOperator.NotEqual, PlainType)
-                or (OptionalPlainType { Referent: PlainType }, BinaryOperator.NotEqual, OptionalPlainType { Referent: PlainType })
-                or (PlainType, BinaryOperator.LessThan, PlainType)
-                or (PlainType, BinaryOperator.LessThanOrEqual, PlainType)
-                or (PlainType, BinaryOperator.GreaterThan, PlainType)
-                or (PlainType, BinaryOperator.GreaterThanOrEqual, PlainType)
-                => ((PlainType)leftPlainType).NumericOperatorCommonType((PlainType)rightPlainType),
+            (NonVoidPlainType, BinaryOperator.Plus, NonVoidPlainType)
+                or (NonVoidPlainType, BinaryOperator.Minus, NonVoidPlainType)
+                or (NonVoidPlainType, BinaryOperator.Asterisk, NonVoidPlainType)
+                or (NonVoidPlainType, BinaryOperator.Slash, NonVoidPlainType)
+                => ((NonVoidPlainType)leftPlainType).NumericOperatorCommonType((NonVoidPlainType)rightPlainType),
+            (NonVoidPlainType, BinaryOperator.EqualsEquals, PlainType)
+                or (NonVoidPlainType, BinaryOperator.NotEqual, PlainType)
+                or (OptionalPlainType { Referent: NonVoidPlainType }, BinaryOperator.NotEqual, OptionalPlainType { Referent: NonVoidPlainType })
+                or (NonVoidPlainType, BinaryOperator.LessThan, PlainType)
+                or (NonVoidPlainType, BinaryOperator.LessThanOrEqual, PlainType)
+                or (NonVoidPlainType, BinaryOperator.GreaterThan, PlainType)
+                or (NonVoidPlainType, BinaryOperator.GreaterThanOrEqual, PlainType)
+                => ((NonVoidPlainType)leftPlainType).NumericOperatorCommonType((NonVoidPlainType)rightPlainType),
 
             (_, BinaryOperator.DotDot, _)
                 or (_, BinaryOperator.LessThanDotDot, _)

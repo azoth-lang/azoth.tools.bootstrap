@@ -2,6 +2,7 @@ using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Compiler.Types;
+using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Decorated;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
@@ -44,20 +45,36 @@ internal static partial class TypeExpressionsAspect
     public static partial IMaybeType CapabilitySetType_NamedType(ICapabilitySetTypeNode node)
     {
         var capabilitySet = node.CapabilitySet.DeclaredCapabilitySet.ToCapabilitySet();
-        var referent = node.Referent.NamedType as GenericParameterType ?? IMaybeType.Unknown;
-        return CapabilitySetRestrictedType.Create(capabilitySet, referent);
+        if (capabilitySet is not CapabilitySetWithIdentity capabilitySetWithIdentity)
+            return IMaybeType.Unknown;
+        var referent = node.Referent.NamedType as GenericParameterType;
+        // A non-fatal error is reported for this case where it doesn't apply
+        if (referent?.ImplicitConstraint.IsSubtypeOf(capabilitySet) == true) return referent;
+        return CapabilitySetRestrictedType.Create(capabilitySetWithIdentity, referent) ?? IMaybeType.Unknown;
     }
 
     public static partial void CapabilitySetType_Contribute_Diagnostics(ICapabilitySetTypeNode node, DiagnosticCollectionBuilder diagnostics)
     {
         var referentType = node.Referent.NamedType;
-        // GenericParameterType is correct
-        if (referentType is GenericParameterType
-            or UnknownType) // Error reported elsewhere
+        if (referentType is UnknownType) // Error reported elsewhere
             return;
 
-        diagnostics.Add(TypeError.CannotApplyCapabilitySetToType(node.File, node.Syntax,
-            node.CapabilitySet.DeclaredCapabilitySet, referentType));
+        var declaredCapabilitySet = node.CapabilitySet.DeclaredCapabilitySet;
+        var capabilitySet = declaredCapabilitySet.ToCapabilitySet();
+        if (capabilitySet is not CapabilitySetWithIdentity capabilitySetWithIdentity)
+            diagnostics.Add(TypeError.CannotApplyCapabilitySetWithoutIdentityToGenericParameterType(
+                node.File, node.Syntax, declaredCapabilitySet, referentType));
+
+        if (referentType is not GenericParameterType referent)
+        {
+            diagnostics.Add(TypeError.CannotApplyCapabilitySetToType(node.File, node.Syntax,
+                declaredCapabilitySet, referentType));
+            return;
+        }
+
+        if (referent.ImplicitConstraint.IsSubtypeOf(capabilitySet))
+            diagnostics.Add(TypeError.CannotApplyCapabilitySetToGenericParameterType(node.File,
+                node.Syntax, declaredCapabilitySet, referentType));
     }
 
     public static partial IMaybeType OptionalType_NamedType(IOptionalTypeNode node)

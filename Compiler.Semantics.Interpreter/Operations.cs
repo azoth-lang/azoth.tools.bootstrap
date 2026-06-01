@@ -156,7 +156,7 @@ internal static class Operations
                 // Should be unreachable since type replacement should have removed all generic parameter types.
                 throw new UnreachableException();
             case CapabilitySetSelfType t:
-                return value.IsOfType(t.BareType, t.CapabilitySet.AnyCapabilityAllowsWrite);
+                return value.IsOfType(t.BareType, t.CapabilitySet.SomeCapabilityAllowsWrite);
             case CapabilitySetRestrictedType t:
                 return value.IsOfType(t.Referent);
             case CapabilityViewpointType t:

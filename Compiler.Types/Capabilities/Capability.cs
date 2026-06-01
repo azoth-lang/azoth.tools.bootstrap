@@ -8,6 +8,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 [DebuggerDisplay("{" + nameof(ToILString) + "(),nq}")]
 public sealed class Capability : ICapabilityConstraint
 {
+    // TODO add the own capability
+
     /// <summary>
     /// A reference that has write access and is the sole reference into an isolated sub-graph. That
     /// is, there are no other references into the object graph reachable from this reference and no
@@ -90,7 +92,7 @@ public sealed class Capability : ICapabilityConstraint
     /// Whether this kind of reference permits mutating the referenced object through this reference.
     /// </summary>
     public bool AllowsWrite { [DebuggerStepThrough] get; }
-    bool ICapabilityConstraint.AnyCapabilityAllowsWrite => AllowsWrite;
+    bool ICapabilityConstraint.SomeCapabilityAllowsWrite => AllowsWrite;
     /// <summary>
     /// Whether this kind of reference permits other writable aliases to the object to exist.
     /// </summary>
@@ -166,7 +168,7 @@ public sealed class Capability : ICapabilityConstraint
     /// Can a reference with this capability be assigned from a reference with the given capability
     /// ignoring lent.
     /// </summary>
-    /// <remarks>This ignores `lent` because "swapping" means there are times where a lent reference
+    /// <remarks>This ignores `lent` because "swapping" means there are times when a lent reference
     /// is passed to something expecting a non-lent reference. The rules are context dependent.</remarks>
     public bool IsAssignableFrom(Capability from)
     {
@@ -190,7 +192,7 @@ public sealed class Capability : ICapabilityConstraint
     /// Can a reference with this capability be assigned from a reference with the given capability
     /// constraint ignoring lent.
     /// </summary>
-    /// <remarks>This ignores `lent` because "swapping" means there are times where a lent reference
+    /// <remarks>This ignores `lent` because "swapping" means there are times when a lent reference
     /// is passed to something expecting a non-lent reference. The rules are context dependent.</remarks>
     public bool IsAssignableFrom(ICapabilityConstraint from)
         => from switch

@@ -159,9 +159,9 @@ public static class Intrinsic
         var mutSelfType = bareSelfType.With(Capability.Mutable);
         var readSelfType = bareSelfType.WithDefaultCapability();
         var prefixType = typeConstructor.ParameterTypes[0];
-        var aliasablePrefixType = CapabilitySetRestrictedType.Create(CapabilitySet.Aliasable, prefixType);
+        var aliasablePrefixType = new CapabilitySetRestrictedType(CapabilitySet.Aliasable, prefixType);
         var itemType = typeConstructor.ParameterTypes[1];
-        var aliasableItemType = CapabilitySetRestrictedType.Create(CapabilitySet.Aliasable, itemType);
+        var aliasableItemType = new CapabilitySetRestrictedType(CapabilitySet.Aliasable, itemType);
 
         var classSymbol = new OrdinaryTypeSymbol(@namespace, typeConstructor);
         tree.Add(classSymbol);

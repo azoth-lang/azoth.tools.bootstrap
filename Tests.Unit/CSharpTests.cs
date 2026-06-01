@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Diagnostics;
 using Xunit;
 
 namespace Azoth.Tools.Bootstrap.Tests.Unit;

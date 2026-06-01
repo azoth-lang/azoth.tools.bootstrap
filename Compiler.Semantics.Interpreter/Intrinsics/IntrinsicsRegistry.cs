@@ -123,9 +123,9 @@ internal sealed class IntrinsicsRegistry
         var initMutableSelfType = bareSelfType.With(Capability.InitMutable);
         var mutSelfType = bareSelfType.With(Capability.Mutable);
         var prefixType = typeConstructor.ParameterTypes[0];
-        var aliasablePrefixType = CapabilitySetRestrictedType.Create(CapabilitySet.Aliasable, prefixType);
+        var aliasablePrefixType = new CapabilitySetRestrictedType(CapabilitySet.Aliasable, prefixType);
         var itemType = typeConstructor.ParameterTypes[1];
-        var aliasableItemType = CapabilitySetRestrictedType.Create(CapabilitySet.Aliasable, itemType);
+        var aliasableItemType = new CapabilitySetRestrictedType(CapabilitySet.Aliasable, itemType);
         var classSymbol = new OrdinaryTypeSymbol(rawNamespace, typeConstructor);
 
         // published /*unsafe*/ init(mut self, ensure_prefix_zeroed: bool, count: size, ensure_zeroed: bool)

@@ -6,7 +6,8 @@ using static Azoth.Tools.Bootstrap.Compiler.Types.Capabilities.Capability;
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 
 [DebuggerDisplay("{" + nameof(ToILString) + "(),nq}")]
-public sealed class CapabilitySet : ICapabilityConstraint
+[Closed(typeof(CapabilitySetWithIdentity))]
+public class CapabilitySet : ICapabilityConstraint
 {
     /// <summary>
     /// Any capability that is directly readable <i>without conversion</i> (i.e. `mut`, `const`, `temp const`, `read`).
@@ -20,26 +21,23 @@ public sealed class CapabilitySet : ICapabilityConstraint
     /// <summary>
     /// Any capability that can be shared between more than one thread (i.e. `const`, `id`).
     /// </summary>
-    public static readonly CapabilitySet Shareable
-        = new("shareable", Constant, Identity);
+    public static readonly CapabilitySetWithIdentity Shareable = CapabilitySetWithIdentity.Shareable;
 
     /// <summary>
     /// Any capability that can alias itself (i.e. `mut`, `const`, `temp const`, `read`, `id`).
     /// </summary>
     /// <remarks>This is the default capability constraint for type parameters.</remarks>
-    public static readonly CapabilitySet Aliasable
-        = new("aliasable", Mutable, Constant, TemporarilyConstant, Read, Identity);
+    public static readonly CapabilitySetWithIdentity Aliasable = CapabilitySetWithIdentity.Aliasable;
 
     /// <summary>
     /// Any capability that can be sent between threads (i.e. `iso`, `const`, `id`).
     /// </summary>
-    public static readonly CapabilitySet Sendable
-        = new("sendable", Isolated, Constant, Identity);
+    public static readonly CapabilitySetWithIdentity Sendable = CapabilitySetWithIdentity.Sendable;
 
     /// <summary>
     /// Any capability that does not allow writing (i.e. `const`, `temp const`, `read`, `id`).
     /// </summary>
-    public static readonly CapabilitySet ReadOnly = new("readonly", Constant, TemporarilyConstant, Read, Identity);
+    public static readonly CapabilitySetWithIdentity ReadOnly = CapabilitySetWithIdentity.ReadOnly;
 
     /// <summary>
     /// Any capability that is temporary (i.e. `temp iso`, `temp const`).
@@ -48,13 +46,13 @@ public sealed class CapabilitySet : ICapabilityConstraint
     // "temporary" doesn't describe `self` it describes the capabilities. Maybe a capability that
     // indicates there are no other writers and also included `const` would be better?
     // Another option would be to name this `temp any` or `any temp`
+    // TODO is this capability set even needed?
     public static readonly CapabilitySet Temporary = new("temporary", TemporarilyIsolated, TemporarilyConstant);
 
     /// <summary>
     /// Any capability whatsoever (i.e. `iso`, `temp iso`, `own`, `mut`, `const`, `temp const`, `read`, `id`).
     /// </summary>
-    public static readonly CapabilitySet Any
-        = new("any", Isolated, TemporarilyIsolated, Mutable, Constant, TemporarilyConstant, Read, Identity);
+    public static readonly CapabilitySetWithIdentity Any = CapabilitySetWithIdentity.Any;
 
     /// <summary>
     /// The default capability set used for generic type parameters that do not specify one.
@@ -65,15 +63,15 @@ public sealed class CapabilitySet : ICapabilityConstraint
 
     public IReadOnlySet<Capability> AllowedCapabilities { [DebuggerStepThrough] get; }
 
-    public bool AnyCapabilityAllowsWrite { [DebuggerStepThrough] get; }
+    public bool SomeCapabilityAllowsWrite { [DebuggerStepThrough] get; }
 
     public Capability UpperBound { [DebuggerStepThrough] get; }
 
-    private CapabilitySet(string name, params Capability[] allowedCapabilities)
+    protected CapabilitySet(string name, params Capability[] allowedCapabilities)
     {
         this.name = name;
         AllowedCapabilities = allowedCapabilities.ToFrozenSet();
-        AnyCapabilityAllowsWrite = AllowedCapabilities.Any(capability => capability.AllowsWrite);
+        SomeCapabilityAllowsWrite = AllowedCapabilities.Any(capability => capability.AllowsWrite);
         // This does assume there will be a unique upper bound
         var upperBound = AllowedCapabilities.First();
         foreach (var allowedCapability in AllowedCapabilities)
@@ -96,13 +94,6 @@ public sealed class CapabilitySet : ICapabilityConstraint
         };
 
     public bool IsSubtypeOf(ICapabilityConstraint other) => other.IsAssignableFrom(this);
-
-    public CapabilitySet Intersect(CapabilitySet other)
-    {
-        if (IsSubtypeOf(other)) return this;
-        if (other.IsSubtypeOf(this)) return other;
-        throw new NotImplementedException();
-    }
 
     public override string ToString() => ToILString();
 

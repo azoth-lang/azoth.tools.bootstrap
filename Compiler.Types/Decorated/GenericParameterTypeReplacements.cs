@@ -17,7 +17,7 @@ public sealed class GenericParameterTypeReplacements
     public static readonly GenericParameterTypeReplacements None = new();
 
     private readonly PlainTypeReplacements plainTypeReplacements;
-    private readonly Dictionary<GenericParameterType, Type> replacements = new();
+    private readonly Dictionary<GenericParameterType, Type> replacements = [];
 
     private GenericParameterTypeReplacements()
     {
@@ -125,7 +125,7 @@ public sealed class GenericParameterTypeReplacements
         return type;
     }
 
-    private static Type ApplyCapabilitySet(Type type, CapabilitySet capabilitySet)
+    private static Type ApplyCapabilitySet(Type type, CapabilitySetWithIdentity capabilitySet)
     {
         switch (type)
         {
@@ -140,7 +140,7 @@ public sealed class GenericParameterTypeReplacements
                 return t.BareType.With(capability);
             }
             case GenericParameterType t:
-                return CapabilitySetRestrictedType.Create(capabilitySet, t);
+                return ApplyCapabilitySet(t, capabilitySet);
             case OptionalType t:
                 // Optional types act like a const value type with an independent
                 // parameter. So the restriction should be applied to the referent type.
@@ -153,14 +153,20 @@ public sealed class GenericParameterTypeReplacements
                 return CapabilityViewpointType.Create(capability, t.Referent);
             }
             case CapabilitySetRestrictedType t:
-            {
                 var newCapabilitySet = t.CapabilitySet.Intersect(capabilitySet);
-                return CapabilitySetRestrictedType.Create(newCapabilitySet, t.Referent);
-            }
+                return ApplyCapabilitySet(t.Referent, newCapabilitySet);
             default:
                 // TODO what is the correct thing to do in this case?
                 throw new NotImplementedException();
         }
+    }
+
+    private static Type ApplyCapabilitySet(GenericParameterType type, CapabilitySetWithIdentity capabilitySet)
+    {
+        // If the implicit constraint is more specific, then no capability set needs to be applied
+        if (type.ImplicitConstraint.IsSubtypeOf(capabilitySet))
+            return type;
+        return new CapabilitySetRestrictedType(capabilitySet, type);
     }
 
     internal Type ApplyTo(SelfViewpointType type, NonVoidType? selfReplacement)
@@ -198,11 +204,7 @@ public sealed class GenericParameterTypeReplacements
     }
 
     internal Type ApplyTo(GenericParameterType type)
-    {
-        if (replacements.TryGetValue(type, out var replacementType))
-            return replacementType;
-        return type;
-    }
+        => replacements.GetValueOrDefault(type, type);
 
     internal Type ApplyTo(CapabilityType type, NonVoidType? selfReplacement)
     {
