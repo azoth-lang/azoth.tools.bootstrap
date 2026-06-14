@@ -113,6 +113,9 @@ MethodSelfParameter <: SelfParameter;
 FieldParameter <: InitializerParameter = Name:`IdentifierName` DefaultValue:Expression?;
 Return <: Code = Type; // Return syntax of a function or method (i.e. `-> Type`)
 
+// ---------- Method Qualifiers
+Overrides <: Code = AccessModifier:`AccessModifierSyntax`? Name:`IdentifierName`? ParameterTypes:Type*? Return?;
+
 // ---------- Function Parts
 Body <: BodyOrBlock;
 BlockBody <: Body = Statements:BodyStatement*;

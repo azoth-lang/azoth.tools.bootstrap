@@ -30,9 +30,14 @@ public static class <#=Emit.TypeName(tree.RootSupertype)#>Extensions
 <#          if (property.Type is CollectionTypeModel) { #>
                 foreach (var child in n.<#=property.TempName #>)
                     yield return child;
-<#          } else if (property.Type is OptionalTypeModel) { #>
+<#          } else if (property.Type is OptionalTypeModel optionalType) { #>
                 if (n.<#=property.TempName #> is not null)
+<#              if (optionalType.UnderlyingType is CollectionTypeModel) { #>
+                    foreach (var child in n.<#=property.TempName #>)
+                        yield return child;
+<#              } else { #>
                     yield return n.<#=property.TempName #>;
+<#              } #>
 <#          } else { #>
                 yield return n.<#=property.TempName #>;
 <#          } #>

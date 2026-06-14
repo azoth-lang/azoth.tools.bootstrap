@@ -131,7 +131,12 @@ internal static class Emit
             SetTypeModel _ => ".ToFixedSet()",
             ListTypeModel _ => ".ToFixedList()",
             EnumerableTypeModel _ => throw new NotImplementedException("Enumerable type not yet implemented."),
-            OptionalTypeModel _ => "",
+            OptionalTypeModel t => t.UnderlyingType switch
+            {
+                SetTypeModel _ => "?.ToFixedSet()",
+                ListTypeModel _ => "?.ToFixedList()",
+                _ => ""
+            },
             SymbolTypeModel _ => "",
             _ => throw ExhaustiveMatch.Failed(property.Type)
         };

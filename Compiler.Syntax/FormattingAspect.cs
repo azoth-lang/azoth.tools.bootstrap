@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.Linq;
+using System.Text;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 using Azoth.Tools.Bootstrap.Compiler.Core.Types;
 using Azoth.Tools.Bootstrap.Framework;
@@ -176,6 +177,36 @@ internal static partial class FormattingAspect
     }
 
     public static partial string Return_ToString(IReturnSyntax node) => $"-> {node.Type}";
+    #endregion
+
+    #region Method Qualifiers
+    public static partial string Overrides_ToString(IOverridesSyntax node)
+    {
+        var builder = new StringBuilder("overrides");
+        if (node.AccessModifier is { } accessModifier)
+        {
+            builder.Append(' ');
+            builder.Append(accessModifier.ToString()); // call ToString to avoid boxing AccessModifierSyntax struct
+        }
+        if (node.Name is { } identifierName)
+        {
+            builder.Append(' ');
+            builder.Append(identifierName);
+        }
+        if (node.ParameterTypes is { } parameterTypes)
+        {
+            builder.Append(" (");
+            builder.AppendJoin(", ", parameterTypes);
+            builder.Append(')');
+        }
+        if (node.Return is { } returnSyntax)
+        {
+            builder.Append(" -> ");
+            builder.Append(returnSyntax);
+        }
+        return builder.ToString();
+    }
+
     #endregion
 
     #region Function Parts

@@ -99,7 +99,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees
             this.Write(")\r\n                    yield return child;\r\n");
             
             #line 33 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\ChildrenCodeTemplate.tt"
-          } else if (property.Type is OptionalTypeModel) { 
+          } else if (property.Type is OptionalTypeModel optionalType) { 
             
             #line default
             #line hidden
@@ -110,43 +110,70 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees
             
             #line default
             #line hidden
-            this.Write(" is not null)\r\n                    yield return n.");
+            this.Write(" is not null)\r\n");
             
             #line 35 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\ChildrenCodeTemplate.tt"
+              if (optionalType.UnderlyingType is CollectionTypeModel) { 
+            
+            #line default
+            #line hidden
+            this.Write("                    foreach (var child in n.");
+            
+            #line 36 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\ChildrenCodeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(property.TempName));
+            
+            #line default
+            #line hidden
+            this.Write(")\r\n                        yield return child;\r\n");
+            
+            #line 38 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\ChildrenCodeTemplate.tt"
+              } else { 
+            
+            #line default
+            #line hidden
+            this.Write("                    yield return n.");
+            
+            #line 39 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\ChildrenCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(property.TempName));
             
             #line default
             #line hidden
             this.Write(";\r\n");
             
-            #line 36 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\ChildrenCodeTemplate.tt"
+            #line 40 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\ChildrenCodeTemplate.tt"
+              } 
+            
+            #line default
+            #line hidden
+            
+            #line 41 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\ChildrenCodeTemplate.tt"
           } else { 
             
             #line default
             #line hidden
             this.Write("                yield return n.");
             
-            #line 37 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\ChildrenCodeTemplate.tt"
+            #line 42 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\ChildrenCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(property.TempName));
             
             #line default
             #line hidden
             this.Write(";\r\n");
             
-            #line 38 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\ChildrenCodeTemplate.tt"
+            #line 43 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\ChildrenCodeTemplate.tt"
           } 
             
             #line default
             #line hidden
             
-            #line 39 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\ChildrenCodeTemplate.tt"
+            #line 44 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\ChildrenCodeTemplate.tt"
       } 
             
             #line default
             #line hidden
             this.Write("                yield break;\r\n");
             
-            #line 41 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\ChildrenCodeTemplate.tt"
+            #line 46 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\ChildrenCodeTemplate.tt"
   } 
             
             #line default

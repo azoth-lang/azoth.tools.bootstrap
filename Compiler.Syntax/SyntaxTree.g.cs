@@ -127,6 +127,7 @@ public partial interface IPackageReferenceSyntax : ISyntax
     typeof(ICapabilityConstraintSyntax),
     typeof(IParameterSyntax),
     typeof(IReturnSyntax),
+    typeof(IOverridesSyntax),
     typeof(ITypeSyntax),
     typeof(IParameterTypeSyntax),
     typeof(IStatementSyntax),
@@ -720,6 +721,24 @@ public partial interface IReturnSyntax : ICodeSyntax
         TextSpan span,
         ITypeSyntax type)
         => new ReturnSyntax(span, type);
+}
+
+[Closed(typeof(OverridesSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
+public partial interface IOverridesSyntax : ICodeSyntax
+{
+    AccessModifierSyntax? AccessModifier { get; }
+    IdentifierName? Name { get; }
+    IFixedList<ITypeSyntax>? ParameterTypes { get; }
+    IReturnSyntax? Return { get; }
+
+    public static IOverridesSyntax Create(
+        TextSpan span,
+        AccessModifierSyntax? accessModifier,
+        IdentifierName? name,
+        IEnumerable<ITypeSyntax>? parameterTypes,
+        IReturnSyntax? @return)
+        => new OverridesSyntax(span, accessModifier, name, parameterTypes, @return);
 }
 
 [Closed(
@@ -2451,6 +2470,34 @@ file class ReturnSyntax : IReturnSyntax
     {
         Span = span;
         Type = type;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class OverridesSyntax : IOverridesSyntax
+{
+    private IOverridesSyntax Self { [Inline] get => this; }
+
+    public TextSpan Span { [DebuggerStepThrough] get; }
+    public AccessModifierSyntax? AccessModifier { [DebuggerStepThrough] get; }
+    public IdentifierName? Name { [DebuggerStepThrough] get; }
+    public IFixedList<ITypeSyntax>? ParameterTypes { [DebuggerStepThrough] get; }
+    public IReturnSyntax? Return { [DebuggerStepThrough] get; }
+    public override string ToString()
+        => FormattingAspect.Overrides_ToString(this);
+
+    public OverridesSyntax(
+        TextSpan span,
+        AccessModifierSyntax? accessModifier,
+        IdentifierName? name,
+        IEnumerable<ITypeSyntax>? parameterTypes,
+        IReturnSyntax? @return)
+    {
+        Span = span;
+        AccessModifier = accessModifier;
+        Name = name;
+        ParameterTypes = parameterTypes?.ToFixedList();
+        Return = @return;
     }
 }
 

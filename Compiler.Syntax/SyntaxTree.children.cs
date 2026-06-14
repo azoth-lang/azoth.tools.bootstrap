@@ -240,6 +240,13 @@ public static class ISyntaxExtensions
                 if (n.Body is not null)
                     yield return n.Body;
                 yield break;
+            case IOverridesSyntax n:
+                if (n.ParameterTypes is not null)
+                    foreach (var child in n.ParameterTypes)
+                        yield return child;
+                if (n.Return is not null)
+                    yield return n.Return;
+                yield break;
             case IPackageFacetSyntax n:
                 foreach (var child in n.CompilationUnits)
                     yield return child;
