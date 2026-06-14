@@ -308,7 +308,7 @@ public partial class Parser
             case IIsKeywordToken _:
             case IDropKeywordToken _:
             case IInheritsKeywordToken _:
-            case IOverridesKeywordToken _:
+            case IOverridesOrHidesToken _:
                 Add(ParseError.UnexpectedEndOfExpression(File, Tokens.Current.Span.AtStart()));
                 throw new ParseFailedException("Unexpected end of expression");
             case ISelfKeywordToken _:

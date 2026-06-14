@@ -35,6 +35,7 @@ public static partial class TokenTypes
         typeof(FunctionKeywordToken),
         typeof(GetKeywordToken),
         typeof(GoKeywordToken),
+        typeof(HidesKeywordToken),
         typeof(IdKeywordToken),
         typeof(IfKeywordToken),
         typeof(ImportKeywordToken),
@@ -177,6 +178,9 @@ public static partial class TokenFactory
 
     public static IGoKeywordToken GoKeyword(TextSpan span)
         => new GoKeywordToken(span);
+
+    public static IHidesKeywordToken HidesKeyword(TextSpan span)
+        => new HidesKeywordToken(span);
 
     public static IIdKeywordToken IdKeyword(TextSpan span)
         => new IdKeywordToken(span);
@@ -387,6 +391,7 @@ public static partial class TokenFactory
     typeof(IFunctionKeywordToken),
     typeof(IGetKeywordToken),
     typeof(IGoKeywordToken),
+    typeof(IHidesKeywordToken),
     typeof(IIdKeywordToken),
     typeof(IIfKeywordToken),
     typeof(IImportKeywordToken),
@@ -679,6 +684,15 @@ public partial interface IGoKeywordToken : IKeywordToken;
 internal partial class GoKeywordToken : Token, IGoKeywordToken
 {
     public GoKeywordToken(TextSpan span)
+        : base(span)
+    {
+    }
+}
+
+public partial interface IHidesKeywordToken : IKeywordToken;
+internal partial class HidesKeywordToken : Token, IHidesKeywordToken
+{
+    public HidesKeywordToken(TextSpan span)
         : base(span)
     {
     }
