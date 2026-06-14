@@ -60,7 +60,7 @@ internal static partial class FormattingAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial string Return_ToString(IReturnSyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial string Overrides_ToString(IOverridesSyntax node);
+    public static partial string OverridesOrHides_ToString(IOverridesOrHidesSyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial string BlockBody_ToString(IBlockBodySyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

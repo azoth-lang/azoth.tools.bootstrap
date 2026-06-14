@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 using Azoth.Tools.Bootstrap.Compiler.Core.Types;
+using Azoth.Tools.Bootstrap.Compiler.Tokens;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 
@@ -180,9 +181,15 @@ internal static partial class FormattingAspect
     #endregion
 
     #region Method Qualifiers
-    public static partial string Overrides_ToString(IOverridesSyntax node)
+    public static partial string OverridesOrHides_ToString(IOverridesOrHidesSyntax node)
     {
-        var builder = new StringBuilder("overrides");
+        var keyword = node.OverridesOrHidesToken switch
+        {
+            IOverridesKeywordToken _ => "overrides",
+            IHidesKeywordToken _ => "hides",
+            _ => throw ExhaustiveMatch.Failed(node.OverridesOrHidesToken)
+        };
+        var builder = new StringBuilder(keyword);
         if (node.AccessModifier is { } accessModifier)
         {
             builder.Append(' ');

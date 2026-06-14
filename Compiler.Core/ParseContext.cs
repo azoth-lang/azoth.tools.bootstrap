@@ -11,9 +11,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Core;
 public sealed class ParseContext
 {
     public CodeFile File { [DebuggerStepThrough] get; }
-    public DiagnosticCollectionBuilder Diagnostics { [DebuggerStepThrough] get; } = new();
+    public DiagnosticCollectionBuilder Diagnostics { [DebuggerStepThrough] get; } = [];
 
-    // TODO the DiagnosticCollectionBuilder is always a new one, any reason to pass in?
     public ParseContext(CodeFile file)
     {
         File = file;

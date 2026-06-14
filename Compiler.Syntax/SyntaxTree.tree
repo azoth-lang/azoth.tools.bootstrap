@@ -114,7 +114,9 @@ FieldParameter <: InitializerParameter = Name:`IdentifierName` DefaultValue:Expr
 Return <: Code = Type; // Return syntax of a function or method (i.e. `-> Type`)
 
 // ---------- Method Qualifiers
-Overrides <: Code = AccessModifier:`AccessModifierSyntax`? Name:`IdentifierName`? ParameterTypes:Type*? Return?;
+OverridesOrHides <: Code
+    = OverridesOrHidesToken:`IOverridesOrHidesToken` AccessModifier:`AccessModifierSyntax`?
+        Name:`IdentifierName`? ParameterTypes:Type*? Return?;
 
 // ---------- Function Parts
 Body <: BodyOrBlock;

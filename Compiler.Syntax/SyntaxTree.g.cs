@@ -127,7 +127,7 @@ public partial interface IPackageReferenceSyntax : ISyntax
     typeof(ICapabilityConstraintSyntax),
     typeof(IParameterSyntax),
     typeof(IReturnSyntax),
-    typeof(IOverridesSyntax),
+    typeof(IOverridesOrHidesSyntax),
     typeof(ITypeSyntax),
     typeof(IParameterTypeSyntax),
     typeof(IStatementSyntax),
@@ -723,22 +723,24 @@ public partial interface IReturnSyntax : ICodeSyntax
         => new ReturnSyntax(span, type);
 }
 
-[Closed(typeof(OverridesSyntax))]
+[Closed(typeof(OverridesOrHidesSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IOverridesSyntax : ICodeSyntax
+public partial interface IOverridesOrHidesSyntax : ICodeSyntax
 {
+    IOverridesOrHidesToken OverridesOrHidesToken { get; }
     AccessModifierSyntax? AccessModifier { get; }
     IdentifierName? Name { get; }
     IFixedList<ITypeSyntax>? ParameterTypes { get; }
     IReturnSyntax? Return { get; }
 
-    public static IOverridesSyntax Create(
+    public static IOverridesOrHidesSyntax Create(
         TextSpan span,
+        IOverridesOrHidesToken overridesOrHidesToken,
         AccessModifierSyntax? accessModifier,
         IdentifierName? name,
         IEnumerable<ITypeSyntax>? parameterTypes,
         IReturnSyntax? @return)
-        => new OverridesSyntax(span, accessModifier, name, parameterTypes, @return);
+        => new OverridesOrHidesSyntax(span, overridesOrHidesToken, accessModifier, name, parameterTypes, @return);
 }
 
 [Closed(
@@ -2474,26 +2476,29 @@ file class ReturnSyntax : IReturnSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class OverridesSyntax : IOverridesSyntax
+file class OverridesOrHidesSyntax : IOverridesOrHidesSyntax
 {
-    private IOverridesSyntax Self { [Inline] get => this; }
+    private IOverridesOrHidesSyntax Self { [Inline] get => this; }
 
     public TextSpan Span { [DebuggerStepThrough] get; }
+    public IOverridesOrHidesToken OverridesOrHidesToken { [DebuggerStepThrough] get; }
     public AccessModifierSyntax? AccessModifier { [DebuggerStepThrough] get; }
     public IdentifierName? Name { [DebuggerStepThrough] get; }
     public IFixedList<ITypeSyntax>? ParameterTypes { [DebuggerStepThrough] get; }
     public IReturnSyntax? Return { [DebuggerStepThrough] get; }
     public override string ToString()
-        => FormattingAspect.Overrides_ToString(this);
+        => FormattingAspect.OverridesOrHides_ToString(this);
 
-    public OverridesSyntax(
+    public OverridesOrHidesSyntax(
         TextSpan span,
+        IOverridesOrHidesToken overridesOrHidesToken,
         AccessModifierSyntax? accessModifier,
         IdentifierName? name,
         IEnumerable<ITypeSyntax>? parameterTypes,
         IReturnSyntax? @return)
     {
         Span = span;
+        OverridesOrHidesToken = overridesOrHidesToken;
         AccessModifier = accessModifier;
         Name = name;
         ParameterTypes = parameterTypes?.ToFixedList();

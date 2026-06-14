@@ -240,7 +240,7 @@ public static class ISyntaxExtensions
                 if (n.Body is not null)
                     yield return n.Body;
                 yield break;
-            case IOverridesSyntax n:
+            case IOverridesOrHidesSyntax n:
                 if (n.ParameterTypes is not null)
                     foreach (var child in n.ParameterTypes)
                         yield return child;
