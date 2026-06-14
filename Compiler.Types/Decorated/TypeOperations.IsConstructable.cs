@@ -13,7 +13,7 @@ public static partial class TypeOperations
     /// constraint on the type parameter. For this purpose, subtyping is not the correct thing.
     /// Rather the capability needs to be a subset or element of the constraint (e.g. a constraint
     /// of `read` can only be satisfied by a `read` type, not a `mut` type even thought `mut` is a
-    /// subtype of `read`.</remarks></remarks>
+    /// subtype of `read`.</remarks>
     public static bool IsConstructable(this TypeParameterArgument self)
     {
         var (param, arg) = self;

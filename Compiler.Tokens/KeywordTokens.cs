@@ -64,6 +64,7 @@ public static partial class TokenTypes
         typeof(OffsetKeywordToken),
         typeof(OrKeywordToken),
         typeof(OutKeywordToken),
+        typeof(OverridesKeywordToken),
         typeof(ProtectedKeywordToken),
         typeof(PublicKeywordToken),
         typeof(PublishedKeywordToken),
@@ -264,6 +265,9 @@ public static partial class TokenFactory
     public static IOutKeywordToken OutKeyword(TextSpan span)
         => new OutKeywordToken(span);
 
+    public static IOverridesKeywordToken OverridesKeyword(TextSpan span)
+        => new OverridesKeywordToken(span);
+
     public static IProtectedKeywordToken ProtectedKeyword(TextSpan span)
         => new ProtectedKeywordToken(span);
 
@@ -412,6 +416,7 @@ public static partial class TokenFactory
     typeof(IOffsetKeywordToken),
     typeof(IOrKeywordToken),
     typeof(IOutKeywordToken),
+    typeof(IOverridesKeywordToken),
     typeof(IProtectedKeywordToken),
     typeof(IPublicKeywordToken),
     typeof(IPublishedKeywordToken),
@@ -935,6 +940,15 @@ public partial interface IOutKeywordToken : IKeywordToken;
 internal partial class OutKeywordToken : Token, IOutKeywordToken
 {
     public OutKeywordToken(TextSpan span)
+        : base(span)
+    {
+    }
+}
+
+public partial interface IOverridesKeywordToken : IKeywordToken;
+internal partial class OverridesKeywordToken : Token, IOverridesKeywordToken
+{
+    public OverridesKeywordToken(TextSpan span)
         : base(span)
     {
     }
