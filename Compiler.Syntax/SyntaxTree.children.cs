@@ -166,6 +166,8 @@ public static class ISyntaxExtensions
                     yield return child;
                 yield return n.SelfParameter;
                 yield return n.Return;
+                foreach (var child in n.OverridesOrHides)
+                    yield return child;
                 if (n.Body is not null)
                     yield return n.Body;
                 yield break;
@@ -237,6 +239,8 @@ public static class ISyntaxExtensions
                     yield return child;
                 if (n.Return is not null)
                     yield return n.Return;
+                foreach (var child in n.OverridesOrHides)
+                    yield return child;
                 if (n.Body is not null)
                     yield return n.Body;
                 yield break;
@@ -292,6 +296,8 @@ public static class ISyntaxExtensions
                     yield return child;
                 yield return n.SelfParameter;
                 foreach (var child in n.Parameters)
+                    yield return child;
+                foreach (var child in n.OverridesOrHides)
                     yield return child;
                 if (n.Body is not null)
                     yield return n.Body;

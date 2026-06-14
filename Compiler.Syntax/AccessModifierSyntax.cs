@@ -13,7 +13,7 @@ public readonly struct AccessModifierSyntax
         => new(publishedToken, null);
     public static AccessModifierSyntax PublishedProtected(IPublishedKeywordToken publishedToken, IProtectedKeywordToken protectedToken)
         => new(publishedToken, protectedToken);
-    public static AccessModifierSyntax Package(IPackageAccessModifierToken? packageAccessModifierToken)
+    public static AccessModifierSyntax Package(IPackageAccessModifierToken packageAccessModifierToken)
         => new(null, packageAccessModifierToken);
 
     public readonly IPublishedKeywordToken? PublishedToken;

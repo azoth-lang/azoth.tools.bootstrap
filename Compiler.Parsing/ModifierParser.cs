@@ -4,19 +4,17 @@ using Azoth.Tools.Bootstrap.Compiler.Tokens;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing;
 
-internal class ModifierParser : RecursiveDescentParser
+/// <summary>
+/// Parser for modifiers which are collected and then parsed separately in order to parse them after
+/// determining what definition they are for.
+/// </summary>
+internal class ModifierParser : SharedModifierParser
 {
     public ModifierParser(ITokenIterator<IEssentialToken> tokens)
         : base(tokens) { }
 
-    public AccessModifierSyntax ParseAccessModifiers()
-    {
-        if (Tokens.AcceptToken<IPublishedKeywordToken>() is not { } publishedToken)
-            return AccessModifierSyntax.Package(Tokens.AcceptToken<IPackageAccessModifierToken>());
-        if (Tokens.AcceptToken<IProtectedKeywordToken>() is { } protectedToken)
-            return AccessModifierSyntax.PublishedProtected(publishedToken, protectedToken);
-        return AccessModifierSyntax.Published(publishedToken);
-    }
+    public AccessModifierSyntax ParseAccessModifier()
+        => AcceptAccessModifier() ?? AccessModifierSyntax.Private;
 
     public IConstKeywordToken? ParseConstModifier() => Tokens.AcceptToken<IConstKeywordToken>();
 

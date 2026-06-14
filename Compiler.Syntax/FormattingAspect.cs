@@ -180,7 +180,7 @@ internal static partial class FormattingAspect
     public static partial string Return_ToString(IReturnSyntax node) => $"-> {node.Type}";
     #endregion
 
-    #region Method Qualifiers
+    #region Method Clauses
     public static partial string OverridesOrHides_ToString(IOverridesOrHidesSyntax node)
     {
         var keyword = node.OverridesOrHidesToken switch
@@ -213,7 +213,6 @@ internal static partial class FormattingAspect
         }
         return builder.ToString();
     }
-
     #endregion
 
     #region Function Parts

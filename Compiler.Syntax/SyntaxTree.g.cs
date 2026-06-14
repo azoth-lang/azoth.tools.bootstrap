@@ -405,6 +405,7 @@ public partial interface IMethodDefinitionSyntax : IMemberDefinitionSyntax, IInv
     new IFixedList<INamedParameterSyntax> Parameters { get; }
     IFixedList<IInitializerParameterSyntax> IInvocableDefinitionSyntax.Parameters => Parameters;
     IReturnSyntax? Return { get; }
+    IFixedList<IOverridesOrHidesSyntax> OverridesOrHides { get; }
 }
 
 [Closed(typeof(OrdinaryMethodDefinitionSyntax))]
@@ -423,8 +424,9 @@ public partial interface IOrdinaryMethodDefinitionSyntax : IMethodDefinitionSynt
         IMethodSelfParameterSyntax selfParameter,
         IEnumerable<INamedParameterSyntax> parameters,
         IReturnSyntax? @return,
+        IEnumerable<IOverridesOrHidesSyntax> overridesOrHides,
         IBodySyntax? body)
-        => new OrdinaryMethodDefinitionSyntax(span, file, nameSpan, attributes, accessModifier, abstractKeyword, name, selfParameter, parameters, @return, body);
+        => new OrdinaryMethodDefinitionSyntax(span, file, nameSpan, attributes, accessModifier, abstractKeyword, name, selfParameter, parameters, @return, overridesOrHides, body);
 }
 
 [Closed(typeof(GetterMethodDefinitionSyntax))]
@@ -448,8 +450,9 @@ public partial interface IGetterMethodDefinitionSyntax : IMethodDefinitionSyntax
         IdentifierName name,
         IMethodSelfParameterSyntax selfParameter,
         IReturnSyntax @return,
+        IEnumerable<IOverridesOrHidesSyntax> overridesOrHides,
         IBodySyntax? body)
-        => new GetterMethodDefinitionSyntax(span, file, nameSpan, attributes, accessModifier, abstractKeyword, name, selfParameter, @return, body);
+        => new GetterMethodDefinitionSyntax(span, file, nameSpan, attributes, accessModifier, abstractKeyword, name, selfParameter, @return, overridesOrHides, body);
 }
 
 [Closed(typeof(SetterMethodDefinitionSyntax))]
@@ -470,8 +473,9 @@ public partial interface ISetterMethodDefinitionSyntax : IMethodDefinitionSyntax
         IdentifierName name,
         IMethodSelfParameterSyntax selfParameter,
         IEnumerable<INamedParameterSyntax> parameters,
+        IEnumerable<IOverridesOrHidesSyntax> overridesOrHides,
         IBodySyntax? body)
-        => new SetterMethodDefinitionSyntax(span, file, nameSpan, attributes, accessModifier, abstractKeyword, name, selfParameter, parameters, body);
+        => new SetterMethodDefinitionSyntax(span, file, nameSpan, attributes, accessModifier, abstractKeyword, name, selfParameter, parameters, overridesOrHides, body);
 }
 
 [Closed(typeof(InitializerDefinitionSyntax))]
@@ -2007,6 +2011,7 @@ file class OrdinaryMethodDefinitionSyntax : IOrdinaryMethodDefinitionSyntax
     public IMethodSelfParameterSyntax SelfParameter { [DebuggerStepThrough] get; }
     public IFixedList<INamedParameterSyntax> Parameters { [DebuggerStepThrough] get; }
     public IReturnSyntax? Return { [DebuggerStepThrough] get; }
+    public IFixedList<IOverridesOrHidesSyntax> OverridesOrHides { [DebuggerStepThrough] get; }
     public IBodySyntax? Body { [DebuggerStepThrough] get; }
     public override string ToString()
         => FormattingAspect.OrdinaryMethodDefinition_ToString(this);
@@ -2022,6 +2027,7 @@ file class OrdinaryMethodDefinitionSyntax : IOrdinaryMethodDefinitionSyntax
         IMethodSelfParameterSyntax selfParameter,
         IEnumerable<INamedParameterSyntax> parameters,
         IReturnSyntax? @return,
+        IEnumerable<IOverridesOrHidesSyntax> overridesOrHides,
         IBodySyntax? body)
     {
         Span = span;
@@ -2034,6 +2040,7 @@ file class OrdinaryMethodDefinitionSyntax : IOrdinaryMethodDefinitionSyntax
         SelfParameter = selfParameter;
         Parameters = parameters.ToFixedList();
         Return = @return;
+        OverridesOrHides = overridesOrHides.ToFixedList();
         Body = body;
     }
 }
@@ -2052,6 +2059,7 @@ file class GetterMethodDefinitionSyntax : IGetterMethodDefinitionSyntax
     public IdentifierName Name { [DebuggerStepThrough] get; }
     public IMethodSelfParameterSyntax SelfParameter { [DebuggerStepThrough] get; }
     public IReturnSyntax Return { [DebuggerStepThrough] get; }
+    public IFixedList<IOverridesOrHidesSyntax> OverridesOrHides { [DebuggerStepThrough] get; }
     public IBodySyntax? Body { [DebuggerStepThrough] get; }
     public override string ToString()
         => FormattingAspect.GetterMethodDefinition_ToString(this);
@@ -2066,6 +2074,7 @@ file class GetterMethodDefinitionSyntax : IGetterMethodDefinitionSyntax
         IdentifierName name,
         IMethodSelfParameterSyntax selfParameter,
         IReturnSyntax @return,
+        IEnumerable<IOverridesOrHidesSyntax> overridesOrHides,
         IBodySyntax? body)
     {
         Span = span;
@@ -2077,6 +2086,7 @@ file class GetterMethodDefinitionSyntax : IGetterMethodDefinitionSyntax
         Name = name;
         SelfParameter = selfParameter;
         Return = @return;
+        OverridesOrHides = overridesOrHides.ToFixedList();
         Body = body;
     }
 }
@@ -2095,6 +2105,7 @@ file class SetterMethodDefinitionSyntax : ISetterMethodDefinitionSyntax
     public IdentifierName Name { [DebuggerStepThrough] get; }
     public IMethodSelfParameterSyntax SelfParameter { [DebuggerStepThrough] get; }
     public IFixedList<INamedParameterSyntax> Parameters { [DebuggerStepThrough] get; }
+    public IFixedList<IOverridesOrHidesSyntax> OverridesOrHides { [DebuggerStepThrough] get; }
     public IBodySyntax? Body { [DebuggerStepThrough] get; }
     public override string ToString()
         => FormattingAspect.SetterMethodDefinition_ToString(this);
@@ -2109,6 +2120,7 @@ file class SetterMethodDefinitionSyntax : ISetterMethodDefinitionSyntax
         IdentifierName name,
         IMethodSelfParameterSyntax selfParameter,
         IEnumerable<INamedParameterSyntax> parameters,
+        IEnumerable<IOverridesOrHidesSyntax> overridesOrHides,
         IBodySyntax? body)
     {
         Span = span;
@@ -2120,6 +2132,7 @@ file class SetterMethodDefinitionSyntax : ISetterMethodDefinitionSyntax
         Name = name;
         SelfParameter = selfParameter;
         Parameters = parameters.ToFixedList();
+        OverridesOrHides = overridesOrHides.ToFixedList();
         Body = body;
     }
 }

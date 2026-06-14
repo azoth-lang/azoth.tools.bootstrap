@@ -79,10 +79,10 @@ GenericParameter <: Code = Constraint:CapabilityConstraint Name:`IdentifierName`
 MemberDefinition <: FacetMemberDefinition = Attributes:Attribute* /AccessModifier/;
 MethodDefinition <: MemberDefinition, InvocableDefinition
     = AbstractKeyword:`IAbstractKeywordToken`? Name:`IdentifierName`
-        SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return? Body?;
+        SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return? OverridesOrHides* Body?;
 OrdinaryMethodDefinition <: MethodDefinition;
-GetterMethodDefinition <: MethodDefinition = /SelfParameter/ Return /Body/;
-SetterMethodDefinition <: MethodDefinition = /SelfParameter/ /Parameters/ /Body/;
+GetterMethodDefinition <: MethodDefinition = /SelfParameter/ Return /OverridesOrHides/ /Body/;
+SetterMethodDefinition <: MethodDefinition = /SelfParameter/ /Parameters/ /OverridesOrHides/ /Body/;
 InitializerDefinition <: MemberDefinition, InvocableDefinition
     = Name:`IdentifierName`? SelfParameter:InitializerSelfParameter Parameters:InitializerParameter* Body:BlockBody;
 FieldDefinition <: MemberDefinition, Binding
@@ -113,7 +113,7 @@ MethodSelfParameter <: SelfParameter;
 FieldParameter <: InitializerParameter = Name:`IdentifierName` DefaultValue:Expression?;
 Return <: Code = Type; // Return syntax of a function or method (i.e. `-> Type`)
 
-// ---------- Method Qualifiers
+// ---------- Method Clauses
 OverridesOrHides <: Code
     = OverridesOrHidesToken:`IOverridesOrHidesToken` AccessModifier:`AccessModifierSyntax`?
         Name:`IdentifierName`? ParameterTypes:Type*? Return?;
