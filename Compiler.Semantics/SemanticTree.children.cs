@@ -236,6 +236,8 @@ public static class ISemanticNodeExtensions
                 foreach (var child in n.Parameters)
                     yield return child;
                 yield return n.Return;
+                foreach (var child in n.OverridesOrHides)
+                    yield return child;
                 yield return n.Entry;
                 if (n.Body is not null)
                     yield return n.Body;
@@ -357,6 +359,8 @@ public static class ISemanticNodeExtensions
                     yield return child;
                 if (n.Return is not null)
                     yield return n.Return;
+                foreach (var child in n.OverridesOrHides)
+                    yield return child;
                 yield return n.Entry;
                 if (n.Body is not null)
                     yield return n.Body;
@@ -365,6 +369,13 @@ public static class ISemanticNodeExtensions
             case IOrdinaryMethodSymbolNode n:
                 yield break;
             case IOrdinaryPackageFacetReferenceNode n:
+                yield break;
+            case IOverridesOrHidesNode n:
+                if (n.ParameterTypes is not null)
+                    foreach (var child in n.ParameterTypes)
+                        yield return child;
+                if (n.Return is not null)
+                    yield return n.Return;
                 yield break;
             case IPackageFacetNode n:
                 foreach (var child in n.CompilationUnits)
@@ -426,6 +437,8 @@ public static class ISemanticNodeExtensions
                     yield return child;
                 if (n.Return is not null)
                     yield return n.Return;
+                foreach (var child in n.OverridesOrHides)
+                    yield return child;
                 yield return n.Entry;
                 if (n.Body is not null)
                     yield return n.Body;

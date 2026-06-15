@@ -167,17 +167,17 @@ internal static class SyntaxBinder
     private static IOrdinaryMethodDefinitionNode OrdinaryMethodDefinition(IOrdinaryMethodDefinitionSyntax syntax)
         => IOrdinaryMethodDefinitionNode.Create(syntax, Attributes(syntax.Attributes),
             MethodSelfParameter(syntax.SelfParameter), NamedParameters(syntax.Parameters),
-            Type(syntax.Return?.Type), Body(syntax.Body));
+            Type(syntax.Return?.Type), OverridesOrHidesClauses(syntax.OverridesOrHides), Body(syntax.Body));
 
     private static IGetterMethodDefinitionNode GetterMethodDefinition(IGetterMethodDefinitionSyntax syntax)
         => IGetterMethodDefinitionNode.Create(syntax, Attributes(syntax.Attributes),
             MethodSelfParameter(syntax.SelfParameter), NamedParameters(syntax.Parameters),
-            Type(syntax.Return.Type), Body(syntax.Body));
+            Type(syntax.Return.Type), OverridesOrHidesClauses(syntax.OverridesOrHides), Body(syntax.Body));
 
     private static ISetterMethodDefinitionNode SetterMethodDefinition(ISetterMethodDefinitionSyntax syntax)
         => ISetterMethodDefinitionNode.Create(syntax, Attributes(syntax.Attributes),
             MethodSelfParameter(syntax.SelfParameter), NamedParameters(syntax.Parameters),
-            Type(syntax.Return?.Type), Body(syntax.Body));
+            Type(syntax.Return?.Type), OverridesOrHidesClauses(syntax.OverridesOrHides), Body(syntax.Body));
 
     private static IInitializerDefinitionNode InitializerDefinition(IInitializerDefinitionSyntax syntax)
         => IOrdinaryInitializerDefinitionNode.Create(syntax, Attributes(syntax.Attributes),
@@ -250,6 +250,14 @@ internal static class SyntaxBinder
         => IFieldParameterNode.Create(syntax);
     #endregion
 
+    #region Method Clauses
+    private static IEnumerable<IOverridesOrHidesNode> OverridesOrHidesClauses(IEnumerable<IOverridesOrHidesSyntax> syntax)
+        => syntax.Select(OverridesOrHidesClause);
+
+    private static IOverridesOrHidesNode OverridesOrHidesClause(IOverridesOrHidesSyntax syntax)
+        => IOverridesOrHidesNode.Create(syntax, Types(syntax.ParameterTypes), Type(syntax.Return?.Type));
+    #endregion
+
     #region Function Parts
     [return: NotNullIfNotNull(nameof(syntax))]
     private static IBodyNode? Body(IBodySyntax? syntax)
@@ -269,8 +277,9 @@ internal static class SyntaxBinder
     #endregion
 
     #region Types
-    private static IEnumerable<ITypeNode> Types(IFixedList<ITypeSyntax> syntax)
-        => syntax.Select(syn => Type(syn));
+    [return: NotNullIfNotNull(nameof(syntax))]
+    private static IEnumerable<ITypeNode>? Types(IFixedList<ITypeSyntax>? syntax)
+        => syntax?.Select(syn => Type(syn));
 
     [return: NotNullIfNotNull(nameof(syntax))]
     private static ITypeNode? Type(ITypeSyntax? syntax)

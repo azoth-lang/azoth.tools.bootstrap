@@ -94,9 +94,11 @@ internal static class Emit
         => tree.SimplifiedTree ? "" : $"{BaseClassName(tree)}, ";
 
     #region Members
-    public static string ChildAttach(IMemberModel member)
+    public static string ChildAttach(IMemberModel member) => ChildAttach(member, member.Type);
+
+    private static string ChildAttach(IMemberModel member, TypeModel type)
     {
-        switch (member.Type)
+        switch (type)
         {
             case SetTypeModel:
                 return "ChildSet.Attach(this, ";
@@ -111,17 +113,20 @@ internal static class Emit
                     childListClass += $"<{Type(finalElementType)}>";
                 }
                 return $"{childListClass}.Create(this, nameof({member.Name}), ";
+            case OptionalTypeModel { UnderlyingType: CollectionTypeModel } t:
+                return $"{Emit.VariableName(member)} is null ? null : {ChildAttach(member, t.UnderlyingType)}";
             default:
                 return member.MayHaveRewrites ? "Child.Create(this, " : "Child.Attach(this, ";
         }
     }
+
     #endregion
 
     #region Attributes
     public static string IsNew(AttributeModel attribute)
         => attribute.IsNewDefinition ? "new " : "";
 
-    public static string VariableName(AttributeModel attribute)
+    public static string VariableName(IMemberModel attribute)
         => attribute.Name.ToCamelCase();
 
     public static string ToCollection(PropertyModel property)

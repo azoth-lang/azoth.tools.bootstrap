@@ -108,13 +108,13 @@ AssociatedMemberDefinition <: TypeMemberDefinition, NamedDeclaration, Associated
 // ---------- Member Definitions
 MethodDefinition <: Code, AlwaysTypeMemberDefinition, InvocableDefinition, MethodDeclaration
     = Syntax:`IMethodDefinitionSyntax` /Attributes/
-    SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return:Type? Body?;
+    SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return:Type? OverridesOrHides* Body?;
 OrdinaryMethodDefinition <: MethodDefinition, OrdinaryMethodDeclaration
-    = Syntax:`IOrdinaryMethodDefinitionSyntax` /Attributes/ /SelfParameter/ /Parameters/ /Return/ /Entry/ /Body/ /Exit/;
+    = Syntax:`IOrdinaryMethodDefinitionSyntax` /Attributes/ /SelfParameter/ /Parameters/ /Return/ /OverridesOrHides/ /Entry/ /Body/ /Exit/;
 GetterMethodDefinition <: MethodDefinition, GetterMethodDeclaration
-    = Syntax:`IGetterMethodDefinitionSyntax` /Attributes/ /SelfParameter/ /Parameters/ Return:Type /Entry/ /Body/ /Exit/;
+    = Syntax:`IGetterMethodDefinitionSyntax` /Attributes/ /SelfParameter/ /Parameters/ Return:Type /OverridesOrHides/ /Entry/ /Body/ /Exit/;
 SetterMethodDefinition <: MethodDefinition, SetterMethodDeclaration
-    = Syntax:`ISetterMethodDefinitionSyntax` /Attributes/ /SelfParameter/ /Parameters/ /Return/ /Entry/ /Body/ /Exit/;
+    = Syntax:`ISetterMethodDefinitionSyntax` /Attributes/ /SelfParameter/ /Parameters/ /Return/ /OverridesOrHides/ /Entry/ /Body/ /Exit/;
 InitializerDefinition <: InvocableDefinition, AlwaysTypeMemberDefinition, InitializerDeclaration
     = Syntax:`IInitializerDefinitionSyntax`? /Attributes/ Parameters:InitializerParameter*;
 DefaultInitializerDefinition <: InitializerDefinition;
@@ -146,6 +146,10 @@ SelfParameter <: Parameter, Binding = Syntax:`ISelfParameterSyntax`;
 InitializerSelfParameter <: SelfParameter = Syntax:`IInitializerSelfParameterSyntax` Capability;
 MethodSelfParameter <: SelfParameter = Syntax:`IMethodSelfParameterSyntax` Constraint:CapabilityConstraint;
 FieldParameter <: InitializerParameter = Syntax:`IFieldParameterSyntax`;
+
+// ---------- Method Clauses
+OverridesOrHides <: Code
+    = Syntax:`IOverridesOrHidesSyntax` ParameterTypes:Type*? Return:Type?;
 
 // ---------- Function Parts
 Body <: BodyOrBlock;

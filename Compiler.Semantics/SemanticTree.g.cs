@@ -274,6 +274,7 @@ public partial interface IFacetMemberDefinitionNode : INamespaceBlockMemberDefin
     typeof(IAttributeNode),
     typeof(ICapabilityConstraintNode),
     typeof(IParameterNode),
+    typeof(IOverridesOrHidesNode),
     typeof(ITypeNode),
     typeof(IParameterTypeNode),
     typeof(IStatementNode),
@@ -753,6 +754,7 @@ public partial interface IMethodDefinitionNode : ICodeNode, IAlwaysTypeMemberDef
     new IFixedList<INamedParameterNode> Parameters { get; }
     IFixedList<IInitializerParameterNode> IInvocableDefinitionNode.Parameters => Parameters;
     ITypeNode? Return { get; }
+    IFixedList<IOverridesOrHidesNode> OverridesOrHides { get; }
     new IdentifierName Name
         => Syntax.Name;
     OrdinaryName? IPackageFacetChildDeclarationNode.Name => Name;
@@ -798,8 +800,9 @@ public partial interface IOrdinaryMethodDefinitionNode : IMethodDefinitionNode, 
         IMethodSelfParameterNode selfParameter,
         IEnumerable<INamedParameterNode> parameters,
         ITypeNode? @return,
+        IEnumerable<IOverridesOrHidesNode> overridesOrHides,
         IBodyNode? body)
-        => new OrdinaryMethodDefinitionNode(syntax, attributes, selfParameter, parameters, @return, body);
+        => new OrdinaryMethodDefinitionNode(syntax, attributes, selfParameter, parameters, @return, overridesOrHides, body);
 }
 
 [Closed(typeof(GetterMethodDefinitionNode))]
@@ -823,8 +826,9 @@ public partial interface IGetterMethodDefinitionNode : IMethodDefinitionNode, IG
         IMethodSelfParameterNode selfParameter,
         IEnumerable<INamedParameterNode> parameters,
         ITypeNode @return,
+        IEnumerable<IOverridesOrHidesNode> overridesOrHides,
         IBodyNode? body)
-        => new GetterMethodDefinitionNode(syntax, attributes, selfParameter, parameters, @return, body);
+        => new GetterMethodDefinitionNode(syntax, attributes, selfParameter, parameters, @return, overridesOrHides, body);
 }
 
 [Closed(typeof(SetterMethodDefinitionNode))]
@@ -846,8 +850,9 @@ public partial interface ISetterMethodDefinitionNode : IMethodDefinitionNode, IS
         IMethodSelfParameterNode selfParameter,
         IEnumerable<INamedParameterNode> parameters,
         ITypeNode? @return,
+        IEnumerable<IOverridesOrHidesNode> overridesOrHides,
         IBodyNode? body)
-        => new SetterMethodDefinitionNode(syntax, attributes, selfParameter, parameters, @return, body);
+        => new SetterMethodDefinitionNode(syntax, attributes, selfParameter, parameters, @return, overridesOrHides, body);
 }
 
 [Closed(
@@ -1240,6 +1245,23 @@ public partial interface IFieldParameterNode : IInitializerParameterNode
 
     public static IFieldParameterNode Create(IFieldParameterSyntax syntax)
         => new FieldParameterNode(syntax);
+}
+
+[Closed(typeof(OverridesOrHidesNode))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
+public partial interface IOverridesOrHidesNode : ICodeNode
+{
+    new IOverridesOrHidesSyntax Syntax { get; }
+    ICodeSyntax ICodeNode.Syntax => Syntax;
+    ISyntax? ISemanticNode.Syntax => Syntax;
+    IFixedList<ITypeNode>? ParameterTypes { get; }
+    ITypeNode? Return { get; }
+
+    public static IOverridesOrHidesNode Create(
+        IOverridesOrHidesSyntax syntax,
+        IEnumerable<ITypeNode>? parameterTypes,
+        ITypeNode? @return)
+        => new OverridesOrHidesNode(syntax, parameterTypes, @return);
 }
 
 [Closed(
@@ -6483,6 +6505,7 @@ file class OrdinaryMethodDefinitionNode : SemanticNode, IOrdinaryMethodDefinitio
     public IMethodSelfParameterNode SelfParameter { [DebuggerStepThrough] get; }
     public IFixedList<INamedParameterNode> Parameters { [DebuggerStepThrough] get; }
     public ITypeNode? Return { [DebuggerStepThrough] get; }
+    public IFixedList<IOverridesOrHidesNode> OverridesOrHides { [DebuggerStepThrough] get; }
     public IBodyNode? Body { [DebuggerStepThrough] get; }
     public PackageSymbol PackageSymbol
         => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
@@ -6556,6 +6579,7 @@ file class OrdinaryMethodDefinitionNode : SemanticNode, IOrdinaryMethodDefinitio
         IMethodSelfParameterNode selfParameter,
         IEnumerable<INamedParameterNode> parameters,
         ITypeNode? @return,
+        IEnumerable<IOverridesOrHidesNode> overridesOrHides,
         IBodyNode? body)
     {
         Syntax = syntax;
@@ -6563,6 +6587,7 @@ file class OrdinaryMethodDefinitionNode : SemanticNode, IOrdinaryMethodDefinitio
         SelfParameter = Child.Attach(this, selfParameter);
         Parameters = ChildList.Attach(this, parameters);
         Return = Child.Attach(this, @return);
+        OverridesOrHides = ChildList.Attach(this, overridesOrHides);
         Body = Child.Attach(this, body);
         Entry = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Entry(this));
         Exit = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Exit(this));
@@ -6684,6 +6709,7 @@ file class GetterMethodDefinitionNode : SemanticNode, IGetterMethodDefinitionNod
     public IMethodSelfParameterNode SelfParameter { [DebuggerStepThrough] get; }
     public IFixedList<INamedParameterNode> Parameters { [DebuggerStepThrough] get; }
     public ITypeNode Return { [DebuggerStepThrough] get; }
+    public IFixedList<IOverridesOrHidesNode> OverridesOrHides { [DebuggerStepThrough] get; }
     public IBodyNode? Body { [DebuggerStepThrough] get; }
     public PackageSymbol PackageSymbol
         => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
@@ -6757,6 +6783,7 @@ file class GetterMethodDefinitionNode : SemanticNode, IGetterMethodDefinitionNod
         IMethodSelfParameterNode selfParameter,
         IEnumerable<INamedParameterNode> parameters,
         ITypeNode @return,
+        IEnumerable<IOverridesOrHidesNode> overridesOrHides,
         IBodyNode? body)
     {
         Syntax = syntax;
@@ -6764,6 +6791,7 @@ file class GetterMethodDefinitionNode : SemanticNode, IGetterMethodDefinitionNod
         SelfParameter = Child.Attach(this, selfParameter);
         Parameters = ChildList.Attach(this, parameters);
         Return = Child.Attach(this, @return);
+        OverridesOrHides = ChildList.Attach(this, overridesOrHides);
         Body = Child.Attach(this, body);
         Entry = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Entry(this));
         Exit = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Exit(this));
@@ -6885,6 +6913,7 @@ file class SetterMethodDefinitionNode : SemanticNode, ISetterMethodDefinitionNod
     public IMethodSelfParameterNode SelfParameter { [DebuggerStepThrough] get; }
     public IFixedList<INamedParameterNode> Parameters { [DebuggerStepThrough] get; }
     public ITypeNode? Return { [DebuggerStepThrough] get; }
+    public IFixedList<IOverridesOrHidesNode> OverridesOrHides { [DebuggerStepThrough] get; }
     public IBodyNode? Body { [DebuggerStepThrough] get; }
     public PackageSymbol PackageSymbol
         => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
@@ -6958,6 +6987,7 @@ file class SetterMethodDefinitionNode : SemanticNode, ISetterMethodDefinitionNod
         IMethodSelfParameterNode selfParameter,
         IEnumerable<INamedParameterNode> parameters,
         ITypeNode? @return,
+        IEnumerable<IOverridesOrHidesNode> overridesOrHides,
         IBodyNode? body)
     {
         Syntax = syntax;
@@ -6965,6 +6995,7 @@ file class SetterMethodDefinitionNode : SemanticNode, ISetterMethodDefinitionNod
         SelfParameter = Child.Attach(this, selfParameter);
         Parameters = ChildList.Attach(this, parameters);
         Return = Child.Attach(this, @return);
+        OverridesOrHides = ChildList.Attach(this, overridesOrHides);
         Body = Child.Attach(this, body);
         Entry = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Entry(this));
         Exit = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Exit(this));
@@ -8147,6 +8178,30 @@ file class FieldParameterNode : SemanticNode, IFieldParameterNode
     public FieldParameterNode(IFieldParameterSyntax syntax)
     {
         Syntax = syntax;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class OverridesOrHidesNode : SemanticNode, IOverridesOrHidesNode
+{
+    private IOverridesOrHidesNode Self { [Inline] get => this; }
+
+    public IOverridesOrHidesSyntax Syntax { [DebuggerStepThrough] get; }
+    public IFixedList<ITypeNode>? ParameterTypes { [DebuggerStepThrough] get; }
+    public ITypeNode? Return { [DebuggerStepThrough] get; }
+    public PackageSymbol PackageSymbol
+        => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
+    public CodeFile File
+        => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
+
+    public OverridesOrHidesNode(
+        IOverridesOrHidesSyntax syntax,
+        IEnumerable<ITypeNode>? parameterTypes,
+        ITypeNode? @return)
+    {
+        Syntax = syntax;
+        ParameterTypes = parameterTypes is null ? null : ChildList.Attach(this, parameterTypes);
+        Return = Child.Attach(this, @return);
     }
 }
 
