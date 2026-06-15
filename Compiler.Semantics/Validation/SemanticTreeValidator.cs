@@ -45,7 +45,7 @@ internal class SemanticTreeValidator
         if (node is IExecutableDefinitionNode executable)
         {
             _ = executable.VariableBindingsMap;
-            // NTA nodes are not a children but should still be validated
+            // NTA nodes are not children but should still be validated
             Validate(executable.Entry);
             Validate(executable.Exit);
         }
