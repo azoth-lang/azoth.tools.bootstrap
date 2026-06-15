@@ -5468,7 +5468,6 @@ file class NamespaceDefinitionNode : SemanticNode, INamespaceDefinitionNode
 file class FunctionDefinitionNode : SemanticNode, IFunctionDefinitionNode
 {
     private IFunctionDefinitionNode Self { [Inline] get => this; }
-    private AttributeLock syncLock;
 
     public IFunctionDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
     public IFixedList<IAttributeNode> Attributes { [DebuggerStepThrough] get; }
@@ -5495,12 +5494,7 @@ file class FunctionDefinitionNode : SemanticNode, IFunctionDefinitionNode
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public NamespaceSymbol ContainingSymbol()
         => (NamespaceSymbol)Inherited_ContainingSymbol(GrammarAttribute.CurrentInheritanceContext());
-    public AccessModifier AccessModifier
-        => GrammarAttribute.IsCached(in accessModifierCached) ? accessModifier
-            : this.Synthetic(ref accessModifierCached, ref accessModifier, ref syncLock,
-                TypeModifiersAspect.FunctionDefinition_AccessModifier);
-    private AccessModifier accessModifier;
-    private bool accessModifierCached;
+    public AccessModifier AccessModifier { [DebuggerStepThrough] get; }
     public IEntryNode Entry { [DebuggerStepThrough] get; }
     public IExitNode Exit { [DebuggerStepThrough] get; }
     public LexicalScope LexicalScope
@@ -5559,6 +5553,7 @@ file class FunctionDefinitionNode : SemanticNode, IFunctionDefinitionNode
         Parameters = ChildList.Attach(this, parameters);
         Return = Child.Attach(this, @return);
         Body = Child.Attach(this, body);
+        AccessModifier = TypeModifiersAspect.FunctionDefinition_AccessModifier(this);
         Entry = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Entry(this));
         Exit = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Exit(this));
         ValueIdScope = ValueIdsAspect.ExecutableDefinition_ValueIdScope(this);
@@ -5653,7 +5648,6 @@ file class FunctionDefinitionNode : SemanticNode, IFunctionDefinitionNode
 file class ClassDefinitionNode : SemanticNode, IClassDefinitionNode
 {
     private IClassDefinitionNode Self { [Inline] get => this; }
-    private AttributeLock syncLock;
 
     public IClassDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
     public IFixedList<IAttributeNode> Attributes { [DebuggerStepThrough] get; }
@@ -5687,12 +5681,7 @@ file class ClassDefinitionNode : SemanticNode, IClassDefinitionNode
                 Inherited_TypeConstructorContext);
     private BareTypeConstructorContext? typeConstructorContext;
     private bool typeConstructorContextCached;
-    public AccessModifier AccessModifier
-        => GrammarAttribute.IsCached(in accessModifierCached) ? accessModifier
-            : this.Synthetic(ref accessModifierCached, ref accessModifier, ref syncLock,
-                TypeModifiersAspect.TypeDefinition_AccessModifier);
-    private AccessModifier accessModifier;
-    private bool accessModifierCached;
+    public AccessModifier AccessModifier { [DebuggerStepThrough] get; }
     public FixedDictionary<OrdinaryName, IFixedSet<IAssociatedMemberDeclarationNode>> AssociatedMembersByName
         => GrammarAttribute.IsCached(in associatedMembersByNameCached) ? associatedMembersByName!
             : this.Synthetic(ref associatedMembersByNameCached, ref associatedMembersByName,
@@ -5782,6 +5771,7 @@ file class ClassDefinitionNode : SemanticNode, IClassDefinitionNode
         BaseTypeName = Child.Attach(this, baseTypeName);
         SupertypeNames = ChildList.Attach(this, supertypeNames);
         SourceMembers = ChildList.Attach(this, sourceMembers);
+        AccessModifier = TypeModifiersAspect.TypeDefinition_AccessModifier(this);
     }
 
     internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -5851,7 +5841,6 @@ file class ClassDefinitionNode : SemanticNode, IClassDefinitionNode
 file class StructDefinitionNode : SemanticNode, IStructDefinitionNode
 {
     private IStructDefinitionNode Self { [Inline] get => this; }
-    private AttributeLock syncLock;
 
     public IStructDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
     public IFixedList<IAttributeNode> Attributes { [DebuggerStepThrough] get; }
@@ -5884,12 +5873,7 @@ file class StructDefinitionNode : SemanticNode, IStructDefinitionNode
                 Inherited_TypeConstructorContext);
     private BareTypeConstructorContext? typeConstructorContext;
     private bool typeConstructorContextCached;
-    public AccessModifier AccessModifier
-        => GrammarAttribute.IsCached(in accessModifierCached) ? accessModifier
-            : this.Synthetic(ref accessModifierCached, ref accessModifier, ref syncLock,
-                TypeModifiersAspect.TypeDefinition_AccessModifier);
-    private AccessModifier accessModifier;
-    private bool accessModifierCached;
+    public AccessModifier AccessModifier { [DebuggerStepThrough] get; }
     public FixedDictionary<OrdinaryName, IFixedSet<IAssociatedMemberDeclarationNode>> AssociatedMembersByName
         => GrammarAttribute.IsCached(in associatedMembersByNameCached) ? associatedMembersByName!
             : this.Synthetic(ref associatedMembersByNameCached, ref associatedMembersByName,
@@ -5970,6 +5954,7 @@ file class StructDefinitionNode : SemanticNode, IStructDefinitionNode
         GenericParameters = ChildList.Attach(this, genericParameters);
         SupertypeNames = ChildList.Attach(this, supertypeNames);
         SourceMembers = ChildList.Attach(this, sourceMembers);
+        AccessModifier = TypeModifiersAspect.TypeDefinition_AccessModifier(this);
     }
 
     internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -6038,7 +6023,6 @@ file class StructDefinitionNode : SemanticNode, IStructDefinitionNode
 file class ValueDefinitionNode : SemanticNode, IValueDefinitionNode
 {
     private IValueDefinitionNode Self { [Inline] get => this; }
-    private AttributeLock syncLock;
 
     public IValueDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
     public IFixedList<IAttributeNode> Attributes { [DebuggerStepThrough] get; }
@@ -6071,12 +6055,7 @@ file class ValueDefinitionNode : SemanticNode, IValueDefinitionNode
                 Inherited_TypeConstructorContext);
     private BareTypeConstructorContext? typeConstructorContext;
     private bool typeConstructorContextCached;
-    public AccessModifier AccessModifier
-        => GrammarAttribute.IsCached(in accessModifierCached) ? accessModifier
-            : this.Synthetic(ref accessModifierCached, ref accessModifier, ref syncLock,
-                TypeModifiersAspect.TypeDefinition_AccessModifier);
-    private AccessModifier accessModifier;
-    private bool accessModifierCached;
+    public AccessModifier AccessModifier { [DebuggerStepThrough] get; }
     public FixedDictionary<OrdinaryName, IFixedSet<IAssociatedMemberDeclarationNode>> AssociatedMembersByName
         => GrammarAttribute.IsCached(in associatedMembersByNameCached) ? associatedMembersByName!
             : this.Synthetic(ref associatedMembersByNameCached, ref associatedMembersByName,
@@ -6157,6 +6136,7 @@ file class ValueDefinitionNode : SemanticNode, IValueDefinitionNode
         GenericParameters = ChildList.Attach(this, genericParameters);
         SupertypeNames = ChildList.Attach(this, supertypeNames);
         SourceMembers = ChildList.Attach(this, sourceMembers);
+        AccessModifier = TypeModifiersAspect.TypeDefinition_AccessModifier(this);
     }
 
     internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -6225,7 +6205,6 @@ file class ValueDefinitionNode : SemanticNode, IValueDefinitionNode
 file class TraitDefinitionNode : SemanticNode, ITraitDefinitionNode
 {
     private ITraitDefinitionNode Self { [Inline] get => this; }
-    private AttributeLock syncLock;
 
     public ITraitDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
     public IFixedList<IAttributeNode> Attributes { [DebuggerStepThrough] get; }
@@ -6258,12 +6237,7 @@ file class TraitDefinitionNode : SemanticNode, ITraitDefinitionNode
                 Inherited_TypeConstructorContext);
     private BareTypeConstructorContext? typeConstructorContext;
     private bool typeConstructorContextCached;
-    public AccessModifier AccessModifier
-        => GrammarAttribute.IsCached(in accessModifierCached) ? accessModifier
-            : this.Synthetic(ref accessModifierCached, ref accessModifier, ref syncLock,
-                TypeModifiersAspect.TypeDefinition_AccessModifier);
-    private AccessModifier accessModifier;
-    private bool accessModifierCached;
+    public AccessModifier AccessModifier { [DebuggerStepThrough] get; }
     public FixedDictionary<OrdinaryName, IFixedSet<IAssociatedMemberDeclarationNode>> AssociatedMembersByName
         => GrammarAttribute.IsCached(in associatedMembersByNameCached) ? associatedMembersByName!
             : this.Synthetic(ref associatedMembersByNameCached, ref associatedMembersByName,
@@ -6332,6 +6306,7 @@ file class TraitDefinitionNode : SemanticNode, ITraitDefinitionNode
         GenericParameters = ChildList.Attach(this, genericParameters);
         SupertypeNames = ChildList.Attach(this, supertypeNames);
         Members = ChildSet.Attach(this, members);
+        AccessModifier = TypeModifiersAspect.TypeDefinition_AccessModifier(this);
     }
 
     internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -6498,7 +6473,6 @@ file class ImplicitSelfDefinitionNode : SemanticNode, IImplicitSelfDefinitionNod
 file class OrdinaryMethodDefinitionNode : SemanticNode, IOrdinaryMethodDefinitionNode
 {
     private IOrdinaryMethodDefinitionNode Self { [Inline] get => this; }
-    private AttributeLock syncLock;
 
     public IOrdinaryMethodDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
     public IFixedList<IAttributeNode> Attributes { [DebuggerStepThrough] get; }
@@ -6533,12 +6507,7 @@ file class OrdinaryMethodDefinitionNode : SemanticNode, IOrdinaryMethodDefinitio
                 Inherited_ContainingTypeConstructor);
     private OrdinaryTypeConstructor? containingTypeConstructor;
     private bool containingTypeConstructorCached;
-    public AccessModifier AccessModifier
-        => GrammarAttribute.IsCached(in accessModifierCached) ? accessModifier
-            : this.Synthetic(ref accessModifierCached, ref accessModifier, ref syncLock,
-                TypeModifiersAspect.TypeMemberDefinition_AccessModifier);
-    private AccessModifier accessModifier;
-    private bool accessModifierCached;
+    public AccessModifier AccessModifier { [DebuggerStepThrough] get; }
     public IEntryNode Entry { [DebuggerStepThrough] get; }
     public IExitNode Exit { [DebuggerStepThrough] get; }
     public LexicalScope LexicalScope
@@ -6589,6 +6558,7 @@ file class OrdinaryMethodDefinitionNode : SemanticNode, IOrdinaryMethodDefinitio
         Return = Child.Attach(this, @return);
         OverridesOrHides = ChildList.Attach(this, overridesOrHides);
         Body = Child.Attach(this, body);
+        AccessModifier = TypeModifiersAspect.TypeMemberDefinition_AccessModifier(this);
         Entry = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Entry(this));
         Exit = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Exit(this));
         ValueIdScope = ValueIdsAspect.ExecutableDefinition_ValueIdScope(this);
@@ -6702,7 +6672,6 @@ file class OrdinaryMethodDefinitionNode : SemanticNode, IOrdinaryMethodDefinitio
 file class GetterMethodDefinitionNode : SemanticNode, IGetterMethodDefinitionNode
 {
     private IGetterMethodDefinitionNode Self { [Inline] get => this; }
-    private AttributeLock syncLock;
 
     public IGetterMethodDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
     public IFixedList<IAttributeNode> Attributes { [DebuggerStepThrough] get; }
@@ -6737,12 +6706,7 @@ file class GetterMethodDefinitionNode : SemanticNode, IGetterMethodDefinitionNod
                 Inherited_ContainingTypeConstructor);
     private OrdinaryTypeConstructor? containingTypeConstructor;
     private bool containingTypeConstructorCached;
-    public AccessModifier AccessModifier
-        => GrammarAttribute.IsCached(in accessModifierCached) ? accessModifier
-            : this.Synthetic(ref accessModifierCached, ref accessModifier, ref syncLock,
-                TypeModifiersAspect.TypeMemberDefinition_AccessModifier);
-    private AccessModifier accessModifier;
-    private bool accessModifierCached;
+    public AccessModifier AccessModifier { [DebuggerStepThrough] get; }
     public IEntryNode Entry { [DebuggerStepThrough] get; }
     public IExitNode Exit { [DebuggerStepThrough] get; }
     public LexicalScope LexicalScope
@@ -6793,6 +6757,7 @@ file class GetterMethodDefinitionNode : SemanticNode, IGetterMethodDefinitionNod
         Return = Child.Attach(this, @return);
         OverridesOrHides = ChildList.Attach(this, overridesOrHides);
         Body = Child.Attach(this, body);
+        AccessModifier = TypeModifiersAspect.TypeMemberDefinition_AccessModifier(this);
         Entry = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Entry(this));
         Exit = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Exit(this));
         ValueIdScope = ValueIdsAspect.ExecutableDefinition_ValueIdScope(this);
@@ -6906,7 +6871,6 @@ file class GetterMethodDefinitionNode : SemanticNode, IGetterMethodDefinitionNod
 file class SetterMethodDefinitionNode : SemanticNode, ISetterMethodDefinitionNode
 {
     private ISetterMethodDefinitionNode Self { [Inline] get => this; }
-    private AttributeLock syncLock;
 
     public ISetterMethodDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
     public IFixedList<IAttributeNode> Attributes { [DebuggerStepThrough] get; }
@@ -6941,12 +6905,7 @@ file class SetterMethodDefinitionNode : SemanticNode, ISetterMethodDefinitionNod
                 Inherited_ContainingTypeConstructor);
     private OrdinaryTypeConstructor? containingTypeConstructor;
     private bool containingTypeConstructorCached;
-    public AccessModifier AccessModifier
-        => GrammarAttribute.IsCached(in accessModifierCached) ? accessModifier
-            : this.Synthetic(ref accessModifierCached, ref accessModifier, ref syncLock,
-                TypeModifiersAspect.TypeMemberDefinition_AccessModifier);
-    private AccessModifier accessModifier;
-    private bool accessModifierCached;
+    public AccessModifier AccessModifier { [DebuggerStepThrough] get; }
     public IEntryNode Entry { [DebuggerStepThrough] get; }
     public IExitNode Exit { [DebuggerStepThrough] get; }
     public LexicalScope LexicalScope
@@ -6997,6 +6956,7 @@ file class SetterMethodDefinitionNode : SemanticNode, ISetterMethodDefinitionNod
         Return = Child.Attach(this, @return);
         OverridesOrHides = ChildList.Attach(this, overridesOrHides);
         Body = Child.Attach(this, body);
+        AccessModifier = TypeModifiersAspect.TypeMemberDefinition_AccessModifier(this);
         Entry = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Entry(this));
         Exit = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Exit(this));
         ValueIdScope = ValueIdsAspect.ExecutableDefinition_ValueIdScope(this);
@@ -7110,7 +7070,6 @@ file class SetterMethodDefinitionNode : SemanticNode, ISetterMethodDefinitionNod
 file class DefaultInitializerDefinitionNode : SemanticNode, IDefaultInitializerDefinitionNode
 {
     private IDefaultInitializerDefinitionNode Self { [Inline] get => this; }
-    private AttributeLock syncLock;
 
     public IOrdinaryTypeDeclarationNode ContainingDeclaration
         => (IOrdinaryTypeDeclarationNode)Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
@@ -7136,12 +7095,7 @@ file class DefaultInitializerDefinitionNode : SemanticNode, IDefaultInitializerD
                 Inherited_ContainingTypeDefinition);
     private ITypeDefinitionNode? containingTypeDefinition;
     private bool containingTypeDefinitionCached;
-    public AccessModifier AccessModifier
-        => GrammarAttribute.IsCached(in accessModifierCached) ? accessModifier
-            : this.Synthetic(ref accessModifierCached, ref accessModifier, ref syncLock,
-                TypeModifiersAspect.TypeMemberDefinition_AccessModifier);
-    private AccessModifier accessModifier;
-    private bool accessModifierCached;
+    public AccessModifier AccessModifier { [DebuggerStepThrough] get; }
     public IEntryNode Entry { [DebuggerStepThrough] get; }
     public IExitNode Exit { [DebuggerStepThrough] get; }
     public LexicalScope LexicalScope
@@ -7178,6 +7132,7 @@ file class DefaultInitializerDefinitionNode : SemanticNode, IDefaultInitializerD
 
     public DefaultInitializerDefinitionNode()
     {
+        AccessModifier = TypeModifiersAspect.TypeMemberDefinition_AccessModifier(this);
         Entry = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Entry(this));
         Exit = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Exit(this));
         ValueIdScope = ValueIdsAspect.ExecutableDefinition_ValueIdScope(this);
@@ -7231,7 +7186,6 @@ file class DefaultInitializerDefinitionNode : SemanticNode, IDefaultInitializerD
 file class OrdinaryInitializerDefinitionNode : SemanticNode, IOrdinaryInitializerDefinitionNode
 {
     private IOrdinaryInitializerDefinitionNode Self { [Inline] get => this; }
-    private AttributeLock syncLock;
 
     public IInitializerDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
     public IFixedList<IAttributeNode> Attributes { [DebuggerStepThrough] get; }
@@ -7264,12 +7218,7 @@ file class OrdinaryInitializerDefinitionNode : SemanticNode, IOrdinaryInitialize
                 Inherited_ContainingTypeDefinition);
     private ITypeDefinitionNode? containingTypeDefinition;
     private bool containingTypeDefinitionCached;
-    public AccessModifier AccessModifier
-        => GrammarAttribute.IsCached(in accessModifierCached) ? accessModifier
-            : this.Synthetic(ref accessModifierCached, ref accessModifier, ref syncLock,
-                TypeModifiersAspect.TypeMemberDefinition_AccessModifier);
-    private AccessModifier accessModifier;
-    private bool accessModifierCached;
+    public AccessModifier AccessModifier { [DebuggerStepThrough] get; }
     public IEntryNode Entry { [DebuggerStepThrough] get; }
     public IExitNode Exit { [DebuggerStepThrough] get; }
     public LexicalScope LexicalScope
@@ -7316,6 +7265,7 @@ file class OrdinaryInitializerDefinitionNode : SemanticNode, IOrdinaryInitialize
         SelfParameter = Child.Attach(this, selfParameter);
         Parameters = ChildList.Attach(this, parameters);
         Body = Child.Attach(this, body);
+        AccessModifier = TypeModifiersAspect.TypeMemberDefinition_AccessModifier(this);
         Entry = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Entry(this));
         Exit = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Exit(this));
         ValueIdScope = ValueIdsAspect.ExecutableDefinition_ValueIdScope(this);
@@ -7437,12 +7387,7 @@ file class FieldDefinitionNode : SemanticNode, IFieldDefinitionNode
                 Inherited_ContainingLexicalScope);
     private LexicalScope? containingLexicalScope;
     private bool containingLexicalScopeCached;
-    public AccessModifier AccessModifier
-        => GrammarAttribute.IsCached(in accessModifierCached) ? accessModifier
-            : this.Synthetic(ref accessModifierCached, ref accessModifier, ref syncLock,
-                TypeModifiersAspect.TypeMemberDefinition_AccessModifier);
-    private AccessModifier accessModifier;
-    private bool accessModifierCached;
+    public AccessModifier AccessModifier { [DebuggerStepThrough] get; }
     public IMaybeNonVoidPlainType BindingPlainType
         => GrammarAttribute.IsCached(in bindingPlainTypeCached) ? bindingPlainType!
             : this.Synthetic(ref bindingPlainTypeCached, ref bindingPlainType,
@@ -7487,6 +7432,7 @@ file class FieldDefinitionNode : SemanticNode, IFieldDefinitionNode
         Attributes = ChildList.Attach(this, attributes);
         TypeNode = Child.Attach(this, typeNode);
         this.initializer = Child.Create(this, initializer);
+        AccessModifier = TypeModifiersAspect.TypeMemberDefinition_AccessModifier(this);
         Entry = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Entry(this));
         Exit = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Exit(this));
         ValueIdScope = ValueIdsAspect.ExecutableDefinition_ValueIdScope(this);
@@ -7553,7 +7499,6 @@ file class FieldDefinitionNode : SemanticNode, IFieldDefinitionNode
 file class AssociatedFunctionDefinitionNode : SemanticNode, IAssociatedFunctionDefinitionNode
 {
     private IAssociatedFunctionDefinitionNode Self { [Inline] get => this; }
-    private AttributeLock syncLock;
 
     public IAssociatedFunctionDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
     public IFixedList<IAttributeNode> Attributes { [DebuggerStepThrough] get; }
@@ -7580,12 +7525,7 @@ file class AssociatedFunctionDefinitionNode : SemanticNode, IAssociatedFunctionD
     private bool facetCached;
     public OrdinaryTypeSymbol ContainingSymbol()
         => (OrdinaryTypeSymbol)Inherited_ContainingSymbol(GrammarAttribute.CurrentInheritanceContext());
-    public AccessModifier AccessModifier
-        => GrammarAttribute.IsCached(in accessModifierCached) ? accessModifier
-            : this.Synthetic(ref accessModifierCached, ref accessModifier, ref syncLock,
-                TypeModifiersAspect.TypeMemberDefinition_AccessModifier);
-    private AccessModifier accessModifier;
-    private bool accessModifierCached;
+    public AccessModifier AccessModifier { [DebuggerStepThrough] get; }
     public IEntryNode Entry { [DebuggerStepThrough] get; }
     public IExitNode Exit { [DebuggerStepThrough] get; }
     public LexicalScope LexicalScope
@@ -7644,6 +7584,7 @@ file class AssociatedFunctionDefinitionNode : SemanticNode, IAssociatedFunctionD
         Parameters = ChildList.Attach(this, parameters);
         Return = Child.Attach(this, @return);
         Body = Child.Attach(this, body);
+        AccessModifier = TypeModifiersAspect.TypeMemberDefinition_AccessModifier(this);
         Entry = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Entry(this));
         Exit = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Exit(this));
         ValueIdScope = ValueIdsAspect.ExecutableDefinition_ValueIdScope(this);
@@ -7733,7 +7674,6 @@ file class AssociatedFunctionDefinitionNode : SemanticNode, IAssociatedFunctionD
 file class AssociatedTypeDefinitionNode : SemanticNode, IAssociatedTypeDefinitionNode
 {
     private IAssociatedTypeDefinitionNode Self { [Inline] get => this; }
-    private AttributeLock syncLock;
 
     public IAssociatedTypeDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
     public IFixedList<IAttributeNode> Attributes { [DebuggerStepThrough] get; }
@@ -7758,12 +7698,7 @@ file class AssociatedTypeDefinitionNode : SemanticNode, IAssociatedTypeDefinitio
         => (OrdinaryTypeSymbol)Inherited_ContainingSymbol(GrammarAttribute.CurrentInheritanceContext());
     public OrdinaryTypeConstructor TypeConstructorContext
         => (OrdinaryTypeConstructor)Inherited_TypeConstructorContext(GrammarAttribute.CurrentInheritanceContext());
-    public AccessModifier AccessModifier
-        => GrammarAttribute.IsCached(in accessModifierCached) ? accessModifier
-            : this.Synthetic(ref accessModifierCached, ref accessModifier, ref syncLock,
-                TypeModifiersAspect.TypeMemberDefinition_AccessModifier);
-    private AccessModifier accessModifier;
-    private bool accessModifierCached;
+    public AccessModifier AccessModifier { [DebuggerStepThrough] get; }
     public AssociatedTypeSymbol Symbol
         => GrammarAttribute.IsCached(in symbolCached) ? symbol!
             : this.Synthetic(ref symbolCached, ref symbol,
@@ -7786,6 +7721,7 @@ file class AssociatedTypeDefinitionNode : SemanticNode, IAssociatedTypeDefinitio
         Syntax = syntax;
         Attributes = ChildList.Attach(this, attributes);
         Initializer = Child.Attach(this, initializer);
+        AccessModifier = TypeModifiersAspect.TypeMemberDefinition_AccessModifier(this);
         Variance = DefinitionsAspect.AssociatedTypeDefinition_Variance(this);
     }
 

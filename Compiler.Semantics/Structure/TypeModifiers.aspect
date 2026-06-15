@@ -11,14 +11,14 @@ struct `AccessModifier`;
 ↑ FacetMemberDefinition.AccessModifier: `AccessModifier`;
 
 // ---------- Function Definition
-= FunctionDefinition.AccessModifier;
+= eager FunctionDefinition.AccessModifier;
 
 // ---------- Type Definitions
-= TypeDefinition.AccessModifier;
+= eager TypeDefinition.AccessModifier;
 
 // ---------- Type Member Definitions
 ↑ TypeMemberDefinition.AccessModifier: `AccessModifier`;
-= TypeMemberDefinition.AccessModifier;
+= eager TypeMemberDefinition.AccessModifier;
 
 // ---------- Member Definitions
 = MethodDefinition.↑.Diagnostics;
