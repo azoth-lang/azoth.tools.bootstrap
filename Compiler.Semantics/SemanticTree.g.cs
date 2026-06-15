@@ -1256,6 +1256,7 @@ public partial interface IOverridesOrHidesNode : ICodeNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     IFixedList<ITypeNode>? ParameterTypes { get; }
     ITypeNode? Return { get; }
+    InheritanceRelationship InheritanceRelationship { get; }
     AccessModifier? AccessModifier { get; }
     IdentifierName? Name
         => Syntax.Name;
@@ -8133,6 +8134,7 @@ file class OverridesOrHidesNode : SemanticNode, IOverridesOrHidesNode
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public AccessModifier? AccessModifier { [DebuggerStepThrough] get; }
+    public InheritanceRelationship InheritanceRelationship { [DebuggerStepThrough] get; }
 
     public OverridesOrHidesNode(
         IOverridesOrHidesSyntax syntax,
@@ -8143,6 +8145,7 @@ file class OverridesOrHidesNode : SemanticNode, IOverridesOrHidesNode
         ParameterTypes = parameterTypes is null ? null : ChildList.Attach(this, parameterTypes);
         Return = Child.Attach(this, @return);
         AccessModifier = MethodClausesAspect.OverridesOrHides_AccessModifier(this);
+        InheritanceRelationship = MethodClausesAspect.OverridesOrHides_InheritanceRelationship(this);
     }
 }
 

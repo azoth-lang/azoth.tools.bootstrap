@@ -11,5 +11,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Structure;
 internal static partial class MethodClausesAspect
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial InheritanceRelationship OverridesOrHides_InheritanceRelationship(IOverridesOrHidesNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial AccessModifier? OverridesOrHides_AccessModifier(IOverridesOrHidesNode node);
 }
