@@ -1,12 +1,9 @@
 ◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Structure;
 ◊name MethodClausesAspect;
-◊using System.Collections.Generic;
-◊using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
-◊using Azoth.Tools.Bootstrap.Compiler.Core.Types;
-◊using Azoth.Tools.Bootstrap.Compiler.Names;
-◊using Azoth.Tools.Bootstrap.Compiler.Symbols;
-◊using Azoth.Tools.Bootstrap.Framework;
+◊using Azoth.Tools.Bootstrap.Compiler.Syntax;
 
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
 // ---------- Method Clauses
+↑ eager OverridesOrHides.AccessModifier: `AccessModifier`?;
+↑ OverridesOrHides.Name: `IdentifierName`? => Syntax.Name;

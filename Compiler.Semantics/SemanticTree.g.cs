@@ -1256,6 +1256,9 @@ public partial interface IOverridesOrHidesNode : ICodeNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     IFixedList<ITypeNode>? ParameterTypes { get; }
     ITypeNode? Return { get; }
+    AccessModifier? AccessModifier { get; }
+    IdentifierName? Name
+        => Syntax.Name;
 
     public static IOverridesOrHidesNode Create(
         IOverridesOrHidesSyntax syntax,
@@ -8129,6 +8132,7 @@ file class OverridesOrHidesNode : SemanticNode, IOverridesOrHidesNode
         => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
+    public AccessModifier? AccessModifier { [DebuggerStepThrough] get; }
 
     public OverridesOrHidesNode(
         IOverridesOrHidesSyntax syntax,
@@ -8138,6 +8142,7 @@ file class OverridesOrHidesNode : SemanticNode, IOverridesOrHidesNode
         Syntax = syntax;
         ParameterTypes = parameterTypes is null ? null : ChildList.Attach(this, parameterTypes);
         Return = Child.Attach(this, @return);
+        AccessModifier = MethodClausesAspect.OverridesOrHides_AccessModifier(this);
     }
 }
 
