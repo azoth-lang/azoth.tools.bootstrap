@@ -10,9 +10,4 @@ public static class TreeCodeBuilder
         return template.TransformText();
     }
 
-    public static string GenerateChildren(TreeModel tree)
-    {
-        var template = new ChildrenCodeTemplate(tree);
-        return template.TransformText();
-    }
 }

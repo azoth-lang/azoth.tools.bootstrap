@@ -42,9 +42,6 @@
     <Compile Update="SyntaxTree.g.cs">
       <DependentUpon>SyntaxTree.tree</DependentUpon>
     </Compile>
-    <Compile Update="SyntaxTree.children.cs">
-      <DependentUpon>SyntaxTree.tree</DependentUpon>
-    </Compile>
     <Compile Update="FormattingAspect.g.cs">
       <DependentUpon>Formatting.aspect</DependentUpon>
     </Compile>

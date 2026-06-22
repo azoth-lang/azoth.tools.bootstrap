@@ -47,9 +47,6 @@
     <Compile Update="SemanticTree.g.cs">
       <DependentUpon>SemanticTree.tree</DependentUpon>
     </Compile>
-    <Compile Update="SemanticTree.children.cs">
-      <DependentUpon>SemanticTree.tree</DependentUpon>
-    </Compile>
     <Compile Update="LexicalScopes\LexicalScopingAspect.g.cs">
       <DependentUpon>LexicalScoping.aspect</DependentUpon>
     </Compile>

@@ -1,6 +1,7 @@
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Numerics;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Code;
@@ -29,6 +30,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Syntax;
 public partial interface ISyntax
 {
     string ToString();
+
+    [DebuggerStepThrough]
+    IEnumerable<ISyntax> Children();
 }
 
 [Closed(
@@ -1606,6 +1610,15 @@ file class PackageFacetSyntax : IPackageFacetSyntax
     public override string ToString()
         => FormattingAspect.PackageFacet_ToString(this);
 
+    [DebuggerStepThrough]
+    public IEnumerable<ISyntax> Children()
+    {
+        foreach (var child in CompilationUnits)
+            yield return child;
+        foreach (var child in References)
+            yield return child;
+    }
+
     public PackageFacetSyntax(
         IdentifierName name,
         FacetKind kind,
@@ -1633,6 +1646,12 @@ file class PackageReferenceSyntax : IPackageReferenceSyntax
     public bool ReferenceTests { [DebuggerStepThrough] get; }
     public override string ToString()
         => FormattingAspect.PackageReference_ToString(this);
+
+    [DebuggerStepThrough]
+    public IEnumerable<ISyntax> Children()
+    {
+        return Enumerable.Empty<ISyntax>();
+    }
 
     public PackageReferenceSyntax(
         IdentifierName aliasOrName,
@@ -1665,6 +1684,15 @@ file class CompilationUnitSyntax : ICompilationUnitSyntax
     public override string ToString()
         => FormattingAspect.CompilationUnit_ToString(this);
 
+    [DebuggerStepThrough]
+    public IEnumerable<ISyntax> Children()
+    {
+        foreach (var child in ImportDirectives)
+            yield return child;
+        foreach (var child in Definitions)
+            yield return child;
+    }
+
     public CompilationUnitSyntax(
         TextSpan span,
         CodeFile file,
@@ -1692,6 +1720,12 @@ file class ImportDirectiveSyntax : IImportDirectiveSyntax
     public override string ToString()
         => FormattingAspect.ImportDirective_ToString(this);
 
+    [DebuggerStepThrough]
+    public IEnumerable<ISyntax> Children()
+    {
+        return Enumerable.Empty<ISyntax>();
+    }
+
     public ImportDirectiveSyntax(
         TextSpan span,
         NamespaceName name)
@@ -1716,6 +1750,15 @@ file class NamespaceBlockDefinitionSyntax : INamespaceBlockDefinitionSyntax
     public IFixedList<INamespaceBlockMemberDefinitionSyntax> Definitions { [DebuggerStepThrough] get; }
     public override string ToString()
         => FormattingAspect.NamespaceBlockDefinition_ToString(this);
+
+    [DebuggerStepThrough]
+    public IEnumerable<ISyntax> Children()
+    {
+        foreach (var child in ImportDirectives)
+            yield return child;
+        foreach (var child in Definitions)
+            yield return child;
+    }
 
     public NamespaceBlockDefinitionSyntax(
         TextSpan span,
@@ -1754,6 +1797,18 @@ file class FunctionDefinitionSyntax : IFunctionDefinitionSyntax
     public IBodySyntax Body { [DebuggerStepThrough] get; }
     public override string ToString()
         => FormattingAspect.FunctionDefinition_ToString(this);
+
+    [DebuggerStepThrough]
+    public IEnumerable<ISyntax> Children()
+    {
+        foreach (var child in Attributes)
+            yield return child;
+        foreach (var child in Parameters)
+            yield return child;
+        if (Return is not null)
+            yield return Return;
+        yield return Body;
+    }
 
     public FunctionDefinitionSyntax(
         TextSpan span,
@@ -1798,6 +1853,21 @@ file class ClassDefinitionSyntax : IClassDefinitionSyntax
     public IFixedList<IMemberDefinitionSyntax> Members { [DebuggerStepThrough] get; }
     public override string ToString()
         => FormattingAspect.ClassDefinition_ToString(this);
+
+    [DebuggerStepThrough]
+    public IEnumerable<ISyntax> Children()
+    {
+        foreach (var child in Attributes)
+            yield return child;
+        foreach (var child in GenericParameters)
+            yield return child;
+        if (BaseTypeName is not null)
+            yield return BaseTypeName;
+        foreach (var child in SupertypeNames)
+            yield return child;
+        foreach (var child in Members)
+            yield return child;
+    }
 
     public ClassDefinitionSyntax(
         TextSpan span,
@@ -1849,6 +1919,19 @@ file class StructDefinitionSyntax : IStructDefinitionSyntax
     public override string ToString()
         => FormattingAspect.StructDefinition_ToString(this);
 
+    [DebuggerStepThrough]
+    public IEnumerable<ISyntax> Children()
+    {
+        foreach (var child in Attributes)
+            yield return child;
+        foreach (var child in GenericParameters)
+            yield return child;
+        foreach (var child in SupertypeNames)
+            yield return child;
+        foreach (var child in Members)
+            yield return child;
+    }
+
     public StructDefinitionSyntax(
         TextSpan span,
         CodeFile file,
@@ -1894,6 +1977,19 @@ file class ValueDefinitionSyntax : IValueDefinitionSyntax
     public IFixedList<IMemberDefinitionSyntax> Members { [DebuggerStepThrough] get; }
     public override string ToString()
         => FormattingAspect.ValueDefinition_ToString(this);
+
+    [DebuggerStepThrough]
+    public IEnumerable<ISyntax> Children()
+    {
+        foreach (var child in Attributes)
+            yield return child;
+        foreach (var child in GenericParameters)
+            yield return child;
+        foreach (var child in SupertypeNames)
+            yield return child;
+        foreach (var child in Members)
+            yield return child;
+    }
 
     public ValueDefinitionSyntax(
         TextSpan span,
@@ -1941,6 +2037,19 @@ file class TraitDefinitionSyntax : ITraitDefinitionSyntax
     public override string ToString()
         => FormattingAspect.TraitDefinition_ToString(this);
 
+    [DebuggerStepThrough]
+    public IEnumerable<ISyntax> Children()
+    {
+        foreach (var child in Attributes)
+            yield return child;
+        foreach (var child in GenericParameters)
+            yield return child;
+        foreach (var child in SupertypeNames)
+            yield return child;
+        foreach (var child in Members)
+            yield return child;
+    }
+
     public TraitDefinitionSyntax(
         TextSpan span,
         CodeFile file,
@@ -1981,6 +2090,12 @@ file class GenericParameterSyntax : IGenericParameterSyntax
     public override string ToString()
         => FormattingAspect.GenericParameter_ToString(this);
 
+    [DebuggerStepThrough]
+    public IEnumerable<ISyntax> Children()
+    {
+        yield return Constraint;
+    }
+
     public GenericParameterSyntax(
         TextSpan span,
         ICapabilityConstraintSyntax constraint,
@@ -2015,6 +2130,22 @@ file class OrdinaryMethodDefinitionSyntax : IOrdinaryMethodDefinitionSyntax
     public IBodySyntax? Body { [DebuggerStepThrough] get; }
     public override string ToString()
         => FormattingAspect.OrdinaryMethodDefinition_ToString(this);
+
+    [DebuggerStepThrough]
+    public IEnumerable<ISyntax> Children()
+    {
+        foreach (var child in Attributes)
+            yield return child;
+        yield return SelfParameter;
+        foreach (var child in Parameters)
+            yield return child;
+        if (Return is not null)
+            yield return Return;
+        foreach (var child in OverridesOrHides)
+            yield return child;
+        if (Body is not null)
+            yield return Body;
+    }
 
     public OrdinaryMethodDefinitionSyntax(
         TextSpan span,
@@ -2064,6 +2195,19 @@ file class GetterMethodDefinitionSyntax : IGetterMethodDefinitionSyntax
     public override string ToString()
         => FormattingAspect.GetterMethodDefinition_ToString(this);
 
+    [DebuggerStepThrough]
+    public IEnumerable<ISyntax> Children()
+    {
+        foreach (var child in Attributes)
+            yield return child;
+        yield return SelfParameter;
+        yield return Return;
+        foreach (var child in OverridesOrHides)
+            yield return child;
+        if (Body is not null)
+            yield return Body;
+    }
+
     public GetterMethodDefinitionSyntax(
         TextSpan span,
         CodeFile file,
@@ -2110,6 +2254,20 @@ file class SetterMethodDefinitionSyntax : ISetterMethodDefinitionSyntax
     public override string ToString()
         => FormattingAspect.SetterMethodDefinition_ToString(this);
 
+    [DebuggerStepThrough]
+    public IEnumerable<ISyntax> Children()
+    {
+        foreach (var child in Attributes)
+            yield return child;
+        yield return SelfParameter;
+        foreach (var child in Parameters)
+            yield return child;
+        foreach (var child in OverridesOrHides)
+            yield return child;
+        if (Body is not null)
+            yield return Body;
+    }
+
     public SetterMethodDefinitionSyntax(
         TextSpan span,
         CodeFile file,
@@ -2154,6 +2312,17 @@ file class InitializerDefinitionSyntax : IInitializerDefinitionSyntax
     public override string ToString()
         => FormattingAspect.InitializerDefinition_ToString(this);
 
+    [DebuggerStepThrough]
+    public IEnumerable<ISyntax> Children()
+    {
+        foreach (var child in Attributes)
+            yield return child;
+        yield return SelfParameter;
+        foreach (var child in Parameters)
+            yield return child;
+        yield return Body;
+    }
+
     public InitializerDefinitionSyntax(
         TextSpan span,
         CodeFile file,
@@ -2193,6 +2362,16 @@ file class FieldDefinitionSyntax : IFieldDefinitionSyntax
     public IExpressionSyntax? Initializer { [DebuggerStepThrough] get; }
     public override string ToString()
         => FormattingAspect.FieldDefinition_ToString(this);
+
+    [DebuggerStepThrough]
+    public IEnumerable<ISyntax> Children()
+    {
+        foreach (var child in Attributes)
+            yield return child;
+        yield return Type;
+        if (Initializer is not null)
+            yield return Initializer;
+    }
 
     public FieldDefinitionSyntax(
         TextSpan span,
@@ -2234,6 +2413,19 @@ file class AssociatedFunctionDefinitionSyntax : IAssociatedFunctionDefinitionSyn
     public IBodySyntax? Body { [DebuggerStepThrough] get; }
     public override string ToString()
         => FormattingAspect.AssociatedFunctionDefinition_ToString(this);
+
+    [DebuggerStepThrough]
+    public IEnumerable<ISyntax> Children()
+    {
+        foreach (var child in Attributes)
+            yield return child;
+        foreach (var child in Parameters)
+            yield return child;
+        if (Return is not null)
+            yield return Return;
+        if (Body is not null)
+            yield return Body;
+    }
 
     public AssociatedFunctionDefinitionSyntax(
         TextSpan span,
@@ -2279,6 +2471,15 @@ file class AssociatedTypeDefinitionSyntax : IAssociatedTypeDefinitionSyntax
     public override string ToString()
         => FormattingAspect.AssociatedTypeDefinition_ToString(this);
 
+    [DebuggerStepThrough]
+    public IEnumerable<ISyntax> Children()
+    {
+        foreach (var child in Attributes)
+            yield return child;
+        if (Initializer is not null)
+            yield return Initializer;
+    }
+
     public AssociatedTypeDefinitionSyntax(
         TextSpan span,
         CodeFile file,
@@ -2316,6 +2517,12 @@ file class AttributeSyntax : IAttributeSyntax
     public override string ToString()
         => FormattingAspect.Attribute_ToString(this);
 
+    [DebuggerStepThrough]
+    public IEnumerable<ISyntax> Children()
+    {
+        yield return TypeName;
+    }
+
     public AttributeSyntax(
         TextSpan span,
         INameSyntax typeName)
@@ -2335,6 +2542,12 @@ file class CapabilitySetSyntax : ICapabilitySetSyntax
     public DeclaredCapabilitySet CapabilitySet { [DebuggerStepThrough] get; }
     public override string ToString()
         => FormattingAspect.CapabilitySet_ToString(this);
+
+    [DebuggerStepThrough]
+    public IEnumerable<ISyntax> Children()
+    {
+        return Enumerable.Empty<ISyntax>();
+    }
 
     public CapabilitySetSyntax(
         TextSpan span,
@@ -2357,6 +2570,12 @@ file class CapabilitySyntax : ICapabilitySyntax
     public DeclaredCapability Capability { [DebuggerStepThrough] get; }
     public override string ToString()
         => FormattingAspect.Capability_ToString(this);
+
+    [DebuggerStepThrough]
+    public IEnumerable<ISyntax> Children()
+    {
+        return Enumerable.Empty<ISyntax>();
+    }
 
     public CapabilitySyntax(
         TextSpan span,
@@ -2383,6 +2602,14 @@ file class NamedParameterSyntax : INamedParameterSyntax
     public IExpressionSyntax? DefaultValue { [DebuggerStepThrough] get; }
     public override string ToString()
         => FormattingAspect.NamedParameter_ToString(this);
+
+    [DebuggerStepThrough]
+    public IEnumerable<ISyntax> Children()
+    {
+        yield return Type;
+        if (DefaultValue is not null)
+            yield return DefaultValue;
+    }
 
     public NamedParameterSyntax(
         TextSpan span,
@@ -2414,6 +2641,12 @@ file class InitializerSelfParameterSyntax : IInitializerSelfParameterSyntax
     public override string ToString()
         => FormattingAspect.SelfParameter_ToString(this);
 
+    [DebuggerStepThrough]
+    public IEnumerable<ISyntax> Children()
+    {
+        yield return Constraint;
+    }
+
     public InitializerSelfParameterSyntax(
         TextSpan span,
         bool isLentBinding,
@@ -2435,6 +2668,12 @@ file class MethodSelfParameterSyntax : IMethodSelfParameterSyntax
     public ICapabilityConstraintSyntax Constraint { [DebuggerStepThrough] get; }
     public override string ToString()
         => FormattingAspect.SelfParameter_ToString(this);
+
+    [DebuggerStepThrough]
+    public IEnumerable<ISyntax> Children()
+    {
+        yield return Constraint;
+    }
 
     public MethodSelfParameterSyntax(
         TextSpan span,
@@ -2458,6 +2697,13 @@ file class FieldParameterSyntax : IFieldParameterSyntax
     public override string ToString()
         => FormattingAspect.FieldParameter_ToString(this);
 
+    [DebuggerStepThrough]
+    public IEnumerable<ISyntax> Children()
+    {
+        if (DefaultValue is not null)
+            yield return DefaultValue;
+    }
+
     public FieldParameterSyntax(
         TextSpan span,
         IdentifierName name,
@@ -2478,6 +2724,12 @@ file class ReturnSyntax : IReturnSyntax
     public ITypeSyntax Type { [DebuggerStepThrough] get; }
     public override string ToString()
         => FormattingAspect.Return_ToString(this);
+
+    [DebuggerStepThrough]
+    public IEnumerable<ISyntax> Children()
+    {
+        yield return Type;
+    }
 
     public ReturnSyntax(
         TextSpan span,
@@ -2501,6 +2753,16 @@ file class OverridesOrHidesSyntax : IOverridesOrHidesSyntax
     public IReturnSyntax? Return { [DebuggerStepThrough] get; }
     public override string ToString()
         => FormattingAspect.OverridesOrHides_ToString(this);
+
+    [DebuggerStepThrough]
+    public IEnumerable<ISyntax> Children()
+    {
+        if (ParameterTypes is not null)
+            foreach (var child in ParameterTypes)
+                yield return child;
+        if (Return is not null)
+            yield return Return;
+    }
 
     public OverridesOrHidesSyntax(
         TextSpan span,
@@ -2529,6 +2791,13 @@ file class BlockBodySyntax : IBlockBodySyntax
     public override string ToString()
         => FormattingAspect.BlockBody_ToString(this);
 
+    [DebuggerStepThrough]
+    public IEnumerable<ISyntax> Children()
+    {
+        foreach (var child in Statements)
+            yield return child;
+    }
+
     public BlockBodySyntax(
         TextSpan span,
         IEnumerable<IBodyStatementSyntax> statements)
@@ -2548,6 +2817,12 @@ file class ExpressionBodySyntax : IExpressionBodySyntax
     public IFixedList<IStatementSyntax> Statements { [DebuggerStepThrough] get; }
     public override string ToString()
         => FormattingAspect.ExpressionBody_ToString(this);
+
+    [DebuggerStepThrough]
+    public IEnumerable<ISyntax> Children()
+    {
+        yield return ResultStatement;
+    }
 
     public ExpressionBodySyntax(
         TextSpan span,
@@ -2569,6 +2844,12 @@ file class OptionalTypeSyntax : IOptionalTypeSyntax
     public override string ToString()
         => FormattingAspect.OptionalType_ToString(this);
 
+    [DebuggerStepThrough]
+    public IEnumerable<ISyntax> Children()
+    {
+        yield return Referent;
+    }
+
     public OptionalTypeSyntax(
         TextSpan span,
         ITypeSyntax referent)
@@ -2588,6 +2869,13 @@ file class CapabilityTypeSyntax : ICapabilityTypeSyntax
     public ITypeSyntax Referent { [DebuggerStepThrough] get; }
     public override string ToString()
         => FormattingAspect.CapabilityType_ToString(this);
+
+    [DebuggerStepThrough]
+    public IEnumerable<ISyntax> Children()
+    {
+        yield return Capability;
+        yield return Referent;
+    }
 
     public CapabilityTypeSyntax(
         TextSpan span,
@@ -2611,6 +2899,13 @@ file class CapabilitySetTypeSyntax : ICapabilitySetTypeSyntax
     public override string ToString()
         => FormattingAspect.CapabilitySetType_ToString(this);
 
+    [DebuggerStepThrough]
+    public IEnumerable<ISyntax> Children()
+    {
+        yield return CapabilitySet;
+        yield return Referent;
+    }
+
     public CapabilitySetTypeSyntax(
         TextSpan span,
         ICapabilitySetSyntax capabilitySet,
@@ -2632,6 +2927,14 @@ file class FunctionTypeSyntax : IFunctionTypeSyntax
     public ITypeSyntax Return { [DebuggerStepThrough] get; }
     public override string ToString()
         => FormattingAspect.FunctionType_ToString(this);
+
+    [DebuggerStepThrough]
+    public IEnumerable<ISyntax> Children()
+    {
+        foreach (var child in Parameters)
+            yield return child;
+        yield return Return;
+    }
 
     public FunctionTypeSyntax(
         TextSpan span,
@@ -2655,6 +2958,12 @@ file class ParameterTypeSyntax : IParameterTypeSyntax
     public override string ToString()
         => FormattingAspect.ParameterType_ToString(this);
 
+    [DebuggerStepThrough]
+    public IEnumerable<ISyntax> Children()
+    {
+        yield return Referent;
+    }
+
     public ParameterTypeSyntax(
         TextSpan span,
         bool isLent,
@@ -2677,6 +2986,13 @@ file class CapabilityViewpointTypeSyntax : ICapabilityViewpointTypeSyntax
     public override string ToString()
         => FormattingAspect.CapabilityViewpointType_ToString(this);
 
+    [DebuggerStepThrough]
+    public IEnumerable<ISyntax> Children()
+    {
+        yield return Capability;
+        yield return Referent;
+    }
+
     public CapabilityViewpointTypeSyntax(
         TextSpan span,
         ICapabilitySyntax capability,
@@ -2698,6 +3014,12 @@ file class SelfViewpointTypeSyntax : ISelfViewpointTypeSyntax
     public override string ToString()
         => FormattingAspect.SelfViewpointType_ToString(this);
 
+    [DebuggerStepThrough]
+    public IEnumerable<ISyntax> Children()
+    {
+        yield return Referent;
+    }
+
     public SelfViewpointTypeSyntax(
         TextSpan span,
         ITypeSyntax referent)
@@ -2716,6 +3038,12 @@ file class ResultStatementSyntax : IResultStatementSyntax
     public IExpressionSyntax Expression { [DebuggerStepThrough] get; }
     public override string ToString()
         => FormattingAspect.ResultStatement_ToString(this);
+
+    [DebuggerStepThrough]
+    public IEnumerable<ISyntax> Children()
+    {
+        yield return Expression;
+    }
 
     public ResultStatementSyntax(
         TextSpan span,
@@ -2740,6 +3068,17 @@ file class VariableDeclarationStatementSyntax : IVariableDeclarationStatementSyn
     public IExpressionSyntax? Initializer { [DebuggerStepThrough] get; }
     public override string ToString()
         => FormattingAspect.VariableDeclarationStatement_ToString(this);
+
+    [DebuggerStepThrough]
+    public IEnumerable<ISyntax> Children()
+    {
+        if (Capability is not null)
+            yield return Capability;
+        if (Type is not null)
+            yield return Type;
+        if (Initializer is not null)
+            yield return Initializer;
+    }
 
     public VariableDeclarationStatementSyntax(
         TextSpan span,
@@ -2770,6 +3109,12 @@ file class ExpressionStatementSyntax : IExpressionStatementSyntax
     public override string ToString()
         => FormattingAspect.ExpressionStatement_ToString(this);
 
+    [DebuggerStepThrough]
+    public IEnumerable<ISyntax> Children()
+    {
+        yield return Expression;
+    }
+
     public ExpressionStatementSyntax(
         TextSpan span,
         IExpressionSyntax expression)
@@ -2788,6 +3133,12 @@ file class TypePatternSyntax : ITypePatternSyntax
     public ITypeSyntax Type { [DebuggerStepThrough] get; }
     public override string ToString()
         => FormattingAspect.TypePattern_ToString(this);
+
+    [DebuggerStepThrough]
+    public IEnumerable<ISyntax> Children()
+    {
+        yield return Type;
+    }
 
     public TypePatternSyntax(
         TextSpan span,
@@ -2809,6 +3160,14 @@ file class BindingContextPatternSyntax : IBindingContextPatternSyntax
     public ITypeSyntax? Type { [DebuggerStepThrough] get; }
     public override string ToString()
         => FormattingAspect.BindingContextPattern_ToString(this);
+
+    [DebuggerStepThrough]
+    public IEnumerable<ISyntax> Children()
+    {
+        yield return Pattern;
+        if (Type is not null)
+            yield return Type;
+    }
 
     public BindingContextPatternSyntax(
         TextSpan span,
@@ -2834,6 +3193,12 @@ file class BindingPatternSyntax : IBindingPatternSyntax
     public override string ToString()
         => FormattingAspect.BindingPattern_ToString(this);
 
+    [DebuggerStepThrough]
+    public IEnumerable<ISyntax> Children()
+    {
+        return Enumerable.Empty<ISyntax>();
+    }
+
     public BindingPatternSyntax(
         bool isMutableBinding,
         TextSpan nameSpan,
@@ -2855,6 +3220,12 @@ file class OptionalPatternSyntax : IOptionalPatternSyntax
     public override string ToString()
         => FormattingAspect.OptionalPattern_ToString(this);
 
+    [DebuggerStepThrough]
+    public IEnumerable<ISyntax> Children()
+    {
+        yield return Pattern;
+    }
+
     public OptionalPatternSyntax(
         TextSpan span,
         IOptionalOrBindingPatternSyntax pattern)
@@ -2874,6 +3245,13 @@ file class BlockExpressionSyntax : IBlockExpressionSyntax
     public override string ToString()
         => FormattingAspect.BlockExpression_ToString(this);
 
+    [DebuggerStepThrough]
+    public IEnumerable<ISyntax> Children()
+    {
+        foreach (var child in Statements)
+            yield return child;
+    }
+
     public BlockExpressionSyntax(
         TextSpan span,
         IEnumerable<IStatementSyntax> statements)
@@ -2892,6 +3270,12 @@ file class UnsafeExpressionSyntax : IUnsafeExpressionSyntax
     public IExpressionSyntax Expression { [DebuggerStepThrough] get; }
     public override string ToString()
         => FormattingAspect.UnsafeExpression_ToString(this);
+
+    [DebuggerStepThrough]
+    public IEnumerable<ISyntax> Children()
+    {
+        yield return Expression;
+    }
 
     public UnsafeExpressionSyntax(
         TextSpan span,
@@ -2914,6 +3298,14 @@ file class MemberAccessExpressionSyntax : IMemberAccessExpressionSyntax
     public IFixedList<ITypeSyntax> GenericArguments { [DebuggerStepThrough] get; }
     public override string ToString()
         => FormattingAspect.MemberAccessExpression_ToString(this);
+
+    [DebuggerStepThrough]
+    public IEnumerable<ISyntax> Children()
+    {
+        yield return Context;
+        foreach (var child in GenericArguments)
+            yield return child;
+    }
 
     public MemberAccessExpressionSyntax(
         TextSpan span,
@@ -2940,6 +3332,12 @@ file class BoolLiteralExpressionSyntax : IBoolLiteralExpressionSyntax
     public override string ToString()
         => FormattingAspect.BoolLiteralExpression_ToString(this);
 
+    [DebuggerStepThrough]
+    public IEnumerable<ISyntax> Children()
+    {
+        return Enumerable.Empty<ISyntax>();
+    }
+
     public BoolLiteralExpressionSyntax(
         TextSpan span,
         bool value)
@@ -2959,6 +3357,12 @@ file class IntegerLiteralExpressionSyntax : IIntegerLiteralExpressionSyntax
     public override string ToString()
         => FormattingAspect.IntegerLiteralExpression_ToString(this);
 
+    [DebuggerStepThrough]
+    public IEnumerable<ISyntax> Children()
+    {
+        return Enumerable.Empty<ISyntax>();
+    }
+
     public IntegerLiteralExpressionSyntax(
         TextSpan span,
         BigInteger value)
@@ -2977,6 +3381,12 @@ file class NoneLiteralExpressionSyntax : INoneLiteralExpressionSyntax
     public override string ToString()
         => FormattingAspect.NoneLiteralExpression_ToString(this);
 
+    [DebuggerStepThrough]
+    public IEnumerable<ISyntax> Children()
+    {
+        return Enumerable.Empty<ISyntax>();
+    }
+
     public NoneLiteralExpressionSyntax(TextSpan span)
     {
         Span = span;
@@ -2992,6 +3402,12 @@ file class StringLiteralExpressionSyntax : IStringLiteralExpressionSyntax
     public string Value { [DebuggerStepThrough] get; }
     public override string ToString()
         => FormattingAspect.StringLiteralExpression_ToString(this);
+
+    [DebuggerStepThrough]
+    public IEnumerable<ISyntax> Children()
+    {
+        return Enumerable.Empty<ISyntax>();
+    }
 
     public StringLiteralExpressionSyntax(
         TextSpan span,
@@ -3013,6 +3429,13 @@ file class AssignmentExpressionSyntax : IAssignmentExpressionSyntax
     public IExpressionSyntax RightOperand { [DebuggerStepThrough] get; }
     public override string ToString()
         => FormattingAspect.AssignmentExpression_ToString(this);
+
+    [DebuggerStepThrough]
+    public IEnumerable<ISyntax> Children()
+    {
+        yield return LeftOperand;
+        yield return RightOperand;
+    }
 
     public AssignmentExpressionSyntax(
         TextSpan span,
@@ -3039,6 +3462,13 @@ file class BinaryOperatorExpressionSyntax : IBinaryOperatorExpressionSyntax
     public override string ToString()
         => FormattingAspect.BinaryOperatorExpression_ToString(this);
 
+    [DebuggerStepThrough]
+    public IEnumerable<ISyntax> Children()
+    {
+        yield return LeftOperand;
+        yield return RightOperand;
+    }
+
     public BinaryOperatorExpressionSyntax(
         TextSpan span,
         IExpressionSyntax leftOperand,
@@ -3063,6 +3493,12 @@ file class UnaryOperatorExpressionSyntax : IUnaryOperatorExpressionSyntax
     public IExpressionSyntax Operand { [DebuggerStepThrough] get; }
     public override string ToString()
         => FormattingAspect.UnaryOperatorExpression_ToString(this);
+
+    [DebuggerStepThrough]
+    public IEnumerable<ISyntax> Children()
+    {
+        yield return Operand;
+    }
 
     public UnaryOperatorExpressionSyntax(
         TextSpan span,
@@ -3089,6 +3525,13 @@ file class ConversionExpressionSyntax : IConversionExpressionSyntax
     public override string ToString()
         => FormattingAspect.ConversionExpression_ToString(this);
 
+    [DebuggerStepThrough]
+    public IEnumerable<ISyntax> Children()
+    {
+        yield return Referent;
+        yield return ConvertToType;
+    }
+
     public ConversionExpressionSyntax(
         TextSpan span,
         IExpressionSyntax referent,
@@ -3113,6 +3556,13 @@ file class PatternMatchExpressionSyntax : IPatternMatchExpressionSyntax
     public IPatternSyntax Pattern { [DebuggerStepThrough] get; }
     public override string ToString()
         => FormattingAspect.PatternMatchExpression_ToString(this);
+
+    [DebuggerStepThrough]
+    public IEnumerable<ISyntax> Children()
+    {
+        yield return Referent;
+        yield return Pattern;
+    }
 
     public PatternMatchExpressionSyntax(
         TextSpan span,
@@ -3139,6 +3589,15 @@ file class IfExpressionSyntax : IIfExpressionSyntax
     public override string ToString()
         => FormattingAspect.IfExpression_ToString(this);
 
+    [DebuggerStepThrough]
+    public IEnumerable<ISyntax> Children()
+    {
+        yield return Condition;
+        yield return ThenBlock;
+        if (ElseClause is not null)
+            yield return ElseClause;
+    }
+
     public IfExpressionSyntax(
         TextSpan span,
         IExpressionSyntax condition,
@@ -3162,6 +3621,12 @@ file class LoopExpressionSyntax : ILoopExpressionSyntax
     public override string ToString()
         => FormattingAspect.LoopExpression_ToString(this);
 
+    [DebuggerStepThrough]
+    public IEnumerable<ISyntax> Children()
+    {
+        yield return Block;
+    }
+
     public LoopExpressionSyntax(
         TextSpan span,
         IBlockExpressionSyntax block)
@@ -3181,6 +3646,13 @@ file class WhileExpressionSyntax : IWhileExpressionSyntax
     public IBlockExpressionSyntax Block { [DebuggerStepThrough] get; }
     public override string ToString()
         => FormattingAspect.WhileExpression_ToString(this);
+
+    [DebuggerStepThrough]
+    public IEnumerable<ISyntax> Children()
+    {
+        yield return Condition;
+        yield return Block;
+    }
 
     public WhileExpressionSyntax(
         TextSpan span,
@@ -3207,6 +3679,15 @@ file class ForeachExpressionSyntax : IForeachExpressionSyntax
     public IBlockExpressionSyntax Block { [DebuggerStepThrough] get; }
     public override string ToString()
         => FormattingAspect.ForeachExpression_ToString(this);
+
+    [DebuggerStepThrough]
+    public IEnumerable<ISyntax> Children()
+    {
+        yield return InExpression;
+        if (Type is not null)
+            yield return Type;
+        yield return Block;
+    }
 
     public ForeachExpressionSyntax(
         TextSpan span,
@@ -3237,6 +3718,13 @@ file class BreakExpressionSyntax : IBreakExpressionSyntax
     public override string ToString()
         => FormattingAspect.BreakExpression_ToString(this);
 
+    [DebuggerStepThrough]
+    public IEnumerable<ISyntax> Children()
+    {
+        if (Value is not null)
+            yield return Value;
+    }
+
     public BreakExpressionSyntax(
         TextSpan span,
         IExpressionSyntax? value)
@@ -3255,6 +3743,12 @@ file class NextExpressionSyntax : INextExpressionSyntax
     public override string ToString()
         => FormattingAspect.NextExpression_ToString(this);
 
+    [DebuggerStepThrough]
+    public IEnumerable<ISyntax> Children()
+    {
+        return Enumerable.Empty<ISyntax>();
+    }
+
     public NextExpressionSyntax(TextSpan span)
     {
         Span = span;
@@ -3270,6 +3764,13 @@ file class ReturnExpressionSyntax : IReturnExpressionSyntax
     public IExpressionSyntax? Value { [DebuggerStepThrough] get; }
     public override string ToString()
         => FormattingAspect.ReturnExpression_ToString(this);
+
+    [DebuggerStepThrough]
+    public IEnumerable<ISyntax> Children()
+    {
+        if (Value is not null)
+            yield return Value;
+    }
 
     public ReturnExpressionSyntax(
         TextSpan span,
@@ -3290,6 +3791,14 @@ file class InvocationExpressionSyntax : IInvocationExpressionSyntax
     public IFixedList<IExpressionSyntax> Arguments { [DebuggerStepThrough] get; }
     public override string ToString()
         => FormattingAspect.InvocationExpression_ToString(this);
+
+    [DebuggerStepThrough]
+    public IEnumerable<ISyntax> Children()
+    {
+        yield return Expression;
+        foreach (var child in Arguments)
+            yield return child;
+    }
 
     public InvocationExpressionSyntax(
         TextSpan span,
@@ -3312,6 +3821,12 @@ file class SelfExpressionSyntax : ISelfExpressionSyntax
     public override string ToString()
         => FormattingAspect.SelfExpression_ToString(this);
 
+    [DebuggerStepThrough]
+    public IEnumerable<ISyntax> Children()
+    {
+        return Enumerable.Empty<ISyntax>();
+    }
+
     public SelfExpressionSyntax(
         TextSpan span,
         bool isImplicit)
@@ -3330,6 +3845,12 @@ file class BaseExpressionSyntax : IBaseExpressionSyntax
     public override string ToString()
         => FormattingAspect.BaseExpression_ToString(this);
 
+    [DebuggerStepThrough]
+    public IEnumerable<ISyntax> Children()
+    {
+        return Enumerable.Empty<ISyntax>();
+    }
+
     public BaseExpressionSyntax(TextSpan span)
     {
         Span = span;
@@ -3344,6 +3865,12 @@ file class MissingNameExpressionSyntax : IMissingNameExpressionSyntax
     public TextSpan Span { [DebuggerStepThrough] get; }
     public override string ToString()
         => FormattingAspect.MissingNameExpression_ToString(this);
+
+    [DebuggerStepThrough]
+    public IEnumerable<ISyntax> Children()
+    {
+        return Enumerable.Empty<ISyntax>();
+    }
 
     public MissingNameExpressionSyntax(TextSpan span)
     {
@@ -3360,6 +3887,12 @@ file class BuiltInTypeNameSyntax : IBuiltInTypeNameSyntax
     public BuiltInTypeName Name { [DebuggerStepThrough] get; }
     public override string ToString()
         => FormattingAspect.BuiltInTypeName_ToString(this);
+
+    [DebuggerStepThrough]
+    public IEnumerable<ISyntax> Children()
+    {
+        return Enumerable.Empty<ISyntax>();
+    }
 
     public BuiltInTypeNameSyntax(
         TextSpan span,
@@ -3380,6 +3913,12 @@ file class IdentifierNameSyntax : IIdentifierNameSyntax
     public override string ToString()
         => FormattingAspect.IdentifierName_ToString(this);
 
+    [DebuggerStepThrough]
+    public IEnumerable<ISyntax> Children()
+    {
+        return Enumerable.Empty<ISyntax>();
+    }
+
     public IdentifierNameSyntax(
         TextSpan span,
         IdentifierName name)
@@ -3399,6 +3938,13 @@ file class GenericNameSyntax : IGenericNameSyntax
     public IFixedList<ITypeSyntax> GenericArguments { [DebuggerStepThrough] get; }
     public override string ToString()
         => FormattingAspect.GenericName_ToString(this);
+
+    [DebuggerStepThrough]
+    public IEnumerable<ISyntax> Children()
+    {
+        foreach (var child in GenericArguments)
+            yield return child;
+    }
 
     public GenericNameSyntax(
         TextSpan span,
@@ -3423,6 +3969,14 @@ file class QualifiedNameSyntax : IQualifiedNameSyntax
     public IFixedList<ITypeSyntax> GenericArguments { [DebuggerStepThrough] get; }
     public override string ToString()
         => FormattingAspect.MemberAccessExpression_ToString(this);
+
+    [DebuggerStepThrough]
+    public IEnumerable<ISyntax> Children()
+    {
+        yield return Context;
+        foreach (var child in GenericArguments)
+            yield return child;
+    }
 
     public QualifiedNameSyntax(
         TextSpan span,
@@ -3449,6 +4003,12 @@ file class MoveExpressionSyntax : IMoveExpressionSyntax
     public override string ToString()
         => FormattingAspect.MoveExpression_ToString(this);
 
+    [DebuggerStepThrough]
+    public IEnumerable<ISyntax> Children()
+    {
+        yield return Referent;
+    }
+
     public MoveExpressionSyntax(
         TextSpan span,
         IExpressionSyntax referent)
@@ -3468,6 +4028,12 @@ file class FreezeExpressionSyntax : IFreezeExpressionSyntax
     public override string ToString()
         => FormattingAspect.FreezeExpression_ToString(this);
 
+    [DebuggerStepThrough]
+    public IEnumerable<ISyntax> Children()
+    {
+        yield return Referent;
+    }
+
     public FreezeExpressionSyntax(
         TextSpan span,
         IExpressionSyntax referent)
@@ -3486,6 +4052,12 @@ file class AsyncBlockExpressionSyntax : IAsyncBlockExpressionSyntax
     public IBlockExpressionSyntax Block { [DebuggerStepThrough] get; }
     public override string ToString()
         => FormattingAspect.AsyncBlockExpression_ToString(this);
+
+    [DebuggerStepThrough]
+    public IEnumerable<ISyntax> Children()
+    {
+        yield return Block;
+    }
 
     public AsyncBlockExpressionSyntax(
         TextSpan span,
@@ -3507,6 +4079,12 @@ file class AsyncStartExpressionSyntax : IAsyncStartExpressionSyntax
     public override string ToString()
         => FormattingAspect.AsyncStartExpression_ToString(this);
 
+    [DebuggerStepThrough]
+    public IEnumerable<ISyntax> Children()
+    {
+        yield return Expression;
+    }
+
     public AsyncStartExpressionSyntax(
         TextSpan span,
         bool scheduled,
@@ -3527,6 +4105,12 @@ file class AwaitExpressionSyntax : IAwaitExpressionSyntax
     public IExpressionSyntax Expression { [DebuggerStepThrough] get; }
     public override string ToString()
         => FormattingAspect.AwaitExpression_ToString(this);
+
+    [DebuggerStepThrough]
+    public IEnumerable<ISyntax> Children()
+    {
+        yield return Expression;
+    }
 
     public AwaitExpressionSyntax(
         TextSpan span,

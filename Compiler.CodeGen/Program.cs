@@ -81,10 +81,8 @@ public static class Program
         try
         {
             var treeOutputPath = Path.ChangeExtension(treePath, ".g.cs");
-            var childrenOutputPath = Path.ChangeExtension(treePath, ".children.cs");
             Console.WriteLine($"Tree Input:  {treePath}");
             Console.WriteLine($"Tree Output: {treeOutputPath}");
-            Console.WriteLine($"Children Output: {childrenOutputPath}");
 
             var treeName = Path.GetFileNameWithoutExtension(treePath);
             var treeSyntax = TreeParser.Parse(treeName, File.ReadAllText(treePath));
@@ -102,9 +100,6 @@ public static class Program
             {
                 var treeCode = TreeCodeBuilder.GenerateTree(tree);
                 WriteIfChanged(treeOutputPath, treeCode);
-
-                var walkerCode = TreeCodeBuilder.GenerateChildren(tree);
-                WriteIfChanged(childrenOutputPath, walkerCode);
             }
 
             foreach (var (aspect, path) in tree.Aspects.EquiZip(aspectPaths))

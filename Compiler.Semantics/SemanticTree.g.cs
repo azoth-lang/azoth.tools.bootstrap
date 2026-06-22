@@ -56,6 +56,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
 public partial interface ISemanticNode : ITreeNode
 {
     ISyntax? Syntax { get; }
+
+    [DebuggerStepThrough]
+    IEnumerable<ISemanticNode> Children();
 }
 
 [Closed(
@@ -4999,6 +5002,8 @@ internal abstract partial class SemanticNode : TreeNode, IChildTreeNode<ISemanti
         return builder.ToControlFlowSet();
     }
     internal virtual void Contribute_ControlFlowPrevious(SemanticNode target, Dictionary<IControlFlowNode, ControlFlowKind> builder) { }
+
+    public abstract IEnumerable<ISemanticNode> Children();
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -5080,6 +5085,20 @@ file class PackageFacetNode : SemanticNode, IPackageFacetNode
     private FixedSymbolTree? symbols;
     private bool symbolsCached;
 
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        foreach (var child in CompilationUnits)
+            yield return child;
+        if (MainFacetReference is not null)
+            yield return MainFacetReference;
+        foreach (var child in References)
+            yield return child;
+        foreach (var child in PrimitivesDeclarations)
+            yield return child;
+        yield return IntrinsicsReference;
+    }
+
     public PackageFacetNode(
         IPackageFacetSyntax syntax,
         IEnumerable<ICompilationUnitNode> compilationUnits,
@@ -5150,6 +5169,12 @@ file class OrdinaryPackageFacetReferenceNode : SemanticNode, IOrdinaryPackageFac
         => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public IPackageFacetSymbolNode SymbolNode { [DebuggerStepThrough] get; }
 
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        return Enumerable.Empty<ISemanticNode>();
+    }
+
     public OrdinaryPackageFacetReferenceNode(
         IPackageReferenceSyntax syntax,
         FacetKind facet,
@@ -5173,6 +5198,12 @@ file class PackageMainFacetReferenceNode : SemanticNode, IPackageMainFacetRefere
         => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public IPackageFacetSymbolNode SymbolNode { [DebuggerStepThrough] get; }
 
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        return Enumerable.Empty<ISemanticNode>();
+    }
+
     public PackageMainFacetReferenceNode(
         IdentifierName aliasOrName,
         FixedSymbolTree symbols)
@@ -5191,6 +5222,12 @@ file class IntrinsicsPackageFacetReferenceNode : SemanticNode, IIntrinsicsPackag
     public PackageSymbol PackageSymbol
         => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public IPackageFacetSymbolNode SymbolNode { [DebuggerStepThrough] get; }
+
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        return Enumerable.Empty<ISemanticNode>();
+    }
 
     public IntrinsicsPackageFacetReferenceNode()
     {
@@ -5241,6 +5278,15 @@ file class CompilationUnitNode : SemanticNode, ICompilationUnitNode
                 TypeConstructorsAspect.CompilationUnit_TypeConstructorContext);
     private NamespaceContext? typeConstructorContext;
     private bool typeConstructorContextCached;
+
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        foreach (var child in ImportDirectives)
+            yield return child;
+        foreach (var child in Definitions)
+            yield return child;
+    }
 
     public CompilationUnitNode(
         ICompilationUnitSyntax syntax,
@@ -5306,6 +5352,12 @@ file class ImportDirectiveNode : SemanticNode, IImportDirectiveNode
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
 
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        return Enumerable.Empty<ISemanticNode>();
+    }
+
     public ImportDirectiveNode(IImportDirectiveSyntax syntax)
     {
         Syntax = syntax;
@@ -5356,6 +5408,15 @@ file class NamespaceBlockDefinitionNode : SemanticNode, INamespaceBlockDefinitio
                 LexicalScopingAspect.NamespaceBlockDefinition_LexicalScope);
     private NamespaceSearchScope? lexicalScope;
     private bool lexicalScopeCached;
+
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        foreach (var child in ImportDirectives)
+            yield return child;
+        foreach (var child in Members)
+            yield return child;
+    }
 
     public NamespaceBlockDefinitionNode(
         INamespaceBlockDefinitionSyntax syntax,
@@ -5441,6 +5502,13 @@ file class NamespaceDefinitionNode : SemanticNode, INamespaceDefinitionNode
                 TypeConstructorsAspect.NamespaceDefinition_TypeConstructorContext);
     private NamespaceContext? typeConstructorContext;
     private bool typeConstructorContextCached;
+
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        foreach (var child in MemberNamespaces)
+            yield return child;
+    }
 
     public NamespaceDefinitionNode(
         NamespaceName namespaceName,
@@ -5544,6 +5612,20 @@ file class FunctionDefinitionNode : SemanticNode, IFunctionDefinitionNode
                 VariablesAspect.InvocableDefinition_VariableBindingsMap);
     private FixedDictionary<IVariableBindingNode, int>? variableBindingsMap;
     private bool variableBindingsMapCached;
+
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        foreach (var child in Attributes)
+            yield return child;
+        foreach (var child in Parameters)
+            yield return child;
+        if (Return is not null)
+            yield return Return;
+        yield return Entry;
+        yield return Body;
+        yield return Exit;
+    }
 
     public FunctionDefinitionNode(
         IFunctionDefinitionSyntax syntax,
@@ -5761,6 +5843,24 @@ file class ClassDefinitionNode : SemanticNode, IClassDefinitionNode
     private OrdinaryTypeConstructor? typeConstructor;
     private bool typeConstructorCached;
 
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        yield return ImplicitSelf;
+        foreach (var child in Attributes)
+            yield return child;
+        foreach (var child in GenericParameters)
+            yield return child;
+        if (BaseTypeName is not null)
+            yield return BaseTypeName;
+        foreach (var child in SupertypeNames)
+            yield return child;
+        foreach (var child in SourceMembers)
+            yield return child;
+        if (DefaultInitializer is not null)
+            yield return DefaultInitializer;
+    }
+
     public ClassDefinitionNode(
         IClassDefinitionSyntax syntax,
         IEnumerable<IAttributeNode> attributes,
@@ -5946,6 +6046,22 @@ file class StructDefinitionNode : SemanticNode, IStructDefinitionNode
     private OrdinaryTypeConstructor? typeConstructor;
     private bool typeConstructorCached;
 
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        yield return ImplicitSelf;
+        foreach (var child in Attributes)
+            yield return child;
+        foreach (var child in GenericParameters)
+            yield return child;
+        foreach (var child in SupertypeNames)
+            yield return child;
+        foreach (var child in SourceMembers)
+            yield return child;
+        if (DefaultInitializer is not null)
+            yield return DefaultInitializer;
+    }
+
     public StructDefinitionNode(
         IStructDefinitionSyntax syntax,
         IEnumerable<IAttributeNode> attributes,
@@ -6128,6 +6244,22 @@ file class ValueDefinitionNode : SemanticNode, IValueDefinitionNode
     private OrdinaryTypeConstructor? typeConstructor;
     private bool typeConstructorCached;
 
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        yield return ImplicitSelf;
+        foreach (var child in Attributes)
+            yield return child;
+        foreach (var child in GenericParameters)
+            yield return child;
+        foreach (var child in SupertypeNames)
+            yield return child;
+        foreach (var child in SourceMembers)
+            yield return child;
+        if (DefaultInitializer is not null)
+            yield return DefaultInitializer;
+    }
+
     public ValueDefinitionNode(
         IValueDefinitionSyntax syntax,
         IEnumerable<IAttributeNode> attributes,
@@ -6298,6 +6430,20 @@ file class TraitDefinitionNode : SemanticNode, ITraitDefinitionNode
     private OrdinaryTypeConstructor? typeConstructor;
     private bool typeConstructorCached;
 
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        yield return ImplicitSelf;
+        foreach (var child in Attributes)
+            yield return child;
+        foreach (var child in GenericParameters)
+            yield return child;
+        foreach (var child in SupertypeNames)
+            yield return child;
+        foreach (var child in Members)
+            yield return child;
+    }
+
     public TraitDefinitionNode(
         ITraitDefinitionSyntax syntax,
         IEnumerable<IAttributeNode> attributes,
@@ -6423,6 +6569,12 @@ file class GenericParameterNode : SemanticNode, IGenericParameterNode
     private ITypeConstructor? typeConstructor;
     private bool typeConstructorCached;
 
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        yield return Constraint;
+    }
+
     public GenericParameterNode(
         IGenericParameterSyntax syntax,
         ICapabilityConstraintNode constraint)
@@ -6462,6 +6614,12 @@ file class ImplicitSelfDefinitionNode : SemanticNode, IImplicitSelfDefinitionNod
                 TypeConstructorsAspect.ImplicitSelfDefinition_TypeConstructor);
     private SelfTypeConstructor? typeConstructor;
     private bool typeConstructorCached;
+
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        return Enumerable.Empty<ISemanticNode>();
+    }
 
     public ImplicitSelfDefinitionNode()
     {
@@ -6545,6 +6703,24 @@ file class OrdinaryMethodDefinitionNode : SemanticNode, IOrdinaryMethodDefinitio
                 VariablesAspect.InvocableDefinition_VariableBindingsMap);
     private FixedDictionary<IVariableBindingNode, int>? variableBindingsMap;
     private bool variableBindingsMapCached;
+
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        foreach (var child in Attributes)
+            yield return child;
+        yield return SelfParameter;
+        foreach (var child in Parameters)
+            yield return child;
+        if (Return is not null)
+            yield return Return;
+        foreach (var child in OverridesOrHides)
+            yield return child;
+        yield return Entry;
+        if (Body is not null)
+            yield return Body;
+        yield return Exit;
+    }
 
     public OrdinaryMethodDefinitionNode(
         IOrdinaryMethodDefinitionSyntax syntax,
@@ -6745,6 +6921,23 @@ file class GetterMethodDefinitionNode : SemanticNode, IGetterMethodDefinitionNod
     private FixedDictionary<IVariableBindingNode, int>? variableBindingsMap;
     private bool variableBindingsMapCached;
 
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        foreach (var child in Attributes)
+            yield return child;
+        yield return SelfParameter;
+        foreach (var child in Parameters)
+            yield return child;
+        yield return Return;
+        foreach (var child in OverridesOrHides)
+            yield return child;
+        yield return Entry;
+        if (Body is not null)
+            yield return Body;
+        yield return Exit;
+    }
+
     public GetterMethodDefinitionNode(
         IGetterMethodDefinitionSyntax syntax,
         IEnumerable<IAttributeNode> attributes,
@@ -6944,6 +7137,24 @@ file class SetterMethodDefinitionNode : SemanticNode, ISetterMethodDefinitionNod
     private FixedDictionary<IVariableBindingNode, int>? variableBindingsMap;
     private bool variableBindingsMapCached;
 
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        foreach (var child in Attributes)
+            yield return child;
+        yield return SelfParameter;
+        foreach (var child in Parameters)
+            yield return child;
+        if (Return is not null)
+            yield return Return;
+        foreach (var child in OverridesOrHides)
+            yield return child;
+        yield return Entry;
+        if (Body is not null)
+            yield return Body;
+        yield return Exit;
+    }
+
     public SetterMethodDefinitionNode(
         ISetterMethodDefinitionSyntax syntax,
         IEnumerable<IAttributeNode> attributes,
@@ -7134,6 +7345,13 @@ file class DefaultInitializerDefinitionNode : SemanticNode, IDefaultInitializerD
     private FixedDictionary<IVariableBindingNode, int>? variableBindingsMap;
     private bool variableBindingsMapCached;
 
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        yield return Entry;
+        yield return Exit;
+    }
+
     public DefaultInitializerDefinitionNode()
     {
         AccessModifier = TypeModifiersAspect.TypeMemberDefinition_AccessModifier(this);
@@ -7256,6 +7474,19 @@ file class OrdinaryInitializerDefinitionNode : SemanticNode, IOrdinaryInitialize
                 VariablesAspect.InvocableDefinition_VariableBindingsMap);
     private FixedDictionary<IVariableBindingNode, int>? variableBindingsMap;
     private bool variableBindingsMapCached;
+
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        foreach (var child in Attributes)
+            yield return child;
+        yield return SelfParameter;
+        foreach (var child in Parameters)
+            yield return child;
+        yield return Entry;
+        yield return Body;
+        yield return Exit;
+    }
 
     public OrdinaryInitializerDefinitionNode(
         IInitializerDefinitionSyntax syntax,
@@ -7426,6 +7657,18 @@ file class FieldDefinitionNode : SemanticNode, IFieldDefinitionNode
     private FixedDictionary<IVariableBindingNode, int>? variableBindingsMap;
     private bool variableBindingsMapCached;
 
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        foreach (var child in Attributes)
+            yield return child;
+        yield return TypeNode;
+        yield return Entry;
+        if (TempInitializer is not null)
+            yield return TempInitializer;
+        yield return Exit;
+    }
+
     public FieldDefinitionNode(
         IFieldDefinitionSyntax syntax,
         IEnumerable<IAttributeNode> attributes,
@@ -7576,6 +7819,21 @@ file class AssociatedFunctionDefinitionNode : SemanticNode, IAssociatedFunctionD
     private FixedDictionary<IVariableBindingNode, int>? variableBindingsMap;
     private bool variableBindingsMapCached;
 
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        foreach (var child in Attributes)
+            yield return child;
+        foreach (var child in Parameters)
+            yield return child;
+        if (Return is not null)
+            yield return Return;
+        yield return Entry;
+        if (Body is not null)
+            yield return Body;
+        yield return Exit;
+    }
+
     public AssociatedFunctionDefinitionNode(
         IAssociatedFunctionDefinitionSyntax syntax,
         IEnumerable<IAttributeNode> attributes,
@@ -7717,6 +7975,15 @@ file class AssociatedTypeDefinitionNode : SemanticNode, IAssociatedTypeDefinitio
     private bool typeConstructorCached;
     public TypeVariance Variance { [DebuggerStepThrough] get; }
 
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        foreach (var child in Attributes)
+            yield return child;
+        if (Initializer is not null)
+            yield return Initializer;
+    }
+
     public AssociatedTypeDefinitionNode(
         IAssociatedTypeDefinitionSyntax syntax,
         IEnumerable<IAttributeNode> attributes,
@@ -7752,6 +8019,12 @@ file class AttributeNode : SemanticNode, IAttributeNode
                 SymbolsAspect.Attribute_ReferencedSymbol);
     private InvocableSymbol? referencedSymbol;
     private bool referencedSymbolCached;
+
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        yield return TypeName;
+    }
 
     public AttributeNode(
         IAttributeSyntax syntax,
@@ -7791,6 +8064,12 @@ file class CapabilitySetNode : SemanticNode, ICapabilitySetNode
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
 
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        return Enumerable.Empty<ISemanticNode>();
+    }
+
     public CapabilitySetNode(ICapabilitySetSyntax syntax)
     {
         Syntax = syntax;
@@ -7807,6 +8086,12 @@ file class CapabilityNode : SemanticNode, ICapabilityNode
         => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
+
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        return Enumerable.Empty<ISemanticNode>();
+    }
 
     public CapabilityNode(ICapabilitySyntax syntax)
     {
@@ -7868,6 +8153,12 @@ file class NamedParameterNode : SemanticNode, INamedParameterNode
                 NameBindingTypesAspect.NamedParameter_ParameterType);
     private IMaybeParameterType? parameterType;
     private bool parameterTypeCached;
+
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        yield return TypeNode;
+    }
 
     public NamedParameterNode(
         INamedParameterSyntax syntax,
@@ -7956,6 +8247,12 @@ file class InitializerSelfParameterNode : SemanticNode, IInitializerSelfParamete
     private IMaybeNonVoidType? parameterType;
     private bool parameterTypeCached;
 
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        yield return Capability;
+    }
+
     public InitializerSelfParameterNode(
         IInitializerSelfParameterSyntax syntax,
         ICapabilityNode capability)
@@ -8043,6 +8340,12 @@ file class MethodSelfParameterNode : SemanticNode, IMethodSelfParameterNode
     private IMaybeNonVoidType? parameterType;
     private bool parameterTypeCached;
 
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        yield return Constraint;
+    }
+
     public MethodSelfParameterNode(
         IMethodSelfParameterSyntax syntax,
         ICapabilityConstraintNode constraint)
@@ -8115,6 +8418,12 @@ file class FieldParameterNode : SemanticNode, IFieldParameterNode
     private IFieldDefinitionNode? referencedField;
     private bool referencedFieldCached;
 
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        return Enumerable.Empty<ISemanticNode>();
+    }
+
     public FieldParameterNode(IFieldParameterSyntax syntax)
     {
         Syntax = syntax;
@@ -8135,6 +8444,16 @@ file class OverridesOrHidesNode : SemanticNode, IOverridesOrHidesNode
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public AccessModifier? AccessModifier { [DebuggerStepThrough] get; }
     public InheritanceRelationship InheritanceRelationship { [DebuggerStepThrough] get; }
+
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        if (ParameterTypes is not null)
+            foreach (var child in ParameterTypes)
+                yield return child;
+        if (Return is not null)
+            yield return Return;
+    }
 
     public OverridesOrHidesNode(
         IOverridesOrHidesSyntax syntax,
@@ -8162,6 +8481,13 @@ file class BlockBodyNode : SemanticNode, IBlockBodyNode
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
         => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
+
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        foreach (var child in Statements)
+            yield return child;
+    }
 
     public BlockBodyNode(
         IBlockBodySyntax syntax,
@@ -8220,6 +8546,12 @@ file class ExpressionBodyNode : SemanticNode, IExpressionBodyNode
                 Inherited_ExpectedPlainType);
     private IMaybePlainType? expectedPlainType;
     private bool expectedPlainTypeCached;
+
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        yield return ResultStatement;
+    }
 
     public ExpressionBodyNode(
         IExpressionBodySyntax syntax,
@@ -8289,6 +8621,12 @@ file class OptionalTypeNode : SemanticNode, IOptionalTypeNode
     private IMaybeType? namedType;
     private bool namedTypeCached;
 
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        yield return Referent;
+    }
+
     public OptionalTypeNode(
         IOptionalTypeSyntax syntax,
         ITypeNode referent)
@@ -8322,6 +8660,13 @@ file class CapabilityTypeNode : SemanticNode, ICapabilityTypeNode
                 TypeExpressionsAspect.CapabilityType_NamedType);
     private IMaybeType? namedType;
     private bool namedTypeCached;
+
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        yield return Capability;
+        yield return Referent;
+    }
 
     public CapabilityTypeNode(
         ICapabilityTypeSyntax syntax,
@@ -8370,6 +8715,13 @@ file class CapabilitySetTypeNode : SemanticNode, ICapabilitySetTypeNode
     private IMaybeType? namedType;
     private bool namedTypeCached;
 
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        yield return CapabilitySet;
+        yield return Referent;
+    }
+
     public CapabilitySetTypeNode(
         ICapabilitySetTypeSyntax syntax,
         ICapabilitySetNode capabilitySet,
@@ -8417,6 +8769,14 @@ file class FunctionTypeNode : SemanticNode, IFunctionTypeNode
     private IMaybeType? namedType;
     private bool namedTypeCached;
 
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        foreach (var child in Parameters)
+            yield return child;
+        yield return Return;
+    }
+
     public FunctionTypeNode(
         IFunctionTypeSyntax syntax,
         IEnumerable<IParameterTypeNode> parameters,
@@ -8445,6 +8805,12 @@ file class ParameterTypeNode : SemanticNode, IParameterTypeNode
                 TypeExpressionsAspect.ParameterType_Parameter);
     private IMaybeParameterType? parameter;
     private bool parameterCached;
+
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        yield return Referent;
+    }
 
     public ParameterTypeNode(
         IParameterTypeSyntax syntax,
@@ -8479,6 +8845,13 @@ file class CapabilityViewpointTypeNode : SemanticNode, ICapabilityViewpointTypeN
                 TypeExpressionsAspect.CapabilityViewpointType_NamedType);
     private IMaybeType? namedType;
     private bool namedTypeCached;
+
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        yield return Capability;
+        yield return Referent;
+    }
 
     public CapabilityViewpointTypeNode(
         ICapabilityViewpointTypeSyntax syntax,
@@ -8531,6 +8904,12 @@ file class SelfViewpointTypeNode : SemanticNode, ISelfViewpointTypeNode
                 TypeExpressionsAspect.SelfViewpointType_NamedType);
     private IMaybeType? namedType;
     private bool namedTypeCached;
+
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        yield return Referent;
+    }
 
     public SelfViewpointTypeNode(
         ISelfViewpointTypeSyntax syntax,
@@ -8589,6 +8968,12 @@ file class EntryNode : SemanticNode, IEntryNode
     private BindingFlags<IVariableBindingNode>? definitelyUnassigned;
     private bool definitelyUnassignedCached;
 
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        return Enumerable.Empty<ISemanticNode>();
+    }
+
     public EntryNode()
     {
     }
@@ -8646,6 +9031,12 @@ file class ExitNode : SemanticNode, IExitNode
                 SingleAssignmentAspect.DataFlow_DefinitelyUnassigned_Initial);
     private Circular<BindingFlags<IVariableBindingNode>> definitelyUnassigned = Circular.Unset;
     private bool definitelyUnassignedCached;
+
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        return Enumerable.Empty<ISemanticNode>();
+    }
 
     public ExitNode()
     {
@@ -8730,6 +9121,12 @@ file class ResultStatementNode : SemanticNode, IResultStatementNode
                 ExpressionTypesAspect.ResultStatement_Type);
     private IMaybeType? type;
     private bool typeCached;
+
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        yield return TempExpression;
+    }
 
     public ResultStatementNode(
         IResultStatementSyntax syntax,
@@ -8884,6 +9281,17 @@ file class VariableDeclarationStatementNode : SemanticNode, IVariableDeclaration
     private LexicalScope? lexicalScope;
     private bool lexicalScopeCached;
 
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        if (Capability is not null)
+            yield return Capability;
+        if (Type is not null)
+            yield return Type;
+        if (TempInitializer is not null)
+            yield return TempInitializer;
+    }
+
     public VariableDeclarationStatementNode(
         IVariableDeclarationStatementSyntax syntax,
         ICapabilityNode? capability,
@@ -8994,6 +9402,12 @@ file class ExpressionStatementNode : SemanticNode, IExpressionStatementNode
     private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
 
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        yield return TempExpression;
+    }
+
     public ExpressionStatementNode(
         IExpressionStatementSyntax syntax,
         IAmbiguousExpressionNode expression)
@@ -9097,6 +9511,12 @@ file class TypePatternNode : SemanticNode, ITypePatternNode
     private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
 
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        yield return Type;
+    }
+
     public TypePatternNode(
         ITypePatternSyntax syntax,
         ITypeNode type)
@@ -9158,6 +9578,14 @@ file class BindingContextPatternNode : SemanticNode, IBindingContextPatternNode
                 ControlFlowAspect.BindingContextPattern_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
+
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        yield return Pattern;
+        if (Type is not null)
+            yield return Type;
+    }
 
     public BindingContextPatternNode(
         IBindingContextPatternSyntax syntax,
@@ -9293,6 +9721,12 @@ file class BindingPatternNode : SemanticNode, IBindingPatternNode
     private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
 
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        return Enumerable.Empty<ISemanticNode>();
+    }
+
     public BindingPatternNode(IBindingPatternSyntax syntax)
     {
         Syntax = syntax;
@@ -9361,6 +9795,12 @@ file class OptionalPatternNode : SemanticNode, IOptionalPatternNode
                 ControlFlowAspect.OptionalPattern_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
+
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        yield return Pattern;
+    }
 
     public OptionalPatternNode(
         IOptionalPatternSyntax syntax,
@@ -9485,6 +9925,13 @@ file class BlockExpressionNode : SemanticNode, IBlockExpressionNode
                 ValueIdsAspect.Expression_ValueId);
     private ValueId valueId;
     private bool valueIdCached;
+
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        foreach (var child in Statements)
+            yield return child;
+    }
 
     public BlockExpressionNode(
         IBlockExpressionSyntax syntax,
@@ -9661,6 +10108,12 @@ file class UnsafeExpressionNode : SemanticNode, IUnsafeExpressionNode
     private ValueId valueId;
     private bool valueIdCached;
 
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        yield return TempExpression;
+    }
+
     public UnsafeExpressionNode(
         IUnsafeExpressionSyntax syntax,
         IAmbiguousExpressionNode expression)
@@ -9786,6 +10239,14 @@ file class UnresolvedMemberAccessExpressionNode : SemanticNode, IUnresolvedMembe
                 ValueIdsAspect.Expression_ValueId);
     private ValueId valueId;
     private bool valueIdCached;
+
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        yield return TempContext;
+        foreach (var child in GenericArguments)
+            yield return child;
+    }
 
     public UnresolvedMemberAccessExpressionNode(
         IMemberAccessExpressionSyntax syntax,
@@ -9934,6 +10395,12 @@ file class FieldAccessExpressionNode : SemanticNode, IFieldAccessExpressionNode
                 ValueIdsAspect.Expression_ValueId);
     private ValueId valueId;
     private bool valueIdCached;
+
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        yield return Context;
+    }
 
     public FieldAccessExpressionNode(
         IMemberAccessExpressionSyntax syntax,
@@ -10102,6 +10569,14 @@ file class MethodAccessExpressionNode : SemanticNode, IMethodAccessExpressionNod
     private ValueId valueId;
     private bool valueIdCached;
 
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        yield return Context;
+        foreach (var child in GenericArguments)
+            yield return child;
+    }
+
     public MethodAccessExpressionNode(
         IMemberAccessExpressionSyntax syntax,
         IExpressionNode context,
@@ -10257,6 +10732,12 @@ file class BoolLiteralExpressionNode : SemanticNode, IBoolLiteralExpressionNode
     private ValueId valueId;
     private bool valueIdCached;
 
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        return Enumerable.Empty<ISemanticNode>();
+    }
+
     public BoolLiteralExpressionNode(IBoolLiteralExpressionSyntax syntax)
     {
         Syntax = syntax;
@@ -10398,6 +10879,12 @@ file class IntegerLiteralExpressionNode : SemanticNode, IIntegerLiteralExpressio
     private ValueId valueId;
     private bool valueIdCached;
 
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        return Enumerable.Empty<ISemanticNode>();
+    }
+
     public IntegerLiteralExpressionNode(IIntegerLiteralExpressionSyntax syntax)
     {
         Syntax = syntax;
@@ -10538,6 +11025,12 @@ file class NoneLiteralExpressionNode : SemanticNode, INoneLiteralExpressionNode
                 ValueIdsAspect.Expression_ValueId);
     private ValueId valueId;
     private bool valueIdCached;
+
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        return Enumerable.Empty<ISemanticNode>();
+    }
 
     public NoneLiteralExpressionNode(INoneLiteralExpressionSyntax syntax)
     {
@@ -10683,6 +11176,12 @@ file class StringLiteralExpressionNode : SemanticNode, IStringLiteralExpressionN
                 ValueIdsAspect.Expression_ValueId);
     private ValueId valueId;
     private bool valueIdCached;
+
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        return Enumerable.Empty<ISemanticNode>();
+    }
 
     public StringLiteralExpressionNode(IStringLiteralExpressionSyntax syntax)
     {
@@ -10863,6 +11362,13 @@ file class AssignmentExpressionNode : SemanticNode, IAssignmentExpressionNode
                 ValueIdsAspect.Expression_ValueId);
     private ValueId valueId;
     private bool valueIdCached;
+
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        yield return TempLeftOperand;
+        yield return TempRightOperand;
+    }
 
     public AssignmentExpressionNode(
         IAssignmentExpressionSyntax syntax,
@@ -11056,6 +11562,13 @@ file class BinaryOperatorExpressionNode : SemanticNode, IBinaryOperatorExpressio
     private ValueId valueId;
     private bool valueIdCached;
 
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        yield return TempLeftOperand;
+        yield return TempRightOperand;
+    }
+
     public BinaryOperatorExpressionNode(
         IBinaryOperatorExpressionSyntax syntax,
         IAmbiguousExpressionNode leftOperand,
@@ -11237,6 +11750,12 @@ file class UnaryOperatorExpressionNode : SemanticNode, IUnaryOperatorExpressionN
     private ValueId valueId;
     private bool valueIdCached;
 
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        yield return TempOperand;
+    }
+
     public UnaryOperatorExpressionNode(
         IUnaryOperatorExpressionSyntax syntax,
         IAmbiguousExpressionNode operand)
@@ -11390,6 +11909,13 @@ file class ConversionExpressionNode : SemanticNode, IConversionExpressionNode
     private ValueId valueId;
     private bool valueIdCached;
 
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        yield return TempReferent;
+        yield return ConvertToType;
+    }
+
     public ConversionExpressionNode(
         IConversionExpressionSyntax syntax,
         IAmbiguousExpressionNode referent,
@@ -11535,6 +12061,12 @@ file class ImplicitConversionExpressionNode : SemanticNode, IImplicitConversionE
                 ValueIdsAspect.Expression_ValueId);
     private ValueId valueId;
     private bool valueIdCached;
+
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        yield return Referent;
+    }
 
     public ImplicitConversionExpressionNode(
         IExpressionNode referent,
@@ -11689,6 +12221,12 @@ file class OptionalConversionExpressionNode : SemanticNode, IOptionalConversionE
     private ValueId valueId;
     private bool valueIdCached;
 
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        yield return Referent;
+    }
+
     public OptionalConversionExpressionNode(
         IExpressionNode referent,
         uint depth)
@@ -11830,6 +12368,13 @@ file class PatternMatchExpressionNode : SemanticNode, IPatternMatchExpressionNod
                 ValueIdsAspect.Expression_ValueId);
     private ValueId valueId;
     private bool valueIdCached;
+
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        yield return TempReferent;
+        yield return Pattern;
+    }
 
     public PatternMatchExpressionNode(
         IPatternMatchExpressionSyntax syntax,
@@ -12048,6 +12593,15 @@ file class IfExpressionNode : SemanticNode, IIfExpressionNode
     private ValueId valueId;
     private bool valueIdCached;
 
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        yield return TempCondition;
+        yield return ThenBlock;
+        if (ElseClause is not null)
+            yield return ElseClause;
+    }
+
     public IfExpressionNode(
         IIfExpressionSyntax syntax,
         IAmbiguousExpressionNode condition,
@@ -12231,6 +12785,12 @@ file class LoopExpressionNode : SemanticNode, ILoopExpressionNode
     private ValueId valueId;
     private bool valueIdCached;
 
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        yield return Block;
+    }
+
     public LoopExpressionNode(
         ILoopExpressionSyntax syntax,
         IBlockExpressionNode block)
@@ -12408,6 +12968,13 @@ file class WhileExpressionNode : SemanticNode, IWhileExpressionNode
                 ValueIdsAspect.Expression_ValueId);
     private ValueId valueId;
     private bool valueIdCached;
+
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        yield return TempCondition;
+        yield return Block;
+    }
 
     public WhileExpressionNode(
         IWhileExpressionSyntax syntax,
@@ -12735,6 +13302,15 @@ file class ForeachExpressionNode : SemanticNode, IForeachExpressionNode
     private ValueId valueId;
     private bool valueIdCached;
 
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        yield return TempInExpression;
+        if (DeclaredType is not null)
+            yield return DeclaredType;
+        yield return Block;
+    }
+
     public ForeachExpressionNode(
         IForeachExpressionSyntax syntax,
         IAmbiguousExpressionNode inExpression,
@@ -12888,6 +13464,13 @@ file class BreakExpressionNode : SemanticNode, IBreakExpressionNode
     private ValueId valueId;
     private bool valueIdCached;
 
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        if (TempValue is not null)
+            yield return TempValue;
+    }
+
     public BreakExpressionNode(
         IBreakExpressionSyntax syntax,
         IAmbiguousExpressionNode? value)
@@ -12981,6 +13564,12 @@ file class NextExpressionNode : SemanticNode, INextExpressionNode
                 ValueIdsAspect.Expression_ValueId);
     private ValueId valueId;
     private bool valueIdCached;
+
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        return Enumerable.Empty<ISemanticNode>();
+    }
 
     public NextExpressionNode(INextExpressionSyntax syntax)
     {
@@ -13095,6 +13684,13 @@ file class ReturnExpressionNode : SemanticNode, IReturnExpressionNode
                 ValueIdsAspect.Expression_ValueId);
     private ValueId valueId;
     private bool valueIdCached;
+
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        if (TempValue is not null)
+            yield return TempValue;
+    }
 
     public ReturnExpressionNode(
         IReturnExpressionSyntax syntax,
@@ -13250,6 +13846,14 @@ file class UnresolvedInvocationExpressionNode : SemanticNode, IUnresolvedInvocat
                 ValueIdsAspect.Expression_ValueId);
     private ValueId valueId;
     private bool valueIdCached;
+
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        yield return TempExpression;
+        foreach (var child in TempArguments)
+            yield return child;
+    }
 
     public UnresolvedInvocationExpressionNode(
         IInvocationExpressionSyntax syntax,
@@ -13456,6 +14060,14 @@ file class FunctionInvocationExpressionNode : SemanticNode, IFunctionInvocationE
     private ValueId valueId;
     private bool valueIdCached;
 
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        yield return Function;
+        foreach (var child in TempArguments)
+            yield return child;
+    }
+
     public FunctionInvocationExpressionNode(
         IInvocationExpressionSyntax syntax,
         IFunctionNameExpressionNode function,
@@ -13653,6 +14265,14 @@ file class MethodInvocationExpressionNode : SemanticNode, IMethodInvocationExpre
     private ValueId valueId;
     private bool valueIdCached;
 
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        yield return Method;
+        foreach (var child in TempArguments)
+            yield return child;
+    }
+
     public MethodInvocationExpressionNode(
         IInvocationExpressionSyntax syntax,
         IMethodAccessExpressionNode method,
@@ -13848,6 +14468,12 @@ file class GetterInvocationExpressionNode : SemanticNode, IGetterInvocationExpre
     private ValueId valueId;
     private bool valueIdCached;
 
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        yield return Context;
+    }
+
     public GetterInvocationExpressionNode(
         IMemberAccessExpressionSyntax syntax,
         IExpressionNode context,
@@ -14032,6 +14658,13 @@ file class SetterInvocationExpressionNode : SemanticNode, ISetterInvocationExpre
                 ValueIdsAspect.Expression_ValueId);
     private ValueId valueId;
     private bool valueIdCached;
+
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        yield return Context;
+        yield return TempValue;
+    }
 
     public SetterInvocationExpressionNode(
         IAssignmentExpressionSyntax syntax,
@@ -14229,6 +14862,14 @@ file class FunctionReferenceInvocationExpressionNode : SemanticNode, IFunctionRe
     private ValueId valueId;
     private bool valueIdCached;
 
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        yield return Expression;
+        foreach (var child in TempArguments)
+            yield return child;
+    }
+
     public FunctionReferenceInvocationExpressionNode(
         IInvocationExpressionSyntax syntax,
         IExpressionNode expression,
@@ -14417,6 +15058,14 @@ file class InitializerInvocationExpressionNode : SemanticNode, IInitializerInvoc
     private ValueId valueId;
     private bool valueIdCached;
 
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        yield return Initializer;
+        foreach (var child in TempArguments)
+            yield return child;
+    }
+
     public InitializerInvocationExpressionNode(
         IInvocationExpressionSyntax syntax,
         IInitializerNameExpressionNode initializer,
@@ -14591,6 +15240,14 @@ file class NonInvocableInvocationExpressionNode : SemanticNode, INonInvocableInv
     private ValueId valueId;
     private bool valueIdCached;
 
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        yield return TempExpression;
+        foreach (var child in TempArguments)
+            yield return child;
+    }
+
     public NonInvocableInvocationExpressionNode(
         IInvocationExpressionSyntax syntax,
         IAmbiguousExpressionNode expression,
@@ -14764,6 +15421,12 @@ file class VariableNameExpressionNode : SemanticNode, IVariableNameExpressionNod
     private ValueId valueId;
     private bool valueIdCached;
 
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        return Enumerable.Empty<ISemanticNode>();
+    }
+
     public VariableNameExpressionNode(
         IIdentifierNameSyntax syntax,
         ILocalBindingNode referencedDefinition)
@@ -14923,6 +15586,12 @@ file class SelfExpressionNode : SemanticNode, ISelfExpressionNode
     private ValueId valueId;
     private bool valueIdCached;
 
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        return Enumerable.Empty<ISemanticNode>();
+    }
+
     public SelfExpressionNode(ISelfExpressionSyntax syntax)
     {
         Syntax = syntax;
@@ -15076,6 +15745,12 @@ file class BaseExpressionNode : SemanticNode, IBaseExpressionNode
                 ValueIdsAspect.Expression_ValueId);
     private ValueId valueId;
     private bool valueIdCached;
+
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        return Enumerable.Empty<ISemanticNode>();
+    }
 
     public BaseExpressionNode(IBaseExpressionSyntax syntax)
     {
@@ -15247,6 +15922,15 @@ file class FunctionNameExpressionNode : SemanticNode, IFunctionNameExpressionNod
                 ValueIdsAspect.Expression_ValueId);
     private ValueId valueId;
     private bool valueIdCached;
+
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        if (Context is not null)
+            yield return Context;
+        foreach (var child in GenericArguments)
+            yield return child;
+    }
 
     public FunctionNameExpressionNode(
         INameExpressionSyntax syntax,
@@ -15422,6 +16106,12 @@ file class InitializerNameExpressionNode : SemanticNode, IInitializerNameExpress
     private ValueId valueId;
     private bool valueIdCached;
 
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        yield return Context;
+    }
+
     public InitializerNameExpressionNode(
         INameExpressionSyntax syntax,
         ITypeNameNode context,
@@ -15542,6 +16232,12 @@ file class MissingNameExpressionNode : SemanticNode, IMissingNameExpressionNode
     private ValueId valueId;
     private bool valueIdCached;
 
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        return Enumerable.Empty<ISemanticNode>();
+    }
+
     public MissingNameExpressionNode(IMissingNameExpressionSyntax syntax)
     {
         Syntax = syntax;
@@ -15645,6 +16341,12 @@ file class UnresolvedIdentifierNameExpressionNode : SemanticNode, IUnresolvedIde
                 ValueIdsAspect.Expression_ValueId);
     private ValueId valueId;
     private bool valueIdCached;
+
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        return Enumerable.Empty<ISemanticNode>();
+    }
 
     public UnresolvedIdentifierNameExpressionNode(IIdentifierNameSyntax syntax)
     {
@@ -15765,6 +16467,13 @@ file class UnresolvedGenericNameExpressionNode : SemanticNode, IUnresolvedGeneri
                 ValueIdsAspect.Expression_ValueId);
     private ValueId valueId;
     private bool valueIdCached;
+
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        foreach (var child in GenericArguments)
+            yield return child;
+    }
 
     public UnresolvedGenericNameExpressionNode(
         IGenericNameSyntax syntax,
@@ -15892,6 +16601,14 @@ file class UnresolvedNameExpressionQualifiedNameExpressionNode : SemanticNode, I
     private ValueId valueId;
     private bool valueIdCached;
 
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        yield return Context;
+        foreach (var child in GenericArguments)
+            yield return child;
+    }
+
     public UnresolvedNameExpressionQualifiedNameExpressionNode(
         IQualifiedNameSyntax syntax,
         IExpressionNode context,
@@ -16016,6 +16733,14 @@ file class UnresolvedNamespaceQualifiedNameExpressionNode : SemanticNode, IUnres
                 ValueIdsAspect.Expression_ValueId);
     private ValueId valueId;
     private bool valueIdCached;
+
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        yield return Context;
+        foreach (var child in GenericArguments)
+            yield return child;
+    }
 
     public UnresolvedNamespaceQualifiedNameExpressionNode(
         IQualifiedNameSyntax syntax,
@@ -16143,6 +16868,14 @@ file class UnresolvedTypeQualifiedNameExpressionNode : SemanticNode, IUnresolved
     private ValueId valueId;
     private bool valueIdCached;
 
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        yield return Context;
+        foreach (var child in GenericArguments)
+            yield return child;
+    }
+
     public UnresolvedTypeQualifiedNameExpressionNode(
         IQualifiedNameSyntax syntax,
         ITypeNameNode context,
@@ -16260,6 +16993,12 @@ file class UnqualifiedNamespaceNameNode : SemanticNode, IUnqualifiedNamespaceNam
     private ValueId valueId;
     private bool valueIdCached;
 
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        return Enumerable.Empty<ISemanticNode>();
+    }
+
     public UnqualifiedNamespaceNameNode(
         IIdentifierNameSyntax syntax,
         INamespaceDeclarationNode referencedDeclaration)
@@ -16357,6 +17096,12 @@ file class QualifiedNamespaceNameNode : SemanticNode, IQualifiedNamespaceNameNod
                 ValueIdsAspect.Expression_ValueId);
     private ValueId valueId;
     private bool valueIdCached;
+
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        yield return Context;
+    }
 
     public QualifiedNamespaceNameNode(
         IQualifiedNameSyntax syntax,
@@ -16466,6 +17211,12 @@ file class UnresolvedIdentifierNameNode : SemanticNode, IUnresolvedIdentifierNam
                 ValueIdsAspect.Expression_ValueId);
     private ValueId valueId;
     private bool valueIdCached;
+
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        return Enumerable.Empty<ISemanticNode>();
+    }
 
     public UnresolvedIdentifierNameNode(IIdentifierNameSyntax syntax)
     {
@@ -16586,6 +17337,13 @@ file class UnresolvedGenericNameNode : SemanticNode, IUnresolvedGenericNameNode
                 ValueIdsAspect.Expression_ValueId);
     private ValueId valueId;
     private bool valueIdCached;
+
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        foreach (var child in GenericArguments)
+            yield return child;
+    }
 
     public UnresolvedGenericNameNode(
         IGenericNameSyntax syntax,
@@ -16711,6 +17469,14 @@ file class UnresolvedNameQualifiedNameNode : SemanticNode, IUnresolvedNameQualif
     private ValueId valueId;
     private bool valueIdCached;
 
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        yield return Context;
+        foreach (var child in GenericArguments)
+            yield return child;
+    }
+
     public UnresolvedNameQualifiedNameNode(
         IQualifiedNameSyntax syntax,
         INameNode context,
@@ -16821,6 +17587,14 @@ file class UnresolvedNamespaceQualifiedNameNode : SemanticNode, IUnresolvedNames
                 ValueIdsAspect.Expression_ValueId);
     private ValueId valueId;
     private bool valueIdCached;
+
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        yield return Context;
+        foreach (var child in GenericArguments)
+            yield return child;
+    }
 
     public UnresolvedNamespaceQualifiedNameNode(
         IQualifiedNameSyntax syntax,
@@ -16933,6 +17707,14 @@ file class UnresolvedTypeQualifiedNameNode : SemanticNode, IUnresolvedTypeQualif
                 ValueIdsAspect.Expression_ValueId);
     private ValueId valueId;
     private bool valueIdCached;
+
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        yield return Context;
+        foreach (var child in GenericArguments)
+            yield return child;
+    }
 
     public UnresolvedTypeQualifiedNameNode(
         IQualifiedNameSyntax syntax,
@@ -17051,6 +17833,12 @@ file class BuiltInTypeNameNode : SemanticNode, IBuiltInTypeNameNode
     private ITypeDeclarationNode? referencedDeclaration;
     private bool referencedDeclarationCached;
 
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        return Enumerable.Empty<ISemanticNode>();
+    }
+
     public BuiltInTypeNameNode(IBuiltInTypeNameSyntax syntax)
     {
         Syntax = syntax;
@@ -17163,6 +17951,12 @@ file class IdentifierTypeNameNode : SemanticNode, IIdentifierTypeNameNode
                 BindingNamesAspect.OrdinaryTypeName_ReferencedDeclaration);
     private ITypeDeclarationNode? referencedDeclaration;
     private bool referencedDeclarationCached;
+
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        return Enumerable.Empty<ISemanticNode>();
+    }
 
     public IdentifierTypeNameNode(IIdentifierNameSyntax syntax)
     {
@@ -17288,6 +18082,13 @@ file class GenericTypeNameNode : SemanticNode, IGenericTypeNameNode
                 BindingNamesAspect.OrdinaryTypeName_ReferencedDeclaration);
     private ITypeDeclarationNode? referencedDeclaration;
     private bool referencedDeclarationCached;
+
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        foreach (var child in GenericArguments)
+            yield return child;
+    }
 
     public GenericTypeNameNode(
         IGenericNameSyntax syntax,
@@ -17417,6 +18218,14 @@ file class QualifiedTypeNameNode : SemanticNode, IQualifiedTypeNameNode
     private ITypeDeclarationNode? referencedDeclaration;
     private bool referencedDeclarationCached;
 
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        yield return Context;
+        foreach (var child in GenericArguments)
+            yield return child;
+    }
+
     public QualifiedTypeNameNode(
         IQualifiedNameSyntax syntax,
         INameNode context,
@@ -17490,6 +18299,12 @@ file class AmbiguousMoveExpressionNode : SemanticNode, IAmbiguousMoveExpressionN
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
         => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
+
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        yield return TempReferent;
+    }
 
     public AmbiguousMoveExpressionNode(
         IMoveExpressionSyntax syntax,
@@ -17608,6 +18423,12 @@ file class MoveVariableExpressionNode : SemanticNode, IMoveVariableExpressionNod
                 ValueIdsAspect.Expression_ValueId);
     private ValueId valueId;
     private bool valueIdCached;
+
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        yield return Referent;
+    }
 
     public MoveVariableExpressionNode(
         IExpressionSyntax syntax,
@@ -17755,6 +18576,12 @@ file class MoveValueExpressionNode : SemanticNode, IMoveValueExpressionNode
                 ValueIdsAspect.Expression_ValueId);
     private ValueId valueId;
     private bool valueIdCached;
+
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        yield return Referent;
+    }
 
     public MoveValueExpressionNode(
         IExpressionSyntax syntax,
@@ -17904,6 +18731,12 @@ file class ImplicitTempMoveExpressionNode : SemanticNode, IImplicitTempMoveExpre
     private ValueId valueId;
     private bool valueIdCached;
 
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        yield return Referent;
+    }
+
     public ImplicitTempMoveExpressionNode(
         IExpressionSyntax syntax,
         IExpressionNode referent)
@@ -17994,6 +18827,12 @@ file class AmbiguousFreezeExpressionNode : SemanticNode, IAmbiguousFreezeExpress
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
         => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
+
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        yield return TempReferent;
+    }
 
     public AmbiguousFreezeExpressionNode(
         IFreezeExpressionSyntax syntax,
@@ -18113,6 +18952,12 @@ file class FreezeVariableExpressionNode : SemanticNode, IFreezeVariableExpressio
                 ValueIdsAspect.Expression_ValueId);
     private ValueId valueId;
     private bool valueIdCached;
+
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        yield return Referent;
+    }
 
     public FreezeVariableExpressionNode(
         IExpressionSyntax syntax,
@@ -18264,6 +19109,12 @@ file class FreezeValueExpressionNode : SemanticNode, IFreezeValueExpressionNode
     private ValueId valueId;
     private bool valueIdCached;
 
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        yield return Referent;
+    }
+
     public FreezeValueExpressionNode(
         IExpressionSyntax syntax,
         IExpressionNode referent,
@@ -18407,6 +19258,12 @@ file class PrepareToReturnExpressionNode : SemanticNode, IPrepareToReturnExpress
     private ValueId valueId;
     private bool valueIdCached;
 
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        yield return Value;
+    }
+
     public PrepareToReturnExpressionNode(IExpressionNode value)
     {
         this.value = Child.Create(this, value);
@@ -18536,6 +19393,12 @@ file class AsyncBlockExpressionNode : SemanticNode, IAsyncBlockExpressionNode
                 ValueIdsAspect.Expression_ValueId);
     private ValueId valueId;
     private bool valueIdCached;
+
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        yield return Block;
+    }
 
     public AsyncBlockExpressionNode(
         IAsyncBlockExpressionSyntax syntax,
@@ -18688,6 +19551,12 @@ file class AsyncStartExpressionNode : SemanticNode, IAsyncStartExpressionNode
     private ValueId valueId;
     private bool valueIdCached;
 
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        yield return TempExpression;
+    }
+
     public AsyncStartExpressionNode(
         IAsyncStartExpressionSyntax syntax,
         IAmbiguousExpressionNode expression)
@@ -18839,6 +19708,12 @@ file class AwaitExpressionNode : SemanticNode, IAwaitExpressionNode
     private ValueId valueId;
     private bool valueIdCached;
 
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        yield return TempExpression;
+    }
+
     public AwaitExpressionNode(
         IAwaitExpressionSyntax syntax,
         IAmbiguousExpressionNode expression)
@@ -18918,6 +19793,12 @@ file class PackageFacetSymbolNode : SemanticNode, IPackageFacetSymbolNode
         => Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
     public INamespaceSymbolNode GlobalNamespace { [DebuggerStepThrough] get; }
 
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        yield return GlobalNamespace;
+    }
+
     public PackageFacetSymbolNode(FixedSymbolTree symbolTree)
         : base(true)
     {
@@ -18987,6 +19868,13 @@ file class NamespaceSymbolNode : SemanticNode, INamespaceSymbolNode
     private FixedDictionary<OrdinaryName, IFixedSet<INamespaceMemberDeclarationNode>>? nestedMembersByName;
     private bool nestedMembersByNameCached;
 
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        foreach (var child in Members)
+            yield return child;
+    }
+
     public NamespaceSymbolNode(NamespaceSymbol symbol)
     {
         Symbol = symbol;
@@ -19007,6 +19895,12 @@ file class FunctionSymbolNode : SemanticNode, IFunctionSymbolNode
         => (INamespaceDeclarationNode)Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
     public ISymbolTree SymbolTree()
         => Inherited_SymbolTree(GrammarAttribute.CurrentInheritanceContext());
+
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        return Enumerable.Empty<ISemanticNode>();
+    }
 
     public FunctionSymbolNode(FunctionSymbol symbol)
     {
@@ -19049,6 +19943,14 @@ file class BuiltInTypeSymbolNode : SemanticNode, IBuiltInTypeSymbolNode
     private IFixedSet<ITypeMemberSymbolNode>? members;
     private bool membersCached;
 
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        yield return ImplicitSelf;
+        foreach (var child in Members)
+            yield return child;
+    }
+
     public BuiltInTypeSymbolNode(BuiltInTypeSymbol symbol)
     {
         Symbol = symbol;
@@ -19073,6 +19975,12 @@ file class VoidTypeSymbolNode : SemanticNode, IVoidTypeSymbolNode
     public ISymbolTree SymbolTree()
         => Inherited_SymbolTree(GrammarAttribute.CurrentInheritanceContext());
 
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        return Enumerable.Empty<ISemanticNode>();
+    }
+
     public VoidTypeSymbolNode(VoidTypeSymbol symbol)
     {
         Symbol = symbol;
@@ -19096,6 +20004,12 @@ file class NeverTypeSymbolNode : SemanticNode, INeverTypeSymbolNode
         => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public ISymbolTree SymbolTree()
         => Inherited_SymbolTree(GrammarAttribute.CurrentInheritanceContext());
+
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        return Enumerable.Empty<ISemanticNode>();
+    }
 
     public NeverTypeSymbolNode(NeverTypeSymbol symbol)
     {
@@ -19152,6 +20066,16 @@ file class ClassSymbolNode : SemanticNode, IClassSymbolNode
                 n => ChildSet.Attach(this, SymbolNodeAspect.OrdinaryTypeSymbol_Members(n)));
     private IFixedSet<ITypeMemberSymbolNode>? members;
     private bool membersCached;
+
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        yield return ImplicitSelf;
+        foreach (var child in GenericParameters)
+            yield return child;
+        foreach (var child in Members)
+            yield return child;
+    }
 
     public ClassSymbolNode(OrdinaryTypeSymbol symbol)
     {
@@ -19210,6 +20134,16 @@ file class StructSymbolNode : SemanticNode, IStructSymbolNode
     private IFixedSet<ITypeMemberSymbolNode>? members;
     private bool membersCached;
 
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        yield return ImplicitSelf;
+        foreach (var child in GenericParameters)
+            yield return child;
+        foreach (var child in Members)
+            yield return child;
+    }
+
     public StructSymbolNode(OrdinaryTypeSymbol symbol)
     {
         SymbolNodeAspect.Validate_StructSymbol(symbol);
@@ -19266,6 +20200,16 @@ file class ValueSymbolNode : SemanticNode, IValueSymbolNode
                 n => ChildSet.Attach(this, SymbolNodeAspect.OrdinaryTypeSymbol_Members(n)));
     private IFixedSet<ITypeMemberSymbolNode>? members;
     private bool membersCached;
+
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        yield return ImplicitSelf;
+        foreach (var child in GenericParameters)
+            yield return child;
+        foreach (var child in Members)
+            yield return child;
+    }
 
     public ValueSymbolNode(OrdinaryTypeSymbol symbol)
     {
@@ -19324,6 +20268,16 @@ file class TraitSymbolNode : SemanticNode, ITraitSymbolNode
     private IFixedSet<ITypeMemberSymbolNode>? members;
     private bool membersCached;
 
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        yield return ImplicitSelf;
+        foreach (var child in GenericParameters)
+            yield return child;
+        foreach (var child in Members)
+            yield return child;
+    }
+
     public TraitSymbolNode(OrdinaryTypeSymbol symbol)
     {
         SymbolNodeAspect.Validate_TraitSymbol(symbol);
@@ -19357,6 +20311,12 @@ file class GenericParameterSymbolNode : SemanticNode, IGenericParameterSymbolNod
     private ITypeConstructor? typeConstructor;
     private bool typeConstructorCached;
 
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        return Enumerable.Empty<ISemanticNode>();
+    }
+
     public GenericParameterSymbolNode(GenericParameterTypeSymbol symbol)
     {
         Symbol = symbol;
@@ -19378,6 +20338,12 @@ file class SelfSymbolNode : SemanticNode, ISelfSymbolNode
         => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public INonVariableTypeDeclarationNode ContainingDeclaration
         => (INonVariableTypeDeclarationNode)Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
+
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        return Enumerable.Empty<ISemanticNode>();
+    }
 
     public SelfSymbolNode(AssociatedTypeSymbol symbol)
     {
@@ -19404,6 +20370,12 @@ file class OrdinaryMethodSymbolNode : SemanticNode, IOrdinaryMethodSymbolNode
         => Inherited_Facet(GrammarAttribute.CurrentInheritanceContext());
     public ISymbolTree SymbolTree()
         => Inherited_SymbolTree(GrammarAttribute.CurrentInheritanceContext());
+
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        return Enumerable.Empty<ISemanticNode>();
+    }
 
     public OrdinaryMethodSymbolNode(MethodSymbol symbol)
     {
@@ -19432,6 +20404,12 @@ file class GetterMethodSymbolNode : SemanticNode, IGetterMethodSymbolNode
     public ISymbolTree SymbolTree()
         => Inherited_SymbolTree(GrammarAttribute.CurrentInheritanceContext());
 
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        return Enumerable.Empty<ISemanticNode>();
+    }
+
     public GetterMethodSymbolNode(MethodSymbol symbol)
     {
         SymbolNodeAspect.Validate_GetterMethodSymbol(symbol);
@@ -19458,6 +20436,12 @@ file class SetterMethodSymbolNode : SemanticNode, ISetterMethodSymbolNode
         => Inherited_Facet(GrammarAttribute.CurrentInheritanceContext());
     public ISymbolTree SymbolTree()
         => Inherited_SymbolTree(GrammarAttribute.CurrentInheritanceContext());
+
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        return Enumerable.Empty<ISemanticNode>();
+    }
 
     public SetterMethodSymbolNode(MethodSymbol symbol)
     {
@@ -19486,6 +20470,12 @@ file class InitializerSymbolNode : SemanticNode, IInitializerSymbolNode
     public ISymbolTree SymbolTree()
         => Inherited_SymbolTree(GrammarAttribute.CurrentInheritanceContext());
 
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        return Enumerable.Empty<ISemanticNode>();
+    }
+
     public InitializerSymbolNode(InitializerSymbol symbol)
     {
         Symbol = symbol;
@@ -19512,6 +20502,12 @@ file class FieldSymbolNode : SemanticNode, IFieldSymbolNode
     public ISymbolTree SymbolTree()
         => Inherited_SymbolTree(GrammarAttribute.CurrentInheritanceContext());
 
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        return Enumerable.Empty<ISemanticNode>();
+    }
+
     public FieldSymbolNode(FieldSymbol symbol)
     {
         Symbol = symbol;
@@ -19532,6 +20528,12 @@ file class AssociatedFunctionSymbolNode : SemanticNode, IAssociatedFunctionSymbo
         => Inherited_Facet(GrammarAttribute.CurrentInheritanceContext());
     public ISymbolTree SymbolTree()
         => Inherited_SymbolTree(GrammarAttribute.CurrentInheritanceContext());
+
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        return Enumerable.Empty<ISemanticNode>();
+    }
 
     public AssociatedFunctionSymbolNode(FunctionSymbol symbol)
     {
@@ -19554,6 +20556,12 @@ file class AssociatedTypeSymbolNode : SemanticNode, IAssociatedTypeSymbolNode
         => Inherited_Facet(GrammarAttribute.CurrentInheritanceContext());
     public ISymbolTree SymbolTree()
         => Inherited_SymbolTree(GrammarAttribute.CurrentInheritanceContext());
+
+    [DebuggerStepThrough]
+    public override IEnumerable<ISemanticNode> Children()
+    {
+        return Enumerable.Empty<ISemanticNode>();
+    }
 
     public AssociatedTypeSymbolNode(
         IdentifierName name,

@@ -22,7 +22,7 @@ public static class MemberModelExtensions
     /// </summary>
     public static IEnumerable<T> DistinctKeepingPlaceholders<T>(this IEnumerable<T> source)
         where T : IMemberModel
-        => PreferPlaceholders(source).DistinctBy(m => m.Name);
+        => source.PreferPlaceholders().DistinctBy(m => m.Name);
 
     public static IEnumerable<T> PreferPlaceholders<T>(this IEnumerable<T> source)
         where T : IMemberModel

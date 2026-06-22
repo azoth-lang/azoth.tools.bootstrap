@@ -14,7 +14,7 @@
 <#  foreach(var usingNamespace in Build.OrderedNamespaces(tree,
     Build.Conditional(!tree.SimplifiedTree, "System", "System.Linq", "System.Threading", "Azoth.Tools.Bootstrap.Compiler.Core.Attributes"),
     Build.Conditional(tree.GenerateClasses, "InlineMethod", "System.Collections.Generic"),
-    ["ExhaustiveMatching", "System.CodeDom.Compiler", "System.Diagnostics"])) { #>
+    ["ExhaustiveMatching", "System.CodeDom.Compiler", "System.Diagnostics", "System.Linq"])) { #>
 using <#=usingNamespace #>;
 <#  } #>
 
@@ -57,6 +57,11 @@ public partial interface <#= Emit.TypeName(node.Defines) #><#= Emit.BaseTypes(no
 <#      } #>
 <#      foreach (var eq in node.EquationsRequiringEmit) { #>
     <#= Emit.Type(eq.Type) #> <#= Emit.TypeName(eq.Attribute.Node.Defines) #>.<#= eq.Name #><#= Emit.ParametersAndBody(eq) #>
+<#      } #>
+<#      if (node.Defines == tree.RootSupertype) { #>
+
+    [DebuggerStepThrough]
+    IEnumerable<<#=Emit.TypeName(tree.RootSupertype)#>> Children();
 <#      } #>
 <#      if (tree.GenerateClasses && !node.IsAbstract) { #>
 
@@ -231,6 +236,8 @@ internal abstract partial class <#= Emit.BaseClassName(tree) #> : TreeNode, IChi
 <#                  break;#>
 <#          } #>
 <#      } #>
+
+    public abstract IEnumerable<<#=Emit.TypeName(tree.RootSupertype)#>> Children();
 }
 
 <#  } #>
@@ -287,6 +294,32 @@ file class <#= Emit.ClassName(node.Defines) #> : <#= Emit.BaseClass(tree) #><#= 
 <#                  break;#>
 <#          } #>
 <#      } #>
+
+    [DebuggerStepThrough]
+    public <#= tree.SimplifiedTree ? "" : "override " #>IEnumerable<<#=Emit.TypeName(tree.RootSupertype)#>> Children()
+    {
+<#      bool noAttributes = true;
+        foreach (var property in node.ActualAttributes.Where(p => p.IsChild).PreferPlaceholders()) {
+            noAttributes = false;#>
+<#          if (property.Type is CollectionTypeModel) { #>
+        foreach (var child in <#=property.TempName#>)
+            yield return child;
+<#          } else if (property.Type is OptionalTypeModel optionalType) { #>
+        if (<#=property.TempName#> is not null)
+<#              if (optionalType.UnderlyingType is CollectionTypeModel) { #>
+            foreach (var child in <#=property.TempName#>)
+                yield return child;
+<#              } else { #>
+            yield return <#=property.TempName#>;
+<#              } #>
+<#          } else { #>
+        yield return <#=property.TempName#>;
+<#          } #>
+<#      } #>
+<#      if (noAttributes) { #>
+        return Enumerable.Empty<<#=Emit.TypeName(tree.RootSupertype)#>>();
+<#      } #>
+    }
 
     public <#= Emit.ClassName(node.Defines) #>(<#= Emit.Parameters(Build.PropertiesForClass(node)) #>)
 <#     if (!tree.SimplifiedTree && node.IsRoot) { #>

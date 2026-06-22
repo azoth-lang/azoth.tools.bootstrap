@@ -39,11 +39,6 @@
       <LastGenOutput>TreeCodeTemplate.cs</LastGenOutput>
       <CustomToolNamespace>Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees</CustomToolNamespace>
     </None>
-    <None Update="Trees\ChildrenCodeTemplate.tt">
-      <Generator>TextTemplatingFilePreprocessor</Generator>
-      <LastGenOutput>ChildrenCodeTemplate.cs</LastGenOutput>
-      <CustomToolNamespace>Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees</CustomToolNamespace>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
@@ -58,11 +53,6 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>TreeCodeTemplate.tt</DependentUpon>
-    </Compile>
-    <Compile Update="Trees\ChildrenCodeTemplate.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>ChildrenCodeTemplate.tt</DependentUpon>
     </Compile>
   </ItemGroup>
 </Project>

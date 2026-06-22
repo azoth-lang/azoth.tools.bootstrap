@@ -7,5 +7,4 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
 /// </summary>
 internal partial class SemanticNode
 {
-    public virtual IEnumerable<ISemanticNode> Children() => ((ISemanticNode)this).Children();
 }
