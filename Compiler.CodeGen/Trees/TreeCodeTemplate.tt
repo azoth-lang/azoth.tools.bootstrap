@@ -73,8 +73,7 @@ public partial interface <#= Emit.TypeName(node.Defines) #><#= Emit.BaseTypes(no
 <#  } #>
 <#  if (tree.GenerateClasses) { #>
 <#  if (!tree.SimplifiedTree) { #>
-// TODO switch back to `file` and not `partial` once fully transitioned
-internal abstract partial class <#= Emit.BaseClassName(tree) #> : TreeNode, IChildTreeNode<<#= Emit.TypeName(tree.RootSupertype) #>>
+file abstract class <#= Emit.BaseClassName(tree) #> : TreeNode, IChildTreeNode<<#= Emit.TypeName(tree.RootSupertype) #>>
 {
     private <#= Emit.BaseClassName(tree) #>? parent;
 

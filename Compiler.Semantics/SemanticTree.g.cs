@@ -4717,8 +4717,7 @@ public partial interface IAssociatedTypeSymbolNode : IAssociatedTypeDeclarationN
         => new AssociatedTypeSymbolNode(name, symbol);
 }
 
-// TODO switch back to `file` and not `partial` once fully transitioned
-internal abstract partial class SemanticNode : TreeNode, IChildTreeNode<ISemanticNode>
+file abstract class SemanticNode : TreeNode, IChildTreeNode<ISemanticNode>
 {
     private SemanticNode? parent;
 
