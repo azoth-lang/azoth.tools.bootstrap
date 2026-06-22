@@ -194,12 +194,12 @@ Logically, equations are simply implementations of the attribute. However, one c
 attribute with another. This is akin to how you can use `override` or `new` to replace a superclass
 member in C#.
 
-**TODO:** should `override` and `new` keywords be required to make it obvious when this is
+**TODO:** should `overrides` and `hides` keywords be required to make it obvious when this is
 happening?
 
 ### Rewrites
 
-Rewrite rule names are optional. They exist to distinguish rewrites from each other. It help
+Rewrite rule names are optional. They exist to distinguish rewrites from each other. To help
 optimize performance, there are two special kinds of rewrites in addition to the general rewrite.
 
 | Declaration                                 | Meaning                                                     |
