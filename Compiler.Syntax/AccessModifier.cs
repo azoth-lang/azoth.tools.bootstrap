@@ -15,7 +15,7 @@ public enum AccessModifier
 
 public static class AccessModifierExtensions
 {
-    public static string ToSourceString(this AccessModifier accessModifier)
+    public static string ToSourceCodeString(this AccessModifier accessModifier)
     {
         return accessModifier switch
         {

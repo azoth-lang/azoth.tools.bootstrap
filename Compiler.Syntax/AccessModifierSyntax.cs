@@ -44,5 +44,5 @@ public readonly struct AccessModifierSyntax
         };
     }
 
-    public override string ToString() => ToAccessModifier().ToSourceString();
+    public override string ToString() => ToAccessModifier().ToSourceCodeString();
 }
