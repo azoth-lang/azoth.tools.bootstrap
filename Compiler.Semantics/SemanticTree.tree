@@ -91,7 +91,7 @@ ValueDefinition <: Code, TypeDefinition, ValueDeclaration = Syntax:`IValueDefini
     SourceMembers:TypeMemberDefinition*;
 TraitDefinition <: Code, TypeDefinition, TraitDeclaration = Syntax:`ITraitDefinitionSyntax`
     /Attributes/ /GenericParameters/ /SupertypeNames/
-    Members:{TypeMemberDefinition};
+    SourceMembers:{TypeMemberDefinition};
 
 // ---------- Type Definition Parts
 GenericParameter <: Code, GenericParameterDeclaration

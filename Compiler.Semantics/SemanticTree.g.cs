@@ -636,18 +636,17 @@ public partial interface ITraitDefinitionNode : ITypeDefinitionNode, ITraitDecla
     ISyntax? ISemanticNode.Syntax => Syntax;
     IDefinitionSyntax? IDefinitionNode.Syntax => Syntax;
     IMemberDefinitionSyntax? ITypeMemberDefinitionNode.Syntax => Syntax;
-    new IFixedSet<ITypeMemberDefinitionNode> Members { get; }
-    IFixedSet<ITypeMemberDefinitionNode> ITypeDefinitionNode.Members => Members;
-    IFixedSet<ITypeMemberDeclarationNode> IOrdinaryTypeDeclarationNode.Members => Members;
-    IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
+    IFixedSet<ITypeMemberDefinitionNode> SourceMembers { get; }
+    IFixedSet<ITypeMemberDefinitionNode> ITypeDefinitionNode.Members
+        => SourceMembers;
 
     public static ITraitDefinitionNode Create(
         ITraitDefinitionSyntax syntax,
         IEnumerable<IAttributeNode> attributes,
         IEnumerable<IGenericParameterNode> genericParameters,
         IEnumerable<ITypeNameNode> supertypeNames,
-        IEnumerable<ITypeMemberDefinitionNode> members)
-        => new TraitDefinitionNode(syntax, attributes, genericParameters, supertypeNames, members);
+        IEnumerable<ITypeMemberDefinitionNode> sourceMembers)
+        => new TraitDefinitionNode(syntax, attributes, genericParameters, supertypeNames, sourceMembers);
 }
 
 [Closed(typeof(GenericParameterNode))]
@@ -6346,7 +6345,7 @@ file class TraitDefinitionNode : SemanticNode, ITraitDefinitionNode
     public IFixedList<IAttributeNode> Attributes { [DebuggerStepThrough] get; }
     public IFixedList<IGenericParameterNode> GenericParameters { [DebuggerStepThrough] get; }
     public IFixedList<ITypeNameNode> SupertypeNames { [DebuggerStepThrough] get; }
-    public IFixedSet<ITypeMemberDefinitionNode> Members { [DebuggerStepThrough] get; }
+    public IFixedSet<ITypeMemberDefinitionNode> SourceMembers { [DebuggerStepThrough] get; }
     public PackageSymbol PackageSymbol
         => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -6440,7 +6439,7 @@ file class TraitDefinitionNode : SemanticNode, ITraitDefinitionNode
             yield return child;
         foreach (var child in SupertypeNames)
             yield return child;
-        foreach (var child in Members)
+        foreach (var child in SourceMembers)
             yield return child;
     }
 
@@ -6449,13 +6448,13 @@ file class TraitDefinitionNode : SemanticNode, ITraitDefinitionNode
         IEnumerable<IAttributeNode> attributes,
         IEnumerable<IGenericParameterNode> genericParameters,
         IEnumerable<ITypeNameNode> supertypeNames,
-        IEnumerable<ITypeMemberDefinitionNode> members)
+        IEnumerable<ITypeMemberDefinitionNode> sourceMembers)
     {
         Syntax = syntax;
         Attributes = ChildList.Attach(this, attributes);
         GenericParameters = ChildList.Attach(this, genericParameters);
         SupertypeNames = ChildList.Attach(this, supertypeNames);
-        Members = ChildSet.Attach(this, members);
+        SourceMembers = ChildSet.Attach(this, sourceMembers);
         AccessModifier = TypeModifiersAspect.TypeDefinition_AccessModifier(this);
     }
 

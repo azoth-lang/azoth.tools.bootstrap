@@ -14,9 +14,9 @@ associated members. This split applies to each of the other categories and so is
 separately. The collections of definition/declaration members available on a type
 definition/declaration are:
 
-* Source Associated/Instance Members: Members declared in the explicitly in the source code. Here,
-  "source" has a double meaning as the members in "source" code and as the members from which
-  everything else is derived.
+* Source Associated/Instance Members: Members declared explicitly in the source code. Here, "source"
+  has a double meaning as the members in "source" code and as the members from which everything else
+  is derived.
 * Synthesized Instance/Associated Members: Members synthesized by the compiler based on other
   declarations. For example, implicit initializers and drop methods.
 * Declared Instance/Associated Members: the union of the source and synthesized members. These are
