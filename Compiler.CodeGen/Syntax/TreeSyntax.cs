@@ -1,8 +1,5 @@
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using Azoth.Tools.Bootstrap.Framework;
-using MoreLinq;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
 
@@ -45,7 +42,5 @@ public sealed class TreeSyntax
         ClassSuffix = classSuffix;
         UsingNamespaces = usingNamespaces.ToFixedSet();
         Nodes = nodes.ToFixedList();
-        if (Nodes.Select(r => r.Defines).Duplicates().Any())
-            throw new ValidationException("Node names must be unique.");
     }
 }

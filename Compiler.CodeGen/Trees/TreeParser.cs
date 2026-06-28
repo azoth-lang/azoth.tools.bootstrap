@@ -23,24 +23,24 @@ internal static class TreeParser
         var classPrefix = GetConfig(lines, "class-prefix") ?? "";
         var classSuffix = GetConfig(lines, "class-suffix") ?? "";
         var usingNamespaces = ParseUsingNamespaces(lines);
-        var rules = ParseNodes(lines);
+        var rules = ParseNodes(lines, treeName);
         return new(treeName, ns, rootType, symbolPrefix, symbolSuffix, generateClasses, simplifiedTree,
             classPrefix, classSuffix, usingNamespaces, rules);
     }
 
-    private static IEnumerable<TreeNodeSyntax> ParseNodes(IEnumerable<string> lines)
+    private static IEnumerable<TreeNodeSyntax> ParseNodes(IEnumerable<string> lines, string sourceTree)
     {
         var statements = ParseToStatements(lines).ToFixedList();
         foreach (var statement in statements)
-            yield return ParseNode(statement);
+            yield return ParseNode(statement, sourceTree);
     }
 
-    private static TreeNodeSyntax ParseNode(string statement)
+    public static TreeNodeSyntax ParseNode(string statement, string sourceFile)
     {
         var (declaration, definition) = SplitDeclarationAndDefinition(statement);
         var (isTemp, isAbstract, defines, supertypes) = ParseDeclaration(declaration);
         var attributes = ParseTreeAttributes(definition).ToFixedList();
-        return new(isTemp, isAbstract, defines, supertypes, attributes);
+        return new(sourceFile, isTemp, isAbstract, defines, supertypes, attributes);
     }
 
     private static (string Declaration, string? Definition) SplitDeclarationAndDefinition(string statement)

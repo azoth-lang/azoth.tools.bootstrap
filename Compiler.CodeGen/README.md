@@ -1,5 +1,23 @@
 # Azoth.Tools.Bootstrap.Compiler.CodeGen
 
+Contents:
+
+* [Tree File Syntax](#tree-file-syntax)
+  * [The Default Node](#the-default-node)
+* [Aspect File Syntax](#aspect-file-syntax)
+  * [Tree Nodes](#tree-nodes)
+  * [Construction](#construction)
+  * [Intertype Declared Members](#intertype-declared-members)
+  * [Type Declarations](#type-declarations)
+  * [Synthesized Attributes](#synthesized-attributes)
+  * [Inherited Attributes](#inherited-attributes)
+  * [Previous Attributes](#previous-attributes)
+  * [Circular Attributes](#circular-attributes)
+  * [Aggregate Attributes](#aggregate-attributes)
+  * [Collection Attributes](#collection-attributes)
+  * [Attribute Overriding](#attribute-overriding)
+  * [Rewrites](#rewrites)
+
 ## Tree File Syntax
 
 | Declaration                                                                                 | Meaning |
@@ -48,6 +66,13 @@
 
 Note that using declarations for aspects are also added to the tree declaration since properties
 added by the aspect may need the using declaration too.
+
+### Tree Nodes
+
+An aspect file may also declare tree nodes using the same syntax as the [tree file](#tree-file-syntax).
+Nodes declared in an aspect file are emitted as part of the generated tree output exactly as if they
+had been declared in the tree file. This allows an aspect to extend the tree as if it were part of
+the tree.
 
 ### Construction
 

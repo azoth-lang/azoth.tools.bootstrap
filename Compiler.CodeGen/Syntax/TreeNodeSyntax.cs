@@ -9,6 +9,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
 
 public sealed class TreeNodeSyntax
 {
+    /// <summary>
+    /// The name of the file the node was declared in (the tree file or an aspect file) without
+    /// the extension.
+    /// </summary>
+    public string SourceFile { get; }
     public bool IsTemp { get; }
     public bool? IsAbstract { get; }
     public SymbolSyntax Defines { get; }
@@ -16,12 +21,14 @@ public sealed class TreeNodeSyntax
     public IFixedList<TreeAttributeSyntax> DeclaredAttributes { get; }
 
     public TreeNodeSyntax(
+        string sourceFile,
         bool isTemp,
         bool? isAbstract,
         SymbolSyntax defines,
         IEnumerable<SymbolSyntax> supertypes,
         IEnumerable<TreeAttributeSyntax> declaredAttributes)
     {
+        SourceFile = sourceFile;
         IsTemp = isTemp;
         IsAbstract = isAbstract;
         Defines = defines;

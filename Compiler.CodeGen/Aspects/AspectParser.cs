@@ -7,6 +7,7 @@ using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Equations;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Equations.Selectors;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Snippets;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees;
 using Azoth.Tools.Bootstrap.Framework;
 using static Azoth.Tools.Bootstrap.Compiler.CodeGen.Core.Parsing;
 
@@ -21,15 +22,16 @@ public static class AspectParser
         var ns = GetRequiredConfig(lines, "namespace");
         var name = GetRequiredConfig(lines, "name");
         var usingNamespaces = ParseUsingNamespaces(lines);
-        var (typeDeclarations, snippets, attributeFamilies, attributes, equations, rewriteRules) = ParseStatements(lines);
-        return new(ns, name, usingNamespaces, typeDeclarations, snippets, attributeFamilies,
+        var (nodes, typeDeclarations, snippets, attributeFamilies, attributes, equations, rewriteRules) = ParseStatements(lines, name);
+        return new(ns, name, usingNamespaces, nodes, typeDeclarations, snippets, attributeFamilies,
             attributes, equations, rewriteRules);
     }
 
     private static AspectStatementsSyntax ParseStatements(
-        IFixedList<string> lines)
+        IFixedList<string> lines, string aspectName)
     {
         var statements = ParseToStatements(lines).ToFixedList();
+        var nodes = new List<TreeNodeSyntax>();
         var typeDeclarations = new List<TypeDeclarationSyntax>();
         var snippets = new List<SnippetSyntax>();
         var attributeFamilies = new List<AttributeFamilySyntax>();
@@ -52,10 +54,15 @@ public static class AspectParser
                 equations.Add(ParseEquation(statement));
             else if (statement.StartsWith('✎'))
                 rewriteRules.Add(ParseRewriteRule(statement));
+            // A tree node declaration begins with the node name or a `temp`/`abstract`/`concrete`
+            // modifier. All other statement kinds begin with a sigil or the `struct`/`type` keywords
+            // handled above, so a statement starting with a letter is a tree node declaration.
+            else if (char.IsLetter(statement[0]))
+                nodes.Add(TreeParser.ParseNode(statement, aspectName));
             else
                 attributes.Add(ParseAttribute(statement));
         }
-        return new(typeDeclarations, snippets, attributeFamilies, attributes, equations, rewriteRules);
+        return new(nodes, typeDeclarations, snippets, attributeFamilies, attributes, equations, rewriteRules);
     }
 
     private static ConstructorArgumentValidationSyntax ParseConstructorArgumentValidation(string statement)
@@ -513,6 +520,7 @@ public static class AspectParser
         };
 
     private record AspectStatementsSyntax(
+        IFixedList<TreeNodeSyntax> Nodes,
         IFixedSet<TypeDeclarationSyntax> TypeDeclarations,
         IFixedList<SnippetSyntax> Snippets,
         IFixedSet<AttributeFamilySyntax> AttributeFamilies,
@@ -521,14 +529,16 @@ public static class AspectParser
         IFixedList<RewriteRuleSyntax> RewriteRules)
     {
         public AspectStatementsSyntax(
+            IEnumerable<TreeNodeSyntax> nodes,
             IEnumerable<TypeDeclarationSyntax> typeDeclarations,
             IEnumerable<SnippetSyntax> snippets,
             IEnumerable<AttributeFamilySyntax> attributeFamilies,
             IEnumerable<AspectAttributeSyntax> attributes,
             IEnumerable<EquationSyntax> equations,
             IEnumerable<RewriteRuleSyntax> rewriteRules)
-            : this(typeDeclarations.ToFixedSet(), snippets.ToFixedList(), attributeFamilies.ToFixedSet(),
-                attributes.ToFixedList(), equations.ToFixedList(), rewriteRules.ToFixedList())
+            : this(nodes.ToFixedList(), typeDeclarations.ToFixedSet(), snippets.ToFixedList(),
+                attributeFamilies.ToFixedSet(), attributes.ToFixedList(), equations.ToFixedList(),
+                rewriteRules.ToFixedList())
         { }
     }
 }

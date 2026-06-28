@@ -49,8 +49,13 @@ public sealed class TreeModel : IHasUsingNamespaces
         UsingNamespaces = syntax.UsingNamespaces
                                 .Concat(aspects.SelectMany(a => a.UsingNamespaces.Append(a.Namespace)))
                                 .Except(Namespace).ToFixedSet();
-        Nodes = syntax.Nodes.Select(r => new TreeNodeModel(this, r)).ToFixedList();
-        nodesLookup = Nodes.ToFixedDictionary(r => r.Defines.ShortName);
+        // Nodes declared in aspect files extend the tree as if they were declared in the tree file.
+        var nodeSyntax = syntax.Nodes.Concat(aspects.SelectMany(a => a.Nodes)).ToFixedList();
+        Nodes = nodeSyntax.Select(r => new TreeNodeModel(this, r)).ToFixedList();
+        // Tolerate duplicate node names here so that Validate() can report them all; otherwise
+        // building the lookup would throw on the first duplicate before validation runs.
+        nodesLookup = Nodes.GroupBy(r => r.Defines.ShortName)
+                           .ToFixedDictionary(g => g.Key, g => g.First());
 
         // Now that the tree is fully created, it is safe to create the aspects
         Aspects = aspects.Select(a => new AspectModel(this, a)).ToFixedList();
@@ -104,7 +109,8 @@ public sealed class TreeModel : IHasUsingNamespaces
 
     public void Validate()
     {
-        var errors = ValidateAllInheritRootSupertype();
+        var errors = ValidateNodeNamesAreUnique();
+        errors |= ValidateAllInheritRootSupertype();
         errors |= ValidateNoAmbiguousAttributes();
         errors |= ValidateNoAmbiguousEquations();
         errors |= ValidateInheritedEquationsProduceSingleType();
@@ -115,6 +121,24 @@ public sealed class TreeModel : IHasUsingNamespaces
         errors |= ValidateCircularAttributeEquations();
         if (errors)
             throw new ValidationFailedException();
+    }
+
+    /// <summary>
+    /// Check that node names are unique across the tree file and all aspect files. A node may be
+    /// declared in the tree file or in any aspect file, and each name must be declared only once.
+    /// </summary>
+    private bool ValidateNodeNamesAreUnique()
+    {
+        var errors = false;
+        foreach (var duplicate in Nodes.GroupBy(n => n.Defines.ShortName).Where(g => g.Count() > 1))
+        {
+            errors = true;
+            // List the source of every declaration so repeats within a single file are visible too.
+            var sources = string.Join(", ", duplicate.Select(n => n.Syntax.SourceFile).OrderBy(s => s));
+            Console.Error.WriteLine($"ERROR: Node '{duplicate.Key}' is declared more than once (in: {sources})."
+                                    + " Node names must be unique across the tree file and all aspect files.");
+        }
+        return errors;
     }
 
     /// <summary>

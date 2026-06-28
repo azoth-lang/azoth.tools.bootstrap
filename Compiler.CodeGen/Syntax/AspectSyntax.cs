@@ -11,6 +11,7 @@ public sealed class AspectSyntax
 {
     public string Namespace { get; }
     public string Name { get; }
+    public IFixedList<TreeNodeSyntax> Nodes { get; }
     public IFixedList<SnippetSyntax> Snippets { get; }
     public IFixedSet<TypeDeclarationSyntax> TypeDeclarations { get; }
     public IFixedSet<string> UsingNamespaces { get; }
@@ -23,6 +24,7 @@ public sealed class AspectSyntax
         string @namespace,
         string name,
         IEnumerable<string> usingNamespaces,
+        IEnumerable<TreeNodeSyntax> nodes,
         IEnumerable<TypeDeclarationSyntax> typeDeclarations,
         IEnumerable<SnippetSyntax> snippets,
         IEnumerable<AttributeFamilySyntax> attributeFamilies,
@@ -32,6 +34,7 @@ public sealed class AspectSyntax
     {
         Namespace = @namespace;
         Name = name;
+        Nodes = nodes.ToFixedList();
         Snippets = snippets.ToFixedList();
         TypeDeclarations = typeDeclarations.ToFixedSet();
         UsingNamespaces = usingNamespaces.ToFixedSet();
