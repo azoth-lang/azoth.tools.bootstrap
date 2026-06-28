@@ -16,9 +16,12 @@ definition/declaration are:
 
 * Source Associated/Instance Members: Members declared explicitly in the source code. Here, "source"
   has a double meaning as the members in "source" code and as the members from which everything else
-  is derived.
+  is derived. (These only exist at the definition level. At the declaration level there is no
+  distinction between source and synthesized members and there are only declared members.)
 * Synthesized Instance/Associated Members: Members synthesized by the compiler based on other
-  declarations. For example, implicit initializers and drop methods.
+  declarations. For example, implicit initializers and drop methods. (These only exist at the
+  definition level. At the declaration level there is no distinction between source and synthesized
+  members and there are only declared members.)
 * Declared Instance/Associated Members: the union of the source and synthesized members. These are
   the declared members because the the source members are explicitly declared and the synthesized
   members are implicitly declared.
