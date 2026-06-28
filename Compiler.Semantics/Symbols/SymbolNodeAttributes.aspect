@@ -1,9 +1,5 @@
 ◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
-◊name SymbolNodeAspect;
-◊using Azoth.Tools.Bootstrap.Compiler.Core;
-◊using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
-◊using Azoth.Tools.Bootstrap.Compiler.Names;
-◊using Azoth.Tools.Bootstrap.Compiler.Primitives;
+◊name SymbolNodeAttributesAspect;
 ◊using Azoth.Tools.Bootstrap.Compiler.Symbols;
 ◊using Azoth.Tools.Bootstrap.Framework;
 
@@ -12,23 +8,6 @@
 // ---------- Facets
 ↑ PackageFacetReference.SymbolNode: PackageFacetSymbol;
 = eager PackageFacetReference.SymbolNode;
-
-// ---------- Function Definition
-= FunctionDefinition.*.**.IsAttributeType => false;
-
-// ---------- Type Definitions
-= TypeDefinition.*.**.IsAttributeType => false;
-
-// ---------- Attributes
-= Attribute.TypeName.IsAttributeType => true;
-
-// ---------- Types
-// TODO move IsAttributeType to another aspect
-↓ OrdinaryTypeName.IsAttributeType:`bool`;
-
-// -------------------------------------------------------------------------------------------------
-// Symbol Nodes
-// -------------------------------------------------------------------------------------------------
 
 ↑ Symbol.Symbol: `Symbol`;
 ↑ Symbol.Syntax: `ISyntax`? => null;

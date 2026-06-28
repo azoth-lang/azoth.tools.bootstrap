@@ -184,10 +184,10 @@ public partial interface IPackageFacetReferenceNode : IChildNode
 {
     new IPackageReferenceSyntax? Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
-    IPackageFacetSymbolNode SymbolNode { get; }
     IdentifierName AliasOrName { get; }
     bool IsTrusted { get; }
     FixedSymbolTree Symbols { get; }
+    IPackageFacetSymbolNode SymbolNode { get; }
 }
 
 [Closed(typeof(OrdinaryPackageFacetReferenceNode))]
@@ -3370,9 +3370,9 @@ public partial interface IOrdinaryTypeNameNode : IUnqualifiedTypeNameNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     INameExpressionSyntax INameExpressionNode.Syntax => Syntax;
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
-    bool IsAttributeType { get; }
     new OrdinaryName Name { get; }
     UnqualifiedName ITypeNameNode.Name => Name;
+    bool IsAttributeType { get; }
 }
 
 [Closed(typeof(IdentifierTypeNameNode))]
@@ -5182,7 +5182,7 @@ file class OrdinaryPackageFacetReferenceNode : SemanticNode, IOrdinaryPackageFac
         Syntax = syntax;
         Facet = facet;
         Symbols = symbols;
-        SymbolNode = SymbolNodeAspect.PackageFacetReference_SymbolNode(this);
+        SymbolNode = SymbolNodeAttributesAspect.PackageFacetReference_SymbolNode(this);
     }
 }
 
@@ -5209,7 +5209,7 @@ file class PackageMainFacetReferenceNode : SemanticNode, IPackageMainFacetRefere
     {
         AliasOrName = aliasOrName;
         Symbols = symbols;
-        SymbolNode = SymbolNodeAspect.PackageFacetReference_SymbolNode(this);
+        SymbolNode = SymbolNodeAttributesAspect.PackageFacetReference_SymbolNode(this);
     }
 }
 
@@ -5230,7 +5230,7 @@ file class IntrinsicsPackageFacetReferenceNode : SemanticNode, IIntrinsicsPackag
 
     public IntrinsicsPackageFacetReferenceNode()
     {
-        SymbolNode = SymbolNodeAspect.PackageFacetReference_SymbolNode(this);
+        SymbolNode = SymbolNodeAttributesAspect.PackageFacetReference_SymbolNode(this);
     }
 }
 
@@ -19802,7 +19802,7 @@ file class PackageFacetSymbolNode : SemanticNode, IPackageFacetSymbolNode
         : base(true)
     {
         SymbolTree = symbolTree;
-        GlobalNamespace = Child.Attach(this, SymbolNodeAspect.PackageFacetSymbol_GlobalNamespace(this));
+        GlobalNamespace = Child.Attach(this, SymbolNodeAttributesAspect.PackageFacetSymbol_GlobalNamespace(this));
     }
 
     internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -19845,7 +19845,7 @@ file class NamespaceSymbolNode : SemanticNode, INamespaceSymbolNode
     public IFixedList<INamespaceMemberSymbolNode> Members
         => GrammarAttribute.IsCached(in membersCached) ? members!
             : this.Synthetic(ref membersCached, ref members,
-                n => ChildList.Attach(this, SymbolNodeAspect.NamespaceSymbol_Members(n)));
+                n => ChildList.Attach(this, SymbolNodeAttributesAspect.NamespaceSymbol_Members(n)));
     private IFixedList<INamespaceMemberSymbolNode>? members;
     private bool membersCached;
     public FixedDictionary<OrdinaryName, IFixedSet<INamespaceMemberDeclarationNode>> MembersByName
@@ -19926,7 +19926,7 @@ file class BuiltInTypeSymbolNode : SemanticNode, IBuiltInTypeSymbolNode
     public ISelfSymbolNode ImplicitSelf
         => GrammarAttribute.IsCached(in implicitSelfCached) ? implicitSelf!
             : this.Synthetic(ref implicitSelfCached, ref implicitSelf,
-                n => Child.Attach(this, SymbolNodeAspect.NonVariableTypeSymbol_ImplicitSelf(n)));
+                n => Child.Attach(this, SymbolNodeAttributesAspect.NonVariableTypeSymbol_ImplicitSelf(n)));
     private ISelfSymbolNode? implicitSelf;
     private bool implicitSelfCached;
     public FixedDictionary<OrdinaryName, IFixedSet<IInstanceMemberDeclarationNode>> InclusiveInstanceMembersByName
@@ -19938,7 +19938,7 @@ file class BuiltInTypeSymbolNode : SemanticNode, IBuiltInTypeSymbolNode
     public IFixedSet<ITypeMemberSymbolNode> Members
         => GrammarAttribute.IsCached(in membersCached) ? members!
             : this.Synthetic(ref membersCached, ref members,
-                n => ChildSet.Attach(this, SymbolNodeAspect.BuiltInTypeSymbol_Members(n)));
+                n => ChildSet.Attach(this, SymbolNodeAttributesAspect.BuiltInTypeSymbol_Members(n)));
     private IFixedSet<ITypeMemberSymbolNode>? members;
     private bool membersCached;
 
@@ -20044,13 +20044,13 @@ file class ClassSymbolNode : SemanticNode, IClassSymbolNode
     public IFixedList<IGenericParameterSymbolNode> GenericParameters
         => GrammarAttribute.IsCached(in genericParametersCached) ? genericParameters!
             : this.Synthetic(ref genericParametersCached, ref genericParameters,
-                n => ChildList.Attach(this, SymbolNodeAspect.OrdinaryTypeSymbol_GenericParameters(n)));
+                n => ChildList.Attach(this, SymbolNodeAttributesAspect.OrdinaryTypeSymbol_GenericParameters(n)));
     private IFixedList<IGenericParameterSymbolNode>? genericParameters;
     private bool genericParametersCached;
     public ISelfSymbolNode ImplicitSelf
         => GrammarAttribute.IsCached(in implicitSelfCached) ? implicitSelf!
             : this.Synthetic(ref implicitSelfCached, ref implicitSelf,
-                n => Child.Attach(this, SymbolNodeAspect.NonVariableTypeSymbol_ImplicitSelf(n)));
+                n => Child.Attach(this, SymbolNodeAttributesAspect.NonVariableTypeSymbol_ImplicitSelf(n)));
     private ISelfSymbolNode? implicitSelf;
     private bool implicitSelfCached;
     public FixedDictionary<OrdinaryName, IFixedSet<IInstanceMemberDeclarationNode>> InclusiveInstanceMembersByName
@@ -20062,7 +20062,7 @@ file class ClassSymbolNode : SemanticNode, IClassSymbolNode
     public IFixedSet<ITypeMemberSymbolNode> Members
         => GrammarAttribute.IsCached(in membersCached) ? members!
             : this.Synthetic(ref membersCached, ref members,
-                n => ChildSet.Attach(this, SymbolNodeAspect.OrdinaryTypeSymbol_Members(n)));
+                n => ChildSet.Attach(this, SymbolNodeAttributesAspect.OrdinaryTypeSymbol_Members(n)));
     private IFixedSet<ITypeMemberSymbolNode>? members;
     private bool membersCached;
 
@@ -20078,7 +20078,7 @@ file class ClassSymbolNode : SemanticNode, IClassSymbolNode
 
     public ClassSymbolNode(OrdinaryTypeSymbol symbol)
     {
-        SymbolNodeAspect.Validate_ClassSymbol(symbol);
+        SymbolNodeAttributesAspect.Validate_ClassSymbol(symbol);
         Symbol = symbol;
     }
 
@@ -20111,13 +20111,13 @@ file class StructSymbolNode : SemanticNode, IStructSymbolNode
     public IFixedList<IGenericParameterSymbolNode> GenericParameters
         => GrammarAttribute.IsCached(in genericParametersCached) ? genericParameters!
             : this.Synthetic(ref genericParametersCached, ref genericParameters,
-                n => ChildList.Attach(this, SymbolNodeAspect.OrdinaryTypeSymbol_GenericParameters(n)));
+                n => ChildList.Attach(this, SymbolNodeAttributesAspect.OrdinaryTypeSymbol_GenericParameters(n)));
     private IFixedList<IGenericParameterSymbolNode>? genericParameters;
     private bool genericParametersCached;
     public ISelfSymbolNode ImplicitSelf
         => GrammarAttribute.IsCached(in implicitSelfCached) ? implicitSelf!
             : this.Synthetic(ref implicitSelfCached, ref implicitSelf,
-                n => Child.Attach(this, SymbolNodeAspect.NonVariableTypeSymbol_ImplicitSelf(n)));
+                n => Child.Attach(this, SymbolNodeAttributesAspect.NonVariableTypeSymbol_ImplicitSelf(n)));
     private ISelfSymbolNode? implicitSelf;
     private bool implicitSelfCached;
     public FixedDictionary<OrdinaryName, IFixedSet<IInstanceMemberDeclarationNode>> InclusiveInstanceMembersByName
@@ -20129,7 +20129,7 @@ file class StructSymbolNode : SemanticNode, IStructSymbolNode
     public IFixedSet<ITypeMemberSymbolNode> Members
         => GrammarAttribute.IsCached(in membersCached) ? members!
             : this.Synthetic(ref membersCached, ref members,
-                n => ChildSet.Attach(this, SymbolNodeAspect.OrdinaryTypeSymbol_Members(n)));
+                n => ChildSet.Attach(this, SymbolNodeAttributesAspect.OrdinaryTypeSymbol_Members(n)));
     private IFixedSet<ITypeMemberSymbolNode>? members;
     private bool membersCached;
 
@@ -20145,7 +20145,7 @@ file class StructSymbolNode : SemanticNode, IStructSymbolNode
 
     public StructSymbolNode(OrdinaryTypeSymbol symbol)
     {
-        SymbolNodeAspect.Validate_StructSymbol(symbol);
+        SymbolNodeAttributesAspect.Validate_StructSymbol(symbol);
         Symbol = symbol;
     }
 
@@ -20178,13 +20178,13 @@ file class ValueSymbolNode : SemanticNode, IValueSymbolNode
     public IFixedList<IGenericParameterSymbolNode> GenericParameters
         => GrammarAttribute.IsCached(in genericParametersCached) ? genericParameters!
             : this.Synthetic(ref genericParametersCached, ref genericParameters,
-                n => ChildList.Attach(this, SymbolNodeAspect.OrdinaryTypeSymbol_GenericParameters(n)));
+                n => ChildList.Attach(this, SymbolNodeAttributesAspect.OrdinaryTypeSymbol_GenericParameters(n)));
     private IFixedList<IGenericParameterSymbolNode>? genericParameters;
     private bool genericParametersCached;
     public ISelfSymbolNode ImplicitSelf
         => GrammarAttribute.IsCached(in implicitSelfCached) ? implicitSelf!
             : this.Synthetic(ref implicitSelfCached, ref implicitSelf,
-                n => Child.Attach(this, SymbolNodeAspect.NonVariableTypeSymbol_ImplicitSelf(n)));
+                n => Child.Attach(this, SymbolNodeAttributesAspect.NonVariableTypeSymbol_ImplicitSelf(n)));
     private ISelfSymbolNode? implicitSelf;
     private bool implicitSelfCached;
     public FixedDictionary<OrdinaryName, IFixedSet<IInstanceMemberDeclarationNode>> InclusiveInstanceMembersByName
@@ -20196,7 +20196,7 @@ file class ValueSymbolNode : SemanticNode, IValueSymbolNode
     public IFixedSet<ITypeMemberSymbolNode> Members
         => GrammarAttribute.IsCached(in membersCached) ? members!
             : this.Synthetic(ref membersCached, ref members,
-                n => ChildSet.Attach(this, SymbolNodeAspect.OrdinaryTypeSymbol_Members(n)));
+                n => ChildSet.Attach(this, SymbolNodeAttributesAspect.OrdinaryTypeSymbol_Members(n)));
     private IFixedSet<ITypeMemberSymbolNode>? members;
     private bool membersCached;
 
@@ -20212,7 +20212,7 @@ file class ValueSymbolNode : SemanticNode, IValueSymbolNode
 
     public ValueSymbolNode(OrdinaryTypeSymbol symbol)
     {
-        SymbolNodeAspect.Validate_ValueSymbol(symbol);
+        SymbolNodeAttributesAspect.Validate_ValueSymbol(symbol);
         Symbol = symbol;
     }
 
@@ -20245,13 +20245,13 @@ file class TraitSymbolNode : SemanticNode, ITraitSymbolNode
     public IFixedList<IGenericParameterSymbolNode> GenericParameters
         => GrammarAttribute.IsCached(in genericParametersCached) ? genericParameters!
             : this.Synthetic(ref genericParametersCached, ref genericParameters,
-                n => ChildList.Attach(this, SymbolNodeAspect.OrdinaryTypeSymbol_GenericParameters(n)));
+                n => ChildList.Attach(this, SymbolNodeAttributesAspect.OrdinaryTypeSymbol_GenericParameters(n)));
     private IFixedList<IGenericParameterSymbolNode>? genericParameters;
     private bool genericParametersCached;
     public ISelfSymbolNode ImplicitSelf
         => GrammarAttribute.IsCached(in implicitSelfCached) ? implicitSelf!
             : this.Synthetic(ref implicitSelfCached, ref implicitSelf,
-                n => Child.Attach(this, SymbolNodeAspect.NonVariableTypeSymbol_ImplicitSelf(n)));
+                n => Child.Attach(this, SymbolNodeAttributesAspect.NonVariableTypeSymbol_ImplicitSelf(n)));
     private ISelfSymbolNode? implicitSelf;
     private bool implicitSelfCached;
     public FixedDictionary<OrdinaryName, IFixedSet<IInstanceMemberDeclarationNode>> InclusiveInstanceMembersByName
@@ -20263,7 +20263,7 @@ file class TraitSymbolNode : SemanticNode, ITraitSymbolNode
     public IFixedSet<ITypeMemberSymbolNode> Members
         => GrammarAttribute.IsCached(in membersCached) ? members!
             : this.Synthetic(ref membersCached, ref members,
-                n => ChildSet.Attach(this, SymbolNodeAspect.OrdinaryTypeSymbol_Members(n)));
+                n => ChildSet.Attach(this, SymbolNodeAttributesAspect.OrdinaryTypeSymbol_Members(n)));
     private IFixedSet<ITypeMemberSymbolNode>? members;
     private bool membersCached;
 
@@ -20279,7 +20279,7 @@ file class TraitSymbolNode : SemanticNode, ITraitSymbolNode
 
     public TraitSymbolNode(OrdinaryTypeSymbol symbol)
     {
-        SymbolNodeAspect.Validate_TraitSymbol(symbol);
+        SymbolNodeAttributesAspect.Validate_TraitSymbol(symbol);
         Symbol = symbol;
     }
 
@@ -20378,7 +20378,7 @@ file class OrdinaryMethodSymbolNode : SemanticNode, IOrdinaryMethodSymbolNode
 
     public OrdinaryMethodSymbolNode(MethodSymbol symbol)
     {
-        SymbolNodeAspect.Validate_OrdinaryMethodSymbol(symbol);
+        SymbolNodeAttributesAspect.Validate_OrdinaryMethodSymbol(symbol);
         Symbol = symbol;
     }
 
@@ -20411,7 +20411,7 @@ file class GetterMethodSymbolNode : SemanticNode, IGetterMethodSymbolNode
 
     public GetterMethodSymbolNode(MethodSymbol symbol)
     {
-        SymbolNodeAspect.Validate_GetterMethodSymbol(symbol);
+        SymbolNodeAttributesAspect.Validate_GetterMethodSymbol(symbol);
         Symbol = symbol;
     }
 
@@ -20444,7 +20444,7 @@ file class SetterMethodSymbolNode : SemanticNode, ISetterMethodSymbolNode
 
     public SetterMethodSymbolNode(MethodSymbol symbol)
     {
-        SymbolNodeAspect.Validate_SetterMethodSymbol(symbol);
+        SymbolNodeAttributesAspect.Validate_SetterMethodSymbol(symbol);
         Symbol = symbol;
     }
 

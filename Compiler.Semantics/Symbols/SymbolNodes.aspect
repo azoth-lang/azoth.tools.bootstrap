@@ -1,0 +1,63 @@
+◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
+◊name SymbolNodesAspect;
+◊using Azoth.Tools.Bootstrap.Compiler.Core;
+◊using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
+◊using Azoth.Tools.Bootstrap.Compiler.Names;
+◊using Azoth.Tools.Bootstrap.Compiler.Primitives;
+◊using Azoth.Tools.Bootstrap.Compiler.Symbols;
+◊using Azoth.Tools.Bootstrap.Framework;
+
+// ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
+
+// -------------------------------------------------------------------------------------------------
+// Implementations of declarations that are derived from symbols.
+// -------------------------------------------------------------------------------------------------
+
+Symbol <: SymbolDeclaration;
+
+// ---------- Parent Symbol Nodes
+ChildSymbol <: Symbol, SymbolDeclaration, ChildDeclaration;
+
+// ---------- Facet Symbol Nodes
+// Facets separate the testing and non-testing aspects of a package. They do no have their own symbol.
+PackageFacetSymbol <: Symbol, PackageFacetDeclaration = SymbolTree:`FixedSymbolTree`;
+
+// ---------- Namespace Symbol Nodes
+NamespaceSymbol <: NamespaceDeclaration, NamespaceMemberSymbol = Symbol:`NamespaceSymbol`;
+NamespaceMemberSymbol <: NamespaceMemberDeclaration, ChildSymbol;
+
+// ---------- Function Symbol Nodes
+FunctionSymbol <: FunctionDeclaration, NamespaceMemberSymbol = Symbol:`FunctionSymbol`;
+
+// ---------- Type Symbol Nodes
+TypeSymbol <: TypeDeclaration, ChildSymbol = Symbol:`TypeSymbol`;
+NonVariableTypeSymbol <: NonVariableTypeDeclaration, TypeSymbol;
+BuiltInTypeSymbol <: BuiltInTypeDeclaration, NonVariableTypeSymbol = Symbol:`BuiltInTypeSymbol`;
+VoidTypeSymbol <: TypeSymbol = Symbol:`VoidTypeSymbol`;
+NeverTypeSymbol <: TypeSymbol = Symbol:`NeverTypeSymbol`;
+OrdinaryTypeSymbol <: OrdinaryTypeDeclaration, NonVariableTypeSymbol, NamespaceMemberSymbol = Symbol:`OrdinaryTypeSymbol`;
+ClassSymbol <: ClassDeclaration, OrdinaryTypeSymbol = /GenericParameters/ /Members/;
+StructSymbol <: StructDeclaration, OrdinaryTypeSymbol = /GenericParameters/ /Members/;
+ValueSymbol <: ValueDeclaration, OrdinaryTypeSymbol = /GenericParameters/ /Members/;
+TraitSymbol <: TraitDeclaration, OrdinaryTypeSymbol = /GenericParameters/ /Members/;
+
+// ---------- Type Declaration Parts
+GenericParameterSymbol <: GenericParameterDeclaration, TypeSymbol = Symbol:`GenericParameterTypeSymbol`;
+SelfSymbol <: ImplicitSelfDeclaration = Symbol:`AssociatedTypeSymbol`;
+
+// ---------- Type Member Declarations (i.e. declarations that can be contained in a type)
+TypeMemberSymbol <: TypeMemberDeclaration, ChildSymbol;
+AssociatedMemberSymbol <: AssociatedMemberDeclaration, TypeMemberSymbol;
+
+// ---------- Member Symbol Nodes
+MethodSymbol <: MethodDeclaration, TypeMemberSymbol
+    = Symbol:`MethodSymbol`;
+OrdinaryMethodSymbol <: OrdinaryMethodDeclaration, MethodSymbol;
+GetterMethodSymbol <: GetterMethodDeclaration, MethodSymbol;
+SetterMethodSymbol <: SetterMethodDeclaration, MethodSymbol;
+InitializerSymbol <: InitializerDeclaration, TypeMemberSymbol = Symbol:`InitializerSymbol`;
+FieldSymbol <: FieldDeclaration, TypeMemberSymbol = Symbol:`FieldSymbol`;
+AssociatedFunctionSymbol <: AssociatedFunctionDeclaration, AssociatedMemberSymbol
+    = Symbol:`FunctionSymbol`;
+AssociatedTypeSymbol <: AssociatedTypeDeclaration, TypeMemberSymbol
+    = Symbol:`AssociatedTypeSymbol`;

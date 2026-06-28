@@ -8,9 +8,9 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 
-internal static partial class SymbolNodeAspect
+internal static partial class SymbolNodeAttributesAspect
 {
-    public static partial IPackageFacetSymbolNode PackageFacetReference_SymbolNode(IPackageFacetReferenceNode node)
+        public static partial IPackageFacetSymbolNode PackageFacetReference_SymbolNode(IPackageFacetReferenceNode node)
         => IPackageFacetSymbolNode.Create(node.Symbols);
 
     private static IEnumerable<Symbol> GetSymbolMembers(IChildSymbolNode node)

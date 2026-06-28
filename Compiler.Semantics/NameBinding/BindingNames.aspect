@@ -5,8 +5,18 @@
 
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
+// ---------- Function Definition
+= FunctionDefinition.*.**.IsAttributeType => false;
+
+// ---------- Type Definitions
+= TypeDefinition.*.**.IsAttributeType => false;
+
 // ---------- Attributes
+= Attribute.TypeName.IsAttributeType => true;
 = Attribute.↑.Diagnostics;
+
+// ---------- Types
+↓ OrdinaryTypeName.IsAttributeType:`bool`;
 
 // ---------- Parameters
 ↑ FieldParameter.ReferencedField: FieldDefinition?;
