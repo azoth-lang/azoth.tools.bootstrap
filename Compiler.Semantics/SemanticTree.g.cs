@@ -5783,13 +5783,13 @@ file class ClassDefinitionNode : SemanticNode, IClassDefinitionNode
     public IDefaultInitializerDefinitionNode? DefaultInitializer
         => GrammarAttribute.IsCached(in defaultInitializerCached) ? defaultInitializer
             : this.Synthetic(ref defaultInitializerCached, ref defaultInitializer,
-                n => Child.Attach(this, DefaultMembersAspect.ClassDefinition_DefaultInitializer(n)));
+                n => Child.Attach(this, SynthesizedMembersAspect.ClassDefinition_DefaultInitializer(n)));
     private IDefaultInitializerDefinitionNode? defaultInitializer;
     private bool defaultInitializerCached;
     public IImplicitSelfDefinitionNode ImplicitSelf
         => GrammarAttribute.IsCached(in implicitSelfCached) ? implicitSelf!
             : this.Synthetic(ref implicitSelfCached, ref implicitSelf,
-                n => Child.Attach(this, DefaultMembersAspect.TypeDefinition_ImplicitSelf(n)));
+                n => Child.Attach(this, SynthesizedMembersAspect.TypeDefinition_ImplicitSelf(n)));
     private IImplicitSelfDefinitionNode? implicitSelf;
     private bool implicitSelfCached;
     public FixedDictionary<OrdinaryName, IFixedSet<IInstanceMemberDeclarationNode>> InclusiveInstanceMembersByName
@@ -5813,7 +5813,7 @@ file class ClassDefinitionNode : SemanticNode, IClassDefinitionNode
     public IFixedSet<ITypeMemberDefinitionNode> Members
         => GrammarAttribute.IsCached(in membersCached) ? members!
             : this.Synthetic(ref membersCached, ref members,
-                DefaultMembersAspect.ClassDefinition_Members);
+                SynthesizedMembersAspect.ClassDefinition_Members);
     private IFixedSet<ITypeMemberDefinitionNode>? members;
     private bool membersCached;
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
@@ -5986,13 +5986,13 @@ file class StructDefinitionNode : SemanticNode, IStructDefinitionNode
     public IDefaultInitializerDefinitionNode? DefaultInitializer
         => GrammarAttribute.IsCached(in defaultInitializerCached) ? defaultInitializer
             : this.Synthetic(ref defaultInitializerCached, ref defaultInitializer,
-                n => Child.Attach(this, DefaultMembersAspect.StructDefinition_DefaultInitializer(n)));
+                n => Child.Attach(this, SynthesizedMembersAspect.StructDefinition_DefaultInitializer(n)));
     private IDefaultInitializerDefinitionNode? defaultInitializer;
     private bool defaultInitializerCached;
     public IImplicitSelfDefinitionNode ImplicitSelf
         => GrammarAttribute.IsCached(in implicitSelfCached) ? implicitSelf!
             : this.Synthetic(ref implicitSelfCached, ref implicitSelf,
-                n => Child.Attach(this, DefaultMembersAspect.TypeDefinition_ImplicitSelf(n)));
+                n => Child.Attach(this, SynthesizedMembersAspect.TypeDefinition_ImplicitSelf(n)));
     private IImplicitSelfDefinitionNode? implicitSelf;
     private bool implicitSelfCached;
     public FixedDictionary<OrdinaryName, IFixedSet<IInstanceMemberDeclarationNode>> InclusiveInstanceMembersByName
@@ -6016,7 +6016,7 @@ file class StructDefinitionNode : SemanticNode, IStructDefinitionNode
     public IFixedSet<ITypeMemberDefinitionNode> Members
         => GrammarAttribute.IsCached(in membersCached) ? members!
             : this.Synthetic(ref membersCached, ref members,
-                DefaultMembersAspect.StructDefinition_Members);
+                SynthesizedMembersAspect.StructDefinition_Members);
     private IFixedSet<ITypeMemberDefinitionNode>? members;
     private bool membersCached;
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
@@ -6184,13 +6184,13 @@ file class ValueDefinitionNode : SemanticNode, IValueDefinitionNode
     public IDefaultInitializerDefinitionNode? DefaultInitializer
         => GrammarAttribute.IsCached(in defaultInitializerCached) ? defaultInitializer
             : this.Synthetic(ref defaultInitializerCached, ref defaultInitializer,
-                n => Child.Attach(this, DefaultMembersAspect.ValueDefinition_DefaultInitializer(n)));
+                n => Child.Attach(this, SynthesizedMembersAspect.ValueDefinition_DefaultInitializer(n)));
     private IDefaultInitializerDefinitionNode? defaultInitializer;
     private bool defaultInitializerCached;
     public IImplicitSelfDefinitionNode ImplicitSelf
         => GrammarAttribute.IsCached(in implicitSelfCached) ? implicitSelf!
             : this.Synthetic(ref implicitSelfCached, ref implicitSelf,
-                n => Child.Attach(this, DefaultMembersAspect.TypeDefinition_ImplicitSelf(n)));
+                n => Child.Attach(this, SynthesizedMembersAspect.TypeDefinition_ImplicitSelf(n)));
     private IImplicitSelfDefinitionNode? implicitSelf;
     private bool implicitSelfCached;
     public FixedDictionary<OrdinaryName, IFixedSet<IInstanceMemberDeclarationNode>> InclusiveInstanceMembersByName
@@ -6214,7 +6214,7 @@ file class ValueDefinitionNode : SemanticNode, IValueDefinitionNode
     public IFixedSet<ITypeMemberDefinitionNode> Members
         => GrammarAttribute.IsCached(in membersCached) ? members!
             : this.Synthetic(ref membersCached, ref members,
-                DefaultMembersAspect.ValueDefinition_Members);
+                SynthesizedMembersAspect.ValueDefinition_Members);
     private IFixedSet<ITypeMemberDefinitionNode>? members;
     private bool membersCached;
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
@@ -6382,7 +6382,7 @@ file class TraitDefinitionNode : SemanticNode, ITraitDefinitionNode
     public IImplicitSelfDefinitionNode ImplicitSelf
         => GrammarAttribute.IsCached(in implicitSelfCached) ? implicitSelf!
             : this.Synthetic(ref implicitSelfCached, ref implicitSelf,
-                n => Child.Attach(this, DefaultMembersAspect.TypeDefinition_ImplicitSelf(n)));
+                n => Child.Attach(this, SynthesizedMembersAspect.TypeDefinition_ImplicitSelf(n)));
     private IImplicitSelfDefinitionNode? implicitSelf;
     private bool implicitSelfCached;
     public FixedDictionary<OrdinaryName, IFixedSet<IInstanceMemberDeclarationNode>> InclusiveInstanceMembersByName

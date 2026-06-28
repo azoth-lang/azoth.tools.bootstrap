@@ -1,5 +1,5 @@
 ◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Structure;
-◊name DefaultMembersAspect;
+◊name SynthesizedMembersAspect;
 ◊using Azoth.Tools.Bootstrap.Framework;
 
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎

@@ -4,7 +4,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Structure;
 
-internal static partial class DefaultMembersAspect
+internal static partial class SynthesizedMembersAspect
 {
     #region Type Definitions
     public static partial IImplicitSelfDefinitionNode TypeDefinition_ImplicitSelf(ITypeDefinitionNode node)

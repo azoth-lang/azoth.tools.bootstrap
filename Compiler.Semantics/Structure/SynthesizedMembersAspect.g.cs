@@ -8,7 +8,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Structure;
 // ReSharper disable PartialTypeWithSinglePart
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-internal static partial class DefaultMembersAspect
+internal static partial class SynthesizedMembersAspect
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IImplicitSelfDefinitionNode TypeDefinition_ImplicitSelf(ITypeDefinitionNode node);
