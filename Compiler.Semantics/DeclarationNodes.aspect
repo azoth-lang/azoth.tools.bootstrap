@@ -86,5 +86,5 @@ FieldDeclaration <: NamedDeclaration, InstanceMemberDeclaration, NamedBindingDec
     = Name:`IdentifierName`;
 AssociatedFunctionDeclaration <: AssociatedMemberDeclaration, FunctionInvocableDeclaration, AlwaysTypeMemberDeclaration
     = Name:`OrdinaryName`;
-AssociatedTypeDeclaration <: AssociatedMemberDeclaration, TypeDeclaration
+AssociatedTypeDeclaration <: AssociatedMemberDeclaration, AlwaysTypeMemberDeclaration, TypeDeclaration
     = Name:`IdentifierName`;

@@ -4046,7 +4046,8 @@ public partial interface ITypeMemberDeclarationNode : IPackageFacetChildDeclarat
     typeof(IMethodDeclarationNode),
     typeof(IInitializerDeclarationNode),
     typeof(IFieldDeclarationNode),
-    typeof(IAssociatedFunctionDeclarationNode))]
+    typeof(IAssociatedFunctionDeclarationNode),
+    typeof(IAssociatedTypeDeclarationNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IAlwaysTypeMemberDeclarationNode : ITypeMemberDeclarationNode
 {
@@ -4173,7 +4174,7 @@ public partial interface IAssociatedFunctionDeclarationNode : IAssociatedMemberD
     typeof(IAssociatedTypeDefinitionNode),
     typeof(IAssociatedTypeSymbolNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IAssociatedTypeDeclarationNode : IAssociatedMemberDeclarationNode, ITypeDeclarationNode
+public partial interface IAssociatedTypeDeclarationNode : IAssociatedMemberDeclarationNode, IAlwaysTypeMemberDeclarationNode, ITypeDeclarationNode
 {
     new IdentifierName Name { get; }
     OrdinaryName? IPackageFacetChildDeclarationNode.Name => Name;
@@ -20547,8 +20548,8 @@ file class AssociatedTypeSymbolNode : SemanticNode, IAssociatedTypeSymbolNode
 
     public IdentifierName Name { [DebuggerStepThrough] get; }
     public AssociatedTypeSymbol Symbol { [DebuggerStepThrough] get; }
-    public ISymbolDeclarationNode ContainingDeclaration
-        => Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
+    public ITypeDeclarationNode ContainingDeclaration
+        => (ITypeDeclarationNode)Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
     public PackageSymbol PackageSymbol
         => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public IPackageFacetDeclarationNode Facet
