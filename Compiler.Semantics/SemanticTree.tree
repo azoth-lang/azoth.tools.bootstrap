@@ -101,6 +101,8 @@ ImplicitSelfDefinition <: ImplicitSelfDeclaration;
 // ---------- Type Member Definitions (i.e. definitions that can be contained in a type)
 TypeMemberDefinition <: Definition, TypeMemberDeclaration
     = Syntax:`IMemberDefinitionSyntax`? Attributes:Attribute*;
+/// A member that must be a member of a type and cannot stand alone. Type declarations can be in a
+/// namespace or a nested type declaration so they are not always type member definitions.
 AlwaysTypeMemberDefinition <: TypeMemberDefinition, AlwaysTypeMemberDeclaration;
 AssociatedMemberDefinition <: TypeMemberDefinition, NamedDeclaration, AssociatedMemberDeclaration
     = Name:`OrdinaryName`;
