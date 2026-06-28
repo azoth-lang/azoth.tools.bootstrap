@@ -23,7 +23,7 @@ internal static partial class BindingNamesAspect
     #region Parameters
     public static partial IFieldDefinitionNode? FieldParameter_ReferencedField(IFieldParameterNode node)
         // TODO report error for field parameter without referenced field
-        => node.ContainingTypeDefinition.Members.OfType<IFieldDefinitionNode>()
+        => node.ContainingTypeDefinition.DeclaredMembers.OfType<IFieldDefinitionNode>()
                .FirstOrDefault(f => f.Name == node.Name);
     #endregion
 

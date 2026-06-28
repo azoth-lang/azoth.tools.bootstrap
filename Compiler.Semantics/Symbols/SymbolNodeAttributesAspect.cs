@@ -30,7 +30,7 @@ internal static partial class SymbolNodeAttributesAspect
     public static partial ISelfSymbolNode NonVariableTypeSymbol_ImplicitSelf(INonVariableTypeSymbolNode node)
         => ISelfSymbolNode.Create(node.SymbolTree().GetChildrenOf(node.Symbol).OfType<AssociatedTypeSymbol>().Where(t => t.Name == BuiltInTypeName.Self).TrySingle()!);
 
-    public static partial IFixedSet<ITypeMemberSymbolNode> BuiltInTypeSymbol_Members(IBuiltInTypeSymbolNode node)
+    public static partial IFixedSet<ITypeMemberSymbolNode> BuiltInTypeSymbol_DeclaredMembers(IBuiltInTypeSymbolNode node)
         => GetMembers(node);
 
     public static partial IFixedList<IGenericParameterSymbolNode> OrdinaryTypeSymbol_GenericParameters(IOrdinaryTypeSymbolNode node)
@@ -38,7 +38,7 @@ internal static partial class SymbolNodeAttributesAspect
                            .Select(SymbolBinder.Symbol).WhereNotNull()
                            .Cast<IGenericParameterSymbolNode>().ToFixedList();
 
-    public static partial IFixedSet<ITypeMemberSymbolNode> OrdinaryTypeSymbol_Members(IOrdinaryTypeSymbolNode node)
+    public static partial IFixedSet<ITypeMemberSymbolNode> OrdinaryTypeSymbol_DeclaredMembers(IOrdinaryTypeSymbolNode node)
         => GetMembers(node);
 
     public static partial void Validate_ClassSymbol(OrdinaryTypeSymbol symbol)

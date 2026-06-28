@@ -67,7 +67,7 @@ internal sealed class PackageSymbolTreeBuilder
     {
         tree.Add(n.Symbol);
         typeDefinitions.Add(n.Symbol, n);
-        TypeMembers(n.Members);
+        TypeMembers(n.DeclaredMembers);
     }
 
     private void TypeMembers(IEnumerable<ITypeMemberDefinitionNode> nodes)

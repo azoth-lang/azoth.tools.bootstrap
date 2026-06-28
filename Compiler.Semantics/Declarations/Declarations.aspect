@@ -45,7 +45,7 @@
 ↑ TypeDeclaration.Supertypes: {`BareType`};
 ↑ TypeDeclaration.TypeConstructor: `ITypeConstructor`;
 ↑ TypeDeclaration.Symbol: `TypeSymbol`;
-↑ TypeDeclaration.Members: {TypeMemberDeclaration};
+↑ TypeDeclaration.DeclaredMembers: {TypeMemberDeclaration};
 /// Members including ones inherited from supertypes
 ↑ TypeDeclaration.InclusiveMembers: {TypeMemberDeclaration};
 ↑ NonVariableTypeDeclaration.TypeConstructor: `BareTypeConstructor`;
@@ -64,7 +64,7 @@
 = ImplicitSelfDeclaration.Supertypes => [];
 ↑ ImplicitSelfDeclaration.TypeConstructor: `AssociatedTypeConstructor`;
 ↑ ImplicitSelfDeclaration.Symbol: `AssociatedTypeSymbol`;
-= ImplicitSelfDeclaration.Members => [];
+= ImplicitSelfDeclaration.DeclaredMembers => [];
 = ImplicitSelfDeclaration.InclusiveMembers => [];
 
 // ---------- Member Declarations
@@ -83,5 +83,5 @@
 ↑ AssociatedFunctionDeclaration.Symbol: `FunctionSymbol`?;
 ↑ AssociatedTypeDeclaration.Symbol: `AssociatedTypeSymbol`;
 = AssociatedTypeDeclaration.Supertypes => [];
-= AssociatedTypeDeclaration.Members => [];
+= AssociatedTypeDeclaration.DeclaredMembers => [];
 = AssociatedTypeDeclaration.InclusiveMembers => [];

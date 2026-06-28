@@ -90,10 +90,10 @@ public sealed class InterpreterProcess
         userTypes = allDefinitions.OfType<ITypeDefinitionNode>()
                                  .ToFrozenDictionary(c => c.Symbol);
         stringValue = userTypes.Values.OfType<IValueDefinitionNode>().Where(c => c.Symbol.Name == SpecialNames.StringTypeName).TrySingle();
-        stringInitializer = stringValue?.Members.OfType<IOrdinaryInitializerDefinitionNode>().Single(c => c.Parameters.Count == 3);
+        stringInitializer = stringValue?.DeclaredMembers.OfType<IOrdinaryInitializerDefinitionNode>().Single(c => c.Parameters.Count == 3);
         stringBareType = stringValue?.TypeConstructor.ConstructNullaryType(containingType: null);
         rangeValue = userTypes.Values.OfType<IValueDefinitionNode>().SingleOrDefault(c => c.Symbol.Name == SpecialNames.RangeTypeName);
-        rangeInitializer = rangeValue?.Members.OfType<IInitializerDefinitionNode>().SingleOrDefault(c => c.Parameters.Count == 2)?.Symbol;
+        rangeInitializer = rangeValue?.DeclaredMembers.OfType<IInitializerDefinitionNode>().SingleOrDefault(c => c.Parameters.Count == 2)?.Symbol;
         rangeBareType = rangeValue?.TypeConstructor.ConstructNullaryType(containingType: null);
 
         var defaultInitializerSymbols = allDefinitions
@@ -131,7 +131,7 @@ public sealed class InterpreterProcess
         {
             yield return definition;
             if (definition is ITypeDefinitionNode syn)
-                definitions.EnqueueRange(syn.Members);
+                definitions.EnqueueRange(syn.DeclaredMembers);
         }
     }
 
@@ -272,7 +272,7 @@ public sealed class InterpreterProcess
 
     private static InitializerSymbol NoArgInitializerSymbol(IClassDefinitionNode baseClass)
         => baseClass.DefaultInitializer?.Symbol
-           ?? baseClass.Members.OfType<IInitializerDefinitionNode>()
+           ?? baseClass.DeclaredMembers.OfType<IInitializerDefinitionNode>()
                        .Select(c => c.Symbol.Assigned()).Single(c => c.Arity == 0);
 
     private ValueTask<Value> CallStructInitializerAsync(
@@ -352,7 +352,7 @@ public sealed class InterpreterProcess
         BareType selfBareType)
     {
         // Initialize fields to default values
-        var fields = typeDefinition.Members.OfType<IFieldDefinitionNode>();
+        var fields = typeDefinition.DeclaredMembers.OfType<IFieldDefinitionNode>();
         foreach (var field in fields)
             self.InstanceReference[field] = Value.None;
 

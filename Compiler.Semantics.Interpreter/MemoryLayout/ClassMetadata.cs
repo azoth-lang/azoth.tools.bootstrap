@@ -57,7 +57,7 @@ internal sealed class ClassMetadata : TypeMetadata
 
     private IMethodDefinitionNode? LookupMethod(ITypeDefinitionNode type, MethodSignature signature)
     {
-        foreach (var method in type.Members.OfType<IMethodDefinitionNode>())
+        foreach (var method in type.DeclaredMembers.OfType<IMethodDefinitionNode>())
             if (methodSignatures[method.Symbol.Assigned()].EqualsOrOverrides(signature))
                 return method;
 

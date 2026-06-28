@@ -32,11 +32,11 @@ internal static partial class SymbolNodeAttributesAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial ISelfSymbolNode NonVariableTypeSymbol_ImplicitSelf(INonVariableTypeSymbolNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IFixedSet<ITypeMemberSymbolNode> BuiltInTypeSymbol_Members(IBuiltInTypeSymbolNode node);
+    public static partial IFixedSet<ITypeMemberSymbolNode> BuiltInTypeSymbol_DeclaredMembers(IBuiltInTypeSymbolNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFixedList<IGenericParameterSymbolNode> OrdinaryTypeSymbol_GenericParameters(IOrdinaryTypeSymbolNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IFixedSet<ITypeMemberSymbolNode> OrdinaryTypeSymbol_Members(IOrdinaryTypeSymbolNode node);
+    public static partial IFixedSet<ITypeMemberSymbolNode> OrdinaryTypeSymbol_DeclaredMembers(IOrdinaryTypeSymbolNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFixedList<INamespaceMemberSymbolNode> NamespaceSymbol_Members(INamespaceSymbolNode node);
 }

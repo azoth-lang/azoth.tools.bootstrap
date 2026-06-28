@@ -11,13 +11,13 @@ internal static partial class InheritanceAspect
     #region Type Definitions
     public static partial IFixedSet<ITypeMemberDeclarationNode> TypeDefinition_InclusiveMembers(ITypeDefinitionNode node)
     {
-        var inclusiveMembers = node.Members.Where<ITypeMemberDeclarationNode>(m => m.Name is not null)
+        var inclusiveMembers = node.DeclaredMembers.Where<ITypeMemberDeclarationNode>(m => m.Name is not null)
                                    .ToMultiMapHashSet(m => m.Name!);
         foreach (var supertype in node.AllSupertypeNames.Select(t => t.ReferencedDeclaration))
             AddInheritedMembers(inclusiveMembers, supertype);
         var anyType = node.ContainingLexicalScope.PackageNames.Lookup(BareTypeConstructor.Any);
         AddInheritedMembers(inclusiveMembers, anyType);
-        return inclusiveMembers.Values.SelectMany().Concat(node.Members.Where(m => m.Name is null))
+        return inclusiveMembers.Values.SelectMany().Concat(node.DeclaredMembers.Where(m => m.Name is null))
                                .ToFixedSet();
     }
 

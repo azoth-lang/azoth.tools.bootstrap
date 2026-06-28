@@ -14,7 +14,7 @@ internal static partial class LexicalScopingAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial LexicalScope TypeDefinition_AllSupertypeNames_Broadcast_ContainingLexicalScope(ITypeDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial LexicalScope TypeDefinition_Members_Broadcast_ContainingLexicalScope(ITypeDefinitionNode node);
+    public static partial LexicalScope TypeDefinition_DeclaredMembers_Broadcast_ContainingLexicalScope(ITypeDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial LexicalScope TypeDefinition_LexicalScope(ITypeDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

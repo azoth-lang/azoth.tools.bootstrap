@@ -36,10 +36,10 @@ BuiltInTypeSymbol <: BuiltInTypeDeclaration, NonVariableTypeSymbol = Symbol:`Bui
 VoidTypeSymbol <: TypeSymbol = Symbol:`VoidTypeSymbol`;
 NeverTypeSymbol <: TypeSymbol = Symbol:`NeverTypeSymbol`;
 OrdinaryTypeSymbol <: OrdinaryTypeDeclaration, NonVariableTypeSymbol, NamespaceMemberSymbol = Symbol:`OrdinaryTypeSymbol`;
-ClassSymbol <: ClassDeclaration, OrdinaryTypeSymbol = /GenericParameters/ /Members/;
-StructSymbol <: StructDeclaration, OrdinaryTypeSymbol = /GenericParameters/ /Members/;
-ValueSymbol <: ValueDeclaration, OrdinaryTypeSymbol = /GenericParameters/ /Members/;
-TraitSymbol <: TraitDeclaration, OrdinaryTypeSymbol = /GenericParameters/ /Members/;
+ClassSymbol <: ClassDeclaration, OrdinaryTypeSymbol = /GenericParameters/ /DeclaredMembers/;
+StructSymbol <: StructDeclaration, OrdinaryTypeSymbol = /GenericParameters/ /DeclaredMembers/;
+ValueSymbol <: ValueDeclaration, OrdinaryTypeSymbol = /GenericParameters/ /DeclaredMembers/;
+TraitSymbol <: TraitDeclaration, OrdinaryTypeSymbol = /GenericParameters/ /DeclaredMembers/;
 
 // ---------- Type Declaration Parts
 GenericParameterSymbol <: GenericParameterDeclaration, TypeSymbol = Symbol:`GenericParameterTypeSymbol`;

@@ -54,17 +54,17 @@ FunctionDeclaration <: NamespaceMemberDeclaration, FunctionInvocableDeclaration
 TypeDeclaration <: NamedDeclaration, SymbolDeclaration, NamespaceOrTypeDeclaration;
 // TODO this needs a better name
 NonVariableTypeDeclaration <: TypeDeclaration;
-BuiltInTypeDeclaration <: NonVariableTypeDeclaration = Name:`BuiltInTypeName` Members:{TypeMemberDeclaration};
+BuiltInTypeDeclaration <: NonVariableTypeDeclaration = Name:`BuiltInTypeName` DeclaredMembers:{TypeMemberDeclaration};
 OrdinaryTypeDeclaration <: NamespaceMemberDeclaration, TypeMemberDeclaration, NonVariableTypeDeclaration
-    = Name:`OrdinaryName` GenericParameters:GenericParameterDeclaration* Members:{TypeMemberDeclaration};
-ClassDeclaration <: OrdinaryTypeDeclaration = Members:{TypeMemberDeclaration};
-StructDeclaration <: OrdinaryTypeDeclaration = Members:{TypeMemberDeclaration};
-ValueDeclaration <: OrdinaryTypeDeclaration = Members:{TypeMemberDeclaration};
-TraitDeclaration <: OrdinaryTypeDeclaration = Members:{TypeMemberDeclaration};
+    = Name:`OrdinaryName` GenericParameters:GenericParameterDeclaration* DeclaredMembers:{TypeMemberDeclaration};
+ClassDeclaration <: OrdinaryTypeDeclaration = /DeclaredMembers/;
+StructDeclaration <: OrdinaryTypeDeclaration = /DeclaredMembers/;
+ValueDeclaration <: OrdinaryTypeDeclaration = /DeclaredMembers/;
+TraitDeclaration <: OrdinaryTypeDeclaration = /DeclaredMembers/;
 
 // ---------- Type Declaration Parts
 GenericParameterDeclaration <: TypeDeclaration, AssociatedMemberDeclaration
-    = Name:`IdentifierName` Members:{TypeMemberDeclaration};
+    = Name:`IdentifierName` DeclaredMembers:{TypeMemberDeclaration};
 ImplicitSelfDeclaration <: TypeDeclaration;
 
 // ---------- Type Member Declarations (i.e. declarations that can be contained in a type)

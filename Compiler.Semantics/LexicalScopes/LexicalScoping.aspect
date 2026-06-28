@@ -39,7 +39,7 @@ type `NamespaceScope` <: `NamespaceSearchScope`;
 // ---------- Type Definitions
 = TypeDefinition.GenericParameters[*].**.ContainingLexicalScope => ContainingLexicalScope;
 = TypeDefinition.AllSupertypeNames[*].**.ContainingLexicalScope;
-= TypeDefinition.Members[*].**.ContainingLexicalScope;
+= TypeDefinition.DeclaredMembers[*].**.ContainingLexicalScope;
 = TypeDefinition.LexicalScope;
 ↑ TypeDefinition.SupertypesLexicalScope: `LexicalScope`;
 = TypeDefinition.SupertypesLexicalScope;

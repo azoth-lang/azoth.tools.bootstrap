@@ -12,7 +12,7 @@ internal static partial class SynthesizedMembersAspect
 
     /// <remarks>This needs to be lazy computed because the
     /// <see cref="IClassDefinitionNode.DefaultInitializer"/> attribute must be computed.</remarks>
-    public static partial IFixedSet<ITypeMemberDefinitionNode> ClassDefinition_Members(IClassDefinitionNode node)
+    public static partial IFixedSet<ITypeMemberDefinitionNode> ClassDefinition_DeclaredMembers(IClassDefinitionNode node)
     {
         var members = node.SourceMembers.AsEnumerable();
 
@@ -30,7 +30,7 @@ internal static partial class SynthesizedMembersAspect
 
     /// <remarks>This needs to be lazy computed because the
     /// <see cref="IStructDefinitionNode.DefaultInitializer"/> attribute must be computed.</remarks>
-    public static partial IFixedSet<ITypeMemberDefinitionNode> StructDefinition_Members(IStructDefinitionNode node)
+    public static partial IFixedSet<ITypeMemberDefinitionNode> StructDefinition_DeclaredMembers(IStructDefinitionNode node)
     {
         var members = node.SourceMembers.AsEnumerable();
 
@@ -48,7 +48,7 @@ internal static partial class SynthesizedMembersAspect
 
     /// <remarks>This needs to be lazy computed because the
     /// <see cref="IStructDefinitionNode.DefaultInitializer"/> attribute must be computed.</remarks>
-    public static partial IFixedSet<ITypeMemberDefinitionNode> ValueDefinition_Members(IValueDefinitionNode node)
+    public static partial IFixedSet<ITypeMemberDefinitionNode> ValueDefinition_DeclaredMembers(IValueDefinitionNode node)
     {
         var members = node.SourceMembers.AsEnumerable();
 

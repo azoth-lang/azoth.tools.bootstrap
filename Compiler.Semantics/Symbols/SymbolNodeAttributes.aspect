@@ -39,7 +39,7 @@
 = FunctionSymbol.Type => Symbol.Type;
 
 // ---------- Type Symbol Nodes
-↑ TypeSymbol.Members: {TypeMemberSymbol};
+↑ TypeSymbol.DeclaredMembers: {TypeMemberSymbol};
 ↑ child NonVariableTypeSymbol.ImplicitSelf: SelfSymbol;
 = NonVariableTypeSymbol.ImplicitSelf;
 
@@ -47,23 +47,23 @@
 ↑ BuiltInTypeSymbol.Name: `BuiltInTypeName` => Symbol.Name;
 = BuiltInTypeSymbol.TypeConstructor => Symbol.TypeConstructor;
 = BuiltInTypeSymbol.Supertypes => Symbol.TryGetTypeConstructor()?.Supertypes ?? [];
-↑ child BuiltInTypeSymbol.Members: {TypeMemberSymbol};
-= BuiltInTypeSymbol.Members;
+↑ child BuiltInTypeSymbol.DeclaredMembers: {TypeMemberSymbol};
+= BuiltInTypeSymbol.DeclaredMembers;
 // For now, the symbol tree already includes all inherited members.
-= BuiltInTypeSymbol.InclusiveMembers => Members;
+= BuiltInTypeSymbol.InclusiveMembers => DeclaredMembers;
 
 = VoidTypeSymbol.Name => Symbol.Name;
 = VoidTypeSymbol.TypeConstructor => ITypeConstructor.Void;
 = VoidTypeSymbol.Supertypes => [];
-= VoidTypeSymbol.Members => [];
-= VoidTypeSymbol.InclusiveMembers => Members;
+= VoidTypeSymbol.DeclaredMembers => [];
+= VoidTypeSymbol.InclusiveMembers => DeclaredMembers;
 = VoidTypeSymbol.InclusiveInstanceMembersNamed(OrdinaryName named) => [];
 = VoidTypeSymbol.AssociatedMembersNamed(OrdinaryName named) => [];
 = NeverTypeSymbol.Name => Symbol.Name;
 = NeverTypeSymbol.TypeConstructor => ITypeConstructor.Never;
 = NeverTypeSymbol.Supertypes => [];
-= NeverTypeSymbol.Members => [];
-= NeverTypeSymbol.InclusiveMembers => Members;
+= NeverTypeSymbol.DeclaredMembers => [];
+= NeverTypeSymbol.InclusiveMembers => DeclaredMembers;
 = NeverTypeSymbol.InclusiveInstanceMembersNamed(OrdinaryName named) => [];
 = NeverTypeSymbol.AssociatedMembersNamed(OrdinaryName named) => [];
 
@@ -73,10 +73,10 @@
 = OrdinaryTypeSymbol.Supertypes => Symbol.TryGetTypeConstructor().Supertypes;
 = OrdinaryTypeSymbol.GenericParameters;
 = OrdinaryTypeSymbol.TypeConstructor => Symbol.TypeConstructor;
-↑ child OrdinaryTypeSymbol.Members: {TypeMemberSymbol};
-= OrdinaryTypeSymbol.Members;
+↑ child OrdinaryTypeSymbol.DeclaredMembers: {TypeMemberSymbol};
+= OrdinaryTypeSymbol.DeclaredMembers;
 // For now, the symbol tree already includes all inherited members.
-= OrdinaryTypeSymbol.InclusiveMembers => Members;
+= OrdinaryTypeSymbol.InclusiveMembers => DeclaredMembers;
 
 + ClassSymbol.new.Validate;
 
@@ -89,10 +89,10 @@
 // ---------- Type Declaration Parts
 ↑ GenericParameterSymbol.Name: `IdentifierName` => Symbol.Name;
 = GenericParameterSymbol.Supertypes => Symbol.TryGetTypeConstructor()?.Supertypes ?? [];
-↑ GenericParameterSymbol.Members: {TypeMemberSymbol} => [];
+↑ GenericParameterSymbol.DeclaredMembers: {TypeMemberSymbol} => [];
 = GenericParameterSymbol.InclusiveMembers => [];
 = SelfSymbol.TypeConstructor => Symbol.TypeConstructor;
-↑ SelfSymbol.Members: {TypeMemberSymbol} => [];
+↑ SelfSymbol.DeclaredMembers: {TypeMemberSymbol} => [];
 = SelfSymbol.InclusiveMembers => [];
 
 // ---------- Member Symbol Nodes
@@ -127,4 +127,4 @@
 = AssociatedFunctionSymbol.ReturnPlainType => Symbol.Type.Return.PlainType;
 = AssociatedFunctionSymbol.ReturnType => Symbol.Type.Return;
 = AssociatedTypeSymbol.TypeConstructor => Symbol.TypeConstructor;
-= AssociatedTypeSymbol.Members => [];
+= AssociatedTypeSymbol.DeclaredMembers => [];

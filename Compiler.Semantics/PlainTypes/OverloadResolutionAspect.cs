@@ -94,7 +94,7 @@ internal static partial class OverloadResolutionAspect
 
         // Rewrite to insert an initializer group name node between the type name expression and the
         // invocation expression.
-        var referencedDeclarations = referencedDeclaration.Members.OfType<IInitializerDeclarationNode>()
+        var referencedDeclarations = referencedDeclaration.DeclaredMembers.OfType<IInitializerDeclarationNode>()
                                                           .Where(c => c.Name is null).ToFixedSet();
 
         var initializer = IInitializerNameExpressionNode.Create(context.Syntax, context, null, referencedDeclarations);
