@@ -1,4 +1,4 @@
-◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
+◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Declarations;
 ◊name DeclarationNodesAspect;
 
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
