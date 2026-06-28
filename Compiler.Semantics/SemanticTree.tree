@@ -79,19 +79,16 @@ FunctionDefinition <: FacetMemberDefinition, FunctionDeclaration, FunctionInvoca
 // ---------- Type Definitions
 TypeDefinition <: Code, FacetMemberDefinition, AssociatedMemberDefinition, OrdinaryTypeDeclaration
     = Syntax:`ITypeDefinitionSyntax`
-    /Attributes/ GenericParameters:GenericParameter* SupertypeNames:TypeName*;
+    /Attributes/ GenericParameters:GenericParameter* SupertypeNames:TypeName*
+    SourceMembers:TypeMemberDefinition*;
 ClassDefinition <: Code, TypeDefinition, ClassDeclaration = Syntax:`IClassDefinitionSyntax`
-    /Attributes/ /GenericParameters/ BaseTypeName:TypeName? /SupertypeNames/
-    SourceMembers:TypeMemberDefinition*;
+    /Attributes/ /GenericParameters/ BaseTypeName:TypeName? /SupertypeNames/ /SourceMembers/;
 StructDefinition <: Code, TypeDefinition, StructDeclaration = Syntax:`IStructDefinitionSyntax`
-    /Attributes/ /GenericParameters/ /SupertypeNames/
-    SourceMembers:TypeMemberDefinition*;
+    /Attributes/ /GenericParameters/ /SupertypeNames/ /SourceMembers/;
 ValueDefinition <: Code, TypeDefinition, ValueDeclaration = Syntax:`IValueDefinitionSyntax`
-    /Attributes/ /GenericParameters/ /SupertypeNames/
-    SourceMembers:TypeMemberDefinition*;
+    /Attributes/ /GenericParameters/ /SupertypeNames/ /SourceMembers/;
 TraitDefinition <: Code, TypeDefinition, TraitDeclaration = Syntax:`ITraitDefinitionSyntax`
-    /Attributes/ /GenericParameters/ /SupertypeNames/
-    SourceMembers:{TypeMemberDefinition};
+    /Attributes/ /GenericParameters/ /SupertypeNames/ /SourceMembers/;
 
 // ---------- Type Definition Parts
 GenericParameter <: Code, GenericParameterDeclaration

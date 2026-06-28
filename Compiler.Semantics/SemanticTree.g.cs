@@ -522,6 +522,7 @@ public partial interface ITypeDefinitionNode : ICodeNode, IFacetMemberDefinition
     new IFixedList<IGenericParameterNode> GenericParameters { get; }
     IFixedList<IGenericParameterDeclarationNode> IOrdinaryTypeDeclarationNode.GenericParameters => GenericParameters;
     IFixedList<ITypeNameNode> SupertypeNames { get; }
+    IFixedList<ITypeMemberDefinitionNode> SourceMembers { get; }
     LexicalScope SupertypesLexicalScope { get; }
     IEnumerable<ITypeNameNode> AllSupertypeNames
         => SupertypeNames;
@@ -536,6 +537,7 @@ public partial interface ITypeDefinitionNode : ICodeNode, IFacetMemberDefinition
     OrdinaryName IOrdinaryTypeDeclarationNode.Name => Name;
     new IFixedSet<BareType> Supertypes { get; }
     IFixedSet<BareType> ITypeDeclarationNode.Supertypes => Supertypes;
+    IFixedSet<ITypeMemberDefinitionNode> SynthesizedMembers { get; }
     new IFixedSet<ITypeMemberDefinitionNode> DeclaredMembers { get; }
     IFixedSet<ITypeMemberDeclarationNode> IOrdinaryTypeDeclarationNode.DeclaredMembers => DeclaredMembers;
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.DeclaredMembers => DeclaredMembers;
@@ -564,7 +566,6 @@ public partial interface IClassDefinitionNode : ITypeDefinitionNode, IClassDecla
     IDefinitionSyntax? IDefinitionNode.Syntax => Syntax;
     IMemberDefinitionSyntax? ITypeMemberDefinitionNode.Syntax => Syntax;
     ITypeNameNode? BaseTypeName { get; }
-    IFixedList<ITypeMemberDefinitionNode> SourceMembers { get; }
     bool IsAbstract
         => Syntax.AbstractModifier is not null;
     BareType? BaseType { get; }
@@ -592,7 +593,6 @@ public partial interface IStructDefinitionNode : ITypeDefinitionNode, IStructDec
     ISyntax? ISemanticNode.Syntax => Syntax;
     IDefinitionSyntax? IDefinitionNode.Syntax => Syntax;
     IMemberDefinitionSyntax? ITypeMemberDefinitionNode.Syntax => Syntax;
-    IFixedList<ITypeMemberDefinitionNode> SourceMembers { get; }
     IDefaultInitializerDefinitionNode? DefaultInitializer { get; }
 
     public static IStructDefinitionNode Create(
@@ -614,7 +614,6 @@ public partial interface IValueDefinitionNode : ITypeDefinitionNode, IValueDecla
     ISyntax? ISemanticNode.Syntax => Syntax;
     IDefinitionSyntax? IDefinitionNode.Syntax => Syntax;
     IMemberDefinitionSyntax? ITypeMemberDefinitionNode.Syntax => Syntax;
-    IFixedList<ITypeMemberDefinitionNode> SourceMembers { get; }
     IDefaultInitializerDefinitionNode? DefaultInitializer { get; }
 
     public static IValueDefinitionNode Create(
@@ -636,9 +635,8 @@ public partial interface ITraitDefinitionNode : ITypeDefinitionNode, ITraitDecla
     ISyntax? ISemanticNode.Syntax => Syntax;
     IDefinitionSyntax? IDefinitionNode.Syntax => Syntax;
     IMemberDefinitionSyntax? ITypeMemberDefinitionNode.Syntax => Syntax;
-    IFixedSet<ITypeMemberDefinitionNode> SourceMembers { get; }
-    IFixedSet<ITypeMemberDefinitionNode> ITypeDefinitionNode.DeclaredMembers
-        => SourceMembers;
+    IFixedSet<ITypeMemberDefinitionNode> ITypeDefinitionNode.SynthesizedMembers
+        => [];
 
     public static ITraitDefinitionNode Create(
         ITraitDefinitionSyntax syntax,
@@ -5783,7 +5781,7 @@ file class ClassDefinitionNode : SemanticNode, IClassDefinitionNode
     public IFixedSet<ITypeMemberDefinitionNode> DeclaredMembers
         => GrammarAttribute.IsCached(in declaredMembersCached) ? declaredMembers!
             : this.Synthetic(ref declaredMembersCached, ref declaredMembers,
-                SynthesizedMembersAspect.ClassDefinition_DeclaredMembers);
+                SynthesizedMembersAspect.TypeDefinition_DeclaredMembers);
     private IFixedSet<ITypeMemberDefinitionNode>? declaredMembers;
     private bool declaredMembersCached;
     public IDefaultInitializerDefinitionNode? DefaultInitializer
@@ -5835,6 +5833,12 @@ file class ClassDefinitionNode : SemanticNode, IClassDefinitionNode
                 SymbolsAspect.TypeDefinition_Symbol);
     private OrdinaryTypeSymbol? symbol;
     private bool symbolCached;
+    public IFixedSet<ITypeMemberDefinitionNode> SynthesizedMembers
+        => GrammarAttribute.IsCached(in synthesizedMembersCached) ? synthesizedMembers!
+            : this.Synthetic(ref synthesizedMembersCached, ref synthesizedMembers,
+                SynthesizedMembersAspect.ClassDefinition_SynthesizedMembers);
+    private IFixedSet<ITypeMemberDefinitionNode>? synthesizedMembers;
+    private bool synthesizedMembersCached;
     public OrdinaryTypeConstructor TypeConstructor
         => GrammarAttribute.IsCached(in typeConstructorCached) ? typeConstructor!
             : this.Synthetic(ref typeConstructorCached, ref typeConstructor,
@@ -5986,7 +5990,7 @@ file class StructDefinitionNode : SemanticNode, IStructDefinitionNode
     public IFixedSet<ITypeMemberDefinitionNode> DeclaredMembers
         => GrammarAttribute.IsCached(in declaredMembersCached) ? declaredMembers!
             : this.Synthetic(ref declaredMembersCached, ref declaredMembers,
-                SynthesizedMembersAspect.StructDefinition_DeclaredMembers);
+                SynthesizedMembersAspect.TypeDefinition_DeclaredMembers);
     private IFixedSet<ITypeMemberDefinitionNode>? declaredMembers;
     private bool declaredMembersCached;
     public IDefaultInitializerDefinitionNode? DefaultInitializer
@@ -6038,6 +6042,12 @@ file class StructDefinitionNode : SemanticNode, IStructDefinitionNode
                 SymbolsAspect.TypeDefinition_Symbol);
     private OrdinaryTypeSymbol? symbol;
     private bool symbolCached;
+    public IFixedSet<ITypeMemberDefinitionNode> SynthesizedMembers
+        => GrammarAttribute.IsCached(in synthesizedMembersCached) ? synthesizedMembers!
+            : this.Synthetic(ref synthesizedMembersCached, ref synthesizedMembers,
+                SynthesizedMembersAspect.StructDefinition_SynthesizedMembers);
+    private IFixedSet<ITypeMemberDefinitionNode>? synthesizedMembers;
+    private bool synthesizedMembersCached;
     public OrdinaryTypeConstructor TypeConstructor
         => GrammarAttribute.IsCached(in typeConstructorCached) ? typeConstructor!
             : this.Synthetic(ref typeConstructorCached, ref typeConstructor,
@@ -6184,7 +6194,7 @@ file class ValueDefinitionNode : SemanticNode, IValueDefinitionNode
     public IFixedSet<ITypeMemberDefinitionNode> DeclaredMembers
         => GrammarAttribute.IsCached(in declaredMembersCached) ? declaredMembers!
             : this.Synthetic(ref declaredMembersCached, ref declaredMembers,
-                SynthesizedMembersAspect.ValueDefinition_DeclaredMembers);
+                SynthesizedMembersAspect.TypeDefinition_DeclaredMembers);
     private IFixedSet<ITypeMemberDefinitionNode>? declaredMembers;
     private bool declaredMembersCached;
     public IDefaultInitializerDefinitionNode? DefaultInitializer
@@ -6236,6 +6246,12 @@ file class ValueDefinitionNode : SemanticNode, IValueDefinitionNode
                 SymbolsAspect.TypeDefinition_Symbol);
     private OrdinaryTypeSymbol? symbol;
     private bool symbolCached;
+    public IFixedSet<ITypeMemberDefinitionNode> SynthesizedMembers
+        => GrammarAttribute.IsCached(in synthesizedMembersCached) ? synthesizedMembers!
+            : this.Synthetic(ref synthesizedMembersCached, ref synthesizedMembers,
+                SynthesizedMembersAspect.ValueDefinition_SynthesizedMembers);
+    private IFixedSet<ITypeMemberDefinitionNode>? synthesizedMembers;
+    private bool synthesizedMembersCached;
     public OrdinaryTypeConstructor TypeConstructor
         => GrammarAttribute.IsCached(in typeConstructorCached) ? typeConstructor!
             : this.Synthetic(ref typeConstructorCached, ref typeConstructor,
@@ -6345,7 +6361,7 @@ file class TraitDefinitionNode : SemanticNode, ITraitDefinitionNode
     public IFixedList<IAttributeNode> Attributes { [DebuggerStepThrough] get; }
     public IFixedList<IGenericParameterNode> GenericParameters { [DebuggerStepThrough] get; }
     public IFixedList<ITypeNameNode> SupertypeNames { [DebuggerStepThrough] get; }
-    public IFixedSet<ITypeMemberDefinitionNode> SourceMembers { [DebuggerStepThrough] get; }
+    public IFixedList<ITypeMemberDefinitionNode> SourceMembers { [DebuggerStepThrough] get; }
     public PackageSymbol PackageSymbol
         => Inherited_PackageSymbol(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -6379,6 +6395,12 @@ file class TraitDefinitionNode : SemanticNode, ITraitDefinitionNode
                 NameLookupAspect.OrdinaryTypeDeclaration_AssociatedMembersByName);
     private FixedDictionary<OrdinaryName, IFixedSet<IAssociatedMemberDeclarationNode>>? associatedMembersByName;
     private bool associatedMembersByNameCached;
+    public IFixedSet<ITypeMemberDefinitionNode> DeclaredMembers
+        => GrammarAttribute.IsCached(in declaredMembersCached) ? declaredMembers!
+            : this.Synthetic(ref declaredMembersCached, ref declaredMembers,
+                SynthesizedMembersAspect.TypeDefinition_DeclaredMembers);
+    private IFixedSet<ITypeMemberDefinitionNode>? declaredMembers;
+    private bool declaredMembersCached;
     public IImplicitSelfDefinitionNode ImplicitSelf
         => GrammarAttribute.IsCached(in implicitSelfCached) ? implicitSelf!
             : this.Synthetic(ref implicitSelfCached, ref implicitSelf,
@@ -6454,7 +6476,7 @@ file class TraitDefinitionNode : SemanticNode, ITraitDefinitionNode
         Attributes = ChildList.Attach(this, attributes);
         GenericParameters = ChildList.Attach(this, genericParameters);
         SupertypeNames = ChildList.Attach(this, supertypeNames);
-        SourceMembers = ChildSet.Attach(this, sourceMembers);
+        SourceMembers = ChildList.Attach(this, sourceMembers);
         AccessModifier = TypeModifiersAspect.TypeDefinition_AccessModifier(this);
     }
 

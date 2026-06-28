@@ -11,16 +11,9 @@ internal static partial class SynthesizedMembersAspect
         => IImplicitSelfDefinitionNode.Create();
 
     /// <remarks>This needs to be lazy computed because the
-    /// <see cref="IClassDefinitionNode.DefaultInitializer"/> attribute must be computed.</remarks>
-    public static partial IFixedSet<ITypeMemberDefinitionNode> ClassDefinition_DeclaredMembers(IClassDefinitionNode node)
-    {
-        var members = node.SourceMembers.AsEnumerable();
-
-        if (node.DefaultInitializer is { } defaultInitializer)
-            members = members.Append(defaultInitializer);
-
-        return members.ToFixedSet();
-    }
+    /// <see cref="ITypeDefinitionNode.SynthesizedMembers"/> attribute must be computed.</remarks>
+    public static partial IFixedSet<ITypeMemberDefinitionNode> TypeDefinition_DeclaredMembers(ITypeDefinitionNode node)
+        => node.SourceMembers.Concat(node.SynthesizedMembers).ToFixedSet();
 
     public static partial IDefaultInitializerDefinitionNode? ClassDefinition_DefaultInitializer(IClassDefinitionNode node)
     {
@@ -29,16 +22,10 @@ internal static partial class SynthesizedMembersAspect
     }
 
     /// <remarks>This needs to be lazy computed because the
-    /// <see cref="IStructDefinitionNode.DefaultInitializer"/> attribute must be computed.</remarks>
-    public static partial IFixedSet<ITypeMemberDefinitionNode> StructDefinition_DeclaredMembers(IStructDefinitionNode node)
-    {
-        var members = node.SourceMembers.AsEnumerable();
-
-        if (node.DefaultInitializer is { } defaultInitializer)
-            members = members.Append(defaultInitializer);
-
-        return members.ToFixedSet();
-    }
+    /// <see cref="IClassDefinitionNode.DefaultInitializer"/> attribute must be computed.</remarks>
+    public static partial IFixedSet<ITypeMemberDefinitionNode> ClassDefinition_SynthesizedMembers(IClassDefinitionNode node)
+        // TODO should implicit self be included?
+        => FixedSet.CreateFromValue(node.DefaultInitializer);
 
     public static partial IDefaultInitializerDefinitionNode? StructDefinition_DefaultInitializer(IStructDefinitionNode node)
     {
@@ -48,19 +35,20 @@ internal static partial class SynthesizedMembersAspect
 
     /// <remarks>This needs to be lazy computed because the
     /// <see cref="IStructDefinitionNode.DefaultInitializer"/> attribute must be computed.</remarks>
-    public static partial IFixedSet<ITypeMemberDefinitionNode> ValueDefinition_DeclaredMembers(IValueDefinitionNode node)
-    {
-        var members = node.SourceMembers.AsEnumerable();
-
-        if (node.DefaultInitializer is { } defaultInitializer) members = members.Append(defaultInitializer);
-
-        return members.ToFixedSet();
-    }
+    public static partial IFixedSet<ITypeMemberDefinitionNode> StructDefinition_SynthesizedMembers(IStructDefinitionNode node)
+        // TODO should implicit self be included?
+        => FixedSet.CreateFromValue(node.DefaultInitializer);
 
     public static partial IDefaultInitializerDefinitionNode? ValueDefinition_DefaultInitializer(IValueDefinitionNode node)
     {
         if (node.SourceMembers.Any(m => m is IInitializerDefinitionNode)) return null;
         return Child.Attach(node, IDefaultInitializerDefinitionNode.Create());
     }
+
+    /// <remarks>This needs to be lazy computed because the
+    /// <see cref="IValueDefinitionNode.DefaultInitializer"/> attribute must be computed.</remarks>
+    public static partial IFixedSet<ITypeMemberDefinitionNode> ValueDefinition_SynthesizedMembers(IValueDefinitionNode node)
+        // TODO should implicit self be included?
+        => FixedSet.CreateFromValue(node.DefaultInitializer);
     #endregion
 }

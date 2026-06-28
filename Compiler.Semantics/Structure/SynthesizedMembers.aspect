@@ -5,13 +5,15 @@
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
 // ---------- Type Definitions
+↑ TypeDefinition.SynthesizedMembers: {TypeMemberDefinition};
 ↑ TypeDefinition.DeclaredMembers: {TypeMemberDefinition};
+= TypeDefinition.DeclaredMembers;
 ↑ child TypeDefinition.ImplicitSelf: ImplicitSelfDefinition;
 = TypeDefinition.ImplicitSelf;
 ↑ child ClassDefinition.DefaultInitializer: DefaultInitializerDefinition?;
 ↑ child StructDefinition.DefaultInitializer: DefaultInitializerDefinition?;
 ↑ child ValueDefinition.DefaultInitializer: DefaultInitializerDefinition?;
-= TraitDefinition.DeclaredMembers => SourceMembers;
+= TraitDefinition.SynthesizedMembers => [];
 
 // ---------- Type Definition Parts
 ↑ GenericParameter.DeclaredMembers: {TypeMemberDefinition} => [];

@@ -28,6 +28,17 @@ public static class FixedSet
     public static IFixedSet<T> Create<T>(params T[] items)
         => items.IsEmpty() ? Of<T>.Empty : new(items.AsSpan());
 
+    public static IFixedSet<T> CreateFromValue<T>(T? item)
+        => item is null ? Of<T>.Empty : new([item]);
+
+    public static IFixedSet<T> CreateFromValue<T>(params T?[] items)
+        where T : class
+        => Create(items.WhereNotNull());
+
+    public static IFixedSet<T> CreateFromValue<T>(params T?[] items)
+        where T : struct
+        => Create(items.WhereNotNull());
+
     public static bool Contains<T>(this IFixedSet<T> set, T value)
         => ((Of)set).Contains(value);
 
@@ -61,7 +72,7 @@ public static class FixedSet
     [DebuggerTypeProxy(typeof(CollectionDebugView<>))]
     private sealed class Of<T> : Of, IFixedSet<T>
     {
-        public static readonly Of<T> Empty = new Of<T>([]);
+        public static readonly Of<T> Empty = new([]);
 
         private readonly IReadOnlySet<T> items;
         private int hashCode;
