@@ -34,7 +34,7 @@
 = UnresolvedName.ReferencedDeclaration => null;
 
 // ---------- Type Names
-↑ TypeName.ReferencedDeclaration: TypeDeclaration?;
-↑ BuiltInTypeName.ReferencedDeclaration: TypeDeclaration?;
+↑ TypeName.ReferencedDeclaration: TypeConstructorDeclaration?;
+↑ BuiltInTypeName.ReferencedDeclaration: TypeConstructorDeclaration?;
 = OrdinaryTypeName.ReferencedDeclaration;
 = OrdinaryTypeName.↑.Diagnostics;

@@ -30,7 +30,7 @@ internal static partial class SymbolNodeAttributesAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial INamespaceSymbolNode PackageFacetSymbol_GlobalNamespace(IPackageFacetSymbolNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial ISelfSymbolNode NonVariableTypeSymbol_ImplicitSelf(INonVariableTypeSymbolNode node);
+    public static partial ISelfSymbolNode TypeSymbol_ImplicitSelf(ITypeSymbolNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFixedSet<ITypeMemberSymbolNode> BuiltInTypeSymbol_DeclaredMembers(IBuiltInTypeSymbolNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

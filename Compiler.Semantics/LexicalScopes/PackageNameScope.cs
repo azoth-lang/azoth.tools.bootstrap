@@ -31,12 +31,12 @@ public sealed class PackageNameScope
     /// </summary>
     private readonly FixedDictionary<IdentifierName, NamespaceScope> packageGlobalScopes;
 
-    private readonly FixedDictionary<UnqualifiedName, ITypeDeclarationNode> builtIns;
+    private readonly FixedDictionary<UnqualifiedName, ITypeConstructorDeclarationNode> builtIns;
 
     internal PackageNameScope(
         IEnumerable<IPackageFacetNode> packageFacets,
         IEnumerable<IPackageFacetDeclarationNode> referencedFacets,
-        IFixedSet<ITypeDeclarationNode> builtInDeclarations)
+        IFixedSet<ITypeConstructorDeclarationNode> builtInDeclarations)
     {
         var packageGlobalNamespaces = packageFacets.Select(f => f.GlobalNamespace).ToFixedSet();
         var referencedGlobalNamespaces = referencedFacets.Select(f => f.GlobalNamespace).ToFixedSet();
@@ -68,11 +68,11 @@ public sealed class PackageNameScope
     }
 
     #region Loopkup(BuiltInTypeName)
-    public ITypeDeclarationNode? Lookup(BuiltInTypeName name) => builtIns.GetValueOrDefault(name);
+    public ITypeConstructorDeclarationNode? Lookup(BuiltInTypeName name) => builtIns.GetValueOrDefault(name);
     #endregion
 
     #region Lookup(*PlainType)
-    public ITypeDeclarationNode? Lookup(IMaybePlainType plainType)
+    public ITypeConstructorDeclarationNode? Lookup(IMaybePlainType plainType)
         => plainType switch
         {
             UnknownPlainType _ => null,
@@ -85,7 +85,7 @@ public sealed class PackageNameScope
             _ => throw ExhaustiveMatch.Failed(plainType),
         };
 
-    public ITypeDeclarationNode Lookup(GenericParameterPlainType plainType)
+    public ITypeConstructorDeclarationNode Lookup(GenericParameterPlainType plainType)
     {
         var declaringTypeNode = (IOrdinaryTypeDeclarationNode)Lookup(plainType.DeclaringTypeConstructor);
         return declaringTypeNode.GenericParameters.Single(p => p.Name == plainType.Name);
@@ -93,7 +93,7 @@ public sealed class PackageNameScope
     #endregion
 
     #region Lookup(*TypeConstructor)
-    public ITypeDeclarationNode? Lookup(BareTypeConstructor? typeConstructor)
+    public ITypeConstructorDeclarationNode? Lookup(BareTypeConstructor? typeConstructor)
         => typeConstructor switch
         {
             null => null,
@@ -106,7 +106,7 @@ public sealed class PackageNameScope
             _ => throw ExhaustiveMatch.Failed(typeConstructor),
         };
 
-    public ITypeDeclarationNode Lookup(OrdinaryTypeConstructor typeConstructor)
+    public ITypeConstructorDeclarationNode Lookup(OrdinaryTypeConstructor typeConstructor)
     {
         return typeConstructor.Context switch
         {
@@ -117,7 +117,7 @@ public sealed class PackageNameScope
         };
     }
 
-    private ITypeDeclarationNode Lookup(NamespaceContext context, OrdinaryName name)
+    private ITypeConstructorDeclarationNode Lookup(NamespaceContext context, OrdinaryName name)
     {
         // TODO is there a problem with types using package names and this using package aliases?
         var globalNamespace = GlobalScopeForPackage(context.Package);
@@ -125,14 +125,14 @@ public sealed class PackageNameScope
         foreach (var nsName in context.Namespace.Segments)
             ns = ns.GetChildNamespaceScope(nsName) ?? throw new UnreachableException("Type namespace must exist");
 
-        return ns.Lookup(name).OfType<ITypeDeclarationNode>().Single();
+        return ns.Lookup(name).OfType<ITypeConstructorDeclarationNode>().Single();
     }
 
-    private static ITypeDeclarationNode Lookup(ITypeDeclarationNode context, OrdinaryTypeConstructor typeConstructor)
+    private static ITypeConstructorDeclarationNode Lookup(ITypeConstructorDeclarationNode context, OrdinaryTypeConstructor typeConstructor)
         => context.TypeMembersNamed(typeConstructor.Name)
                   .Single(d => d.TypeConstructor.Equals(typeConstructor));
 
-    public ITypeDeclarationNode Lookup(AssociatedTypeConstructor typeConstructor)
+    public ITypeConstructorDeclarationNode Lookup(AssociatedTypeConstructor typeConstructor)
         => typeConstructor switch
         {
             OrdinaryAssociatedTypeConstructor t => Lookup(t),
@@ -140,24 +140,24 @@ public sealed class PackageNameScope
             _ => throw ExhaustiveMatch.Failed(typeConstructor),
         };
 
-    public ITypeDeclarationNode Lookup(OrdinaryAssociatedTypeConstructor typeConstructor)
+    public ITypeConstructorDeclarationNode Lookup(OrdinaryAssociatedTypeConstructor typeConstructor)
     {
         // TODO remove need for `!`
         var context = Lookup(typeConstructor.Context)!;
-        return context.AssociatedMembersNamed(typeConstructor.Name).OfType<ITypeDeclarationNode>().Single();
+        return context.AssociatedMembersNamed(typeConstructor.Name).OfType<ITypeConstructorDeclarationNode>().Single();
     }
 
-    public ITypeDeclarationNode Lookup(SelfTypeConstructor typeConstructor)
+    public ITypeConstructorDeclarationNode Lookup(SelfTypeConstructor typeConstructor)
     {
         // TODO remove need for cast
-        var context = (INonVariableTypeDeclarationNode)Lookup(typeConstructor.Context)!;
+        var context = (ITypeDeclarationNode)Lookup(typeConstructor.Context)!;
         return context.ImplicitSelf;
     }
 
-    public ITypeDeclarationNode Lookup(SimpleTypeConstructor typeConstructor)
+    public ITypeConstructorDeclarationNode Lookup(SimpleTypeConstructor typeConstructor)
         => builtIns[typeConstructor.Name];
 
-    public ITypeDeclarationNode Lookup(AnyTypeConstructor typeConstructor)
+    public ITypeConstructorDeclarationNode Lookup(AnyTypeConstructor typeConstructor)
         => builtIns[typeConstructor.Name];
     #endregion
 }

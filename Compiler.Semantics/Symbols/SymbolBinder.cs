@@ -25,7 +25,7 @@ internal static class SymbolBinder
            _ => throw ExhaustiveMatch.Failed(symbol),
        };
 
-    private static ITypeDeclarationNode TypeSymbol(TypeSymbol symbol)
+    private static ITypeConstructorDeclarationNode TypeSymbol(TypeSymbol symbol)
         => symbol switch
         {
             OrdinaryTypeSymbol sym => UserTypeSymbol(sym),

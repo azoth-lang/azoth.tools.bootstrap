@@ -5,5 +5,5 @@
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
 // ---------- Facets
-↑ child PackageFacet.PrimitivesDeclarations: {TypeDeclaration};
+↑ child PackageFacet.PrimitivesDeclarations: {TypeConstructorDeclaration};
 ↑ child PackageFacet.IntrinsicsReference: IntrinsicsPackageFacetReference;

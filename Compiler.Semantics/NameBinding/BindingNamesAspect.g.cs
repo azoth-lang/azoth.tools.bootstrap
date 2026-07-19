@@ -20,13 +20,13 @@ internal static partial class BindingNamesAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial void BaseExpression_Contribute_Diagnostics(IBaseExpressionNode node, DiagnosticCollectionBuilder diagnostics);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial ITypeDeclarationNode? OrdinaryTypeName_ReferencedDeclaration(IOrdinaryTypeNameNode node);
+    public static partial ITypeConstructorDeclarationNode? OrdinaryTypeName_ReferencedDeclaration(IOrdinaryTypeNameNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial void OrdinaryTypeName_Contribute_Diagnostics(IOrdinaryTypeNameNode node, DiagnosticCollectionBuilder diagnostics);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFieldDefinitionNode? FieldParameter_ReferencedField(IFieldParameterNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial ITypeDeclarationNode? BuiltInTypeName_ReferencedDeclaration(IBuiltInTypeNameNode node);
+    public static partial ITypeConstructorDeclarationNode? BuiltInTypeName_ReferencedDeclaration(IBuiltInTypeNameNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial ITypeDeclarationNode? QualifiedTypeName_ReferencedDeclaration(IQualifiedTypeNameNode node);
+    public static partial ITypeConstructorDeclarationNode? QualifiedTypeName_ReferencedDeclaration(IQualifiedTypeNameNode node);
 }

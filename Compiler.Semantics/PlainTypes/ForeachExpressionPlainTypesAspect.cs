@@ -6,7 +6,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.PlainTypes;
 
 internal static partial class ForeachExpressionPlainTypesAspect
 {
-    public static partial ITypeDeclarationNode? ForeachExpression_ReferencedIterableDeclaration(IForeachExpressionNode node)
+    public static partial ITypeConstructorDeclarationNode? ForeachExpression_ReferencedIterableDeclaration(IForeachExpressionNode node)
         => node.PackageNameScope().Lookup(node.InExpression?.PlainType ?? PlainType.Unknown);
 
     public static partial IOrdinaryMethodDeclarationNode? ForeachExpression_ReferencedIterateMethod(IForeachExpressionNode node)
@@ -24,7 +24,7 @@ internal static partial class ForeachExpressionPlainTypesAspect
         return iteratorPlainType;
     }
 
-    public static partial ITypeDeclarationNode? ForeachExpression_ReferencedIteratorDeclaration(IForeachExpressionNode node)
+    public static partial ITypeConstructorDeclarationNode? ForeachExpression_ReferencedIteratorDeclaration(IForeachExpressionNode node)
         => node.PackageNameScope().Lookup(node.IteratorPlainType);
 
     public static partial IOrdinaryMethodDeclarationNode? ForeachExpression_ReferencedNextMethod(IForeachExpressionNode node)

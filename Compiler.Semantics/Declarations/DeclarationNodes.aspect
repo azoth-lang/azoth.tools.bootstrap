@@ -50,22 +50,32 @@ NamespaceMemberDeclaration <: PackageFacetChildDeclaration, SymbolDeclaration
 FunctionDeclaration <: NamespaceMemberDeclaration, FunctionInvocableDeclaration
     = Name:`OrdinaryName`;
 
+// ---------- Type Constructor Declarations
+/// A declaration that introduces a type constructor. This is either an actual type (a
+/// `TypeDeclaration`) or a type variable (a `TypeVariableDeclaration`). All such declarations have
+/// a `TypeConstructor` attribute. Actual types produce a `BareTypeConstructor` while type variables
+/// produce an `AssociatedTypeConstructor`.
+TypeConstructorDeclaration <: NamedDeclaration, SymbolDeclaration, NamespaceOrTypeDeclaration;
+
 // ---------- Type Declarations
-TypeDeclaration <: NamedDeclaration, SymbolDeclaration, NamespaceOrTypeDeclaration;
-// TODO this needs a better name
-NonVariableTypeDeclaration <: TypeDeclaration;
-BuiltInTypeDeclaration <: NonVariableTypeDeclaration = Name:`BuiltInTypeName` DeclaredMembers:{TypeMemberDeclaration};
-OrdinaryTypeDeclaration <: NamespaceMemberDeclaration, TypeMemberDeclaration, NonVariableTypeDeclaration
+/// A declaration of an actual, fixed type (e.g. a class, struct, value, trait, or built-in type) as
+/// opposed to a type variable.
+TypeDeclaration <: TypeConstructorDeclaration;
+BuiltInTypeDeclaration <: TypeDeclaration = Name:`BuiltInTypeName` DeclaredMembers:{TypeMemberDeclaration};
+OrdinaryTypeDeclaration <: NamespaceMemberDeclaration, TypeMemberDeclaration, TypeDeclaration
     = Name:`OrdinaryName` GenericParameters:GenericParameterDeclaration* DeclaredMembers:{TypeMemberDeclaration};
 ClassDeclaration <: OrdinaryTypeDeclaration = /DeclaredMembers/;
 StructDeclaration <: OrdinaryTypeDeclaration = /DeclaredMembers/;
 ValueDeclaration <: OrdinaryTypeDeclaration = /DeclaredMembers/;
 TraitDeclaration <: OrdinaryTypeDeclaration = /DeclaredMembers/;
 
-// ---------- Type Declaration Parts
-GenericParameterDeclaration <: TypeDeclaration, AssociatedMemberDeclaration
+// ---------- Type Variable Declarations
+/// A declaration that introduces a type variable: a name standing for a type that will be determined
+/// later (e.g. a generic parameter, associated type, or the implicit `Self` type).
+TypeVariableDeclaration <: TypeConstructorDeclaration;
+GenericParameterDeclaration <: TypeVariableDeclaration, AssociatedMemberDeclaration
     = Name:`IdentifierName` DeclaredMembers:{TypeMemberDeclaration};
-ImplicitSelfDeclaration <: TypeDeclaration;
+ImplicitSelfDeclaration <: TypeVariableDeclaration;
 
 // ---------- Type Member Declarations (i.e. declarations that can be contained in a type)
 TypeMemberDeclaration <: PackageFacetChildDeclaration, SymbolDeclaration;
@@ -86,5 +96,5 @@ FieldDeclaration <: NamedDeclaration, InstanceMemberDeclaration, NamedBindingDec
     = Name:`IdentifierName`;
 AssociatedFunctionDeclaration <: AssociatedMemberDeclaration, FunctionInvocableDeclaration, AlwaysTypeMemberDeclaration
     = Name:`OrdinaryName`;
-AssociatedTypeDeclaration <: AssociatedMemberDeclaration, AlwaysTypeMemberDeclaration, TypeDeclaration
+AssociatedTypeDeclaration <: AssociatedMemberDeclaration, AlwaysTypeMemberDeclaration, TypeVariableDeclaration
     = Name:`IdentifierName`;

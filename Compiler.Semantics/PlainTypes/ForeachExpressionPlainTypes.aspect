@@ -5,9 +5,9 @@
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
 // ---------- Control Flow Expressions
-↑ ForeachExpression.ReferencedIterableDeclaration: TypeDeclaration?;
+↑ ForeachExpression.ReferencedIterableDeclaration: TypeConstructorDeclaration?;
 ↑ ForeachExpression.ReferencedIterateMethod: OrdinaryMethodDeclaration?;
 ↑ ForeachExpression.IteratorPlainType:`IMaybeNonVoidPlainType`;
-↑ ForeachExpression.ReferencedIteratorDeclaration: TypeDeclaration?;
+↑ ForeachExpression.ReferencedIteratorDeclaration: TypeConstructorDeclaration?;
 ↑ ForeachExpression.ReferencedNextMethod: OrdinaryMethodDeclaration?;
 ↑ ForeachExpression.IteratedPlainType: `IMaybeNonVoidPlainType`;

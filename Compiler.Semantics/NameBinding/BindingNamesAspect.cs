@@ -59,11 +59,11 @@ internal static partial class BindingNamesAspect
     #endregion
 
     #region Type Names
-    public static partial ITypeDeclarationNode? BuiltInTypeName_ReferencedDeclaration(IBuiltInTypeNameNode node)
+    public static partial ITypeConstructorDeclarationNode? BuiltInTypeName_ReferencedDeclaration(IBuiltInTypeNameNode node)
         // TODO report error for use of `Self` outside of a type
         => node.ContainingLexicalScope.Lookup(node.Name);
 
-    public static partial ITypeDeclarationNode? OrdinaryTypeName_ReferencedDeclaration(IOrdinaryTypeNameNode node)
+    public static partial ITypeConstructorDeclarationNode? OrdinaryTypeName_ReferencedDeclaration(IOrdinaryTypeNameNode node)
     {
         // TODO this prefers the non-suffixed name. Maybe it should be the other way around to avoid conflict
         var typeDeclaration = node.ContainingLexicalScope.LookupTypeDeclarations(node.Name).TrySingle();
@@ -92,17 +92,17 @@ internal static partial class BindingNamesAspect
         }
     }
 
-    public static partial ITypeDeclarationNode? QualifiedTypeName_ReferencedDeclaration(IQualifiedTypeNameNode node)
+    public static partial ITypeConstructorDeclarationNode? QualifiedTypeName_ReferencedDeclaration(IQualifiedTypeNameNode node)
         // TODO do proper generic type selection
         => node.Context.ReferencedDeclaration?.TypeMembersNamed(node.Name).TrySingle();
 
-    private static IFixedSet<ITypeDeclarationNode> LookupTypeDeclarations(
+    private static IFixedSet<ITypeConstructorDeclarationNode> LookupTypeDeclarations(
         this LexicalScope containingLexicalScope,
         OrdinaryName name,
         bool withAttributeSuffix = false)
     {
         if (withAttributeSuffix) name = name.WithAttributeSuffix();
-        return containingLexicalScope.Lookup<ITypeDeclarationNode>(name).ToFixedSet();
+        return containingLexicalScope.Lookup<ITypeConstructorDeclarationNode>(name).ToFixedSet();
     }
     #endregion
 }

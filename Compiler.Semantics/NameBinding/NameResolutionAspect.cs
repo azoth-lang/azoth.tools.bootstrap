@@ -168,7 +168,7 @@ internal static partial class NameResolutionAspect
                     return IUnqualifiedNamespaceNameNode.Create(node.Syntax, referencedNamespace);
                 case ILocalBindingNode referencedVariable:
                     return IVariableNameExpressionNode.Create(node.Syntax, referencedVariable);
-                case ITypeDeclarationNode referencedType:
+                case ITypeConstructorDeclarationNode referencedType:
                     // TODO a way to pass along referenced declarations rather than requiring they be figured out again?
                     return IIdentifierTypeNameNode.Create(node.Syntax);
             }
@@ -186,7 +186,7 @@ internal static partial class NameResolutionAspect
         if (referencedDeclarations.TrySingle() is not null and var referencedDeclaration)
             switch (referencedDeclaration)
             {
-                case ITypeDeclarationNode referencedType:
+                case ITypeConstructorDeclarationNode referencedType:
                     // TODO a way to pass along referenced declarations rather than requiring they be figured out again?
                     return IGenericTypeNameNode.Create(node.Syntax, node.GenericArguments);
             }
@@ -223,7 +223,7 @@ internal static partial class NameResolutionAspect
         {
             case INamespaceDeclarationNode referencedNamespace:
                 return IQualifiedNamespaceNameNode.Create(node.Syntax, node.Context, referencedNamespace);
-            case ITypeDeclarationNode referencedType:
+            case ITypeConstructorDeclarationNode referencedType:
                 // TODO select correct type declaration based on generic arguments
                 // TODO a way to pass along referenced declarations rather than requiring they be figured out again?
                 return IQualifiedTypeNameNode.Create(node.Syntax, node.Context, node.GenericArguments);
@@ -251,7 +251,7 @@ internal static partial class NameResolutionAspect
             return IInitializerNameExpressionNode.Create(node.Syntax, node.Context, node.MemberName, referencedInitializers);
 
         // TODO select correct type declaration based on generic arguments
-        if (referencedDeclarations.TrySingle() is ITypeDeclarationNode referencedType)
+        if (referencedDeclarations.TrySingle() is ITypeConstructorDeclarationNode referencedType)
             // TODO a way to pass along referenced declarations rather than requiring they be figured out again?
             return IQualifiedTypeNameNode.Create(node.Syntax, node.Context, node.GenericArguments);
 
@@ -293,7 +293,7 @@ internal static partial class NameResolutionAspect
             {
                 case INamespaceDeclarationNode referencedNamespace:
                     return IUnqualifiedNamespaceNameNode.Create(node.Syntax, referencedNamespace);
-                case ITypeDeclarationNode referencedType:
+                case ITypeConstructorDeclarationNode referencedType:
                     // TODO a way to pass along referenced declarations rather than requiring they be figured out again?
                     return IIdentifierTypeNameNode.Create(node.Syntax);
             }
@@ -308,7 +308,7 @@ internal static partial class NameResolutionAspect
         if (referencedDeclarations.TrySingle() is not null and var referencedDeclaration)
             switch (referencedDeclaration)
             {
-                case ITypeDeclarationNode referencedType:
+                case ITypeConstructorDeclarationNode referencedType:
                     // TODO a way to pass along referenced declarations rather than requiring they be figured out again?
                     return IGenericTypeNameNode.Create(node.Syntax, node.GenericArguments);
             }
@@ -343,7 +343,7 @@ internal static partial class NameResolutionAspect
             case INamespaceDeclarationNode referencedNamespace:
                 return IQualifiedNamespaceNameNode.Create(node.Syntax, node.Context, referencedNamespace);
 
-            case ITypeDeclarationNode referencedType:
+            case ITypeConstructorDeclarationNode referencedType:
                 // TODO select correct type declaration based on generic arguments
                 // TODO a way to pass along referenced declarations rather than requiring they be figured out again?
                 return IQualifiedTypeNameNode.Create(node.Syntax, node.Context, node.GenericArguments);
@@ -362,7 +362,7 @@ internal static partial class NameResolutionAspect
             return node;
 
         // TODO select correct type declaration based on generic arguments
-        if (referencedDeclarations.TrySingle() is ITypeDeclarationNode referencedType)
+        if (referencedDeclarations.TrySingle() is ITypeConstructorDeclarationNode referencedType)
             throw new NotImplementedException();
         // return IQualifiedTypeNameNode.Create(node.Syntax, node.Context, node.GenericArguments, referencedType);
 

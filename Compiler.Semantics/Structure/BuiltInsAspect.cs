@@ -8,8 +8,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Structure;
 internal static partial class BuiltInsAspect
 {
     #region Facets
-    public static partial IFixedSet<ITypeDeclarationNode> PackageFacet_PrimitivesDeclarations(IPackageFacetNode node)
-        => Primitive.SymbolTree.GlobalSymbols.Select(SymbolBinder.Symbol).WhereNotNull().Cast<ITypeDeclarationNode>()
+    public static partial IFixedSet<ITypeConstructorDeclarationNode> PackageFacet_PrimitivesDeclarations(IPackageFacetNode node)
+        => Primitive.SymbolTree.GlobalSymbols.Select(SymbolBinder.Symbol).WhereNotNull().Cast<ITypeConstructorDeclarationNode>()
                     .ToFixedSet();
 
     // TODO the intrinsics package is going away and being replaced by uses of `#Intrinsic`

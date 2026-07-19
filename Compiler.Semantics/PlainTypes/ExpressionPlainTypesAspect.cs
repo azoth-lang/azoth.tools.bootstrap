@@ -225,7 +225,7 @@ internal static partial class ExpressionPlainTypesAspect
     public static partial IMaybePlainType StringLiteralExpression_PlainType(IStringLiteralExpressionNode node)
     {
         var typeDeclarationNode = node.ContainingLexicalScope
-                                      .Lookup<ITypeDeclarationNode>(SpecialNames.StringTypeName)
+                                      .Lookup<ITypeConstructorDeclarationNode>(SpecialNames.StringTypeName)
                                       .TrySingle();
         return typeDeclarationNode?.TypeConstructor.TryConstructNullaryPlainType(containingType: null) ?? IMaybePlainType.Unknown;
     }
@@ -402,7 +402,7 @@ internal static partial class ExpressionPlainTypesAspect
         // TODO the left and right plain types need to be compatible with the range type
         var globalScope = containingLexicalScope.PackageNames.ImportGlobalScope;
         var typeDeclaration = globalScope.Lookup<INamespaceDeclarationNode>("azoth")
-            .SelectMany(ns => ns.MembersNamed(SpecialNames.RangeTypeName)).OfType<ITypeDeclarationNode>().TrySingle();
+            .SelectMany(ns => ns.MembersNamed(SpecialNames.RangeTypeName)).OfType<ITypeConstructorDeclarationNode>().TrySingle();
         var typeConstructor = typeDeclaration?.TypeConstructor as BareTypeConstructor;
         var rangePlainType = typeConstructor?.TryConstructNullaryPlainType(containingType: null)
                              ?? IMaybePlainType.Unknown;

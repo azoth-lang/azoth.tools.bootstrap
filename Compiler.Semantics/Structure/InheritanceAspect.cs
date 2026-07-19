@@ -23,7 +23,7 @@ internal static partial class InheritanceAspect
 
     private static void AddInheritedMembers(
         MultiMapHashSet<OrdinaryName, ITypeMemberDeclarationNode> members,
-        ITypeDeclarationNode? fromDeclaration)
+        ITypeConstructorDeclarationNode? fromDeclaration)
     {
         if (fromDeclaration is null)
             return;

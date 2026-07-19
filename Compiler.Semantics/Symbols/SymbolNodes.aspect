@@ -29,20 +29,25 @@ NamespaceMemberSymbol <: NamespaceMemberDeclaration, ChildSymbol;
 // ---------- Function Symbol Nodes
 FunctionSymbol <: FunctionDeclaration, NamespaceMemberSymbol = Symbol:`FunctionSymbol`;
 
+// ---------- Type Constructor Symbol Nodes
+TypeConstructorSymbol <: TypeConstructorDeclaration, ChildSymbol = Symbol:`TypeSymbol`;
+
 // ---------- Type Symbol Nodes
-TypeSymbol <: TypeDeclaration, ChildSymbol = Symbol:`TypeSymbol`;
-NonVariableTypeSymbol <: NonVariableTypeDeclaration, TypeSymbol;
-BuiltInTypeSymbol <: BuiltInTypeDeclaration, NonVariableTypeSymbol = Symbol:`BuiltInTypeSymbol`;
-VoidTypeSymbol <: TypeSymbol = Symbol:`VoidTypeSymbol`;
-NeverTypeSymbol <: TypeSymbol = Symbol:`NeverTypeSymbol`;
-OrdinaryTypeSymbol <: OrdinaryTypeDeclaration, NonVariableTypeSymbol, NamespaceMemberSymbol = Symbol:`OrdinaryTypeSymbol`;
+TypeSymbol <: TypeDeclaration, TypeConstructorSymbol;
+BuiltInTypeSymbol <: BuiltInTypeDeclaration, TypeSymbol = Symbol:`BuiltInTypeSymbol`;
+VoidTypeSymbol <: TypeConstructorSymbol = Symbol:`VoidTypeSymbol`;
+NeverTypeSymbol <: TypeConstructorSymbol = Symbol:`NeverTypeSymbol`;
+OrdinaryTypeSymbol <: OrdinaryTypeDeclaration, TypeSymbol, NamespaceMemberSymbol = Symbol:`OrdinaryTypeSymbol`;
 ClassSymbol <: ClassDeclaration, OrdinaryTypeSymbol = /GenericParameters/ /DeclaredMembers/;
 StructSymbol <: StructDeclaration, OrdinaryTypeSymbol = /GenericParameters/ /DeclaredMembers/;
 ValueSymbol <: ValueDeclaration, OrdinaryTypeSymbol = /GenericParameters/ /DeclaredMembers/;
 TraitSymbol <: TraitDeclaration, OrdinaryTypeSymbol = /GenericParameters/ /DeclaredMembers/;
 
-// ---------- Type Declaration Parts
-GenericParameterSymbol <: GenericParameterDeclaration, TypeSymbol = Symbol:`GenericParameterTypeSymbol`;
+// ---------- Type Variable Symbol Nodes
+TypeVariableSymbol <: TypeVariableDeclaration, TypeConstructorSymbol;
+GenericParameterSymbol <: GenericParameterDeclaration, TypeVariableSymbol = Symbol:`GenericParameterTypeSymbol`;
+// `Self` and associated types are type variables, but their symbol nodes are modeled specially (Self
+// as a standalone node, associated types as member symbols) and so are not `TypeConstructorSymbol`s.
 SelfSymbol <: ImplicitSelfDeclaration = Symbol:`AssociatedTypeSymbol`;
 
 // ---------- Type Member Declarations (i.e. declarations that can be contained in a type)

@@ -35,10 +35,10 @@ internal class DeclarationScope : LexicalScope
     }
 
     /// <remarks>Declarations can contain the <see cref="BuiltInTypeName.Self"/> declaration.</remarks>
-    public override ITypeDeclarationNode? Lookup(BuiltInTypeName name)
+    public override ITypeConstructorDeclarationNode? Lookup(BuiltInTypeName name)
     {
         if (declarations.TryGetValue(name, out var nodes))
-            return nodes.Cast<ITypeDeclarationNode>().Single();
+            return nodes.Cast<ITypeConstructorDeclarationNode>().Single();
         // The parent could be a declaration scope and needs checked.
         return parent.Lookup(name);
     }

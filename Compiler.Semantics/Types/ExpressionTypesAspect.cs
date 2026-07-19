@@ -233,7 +233,7 @@ internal static partial class ExpressionTypesAspect
     public static partial IMaybeType StringLiteralExpression_Type(IStringLiteralExpressionNode node)
     {
         var typeDeclarationNode = node.ContainingLexicalScope
-                                      .Lookup<ITypeDeclarationNode>(SpecialNames.StringTypeName)
+                                      .Lookup<ITypeConstructorDeclarationNode>(SpecialNames.StringTypeName)
                                       .TrySingle();
         return typeDeclarationNode?.TypeConstructor.TryConstructBareType(containingType: null, [])
                                   ?.With(Capability.Constant) ?? IMaybeType.Unknown;
@@ -347,7 +347,7 @@ internal static partial class ExpressionTypesAspect
         // TODO the left and right types need to be compatible with the range type
         var globalScope = containingLexicalScope.PackageNames.ImportGlobalScope;
         var typeDeclaration = globalScope.Lookup<INamespaceDeclarationNode>("azoth")
-            .SelectMany(ns => ns.MembersNamed(SpecialNames.RangeTypeName)).OfType<ITypeDeclarationNode>().TrySingle();
+            .SelectMany(ns => ns.MembersNamed(SpecialNames.RangeTypeName)).OfType<ITypeConstructorDeclarationNode>().TrySingle();
         var typeConstructor = typeDeclaration?.TypeConstructor as BareTypeConstructor;
         var rangeType = typeConstructor?.ConstructNullaryType(containingType: null).With(Capability.Constant)
                              ?? IMaybeType.Unknown;

@@ -13,7 +13,8 @@ using Type = Azoth.Tools.Bootstrap.Compiler.Types.Decorated.Type;
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 
 /// <summary>
-/// A type constructor for a plain type.
+/// A type constructor for a bare type. (That is a type that does not have a capability but could
+/// accept one.) The type constructor can construct either plain bare types or ordinary bare types.
 /// </summary>
 /// <remarks>A type constructor is a sort of template, factory, or kind for creating plain types.</remarks>
 [Closed(

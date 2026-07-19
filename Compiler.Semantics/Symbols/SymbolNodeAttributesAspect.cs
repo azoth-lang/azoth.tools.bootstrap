@@ -27,7 +27,7 @@ internal static partial class SymbolNodeAttributesAspect
     #endregion
 
     #region Type Symbol Nodes
-    public static partial ISelfSymbolNode NonVariableTypeSymbol_ImplicitSelf(INonVariableTypeSymbolNode node)
+    public static partial ISelfSymbolNode TypeSymbol_ImplicitSelf(ITypeSymbolNode node)
         => ISelfSymbolNode.Create(node.SymbolTree().GetChildrenOf(node.Symbol).OfType<AssociatedTypeSymbol>().Where(t => t.Name == BuiltInTypeName.Self).TrySingle()!);
 
     public static partial IFixedSet<ITypeMemberSymbolNode> BuiltInTypeSymbol_DeclaredMembers(IBuiltInTypeSymbolNode node)
@@ -57,7 +57,7 @@ internal static partial class SymbolNodeAttributesAspect
         => Requires.That(symbol.TypeConstructor is { Kind: TypeKind.Trait }, nameof(symbol),
             "Symbol must be for an trait type.");
 
-    private static IFixedSet<ITypeMemberSymbolNode> GetMembers(ITypeSymbolNode node)
+    private static IFixedSet<ITypeMemberSymbolNode> GetMembers(ITypeConstructorSymbolNode node)
         => GetSymbolMembers(node).Where(sym => sym is not GenericParameterTypeSymbol)
                            .Select(SymbolBinder.Symbol).WhereNotNull()
                            .OfType<ITypeMemberSymbolNode>().ToFixedSet();

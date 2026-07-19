@@ -63,17 +63,17 @@
 ↓ computed FunctionDeclaration.ContainingDeclaration: NamespaceDeclaration;
 
 // ---------- Type Declarations
-= TypeDeclaration.*.**.ContainingDeclaration => this;
+= TypeConstructorDeclaration.*.**.ContainingDeclaration => this;
 
 // ---------- Type Declaration Parts
 ↓ computed GenericParameterDeclaration.ContainingDeclaration: OrdinaryTypeDeclaration;
-↓ computed ImplicitSelfDeclaration.ContainingDeclaration: NonVariableTypeDeclaration;
+↓ computed ImplicitSelfDeclaration.ContainingDeclaration: TypeDeclaration;
 
 // ---------- Type Member Declarations
 = MethodDeclaration.*.**.ContainingDeclaration => this;
 = InitializerDeclaration.*.**.ContainingDeclaration => this;
-↓ FieldDeclaration.ContainingDeclaration: TypeDeclaration;
-↓ computed AlwaysTypeMemberDeclaration.ContainingDeclaration: TypeDeclaration;
+↓ FieldDeclaration.ContainingDeclaration: TypeConstructorDeclaration;
+↓ computed AlwaysTypeMemberDeclaration.ContainingDeclaration: TypeConstructorDeclaration;
 
 // -------------------------------------------------------------------------------------------------
 // Symbol Nodes

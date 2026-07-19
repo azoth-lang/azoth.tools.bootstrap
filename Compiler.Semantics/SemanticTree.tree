@@ -76,8 +76,13 @@ NamespaceMemberDefinition <: NamespaceMemberDeclaration;
 FunctionDefinition <: FacetMemberDefinition, FunctionDeclaration, FunctionInvocableDefinition
     = Syntax:`IFunctionDefinitionSyntax` /Attributes/ /Parameters/ /Return/ /Entry/ Body /Exit/;
 
+// ---------- Type Constructor Definitions
+/// A definition that introduces a type constructor (an actual type or a type variable). This is the
+/// definition-side counterpart of `TypeConstructorDeclaration`.
+TypeConstructorDefinition <: TypeConstructorDeclaration;
+
 // ---------- Type Definitions
-TypeDefinition <: Code, FacetMemberDefinition, AssociatedMemberDefinition, OrdinaryTypeDeclaration
+TypeDefinition <: Code, FacetMemberDefinition, AssociatedMemberDefinition, TypeConstructorDefinition, OrdinaryTypeDeclaration
     = Syntax:`ITypeDefinitionSyntax`
     /Attributes/ GenericParameters:GenericParameter* SupertypeNames:TypeName*
     SourceMembers:TypeMemberDefinition*;
@@ -90,10 +95,12 @@ ValueDefinition <: Code, TypeDefinition, ValueDeclaration = Syntax:`IValueDefini
 TraitDefinition <: Code, TypeDefinition, TraitDeclaration = Syntax:`ITraitDefinitionSyntax`
     /Attributes/ /GenericParameters/ /SupertypeNames/ /SourceMembers/;
 
-// ---------- Type Definition Parts
-GenericParameter <: Code, GenericParameterDeclaration
+// ---------- Type Variable Definitions
+/// The definition-side counterpart of `TypeVariableDeclaration`.
+TypeVariableDefinition <: TypeConstructorDefinition, TypeVariableDeclaration;
+GenericParameter <: Code, TypeVariableDefinition, GenericParameterDeclaration
     = Syntax:`IGenericParameterSyntax` Constraint:CapabilityConstraint;
-ImplicitSelfDefinition <: ImplicitSelfDeclaration;
+ImplicitSelfDefinition <: TypeVariableDefinition, ImplicitSelfDeclaration;
 
 // ---------- Type Member Definitions (i.e. definitions that can be contained in a type)
 TypeMemberDefinition <: Definition, TypeMemberDeclaration
@@ -124,7 +131,7 @@ FieldDefinition <: Code, AlwaysTypeMemberDefinition, NamedBinding, FieldDeclarat
     = Syntax:`IFieldDefinitionSyntax` /Attributes/ TypeNode:Type /Entry/ Initializer:AmbiguousExpression? /Exit/;
 AssociatedFunctionDefinition <: FunctionInvocableDefinition, AlwaysTypeMemberDefinition, AssociatedMemberDefinition, AssociatedFunctionDeclaration
     = Syntax:`IAssociatedFunctionDefinitionSyntax` /Attributes/ /Parameters/ /Return/ /Entry/ /Body/ /Exit/;
-AssociatedTypeDefinition <: AssociatedMemberDefinition, AlwaysTypeMemberDefinition, AssociatedTypeDeclaration
+AssociatedTypeDefinition <: AssociatedMemberDefinition, AlwaysTypeMemberDefinition, TypeVariableDefinition, AssociatedTypeDeclaration
     = Syntax:`IAssociatedTypeDefinitionSyntax` /Attributes/ Initializer:Type?;
 
 // ---------- Attributes

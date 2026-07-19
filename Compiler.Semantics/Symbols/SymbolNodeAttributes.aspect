@@ -39,9 +39,9 @@
 = FunctionSymbol.Type => Symbol.Type;
 
 // ---------- Type Symbol Nodes
-↑ TypeSymbol.DeclaredMembers: {TypeMemberSymbol};
-↑ child NonVariableTypeSymbol.ImplicitSelf: SelfSymbol;
-= NonVariableTypeSymbol.ImplicitSelf;
+↑ TypeConstructorSymbol.DeclaredMembers: {TypeMemberSymbol};
+↑ child TypeSymbol.ImplicitSelf: SelfSymbol;
+= TypeSymbol.ImplicitSelf;
 
 ↑ BuiltInTypeSymbol.SymbolTree(): `PrimitiveSymbolTree` => Primitive.SymbolTree;
 ↑ BuiltInTypeSymbol.Name: `BuiltInTypeName` => Symbol.Name;

@@ -42,14 +42,14 @@
 ↑ FunctionDeclaration.Symbol: `FunctionSymbol`?;
 
 // ---------- Type Declarations
-↑ TypeDeclaration.Supertypes: {`BareType`};
-↑ TypeDeclaration.TypeConstructor: `ITypeConstructor`;
-↑ TypeDeclaration.Symbol: `TypeSymbol`;
-↑ TypeDeclaration.DeclaredMembers: {TypeMemberDeclaration};
+↑ TypeConstructorDeclaration.Supertypes: {`BareType`};
+↑ TypeConstructorDeclaration.TypeConstructor: `ITypeConstructor`;
+↑ TypeConstructorDeclaration.Symbol: `TypeSymbol`;
+↑ TypeConstructorDeclaration.DeclaredMembers: {TypeMemberDeclaration};
 /// Members including ones inherited from supertypes
-↑ TypeDeclaration.InclusiveMembers: {TypeMemberDeclaration};
-↑ NonVariableTypeDeclaration.TypeConstructor: `BareTypeConstructor`;
-↑ NonVariableTypeDeclaration.ImplicitSelf: ImplicitSelfDeclaration;
+↑ TypeConstructorDeclaration.InclusiveMembers: {TypeMemberDeclaration};
+↑ TypeDeclaration.TypeConstructor: `BareTypeConstructor`;
+↑ TypeDeclaration.ImplicitSelf: ImplicitSelfDeclaration;
 ↑ OrdinaryTypeDeclaration.Symbol: `OrdinaryTypeSymbol`;
 ↑ OrdinaryTypeDeclaration.InclusiveMembers: {TypeMemberDeclaration};
 ↑ ClassDeclaration.InclusiveMembers: {TypeMemberDeclaration};
