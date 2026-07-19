@@ -66,7 +66,10 @@ public abstract class AttributeModel : IMemberModel
             return baseProperty is null // There were none or multiple, so it needs to be declared
                    || baseProperty.Type != Type
                    || baseProperty.IsMethod != IsMethod
-                   || baseProperty.GetType() != GetType();
+                   || baseProperty.GetType() != GetType()
+                   // The single most specific inherited attribute hides that incomparable interface
+                   // branches each contribute an implementation, so a redeclaration is needed to merge.
+                   || Node.InheritsAmbiguousImplementationOf(this);
         });
     }
 

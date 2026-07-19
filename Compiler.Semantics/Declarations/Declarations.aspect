@@ -56,7 +56,9 @@
 ↑ StructDeclaration.InclusiveMembers: {TypeMemberDeclaration};
 ↑ TraitDeclaration.InclusiveMembers: {TypeMemberDeclaration};
 
-// ---------- Type Declaration Parts
+// ---------- Type Variable Declarations
+// Type variables never have declared members.
+= TypeVariableDeclaration.DeclaredMembers => [];
 = GenericParameterDeclaration.TypeConstructor;
 ↑ GenericParameterDeclaration.Symbol: `GenericParameterTypeSymbol`;
 ↑ ImplicitSelfDeclaration.Syntax: `ISyntax`? => null;
@@ -64,7 +66,6 @@
 = ImplicitSelfDeclaration.Supertypes => [];
 ↑ ImplicitSelfDeclaration.TypeConstructor: `AssociatedTypeConstructor`;
 ↑ ImplicitSelfDeclaration.Symbol: `AssociatedTypeSymbol`;
-= ImplicitSelfDeclaration.DeclaredMembers => [];
 = ImplicitSelfDeclaration.InclusiveMembers => [];
 
 // ---------- Member Declarations
@@ -83,5 +84,4 @@
 ↑ AssociatedFunctionDeclaration.Symbol: `FunctionSymbol`?;
 ↑ AssociatedTypeDeclaration.Symbol: `AssociatedTypeSymbol`;
 = AssociatedTypeDeclaration.Supertypes => [];
-= AssociatedTypeDeclaration.DeclaredMembers => [];
 = AssociatedTypeDeclaration.InclusiveMembers => [];

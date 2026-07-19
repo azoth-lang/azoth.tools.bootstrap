@@ -46,11 +46,9 @@ TraitSymbol <: TraitDeclaration, OrdinaryTypeSymbol = /GenericParameters/ /Decla
 // ---------- Type Variable Symbol Nodes
 TypeVariableSymbol <: TypeVariableDeclaration, TypeConstructorSymbol;
 GenericParameterSymbol <: GenericParameterDeclaration, TypeVariableSymbol = Symbol:`GenericParameterTypeSymbol`;
-// `Self` and associated types are type variables, but their symbol nodes are modeled specially (Self
-// as a standalone node, associated types as member symbols) and so are not `TypeConstructorSymbol`s.
-SelfSymbol <: ImplicitSelfDeclaration = Symbol:`AssociatedTypeSymbol`;
+SelfSymbol <: ImplicitSelfDeclaration, TypeVariableSymbol = Symbol:`AssociatedTypeSymbol`;
 
-// ---------- Type Member Declarations (i.e. declarations that can be contained in a type)
+// ---------- Type Member Symbol Nodes (i.e. declarations that can be contained in a type)
 TypeMemberSymbol <: TypeMemberDeclaration, ChildSymbol;
 AssociatedMemberSymbol <: AssociatedMemberDeclaration, TypeMemberSymbol;
 
@@ -64,5 +62,5 @@ InitializerSymbol <: InitializerDeclaration, TypeMemberSymbol = Symbol:`Initiali
 FieldSymbol <: FieldDeclaration, TypeMemberSymbol = Symbol:`FieldSymbol`;
 AssociatedFunctionSymbol <: AssociatedFunctionDeclaration, AssociatedMemberSymbol
     = Symbol:`FunctionSymbol`;
-AssociatedTypeSymbol <: AssociatedTypeDeclaration, TypeMemberSymbol
+AssociatedTypeSymbol <: AssociatedTypeDeclaration, TypeMemberSymbol, TypeVariableSymbol
     = Symbol:`AssociatedTypeSymbol`;

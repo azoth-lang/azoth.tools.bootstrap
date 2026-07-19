@@ -332,6 +332,34 @@ public class TreeNodeModel
     private IEnumerable<AttributeModel> AllInheritedAttributesNamed(string name)
         => AllInheritedAttributes.Where(p => p.Name == name).Distinct();
 
+    /// <summary>
+    /// Whether this node inherits explicit implementations of the named attribute through two or more
+    /// incomparable supertype interfaces.
+    /// </summary>
+    /// <remarks>
+    /// When that happens, C# has no single most specific implementation of the base interface member,
+    /// so this node must redeclare the attribute to resolve the ambiguity. This can occur even when
+    /// the most specific inherited attribute appears unique (i.e. one declaring node is an ancestor of
+    /// the other), because the two implementations are contributed through incomparable interface
+    /// branches—for example one supplied by an equation and the other by a covariant override.
+    /// </remarks>
+    public bool InheritsAmbiguousImplementationOf(AttributeModel attribute)
+    {
+        var providers = AncestorNodes.Where(a => a.EmitsImplementationOf(attribute.Name)).ToFixedList();
+        // Keep only the most derived providers; a provider is subsumed when another derives from it.
+        var maximalProviders = providers
+            .Where(p => !providers.Any(q => !ReferenceEquals(q, p) && q.AncestorNodes.Contains(p)));
+        return maximalProviders.AtLeast(2);
+    }
+
+    /// <summary>
+    /// Whether this node emits an explicit interface implementation of the named attribute, either by
+    /// redeclaring it or through an equation that is emitted onto the node.
+    /// </summary>
+    private bool EmitsImplementationOf(string attributeName)
+        => AttributesRequiringDeclaration.Any(a => a.Name == attributeName)
+           || EquationsRequiringEmit.Any(e => e.Name == attributeName);
+
     public IEnumerable<AttributeModel> AttributesNamed(string name)
         => ActualAttributes.Where(p => p.Name == name);
 

@@ -74,7 +74,7 @@ TraitDeclaration <: OrdinaryTypeDeclaration = /DeclaredMembers/;
 /// later (e.g. a generic parameter, associated type, or the implicit `Self` type).
 TypeVariableDeclaration <: TypeConstructorDeclaration;
 GenericParameterDeclaration <: TypeVariableDeclaration, AssociatedMemberDeclaration
-    = Name:`IdentifierName` DeclaredMembers:{TypeMemberDeclaration};
+    = Name:`IdentifierName`;
 ImplicitSelfDeclaration <: TypeVariableDeclaration;
 
 // ---------- Type Member Declarations (i.e. declarations that can be contained in a type)

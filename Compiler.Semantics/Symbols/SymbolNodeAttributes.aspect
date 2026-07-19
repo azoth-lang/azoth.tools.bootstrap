@@ -86,14 +86,15 @@
 
 + TraitSymbol.new.Validate;
 
-// ---------- Type Declaration Parts
+// ---------- Type Variable Symbol Nodes
+// Type variable symbols never have declared members, but must covariantly refine the member type.
+↑ TypeVariableSymbol.DeclaredMembers: {TypeMemberSymbol} => [];
 ↑ GenericParameterSymbol.Name: `IdentifierName` => Symbol.Name;
 = GenericParameterSymbol.Supertypes => Symbol.TryGetTypeConstructor()?.Supertypes ?? [];
-↑ GenericParameterSymbol.DeclaredMembers: {TypeMemberSymbol} => [];
 = GenericParameterSymbol.InclusiveMembers => [];
 = SelfSymbol.TypeConstructor => Symbol.TypeConstructor;
-↑ SelfSymbol.DeclaredMembers: {TypeMemberSymbol} => [];
 = SelfSymbol.InclusiveMembers => [];
+↑ SelfSymbol.Syntax: `ISyntax`? => null;
 
 // ---------- Member Symbol Nodes
 ↑ MethodSymbol.Name: `IdentifierName` => Symbol.Name;
@@ -127,4 +128,3 @@
 = AssociatedFunctionSymbol.ReturnPlainType => Symbol.Type.Return.PlainType;
 = AssociatedFunctionSymbol.ReturnType => Symbol.Type.Return;
 = AssociatedTypeSymbol.TypeConstructor => Symbol.TypeConstructor;
-= AssociatedTypeSymbol.DeclaredMembers => [];
