@@ -24,7 +24,7 @@ internal static partial class SynthesizedMembersAspect
     /// <remarks>This needs to be lazy computed because the
     /// <see cref="IClassDefinitionNode.DefaultInitializer"/> attribute must be computed.</remarks>
     public static partial IFixedSet<ITypeMemberDefinitionNode> ClassDefinition_SynthesizedMembers(IClassDefinitionNode node)
-        // TODO should implicit self be included?
+        // TODO should implicit self be included? (It isn't currently a type member)
         => FixedSet.CreateFromValue(node.DefaultInitializer);
 
     public static partial IDefaultInitializerDefinitionNode? StructDefinition_DefaultInitializer(IStructDefinitionNode node)
@@ -36,7 +36,7 @@ internal static partial class SynthesizedMembersAspect
     /// <remarks>This needs to be lazy computed because the
     /// <see cref="IStructDefinitionNode.DefaultInitializer"/> attribute must be computed.</remarks>
     public static partial IFixedSet<ITypeMemberDefinitionNode> StructDefinition_SynthesizedMembers(IStructDefinitionNode node)
-        // TODO should implicit self be included?
+        // TODO should implicit self be included? (It isn't currently a type member)
         => FixedSet.CreateFromValue(node.DefaultInitializer);
 
     public static partial IDefaultInitializerDefinitionNode? ValueDefinition_DefaultInitializer(IValueDefinitionNode node)
@@ -48,7 +48,7 @@ internal static partial class SynthesizedMembersAspect
     /// <remarks>This needs to be lazy computed because the
     /// <see cref="IValueDefinitionNode.DefaultInitializer"/> attribute must be computed.</remarks>
     public static partial IFixedSet<ITypeMemberDefinitionNode> ValueDefinition_SynthesizedMembers(IValueDefinitionNode node)
-        // TODO should implicit self be included?
+        // TODO should implicit self be included? (It isn't currently a type member)
         => FixedSet.CreateFromValue(node.DefaultInitializer);
     #endregion
 }
