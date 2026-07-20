@@ -9,5 +9,4 @@ public static class TreeCodeBuilder
         var template = new TreeCodeTemplate(tree);
         return template.TransformText();
     }
-
 }
