@@ -9,28 +9,28 @@ Contents:
 ## Members
 
 There are quite a few different flavors or members that need to be organized in various collections.
-First, members can be instance members or associated members. Note that initializers are considered
-associated members. This split applies to each of the other categories and so isn't listed
-separately. The collections of definition/declaration members available on a type
+The collections of definition/declaration members available on a type
 definition/declaration are:
 
-* Source Associated/Instance Members: Members declared explicitly in the source code. Here, "source"
+* Source Members: Members declared explicitly in the source code. Here, "source"
   has a double meaning as the members in "source" code and as the members from which everything else
   is derived. (These only exist at the definition level. At the declaration level there is no
   distinction between source and synthesized members and there are only declared members.)
-* Synthesized Instance/Associated Members: Members synthesized by the compiler based on other
+* Synthesized Members: Members synthesized by the compiler based on other
   declarations. For example, implicit initializers and drop methods. (These only exist at the
   definition level. At the declaration level there is no distinction between source and synthesized
   members and there are only declared members.)
-* Declared Instance/Associated Members: the union of the source and synthesized members. These are
+* Declared Members: the union of the source and synthesized members. These are
   the declared members because the the source members are explicitly declared and the synthesized
   members are implicitly declared.
 * Nested Members: For namespaces, the nested members includes not only the members of this
   namespace, but the nested members of all namespaces inside that namespace. This is useful for name
   lookup since name resolution searches the nested members.
 
-In addition to those, there are denotation members. The collections of denotations members available
-on a type definition/declaration are:
+In addition to those, there are denotation members. Denotation members are separated into instance
+members and associated members. Note that initializers are considered associated members. This split
+applies to each of the other categories and so isn't listed separately. The collections of
+denotations members available on a type definition/declaration are:
 
 * Base/supertype Instance/Associated Member Denotations: denotations for the base or supertype
   members as-seen-from the current type without consideration for which are superseded.
