@@ -47,7 +47,7 @@ public partial class Parser
             case IAffineKeywordToken _:
                 return ParseAffineStruct(attributes, modifiers);
             case IValueKeywordToken _:
-                return ParseValue(attributes, modifiers);
+                return ParseStruct(attributes, modifiers);
             case ITraitKeywordToken _:
                 return ParseTrait(attributes, modifiers);
             case IFunctionKeywordToken _:
@@ -301,8 +301,8 @@ public partial class Parser
     }
     #endregion
 
-    #region Parse Value Definitions
-    private IValueDefinitionSyntax ParseValue(IFixedList<IAttributeSyntax> attributes, ModifierParser modifiers)
+    #region Parse Struct Definitions
+    private IStructDefinitionSyntax ParseStruct(IFixedList<IAttributeSyntax> attributes, ModifierParser modifiers)
     {
         var accessModifiers = modifiers.ParseAccessModifier();
         var constModifier = modifiers.ParseConstModifier();
@@ -317,7 +317,7 @@ public partial class Parser
         var (members, bodySpan) = ParseTypeBody(inTrait: false);
         var span = TextSpan.Covering(valueKeywordSpan, identifier.Span, generic?.Span,
             TextSpan.Covering(superTypes.Select(st => st.Span)), bodySpan);
-        return IValueDefinitionSyntax.Create(span, File, identifier.Span, attributes, accessModifiers, constModifier,
+        return IStructDefinitionSyntax.Create(span, File, identifier.Span, attributes, accessModifiers, constModifier,
             dropModifier, name, genericParameters, superTypes, members);
     }
     #endregion

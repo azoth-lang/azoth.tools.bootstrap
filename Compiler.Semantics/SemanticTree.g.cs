@@ -616,7 +616,7 @@ public partial interface IAffineStructDefinitionNode : ITypeDefinitionNode, IStr
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IValueDefinitionNode : ITypeDefinitionNode, IValueDeclarationNode
 {
-    new IValueDefinitionSyntax Syntax { get; }
+    new IStructDefinitionSyntax Syntax { get; }
     ITypeDefinitionSyntax ITypeDefinitionNode.Syntax => Syntax;
     ICodeSyntax ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
@@ -625,7 +625,7 @@ public partial interface IValueDefinitionNode : ITypeDefinitionNode, IValueDecla
     IDefaultInitializerDefinitionNode? DefaultInitializer { get; }
 
     public static IValueDefinitionNode Create(
-        IValueDefinitionSyntax syntax,
+        IStructDefinitionSyntax syntax,
         IEnumerable<IAttributeNode> attributes,
         IEnumerable<IGenericParameterNode> genericParameters,
         IEnumerable<ITypeNameNode> supertypeNames,
@@ -6183,7 +6183,7 @@ file class ValueDefinitionNode : SemanticNode, IValueDefinitionNode
 {
     private IValueDefinitionNode Self { [Inline] get => this; }
 
-    public IValueDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
+    public IStructDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
     public IFixedList<IAttributeNode> Attributes { [DebuggerStepThrough] get; }
     public IFixedList<IGenericParameterNode> GenericParameters { [DebuggerStepThrough] get; }
     public IFixedList<ITypeNameNode> SupertypeNames { [DebuggerStepThrough] get; }
@@ -6306,7 +6306,7 @@ file class ValueDefinitionNode : SemanticNode, IValueDefinitionNode
     }
 
     public ValueDefinitionNode(
-        IValueDefinitionSyntax syntax,
+        IStructDefinitionSyntax syntax,
         IEnumerable<IAttributeNode> attributes,
         IEnumerable<IGenericParameterNode> genericParameters,
         IEnumerable<ITypeNameNode> supertypeNames,

@@ -102,7 +102,7 @@ internal static class SyntaxBinder
         {
             IClassDefinitionSyntax syn => ClassDefinition(syn),
             IAffineStructDefinitionSyntax syn => AffineStructDefinition(syn),
-            IValueDefinitionSyntax syn => ValueDefinition(syn),
+            IStructDefinitionSyntax syn => StructDefinition(syn),
             ITraitDefinitionSyntax syn => TraitDefinition(syn),
             _ => throw ExhaustiveMatch.Failed(syntax)
         };
@@ -117,7 +117,7 @@ internal static class SyntaxBinder
             GenericParameters(syntax.GenericParameters), SupertypeNames(syntax.SupertypeNames),
             MemberDefinitions(syntax.Members));
 
-    private static IValueDefinitionNode ValueDefinition(IValueDefinitionSyntax syntax)
+    private static IValueDefinitionNode StructDefinition(IStructDefinitionSyntax syntax)
         => IValueDefinitionNode.Create(syntax, Attributes(syntax.Attributes),
             GenericParameters(syntax.GenericParameters), SupertypeNames(syntax.SupertypeNames),
             MemberDefinitions(syntax.Members));

@@ -64,7 +64,7 @@ internal static partial class FormattingAspect
         return $"{modifiers}affine struct {node.Name.ToBareString()}{generics} {{ … }}";
     }
 
-    public static partial string ValueDefinition_ToString(IValueDefinitionSyntax node)
+    public static partial string StructDefinition_ToString(IStructDefinitionSyntax node)
     {
         var modifiers = "";
         var accessModifier = node.AccessModifier.ToAccessModifier();
@@ -72,7 +72,7 @@ internal static partial class FormattingAspect
         if (node.ConstModifier is not null) modifiers += "const ";
         if (node.DropModifier is not null) modifiers += "drop ";
         var generics = !node.GenericParameters.IsEmpty ? $"[{string.Join(", ", node.GenericParameters)}]" : "";
-        return $"{modifiers}value {node.Name.ToBareString()}{generics} {{ … }}";
+        return $"{modifiers}struct {node.Name.ToBareString()}{generics} {{ … }}";
     }
 
     public static partial string TraitDefinition_ToString(ITraitDefinitionSyntax node)
