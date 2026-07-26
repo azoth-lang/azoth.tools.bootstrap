@@ -45,7 +45,7 @@ public partial class Parser
             case IClassKeywordToken _:
                 return ParseClass(attributes, modifiers);
             case IStructKeywordToken _:
-                return ParseStruct(attributes, modifiers);
+                return ParseAffineStruct(attributes, modifiers);
             case IValueKeywordToken _:
                 return ParseValue(attributes, modifiers);
             case ITraitKeywordToken _:
@@ -278,8 +278,8 @@ public partial class Parser
     }
     #endregion
 
-    #region Parse Struct Definitions
-    private IStructDefinitionSyntax ParseStruct(IFixedList<IAttributeSyntax> attributes, ModifierParser modifiers)
+    #region Parse Affine Struct Definitions
+    private IAffineStructDefinitionSyntax ParseAffineStruct(IFixedList<IAttributeSyntax> attributes, ModifierParser modifiers)
     {
         var accessModifiers = modifiers.ParseAccessModifier();
         var constModifier = modifiers.ParseConstModifier();
@@ -294,8 +294,8 @@ public partial class Parser
         var (members, bodySpan) = ParseTypeBody(inTrait: false);
         var span = TextSpan.Covering(structKeywordSpan, identifier.Span, generic?.Span,
             TextSpan.Covering(superTypes.Select(st => st.Span)), bodySpan);
-        return IStructDefinitionSyntax.Create(span, File, identifier.Span, attributes, accessModifiers,
-            constModifier, dropModifier, name, genericParameters, superTypes,
+        return IAffineStructDefinitionSyntax.Create(span, File, identifier.Span, attributes,
+            accessModifiers, constModifier, dropModifier, name, genericParameters, superTypes,
             members);
     }
     #endregion
@@ -374,7 +374,7 @@ public partial class Parser
             case IClassKeywordToken _:
                 return ParseClass(attributes, modifiers);
             case IStructKeywordToken _:
-                return ParseStruct(attributes, modifiers);
+                return ParseAffineStruct(attributes, modifiers);
             case ITraitKeywordToken _:
                 return ParseTrait(attributes, modifiers);
             default:

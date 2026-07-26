@@ -595,7 +595,7 @@ public partial interface IClassDefinitionNode : ITypeDefinitionNode, IClassDecla
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IStructDefinitionNode : ITypeDefinitionNode, IStructDeclarationNode
 {
-    new IStructDefinitionSyntax Syntax { get; }
+    new IAffineStructDefinitionSyntax Syntax { get; }
     ITypeDefinitionSyntax ITypeDefinitionNode.Syntax => Syntax;
     ICodeSyntax ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
@@ -604,7 +604,7 @@ public partial interface IStructDefinitionNode : ITypeDefinitionNode, IStructDec
     IDefaultInitializerDefinitionNode? DefaultInitializer { get; }
 
     public static IStructDefinitionNode Create(
-        IStructDefinitionSyntax syntax,
+        IAffineStructDefinitionSyntax syntax,
         IEnumerable<IAttributeNode> attributes,
         IEnumerable<IGenericParameterNode> genericParameters,
         IEnumerable<ITypeNameNode> supertypeNames,
@@ -5979,7 +5979,7 @@ file class StructDefinitionNode : SemanticNode, IStructDefinitionNode
 {
     private IStructDefinitionNode Self { [Inline] get => this; }
 
-    public IStructDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
+    public IAffineStructDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
     public IFixedList<IAttributeNode> Attributes { [DebuggerStepThrough] get; }
     public IFixedList<IGenericParameterNode> GenericParameters { [DebuggerStepThrough] get; }
     public IFixedList<ITypeNameNode> SupertypeNames { [DebuggerStepThrough] get; }
@@ -6102,7 +6102,7 @@ file class StructDefinitionNode : SemanticNode, IStructDefinitionNode
     }
 
     public StructDefinitionNode(
-        IStructDefinitionSyntax syntax,
+        IAffineStructDefinitionSyntax syntax,
         IEnumerable<IAttributeNode> attributes,
         IEnumerable<IGenericParameterNode> genericParameters,
         IEnumerable<ITypeNameNode> supertypeNames,

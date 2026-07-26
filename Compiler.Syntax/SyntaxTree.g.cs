@@ -265,7 +265,7 @@ public partial interface IFunctionDefinitionSyntax : IInvocableDefinitionSyntax,
 
 [Closed(
     typeof(IClassDefinitionSyntax),
-    typeof(IStructDefinitionSyntax),
+    typeof(IAffineStructDefinitionSyntax),
     typeof(IValueDefinitionSyntax),
     typeof(ITraitDefinitionSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -304,12 +304,12 @@ public partial interface IClassDefinitionSyntax : ITypeDefinitionSyntax
         => new ClassDefinitionSyntax(span, file, nameSpan, attributes, accessModifier, constModifier, dropModifier, name, abstractModifier, genericParameters, baseTypeName, supertypeNames, members);
 }
 
-[Closed(typeof(StructDefinitionSyntax))]
+[Closed(typeof(AffineStructDefinitionSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IStructDefinitionSyntax : ITypeDefinitionSyntax
+public partial interface IAffineStructDefinitionSyntax : ITypeDefinitionSyntax
 {
 
-    public static IStructDefinitionSyntax Create(
+    public static IAffineStructDefinitionSyntax Create(
         TextSpan span,
         CodeFile file,
         TextSpan nameSpan,
@@ -321,7 +321,7 @@ public partial interface IStructDefinitionSyntax : ITypeDefinitionSyntax
         IEnumerable<IGenericParameterSyntax> genericParameters,
         IEnumerable<INameSyntax> supertypeNames,
         IEnumerable<IMemberDefinitionSyntax> members)
-        => new StructDefinitionSyntax(span, file, nameSpan, attributes, accessModifier, constModifier, dropModifier, name, genericParameters, supertypeNames, members);
+        => new AffineStructDefinitionSyntax(span, file, nameSpan, attributes, accessModifier, constModifier, dropModifier, name, genericParameters, supertypeNames, members);
 }
 
 [Closed(typeof(ValueDefinitionSyntax))]
@@ -1901,9 +1901,9 @@ file class ClassDefinitionSyntax : IClassDefinitionSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class StructDefinitionSyntax : IStructDefinitionSyntax
+file class AffineStructDefinitionSyntax : IAffineStructDefinitionSyntax
 {
-    private IStructDefinitionSyntax Self { [Inline] get => this; }
+    private IAffineStructDefinitionSyntax Self { [Inline] get => this; }
 
     public TextSpan Span { [DebuggerStepThrough] get; }
     public CodeFile File { [DebuggerStepThrough] get; }
@@ -1917,7 +1917,7 @@ file class StructDefinitionSyntax : IStructDefinitionSyntax
     public IFixedList<INameSyntax> SupertypeNames { [DebuggerStepThrough] get; }
     public IFixedList<IMemberDefinitionSyntax> Members { [DebuggerStepThrough] get; }
     public override string ToString()
-        => FormattingAspect.StructDefinition_ToString(this);
+        => FormattingAspect.AffineStructDefinition_ToString(this);
 
     [DebuggerStepThrough]
     public IEnumerable<ISyntax> Children()
@@ -1932,7 +1932,7 @@ file class StructDefinitionSyntax : IStructDefinitionSyntax
             yield return child;
     }
 
-    public StructDefinitionSyntax(
+    public AffineStructDefinitionSyntax(
         TextSpan span,
         CodeFile file,
         TextSpan nameSpan,

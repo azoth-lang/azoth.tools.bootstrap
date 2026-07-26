@@ -26,7 +26,7 @@ internal static partial class FormattingAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial string ClassDefinition_ToString(IClassDefinitionSyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial string StructDefinition_ToString(IStructDefinitionSyntax node);
+    public static partial string AffineStructDefinition_ToString(IAffineStructDefinitionSyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial string ValueDefinition_ToString(IValueDefinitionSyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
