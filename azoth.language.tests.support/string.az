@@ -1,4 +1,4 @@
-published const value string
+published const struct string
 {
     /// The index of the start of the string data in `bytes`.
     public let start: size;

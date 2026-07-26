@@ -46,7 +46,7 @@ public partial class Parser
                 return ParseClass(attributes, modifiers);
             case IAffineKeywordToken _:
                 return ParseAffineStruct(attributes, modifiers);
-            case IValueKeywordToken _:
+            case IStructKeywordToken _:
                 return ParseStruct(attributes, modifiers);
             case ITraitKeywordToken _:
                 return ParseTrait(attributes, modifiers);
@@ -308,14 +308,14 @@ public partial class Parser
         var constModifier = modifiers.ParseConstModifier();
         var dropModifier = modifiers.ParseDropModifier();
         modifiers.ParseEndOfModifiers();
-        var valueKeywordSpan = Tokens.Consume<IValueKeywordToken>();
+        var structKeywordSpan = Tokens.Consume<IStructKeywordToken>();
         var identifier = Tokens.RequiredToken<IIdentifierToken>();
         var generic = AcceptGenericParameters();
         var genericParameters = generic?.Parameters ?? FixedList.Empty<IGenericParameterSyntax>();
         var name = OrdinaryName.Create(identifier.Value, genericParameters.Count);
         var superTypes = ParseSupertypes();
         var (members, bodySpan) = ParseTypeBody(inTrait: false);
-        var span = TextSpan.Covering(valueKeywordSpan, identifier.Span, generic?.Span,
+        var span = TextSpan.Covering(structKeywordSpan, identifier.Span, generic?.Span,
             TextSpan.Covering(superTypes.Select(st => st.Span)), bodySpan);
         return IStructDefinitionSyntax.Create(span, File, identifier.Span, attributes, accessModifiers, constModifier,
             dropModifier, name, genericParameters, superTypes, members);
