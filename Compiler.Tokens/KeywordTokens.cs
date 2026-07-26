@@ -10,6 +10,7 @@ public static partial class TokenTypes
     private static readonly IReadOnlyList<Type> Keyword = new List<Type>()
     {
         typeof(AbstractKeywordToken),
+        typeof(AffineKeywordToken),
         typeof(AliasableKeywordToken),
         typeof(AndKeywordToken),
         typeof(AnyKeywordToken),
@@ -103,6 +104,9 @@ public static partial class TokenFactory
 {
     public static IAbstractKeywordToken AbstractKeyword(TextSpan span)
         => new AbstractKeywordToken(span);
+
+    public static IAffineKeywordToken AffineKeyword(TextSpan span)
+        => new AffineKeywordToken(span);
 
     public static IAliasableKeywordToken AliasableKeyword(TextSpan span)
         => new AliasableKeywordToken(span);
@@ -366,6 +370,7 @@ public static partial class TokenFactory
 
 [Closed(
     typeof(IAbstractKeywordToken),
+    typeof(IAffineKeywordToken),
     typeof(IAliasableKeywordToken),
     typeof(IAndKeywordToken),
     typeof(IAnyKeywordToken),
@@ -459,6 +464,15 @@ public partial interface IAbstractKeywordToken : IKeywordToken;
 internal partial class AbstractKeywordToken : Token, IAbstractKeywordToken
 {
     public AbstractKeywordToken(TextSpan span)
+        : base(span)
+    {
+    }
+}
+
+public partial interface IAffineKeywordToken : IKeywordToken;
+internal partial class AffineKeywordToken : Token, IAffineKeywordToken
+{
+    public AffineKeywordToken(TextSpan span)
         : base(span)
     {
     }

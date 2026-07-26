@@ -251,6 +251,7 @@ public static class Arbitrary
         //{ "^", typeof(ICaretToken) },
         //{ "|", typeof(IPipeToken) },
         { "abstract", typeof(IAbstractKeywordToken) },
+        { "affine", typeof(IAffineKeywordToken) },
         { "aliasable", typeof(IAliasableKeywordToken) },
         { "and", typeof(IAndKeywordToken) },
         { "any", typeof(IAnyKeywordToken) },

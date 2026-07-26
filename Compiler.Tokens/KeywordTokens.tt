@@ -8,6 +8,7 @@
     var keywords = new List<string>()
     {
         "Abstract",
+        "Affine",
         "Aliasable",
         "And",
         "Any",
