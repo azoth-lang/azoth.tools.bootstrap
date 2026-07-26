@@ -82,7 +82,7 @@
 
 + AffineStructSymbol.new.Validate;
 
-+ ValueSymbol.new.Validate;
++ StructSymbol.new.Validate;
 
 + TraitSymbol.new.Validate;
 

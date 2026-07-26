@@ -40,7 +40,7 @@ NeverTypeSymbol <: TypeConstructorSymbol = Symbol:`NeverTypeSymbol`;
 OrdinaryTypeSymbol <: OrdinaryTypeDeclaration, TypeSymbol, NamespaceMemberSymbol = Symbol:`OrdinaryTypeSymbol`;
 ClassSymbol <: ClassDeclaration, OrdinaryTypeSymbol = /GenericParameters/ /DeclaredMembers/;
 AffineStructSymbol <: AffineStructDeclaration, OrdinaryTypeSymbol = /GenericParameters/ /DeclaredMembers/;
-ValueSymbol <: ValueDeclaration, OrdinaryTypeSymbol = /GenericParameters/ /DeclaredMembers/;
+StructSymbol <: StructDeclaration, OrdinaryTypeSymbol = /GenericParameters/ /DeclaredMembers/;
 TraitSymbol <: TraitDeclaration, OrdinaryTypeSymbol = /GenericParameters/ /DeclaredMembers/;
 
 // ---------- Type Variable Symbol Nodes

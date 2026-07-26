@@ -9,8 +9,8 @@ internal static class TypeKindExtensions
         {
             TypeKind.Class => TypeSemantics.Reference,
             TypeKind.Trait => TypeSemantics.Reference,
-            TypeKind.Struct => TypeSemantics.Hybrid,
-            TypeKind.Value => TypeSemantics.Value,
+            TypeKind.AffineStruct => TypeSemantics.Hybrid,
+            TypeKind.Struct => TypeSemantics.Value,
             _ => throw ExhaustiveMatch.Failed(kind)
         };
 }

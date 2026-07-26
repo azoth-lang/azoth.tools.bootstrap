@@ -100,7 +100,7 @@ internal static partial class TypeDefinitionsAspect
     {
         foreach (var node in typeNode.SupertypeNames)
             // Null symbol will report a separate name binding error
-            if (node.ReferencedDeclaration?.TypeConstructor is OrdinaryTypeConstructor { Kind: TypeKind.Struct })
+            if (node.ReferencedDeclaration?.TypeConstructor is OrdinaryTypeConstructor { Kind: TypeKind.AffineStruct })
                 diagnostics.Add(OtherSemanticError.SupertypeMustBeClassOrTrait(node.File, typeNode.Name, node.Syntax));
     }
 

@@ -46,12 +46,12 @@ internal static partial class SymbolNodeAttributesAspect
             "Symbol must be for an class type.");
 
     public static partial void Validate_AffineStructSymbol(OrdinaryTypeSymbol symbol)
-        => Requires.That(symbol.TypeConstructor is { Kind: TypeKind.Struct }, nameof(symbol),
+        => Requires.That(symbol.TypeConstructor is { Kind: TypeKind.AffineStruct }, nameof(symbol),
             "Symbol must be for an affine struct type.");
 
-    public static partial void Validate_ValueSymbol(OrdinaryTypeSymbol symbol)
-        => Requires.That(symbol.TypeConstructor is { Kind: TypeKind.Value }, nameof(symbol),
-            "Symbol must be for a value type.");
+    public static partial void Validate_StructSymbol(OrdinaryTypeSymbol symbol)
+        => Requires.That(symbol.TypeConstructor is { Kind: TypeKind.Struct }, nameof(symbol),
+            "Symbol must be for a struct type.");
 
     public static partial void Validate_TraitSymbol(OrdinaryTypeSymbol symbol)
         => Requires.That(symbol.TypeConstructor is { Kind: TypeKind.Trait }, nameof(symbol),

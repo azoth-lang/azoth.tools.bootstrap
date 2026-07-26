@@ -42,8 +42,8 @@ internal static class SymbolBinder
          => symbol.TypeConstructor.Kind switch
          {
              TypeKind.Class => IClassSymbolNode.Create(symbol),
-             TypeKind.Struct => IAffineStructSymbolNode.Create(symbol),
-             TypeKind.Value => IValueSymbolNode.Create(symbol),
+             TypeKind.AffineStruct => IAffineStructSymbolNode.Create(symbol),
+             TypeKind.Struct => IStructSymbolNode.Create(symbol),
              TypeKind.Trait => ITraitSymbolNode.Create(symbol),
              _ => throw ExhaustiveMatch.Failed(symbol.TypeConstructor.Kind),
          };

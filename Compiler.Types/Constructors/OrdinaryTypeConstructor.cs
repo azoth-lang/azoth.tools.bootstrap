@@ -49,7 +49,7 @@ public sealed class OrdinaryTypeConstructor : BareTypeConstructor
     public override bool CanHaveFields => Kind != TypeKind.Trait;
 
     public override bool CanBeBaseType => Kind == TypeKind.Class;
-    public override bool CanBeSupertype => Kind != TypeKind.Struct;
+    public override bool CanBeSupertype => Kind != TypeKind.AffineStruct;
 
     public override OrdinaryName Name { [DebuggerStepThrough] get; }
 
@@ -77,7 +77,7 @@ public sealed class OrdinaryTypeConstructor : BareTypeConstructor
         IEnumerable<BareType> supertypes)
     {
         Requires.That((kind == TypeKind.Trait).Implies(isAbstract), nameof(isAbstract), "Traits must be abstract.");
-        Requires.That((kind == TypeKind.Struct).Implies(!isAbstract), nameof(isAbstract), "Structs cannot be abstract.");
+        Requires.That((kind == TypeKind.AffineStruct).Implies(!isAbstract), nameof(isAbstract), "Affine structs cannot be abstract.");
         Context = context;
         IsAbstract = isAbstract;
         Kind = kind;

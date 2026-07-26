@@ -46,14 +46,14 @@ public sealed class InterpreterProcess
     private readonly IPackageFacetNode packageFacet;
     private readonly Task executionTask;
     private readonly FrozenDictionary<FunctionSymbol, IFunctionInvocableDefinitionNode> functions;
-    private readonly FrozenDictionary<MethodSymbol, IMethodDefinitionNode> valueMethods;
     private readonly FrozenDictionary<MethodSymbol, IMethodDefinitionNode> structMethods;
+    private readonly FrozenDictionary<MethodSymbol, IMethodDefinitionNode> affineStructMethods;
     private readonly FrozenDictionary<InitializerSymbol, IOrdinaryInitializerDefinitionNode?> initializers;
     private readonly FrozenDictionary<OrdinaryTypeSymbol, ITypeDefinitionNode> userTypes;
-    private readonly IValueDefinitionNode? stringValue;
+    private readonly IStructDefinitionNode? stringStruct;
     private readonly IOrdinaryInitializerDefinitionNode? stringInitializer;
     private readonly BareType? stringBareType;
-    private readonly IValueDefinitionNode? rangeValue;
+    private readonly IStructDefinitionNode? rangeStruct;
     private readonly InitializerSymbol? rangeInitializer;
     private readonly BareType? rangeBareType;
     private byte? exitCode;
@@ -63,7 +63,7 @@ public sealed class InterpreterProcess
         = new(ReferenceEqualityComparer.Instance);
     private readonly ConcurrentDictionary<IAffineStructDefinitionNode, AffineStructMetadata> affineStructMetadata
         = new(ReferenceEqualityComparer.Instance);
-    private readonly ConcurrentDictionary<IValueDefinitionNode, ValueMetadata> valueMetadata
+    private readonly ConcurrentDictionary<IStructDefinitionNode, StructMetadata> structMetadata
         = new(ReferenceEqualityComparer.Instance);
     private readonly LocalVariables.Scope.Pool localVariableScopePool = new();
     private readonly Stopwatch runStopwatch = new();
@@ -77,24 +77,24 @@ public sealed class InterpreterProcess
                     .OfType<IFunctionInvocableDefinitionNode>()
                     .ToFrozenDictionary(f => f.Symbol.Assigned());
 
-        valueMethods = allDefinitions
+        structMethods = allDefinitions
                        .OfType<IMethodDefinitionNode>()
-                       .Where(m => m.Symbol.Assigned().ContextTypeSymbol is OrdinaryTypeSymbol { Kind: TypeKind.Value })
+                       .Where(m => m.Symbol.Assigned().ContextTypeSymbol is OrdinaryTypeSymbol { Kind: TypeKind.Struct })
                        .ToFrozenDictionary(m => m.Symbol.Assigned());
 
-        structMethods = allDefinitions
+        affineStructMethods = allDefinitions
                         .OfType<IMethodDefinitionNode>()
-                        .Where(m => m.Symbol.Assigned().ContextTypeSymbol is OrdinaryTypeSymbol { Kind: TypeKind.Struct })
+                        .Where(m => m.Symbol.Assigned().ContextTypeSymbol is OrdinaryTypeSymbol { Kind: TypeKind.AffineStruct })
                         .ToFrozenDictionary(m => m.Symbol.Assigned());
 
         userTypes = allDefinitions.OfType<ITypeDefinitionNode>()
                                  .ToFrozenDictionary(c => c.Symbol);
-        stringValue = userTypes.Values.OfType<IValueDefinitionNode>().Where(c => c.Symbol.Name == SpecialNames.StringTypeName).TrySingle();
-        stringInitializer = stringValue?.DeclaredMembers.OfType<IOrdinaryInitializerDefinitionNode>().Single(c => c.Parameters.Count == 3);
-        stringBareType = stringValue?.TypeConstructor.ConstructNullaryType(containingType: null);
-        rangeValue = userTypes.Values.OfType<IValueDefinitionNode>().SingleOrDefault(c => c.Symbol.Name == SpecialNames.RangeTypeName);
-        rangeInitializer = rangeValue?.DeclaredMembers.OfType<IInitializerDefinitionNode>().SingleOrDefault(c => c.Parameters.Count == 2)?.Symbol;
-        rangeBareType = rangeValue?.TypeConstructor.ConstructNullaryType(containingType: null);
+        stringStruct = userTypes.Values.OfType<IStructDefinitionNode>().Where(c => c.Symbol.Name == SpecialNames.StringTypeName).TrySingle();
+        stringInitializer = stringStruct?.DeclaredMembers.OfType<IOrdinaryInitializerDefinitionNode>().Single(c => c.Parameters.Count == 3);
+        stringBareType = stringStruct?.TypeConstructor.ConstructNullaryType(containingType: null);
+        rangeStruct = userTypes.Values.OfType<IStructDefinitionNode>().SingleOrDefault(c => c.Symbol.Name == SpecialNames.RangeTypeName);
+        rangeInitializer = rangeStruct?.DeclaredMembers.OfType<IInitializerDefinitionNode>().SingleOrDefault(c => c.Parameters.Count == 2)?.Symbol;
+        rangeBareType = rangeStruct?.TypeConstructor.ConstructNullaryType(containingType: null);
 
         var defaultInitializerSymbols = allDefinitions
                                        .OfType<IAffineStructDefinitionNode>()
@@ -253,7 +253,7 @@ public sealed class InterpreterProcess
         {
             IClassDefinitionNode @class => CallClassInitializerAsync(@class, selfBareType, initializerSymbol, arguments),
             IAffineStructDefinitionNode affineStruct => CallAffineStructInitializerAsync(affineStruct, selfBareType, initializerSymbol, arguments),
-            IValueDefinitionNode value => CallValueInitializerAsync(value, selfBareType, initializerSymbol, arguments),
+            IStructDefinitionNode @struct => CallStructInitializerAsync(@struct, selfBareType, initializerSymbol, arguments),
             ITraitDefinitionNode _ => throw new UnreachableException("Traits don't have initializers."),
             _ => throw ExhaustiveMatch.Failed(typeDefinition)
         };
@@ -286,15 +286,15 @@ public sealed class InterpreterProcess
         return CallInitializerAsync(affineStruct, initializerSymbol, self, selfBareType, arguments);
     }
 
-    private ValueTask<Value> CallValueInitializerAsync(
-        IValueDefinitionNode value,
+    private ValueTask<Value> CallStructInitializerAsync(
+        IStructDefinitionNode @struct,
         BareType selfBareType,
         InitializerSymbol initializerSymbol,
         IReadOnlyList<Value> arguments)
     {
-        var layout = valueMetadata.GetOrAdd(value, CreateValueMetadata);
-        var self = Value.From((ValueReference)new(layout));
-        return CallInitializerAsync(value, initializerSymbol, self, selfBareType, arguments);
+        var layout = structMetadata.GetOrAdd(@struct, CreateStructMetadata);
+        var self = Value.From((StructReference)new(layout));
+        return CallInitializerAsync(@struct, initializerSymbol, self, selfBareType, arguments);
     }
 
     private ValueTask<Value> CallInitializerAsync(
@@ -415,8 +415,8 @@ public sealed class InterpreterProcess
         var semantics = selfType.Semantics ?? (self.InstanceReference.IsClassReference ? TypeSemantics.Reference : TypeSemantics.Value);
         return semantics switch
         {
-            TypeSemantics.Value => CallValueMethod(methodSymbol, selfType, self, arguments),
-            TypeSemantics.Hybrid => CallStructMethod(methodSymbol, selfType, self, arguments),
+            TypeSemantics.Value => CallStructMethod(methodSymbol, selfType, self, arguments),
+            TypeSemantics.Hybrid => CallAffineStructMethod(methodSymbol, selfType, self, arguments),
             TypeSemantics.Reference => CallClassMethodAsync(methodSymbol, selfType, self, arguments),
             _ => throw ExhaustiveMatch.Failed(semantics),
         };
@@ -434,20 +434,6 @@ public sealed class InterpreterProcess
         return CallMethodAsync(method, self, selfType, arguments);
     }
 
-    private ValueTask<Value> CallValueMethod(
-        MethodSymbol methodSymbol,
-        BareType selfType,
-        Value self,
-        IReadOnlyList<Value> arguments)
-    {
-        return methodSymbol.Name.Text switch
-        {
-            "remainder" => ValueTask.FromResult(Remainder(self, arguments.Single(), selfType)),
-            "to_display_string" => ToDisplayStringAsync(self, selfType),
-            _ => CallMethodAsync(valueMethods[methodSymbol], self, selfType, arguments),
-        };
-    }
-
     private ValueTask<Value> CallStructMethod(
         MethodSymbol methodSymbol,
         BareType selfType,
@@ -459,6 +445,21 @@ public sealed class InterpreterProcess
             "remainder" => ValueTask.FromResult(Remainder(self, arguments.Single(), selfType)),
             "to_display_string" => ToDisplayStringAsync(self, selfType),
             _ => CallMethodAsync(structMethods[methodSymbol], self, selfType, arguments),
+        };
+    }
+
+    private ValueTask<Value> CallAffineStructMethod(
+        MethodSymbol methodSymbol,
+        BareType selfType,
+        Value self,
+        IReadOnlyList<Value> arguments)
+    {
+        return methodSymbol.Name.Text switch
+        {
+            // TODO what affine struct has these methods?
+            "remainder" => ValueTask.FromResult(Remainder(self, arguments.Single(), selfType)),
+            "to_display_string" => ToDisplayStringAsync(self, selfType),
+            _ => CallMethodAsync(affineStructMethods[methodSymbol], self, selfType, arguments),
         };
     }
 
@@ -707,7 +708,7 @@ public sealed class InterpreterProcess
                         var rightResult = await ExecuteAsync(selfBareType, exp.RightOperand!, variables).ConfigureAwait(false);
                         if (rightResult.ShouldExit(out var right)) return rightResult;
                         if (binaryOperator.RangeInclusiveOfEnd()) right = right.IncrementInt();
-                        return await CallValueInitializerAsync(rangeValue!, rangeBareType!, rangeInitializer!, [left, right]);
+                        return await CallStructInitializerAsync(rangeStruct!, rangeBareType!, rangeInitializer!, [left, right]);
                     }
                     case BinaryOperator.QuestionQuestion:
                     {
@@ -1090,10 +1091,10 @@ public sealed class InterpreterProcess
             // byte_count: size
             Value.FromSize(bytes.Count),
         };
-        if (stringValue is null)
+        if (stringStruct is null)
             throw new Exception("Cannot initialize string literal because no string type was found.");
-        var layout = valueMetadata.GetOrAdd(stringValue, CreateValueMetadata);
-        var self = Value.From(new ValueReference(layout));
+        var layout = structMetadata.GetOrAdd(stringStruct, CreateStructMetadata);
+        var self = Value.From(new StructReference(layout));
         return await CallInitializerAsync(stringInitializer!, self, stringBareType!, arguments).ConfigureAwait(false);
     }
 
@@ -1103,7 +1104,7 @@ public sealed class InterpreterProcess
     private static AffineStructMetadata CreateAffineStructMetadata(IAffineStructDefinitionNode affineStruct)
         => new(affineStruct);
 
-    private static ValueMetadata CreateValueMetadata(IValueDefinitionNode value) => new(value);
+    private static StructMetadata CreateStructMetadata(IStructDefinitionNode @struct) => new(@struct);
 
     private async ValueTask<Result> ExecuteArgumentsAsync(
         BareType? selfBareType,

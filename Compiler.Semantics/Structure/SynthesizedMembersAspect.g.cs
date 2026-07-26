@@ -23,7 +23,7 @@ internal static partial class SynthesizedMembersAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IDefaultInitializerDefinitionNode? AffineStructDefinition_DefaultInitializer(IAffineStructDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IFixedSet<ITypeMemberDefinitionNode> ValueDefinition_SynthesizedMembers(IValueDefinitionNode node);
+    public static partial IFixedSet<ITypeMemberDefinitionNode> StructDefinition_SynthesizedMembers(IStructDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IDefaultInitializerDefinitionNode? ValueDefinition_DefaultInitializer(IValueDefinitionNode node);
+    public static partial IDefaultInitializerDefinitionNode? StructDefinition_DefaultInitializer(IStructDefinitionNode node);
 }

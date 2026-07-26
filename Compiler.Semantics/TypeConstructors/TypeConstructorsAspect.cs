@@ -26,8 +26,8 @@ internal static partial class TypeConstructorsAspect
         => BareTypeConstructor.CreateAffineStruct(node.TypeConstructorContext, node.IsConst, node.Name,
             GetGenericParameters(node), node.Supertypes);
 
-    public static partial OrdinaryTypeConstructor ValueDefinition_TypeConstructor(IValueDefinitionNode node)
-        => BareTypeConstructor.CreateValue(node.TypeConstructorContext, node.IsConst, node.Name,
+    public static partial OrdinaryTypeConstructor StructDefinition_TypeConstructor(IStructDefinitionNode node)
+        => BareTypeConstructor.CreateStruct(node.TypeConstructorContext, node.IsConst, node.Name,
             GetGenericParameters(node), node.Supertypes);
 
     public static partial OrdinaryTypeConstructor TraitDefinition_TypeConstructor(ITraitDefinitionNode node)

@@ -56,15 +56,15 @@ public abstract class BareTypeConstructor : BareTypeConstructorContext, IEquatab
         OrdinaryName name,
         IFixedList<TypeConstructorParameter> genericParameters,
         IFixedSet<BareType> supertypes)
-        => new(context, isAbstract: false, isConst, TypeKind.Struct, name, genericParameters, baseType: null, supertypes);
+        => new(context, isAbstract: false, isConst, TypeKind.AffineStruct, name, genericParameters, baseType: null, supertypes);
 
-    public static OrdinaryTypeConstructor CreateValue(
+    public static OrdinaryTypeConstructor CreateStruct(
         BareTypeConstructorContext context,
         bool isConst,
         OrdinaryName name,
         IFixedList<TypeConstructorParameter> genericParameters,
         IFixedSet<BareType> supertypes)
-        => new(context, isAbstract: false, isConst, TypeKind.Value, name, genericParameters, baseType: null, supertypes);
+        => new(context, isAbstract: false, isConst, TypeKind.Struct, name, genericParameters, baseType: null, supertypes);
 
     public static OrdinaryTypeConstructor CreateClass(
         IdentifierName containingPackage,

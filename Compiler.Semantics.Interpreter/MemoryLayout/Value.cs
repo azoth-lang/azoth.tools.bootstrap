@@ -23,7 +23,7 @@ internal readonly struct Value
     [FieldOffset(0)] public readonly InstanceReference InstanceReference;
     [FieldOffset(0)] public readonly ClassReference ClassReference;
     [FieldOffset(0)] public readonly AffineStructReference AffineStructReference;
-    [FieldOffset(0)] public readonly ValueReference ValueReference;
+    [FieldOffset(0)] public readonly StructReference StructReference;
     [FieldOffset(0)] public readonly BigInteger Int;
     [FieldOffset(0)] public readonly IIntrinsicValue IntrinsicValue;
     [FieldOffset(0)] public readonly Task<Result> Promise;
@@ -35,7 +35,7 @@ internal readonly struct Value
     [FieldOffset(0)] public readonly TypeMetadata TypeMetadata;
     [FieldOffset(0)] public readonly ClassMetadata ClassMetadata;
     [FieldOffset(0)] public readonly AffineStructMetadata AffineStructMetadata;
-    [FieldOffset(0)] public readonly ValueMetadata ValueMetadata;
+    [FieldOffset(0)] public readonly StructMetadata StructMetadata;
     [FieldOffset(0)] public readonly BareType BareType;
 
     public bool IsNone
@@ -68,7 +68,7 @@ internal readonly struct Value
     [Inline(InlineBehavior.Remove)]
     public static Value From(AffineStructReference value) => new(value);
     [Inline(InlineBehavior.Remove)]
-    public static Value From(ValueReference value) => new(value);
+    public static Value From(StructReference value) => new(value);
     [Inline(export: true)]
     public static Value From(BigInteger value) => new(value);
     [Inline(InlineBehavior.Remove)]
@@ -125,9 +125,9 @@ internal readonly struct Value
     {
         AffineStructReference = value;
     }
-    private Value(ValueReference value)
+    private Value(StructReference value)
     {
-        ValueReference = value;
+        StructReference = value;
     }
     private Value(BigInteger value)
     {

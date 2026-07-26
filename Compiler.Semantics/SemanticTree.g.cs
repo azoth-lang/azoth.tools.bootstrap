@@ -517,7 +517,7 @@ public partial interface ITypeConstructorDefinitionNode : ITypeConstructorDeclar
 [Closed(
     typeof(IClassDefinitionNode),
     typeof(IAffineStructDefinitionNode),
-    typeof(IValueDefinitionNode),
+    typeof(IStructDefinitionNode),
     typeof(ITraitDefinitionNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface ITypeDefinitionNode : ICodeNode, IFacetMemberDefinitionNode, IAssociatedMemberDefinitionNode, ITypeConstructorDefinitionNode, IOrdinaryTypeDeclarationNode
@@ -612,9 +612,9 @@ public partial interface IAffineStructDefinitionNode : ITypeDefinitionNode, IAff
         => new AffineStructDefinitionNode(syntax, attributes, genericParameters, supertypeNames, sourceMembers);
 }
 
-[Closed(typeof(ValueDefinitionNode))]
+[Closed(typeof(StructDefinitionNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IValueDefinitionNode : ITypeDefinitionNode, IValueDeclarationNode
+public partial interface IStructDefinitionNode : ITypeDefinitionNode, IStructDeclarationNode
 {
     new IStructDefinitionSyntax Syntax { get; }
     ITypeDefinitionSyntax ITypeDefinitionNode.Syntax => Syntax;
@@ -624,13 +624,13 @@ public partial interface IValueDefinitionNode : ITypeDefinitionNode, IValueDecla
     IMemberDefinitionSyntax? ITypeMemberDefinitionNode.Syntax => Syntax;
     IDefaultInitializerDefinitionNode? DefaultInitializer { get; }
 
-    public static IValueDefinitionNode Create(
+    public static IStructDefinitionNode Create(
         IStructDefinitionSyntax syntax,
         IEnumerable<IAttributeNode> attributes,
         IEnumerable<IGenericParameterNode> genericParameters,
         IEnumerable<ITypeNameNode> supertypeNames,
         IEnumerable<ITypeMemberDefinitionNode> sourceMembers)
-        => new ValueDefinitionNode(syntax, attributes, genericParameters, supertypeNames, sourceMembers);
+        => new StructDefinitionNode(syntax, attributes, genericParameters, supertypeNames, sourceMembers);
 }
 
 [Closed(typeof(TraitDefinitionNode))]
@@ -3929,7 +3929,7 @@ public partial interface IBuiltInTypeDeclarationNode : ITypeDeclarationNode
     typeof(ITypeDefinitionNode),
     typeof(IClassDeclarationNode),
     typeof(IAffineStructDeclarationNode),
-    typeof(IValueDeclarationNode),
+    typeof(IStructDeclarationNode),
     typeof(ITraitDeclarationNode),
     typeof(IOrdinaryTypeSymbolNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -3970,10 +3970,10 @@ public partial interface IAffineStructDeclarationNode : IOrdinaryTypeDeclaration
 }
 
 [Closed(
-    typeof(IValueDefinitionNode),
-    typeof(IValueSymbolNode))]
+    typeof(IStructDefinitionNode),
+    typeof(IStructSymbolNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IValueDeclarationNode : IOrdinaryTypeDeclarationNode
+public partial interface IStructDeclarationNode : IOrdinaryTypeDeclarationNode
 {
 }
 
@@ -4432,7 +4432,7 @@ public partial interface INeverTypeSymbolNode : ITypeConstructorSymbolNode
 [Closed(
     typeof(IClassSymbolNode),
     typeof(IAffineStructSymbolNode),
-    typeof(IValueSymbolNode),
+    typeof(IStructSymbolNode),
     typeof(ITraitSymbolNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IOrdinaryTypeSymbolNode : IOrdinaryTypeDeclarationNode, ITypeSymbolNode, INamespaceMemberSymbolNode
@@ -4481,13 +4481,13 @@ public partial interface IAffineStructSymbolNode : IAffineStructDeclarationNode,
         => new AffineStructSymbolNode(symbol);
 }
 
-[Closed(typeof(ValueSymbolNode))]
+[Closed(typeof(StructSymbolNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IValueSymbolNode : IValueDeclarationNode, IOrdinaryTypeSymbolNode
+public partial interface IStructSymbolNode : IStructDeclarationNode, IOrdinaryTypeSymbolNode
 {
 
-    public static IValueSymbolNode Create(OrdinaryTypeSymbol symbol)
-        => new ValueSymbolNode(symbol);
+    public static IStructSymbolNode Create(OrdinaryTypeSymbol symbol)
+        => new StructSymbolNode(symbol);
 }
 
 [Closed(typeof(TraitSymbolNode))]
@@ -6179,9 +6179,9 @@ file class AffineStructDefinitionNode : SemanticNode, IAffineStructDefinitionNod
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class ValueDefinitionNode : SemanticNode, IValueDefinitionNode
+file class StructDefinitionNode : SemanticNode, IStructDefinitionNode
 {
-    private IValueDefinitionNode Self { [Inline] get => this; }
+    private IStructDefinitionNode Self { [Inline] get => this; }
 
     public IStructDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
     public IFixedList<IAttributeNode> Attributes { [DebuggerStepThrough] get; }
@@ -6230,7 +6230,7 @@ file class ValueDefinitionNode : SemanticNode, IValueDefinitionNode
     public IDefaultInitializerDefinitionNode? DefaultInitializer
         => GrammarAttribute.IsCached(in defaultInitializerCached) ? defaultInitializer
             : this.Synthetic(ref defaultInitializerCached, ref defaultInitializer,
-                n => Child.Attach(this, SynthesizedMembersAspect.ValueDefinition_DefaultInitializer(n)));
+                n => Child.Attach(this, SynthesizedMembersAspect.StructDefinition_DefaultInitializer(n)));
     private IDefaultInitializerDefinitionNode? defaultInitializer;
     private bool defaultInitializerCached;
     public IImplicitSelfDefinitionNode ImplicitSelf
@@ -6279,13 +6279,13 @@ file class ValueDefinitionNode : SemanticNode, IValueDefinitionNode
     public IFixedSet<ITypeMemberDefinitionNode> SynthesizedMembers
         => GrammarAttribute.IsCached(in synthesizedMembersCached) ? synthesizedMembers!
             : this.Synthetic(ref synthesizedMembersCached, ref synthesizedMembers,
-                SynthesizedMembersAspect.ValueDefinition_SynthesizedMembers);
+                SynthesizedMembersAspect.StructDefinition_SynthesizedMembers);
     private IFixedSet<ITypeMemberDefinitionNode>? synthesizedMembers;
     private bool synthesizedMembersCached;
     public OrdinaryTypeConstructor TypeConstructor
         => GrammarAttribute.IsCached(in typeConstructorCached) ? typeConstructor!
             : this.Synthetic(ref typeConstructorCached, ref typeConstructor,
-                TypeConstructorsAspect.ValueDefinition_TypeConstructor);
+                TypeConstructorsAspect.StructDefinition_TypeConstructor);
     private OrdinaryTypeConstructor? typeConstructor;
     private bool typeConstructorCached;
 
@@ -6305,7 +6305,7 @@ file class ValueDefinitionNode : SemanticNode, IValueDefinitionNode
             yield return DefaultInitializer;
     }
 
-    public ValueDefinitionNode(
+    public StructDefinitionNode(
         IStructDefinitionSyntax syntax,
         IEnumerable<IAttributeNode> attributes,
         IEnumerable<IGenericParameterNode> genericParameters,
@@ -20208,9 +20208,9 @@ file class AffineStructSymbolNode : SemanticNode, IAffineStructSymbolNode
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class ValueSymbolNode : SemanticNode, IValueSymbolNode
+file class StructSymbolNode : SemanticNode, IStructSymbolNode
 {
-    private IValueSymbolNode Self { [Inline] get => this; }
+    private IStructSymbolNode Self { [Inline] get => this; }
 
     public OrdinaryTypeSymbol Symbol { [DebuggerStepThrough] get; }
     public ISymbolDeclarationNode ContainingDeclaration
@@ -20262,9 +20262,9 @@ file class ValueSymbolNode : SemanticNode, IValueSymbolNode
             yield return child;
     }
 
-    public ValueSymbolNode(OrdinaryTypeSymbol symbol)
+    public StructSymbolNode(OrdinaryTypeSymbol symbol)
     {
-        SymbolNodeAttributesAspect.Validate_ValueSymbol(symbol);
+        SymbolNodeAttributesAspect.Validate_StructSymbol(symbol);
         Symbol = symbol;
     }
 

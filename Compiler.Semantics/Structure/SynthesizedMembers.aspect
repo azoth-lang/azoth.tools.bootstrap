@@ -12,5 +12,5 @@
 = TypeDefinition.ImplicitSelf;
 ↑ child ClassDefinition.DefaultInitializer: DefaultInitializerDefinition?;
 ↑ child AffineStructDefinition.DefaultInitializer: DefaultInitializerDefinition?;
-↑ child ValueDefinition.DefaultInitializer: DefaultInitializerDefinition?;
+↑ child StructDefinition.DefaultInitializer: DefaultInitializerDefinition?;
 = TraitDefinition.SynthesizedMembers => [];

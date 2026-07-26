@@ -3,13 +3,13 @@ using InlineMethod;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.MemoryLayout;
 
-internal sealed class ValueMetadata : TypeMetadata
+internal sealed class StructMetadata : TypeMetadata
 {
-    public IValueDefinitionNode Value { [DebuggerStepThrough] get; }
+    public IStructDefinitionNode Struct { [DebuggerStepThrough] get; }
 
-    public ValueMetadata(IValueDefinitionNode value) : base(value, 1)
+    public StructMetadata(IStructDefinitionNode @struct) : base(@struct, 1)
     {
-        Value = value;
+        Struct = @struct;
     }
 
     [Inline(InlineBehavior.Remove)]

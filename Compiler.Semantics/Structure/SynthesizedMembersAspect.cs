@@ -39,15 +39,15 @@ internal static partial class SynthesizedMembersAspect
         // TODO should implicit self be included? (It isn't currently a type member)
         => FixedSet.CreateFromValue(node.DefaultInitializer);
 
-    public static partial IDefaultInitializerDefinitionNode? ValueDefinition_DefaultInitializer(IValueDefinitionNode node)
+    public static partial IDefaultInitializerDefinitionNode? StructDefinition_DefaultInitializer(IStructDefinitionNode node)
     {
         if (node.SourceMembers.Any(m => m is IInitializerDefinitionNode)) return null;
         return Child.Attach(node, IDefaultInitializerDefinitionNode.Create());
     }
 
     /// <remarks>This needs to be lazy computed because the
-    /// <see cref="IValueDefinitionNode.DefaultInitializer"/> attribute must be computed.</remarks>
-    public static partial IFixedSet<ITypeMemberDefinitionNode> ValueDefinition_SynthesizedMembers(IValueDefinitionNode node)
+    /// <see cref="IStructDefinitionNode.DefaultInitializer"/> attribute must be computed.</remarks>
+    public static partial IFixedSet<ITypeMemberDefinitionNode> StructDefinition_SynthesizedMembers(IStructDefinitionNode node)
         // TODO should implicit self be included? (It isn't currently a type member)
         => FixedSet.CreateFromValue(node.DefaultInitializer);
     #endregion
