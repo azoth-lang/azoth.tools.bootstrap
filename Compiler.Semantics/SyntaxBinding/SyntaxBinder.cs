@@ -112,8 +112,8 @@ internal static class SyntaxBinder
             GenericParameters(syntax.GenericParameters), TypeName(syntax.BaseTypeName),
             SupertypeNames(syntax.SupertypeNames), MemberDefinitions(syntax.Members));
 
-    private static IStructDefinitionNode AffineStructDefinition(IAffineStructDefinitionSyntax syntax)
-        => IStructDefinitionNode.Create(syntax, Attributes(syntax.Attributes),
+    private static IAffineStructDefinitionNode AffineStructDefinition(IAffineStructDefinitionSyntax syntax)
+        => IAffineStructDefinitionNode.Create(syntax, Attributes(syntax.Attributes),
             GenericParameters(syntax.GenericParameters), SupertypeNames(syntax.SupertypeNames),
             MemberDefinitions(syntax.Members));
 

@@ -20,7 +20,7 @@ internal static partial class TypeConstructorsAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial OrdinaryTypeConstructor ClassDefinition_TypeConstructor(IClassDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial OrdinaryTypeConstructor StructDefinition_TypeConstructor(IStructDefinitionNode node);
+    public static partial OrdinaryTypeConstructor AffineStructDefinition_TypeConstructor(IAffineStructDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial OrdinaryTypeConstructor ValueDefinition_TypeConstructor(IValueDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

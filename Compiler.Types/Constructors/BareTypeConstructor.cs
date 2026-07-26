@@ -50,7 +50,7 @@ public abstract class BareTypeConstructor : BareTypeConstructorContext, IEquatab
     #endregion
 
     #region CreateX(...)
-    public static OrdinaryTypeConstructor CreateStruct(
+    public static OrdinaryTypeConstructor CreateAffineStruct(
         BareTypeConstructorContext context,
         bool isConst,
         OrdinaryName name,

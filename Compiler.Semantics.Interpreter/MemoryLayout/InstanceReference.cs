@@ -4,7 +4,7 @@ using InlineMethod;
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.MemoryLayout;
 
 /// <summary>
-/// One of <see cref="ClassReference"/>, <see cref="StructReference"/>, or <see cref="ValueReference"/>.
+/// One of <see cref="ClassReference"/>, <see cref="AffineStructReference"/>, or <see cref="ValueReference"/>.
 /// </summary>
 internal readonly struct InstanceReference
 {

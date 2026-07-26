@@ -22,7 +22,7 @@ internal readonly struct Value
 {
     [FieldOffset(0)] public readonly InstanceReference InstanceReference;
     [FieldOffset(0)] public readonly ClassReference ClassReference;
-    [FieldOffset(0)] public readonly StructReference StructReference;
+    [FieldOffset(0)] public readonly AffineStructReference AffineStructReference;
     [FieldOffset(0)] public readonly ValueReference ValueReference;
     [FieldOffset(0)] public readonly BigInteger Int;
     [FieldOffset(0)] public readonly IIntrinsicValue IntrinsicValue;
@@ -34,7 +34,7 @@ internal readonly struct Value
     // These aren't used as true values, they are only so InstanceReference etc. can access fields
     [FieldOffset(0)] public readonly TypeMetadata TypeMetadata;
     [FieldOffset(0)] public readonly ClassMetadata ClassMetadata;
-    [FieldOffset(0)] public readonly StructMetadata StructMetadata;
+    [FieldOffset(0)] public readonly AffineStructMetadata AffineStructMetadata;
     [FieldOffset(0)] public readonly ValueMetadata ValueMetadata;
     [FieldOffset(0)] public readonly BareType BareType;
 
@@ -66,7 +66,7 @@ internal readonly struct Value
     [Inline(InlineBehavior.Remove)]
     public static Value From(ClassReference value) => new(value);
     [Inline(InlineBehavior.Remove)]
-    public static Value From(StructReference value) => new(value);
+    public static Value From(AffineStructReference value) => new(value);
     [Inline(InlineBehavior.Remove)]
     public static Value From(ValueReference value) => new(value);
     [Inline(export: true)]
@@ -121,9 +121,9 @@ internal readonly struct Value
     {
         ClassReference = value;
     }
-    private Value(StructReference value)
+    private Value(AffineStructReference value)
     {
-        StructReference = value;
+        AffineStructReference = value;
     }
     private Value(ValueReference value)
     {

@@ -61,7 +61,7 @@ public sealed class InterpreterProcess
     private readonly MethodSignatureCache methodSignatures = new();
     private readonly ConcurrentDictionary<IClassDefinitionNode, ClassMetadata> classMetadata
         = new(ReferenceEqualityComparer.Instance);
-    private readonly ConcurrentDictionary<IStructDefinitionNode, StructMetadata> structMetadata
+    private readonly ConcurrentDictionary<IAffineStructDefinitionNode, AffineStructMetadata> affineStructMetadata
         = new(ReferenceEqualityComparer.Instance);
     private readonly ConcurrentDictionary<IValueDefinitionNode, ValueMetadata> valueMetadata
         = new(ReferenceEqualityComparer.Instance);
@@ -97,7 +97,7 @@ public sealed class InterpreterProcess
         rangeBareType = rangeValue?.TypeConstructor.ConstructNullaryType(containingType: null);
 
         var defaultInitializerSymbols = allDefinitions
-                                       .OfType<IStructDefinitionNode>()
+                                       .OfType<IAffineStructDefinitionNode>()
                                        .Select(c => c.DefaultInitializer?.Symbol)
                                        .Concat(allDefinitions
                                                .OfType<IClassDefinitionNode>()
@@ -252,7 +252,7 @@ public sealed class InterpreterProcess
         return typeDefinition switch
         {
             IClassDefinitionNode @class => CallClassInitializerAsync(@class, selfBareType, initializerSymbol, arguments),
-            IStructDefinitionNode @struct => CallStructInitializerAsync(@struct, selfBareType, initializerSymbol, arguments),
+            IAffineStructDefinitionNode affineStruct => CallAffineStructInitializerAsync(affineStruct, selfBareType, initializerSymbol, arguments),
             IValueDefinitionNode value => CallValueInitializerAsync(value, selfBareType, initializerSymbol, arguments),
             ITraitDefinitionNode _ => throw new UnreachableException("Traits don't have initializers."),
             _ => throw ExhaustiveMatch.Failed(typeDefinition)
@@ -275,15 +275,15 @@ public sealed class InterpreterProcess
            ?? baseClass.DeclaredMembers.OfType<IInitializerDefinitionNode>()
                        .Select(c => c.Symbol.Assigned()).Single(c => c.Arity == 0);
 
-    private ValueTask<Value> CallStructInitializerAsync(
-        IStructDefinitionNode @struct,
+    private ValueTask<Value> CallAffineStructInitializerAsync(
+        IAffineStructDefinitionNode affineStruct,
         BareType selfBareType,
         InitializerSymbol initializerSymbol,
         IReadOnlyList<Value> arguments)
     {
-        var layout = structMetadata.GetOrAdd(@struct, CreateStructMetatdata);
-        var self = Value.From((StructReference)new(layout));
-        return CallInitializerAsync(@struct, initializerSymbol, self, selfBareType, arguments);
+        var layout = affineStructMetadata.GetOrAdd(affineStruct, CreateAffineStructMetadata);
+        var self = Value.From((AffineStructReference)new(layout));
+        return CallInitializerAsync(affineStruct, initializerSymbol, self, selfBareType, arguments);
     }
 
     private ValueTask<Value> CallValueInitializerAsync(
@@ -1100,7 +1100,8 @@ public sealed class InterpreterProcess
     private ClassMetadata CreateClassMetadata(IClassDefinitionNode @class)
         => new(@class, methodSignatures, userTypes);
 
-    private static StructMetadata CreateStructMetatdata(IStructDefinitionNode @struct) => new(@struct);
+    private static AffineStructMetadata CreateAffineStructMetadata(IAffineStructDefinitionNode affineStruct)
+        => new(affineStruct);
 
     private static ValueMetadata CreateValueMetadata(IValueDefinitionNode value) => new(value);
 

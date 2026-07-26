@@ -89,7 +89,7 @@ internal class SemanticTreeValidator
                 _ = n.TypeConstructor;
                 _ = n.Symbol;
                 break;
-            case IStructDefinitionNode n:
+            case IAffineStructDefinitionNode n:
                 _ = n.File;
                 _ = n.TypeConstructor;
                 _ = n.Symbol;

@@ -516,7 +516,7 @@ public partial interface ITypeConstructorDefinitionNode : ITypeConstructorDeclar
 
 [Closed(
     typeof(IClassDefinitionNode),
-    typeof(IStructDefinitionNode),
+    typeof(IAffineStructDefinitionNode),
     typeof(IValueDefinitionNode),
     typeof(ITraitDefinitionNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -591,9 +591,9 @@ public partial interface IClassDefinitionNode : ITypeDefinitionNode, IClassDecla
         => new ClassDefinitionNode(syntax, attributes, genericParameters, baseTypeName, supertypeNames, sourceMembers);
 }
 
-[Closed(typeof(StructDefinitionNode))]
+[Closed(typeof(AffineStructDefinitionNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IStructDefinitionNode : ITypeDefinitionNode, IStructDeclarationNode
+public partial interface IAffineStructDefinitionNode : ITypeDefinitionNode, IStructDeclarationNode
 {
     new IAffineStructDefinitionSyntax Syntax { get; }
     ITypeDefinitionSyntax ITypeDefinitionNode.Syntax => Syntax;
@@ -603,13 +603,13 @@ public partial interface IStructDefinitionNode : ITypeDefinitionNode, IStructDec
     IMemberDefinitionSyntax? ITypeMemberDefinitionNode.Syntax => Syntax;
     IDefaultInitializerDefinitionNode? DefaultInitializer { get; }
 
-    public static IStructDefinitionNode Create(
+    public static IAffineStructDefinitionNode Create(
         IAffineStructDefinitionSyntax syntax,
         IEnumerable<IAttributeNode> attributes,
         IEnumerable<IGenericParameterNode> genericParameters,
         IEnumerable<ITypeNameNode> supertypeNames,
         IEnumerable<ITypeMemberDefinitionNode> sourceMembers)
-        => new StructDefinitionNode(syntax, attributes, genericParameters, supertypeNames, sourceMembers);
+        => new AffineStructDefinitionNode(syntax, attributes, genericParameters, supertypeNames, sourceMembers);
 }
 
 [Closed(typeof(ValueDefinitionNode))]
@@ -3962,7 +3962,7 @@ public partial interface IClassDeclarationNode : IOrdinaryTypeDeclarationNode
 }
 
 [Closed(
-    typeof(IStructDefinitionNode),
+    typeof(IAffineStructDefinitionNode),
     typeof(IStructSymbolNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IStructDeclarationNode : IOrdinaryTypeDeclarationNode
@@ -5975,9 +5975,9 @@ file class ClassDefinitionNode : SemanticNode, IClassDefinitionNode
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class StructDefinitionNode : SemanticNode, IStructDefinitionNode
+file class AffineStructDefinitionNode : SemanticNode, IAffineStructDefinitionNode
 {
-    private IStructDefinitionNode Self { [Inline] get => this; }
+    private IAffineStructDefinitionNode Self { [Inline] get => this; }
 
     public IAffineStructDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
     public IFixedList<IAttributeNode> Attributes { [DebuggerStepThrough] get; }
@@ -6026,7 +6026,7 @@ file class StructDefinitionNode : SemanticNode, IStructDefinitionNode
     public IDefaultInitializerDefinitionNode? DefaultInitializer
         => GrammarAttribute.IsCached(in defaultInitializerCached) ? defaultInitializer
             : this.Synthetic(ref defaultInitializerCached, ref defaultInitializer,
-                n => Child.Attach(this, SynthesizedMembersAspect.StructDefinition_DefaultInitializer(n)));
+                n => Child.Attach(this, SynthesizedMembersAspect.AffineStructDefinition_DefaultInitializer(n)));
     private IDefaultInitializerDefinitionNode? defaultInitializer;
     private bool defaultInitializerCached;
     public IImplicitSelfDefinitionNode ImplicitSelf
@@ -6075,13 +6075,13 @@ file class StructDefinitionNode : SemanticNode, IStructDefinitionNode
     public IFixedSet<ITypeMemberDefinitionNode> SynthesizedMembers
         => GrammarAttribute.IsCached(in synthesizedMembersCached) ? synthesizedMembers!
             : this.Synthetic(ref synthesizedMembersCached, ref synthesizedMembers,
-                SynthesizedMembersAspect.StructDefinition_SynthesizedMembers);
+                SynthesizedMembersAspect.AffineStructDefinition_SynthesizedMembers);
     private IFixedSet<ITypeMemberDefinitionNode>? synthesizedMembers;
     private bool synthesizedMembersCached;
     public OrdinaryTypeConstructor TypeConstructor
         => GrammarAttribute.IsCached(in typeConstructorCached) ? typeConstructor!
             : this.Synthetic(ref typeConstructorCached, ref typeConstructor,
-                TypeConstructorsAspect.StructDefinition_TypeConstructor);
+                TypeConstructorsAspect.AffineStructDefinition_TypeConstructor);
     private OrdinaryTypeConstructor? typeConstructor;
     private bool typeConstructorCached;
 
@@ -6101,7 +6101,7 @@ file class StructDefinitionNode : SemanticNode, IStructDefinitionNode
             yield return DefaultInitializer;
     }
 
-    public StructDefinitionNode(
+    public AffineStructDefinitionNode(
         IAffineStructDefinitionSyntax syntax,
         IEnumerable<IAttributeNode> attributes,
         IEnumerable<IGenericParameterNode> genericParameters,
