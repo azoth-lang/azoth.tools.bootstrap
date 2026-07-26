@@ -80,7 +80,7 @@
 
 + ClassSymbol.new.Validate;
 
-+ StructSymbol.new.Validate;
++ AffineStructSymbol.new.Validate;
 
 + ValueSymbol.new.Validate;
 

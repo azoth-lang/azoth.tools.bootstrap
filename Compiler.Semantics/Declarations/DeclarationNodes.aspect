@@ -65,7 +65,7 @@ BuiltInTypeDeclaration <: TypeDeclaration = Name:`BuiltInTypeName` DeclaredMembe
 OrdinaryTypeDeclaration <: NamespaceMemberDeclaration, TypeMemberDeclaration, TypeDeclaration
     = Name:`OrdinaryName` GenericParameters:GenericParameterDeclaration* DeclaredMembers:{TypeMemberDeclaration};
 ClassDeclaration <: OrdinaryTypeDeclaration = /DeclaredMembers/;
-StructDeclaration <: OrdinaryTypeDeclaration = /DeclaredMembers/;
+AffineStructDeclaration <: OrdinaryTypeDeclaration = /DeclaredMembers/;
 ValueDeclaration <: OrdinaryTypeDeclaration = /DeclaredMembers/;
 TraitDeclaration <: OrdinaryTypeDeclaration = /DeclaredMembers/;
 

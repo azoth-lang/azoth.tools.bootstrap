@@ -593,7 +593,7 @@ public partial interface IClassDefinitionNode : ITypeDefinitionNode, IClassDecla
 
 [Closed(typeof(AffineStructDefinitionNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IAffineStructDefinitionNode : ITypeDefinitionNode, IStructDeclarationNode
+public partial interface IAffineStructDefinitionNode : ITypeDefinitionNode, IAffineStructDeclarationNode
 {
     new IAffineStructDefinitionSyntax Syntax { get; }
     ITypeDefinitionSyntax ITypeDefinitionNode.Syntax => Syntax;
@@ -3928,7 +3928,7 @@ public partial interface IBuiltInTypeDeclarationNode : ITypeDeclarationNode
 [Closed(
     typeof(ITypeDefinitionNode),
     typeof(IClassDeclarationNode),
-    typeof(IStructDeclarationNode),
+    typeof(IAffineStructDeclarationNode),
     typeof(IValueDeclarationNode),
     typeof(ITraitDeclarationNode),
     typeof(IOrdinaryTypeSymbolNode))]
@@ -3963,9 +3963,9 @@ public partial interface IClassDeclarationNode : IOrdinaryTypeDeclarationNode
 
 [Closed(
     typeof(IAffineStructDefinitionNode),
-    typeof(IStructSymbolNode))]
+    typeof(IAffineStructSymbolNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IStructDeclarationNode : IOrdinaryTypeDeclarationNode
+public partial interface IAffineStructDeclarationNode : IOrdinaryTypeDeclarationNode
 {
 }
 
@@ -4431,7 +4431,7 @@ public partial interface INeverTypeSymbolNode : ITypeConstructorSymbolNode
 
 [Closed(
     typeof(IClassSymbolNode),
-    typeof(IStructSymbolNode),
+    typeof(IAffineStructSymbolNode),
     typeof(IValueSymbolNode),
     typeof(ITraitSymbolNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -4472,13 +4472,13 @@ public partial interface IClassSymbolNode : IClassDeclarationNode, IOrdinaryType
         => new ClassSymbolNode(symbol);
 }
 
-[Closed(typeof(StructSymbolNode))]
+[Closed(typeof(AffineStructSymbolNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IStructSymbolNode : IStructDeclarationNode, IOrdinaryTypeSymbolNode
+public partial interface IAffineStructSymbolNode : IAffineStructDeclarationNode, IOrdinaryTypeSymbolNode
 {
 
-    public static IStructSymbolNode Create(OrdinaryTypeSymbol symbol)
-        => new StructSymbolNode(symbol);
+    public static IAffineStructSymbolNode Create(OrdinaryTypeSymbol symbol)
+        => new AffineStructSymbolNode(symbol);
 }
 
 [Closed(typeof(ValueSymbolNode))]
@@ -20141,9 +20141,9 @@ file class ClassSymbolNode : SemanticNode, IClassSymbolNode
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class StructSymbolNode : SemanticNode, IStructSymbolNode
+file class AffineStructSymbolNode : SemanticNode, IAffineStructSymbolNode
 {
-    private IStructSymbolNode Self { [Inline] get => this; }
+    private IAffineStructSymbolNode Self { [Inline] get => this; }
 
     public OrdinaryTypeSymbol Symbol { [DebuggerStepThrough] get; }
     public ISymbolDeclarationNode ContainingDeclaration
@@ -20195,9 +20195,9 @@ file class StructSymbolNode : SemanticNode, IStructSymbolNode
             yield return child;
     }
 
-    public StructSymbolNode(OrdinaryTypeSymbol symbol)
+    public AffineStructSymbolNode(OrdinaryTypeSymbol symbol)
     {
-        SymbolNodeAttributesAspect.Validate_StructSymbol(symbol);
+        SymbolNodeAttributesAspect.Validate_AffineStructSymbol(symbol);
         Symbol = symbol;
     }
 

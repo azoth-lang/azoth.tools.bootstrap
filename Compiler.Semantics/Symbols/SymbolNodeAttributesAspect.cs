@@ -10,8 +10,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 
 internal static partial class SymbolNodeAttributesAspect
 {
-        public static partial IPackageFacetSymbolNode PackageFacetReference_SymbolNode(IPackageFacetReferenceNode node)
-        => IPackageFacetSymbolNode.Create(node.Symbols);
+    public static partial IPackageFacetSymbolNode PackageFacetReference_SymbolNode(IPackageFacetReferenceNode node)
+    => IPackageFacetSymbolNode.Create(node.Symbols);
 
     private static IEnumerable<Symbol> GetSymbolMembers(IChildSymbolNode node)
         => node.SymbolTree().GetChildrenOf(node.Symbol);
@@ -45,9 +45,9 @@ internal static partial class SymbolNodeAttributesAspect
         => Requires.That(symbol.TypeConstructor is { Kind: TypeKind.Class }, nameof(symbol),
             "Symbol must be for an class type.");
 
-    public static partial void Validate_StructSymbol(OrdinaryTypeSymbol symbol)
+    public static partial void Validate_AffineStructSymbol(OrdinaryTypeSymbol symbol)
         => Requires.That(symbol.TypeConstructor is { Kind: TypeKind.Struct }, nameof(symbol),
-            "Symbol must be for a struct type.");
+            "Symbol must be for an affine struct type.");
 
     public static partial void Validate_ValueSymbol(OrdinaryTypeSymbol symbol)
         => Requires.That(symbol.TypeConstructor is { Kind: TypeKind.Value }, nameof(symbol),

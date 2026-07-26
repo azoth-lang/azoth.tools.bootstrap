@@ -88,7 +88,7 @@ TypeDefinition <: Code, FacetMemberDefinition, AssociatedMemberDefinition, TypeC
     SourceMembers:TypeMemberDefinition*;
 ClassDefinition <: Code, TypeDefinition, ClassDeclaration = Syntax:`IClassDefinitionSyntax`
     /Attributes/ /GenericParameters/ BaseTypeName:TypeName? /SupertypeNames/ /SourceMembers/;
-AffineStructDefinition <: Code, TypeDefinition, StructDeclaration = Syntax:`IAffineStructDefinitionSyntax`
+AffineStructDefinition <: Code, TypeDefinition, AffineStructDeclaration = Syntax:`IAffineStructDefinitionSyntax`
     /Attributes/ /GenericParameters/ /SupertypeNames/ /SourceMembers/;
 ValueDefinition <: Code, TypeDefinition, ValueDeclaration = Syntax:`IStructDefinitionSyntax`
     /Attributes/ /GenericParameters/ /SupertypeNames/ /SourceMembers/;
